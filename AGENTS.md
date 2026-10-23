@@ -2,7 +2,7 @@
 
 Workspace: C:/Users/PC/Desktop/Codes/EducationPlatform.
 
-Hosted-pilot checkpoint, 2026-10-23: owner explicitly selected a hosted test pilot with simulated payments and clearly labelled unverified-email accounts. AUTH_HOSTED_PILOT=true requires a canonical HTTPS BETTER_AUTH_URL; HOSTED_MOCK_PAYMENTS and SPEAKING_LAB_ENABLED are separate opt-ins. Keep local-only demo login/provisioning guards unchanged. Hosted source/configuration and the separate Neon database are prepared; read the latest HANDOFF.md for actual deployment and verification results. This is not verified-email production authentication or live billing.
+Hosted-pilot checkpoint, 2026-10-23: owner explicitly selected a hosted test pilot with simulated payments and clearly labelled unverified-email accounts. AUTH_HOSTED_PILOT=true requires a canonical HTTPS BETTER_AUTH_URL; HOSTED_MOCK_PAYMENTS and SPEAKING_LAB_ENABLED are separate opt-ins. Keep local-only demo login/provisioning guards unchanged. The hosted pilot is deployed and uses its separate Neon PostgreSQL database; read the latest HANDOFF.md for actual deployment and verification results. This is not verified-email production authentication or live billing.
 
 Read in order before changing the project:
 1. HANDOFF.md — exact continuation state and verification outcomes.
@@ -106,7 +106,7 @@ All five owned Markdown files updated. No application source changed after the f
 
 ## Speaking Studio upgrade — 2026-10-23
 
-/labs/ielts-speaking is now a hands-free speaking studio (streamed Kokoro voice, whisper-base.en, VAD turn-taking, full Part 1→2→3 mock with cue card, per-answer tips, hints, redo, indicative transcript-only band report, local-browser progress/phrasebook). Still isolated, local-pilot-only, noindex, no DB writes. Bands are AI estimates, labelled not official, pronunciation not assessed — this reverses the earlier "no band numbers" choice at the owner's request for a more complete learning tool. See the latest HANDOFF.md entry for contracts, quotas, verification state and the pending real-model smoke run.
+/labs/ielts-speaking is now a hands-free speaking studio (streamed Kokoro voice, whisper-base.en, VAD turn-taking, full Part 1→2→3 mock with cue card, per-answer tips, hints, redo, indicative transcript-only band report, local-browser progress/phrasebook). Still isolated, explicitly pilot-gated, noindex, with no speaking-attempt/chat writes. Bands are AI estimates, labelled not official, pronunciation not assessed — this reverses the earlier "no band numbers" choice at the owner's request for a more complete learning tool. See the latest HANDOFF.md entry for contracts, quotas, verification state and the pending real-model smoke run.
 
 <!-- BEGIN:nextjs-agent-rules -->
 
@@ -117,3 +117,6 @@ This version has breaking changes — APIs, conventions, and file structure may 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
 <!-- END:nextjs-agent-rules -->
+
+
+Hosted verification checkpoint, 2026-10-23: the canonical Vercel site is live on application commit 30574b6. Hosted account/payment suites passed on 88100c2; after the native speech packaging fix, hosted speaking_lab_smoke.py passed real Kokoro streaming, Whisper transcription and three DeepSeek start/answer/report calls. All 47 units and the five required/relevant local browser suites passed for the repair; the final packaging-only follow-up also built successfully. See HANDOFF.md for exact coverage. Neon vercel is now the default branch and sole compute (0.25 CU, five-minute autosuspend). hosted-pilot is absent; the production root remains only because vercel depends on it, with its unused compute removed. Payments remain simulated and accounts have unverified email; this is a hosted test pilot.

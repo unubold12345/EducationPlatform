@@ -1,0 +1,57 @@
+{
+  "name": "education-platform",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3001",
+    "build": "prisma generate && next build",
+    "start": "next start -p 3001",
+    "lint": "eslint .",
+    "typecheck": "next typegen && tsc --noEmit",
+    "test": "node --test tests/*.test.mjs",
+    "setup:env": "node scripts/local-env.mjs",
+    "db:start": "prisma dev --name education-platform --detach",
+    "db:stop": "prisma dev stop education-platform",
+    "db:migrate": "prisma migrate deploy",
+    "db:seed": "prisma db seed",
+    "demo:accounts": "node scripts/create-demo-accounts.mjs",
+    "admin:grant": "node --import tsx scripts/grant-local-admin.mjs",
+    "db:generate": "prisma generate",
+    "postinstall": "prisma generate"
+  },
+  "dependencies": {
+    "@huggingface/transformers": "3.8.1",
+    "@prisma/adapter-pg": "7.10.1",
+    "@prisma/client": "7.10.1",
+    "better-auth": "1.7.12",
+    "dotenv": "18.0.8",
+    "kokoro-js": "1.2.1",
+    "next": "16.4.2",
+    "pg": "8.23.1",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "server-only": "0.0.1",
+    "sharp": "0.35.5",
+    "three": "0.186.1"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.5",
+    "@types/pg": "8.23.1",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@types/three": "0.186.0",
+    "eslint": "9.39.5",
+    "eslint-config-next": "16.4.2",
+    "prisma": "7.10.1",
+    "tsx": "4.23.15",
+    "typescript": "6.0.3"
+  },
+  "engines": {
+    "node": ">=24.0.0",
+    "npm": ">=11.0.0"
+  },
+  "type": "module",
+  "overrides": {
+    "sharp": "0.35.5"
+  }
+}

@@ -1,0 +1,61 @@
+from playwright.sync_api import expect
+
+def check_scratchpad(page, context, endpoint, artifacts, label):
+    before = context.request.get(endpoint).json()
+    toggle = page.get_by_role('button', name='Ноорог цаас', exact=False)
+    toggle.click()
+    expect(toggle).to_have_attribute('aria-expanded', 'true')
+    pad = page.locator('.scratch-paper')
+    notes = page.get_by_role('textbox', name='Бичгэн тэмдэглэл')
+    notes.fill('x² + 2x = 8\nx = 2')
+    for offset in [0, 40]:
+        pad.scroll_into_view_if_needed()
+        box = pad.bounding_box()
+        page.mouse.move(box['x']+30, box['y']+35+offset)
+        page.mouse.down()
+        page.mouse.move(box['x']+100, box['y']+65+offset, steps=8)
+        page.mouse.up()
+    expect(pad.locator('path')).to_have_count(2)
+    page.get_by_role('button', name='Сүүлийн зураасыг буцаах').click()
+    expect(pad.locator('path')).to_have_count(1)
+    toggle.click()
+    expect(pad).not_to_be_visible()
+    page.reload()
+    toggle.click()
+    expect(notes).to_have_value('x² + 2x = 8\nx = 2')
+    expect(pad.locator('path')).to_have_count(1)
+    page.screenshot(path=str(artifacts/(label+'-scratch-desktop.png')), full_page=True)
+    original = page.viewport_size
+    for width in [390, 320]:
+        page.set_viewport_size({'width':width,'height':844})
+        assert page.evaluate('document.documentElement.scrollWidth <= innerWidth')
+    pad.scroll_into_view_if_needed()
+    box = pad.bounding_box()
+    touch = context.new_cdp_session(page)
+    touch.send('Input.dispatchTouchEvent', {'type':'touchStart','touchPoints':[{'x':box['x']+box['width']/4,'y':box['y']+box['height']/4}]})
+    touch.send('Input.dispatchTouchEvent', {'type':'touchMove','touchPoints':[{'x':box['x']+box['width']/2,'y':box['y']+box['height']/2}]})
+    touch.send('Input.dispatchTouchEvent', {'type':'touchEnd','touchPoints':[]})
+    touch.detach()
+    expect(pad.locator('path')).to_have_count(2)
+    start = pad.locator('path').last.get_attribute('d').split(' ')[0][1:]
+    x,y = map(float,start.split(','))
+    assert abs(x-250)<5 and abs(y-150)<5, (x,y)
+    page.screenshot(path=str(artifacts/(label+'-scratch-320.png')), full_page=True)
+    page.set_viewport_size(original)
+    page.get_by_role('button', name='Цэвэрлэх', exact=True).click()
+    page.get_by_role('button', name='Болих', exact=True).click()
+    expect(notes).to_have_value('x² + 2x = 8\nx = 2')
+    page.get_by_role('button', name='Цэвэрлэх', exact=True).click()
+    page.get_by_role('button', name='Тийм, арилгах', exact=True).click()
+    expect(notes).to_have_value('')
+    expect(pad.locator('path')).to_have_count(0)
+    page.reload()
+    toggle.click()
+    expect(notes).to_have_value('')
+    expect(pad.locator('path')).to_have_count(0)
+    toggle.click()
+    after = context.request.get(endpoint).json()
+    assert after['deadline'] == before['deadline']
+    assert after['responses'] == before['responses']
+
+

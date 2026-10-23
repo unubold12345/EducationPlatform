@@ -1,0 +1,4 @@
+"use client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+export function PaperStart({slug}:{slug:string}){const [busy,setBusy]=useState(false);const [error,setError]=useState("");const router=useRouter();return <div><button className="button primary" disabled={busy} onClick={async()=>{setBusy(true);setError("");try{const response=await fetch("/api/paper-attempts",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({slug})});const data=await response.json();if(!response.ok)throw Error(data.error);router.push("/papers/attempts/"+data.id);}catch(error){setError(error instanceof Error?error.message:"Түр алдаа гарлаа.");setBusy(false);}}}>{busy?"Нээж байна…":"Эхлэх / үргэлжлүүлэх →"}</button>{error&&<p role="alert" className="error-message">{error}</p>}</div>;}

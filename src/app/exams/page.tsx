@@ -1,0 +1,19 @@
+import { officialPaper } from "@/modules/papers/catalog";
+import { getExam } from "@/modules/content/published";
+export const dynamic="force-dynamic";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { examDefinitions } from "@/modules/exams/definitions";
+import { MOCK_PRICE_LABEL } from "@/modules/exams/pricing";
+export const metadata:Metadata={title:"Бүтэн шалгалтууд"};
+export default async function ExamsPage(){
+  const exams=await Promise.all(examDefinitions.map(exam=>getExam(exam.slug).then(value=>value!)));
+  return <div className="container page-space exams-library"><div className="library-topline"><span className="eyebrow">ШАЛГАЛТЫН САН</span><Link className="text-link" href="/dashboard">Миний шалгалтууд ↗</Link></div><div className="page-intro"><h1>Бэлтгэлээ бодитоор<br/><span>сорьж үз.</span></h1><p>SAT, IELTS Academic mock болон БҮТ-ийн бодит ЭЕШ материал. Стандарт хугацаа, хадгалагдах хариулт, хувийн үр дүн.</p></div><div className="exam-library-label"><h2>Бүтэн шалгалтууд</h2><span>3 шалгалт · Стандарт хугацаа</span></div>
+    <div className="exam-grid">{exams.map(exam=><article className={"exam-card "+exam.program} key={exam.slug}><div className="exam-card-top"><span className="exam-subject">{exam.program==="sat"?"SAT":"IELTS Academic"}</span><span className="status">Full Mock 01</span></div><h2>{exam.title}</h2><p>{exam.program==="sat"?"Reading & Writing-ээс Math хүртэл. Модуль бүрийн цаг, завсарлага болон сонгох/тоон хариулттай.":"Listening, Reading, Writing, Speaking. Бичлэг сонсож, эх уншиж, эсээ бичиж, яриагаа бичүүлээрэй."}</p>
+      <dl className="exam-card-facts"><div><dt>Агуулга</dt><dd>{exam.program==="sat"?"98 асуулт · 4 модуль":"80 асуулт + 2 Writing task + Speaking"}</dd></div><div><dt>Хугацаа</dt><dd>{exam.program==="sat"?"2ц 14м + 10м завсарлага":"32м Listening · 60м Reading · 60м Writing · 12м Speaking"}</dd></div></dl>
+      <ol className="exam-timing-strip">{(exam.program==="sat"?["R&W · 64м","Break · 10м","Math · 70м"]:["Listen · 32м","Read · 60м","Write · 60м","Speak · 12м"]).map(text=><li key={text}>{text}</li>)}</ol>
+      <div className="exam-price"><strong>{MOCK_PRICE_LABEL}</strong><span>Нэг шалгалтын эрх · Дахин өгч болно</span></div><Link className="button" href={"/exams/"+exam.slug}>Шалгалттай танилцах →</Link>
+    </article>)}<article className="exam-card entrance official-exam-card"><div className="exam-card-top"><span className="exam-subject">ЭЛСЭЛТИЙН ЕРӨНХИЙ ШАЛГАЛТ</span><span className="status">БҮТ · 2020 · А</span></div><h2>{officialPaper.title}</h2><p>Бодит өмнөх оны албан материал. Томьёо, зураг бүхий эх 8 хуудас, албан түлхүүрээр дүгнэх хариултын хуудас.</p><dl className="exam-card-facts"><div><dt>Агуулга</dt><dd>36 сонгох + 4 нөхөх даалгавар</dd></div><div><dt>Хугацаа</dt><dd>100 минут · 100 анхны оноо</dd></div></dl><ol className="exam-timing-strip"><li>Сонгох · 72 оноо</li><li>Нөхөх · 28 оноо</li></ol><div className="exam-price"><strong>{MOCK_PRICE_LABEL}</strong><span>Эсвэл University Prep сарын багц</span></div><Link className="button" href={"/exams/"+officialPaper.slug}>Албан шалгалттай танилцах →</Link></article></div>
+    <div className="exam-accuracy"><h2>Эх сурвалж нь тодорхой, бэлтгэл нь бодит.</h2><p>Хугацаа, хэсгийн дараалал, асуултын тоог албан ёсны тайлбарт тулгасан. SAT/IELTS нь өөрсдийн зохиосон mock агуулга. ЭЕШ 2020 Математик А нь БҮТ-ийн албан архивын эх материал. SAT-ийн хоёрдугаар модулийн чиглүүлэлт нь дадлагын загвар; албан ёсны difficulty calibration, 1600 онооны хөрвүүлэлт биш. IELTS Writing, Speaking нь багшийн үнэлгээ шаарддаг.</p><Link className="text-link" href="/programs">Хугацаагүй сэдэвчилсэн дасгалууд →</Link></div>
+  </div>;
+}

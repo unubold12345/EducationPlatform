@@ -1,0 +1,320 @@
+generator client {
+  provider = "prisma-client"
+  output = "../src/generated/prisma"
+}
+datasource db {
+  provider = "postgresql"
+}
+model User {
+  id String @id
+  name String
+  email String @unique
+  emailVerified Boolean @default(false)
+  image String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  sessions Session[]
+  accounts Account[]
+  attempts Attempt[]
+  mockAttempts MockAttempt[]
+  mockPurchases MockPurchase[]
+  subscriptions Subscription[]
+  subscriptionOrders SubscriptionOrder[]
+  adminMembership AdminMembership?
+  paperAttempts PaperAttempt[]
+}
+
+model AdminMembership {
+  userId String @id
+  user User @relation(fields:[userId], references:[id], onDelete:Cascade)
+  createdAt DateTime @default(now())
+}
+
+model AdminAudit {
+  id String @id @default(cuid())
+  actorId String
+  action String
+  target String
+  reason String
+  details Json
+  createdAt DateTime @default(now())
+  @@index([createdAt])
+}
+
+model ContentReview {
+  key String @id
+  status String @default("PENDING")
+  notes String
+  reviewerId String
+  updatedAt DateTime @updatedAt
+}
+
+model ContentDraft {
+  key String @id
+  body Json
+  provenance String
+  revision Int @default(1)
+  status String @default("DRAFT")
+  editorId String
+  reviewerId String?
+  updatedAt DateTime @updatedAt
+}
+
+model PublishedContent {
+  id String @id @default(cuid())
+  key String
+  version Int
+  body Json
+  provenance String
+  publishedBy String
+  reviewedBy String
+  createdAt DateTime @default(now())
+  @@unique([key,version])
+}
+model Session {
+  id String @id
+  expiresAt DateTime
+  token String @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@index([userId])
+}
+model Account {
+  id String @id
+  accountId String
+  providerId String
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken String?
+  refreshToken String?
+  idToken String?
+  accessTokenExpiresAt DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope String?
+  password String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([providerId, accountId])
+  @@index([userId])
+}
+model Verification {
+  id String @id
+  identifier String
+  value String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([identifier])
+}
+model RateLimit {
+  id String @id
+  key String @unique
+  count Int
+  lastRequest BigInt
+}
+model Program {
+  id String @id
+  slug String @unique
+  title String
+  subjects Subject[]
+  exams Exam[]
+}
+model Subject {
+  id String @id
+  programId String
+  program Program @relation(fields: [programId], references: [id], onDelete: Restrict)
+  slug String
+  title String
+  topics Topic[]
+  @@unique([programId, slug])
+}
+model Topic {
+  id String @id
+  subjectId String
+  subject Subject @relation(fields: [subjectId], references: [id], onDelete: Restrict)
+  slug String
+  title String
+  questions Question[]
+  @@unique([subjectId, slug])
+}
+enum ResponseType {
+  SINGLE_CHOICE
+}
+model Question {
+  id String @id
+  topicId String
+  topic Topic @relation(fields: [topicId], references: [id], onDelete: Restrict)
+  versions QuestionVersion[]
+}
+model QuestionVersion {
+  id String @id
+  questionId String
+  question Question @relation(fields: [questionId], references: [id], onDelete: Restrict)
+  version Int
+  type ResponseType @default(SINGLE_CHOICE)
+  prompt String
+  options String[]
+  correct Int
+  explanation String
+  provenance String
+  isDemo Boolean @default(true)
+  createdAt DateTime @default(now())
+  examItems ExamItem[]
+  attemptItems AttemptItem[]
+  @@unique([questionId, version])
+}
+model Exam {
+  id String @id
+  slug String @unique
+  programId String
+  program Program @relation(fields: [programId], references: [id], onDelete: Restrict)
+  title String
+  version Int
+  scoringVersion String
+  isDemo Boolean @default(true)
+  items ExamItem[]
+  attempts Attempt[]
+}
+model ExamItem {
+  id String @id @default(cuid())
+  examId String
+  exam Exam @relation(fields: [examId], references: [id], onDelete: Cascade)
+  questionVersionId String
+  questionVersion QuestionVersion @relation(fields: [questionVersionId], references: [id], onDelete: Restrict)
+  position Int
+  @@unique([examId, position])
+}
+enum AttemptStatus {
+  IN_PROGRESS
+  SUBMITTED
+}
+model Attempt {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  examId String
+  exam Exam @relation(fields: [examId], references: [id], onDelete: Restrict)
+  // Nullable unique key allows exactly one open attempt per student and exam.
+  activeKey String? @unique
+  title String
+  examVersion Int
+  scoringVersion String
+  isDemo Boolean
+  status AttemptStatus @default(IN_PROGRESS)
+  revision Int @default(0)
+  total Int
+  score Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  submittedAt DateTime?
+  items AttemptItem[]
+  @@index([userId, createdAt])
+}
+model AttemptItem {
+  id String @id @default(cuid())
+  attemptId String
+  attempt Attempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  questionVersionId String
+  questionVersion QuestionVersion @relation(fields: [questionVersionId], references: [id], onDelete: Restrict)
+  position Int
+  type ResponseType
+  // Immutable snapshot: content edits must not change a historical result.
+  prompt String
+  options String[]
+  correct Int
+  explanation String
+  selected Int?
+  @@unique([attemptId, position])
+}
+
+model MockAttempt {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug String
+  activeKey String? @unique
+  status String @default("IN_PROGRESS")
+  revision Int @default(0)
+  // Full immutable exam definition and answer-key snapshot, never exposed to clients.
+  state Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  recordings MockRecording[]
+  // A sitting started under a valid subscription may finish and retain private review.
+  subscriptionAccess Boolean @default(false)
+  @@index([userId, createdAt])
+}
+
+model MockRecording {
+  attemptId String
+  attempt MockAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  stageId String
+  mime String
+  data Bytes
+  createdAt DateTime @default(now())
+  @@id([attemptId, stageId])
+}
+
+model MockPurchase {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  examSlug String
+  amountMnt Int @default(10000)
+  currency String @default("MNT")
+  provider String @default("MOCK")
+  status String @default("PENDING")
+  createdAt DateTime @default(now())
+  paidAt DateTime?
+  @@unique([userId, examSlug])
+}
+
+model Subscription {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields:[userId], references:[id], onDelete:Cascade)
+  program String
+  startsAt DateTime
+  endsAt DateTime
+  createdAt DateTime @default(now())
+  @@unique([userId,program])
+}
+
+model SubscriptionOrder {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields:[userId], references:[id], onDelete:Cascade)
+  program String
+  amountMnt Int
+  currency String @default("MNT")
+  provider String @default("MOCK")
+  status String @default("PENDING")
+  activeKey String? @unique
+  createdAt DateTime @default(now())
+  paidAt DateTime?
+  periodStart DateTime?
+  periodEnd DateTime?
+  @@index([userId,createdAt])
+}
+
+model PaperAttempt {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+  slug String
+  activeKey String? @unique
+  status String @default("IN_PROGRESS")
+  revision Int @default(0)
+  snapshot Json
+  responses Json
+  deadline DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  finishedAt DateTime?
+  @@index([userId,createdAt])
+}
+

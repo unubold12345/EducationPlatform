@@ -38,6 +38,14 @@ Source repository: [unubold12345/EducationPlatform](https://github.com/unubold12
 
 ## Local setup
 
+### Hosted test pilot on Vercel
+
+The owner selected this mode on 2026-10-23. Use a separate hosted PostgreSQL database and the canonical HTTPS BETTER_AUTH_URL, a private random BETTER_AUTH_SECRET, AUTH_LOCAL_PILOT=false and AUTH_HOSTED_PILOT=true. Enable simulated checkout with HOSTED_MOCK_PAYMENTS=true and the isolated speaking page with SPEAKING_LAB_ENABLED=true. Configure the private DEEPSEEK_API_KEY in Vercel, never in Git or a NEXT_PUBLIC_ variable. Hosted pages display a test-pilot notice; email verification/recovery and real billing remain unfinished. Local demo credentials remain hidden on hosted URLs.
+
+vercel.json selects npm run build:vercel: validate required settings, generate Prisma, apply committed migrations, run the idempotent content seed, then build Next.js. Missing or local database settings fail the deployment rather than publishing broken database pages. Seed transaction limits accommodate remote database latency; existing versions and records are preserved. Use a separate database for any future preview environment. No production/preview credential fallback is provided.
+
+Speech dependencies use statically traceable CJS loading; deployment traces include the six supported Kokoro voice files and IELTS Listening audio. On Vercel, downloaded speech weights use the ephemeral writable temporary directory, so a cold instance may download/load them again. Warm-up uses Next.js after() with a bounded route duration. Real hosted speech performance must be verified on the deployed build; local success alone does not establish Vercel capacity. See HANDOFF.md for actual outcomes and cloud resource IDs. Existing ignored .env and .env.local remain the local runtime; the separate ignored .env.vercel.local holds only this project's hosted setup.
+
 Requirements: Node.js 24+ and npm 11+. Verified host versions were Node 24.19.0 and npm 11.17.0.
 
 Run from this directory:

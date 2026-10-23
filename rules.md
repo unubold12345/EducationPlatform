@@ -74,7 +74,8 @@ The owner initially selected SAT mathematics on 2026-10-22, then explicitly requ
 ## Local account and persistence conventions
 
 - Use Better Auth 1.7.12 with Prisma ORM 7.10.1 for the current local pilot. Do not upgrade Prisma major versions without reviewing adapter compatibility.
-- Keep the AUTH_LOCAL_PILOT gate until email verification, password recovery, and public deployment settings are implemented.
+- Keep AUTH_LOCAL_PILOT restricted to loopback URLs and keep demo credentials/provisioning local-only. Owner-selected hosted test pilot (2026-10-23) uses a separate explicit AUTH_HOSTED_PILOT gate with a canonical HTTPS URL, an independent hosted PostgreSQL database and a visible unverified-email/recovery limitation. This opt-in does not constitute a verified-email public launch.
+- Hosted simulated checkout requires its own HOSTED_MOCK_PAYMENTS opt-in; the isolated speaking page requires SPEAKING_LAB_ENABLED. Preserve all session, ownership, origin, plan, active-exam and quota checks in either pilot mode. Never make hosted access depend on exposing local credentials or bypassing database errors.
 - Never display the local authentication secret or copy it into documentation or test output.
 - Confirm attempt ownership on every read and mutation. Check request origin on authenticated mutations.
 - Preserve attempt content snapshots and use revision checks for conflicting writes. A stale tab must not overwrite newer saved answers.

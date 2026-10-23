@@ -1,4 +1,12 @@
 import type { NextConfig } from "next";
-const nextConfig: NextConfig = { poweredByHeader: false, serverExternalPackages: ["kokoro-js", "@huggingface/transformers", "onnxruntime-node", "phonemizer"] };
+const nextConfig: NextConfig = {
+ poweredByHeader: false,
+ serverExternalPackages: ["kokoro-js", "@huggingface/transformers", "onnxruntime-node", "phonemizer"],
+ outputFileTracingIncludes:{
+  "/api/labs/ielts-speaking/*":["./node_modules/kokoro-js/voices/{af_heart,af_bella,am_michael,bf_emma,bm_george,bm_lewis}.bin"],
+  "/api/mock-attempts/*/audio":["./assets/exams/ielts-01-part-*.mp3"],
+  "/api/exams/audio-check":["./assets/exams/audio-check.mp3"],
+ },
+};
 export default nextConfig;
 

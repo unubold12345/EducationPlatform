@@ -12,6 +12,8 @@ Git delivery setup, 2026-10-23: the owner explicitly authorized pushing the code
 
 ## Objective
 
+Owner decision, 2026-10-23: make the Vercel deployment usable as a hosted test pilot, with simulated payments and clearly labelled unverified-email accounts. Public launch with email verification and password recovery remains a separate milestone. Explicit hosted authentication/payment/speaking opt-ins preserve local-only demo account tooling. See the latest HANDOFF.md for real deployment results; do not infer release success from a local build or Git push.
+
 Build an independent education platform for IELTS, SAT, and Mongolian university entrance exam preparation. Keep LawTest operational and independent, and recommend its plan through an external link where relevant.
 
 ## First release

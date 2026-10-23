@@ -4,12 +4,12 @@ import { getDb } from "@/lib/db";
 import { ApiError } from "@/lib/api";
 import { findExam } from "./definitions";
 import { MOCK_PRICE_MNT } from "./pricing";
-import { localPilotEnabled } from "@/lib/local-pilot";
+import { mockPilotPaymentsEnabled } from "@/lib/local-pilot";
 export class MockAccessRequired extends ApiError {
   constructor(public slug:string) { super(402,"Энэ шалгалтын эрхийг ₮10,000-өөр нээнэ үү."); }
 }
 
-export const mockPaymentsEnabled = localPilotEnabled;
+export const mockPaymentsEnabled = mockPilotPaymentsEnabled;
 const purchaseFields = { id:true, examSlug:true, amountMnt:true, currency:true, provider:true, status:true, createdAt:true, paidAt:true } as const;
 export async function createMockOrder(slug:string,userId:string) {
   if (!mockPaymentsEnabled()) throw new ApiError(403,"Туршилтын төлбөр идэвхгүй байна.");

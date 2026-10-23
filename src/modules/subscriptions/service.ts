@@ -1,17 +1,17 @@
 import "server-only";
 import { getDb } from "@/lib/db";
 import { ApiError } from "@/lib/api";
-import { localPilotEnabled } from "@/lib/local-pilot";
+import { mockPilotPaymentsEnabled } from "@/lib/local-pilot";
 import { findSubscriptionPlan,addCalendarMonth } from "./plans";
 
 const fields={id:true,program:true,amountMnt:true,currency:true,provider:true,status:true,createdAt:true,paidAt:true,periodStart:true,periodEnd:true} as const;
 export async function createSubscriptionOrder(program:string,userId:string) {
-  if(!localPilotEnabled())throw new ApiError(403,"Туршилтын төлбөр идэвхгүй байна.");
+  if(!mockPilotPaymentsEnabled())throw new ApiError(403,"Туршилтын төлбөр идэвхгүй байна.");
   const plan=findSubscriptionPlan(program);if(!plan)throw new ApiError(404,"Багц олдсонгүй.");
   return getDb().subscriptionOrder.upsert({where:{activeKey:userId+":"+program},update:{},create:{userId,program,amountMnt:plan.amountMnt,activeKey:userId+":"+program},select:fields});
 }
 export async function confirmSubscriptionOrder(id:string,userId:string,decision:"success"|"decline") {
-  if(!localPilotEnabled())throw new ApiError(403,"Туршилтын төлбөр идэвхгүй байна.");
+  if(!mockPilotPaymentsEnabled())throw new ApiError(403,"Туршилтын төлбөр идэвхгүй байна.");
   return getDb().$transaction(async tx=>{
     const order=await tx.subscriptionOrder.findFirst({where:{id,userId},select:fields});
     if(!order)throw new ApiError(404,"Захиалга олдсонгүй.");

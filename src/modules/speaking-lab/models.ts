@@ -1,5 +1,6 @@
 import "server-only";
 import path from "node:path";
+import os from "node:os";
 import {createRequire} from "node:module";
 import type {KokoroTTS} from "kokoro-js";
 import type {AutomaticSpeechRecognitionPipeline} from "@huggingface/transformers";
@@ -7,14 +8,17 @@ import type {AutomaticSpeechRecognitionPipeline} from "@huggingface/transformers
 // Local speech models are loaded once per server process and reused.
 // Kokoro's ESM entry reads a global __dirname that Prisma also defines, so both load via CJS require.
 const state=globalThis as unknown as {educationLabVoice?:Promise<KokoroTTS>;educationLabWhisper?:Promise<AutomaticSpeechRecognitionPipeline>};
-const cacheDir=()=>path.join(process.cwd(),"artifacts","speaking-voice-cache");
-const load=()=>createRequire(path.join(process.cwd(),"package.json"));
+// Vercel's application bundle is read-only. Its temporary directory is writable,
+// but caches are ephemeral and must be recreated on a cold instance.
+const cacheDir=()=>process.env.VERCEL
+ ?path.join(os.tmpdir(),"education-speaking-models")
+ :path.join(process.cwd(),"artifacts","speaking-voice-cache");
+const require=createRequire(import.meta.url);
 
 export const WHISPER_MODEL=process.env.SPEAKING_WHISPER_MODEL?.trim()||"onnx-community/whisper-base.en";
 
 export function voiceModel() {
  state.educationLabVoice??=(async()=>{
-  const require=load();
   const {env}=require("@huggingface/transformers") as typeof import("@huggingface/transformers");
   const {KokoroTTS}=require("kokoro-js") as typeof import("kokoro-js");
   env.cacheDir=cacheDir();
@@ -25,7 +29,6 @@ export function voiceModel() {
 
 export function whisperModel() {
  state.educationLabWhisper??=(async()=>{
-  const require=load();
   const {env,pipeline}=require("@huggingface/transformers") as typeof import("@huggingface/transformers");
   env.cacheDir=cacheDir();
   // fp32 encoder keeps accuracy on accented speech; the quantised decoder keeps it fast on CPU.

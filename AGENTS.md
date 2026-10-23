@@ -2,6 +2,8 @@
 
 Workspace: C:/Users/PC/Desktop/Codes/EducationPlatform.
 
+Hosted-pilot checkpoint, 2026-10-23: owner explicitly selected a hosted test pilot with simulated payments and clearly labelled unverified-email accounts. AUTH_HOSTED_PILOT=true requires a canonical HTTPS BETTER_AUTH_URL; HOSTED_MOCK_PAYMENTS and SPEAKING_LAB_ENABLED are separate opt-ins. Keep local-only demo login/provisioning guards unchanged. Hosted source/configuration and the separate Neon database are prepared; read the latest HANDOFF.md for actual deployment and verification results. This is not verified-email production authentication or live billing.
+
 Read in order before changing the project:
 1. HANDOFF.md — exact continuation state and verification outcomes.
 2. readme.md — local setup and verified limitations.

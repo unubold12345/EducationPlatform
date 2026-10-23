@@ -4,7 +4,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { questions } from "../src/modules/practice/questions";
 import { gradePractice } from "../src/modules/practice/grading";
 import { exerciseSets } from "../src/modules/exercises/content";
-const db = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL, max: process.env.AUTH_LOCAL_PILOT === "true" ? 1 : 2, idleTimeoutMillis: 1000 }) });
+const db = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL, max: process.env.AUTH_LOCAL_PILOT === "true" ? 1 : 2, idleTimeoutMillis: 1000 }), transactionOptions:{timeout:60000,maxWait:10000} });
 try {
   await db.$transaction(async tx => {
     await tx.program.upsert({ where: { id: "sat" }, create: { id: "sat", slug: "sat", title: "SAT" }, update: {} });

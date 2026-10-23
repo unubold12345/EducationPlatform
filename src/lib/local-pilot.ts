@@ -1,5 +1,8 @@
 import "server-only";
+import {pilotConfig} from "./pilot-config";
 export function localPilotEnabled() {
-  try { return process.env.AUTH_LOCAL_PILOT === "true" && ["localhost","127.0.0.1","[::1]"].includes(new URL(process.env.BETTER_AUTH_URL ?? "").hostname); }
-  catch { return false; }
+ return pilotConfig(process.env).local;
 }
+export function hostedPilotEnabled(){return pilotConfig(process.env).hosted;}
+export function mockPilotPaymentsEnabled(){return pilotConfig(process.env).payments;}
+export function speakingLabEnabled(){return pilotConfig(process.env).speaking;}

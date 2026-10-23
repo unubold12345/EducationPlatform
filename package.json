@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev -p 3001",
     "build": "prisma generate && next build",
+    "build:vercel": "node scripts/vercel-build.mjs",
     "start": "next start -p 3001",
     "lint": "eslint .",
     "typecheck": "next typegen && tsc --noEmit",
@@ -47,7 +48,7 @@
     "typescript": "6.0.3"
   },
   "engines": {
-    "node": ">=24.0.0",
+    "node": "24.x",
     "npm": ">=11.0.0"
   },
   "type": "module",

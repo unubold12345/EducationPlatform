@@ -2,7 +2,7 @@ import "server-only";
 import {randomUUID} from "node:crypto";
 import {ApiError} from "@/lib/api";
 import {getDb} from "@/lib/db";
-import {localPilotEnabled} from "@/lib/local-pilot";
+import {speakingLabEnabled} from "@/lib/local-pilot";
 import {tutorDay} from "@/modules/tutor/contracts";
 import {normalizeSpeakingReply,speakingMessages,validSpeakingInput} from "./contracts";
 
@@ -10,7 +10,7 @@ import {normalizeSpeakingReply,speakingMessages,validSpeakingInput} from "./cont
 const DAILY_LIMIT={chat:80,voice:200,transcribe:150} as const;
 
 export async function requireSpeakingLab(userId:string) {
- if(!localPilotEnabled())throw new ApiError(404,"Туршилтын хуудас идэвхгүй байна.");
+ if(!speakingLabEnabled())throw new ApiError(404,"Туршилтын хуудас идэвхгүй байна.");
  const db=getDb();
  const [mock,paper]=await Promise.all([db.mockAttempt.findFirst({where:{userId,status:"IN_PROGRESS"},select:{id:true}}),db.paperAttempt.findFirst({where:{userId,status:"IN_PROGRESS",deadline:{gt:new Date()}},select:{id:true}})]);
  if(mock||paper)throw new ApiError(403,"Хугацаатай шалгалтаа дуусгасны дараа Speaking Lab ашиглана уу.");

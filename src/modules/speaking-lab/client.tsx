@@ -430,8 +430,8 @@ export function SpeakingLab({signedIn}:{signedIn:boolean}) {
   </div>
 
   <footer className="sl-foot">
-   <p>Isolated local prototype · Nothing is saved to your account. Practice history and phrasebook stay in this browser. Synthetic AI voices; AI estimates are not official IELTS scores.</p>
-   <details><summary>Credits</summary><p>RobotExpressive by Tomás Laulhé (Quaternius), modified by Don McCurdy, CC0. Kokoro-82M (Apache-2.0) voices and Whisper (MIT) transcription run on this local server.</p></details>
+   <p>Isolated experimental pilot · Nothing is saved to your account. Practice history and phrasebook stay in this browser. Synthetic AI voices; AI estimates are not official IELTS scores.</p>
+   <details><summary>Credits</summary><p>RobotExpressive by Tomás Laulhé (Quaternius), modified by Don McCurdy, CC0. Kokoro-82M (Apache-2.0) voices and Whisper (MIT) transcription run on the application server.</p></details>
   </footer>
  </div>;
 
@@ -457,7 +457,7 @@ export function SpeakingLab({signedIn}:{signedIn:boolean}) {
    </div>
    <div className="sl-consents">
     <label><input type="checkbox" checked={consent} onChange={event=>setConsent(event.target.checked)}/>My answers (as text) are sent to DeepSeek to generate Milo’s replies and feedback. I won’t share personal details.</label>
-    <label><input type="checkbox" checked={micConsent} disabled={!micSupported} onChange={event=>toggleMicConsent(event.target.checked)}/>Use my microphone. Recordings are transcribed on this local server and never saved.</label>
+    <label><input type="checkbox" checked={micConsent} disabled={!micSupported} onChange={event=>toggleMicConsent(event.target.checked)}/>Use my microphone. Recordings are sent to the application server for transcription and never saved.</label>
     {!micSupported&&<small>Microphone recording isn’t available in this browser — try Chrome or Edge, or type your answers.</small>}
    </div>
    {error&&<p className="error-message" role="alert">{error}</p>}

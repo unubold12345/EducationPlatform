@@ -15,7 +15,7 @@ Implemented:
 - Ten complete topic practice sets with 80 original questions, server grading, explanations, retry, and reset.
 - Four IELTS writing/speaking workshops with prompts, model responses, self-review checklists, writing word counts, and text downloads.
 - The original three-question SAT sample remains at /practice.
-- Better Auth email/password registration, login, and logout for a local pilot.
+- Better Auth email/password registration, login, and logout for the explicit local or hosted test pilot.
 - Protected dashboard, answer saving, resume after refresh, and saved-result pages.
 - Prisma/PostgreSQL models for accounts, sessions, programs, subjects, topics, question versions, exams, and attempts.
 - Attempt content snapshots, revision checks for conflicting saves, server scoring, and duplicate-submit handling.
@@ -23,13 +23,13 @@ Implemented:
 
 **Verified local fix:** application and seed pools use one connection when AUTH_LOCAL_PILOT=true, preventing the overlapping-connection protocol error observed with the embedded PGlite server. Both browser suites now pass, including concurrent submissions returning identical successful results. See [HANDOFF.md](./HANDOFF.md).
 
-This is a local practice pilot with two full-length timed mocks and the official 2020 Mathematics A past-paper workflow. Official difficulty calibration/scaled scores, examiner grading, new catalog/media administration, real payment processing, email verification/recovery, and deployment remain unfinished.
+This is a hosted test pilot with two full-length timed mocks and the official 2020 Mathematics A past-paper workflow. Official difficulty calibration/scaled scores, examiner grading, new catalog/media administration, real payment processing and email verification/recovery remain unfinished.
 
 ## Read first
 
 Commit/push workflow: owner authorization is required before committing or pushing. Stage only the authorized changes, verify the EducationPlatform remote/branch, and keep secrets, artifacts and model caches excluded. See [rules.md](./rules.md) for verification and delivery requirements and [start.md](./start.md) for the observed Git setup. Documentation-only updates use documentation/diff checks; application changes retain the required build and browser verification.
 
-Source repository: [unubold12345/EducationPlatform](https://github.com/unubold12345/EducationPlatform) (private), branch codex/education-foundation. GitHub storage does not establish a public deployment; local setup below remains the verified runtime.
+Source repository: [unubold12345/EducationPlatform](https://github.com/unubold12345/EducationPlatform) (private), branch codex/education-foundation. The hosted test pilot runs at https://education-platform-seven-neon.vercel.app with a separate Singapore PostgreSQL database. Local setup below remains independent; see HANDOFF.md for deployment verification.
 
 1. [HANDOFF.md](./HANDOFF.md): exact continuation state, verification, and next actions.
 2. [start.md](./start.md): scope and milestones.
@@ -324,3 +324,6 @@ All five owned Markdown files updated. No application source changed after the f
 
 
 Hosted verification checkpoint, 2026-10-23: the canonical Vercel site is live on application commit 30574b6. Hosted account/payment suites passed on 88100c2; after the native speech packaging fix, hosted speaking_lab_smoke.py passed real Kokoro streaming, Whisper transcription and three DeepSeek start/answer/report calls. All 47 units and the five required/relevant local browser suites passed for the repair; the final packaging-only follow-up also built successfully. See HANDOFF.md for exact coverage. Neon vercel is now the default branch and sole compute (0.25 CU, five-minute autosuspend). hosted-pilot is absent; the production root remains only because vercel depends on it, with its unused compute removed. Payments remain simulated and accounts have unverified email; this is a hosted test pilot.
+
+
+Singapore checkpoint, 2026-10-23: owner requested AWS Asia Pacific 1 (Singapore), aws-ap-southeast-1. The hosted database is now EducationPlatform-Singapore (flat-lab-37306599), default vercel branch br-dry-mode-aomngscc, endpoint ep-wandering-surf-aoura6ip, PostgreSQL 18, 0.25 CU with five-minute autosuspend. All 26 tables/312 pre-cutover rows matched before switching Vercel; 22 original private rows across 11 tables were also verified unchanged after deployment. The old US database is retained read-only for rollback; never resume its writes while Singapore serves the app. Existing .env/.env.local and all credentials remain private. See HANDOFF.md for actual suite outcomes and the monthly-plan UI gate follow-up.

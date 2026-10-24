@@ -122,6 +122,10 @@ loopback outbox still records them. When a hosted sender is configured, email ve
 enforced automatically for every non-demo account. Locally, set
 `AUTH_REQUIRE_EMAIL_VERIFICATION=true` to enforce it.
 
+The login form uses an accessible Google-logo button and omits the email divider, explanatory
+footer and direct verification links. Profile retains its verification control. Registration and
+blocked unverified sign-ins still use the required verification flow before a session is accepted.
+
 Verification links expire after 1 hour. Password-reset links expire after 15 minutes, are one-use,
 and revoke existing sessions when used. Unverified users cannot create a session or call protected
 APIs. Google accounts must arrive with a verified email.
@@ -324,8 +328,9 @@ See [OPERATIONS.md](./OPERATIONS.md) for the exact latest results and the delive
 
 - See `OPERATIONS.md` for the current Git and hosted deployment state. A source push does not prove
   a hosted deployment or enable Google/email without the corresponding provider settings.
-- Hosted Google OAuth and hosted email sending need real provider credentials. Local Gmail SMTP has
-  authenticated, but inbox receipt of the one test message was not independently confirmed.
+- Hosted Google and Gmail credentials are configured; a hosted verification email reached the owner
+  inbox. A completed real Google login, consent and token exchange still require an owner-controlled
+  browser session. See `OPERATIONS.md` for exact deployment/check evidence.
 - There is no verified-email production onboarding, no live billing and no real payment provider.
 - Scores are raw; SAT scaled scores and IELTS bands are not calculated. The Speaking Lab's bands are
   AI estimates only.

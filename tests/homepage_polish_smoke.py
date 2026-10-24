@@ -51,7 +51,7 @@ with sync_playwright() as p:
                     page.screenshot(path=str(ART/f'home-polish-{theme}-{width}.png'),full_page=True)
                 if route=='/login?error=account_not_linked':
                     expect(page.locator('.auth-card .error-message[role="alert"]')).to_contain_text('Google холбох')
-                    expect(page.locator('.auth-card .error-message[role="alert"] a[href="/verify-email"]')).to_be_visible()
+                    expect(page.locator('.auth-card a[href="/verify-email"]')).to_have_count(0)
         page.goto(BASE+'/programs/ielts');expect(page.locator('.speaking-invitation a')).to_have_attribute('href','/labs/ielts-speaking')
         context.close()
     context=browser.new_context(java_script_enabled=False)

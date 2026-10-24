@@ -16,8 +16,8 @@ Read [PROJECT.md](./PROJECT.md) for stable product, architecture and setup detai
 - Vercel reported the homepage/auth increment READY before hosted credential activation. The new
   Gmail opt-in requires the follow-up source deployment; do not infer activation from an env write.
 - Payments remain simulated locally and hosted. No real money or payment provider is involved.
-- The five hosted demo accounts exist in the Singapore database, but the deployed app does not yet
-  contain the new shared-demo behavior.
+- The five hosted demo accounts remain unverified learners. The deployed UI exposes them and the
+  server prevents shared-profile/password changes and admin access.
 
 ## 2. Environment state
 
@@ -35,25 +35,25 @@ Read [PROJECT.md](./PROJECT.md) for stable product, architecture and setup detai
 | Local Google OAuth | Enabled by the local client ID/secret; only the authorization start has been verified |
 | Source delivery | Auth/Gmail, homepage, Speaking links, tests and consolidated documentation included in the owner-authorized delivery |
 
-Last observed processes after the verified production-build restart: preview PID 26228 on 3001, recovery
-QA PID 18708 on 3002, database PID 25316 on 51214. Recheck listeners and ownership before restarting.
+Last observed processes after the verified production-build restart: preview PID 23488 on 3001, recovery
+QA PID 19608 on 3002, database PID 25316 on 51214. Recheck listeners and ownership before restarting.
 Never stop unrelated processes or assume these PIDs are still current.
 
 ### Hosted notes
 
-- Canonical hosted deployment was previously verified as `dpl_BvuGW3NyrsKMpAE6KUm6iRQQ6PUS` on commit
-  `e59caa5`, region `sin1`. New auth source is **not** part of that deployment.
+- Prior baseline: `dpl_BvuGW3NyrsKMpAE6KUm6iRQQ6PUS` on commit `e59caa5`, region `sin1`.
+  Current activation: `dpl_5GYtHHME3BMQZBPD59tBSnsc6nZY` on `0ec6d80`; see section 9.
 - The five `qa-demo-01` through `qa-demo-05` hosted accounts were provisioned directly in the
   Singapore database with verified Better Auth password hashes, no admin membership, no purchases and
-  no subscriptions. Their email addresses are unverified and the deployed UI does not yet show the
-  shared-demo controls.
+  no subscriptions. Their email addresses remain unverified; the deployed UI now shows the shared-demo
+  controls and the exact demo exemptions are enforced.
 - The previous US Neon database is retained read-only for rollback. Do not resume its writes while
   Singapore serves the application.
-- `AUTH_HOSTED_DEMO_ACCOUNTS=true` is set in Vercel and the ignored `.env.vercel.local`. It is safe to
-  leave set because the deployed source does not read it yet; the new source will use it to expose the
-  five demo logins.
+- `AUTH_HOSTED_DEMO_ACCOUNTS=true` is active in Vercel. The deployed source exposes the five demos
+  and enforces their shared-data protections. The ignored `.env.vercel.local` predates Google/Gmail
+  activation and must not be treated as a current hosted-environment snapshot.
 
-## 3. Verification ledger
+## 3. Previous homepage/auth checkpoint verification ledger
 
 Current local-build checks. Provider rows marked **prior checkpoint** are retained evidence and were
 not repeated during the homepage/linking increment:
@@ -86,8 +86,9 @@ Important limits on that evidence:
 - At the previous checkpoint, the first `tests/exams_smoke.py` run hit a transient PGlite `P2028` transaction-start timeout and
   showed the app error page. A clean serial rerun passed in full. Treat `P2028` as an environment
   flake, not a reason to weaken checks.
-- `tests/hosted_demo_smoke.py` has **never been run**. Its source is undeployed and it targets the
-  hosted site. Do not claim it passes.
+- At the previous homepage/auth checkpoint, `tests/hosted_demo_smoke.py` had not been run. It now
+  passes on the activated production deployment, after correcting the POST-only admin test and
+  respecting real rate-limit windows; see section 9.
 - The auth recovery suite uses the loopback outbox and synthetic Google credentials. It does not
   prove real inbox delivery or a completed Google login.
 - No consent screen, Google token exchange or completed Google sign-in has been performed.
@@ -194,8 +195,8 @@ be exposed publicly and is not evidence of real provider behavior.
 
 ## 6. Pending work
 
-1. Confirm receipt of the Gmail test message in the owner's inbox. The SMTP server accepted it, but
-   inbox placement was not independently verified.
+1. Hosted Gmail verification delivery to the owner inbox is now independently confirmed. Review
+   pilot deliverability/bounces and provider sending limits before expanding account onboarding.
 2. Complete one real Google sign-in with an owner-controlled test account and verify the callback,
    verified-email requirement and account-linking behavior.
 3. When a domain/sender is purchased, configure Resend and `AUTH_EMAIL_FROM`; switch local Gmail off.
@@ -284,9 +285,56 @@ authorization. Do not run `tests/hosted_demo_smoke.py` until the new source is d
 - Configured the Google ID/secret and Gmail user/app-password as sensitive, production-only Vercel
   variables, plus `AUTH_HOSTED_GMAIL=true` and `AUTH_REQUIRE_EMAIL_VERIFICATION=true`. Local env files
   were preserved. No Resend key was uploaded because there is no verified `AUTH_EMAIL_FROM`.
-- This source checkpoint is ready for the authorized production deployment; record its actual result
-  below after Vercel reports READY.
+- Source `0ec6d80` was pushed and the authorized production deployment is READY; see the result below.
 - Local validation: lint, typecheck, all 56 unit tests, production build, the four required browser
   suites and the recovery suite pass. The first exercise concurrency run returned a Prisma-related
   503; a clean standalone rerun passed without changing assertions or runtime behavior. No inbox
   delivery or real Google login is claimed by the SMTP authentication check.
+
+
+### Hosted activation result
+
+- Source `0ec6d80c3142d28382f6055f5a9c8f20234b5084` was committed/pushed and automatically deployed
+  to production. Vercel deployment `dpl_5GYtHHME3BMQZBPD59tBSnsc6nZY` is READY, region `sin1`, and
+  owns `https://education-platform-seven-neon.vercel.app`; build-to-ready took about 4 minutes.
+- `tests/hosted_auth_activation_smoke.py` passed against that canonical domain: Google button,
+  real authorization URL/state/PKCE, correct callback, forged-state and foreign-origin denial,
+  enabled recovery/verification forms, mandatory personal-email verification and no unverified
+  session. Inspected hosted login/verification at 320px in both themes and the real Google page.
+- Google displayed its sign-in form for the hosted application without `invalid_client` or
+  `redirect_uri_mismatch`. No Google password, consent or token exchange was performed by the agent.
+- One verification email was sent through the actual hosted signup flow to a test alias of the
+  connected owner's configured Gmail mailbox. Receipt was independently confirmed through the
+  Gmail connector with INBOX/SENT labels and the canonical hosted verification-link origin.
+  This created one unverified owner-mailbox QA account and did not issue a session. No other person
+  received a test message, and no private credential or verification token is recorded here.
+- Hosted demo checks initially exposed an incorrect GET assertion against the POST-only admin
+  endpoint (405). Corrected the test to require actual POST denial (403). Repeated rapid runs also
+  hit the real sign-in/password-change rate limits. Tests now wait for the existing password-change
+  idle window; no rate-limit configuration or app safeguard was weakened.
+
+- Final `tests/hosted_demo_smoke.py` passed for all five canonical hosted accounts: shared-demo
+  disclosure/fill buttons, identities, learner-only access, POST admin denial, profile/password
+  mutation denial, no false email verification, logout and 320px layout. The pacing changes are
+  test-only and retain exact 403 assertions.
+- Final credential scan and `git diff --check` passed; hosted test files also compile. Post-deployment
+  verification notes and test corrections are local-only changes, with no application source changes
+  after the pushed/deployed `0ec6d80` build.
+
+
+## 10. Banner removal and login cleanup — 2026-10-24
+
+- Owner requested removing the global hosted-pilot announcement banner. Removed its root-layout
+  markup, imports and unused CSS.
+- Removed direct verification links from the login form and its error panels, the login explanatory
+  footer and the shared email divider. Google sign-in now uses a four-colour SVG logo button with
+  an accessible name, busy/disabled state and a 48px target on login and registration.
+- Profile verification controls remain. Server verification, ownership, plan, quota and origin checks
+  were not changed; unverified sign-in still redirects to the required verification flow.
+- Latest lint, typecheck, all 56 unit tests and production build passed. Visual/DOM checks passed
+  login, registration and OAuth-error layouts at 1440/390/320px in both themes, including absence of
+  the removed text/links/banner and the accessible logo-only button. Screenshots were inspected.
+- The initial banner-only browser run was superseded when the owner added login requirements;
+  the final combined-change run passed all four required browser suites plus auth recovery and
+  homepage polish. `git diff --check` and the credential scan passed. The owner-authorized UI
+  update is ready for push/deployment; record hosted confirmation after it is READY.

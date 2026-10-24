@@ -24,6 +24,7 @@ with sync_playwright() as p:
     page.get_by_role("link",name="Сарын эрх нээх",exact=False).click()
     expect(page).to_have_url(BASE+"/login?next=%2Fsubscribe%2Fielts")
     page.get_by_role("link",name="Бүртгүүлэх",exact=True).click()
+    page.mouse.move(0, 0)
     email="qa-sub-"+uuid4().hex[:12]+"@example.invalid"
     page.get_by_label("Нэр",exact=True).fill("Subscription QA")
     page.get_by_label("Имэйл",exact=True).fill(email)

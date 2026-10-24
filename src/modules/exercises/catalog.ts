@@ -7,6 +7,7 @@ import { findSubscriptionPlan } from "@/modules/subscriptions/plans";
 
 export function exerciseReturnPath(value: unknown) {
   if (typeof value !== "string") return "/dashboard";
+  if (value === "/labs/ielts-speaking") return value;
   if (value === "/profile") return value;
   if (value === "/admin") return value;
   if (value === "/plans") return value;

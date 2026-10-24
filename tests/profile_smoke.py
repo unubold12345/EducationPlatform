@@ -24,6 +24,7 @@ with sync_playwright() as p:
     page.goto(BASE+"/profile")
     expect(page).to_have_url(BASE + "/login?next=%2Fprofile")
     page.get_by_role("link",name="Бүртгүүлэх",exact=True).click()
+    page.mouse.move(0, 0)
     email = "qa-profile-" + uuid4().hex[:12] + "@example.invalid"
     password = "Local-Test-" + uuid4().hex
     page.get_by_label("Нэр",exact=True).fill("Profile QA")

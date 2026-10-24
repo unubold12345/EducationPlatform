@@ -1,4 +1,5 @@
 import {spawnSync} from "node:child_process";
+import {authFeatures} from "../src/lib/auth-features.ts";
 
 // Fail at deployment time rather than publishing database-dependent pages that 500.
 // Never print a connection string, auth secret or provider key in build logs.
@@ -13,6 +14,8 @@ if(!["postgres:","postgresql:"].includes(database.protocol)||loopback(database.h
 if(auth.protocol!=="https:"||loopback(auth.hostname)||auth.username||auth.password||auth.pathname!=="/"||auth.search||auth.hash)throw new Error("BETTER_AUTH_URL must be the canonical HTTPS site origin.");
 if(process.env.BETTER_AUTH_SECRET.length<32)throw new Error("BETTER_AUTH_SECRET must contain at least 32 characters.");
 if(process.env.AUTH_HOSTED_PILOT!=="true")throw new Error("Explicit AUTH_HOSTED_PILOT opt-in is required for this test deployment.");
+if(process.env.AUTH_REQUIRE_EMAIL_VERIFICATION==="true"&&!authFeatures(process.env).email)throw new Error("Email verification requires a configured sender.");
+if(Boolean(process.env.GOOGLE_CLIENT_ID)!==Boolean(process.env.GOOGLE_CLIENT_SECRET))throw new Error("Google sign-in requires both OAuth credentials.");
 for(const [script,args] of [
  ["node_modules/prisma/build/index.js",["generate"]],
  ["node_modules/prisma/build/index.js",["migrate","deploy"]],

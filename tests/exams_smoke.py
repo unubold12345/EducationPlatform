@@ -45,6 +45,7 @@ with sync_playwright() as p:
     page.get_by_role("button",name="Эрх авах",exact=False).click()
     page.wait_for_url("**/login?next=**")
     page.get_by_role("link",name="Бүртгүүлэх",exact=True).click()
+    page.mouse.move(0, 0)
     page.get_by_label("Нэр",exact=True).fill("Exam QA")
     page.get_by_label("Имэйл",exact=True).fill("qa-exam-"+uuid4().hex[:12]+"@example.invalid")
     password="Local-Test-"+uuid4().hex

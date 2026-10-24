@@ -6,9 +6,11 @@ import { exerciseSets } from "@/modules/exercises/content";
 import { examDefinitions } from "@/modules/exams/definitions";
 import { guidedTasks } from "@/modules/exercises/guided";
 import { addCalendarMonth, findSubscriptionPlan } from "@/modules/subscriptions/plans";
+import { authFeatures, isDemoEmail } from "@/lib/auth-features";
 
 export async function isAdmin(userId: string) {
-  return Boolean(await getDb().adminMembership.findUnique({where:{userId},select:{userId:true}}));
+  const membership = await getDb().adminMembership.findUnique({where:{userId},select:{userId:true,user:{select:{email:true}}}});
+  return Boolean(membership && !(authFeatures(process.env).hostedDemo && isDemoEmail(membership.user.email)));
 }
 export async function assertAdmin(userId: string) {
   if (!await isAdmin(userId)) throw new ApiError(403,"Зөвхөн админд нээлттэй.");
@@ -33,7 +35,8 @@ export async function adminMutation(actorId:string, input:unknown) {
   if(["grant-month","expire-plan"].includes(action)&&!findSubscriptionPlan(program))throw new ApiError(400,"Багц буруу.");
   return getDb().$transaction(async tx=>{
     // Recheck membership inside the same transaction as every privileged write.
-    if(!await tx.adminMembership.findUnique({where:{userId:actorId}}))throw new ApiError(403,"Админ эрх шаардлагатай.");
+    const membership = await tx.adminMembership.findUnique({where:{userId:actorId},select:{userId:true,user:{select:{email:true}}}});
+    if(!membership || (authFeatures(process.env).hostedDemo && isDemoEmail(membership.user.email)))throw new ApiError(403,"Админ эрх шаардлагатай.");
     let details:Record<string,unknown>={};
     if(action==="review-content") {
       const before=await tx.contentReview.findUnique({where:{key:target}});

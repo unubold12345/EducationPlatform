@@ -22,6 +22,7 @@ with sync_playwright() as p:
     page.goto(BASE + "/dashboard")
     expect(page).to_have_url(BASE + "/login")
     page.get_by_role("link", name="Бүртгүүлэх", exact=True).click()
+    page.mouse.move(0, 0)
     page.get_by_label("Нэр", exact=True).fill("Туршилтын сурагч")
     page.get_by_label("Имэйл", exact=True).fill(email)
     page.get_by_label("Нууц үг", exact=True).fill(password)

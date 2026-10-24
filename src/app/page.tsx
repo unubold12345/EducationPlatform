@@ -3,16 +3,19 @@ import { programs } from "@/modules/programs/catalog";
 import { ProgramCard } from "@/components/program-card";
 import { LawTestRecommendation } from "@/components/lawtest";
 
+import { HomeMotion } from "@/components/home-motion";
+import { SpeakingInvitation } from "@/components/speaking-invitation";
+
 export default function HomePage() {
-  return <div className="container home-page">
+  return <HomeMotion>
     <section className="hero">
-      <div className="hero-copy"><div className="pill">ӨӨРИЙН ХЭМНЭЛЭЭР. ЗОРИЛГЫНХОО ТӨЛӨӨ.</div>
+      <div className="hero-copy" data-reveal><div className="pill">ӨӨРИЙН ХЭМНЭЛЭЭР. ЗОРИЛГЫНХОО ТӨЛӨӨ.</div>
         <h1>Том зорилго.<br /><span>Өдөр бүрийн</span><br />жижиг алхам.</h1>
         <p className="hero-description">Хаана хүрэхээ чи сонго.<br />Харин бэлтгэлээ нэг бодлогоос эхлүүл.</p>
         <div className="hero-actions"><Link className="button" href="/exams">Бүтэн шалгалт өгөх <span aria-hidden="true">↗</span></Link><Link className="text-link" href="/programs">Дасгалаа сонгох <span aria-hidden="true">→</span></Link></div>
         <p className="fine-print">Богино жишиг дасгал үнэгүй. Бүх бэлтгэлдээ сарын багцаар нэвтрээрэй.</p>
       </div>
-      <aside className="launch-panel" aria-labelledby="launch-heading">
+      <aside data-reveal className="launch-panel" aria-labelledby="launch-heading">
         <div className="launch-heading"><span className="eyebrow">БЭЛТГЭЛЭЭ ЭХЛҮҮЛ</span><span className="launch-icon" aria-hidden="true">↗</span></div>
         <h2 id="launch-heading">Өнөөдөр нэг алхам урагш.</h2>
         <p>Бүтэн шалгалт эсвэл сэдэвчилсэн дасгал — өөрт тохирохоо сонго.</p>
@@ -22,14 +25,15 @@ export default function HomePage() {
         <div className="launch-note"><span aria-hidden="true">◷</span> Хариугаа хадгалаад, орхисон газраасаа үргэлжлүүл.</div>
       </aside>
     </section>
-    <section className="section" aria-labelledby="programs-heading"><div className="section-heading"><div><p className="eyebrow">Чиний дараагийн зорилго</p><h2 id="programs-heading">Аль шалгалтад бэлдэх вэ?</h2></div><Link className="text-link" href="/programs">Бүгдийг үзэх ↗</Link></div>
-      <div className="program-grid">{programs.map(program => <ProgramCard key={program.slug} program={program} />)}</div>
+    <section className="section" aria-labelledby="programs-heading"><div className="section-heading" data-reveal><div><p className="eyebrow">Чиний дараагийн зорилго</p><h2 id="programs-heading">Аль шалгалтад бэлдэх вэ?</h2></div><Link className="text-link" href="/programs">Бүгдийг үзэх ↗</Link></div>
+      <div className="program-grid">{programs.map(program => <div data-reveal key={program.slug}><ProgramCard program={program} /></div>)}</div>
     </section>
-    <section id="approach" className="approach section"><div><p className="eyebrow">Бэлтгэлээ энгийн болго</p><h2>Зөв хариунаас <br />цааш суралц.</h2><p>Сэдвээ сонгоод, багц дасгалаар бэлтгэлээ бататгаарай.</p></div>
+    <SpeakingInvitation />
+    <section data-reveal id="approach" className="approach section"><div><p className="eyebrow">Бэлтгэлээ энгийн болго</p><h2>Зөв хариунаас <br />цааш суралц.</h2><p>Сэдвээ сонгоод, багц дасгалаар бэлтгэлээ бататгаарай.</p></div>
       <ol className="approach-steps"><li><span>01</span><div><h3>Эхлээд өөрөө бод</h3><p>Хариугаа сонгоод, дараагийн бодлогод шилж.</p></div></li><li><span>02</span><div><h3>Тайлбартай нь шалга</h3><p>Яагаад зөв болохыг алхам бүрээр нь ойлго.</p></div></li><li><span>03</span><div><h3>Дахин оролдоод бататга</h3><p>Алдсан бодлогоо эргэж хараад, аргаа сайжруул.</p></div></li></ol>
     </section>
-    <LawTestRecommendation />
-  </div>;
+    <div data-reveal><LawTestRecommendation /></div>
+  </HomeMotion>;
 }
 
 

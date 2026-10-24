@@ -6,6 +6,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { MainNavigation } from "@/components/main-navigation";
 import { EducationBackdrop } from "@/components/education-backdrop";
 import { AccountLink } from "@/components/account-link";
+import { authFeatures } from "@/lib/auth-features";
 import {hostedPilotEnabled} from "@/lib/local-pilot";
 import "./globals.css";
 
@@ -27,7 +28,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <MainNavigation />
       <div className="header-actions"><ThemeToggle /><AccountLink /></div>
     </div></header>
-    {hostedPilotEnabled()&&<aside className="hosted-pilot-notice" role="note">Туршилтын хувилбар · Төлбөр бодитоор хийгдэхгүй. Имэйл баталгаажуулалт, нууц үг сэргээх боломж хараахан нээгдээгүй. Туршилтын мэдээлэл ашиглаарай.</aside>}
+    {hostedPilotEnabled()&&<aside className="hosted-pilot-notice" role="note">Туршилтын хувилбар · Төлбөр бодитоор хийгдэхгүй. {authFeatures(process.env).email ? "Хувийн бүртгэлдээ өөрийн имэйлийг баталгаажуулаарай." : "Имэйлээр баталгаажуулах, сэргээх үйлчилгээ хараахан идэвхжээгүй."} {authFeatures(process.env).hostedDemo ? "Нийтийн demo бүртгэлд хувийн мэдээлэл бүү оруулаарай." : "Туршилтын мэдээлэл ашиглаарай."}</aside>}
     <main id="main"><EducationBackdrop />{children}</main>
     <footer className="site-footer"><div><Link href="/" className="footer-brand">Education<span>·</span></Link><p>{site.descriptor}</p></div><p>SAT · IELTS · Элсэлтийн бэлтгэл<br />College Board болон IELTS-ийн албан ёсны үйлчилгээ биш.</p></footer>
   </body></html>;

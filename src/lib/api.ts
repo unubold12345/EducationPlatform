@@ -1,5 +1,6 @@
 import "server-only";
 import { getAuth } from "./auth";
+import { verificationAllowed } from "./auth-features";
 
 export class ApiError extends Error {
   constructor(public status: number, message: string) { super(message); }
@@ -10,6 +11,7 @@ export function privateJson(data: unknown, status = 200) {
 export async function apiUser(request: Request) {
   const session = await getAuth().api.getSession({ headers: request.headers });
   if (!session) throw new ApiError(401, "Нэвтэрч орно уу.");
+  if (!verificationAllowed(session.user, process.env)) throw new ApiError(403, "Имэйлээ баталгаажуулж орно уу.");
   return session.user;
 }
 export function checkOrigin(request: Request) {

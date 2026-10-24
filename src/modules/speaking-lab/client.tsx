@@ -341,7 +341,7 @@ export function SpeakingLab({signedIn}:{signedIn:boolean}) {
   :status==="reporting"?"Writing your report…":status==="voicing"?"…":status==="speaking"?"":prep!==null?"Prepare your talk — make a few notes"
   :phase==="session"?(micConsent&&micSupported?"Your turn — tap the mic or press Space":"Your turn — type your answer below"):phase==="report"?"Session complete":"Ready when you are";
 
- if(!signedIn)return <div className="sl-root container page-space"><div className="sl-signin"><p className="sl-kicker">IELTS Speaking Lab</p><h1>Sign in to practise speaking with Milo.</h1><p>Нэвтэрсний дараа энэ хуудсаа шинэчилнэ үү.</p><Link className="button primary" href="/login">Нэвтрэх →</Link></div></div>;
+ if(!signedIn)return <div className="sl-root container page-space"><div className="sl-signin"><p className="sl-kicker">IELTS Speaking Lab</p><h1>Sign in to practise speaking with Milo.</h1><p>Нэвтэрсний дараа ярианы бэлтгэлдээ шууд буцаж ирнэ.</p><Link className="button primary" href="/login?next=%2Flabs%2Fielts-speaking">Нэвтрэх →</Link></div></div>;
 
  return <div className="sl-root container page-space">
   <header className="sl-top">

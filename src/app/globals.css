@@ -888,3 +888,35 @@ body:has(.sl-root) .education-backdrop { display: none; }
 @media(max-width:560px) { .sl-top h1 { font-size: 30px; } .sl-steps { width: 100%; overflow-x: auto; border-radius: 16px; } .sl-steps li { padding-right: 9px; } .sl-setup, .sl-report { padding: 16px; } .sl-modes, .sl-toggles, .sl-criteria, .sl-report-grid { grid-template-columns: 1fr; } .sl-measured { grid-template-columns: repeat(3,1fr); } .speaking-avatar { height: 240px; } .sl-caption p { font-size: 15px; } .sl-msg { max-width: 96%; } .sl-report-hero { grid-template-columns: 1fr; justify-items: start; } .sl-session-head { flex-wrap: wrap; } .sl-foot { flex-direction: column; } .sl-voices { grid-template-columns: 1fr 1fr; } }
 @media(prefers-reduced-motion:reduce) { .sl-stage::before, .sl-dots b, .mood-listening .sl-live, .sl-caption p { animation: none; } .sl-mic-wrap::before, .sl-mic-wrap::after { transition: none; } }
 .hosted-pilot-notice { padding: .7rem max(1rem, calc((100vw - 1180px) / 2)); background: var(--sky); border-bottom: 1px solid var(--line); color: var(--ink); font-size: .78rem; line-height: 1.6; }
+
+/* Account recovery uses the shared semantic form and theme tokens. */
+.google-sign-in { width:100%; }
+.auth-divider { text-align:center; color:var(--muted); font-size:.85rem; margin:0; }
+.auth-recovery .auth-form { margin-top:1rem; }
+.auth-recovery > .error-message, .auth-recovery > .form-success { overflow-wrap:anywhere; }
+
+/* Homepage: notebook sketches, a speaking invitation, and progressive motion. */
+.home-sketches{display:none}
+main:has(.home-page)>.education-backdrop{height:100%;mask-image:linear-gradient(#000 0%,#000 90%,transparent)}
+main:has(.home-page) .home-sketches{display:inline}
+main:has(.home-page)>.education-backdrop>svg{overflow:visible}
+.home-page .program-grid>div{min-width:0}
+.home-page .program-grid .program-card{height:100%}
+.speaking-invitation{display:grid;grid-template-columns:.8fr 1.2fr;align-items:center;gap:56px;margin:34px 0 50px;padding:44px;border:1px solid var(--line);border-radius:24px;background:var(--sky)}
+.speaking-art{color:var(--blue);text-align:center;transform:rotate(-5deg)}
+.speaking-art svg{display:block;width:min(100%,280px);margin:auto}
+.speaking-art>span{font:italic 16px Georgia,serif}
+.speaking-invitation h2{font-size:clamp(27px,3vw,39px);line-height:1.25;letter-spacing:-1px}
+.speaking-invitation-copy>p:not(.eyebrow):not(.fine-print){font-size:14px;margin:18px 0 22px;max-width:470px}
+.speaking-invitation .fine-print{margin-top:16px;max-width:440px}
+.google-connection{margin-top:26px;padding-top:24px;border-top:1px solid var(--line)}
+.google-connection h3{font-size:16px}
+.google-connection>p{font-size:13px;margin:12px 0 18px}
+.auth-card .error-message a{text-decoration:underline;text-underline-offset:3px}
+@media(max-width:760px){
+ main:has(.home-page)>.education-backdrop .education-mobile-sketch{height:auto}
+ .speaking-invitation{grid-template-columns:1fr;gap:26px;padding:28px 22px;margin:26px 0 36px}
+ .speaking-art svg{max-width:175px}
+ .speaking-art>span{font-size:14px}
+ .speaking-invitation .button{font-size:12px}
+}

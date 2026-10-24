@@ -17,6 +17,8 @@ with sync_playwright() as p:
     assert context.request.post(BASE+"/api/paper-attempts",headers=ORIGIN,data={"slug":SLUG}).status==401
     page.get_by_role("link",name="Нэвтэрч эхлэх →").click();expect(page).to_have_url(BASE+"/login?next=%2Fexams%2F"+SLUG)
     page.get_by_role("link",name="Бүртгүүлэх",exact=True).click()
+    page.mouse.move(0, 0)
+
     page.get_by_label("Нэр",exact=True).fill("Official paper QA");page.get_by_label("Имэйл",exact=True).fill("qa-paper-"+uuid4().hex[:12]+"@example.invalid");page.get_by_label("Нууц үг",exact=True).fill("Local-Paper-"+uuid4().hex)
     page.get_by_role("button",name="Бүртгүүлэх",exact=True).click();expect(page).to_have_url(BASE+"/exams/"+SLUG,timeout=20000)
     assert context.request.post(BASE+"/api/paper-attempts",headers=ORIGIN,data={"slug":SLUG}).status==402

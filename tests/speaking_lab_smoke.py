@@ -98,7 +98,9 @@ with sync_playwright() as p:
    assert page.evaluate('document.documentElement.scrollWidth<=innerWidth'),(theme,width)
    page.screenshot(path=str(ART/f'speaking-lab-{theme}-{width}.png'),full_page=True)
  page.set_viewport_size({'width':1440,'height':1000})
- for route in ['/','/practice','/exams','/programs/ielts']:
+ for route in ['/','/programs/ielts']:
+  page.goto(BASE+route);expect(page.locator('a[href="/labs/ielts-speaking"]')).to_have_count(1)
+ for route in ['/practice','/exams']:
   page.goto(BASE+route);expect(page.locator('a[href="/labs/ielts-speaking"]')).to_have_count(0)
 
  # Hands-free loop with REAL getUserMedia/MediaRecorder on a fixture microphone file (3s tone, then silence).

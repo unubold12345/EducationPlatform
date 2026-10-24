@@ -5,6 +5,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { programs, findProgram } from "@/modules/programs/catalog";
 import { getExercises,getWorkshop } from "@/modules/content/published";
+import { SpeakingInvitation } from "@/components/speaking-invitation";
 import { guidedTasks } from "@/modules/exercises/guided";
 
 export function generateStaticParams() { return programs.map(({ slug }) => ({ slug })); }
@@ -28,6 +29,7 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
       <span className="detail-symbol" aria-hidden="true">{program.symbol}</span>
     </section>
     {slug !== "entrance" ? <div className="program-exam-banner"><div><p className="eyebrow">Бүтэн шалгалтын горим</p><h2>{slug === "sat" ? "Digital SAT · 98 асуулт" : "IELTS Academic · Бүх 4 чадвар"}</h2><p>Стандарт хэсэг, хугацаа, хадгалагдах хариулттай.</p></div><Link className="button" href={slug === "sat" ? "/exams/sat-full-01" : "/exams/ielts-academic-01"}>Бүтэн шалгалт үзэх →</Link></div> : null}
+    {slug === "ielts" && <SpeakingInvitation />}
     <div className="library-heading"><div><p className="eyebrow">Сонго · Бод · Тайлбартай нь шалга</p><h2>Өнөөдрийн бэлтгэлээ сонго.</h2></div><p>{sets.length} багц / {total} асуулт</p></div>
     <div className="exercise-list">{sets.map((set, index) => <Link className="exercise-row" href={"/exercises/" + set.slug} key={set.slug}>
       <span className="exercise-count" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>

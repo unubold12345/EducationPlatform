@@ -29,7 +29,7 @@ test("authentication mail permits only the canonical origin and never echoes ups
  await assert.rejects(deliverAuthEmail(message,{key:"private-test",from:"sender@example.com"},async()=>new Response("secret provider detail",{status:401})),/^(?!.*secret provider detail).*Authentication email delivery failed/s);
 });
 
-test("development Gmail SMTP stays local, prefers the test outbox and never exposes credentials", async () => {
+test("Gmail SMTP is local by default, prefers the test outbox and never exposes credentials", async () => {
  const local={BETTER_AUTH_URL:"http://localhost:3001",AUTH_LOCAL_PILOT:"true"};
  const gmail={...local,GMAIL_USER:"Learner@Gmail.com",GMAIL_APP_PASSWORD:"abcd efgh ijkl mnop"};
  const config=authFeatures(gmail);
@@ -51,4 +51,22 @@ test("development Gmail SMTP stays local, prefers the test outbox and never expo
  let sent;
  await deliverGmailEmail(message,{user:"learner@gmail.com",appPassword:"abcdefghijklmnop",from:"EducationPlatform <learner@gmail.com>"},{sendMail:async mail=>{sent=mail;return {};}});
  assert.deepEqual(sent,{from:"EducationPlatform <learner@gmail.com>",to:"learner@example.com",subject:message.subject,text:message.text});
+});
+
+test("hosted Gmail requires explicit opt-in, valid credentials and a clean hosted pilot; verification stays mandatory", () => {
+ const credentials={GMAIL_USER:"learner@gmail.com",GMAIL_APP_PASSWORD:"abcdefghijklmnop"};
+ const enabled={...hosted,...credentials,VERCEL:"1",AUTH_HOSTED_GMAIL:"true"};
+ assert.equal(authFeatures({...hosted,...credentials,VERCEL:"1"}).email,false);
+ assert.equal(authFeatures(enabled).emailTransport,"gmail");
+ assert.equal(authFeatures(enabled).requireVerification,true);
+ assert.equal(authFeatures({...enabled,AUTH_REQUIRE_EMAIL_VERIFICATION:"false"}).requireVerification,true);
+ assert.equal(authFeatures({...enabled,AUTH_EMAIL_TEST_MODE:"true"}).outbox,false);
+ assert.equal(authFeatures({...enabled,AUTH_EMAIL_TEST_MODE:"true"}).emailTransport,"gmail");
+ assert.equal(authFeatures({...enabled,GMAIL_APP_PASSWORD:"invalid"}).email,false);
+ assert.equal(authFeatures({...enabled,AUTH_HOSTED_PILOT:"false"}).email,false);
+ assert.equal(authFeatures({...enabled,BETTER_AUTH_URL:"http://education.example"}).email,false);
+ assert.equal(authFeatures({...enabled,BETTER_AUTH_URL:"https://education.example/path"}).email,false);
+ assert.equal(verificationAllowed({email:"learner@gmail.com",emailVerified:false},enabled),false);
+ assert.equal(verificationAllowed({email:"qa-demo-01@example.invalid",emailVerified:false},{...enabled,AUTH_HOSTED_DEMO_ACCOUNTS:"true"}),true);
+ assert.equal(authFeatures({...enabled,RESEND_API_KEY:"test-key",AUTH_EMAIL_FROM:"sender@example.com"}).emailTransport,"gmail");
 });

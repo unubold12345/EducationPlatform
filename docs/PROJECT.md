@@ -113,10 +113,11 @@ Redirect URIs:
 | --- | --- | --- |
 | Local QA recovery | Loopback outbox | `AUTH_EMAIL_TEST_MODE=true`; writes JSONL under `artifacts/auth-outbox` |
 | Local development | Gmail SMTP | `GMAIL_USER` plus a 16-character `GMAIL_APP_PASSWORD` |
+| Hosted pilot (owner opt-in) | Gmail SMTP | `AUTH_HOSTED_GMAIL=true`, `GMAIL_USER`, `GMAIL_APP_PASSWORD` |
 | Hosted | Resend HTTPS API | `RESEND_API_KEY` plus a verified `AUTH_EMAIL_FROM` |
 
-Precedence is outbox, then Gmail, then Resend. Gmail is local-only and never activates on Vercel or
-a hosted deployment. Reserved `.invalid` QA addresses never receive Gmail or Resend mail; the
+Precedence is outbox, then Gmail, then Resend. Gmail is local by default; hosted pilot additionally requires the explicit
+`AUTH_HOSTED_GMAIL=true` opt-in. Reserved `.invalid` QA addresses never receive Gmail or Resend mail; the
 loopback outbox still records them. When a hosted sender is configured, email verification is
 enforced automatically for every non-demo account. Locally, set
 `AUTH_REQUIRE_EMAIL_VERIFICATION=true` to enforce it.
@@ -263,7 +264,7 @@ Ignored environment files hold real local values. `npm run setup:env` creates lo
 - `AUTH_LOCAL_PILOT=true`
 - `DATABASE_URL` pointing at the loopback database
 - Optional: `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GMAIL_USER`, `GMAIL_APP_PASSWORD`,
-  `RESEND_API_KEY`, `AUTH_EMAIL_FROM`, `AUTH_REQUIRE_EMAIL_VERIFICATION`, `DEEPSEEK_API_KEY`,
+  `AUTH_HOSTED_GMAIL`, `RESEND_API_KEY`, `AUTH_EMAIL_FROM`, `AUTH_REQUIRE_EMAIL_VERIFICATION`, `DEEPSEEK_API_KEY`,
   `DEEPSEEK_MODEL`
 
 Useful provisioning commands:

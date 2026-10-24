@@ -10,12 +10,11 @@ Read [PROJECT.md](./PROJECT.md) for stable product, architecture and setup detai
   <https://github.com/unubold12345/EducationPlatform.git>.
 - This source checkpoint includes Google login/linking, verification/recovery, local Gmail SMTP,
   hosted shared demos, homepage sketches/scroll reveals and visible IELTS Speaking invitations.
-- On 2026-10-24 the owner explicitly authorized committing and pushing this pending increment to
-  `origin/codex/education-foundation`. Inspect Git history for the exact delivery ref. No manual
-  deployment or hosted credential transfer is included in this increment.
-- Last verified hosted deployment still contains the previous application increment. A Git push may
-  trigger Vercel integration; it is not deployment verification. Hosted Google OAuth and hosted email
-  are not configured.
+- On 2026-10-24 the owner authorized the initial feature push (`86d7075`), then explicitly requested
+  hosted Google/Gmail activation using `.env.local` and the Vercel plugin. Production credentials
+  have been configured; see section 9 for the activation checkpoint.
+- Vercel reported the homepage/auth increment READY before hosted credential activation. The new
+  Gmail opt-in requires the follow-up source deployment; do not infer activation from an env write.
 - Payments remain simulated locally and hosted. No real money or payment provider is involved.
 - The five hosted demo accounts exist in the Singapore database, but the deployed app does not yet
   contain the new shared-demo behavior.
@@ -31,13 +30,13 @@ Read [PROJECT.md](./PROJECT.md) for stable product, architecture and setup detai
 | Hosted database | Singapore Neon, branch `vercel`, PostgreSQL 18, 0.25 CU, five-minute autosuspend |
 | Hosted flags | `AUTH_HOSTED_PILOT=true`, `AUTH_HOSTED_DEMO_ACCOUNTS=true`, `SPEAKING_LAB_ENABLED=true`, simulated payments |
 | Local credentials | `.env.local` contains Google, Gmail, Resend and DeepSeek values; `AUTH_EMAIL_FROM` is absent |
-| Hosted credentials | Last saved `.env.vercel.local` has no Google pair or configured hosted sender; no cloud credentials were changed in this increment |
+| Hosted credentials | Production Google pair and Gmail pair configured as sensitive variables via Vercel; `AUTH_HOSTED_GMAIL=true` and `AUTH_REQUIRE_EMAIL_VERIFICATION=true`. Saved `.env.vercel.local` is now a stale snapshot |
 | Local email transport | Gmail, because Gmail values are valid locally; recovery QA still uses the loopback outbox |
 | Local Google OAuth | Enabled by the local client ID/secret; only the authorization start has been verified |
 | Source delivery | Auth/Gmail, homepage, Speaking links, tests and consolidated documentation included in the owner-authorized delivery |
 
-Last observed processes after the verified production-build restart: preview PID 16352 on 3001, recovery
-QA PID 14696 on 3002, database PID 25316 on 51214. Recheck listeners and ownership before restarting.
+Last observed processes after the verified production-build restart: preview PID 26228 on 3001, recovery
+QA PID 18708 on 3002, database PID 25316 on 51214. Recheck listeners and ownership before restarting.
 Never stop unrelated processes or assume these PIDs are still current.
 
 ### Hosted notes
@@ -163,19 +162,22 @@ Important limits on that evidence:
 4. Restart the local preview so the new environment is loaded.
 5. Verify with a small server-side SMTP check. Do not send repeated test messages.
 
-Gmail is local-only, uses `smtp.gmail.com:465` with TLS, and is disabled on Vercel/hosted. The
-loopback outbox takes precedence when `AUTH_EMAIL_TEST_MODE=true`. Reserved `.invalid` addresses are
-skipped for Gmail and Resend.
+Gmail uses `smtp.gmail.com:465` with TLS. It is local by default; the owner authorized hosted Gmail
+on 2026-10-24, supported only with a clean hosted pilot and explicit `AUTH_HOSTED_GMAIL=true`. The
+loopback outbox still works only locally and takes precedence when `AUTH_EMAIL_TEST_MODE=true`.
+Reserved `.invalid` addresses are skipped for Gmail and Resend. Hosted personal accounts must verify
+their email; enabling Gmail does not disable the verified-email gate.
 
 ### Switch local email to Resend
 
 Remove the Gmail values, set `RESEND_API_KEY` and a verified `AUTH_EMAIL_FROM`, then restart. Resend
-is the supported hosted transport. A custom domain is required for a credible sender; the owner
+is an alternative hosted transport; owner-enabled hosted Gmail is also supported. A custom domain is required for a credible sender; the owner
 deferred that purchase.
 
 ### Hosted Google and email
 
-Add `GOOGLE_CLIENT_ID`/`GOOGLE_CLIENT_SECRET` and `RESEND_API_KEY`/`AUTH_EMAIL_FROM` to Vercel only
+The owner has authorized and configured the production Google and Gmail credentials through Vercel.
+For future rotations, add `GOOGLE_CLIENT_ID`/`GOOGLE_CLIENT_SECRET` and `RESEND_API_KEY`/`AUTH_EMAIL_FROM` to Vercel only
 when the owner supplies real values. Add the hosted callback URI to the Google OAuth Web client:
 `https://education-platform-seven-neon.vercel.app/api/auth/callback/google`.
 
@@ -266,3 +268,25 @@ git status --short
 
 Do not run hosted/real-provider checks without the necessary credentials and explicit owner
 authorization. Do not run `tests/hosted_demo_smoke.py` until the new source is deployed.
+
+
+## 9. Hosted authentication activation follow-up — 2026-10-24
+
+- Owner explicitly requested configuring Vercel with the existing Google and Gmail values in ignored
+  `.env.local`, including necessary source support and deployment. No secret value is recorded here.
+- Added `AUTH_HOSTED_GMAIL` as an explicit hosted-pilot opt-in. Default behavior remains local Gmail;
+  hosted Gmail enforces verification for personal accounts and retains the exact shared-demo exemptions.
+- Existing non-demo hosted accounts must verify via `/verify-email` before a session is accepted.
+  Password recovery remains available. Do not mark all existing rows verified or send bulk messages.
+- Local Gmail SMTP authentication was freshly verified without sending a message.
+- Vercel initially returned 403 for team `unubold12345s-projects`. The owner completed team approval;
+  project access then succeeded. Exact project: `prj_MTzsdRQuLeMAjpUnvhScHcYnF37n`.
+- Configured the Google ID/secret and Gmail user/app-password as sensitive, production-only Vercel
+  variables, plus `AUTH_HOSTED_GMAIL=true` and `AUTH_REQUIRE_EMAIL_VERIFICATION=true`. Local env files
+  were preserved. No Resend key was uploaded because there is no verified `AUTH_EMAIL_FROM`.
+- This source checkpoint is ready for the authorized production deployment; record its actual result
+  below after Vercel reports READY.
+- Local validation: lint, typecheck, all 56 unit tests, production build, the four required browser
+  suites and the recovery suite pass. The first exercise concurrency run returned a Prisma-related
+  503; a clean standalone rerun passed without changing assertions or runtime behavior. No inbox
+  delivery or real Google login is claimed by the SMTP authentication check.

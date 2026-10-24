@@ -14,7 +14,8 @@ export function authFeatures(env: Env) {
   const senderValid = /^(?:[^<>\r\n]+ <)?[^\s<>@]+@[^\s<>@]+\.[^\s<>@]+>?$/.test(sender);
   const gmailUser = env.GMAIL_USER?.trim().toLowerCase() ?? "";
   const appPassword = env.GMAIL_APP_PASSWORD?.replace(/\s+/g, "") ?? "";
-  const gmail = !outbox && pilot.local && !env.VERCEL && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(gmailUser) && /^[a-z0-9]{16}$/i.test(appPassword);
+  const gmailAllowed = (pilot.local && !env.VERCEL) || (pilot.hosted && env.AUTH_HOSTED_GMAIL === "true");
+  const gmail = !outbox && gmailAllowed && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(gmailUser) && /^[a-z0-9]{16}$/i.test(appPassword);
   const resend = (pilot.local || pilot.hosted) && Boolean(senderValid && env.RESEND_API_KEY?.trim());
   const emailTransport = outbox ? "outbox" : gmail ? "gmail" : resend ? "resend" : null;
   const email = emailTransport !== null;

@@ -1,5 +1,5 @@
-import { officialPaper } from "@/modules/papers/catalog";
-import { officialKey } from "@/modules/papers/key";
+import { findOfficialPaper } from "@/modules/papers/catalog";
+import { officialKeys } from "@/modules/papers/key";
 import Link from "next/link";
 import { notFound,redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
@@ -15,7 +15,9 @@ export default async function ContentPreview({params}:{params:Promise<{key:strin
   const session=await getSession();if(!session)redirect("/login?next=%2Fadmin");
   if(!await isAdmin(session.user.id))notFound();
   const {key}=await params;
-  if(key===officialPaper.slug)return <div className="container page-space admin-preview"><Link href="/admin?tab=content">← Контентын хяналт</Link><p className="eyebrow">БҮТ · ЭХ МАТЕРИАЛ · ЗӨВХӨН УНШИХ</p><h1>{officialPaper.title}</h1><p>Албан эх хуудсыг өөрчлөхгүй. Асуулт, томьёо, зураг архив дээрх эхээрээ харагдана. Платформын хариулт, онооны түлхүүрийг доорх эхтэй тулгаж хянана.</p><AdminAction target={key} content/><section className="settings-card"><h2>Эх хуудсууд · 100 минут</h2>{officialPaper.pageUrls.map((url,i)=><p key={url}><a href={url} target="_blank" rel="noreferrer">БҮТ · {i+1}-р хуудас ↗</a></p>)}</section><section className="settings-card"><h2>Албан түлхүүр · 100 оноо</h2><p>{officialKey.choices.map((answer,i)=>`${i+1}: ${answer} (${officialKey.choiceMarks[i]})`).join(" · ")}</p>{officialKey.fills.map(q=><p key={q.id}>{q.id}: {q.digits} · 7 оноо</p>)}{officialKey.sourceUrls.map((url,i)=><p key={url}><a href={url} target="_blank" rel="noreferrer">Албан түлхүүрийн {i+1}-р хуудас ↗</a></p>)}</section></div>;
+  const officialPaper=findOfficialPaper(key);
+  const officialKey=officialPaper?officialKeys[officialPaper.variant]:null;
+  if(officialPaper&&officialKey)return <div className="container page-space admin-preview"><Link href="/admin?tab=content">← Контентын хяналт</Link><p className="eyebrow">БҮТ · ЭХ МАТЕРИАЛ · ЗӨВХӨН УНШИХ</p><h1>{officialPaper.title}</h1><p>Албан эх хуудсыг өөрчлөхгүй. Асуулт, томьёо, зураг архив дээрх эхээрээ харагдана. Платформын хариулт, онооны түлхүүрийг доорх эхтэй тулгаж хянана.</p><AdminAction target={key} content/><section className="settings-card"><h2>Эх хуудсууд · 100 минут</h2>{officialPaper.pageUrls.map((url,i)=><p key={url}><a href={url} target="_blank" rel="noreferrer">БҮТ · {i+1}-р хуудас ↗</a></p>)}</section><section className="settings-card"><h2>Албан түлхүүр · 100 оноо</h2><p>{officialKey.choices.map((answer,i)=>`${i+1}: ${answer} (${officialKey.choiceMarks[i]})`).join(" · ")}</p>{officialKey.fills.map(q=><p key={q.id}>{q.id}: {q.digits} · 7 оноо</p>)}{officialKey.sourceUrls.map((url,i)=><p key={url}><a href={url} target="_blank" rel="noreferrer">Албан түлхүүрийн {i+1}-р хуудас ↗</a></p>)}</section></div>;
   const [set,exam,task]=await Promise.all([getExercise(key),getExam(key),getWorkshop(key)]);
   if(!set&&!exam&&!task)notFound();
   const [draft,versions]=await Promise.all([getDb().contentDraft.findUnique({where:{key}}),getDb().publishedContent.findMany({where:{key},orderBy:{version:"desc"},take:5})]);

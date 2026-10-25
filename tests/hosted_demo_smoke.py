@@ -1,5 +1,6 @@
 """Owner-enabled shared demo security on the canonical hosted pilot only."""
 import json
+import time
 from pathlib import Path
 from playwright.sync_api import sync_playwright, expect
 
@@ -25,11 +26,14 @@ with sync_playwright() as p:
   expect(page.locator('.identity-body h2')).to_have_text(account['name'])
   expect(page.locator('.identity-badge')).to_have_text('Education суралцагч')
   expect(page.locator('.profile-email')).to_contain_text('бодит имэйл хүлээн авахгүй')
-  assert context.request.get(BASE+'/api/admin').status==403
+  assert context.request.post(BASE+'/api/admin',headers={'Origin':BASE},data={}).status==403
   assert context.request.post(BASE+'/api/auth/update-user',headers={'Origin':BASE},data={'name':'Must not change'}).status==403
-  assert context.request.post(BASE+'/api/auth/change-password',headers={'Origin':BASE},data={'currentPassword':account['password'],'newPassword':'Must-not-change-123!','revokeOtherSessions':True}).status==403
+  password_change=context.request.post(BASE+'/api/auth/change-password',headers={'Origin':BASE},data={'currentPassword':account['password'],'newPassword':'Must-not-change-123!','revokeOtherSessions':True})
+  assert password_change.status==403, {'accountIndex':index,'status':password_change.status,'code':password_change.json().get('code')}
   session=context.request.get(BASE+'/api/auth/get-session').json();assert session['user']['email']==account['email'] and not session['user']['emailVerified']
   page.get_by_role('button',name='Гарах',exact=True).click();expect(page).to_have_url(BASE+'/login')
   context.close()
+  # Allow Better Auth's 10-second idle window to reset between password-denial checks.
+  time.sleep(11)
  browser.close()
 print('PASS: all five hosted shared learner logins, public-demo disclosure, fill buttons, profile identity, no false email verification, admin denial, server-side name/password mutation denial, logout and 320px layout')

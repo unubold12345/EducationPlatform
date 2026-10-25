@@ -14,7 +14,8 @@ import { hasSubscription } from "@/modules/subscriptions/access";
 export function generateStaticParams(){return examDefinitions.map(({slug})=>({slug}));}
 export async function generateMetadata({params}:{params:Promise<{slug:string}>}):Promise<Metadata>{return{title:findOfficialPaper((await params).slug)?.title??(await getExam((await params).slug))?.title??"Шалгалт олдсонгүй"};}
 export default async function ExamPage({params}:{params:Promise<{slug:string}>}){
-  if(findOfficialPaper((await params).slug))return <OfficialPaperBriefing/>;
+  const paper=findOfficialPaper((await params).slug);
+  if(paper)return <OfficialPaperBriefing paper={paper}/>;
   const exam=await getExam((await params).slug);if(!exam)notFound();
   const session=await getSession();
   const access=session?await getDb().mockPurchase.findFirst({where:{userId:session.user.id,examSlug:exam.slug,status:"PAID"},select:{id:true}}):null;

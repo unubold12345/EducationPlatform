@@ -24,7 +24,7 @@ authentication require provider configuration; see the actual hosted checkpoint 
 | Program practice | 10 sets / 80 original questions: SAT 32, IELTS 24, university entrance 24 |
 | IELTS workshops | Four focused workshops with saved work and grading |
 | Full mocks | Digital SAT and IELTS Academic sittings with server-authoritative timers |
-| Official paper | 2020 EEC (ЭЕШ) Mathematics A, an eight-page archive-image paper |
+| Official papers | One 2020 EEC (ЭЕШ) Mathematics category with A, B, C and D; eight archive-image pages per variant |
 | Accounts | Better Auth email/password, profile, Google OAuth, verification and password recovery |
 | Plans and payments | Three monthly plans plus per-mock and per-paper simulated purchases |
 | Admin | Protected overview, members, subscriptions, payments, monitoring, content and audits |
@@ -57,14 +57,46 @@ purchases and LEGACY grants are preserved.
 - Speaking: a 12-minute simulation.
 - No IELTS band score is calculated.
 
-### Official 2020 EEC Mathematics A
+### Official 2020 EEC Mathematics · A–D
 
-- Eight original archive image references; a private saved 100-minute answer sheet.
+- `/exams/eec-math-2020` groups only 2020 Mathematics, with A, B, C and D variation links.
+- Each variation has eight unchanged archive page copies served from the app, its own official key and a private saved
+  100-minute answer sheet. Attempts, immutable snapshots, timers and history retain the variation.
+- Existing `/exams/eec-math-2020-a` purchases and saved attempts remain valid. B/C/D use their own
+  per-paper purchases; University Prep includes all four. The category itself is not a purchasable paper.
 - Exact official weighting: 36 multiple-choice and 4 fill-in questions, 72 + 28 = 100 points.
-- Paired-digit scoring; raw /100 only, with no 200–800 conversion.
+- Variant-specific digit scoring: A/C question 2.1 groups d/e; B/D scores those cells separately.
+  Question 2.3 groups d/e and f/g in all four. Raw /100 only, with no 200–800 conversion.
 - Read-only official material. Do not treat it as editable authored mock content.
+- The 32 JPEGs in `public/exam-assets/eec-math-2020/` are byte-identical to the reviewed originals.
+  `assets/papers/eec-math-2020.json` records provenance, dimensions and SHA-256 hashes.
+  Original source URLs remain in snapshots and attribution links. The workspace maps only the exact
+  2020 A–D page URLs to same-origin files, so existing saved attempts work over HTTPS too.
+  Browser image loading does not depend on the external archive or its TLS certificate.
 - New starts require the University Prep plan or an existing 10,000 MNT per-paper simulated purchase.
   Saved work and review remain available after subscription expiry.
+
+### Official English paper and answer archive
+
+- `/exams/eec-english` groups every verified, retrievable paper/key pair by year and variation.
+  Published coverage is 37 variations across nine years: 2006 A–E; 2007 A–C; 2008 B–F;
+  2009 B/D/H/I; 2010–2011 A–D; 2018–2020 A–D.
+- Each variation has a same-origin page viewer and matching original answer-key pages, with an
+  explicit reminder to use that variation's column. This is a free source-paper/self-check archive;
+  it does not start a timed attempt, save responses or calculate an automatic score. Older listening
+  audio is not bundled. Paid Mathematics starts and existing plan/purchase checks remain unchanged.
+- The 2006–2011 БҮТ booklets are mirrored by `highschool.num.edu.mn`; original PDFs are retained in
+  `assets/papers/english-originals`. Pages are rendered at 2× and clipped only at printed variation
+  headings when a PDF page contains the end of one variation and the beginning of the next.
+- The 2018–2020 JPEGs come directly from `help.eec.mn` and retain their original bytes.
+  `assets/papers/english-archive.json` records every published pairing, source page/clip, image and
+  original-file hashes, and exclusions. There are 218 served images under
+  `public/exam-assets/eec-english/`; readers make no external image requests.
+- No listing is published just because an exam title exists. Historical 2012–2017 source/key links
+  are unavailable; 2021's accessible mirror key does not match the official paper option order;
+  current 2022–2026 links/bank entries did not yield a complete verified pairing. The 2019 E key
+  exists but its source paper returns 404, so E is excluded. These are availability/verification
+  limits, not a claim that no such exams or answers exist anywhere.
 
 ## 4. Pricing and access
 
@@ -337,8 +369,7 @@ See [OPERATIONS.md](./OPERATIONS.md) for the exact latest results and the delive
 - The scanned EEC paper has no AI explanations, no structured question text and no independently
   reviewed worked solutions.
 - Creating new catalog items and replacing content media are unfinished.
-- Content and official-page accuracy depend on manual review. The archive images are external and
-  can be unavailable.
+- Content and official-page accuracy depend on manual review. Original archive and answer-key links are external and can be unavailable; exam page images are bundled.
 - Local PGlite works with single-connection settings; broad production concurrency and scale are
   unverified.
 - AI and speech features depend on third-party models and local model caches; quality, latency and

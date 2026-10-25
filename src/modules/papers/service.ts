@@ -3,23 +3,24 @@ import { getDb } from "@/lib/db";
 import { ApiError } from "@/lib/api";
 import { Prisma } from "@/generated/prisma/client";
 import { hasSubscription } from "@/modules/subscriptions/access";
-import { officialPaper } from "./catalog";
-import { officialKey } from "./key";
+import { findOfficialPaper,type OfficialPaper } from "./catalog";
+import { officialKeys } from "./key";
 import { validPaperResponses,gradePaper,type PaperKey,type PaperResponses } from "./engine";
 const json=(value:unknown):Prisma.InputJsonValue=>JSON.parse(JSON.stringify(value));
-export async function paperAccess(userId:string){return Boolean(await getDb().mockPurchase.findFirst({where:{userId,examSlug:officialPaper.slug,status:"PAID"},select:{id:true}}))||await hasSubscription(userId,"entrance");}
-export async function startPaper(userId:string){
+export async function paperAccess(userId:string,slug:string){return Boolean(await getDb().mockPurchase.findFirst({where:{userId,examSlug:slug,status:"PAID"},select:{id:true}}))||await hasSubscription(userId,"entrance");}
+export async function startPaper(userId:string,slug:string){
+ const officialPaper=findOfficialPaper(slug);if(!officialPaper)throw new ApiError(404,"Шалгалт олдсонгүй.");
  const db=getDb();const activeKey=userId+":"+officialPaper.slug;
  const old=await db.paperAttempt.findUnique({where:{activeKey},select:{id:true}});if(old)return old;
- if(!await paperAccess(userId))throw new ApiError(402,"Энэ шалгалтын эрх эсвэл University Prep сарын багц шаардлагатай.");
- try{return await db.paperAttempt.create({data:{userId,slug:officialPaper.slug,activeKey,deadline:new Date(Date.now()+officialPaper.seconds*1000),snapshot:json({paper:officialPaper,key:officialKey}),responses:{}},select:{id:true}});}catch(error){
+ if(!await paperAccess(userId,slug))throw new ApiError(402,"Энэ шалгалтын эрх эсвэл University Prep сарын багц шаардлагатай.");
+ try{return await db.paperAttempt.create({data:{userId,slug:officialPaper.slug,activeKey,deadline:new Date(Date.now()+officialPaper.seconds*1000),snapshot:json({paper:officialPaper,key:officialKeys[officialPaper.variant]}),responses:{}},select:{id:true}});}catch(error){
   if(error instanceof Prisma.PrismaClientKnownRequestError&&error.code==="P2002"){const winner=await db.paperAttempt.findUnique({where:{activeKey},select:{id:true}});if(winner)return winner;}throw error;
  }
 }
 export async function paperAttempt(id:string,userId:string,input?:unknown){
  try{return await getDb().$transaction(async tx=>{
   let row=await tx.paperAttempt.findFirst({where:{id,userId}});if(!row)throw new ApiError(404,"Шалгалт олдсонгүй.");
-  const snapshot=row.snapshot as unknown as {paper:typeof officialPaper;key:PaperKey};
+  const snapshot=row.snapshot as unknown as {paper:OfficialPaper;key:PaperKey};
   const now=new Date();const expired=now>=row.deadline;
   if(row.status==="IN_PROGRESS"&&(expired||input!==undefined)){
    let responses=row.responses as PaperResponses;let submit=expired;

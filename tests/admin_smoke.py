@@ -40,6 +40,11 @@ with sync_playwright() as p:
     expect(page.locator(".admin-preview article details p").first).to_be_visible()
     for key in ["sat-full-01","ielts-academic-01","ielts-writing-data"]:
         page.goto(BASE+"/admin/content/"+key);expect(page.locator(".admin-preview")).to_be_visible()
+    for variant in "ABCD":
+        page.goto(BASE+"/admin/content/eec-math-2020-"+variant.lower())
+        expect(page.locator(".admin-preview h1")).to_contain_text(("А" if variant=="A" else variant)+" хувилбар")
+        expect(page.locator(".admin-preview a[href*=\"/2020/mat/"+variant+"/\"]")).to_have_count(8)
+        expect(page.locator(".admin-preview a[href*=\"2020Key\"]")).to_have_count(3)
     assert admin.request.post(BASE+"/api/admin",headers={"Origin":"https://untrusted.invalid"},data={}).status==403
     for body in [{"action":"drop-db","target":target,"reason":"Invalid operation"},{"action":"grant-month","target":target,"program":"all","reason":"Unknown program"},{"action":"grant-month","target":target,"program":"sat","reason":"bad"},{"action":"grant-month","target":target,"program":"sat","reason":"Unknown fields","amountMnt":1}]:
         assert admin.request.post(BASE+"/api/admin",headers=ORIGIN,data=body).status==400

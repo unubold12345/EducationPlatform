@@ -1,4 +1,4 @@
-import { findOfficialPaper } from "@/modules/papers/catalog";
+import { findOfficialPaper,officialPaperCategory } from "@/modules/papers/catalog";
 import "server-only";
 export { exerciseSets, findExercise, publicExercise } from "./content";
 import { exerciseSets } from "./content";
@@ -10,6 +10,7 @@ export function exerciseReturnPath(value: unknown) {
   if (value === "/labs/ielts-speaking") return value;
   if (value === "/profile") return value;
   if (value === "/admin") return value;
+  if (value === "/exams/"+officialPaperCategory.slug) return value;
   if (value === "/plans") return value;
   if (value.startsWith("/subscribe/") && findSubscriptionPlan(value.slice(11))) return value;
   if (value.startsWith("/checkout/") && (findExam(value.slice(10))||findOfficialPaper(value.slice(10)))) return value;

@@ -6,6 +6,11 @@ Read [docs/OPERATIONS.md](./docs/OPERATIONS.md) first, then [docs/PROJECT.md](./
 These two files replace the former `HANDOFF.md`, `readme.md`, `rules.md`, `start.md` and detailed
 `AGENTS.md`; do not recreate or update those retired files.
 
+Before starting any task, read [docs/ACTIVE_WORK.md](./docs/ACTIVE_WORK.md), claim your work there,
+and check it again before builds, preview restarts, database changes, commits or pushes.
+If a new owner task would collide with another agent's claimed files or shared resources, or could
+interrupt its work, warn the owner and wait for a decision before starting.
+
 Non-negotiables:
 
 - Never commit, push or deploy without explicit owner authorization. Inspect status, diff, branch and
@@ -16,6 +21,8 @@ Non-negotiables:
   server-side. Never add timer, payment, grading or AI bypasses.
 - Run the checks required by `docs/OPERATIONS.md` for the change type. Report only checks actually run
   and update `docs/OPERATIONS.md` with actual outcomes.
+- Attribute your work: start every new `docs/OPERATIONS.md` entry with an `Agent:` line (tool and
+  model) and never re-attribute another agent's work. See the AI agent attribution rules in OPERATIONS.
 - Keep LawTest/Lexlab completely separate; this project only links to <https://lexlab.site/plan>.
 - Payments are simulated, hosted accounts are a test pilot, and new auth/Gmail source is currently
   uncommitted and undeployed.

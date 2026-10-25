@@ -919,3 +919,55 @@ main:has(.home-page)>.education-backdrop>svg{overflow:visible}
  .speaking-art>span{font-size:14px}
  .speaking-invitation .button{font-size:12px}
 }
+/* Dashboard (minimal): plain stats, list-style history, quiet aside */
+.dash-head{display:flex;justify-content:space-between;align-items:center;gap:16px;margin:8px 0 28px}
+.dash-head h1{font-size:30px;letter-spacing:-1px;overflow-wrap:anywhere}
+.dash-account{display:flex;align-items:center;gap:16px;flex-shrink:0}
+.dash-account .text-link{font-size:13px;color:var(--muted)}
+.dash .dash-resume{padding:18px 22px;margin:0 0 28px;gap:20px}
+.dash .dash-resume p{font-size:11px;color:var(--muted);margin:0 0 4px;max-width:none;line-height:1.5}
+.dash .dash-resume h2{font-size:19px;letter-spacing:-.4px}
+.dash .dash-stats{display:flex;gap:0;margin:0 0 36px;border-block:1px solid var(--line)}
+.dash .dash-stats>div{display:block;flex:1;padding:18px 0;border:0;background:none;border-radius:0}
+.dash .dash-stats>div+div{border-left:1px solid var(--line);padding-left:24px}
+.dash .dash-stats strong{font-size:28px;line-height:1.2;margin:0;letter-spacing:-1px}
+.dash .dash-stats p{font-size:12px;color:var(--muted);margin-top:4px}
+.dash-grid{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:56px;align-items:start}
+.dash-history,.dash-aside{min-width:0}
+.dash-history h2,.dash-aside h2{font-size:12px;font-weight:650;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+.dash-history section+section{margin-top:28px}
+.dash .attempt-list{display:block}
+.dash .dash-row{display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:16px;padding:14px 0;margin:0;border:0;border-bottom:1px solid var(--line);border-radius:0;background:none}
+.dash .dash-row:hover{background:none}
+.dash .dash-row:hover h3{color:var(--blue)}
+.dash .dash-row h3{font-size:15px;letter-spacing:-.2px;font-weight:600}
+.dash .dash-row p{font-size:11px;color:var(--muted);margin-top:3px}
+.dash .dash-row>span{font-size:12px;font-weight:650;color:var(--blue);white-space:nowrap}
+.dash .dash-row>span.done{color:var(--muted);font-weight:500}
+.dash-more>summary{cursor:pointer;font-size:12px;color:var(--muted);padding:12px 0;list-style:none}
+.dash-more>summary::-webkit-details-marker{display:none}
+.dash-more>summary::before{content:"+ "}
+.dash-more[open]>summary::before{content:"− "}
+.dash-empty{font-size:14px;color:var(--muted);padding:18px 0;border-bottom:1px solid var(--line)}
+.dash-aside{display:grid;gap:32px}
+.dash-links{display:grid}
+.dash-links a{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);font-size:14px;font-weight:600}
+.dash-links a>span{width:28px;height:28px;display:grid;place-items:center;border-radius:8px;background:var(--sky);color:var(--blue);font-size:14px;flex-shrink:0}
+.dash-links a>i{margin-left:auto;font-style:normal;color:var(--muted)}
+.dash-links a:hover>i,.dash-links a:hover{color:var(--blue)}
+.dash-sample{margin-top:16px}
+.dash-sample p{font-size:12px;color:var(--muted);margin-bottom:10px}
+.dash-sample .button{width:100%;justify-content:center;font-size:12px;padding:11px 14px}
+.dash-plans{list-style:none;margin:0;padding:0}
+.dash-plans li{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px;font-weight:600}
+.dash-plans small{font-size:11px;color:var(--muted);font-weight:500;white-space:nowrap}
+.dash-muted{font-size:13px;color:var(--muted);padding:10px 0}
+.dash-plan-link{display:inline-block;margin-top:10px;font-size:12px}
+@media(max-width:900px){.dash-grid{grid-template-columns:1fr;gap:36px}}
+@media(max-width:760px){.dash-head{align-items:start;flex-direction:column;gap:10px;margin-bottom:22px}.dash-head h1{font-size:25px}.dash .dash-resume{flex-direction:column;align-items:start;padding:18px;gap:14px}.dash .dash-stats{margin-bottom:28px}.dash .dash-stats>div+div{padding-left:14px}.dash .dash-stats strong{font-size:24px}.dash .dash-stats p{font-size:10px;line-height:1.5}.dash .dash-row{padding:13px 0;align-items:center}.dash .dash-row h3{font-size:14px}}
+
+/* Official English archive */
+.english-year-nav{display:flex;flex-wrap:wrap;gap:10px;margin:24px 0 36px}.english-year-nav a{padding:10px 15px;border:1px solid var(--line);border-radius:8px;font-size:13px;color:var(--blue)}
+.english-year{margin:32px 0;scroll-margin-top:100px}.english-variation-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:14px}.english-variation{display:flex;flex-direction:column;gap:14px;padding:22px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}.english-variation:hover{border-color:var(--blue)}.english-variation strong{font-size:22px}.english-variation>span{font-size:12px}
+.english-reader{border:1px solid var(--line);border-radius:14px;overflow:hidden;margin:28px 0}.english-reader-toolbar{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:16px;flex-wrap:wrap;background:var(--surface)}.english-reader-sections,.english-reader-pagination{display:flex;align-items:center;gap:8px}.english-reader-sections .button{font-size:12px;padding:12px 16px}.english-reader-sections .button[aria-pressed=true],.english-reader-sections .button[aria-pressed=true]:hover{background:var(--blue);color:var(--white);border-color:var(--blue)}.english-reader-pagination label{font-size:12px;display:flex;align-items:center;gap:8px}.english-reader-pagination select{max-width:110px;padding:8px;border:1px solid var(--line);border-radius:6px;color:var(--ink);background:var(--surface)}.english-key-notice{font-size:13px;padding:16px;background:var(--sky);line-height:1.7}.english-page{background:#e9ecf0;padding:20px;min-height:200px}.english-page img{display:block;width:100%;max-width:1150px;height:auto;margin:auto;background:white}.english-image-link{display:block;padding:16px;font-size:12px}.english-provenance{line-height:1.9;overflow-wrap:anywhere}
+@media(max-width:760px){.english-page{padding:8px}.english-reader-toolbar{padding:12px}.english-reader-sections{width:100%}.english-reader-sections .button{flex:1;font-size:11px;padding:10px}.english-paper .page-intro h1{font-size:28px}.english-archive .page-intro h1{font-size:32px}.english-variation strong{font-size:20px}}

@@ -120,6 +120,19 @@ Important limits on that evidence:
   dependency caches. Verify the final staged diff before committing.
 - Report local changes, commits, pushes and deployments separately, with actual refs and outcomes.
 
+### AI agent attribution
+
+- Several AI agents work in this repository, sometimes in parallel (for example Codex and Claude Code).
+  Every agent must state which work it did in the Markdown files it updates.
+- Each new `OPERATIONS.md` increment section starts with an `Agent:` line naming the tool and model
+  (for example `Agent: Codex` or `Agent: Claude Code (Claude Opus 5.5)`). If several agents contributed,
+  list each and the parts it did. Never claim, edit away or re-attribute another agent's work.
+- When editing `PROJECT.md` or other Markdown, say in that increment's `OPERATIONS.md` entry which
+  agent made the change. Check results are attributed to the agent that actually ran them.
+- Entries written before 2026-10-25 section 12 predate this rule and are not attributed.
+- Coordinate live work through [ACTIVE_WORK.md](./ACTIVE_WORK.md): check it before every task and
+  before builds, preview restarts, database changes, commits or pushes; claim rows and remove them when done.
+
 ### Changes and verification
 
 - Read the installed Next.js guides in `node_modules/next/dist/docs/` before framework-specific code.
@@ -338,3 +351,177 @@ authorization. Do not run `tests/hosted_demo_smoke.py` until the new source is d
   the final combined-change run passed all four required browser suites plus auth recovery and
   homepage polish. `git diff --check` and the credential scan passed. The owner-authorized UI
   update is ready for push/deployment; record hosted confirmation after it is READY.
+
+- UI cleanup source `f381f5856bd664f09856f7dbcb936bf966c43c34` was committed/pushed and deployed
+  READY as `dpl_AsPMgZ1DvQmcdaotuEreXfEi5QTV` on the canonical production domain.
+- Hosted visual/DOM checks passed homepage, login, registration and linking-error pages in both
+  themes at desktop/320px: global banner absent, requested text/direct verification links absent,
+  logo-only Google button present, no overflow/browser errors. Clicking the logo opened Google's
+  sign-in page without a redirect-URI mismatch. Hosted screenshots were inspected.
+- Post-deploy notes are saved locally. Earlier hosted-test corrections remain preserved locally;
+  no application source changed after the deployed build.
+
+## 11. 2020 Mathematics category and all variations — 2026-10-25
+
+- Owner requested one 2020 Mathematics category with every variation. `/exams/eec-math-2020`
+  lists A, B, C and D; the exam library and University Prep page link to that category.
+- Verified all 32 original archive images and inspected the three official key images at
+  `http://help.eec.mn/modelItems/2020Key/mat/mat-1.jpg` through `mat-3.jpg`. Transcribed separate
+  B/C/D choice columns and digits. A/C 2.1 groups d/e; B/D marks those cells separately.
+  Each variation retains eight pages, 36 choices, four digit responses, 100 minutes and 72+28 marks.
+- Starts resolve a server-approved variation and snapshot its own paper/key. Paid access remains
+  scoped to the exact paper slug; University Prep includes all four. The category cannot be purchased
+  or started as a paper. Existing A purchases, LEGACY access and saved snapshots remain intact.
+- Workspace labels, dashboard history and admin attempts/previews identify the actual variation.
+  Admin review includes all four read-only papers. Server ownership, origin, verified-email,
+  entitlement, deadline, revision and immutable-submit checks are preserved.
+- Lint, typecheck, all 58 unit tests and production build passed (49 routes). Extended official-paper
+  browser checks passed all A–D live pages, variation grading, save/resume, history, purchase isolation,
+  subscription access, ownership, invalid slugs, stale writes, immutable submission and expiry.
+  Category layouts passed at 1440/390/320px in both themes. Inspected those screenshots, B/C/D
+  workspaces and the mobile answer sheet.
+- The first browser attempt reached the previously running preview and correctly failed the new
+  category-title assertion. Verified the listener, restarted only this project's preview with the
+  current build and reran successfully. No assertion or application safeguard was weakened.
+- Changes remain local. No commit, push, PR or deployment was performed. Existing hosted-test edits
+  and prior operations notes are preserved. No real payment or provider message was sent.
+- All four required browser suites (`browser`, `accounts`, `exercises`, `exams`) passed, followed by
+  the admin suite, including all four official-paper source/key previews. Python compilation,
+  `git diff --check` and the private credential/pattern scan passed with no secret findings.
+- Final extended official-paper rerun also passed the new B simulated checkout, return to B,
+  B purchase listing in the profile and continued C/D purchase denial. No application source changed
+  after the passing production build; subsequent changes were tests and documentation only.
+
+## 12. HTTPS exam image repair — 2026-10-25
+
+Agent: Codex.
+
+- Owner reported missing exam images on Vercel. Read-only hosted inspection confirmed production is
+  still deployment `dpl_AsPMgZ1DvQmcdaotuEreXfEi5QTV`. No hosted account or exam data was changed.
+- Reproduced the image failure in a normal Chromium context on the canonical HTTPS domain: its
+  HTTP archive image was automatically upgraded to HTTPS and failed with `ERR_CERT_DATE_INVALID`.
+  Direct HTTP retrieval returned JPEG/200; HTTPS retrieval failed certificate validation.
+- Added 32 unchanged A–D JPEGs under `public/exam-assets/eec-math-2020/` (3,566,032 bytes total).
+  Fresh archive downloads matched the previously reviewed images byte for byte. Source addresses,
+  SHA-256 hashes, dimensions and sizes are recorded in `assets/papers/eec-math-2020.json`.
+- The workspace maps only exact reviewed source page URLs to same-origin images. Existing attempt
+  snapshots retain their original provenance and load the secure copies without database rewriting.
+  Original source links remain available. There is no runtime proxy or external fetch dependency.
+  Answer keys, purchase checks, timers, ownership and grading are unchanged by the image repair.
+- Lint, typecheck, 60/60 unit tests and production build passed. New unit checks cover all image
+  hashes and exact URL mapping, including old snapshot provenance and leaving other URLs unmapped.
+- Actual workspace pages were also tested through a temporary loopback HTTPS reverse proxy. All
+  32 images loaded from the HTTPS app origin with the archive blocked and zero archive requests;
+  attribution links, desktop and 320px light/dark layouts passed and screenshots were inspected.
+  The local browser trusted only the temporary self-signed QA setup; production certificate checks
+  and the earlier hosted reproduction were not bypassed. This is local HTTPS evidence, not a deployment.
+- Local preview was restarted with the passing build. Source repair and the preceding A–D category
+  increment remain local; owner authorization is required before commit/push/deployment.
+- Final `official_paper_smoke.py` passed with the archive explicitly blocked for both learner
+  contexts, including all 32 bundled images, grades, save/resume, purchases, subscriptions and expiry.
+  All four required browser suites (`browser`, `accounts`, `exercises`, `exams`) passed on the current
+  production build. Python compilation, `git diff --check` and the credential/pattern scan passed.
+  There were no failing application checks in this increment. These results cover the 12:17 local
+  build containing the image repair. Unrelated dashboard/global-style edits appeared at 12:23 while
+  validation was running and were preserved; those later edits are outside this verification.
+  Hosted repair verification awaits an owner-authorized deployment.
+
+## 13. Dashboard clarity rewrite — 2026-10-25
+
+Agent: Claude Code (Claude Opus 5.5). Renumbered from a duplicate "12" to 13 by the same agent.
+
+- Owner reported the dashboard was hard to understand. `/dashboard` now has explicit labelled
+  sections: resume card (with item type and timer warning), "Таны явц" stats with one-line
+  explanations, "Шинээр эхлэх" (Дасгал / Бүтэн шалгалт / Үнэгүй жишиг cards), plans, and
+  "Миний түүх" with per-type counts and Дууссан/Дуусаагүй chips on every row. Removed the
+  duplicated library banner. Queries, links, access checks and test-relied classes/headings are
+  unchanged. Only `src/app/dashboard/page.tsx` and appended `globals.css` rules changed.
+- Done in parallel with separate exam-image work; the shared 3001 preview was not rebuilt or restarted.
+- Checks run: typecheck, lint, all 60 unit tests, `git diff --check`. A separate dev server on 3005
+  rendered the page for a fresh local QA account at 1440/390/320px in light/dark with no horizontal
+  overflow or page errors; screenshots inspected. **Not yet run:** production build and the four
+  required browser suites. Run them before any commit/deploy. Nothing committed, pushed or deployed.
+- Follow-up (owner: no long desktop scroll): at ≥1000px the dashboard is two columns — activity
+  (resume, stats, history) on the left, a sticky aside with compact start cards and plans on the
+  right. Each history list shows the latest 5 rows; older rows stay in the DOM inside a native
+  `<details>` ("Бусад N-г харах"). Below 1000px it stacks as one column. Desktop page height for a
+  one-attempt account dropped to 1177px; 390/320px have no overflow; both themes inspected. Re-ran
+  typecheck, lint and `git diff --check`. The >5-row fold was not exercised with real data.
+- Second follow-up (owner: "too much text, messy, make it minimalistic"): rewrote layout and styles.
+  Removed explanations, eyebrows, icon stat boxes, start cards and the long plans card. Now: greeting
+  plus Profile/Sign out; one-line resume strip; three plain numbers between rules; list-style history
+  (title, date, score/"Үргэлжлүүлэх →", latest 5 plus "Бусад N"); a quiet aside with three start links,
+  the free SAT sample button and active plans only (full plan management stays on `/profile`).
+  Test-relied classes/headings and the sample-button label are unchanged. Desktop height for a
+  one-attempt account ~1010px; 390/320px no overflow; both themes inspected on the 3005 dev preview.
+  Re-ran typecheck, lint, 60/60 unit tests and `git diff --check`. Build and browser suites still not run.
+
+## 14. English archive with matched answers — 2026-10-25
+
+Agent: Codex (GPT-6).
+
+- Owner requested every available English exam year and variation, excluding papers without answers.
+  Codex researched and added 37 verified paper/key pairs: 2006 A–E; 2007 A–C; 2008 B–F;
+  2009 B/D/H/I; 2010–2011 A–D; 2018–2020 A–D. Coverage means complete retrievable paired sources,
+  not every year since the exam began. Missing and mismatched sets remain unpublished.
+- `/exams/eec-english` groups years and opens each variation's source-paper and answer-key viewer.
+  It is a free paper/self-check archive, with no invented grading, timer or saved-attempt claim.
+  Existing Mathematics timers, entitlements, purchases, ownership and grading are preserved.
+- The six 2006–2011 БҮТ PDFs were retrieved from the NUM school mirror and retained as provenance.
+  Rendered pages are clipped at printed variation headings, preserving all questions while avoiding
+  adjacent-variation content. The 2018–2020 original JPEGs come from БҮТ's public archive.
+  All 218 English images are served from this app; source links and hashes are recorded in
+  `assets/papers/english-archive.json`. This also records excluded years and unavailable 2019 E.
+- Historical 2012–2017 official links returned missing pages. The accessible 2021 mirror key fails
+  the official paper option order (e.g. A question 4); it was not inferred or silently corrected.
+  The newer public task bank has placeholders/incomplete or inconsistent sections, and older
+  2022–2025 PDF links returned 404. No complete matched 2022–2026 set was verified. These exclusions
+  do not claim that answers do not exist elsewhere. Old listening audio is not bundled.
+- Codex updated `PROJECT.md` with coverage, source handling, exclusions and the self-check scope.
+  Codex ran lint, typecheck, 62/62 unit tests and production build (87 generated pages). The English
+  browser suite passed all 37 viewers and all 218 asset hashes, answer-column notices, missing-paper
+  404s, source-outage behavior, library/program links and 1440/390/320px themes. Screenshots and
+  first/last-page contact sheets were inspected. The final hover-contrast adjustment was rebuilt;
+  the final browser regression outcomes are recorded below.
+- Owner explicitly chose Claude Code to handle the combined push after Codex finishes. Codex has
+  not staged, committed, pushed or manually deployed this work. Claude Code owns the git resource
+  on `ACTIVE_WORK.md`; the ignored `artifacts/exam-delivery/` snapshots are preparatory only and
+  are not final/current staging instructions. Preserve and review all unrelated work before delivery.
+- Final regression notes: the first official-paper run encountered a removed dashboard wrapper from
+  the concurrent redesign. Codex updated the history assertion to check each exact attempt link and
+  variant title; the full official-paper suite then passed. The browser suite passed. The first
+  accounts run reached the real five-per-minute sign-up limit (HTTP 429); a serial rerun after the
+  window expired passed. No rate-limit configuration or runtime safeguard was changed.
+- Python compilation, `git diff --check` and the credential/pattern scan passed (292 changed/new
+  files scanned, zero findings). The exercises suite passed all 80 questions, ten sets, four
+  workshops, private history, grading and 320/390px layouts. The exams suite passed SAT 98,
+  IELTS 40+40, essays/recordings, ownership, server clocks, resume/results and mobile layouts.
+  The admin suite passed authorization, controls, audit, exports, all four math variant previews
+  and responsive themes. All required final browser suites passed on the final production build.
+- Handoff: Codex work is complete and ready for Claude Code's owner-authorized combined push.
+  Local preview remains on port 3001 (last observed Codex-owned PID 23880); no build/restart is
+  running. Codex released its preview/database claim. No Codex staging, commit, push or manual
+  deployment occurred. Hosted verification must follow the successful combined push/deployment.
+
+## 15. Combined delivery and agent coordination rules — 2026-10-25
+
+Agent: Claude Code (Claude Opus 5.5).
+
+- Owner authorized pushing all completed work, including Codex's image repair (section 12) and English
+  archive (section 14), plus Claude Code's dashboard redesign (section 13).
+- Added owner-requested coordination rules: `docs/ACTIVE_WORK.md` (claim board: check before every task
+  and before builds, preview restarts, database changes, commits or pushes; warn the owner before a task
+  that collides with or interrupts another agent), the `Agent:` attribution rule in section 4, and
+  matching lines in `AGENTS.md`. Restored the dashboard greeting's final period required by
+  `accounts_smoke.py` (found by Claude Code's run; no assertion changed).
+- Codex's final production build (13:12) contains all current application source; only
+  `tests/official_paper_smoke.py` changed afterwards (Codex's assertion update).
+- Claude Code's own final checks on that tree: lint, typecheck, 62/62 unit tests, `subscriptions_smoke.py`
+  pass, and `official_paper_smoke.py` pass. Earlier official-paper attempts failed for environment
+  reasons only: one concurrent rebuild by another agent, one PGlite fixture protocol error (`08P01`) and
+  one real sign-up rate limit (HTTP 429 window); none changed tests or safeguards. Before Codex's English
+  work, Claude Code's combined build also passed the four required suites plus profile and payments.
+  Codex's section 14 records its final required-suite passes on the final build.
+- Credential scan over all 292 changed/new files: no secret values or key patterns; only the public
+  hosted URL matched an env value. Pushing triggers Vercel production deployment; hosted verification
+  of images, English archive and dashboard must follow.

@@ -1,4 +1,4 @@
-import { officialPaper } from "@/modules/papers/catalog";
+import { officialPapers } from "@/modules/papers/catalog";
 import "server-only";
 import { getDb } from "@/lib/db";
 import { ApiError } from "@/lib/api";
@@ -17,7 +17,7 @@ export async function assertAdmin(userId: string) {
 }
 export function contentCatalog() {
   return [
-    {key:officialPaper.slug,title:officialPaper.title,program:officialPaper.program,kind:"Албан материал",count:40,href:"/exams/"+officialPaper.slug},
+    ...officialPapers.map(paper=>({key:paper.slug,title:paper.title,program:paper.program,kind:"Албан материал",count:40,href:"/exams/"+paper.slug})),
     ...exerciseSets.map(set=>({key:set.slug,title:set.title,program:set.program,kind:"Дасгал",count:set.questions.length,href:"/exercises/"+set.slug})),
     ...examDefinitions.map(exam=>({key:exam.slug,title:exam.title,program:exam.program,kind:"Бүтэн mock",count:exam.program==="sat"?98:80,href:"/exams/"+exam.slug})),
     ...guidedTasks.map(task=>({key:task.slug,title:task.title,program:"ielts",kind:"Workshop",count:1,href:"/workshops/"+task.slug})),

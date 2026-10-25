@@ -24,7 +24,7 @@ authentication require provider configuration; see the actual hosted checkpoint 
 | Program practice | 10 sets / 80 original questions: SAT 32, IELTS 24, university entrance 24 |
 | IELTS workshops | Four focused workshops with saved work and grading |
 | Full mocks | Digital SAT and IELTS Academic sittings with server-authoritative timers |
-| Official papers | One 2020 EEC (ЭЕШ) Mathematics category with A, B, C and D; eight archive-image pages per variant |
+| Official / regional papers | 2020 Math A–D, 37 historical English variations, plus two 2026 Dornod regional practice exams |
 | Accounts | Better Auth email/password, profile, Google OAuth, verification and password recovery |
 | Plans and payments | Three monthly plans plus per-mock and per-paper simulated purchases |
 | Admin | Protected overview, members, subscriptions, payments, monitoring, content and audits |
@@ -104,9 +104,29 @@ purchases and LEGACY grants are preserved.
   `public/exam-assets/eec-english/`; readers make no external image requests.
 - No listing is published just because an exam title exists. Historical 2012–2017 source/key links
   are unavailable; 2021's accessible mirror key does not match the official paper option order;
-  current 2022–2026 links/bank entries did not yield a complete verified pairing. The 2019 E key
+  current 2022–2026 national-paper links/bank entries did not yield a complete verified pairing. The 2019 E key
   exists but its source paper returns 404, so E is excluded. These are availability/verification
   limits, not a claim that no such exams or answers exist anywhere.
+
+### 2026 Dornod regional practice exams
+
+- `/exams/dornod-2026` lists Mathematics (2026-05-30, 100 minutes) and English
+  (2026-05-31, 80 minutes), both labelled as Dornod Education Department's Online Practice Test 4.
+  They use the same paid/plan access, private sitting, snapshot, autosave, deadline and results flow.
+  Main exams, University Prep and the English library link to them; the 2020 Math category stays 2020-only.
+- Math: 36 choices (1–8 one point, 9–28 two, 29–36 three), plus four fill-ins of 7/8/8/7 digits.
+  Choices total 72. Each whole fill-in is worth 7 when fully correct, with no guessed partial-credit
+  allocation because the source does not specify one. This practice policy is disclosed before starting
+  and during the sitting/results. Total 100; no scaled score.
+- English: 47 choices with the source's variable weights (80 points), and fill-ins of 8/8/4 cells
+  at one point each (20 points). Total 100.
+- Original PDFs are retained under `assets/papers/dornod-2026-originals`. The Math URL's filename
+  says Online 3, but the cover, source listing and dates identify Online 4. The student-facing Math
+  pages crop out the answer column without removing question text or diagrams. English excludes
+  the cover and final key page. Source keys are linked in the submitted report only.
+- All 33 source-derived student/key images are served locally under `public/exam-assets/dornod-2026`.
+  `assets/papers/dornod-2026.json` records original hashes, source pages, crop rectangles and image
+  hashes. `regional.ts` exposes layouts/metadata; `regional-keys.json` is used by server grading/admin.
 
 ## 4. Pricing and access
 

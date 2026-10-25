@@ -578,4 +578,49 @@ Agent: Codex (GPT-6).
 - This delivery contains the verified section 16 English exam correction, tests and documentation.
   No app code changed since the passing production build and browser suites. Final whitespace,
   Python compilation and credential scan passed; no ignored env/log/cache/artifact files included.
-- Commit/push outcome is recorded after the authorized operation completes. No manual deployment.
+- Codex committed `8a0f5e8` (`Run all verified English variations as timed graded exams`) and
+  successfully pushed `codex/education-foundation` to origin. `git ls-remote` independently confirmed
+  remote HEAD `8a0f5e8f589f1832a4491ab66d9bb6dba36ac82d`. No manual deployment was run;
+  no hosted success is claimed. This post-push outcome note remains local.
+
+
+## 18. Both 2026 Dornod practice papers as exams — 2026-10-25
+
+Agent: Codex (GPT-6).
+
+- Owner requested adding the two recently verified practice papers as exams. No other active claim
+  conflicted. Codex added a 2026 Dornod category and Math/English briefings using the existing sitting,
+  per-paper/University Prep access, immutable snapshots, autosave, server deadlines and grading.
+- Clear regional provenance replaces national/БҮТ labels on these two items. They are discoverable
+  from the exam library and University Prep; English also appears above the historical English years.
+  Old Math A–D and all 37 historical English papers retain their existing keys, layouts and snapshots.
+- Source PDF covers confirm Online Test 4, May 30 Math / May 31 English. Math's download filename
+  says Online 3; its actual cover and source listing identify Test 4. Original PDFs are retained.
+- Math student images crop the printed answer column while preserving every question and diagram;
+  English's cover/key page are separated from its 14 question pages. All 33 student/key JPEGs have
+  provenance hashes/crop records. Cropped Math contact sheets and original English/key pages inspected.
+- Math uses 36 choices (8×1 + 20×2 + 8×3 = 72) and four 7-point fill-ins with 7/8/8/7 digits.
+  The source has no per-cell partial-credit weights: a whole correct fill-in earns 7, disclosed in
+  briefing, workspace and result. English's printed weights yield 80 choice points plus 8/8/4 cells
+  (20 points). Both total 100. Public timers remain 100/80 minutes as the source covers specify.
+- Codex updated `PROJECT.md` with routes, source handling, original filename discrepancy and scoring.
+  Unit tests: 70/70 passed. Lint, typecheck and production build passed (51 generated pages).
+- The new regional browser suite passed both complete UI submissions at 100/100, all 33 served
+  image hashes with the source blocked, 8-cell save/reload, exact 100/80-minute deadlines, per-paper
+  versus plan access, ownership, stale/invalid edits, immutable reports, expiry/history and discovery
+  links. Category and sitting screenshots at 1440/390/320px in both themes were inspected.
+- The first regional/navigation runs encountered the stopped local database (P1001), leaving
+  database-backed pages unavailable. Codex restarted the existing named Prisma local service without
+  resetting data; both suites then passed. No assertions, runtime limits or access checks weakened.
+- Whitespace, Python compilation and credential scan passed (56 changed/new files; zero findings).
+  Built client JS contained no regional key version or known answer strings. The full historical
+  English suite passed all 37 variations/218 asset hashes. The official Math A–D and account suites
+  passed. Exercises also passed. The first standard-exam run encountered a database error payload
+  during an IELTS stage GET (`PrismaClientKnownRequestError` in the app log). Codex added an HTTP
+  status assertion before reading stage data, preserving all existing assertions, and started a
+  standalone rerun. The full SAT/IELTS rerun passed, followed by admin authorization, controls,
+  exports, regional key previews and responsive themes. All required and affected suites passed.
+- Codex is delivering this exam increment under the owner's instruction to push the code itself.
+  The working branch and EducationPlatform origin were rechecked; fetch showed no divergence.
+  Only this increment's code, source assets, tests and own documentation are staged. No manual
+  deployment or hosted-data change is part of this increment.

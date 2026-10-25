@@ -51,6 +51,12 @@ with sync_playwright() as p:
         expect(page.locator(".admin-preview h2").last).to_have_text("Түлхүүр · "+str(total)+" оноо")
         assert page.locator('.admin-preview a[href*="/exam-assets/eec-english/"]').count()>0
     member.goto(BASE+"/admin/content/eec-english-2020-a");assert member.locator(".admin-preview").count()==0
+    for subject,minutes in [("math",100),("english",80)]:
+        page.goto(BASE+"/admin/content/dornod-2026-"+subject+"-online-4")
+        expect(page.locator(".admin-preview h1")).to_contain_text("Дорнод")
+        expect(page.locator(".admin-preview h2").first).to_have_text("Эх хуудсууд · "+str(minutes)+" минут")
+        expect(page.locator(".admin-preview h2").last).to_have_text("Түлхүүр · 100 оноо")
+        assert page.locator('.admin-preview a[href*="/dornod-2026/"]').count()>0
     assert admin.request.post(BASE+"/api/admin",headers={"Origin":"https://untrusted.invalid"},data={}).status==403
     for body in [{"action":"drop-db","target":target,"reason":"Invalid operation"},{"action":"grant-month","target":target,"program":"all","reason":"Unknown program"},{"action":"grant-month","target":target,"program":"sat","reason":"bad"},{"action":"grant-month","target":target,"program":"sat","reason":"Unknown fields","amountMnt":1}]:
         assert admin.request.post(BASE+"/api/admin",headers=ORIGIN,data=body).status==400

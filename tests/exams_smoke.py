@@ -88,7 +88,9 @@ with sync_playwright() as p:
     assert context.request.patch(endpoint,headers=ORIGIN,data={"revision":saved["revision"],"stageId":"sat-math-1","responses":{},"flags":[]}).status==400
     assert context.request.patch(endpoint,headers=ORIGIN,data={"revision":0,"stageId":"sat-rw-1","responses":{},"flags":[]}).status==409
     for stage_id,count,seconds in [("sat-rw-1",27,1920),("sat-rw-2",27,1920),("sat-break",0,600),("sat-math-1",22,2100),("sat-math-2",22,2100)]:
-        data=context.request.get(endpoint).json()
+        stage_response=context.request.get(endpoint)
+        assert stage_response.status==200,(stage_id,stage_response.status,stage_response.text())
+        data=stage_response.json()
         assert data["stage"]["id"]==stage_id and len(data["stage"]["questions"])==count and data["stage"]["seconds"]==seconds
         answers=fixture("answers",sat_id)
         r=context.request.patch(endpoint,headers=ORIGIN,data={"revision":data["revision"],"stageId":stage_id,"responses":answers["responses"],"flags":[]})
@@ -154,7 +156,9 @@ with sync_playwright() as p:
     assert page.locator(".listening-player audio").get_attribute("controls") is None
     page.screenshot(path=str(ART/"ielts-listening-desktop.png"),full_page=True)
     for stage_id in ["ielts-listening","ielts-listening-check","ielts-reading","ielts-writing","ielts-speaking-1","ielts-speaking-prep","ielts-speaking-2","ielts-speaking-3"]:
-        data=context.request.get(endpoint).json()
+        stage_response=context.request.get(endpoint)
+        assert stage_response.status==200,(stage_id,stage_response.status,stage_response.text())
+        data=stage_response.json()
         assert data["stage"]["id"]==stage_id,(stage_id,data["stage"]["id"])
         answers=fixture("answers",ielts_id)
         if stage_id=="ielts-writing":

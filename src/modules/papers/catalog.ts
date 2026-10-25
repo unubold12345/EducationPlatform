@@ -1,3 +1,4 @@
+import { regionalPapers } from "./regional.ts";
 import { englishExams } from "./english-exams.ts";
 // Only metadata and original-source addresses. Never put answer keys here.
 export const officialPaperCategory={slug:"eec-math-2020",title:"ЭЕШ 2020 · Математик"};
@@ -11,8 +12,8 @@ export const officialPapers=["A","B","C","D"].map(variant=>({
 export type {PaperSlot} from "./layout.ts";
 export {paperSlots,slotsForPaper} from "./layout.ts";
 import type {PaperSlot} from "./layout.ts";
-export type OfficialPaper=(typeof officialPapers)[number]&{subject?:"math"|"english";slots?:PaperSlot[];scoringNote?:string;categoryPath?:string;timingNote?:string};
-export const allOfficialPapers:OfficialPaper[]=[...officialPapers,...englishExams];
+export type OfficialPaper=(typeof officialPapers)[number]&{subject?:"math"|"english";slots?:PaperSlot[];scoringNote?:string;categoryPath?:string;timingNote?:string;regional?:boolean;sourceNote?:string};
+export const allOfficialPapers:OfficialPaper[]=[...officialPapers,...englishExams,...regionalPapers];
 // Preserve the original A export and slug for existing purchases and attempts.
 export const officialPaper=officialPapers[0];
 export function findOfficialPaper(slug:string){return allOfficialPapers.find(paper=>paper.slug===slug);}

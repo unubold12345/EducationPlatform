@@ -4,7 +4,7 @@ import { ApiError } from "@/lib/api";
 import { Prisma } from "@/generated/prisma/client";
 import { hasSubscription } from "@/modules/subscriptions/access";
 import { findOfficialPaper,type OfficialPaper } from "./catalog";
-import { officialKeys } from "./key";
+import { keyForPaper } from "./key";
 import { validPaperResponses,gradePaper,type PaperKey,type PaperResponses } from "./engine";
 const json=(value:unknown):Prisma.InputJsonValue=>JSON.parse(JSON.stringify(value));
 export async function paperAccess(userId:string,slug:string){return Boolean(await getDb().mockPurchase.findFirst({where:{userId,examSlug:slug,status:"PAID"},select:{id:true}}))||await hasSubscription(userId,"entrance");}
@@ -13,7 +13,7 @@ export async function startPaper(userId:string,slug:string){
  const db=getDb();const activeKey=userId+":"+officialPaper.slug;
  const old=await db.paperAttempt.findUnique({where:{activeKey},select:{id:true}});if(old)return old;
  if(!await paperAccess(userId,slug))throw new ApiError(402,"Энэ шалгалтын эрх эсвэл University Prep сарын багц шаардлагатай.");
- try{return await db.paperAttempt.create({data:{userId,slug:officialPaper.slug,activeKey,deadline:new Date(Date.now()+officialPaper.seconds*1000),snapshot:json({paper:officialPaper,key:officialKeys[officialPaper.variant]}),responses:{}},select:{id:true}});}catch(error){
+ try{return await db.paperAttempt.create({data:{userId,slug:officialPaper.slug,activeKey,deadline:new Date(Date.now()+officialPaper.seconds*1000),snapshot:json({paper:officialPaper,key:keyForPaper(officialPaper)}),responses:{}},select:{id:true}});}catch(error){
   if(error instanceof Prisma.PrismaClientKnownRequestError&&error.code==="P2002"){const winner=await db.paperAttempt.findUnique({where:{activeKey},select:{id:true}});if(winner)return winner;}throw error;
  }
 }
@@ -27,7 +27,7 @@ export async function paperAttempt(id:string,userId:string,input?:unknown){
    if(!expired){
     if(!input||typeof input!=="object"||Array.isArray(input))throw new ApiError(400,"Хүсэлт буруу.");
     const body=input as Record<string,unknown>;
-    if(Object.keys(body).sort().join(",")!=="responses,revision,submit"||!Number.isInteger(body.revision)||typeof body.submit!=="boolean"||!validPaperResponses(body.responses))throw new ApiError(400,"Хариултын бүтэц буруу.");
+    if(Object.keys(body).sort().join(",")!=="responses,revision,submit"||!Number.isInteger(body.revision)||typeof body.submit!=="boolean"||!validPaperResponses(body.responses,snapshot.key))throw new ApiError(400,"Хариултын бүтэц буруу.");
     if(body.revision!==row.revision)throw new ApiError(409,"Өөр цонхонд шинэ хадгалалт байна. Хадгалсан хувилбарыг ачаална уу.");
     responses=body.responses;submit=body.submit;
    }

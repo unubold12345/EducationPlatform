@@ -1,3 +1,4 @@
+import englishKeys from "./english-keys.json" with {type:"json"};
 // Factual answers and weights transcribed from БҮТ's public 2020 official key.
 // Server services and tests only; the client receives a report after submission.
 import type { PaperKey } from "./engine";
@@ -31,3 +32,8 @@ export const officialKeys:Record<string,PaperKey>={
  C:variantKey("C","B C D E C B A A E D C B D A E D A C B D A E D C C C E C D C A E D B E D",["8660834","9544555","5835874","2693633"]),
  D:variantKey("D","B D E A C B D A E D C B D C D C B D B E A E A B D E A A C B B A E C D E",["8644828","9544553","4035827","2693423"]),
 };
+
+export function keyForPaper(paper:{slug:string;variant:string;subject?:string}):PaperKey {
+ const key=paper.subject==="english"?englishKeys[paper.slug as keyof typeof englishKeys]:officialKeys[paper.variant];
+ if(!key)throw new Error("Missing verified paper key");return key;
+}

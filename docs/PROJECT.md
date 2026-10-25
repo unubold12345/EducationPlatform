@@ -76,15 +76,25 @@ purchases and LEGACY grants are preserved.
 - New starts require the University Prep plan or an existing 10,000 MNT per-paper simulated purchase.
   Saved work and review remain available after subscription expiry.
 
-### Official English paper and answer archive
+### Official English exams
 
 - `/exams/eec-english` groups every verified, retrievable paper/key pair by year and variation.
   Published coverage is 37 variations across nine years: 2006 A–E; 2007 A–C; 2008 B–F;
   2009 B/D/H/I; 2010–2011 A–D; 2018–2020 A–D.
-- Each variation has a same-origin page viewer and matching original answer-key pages, with an
-  explicit reminder to use that variation's column. This is a free source-paper/self-check archive;
-  it does not start a timed attempt, save responses or calculate an automatic score. Older listening
-  audio is not bundled. Paid Mathematics starts and existing plan/purchase checks remain unchanged.
+- Each variation uses the same timed sitting flow as Mathematics: source pages beside a variation-specific
+  answer sheet, server deadlines, autosave/resume, final submission, immutable graded results and
+  dashboard history. New starts require the matching per-paper purchase or University Prep plan.
+  `/exams/eec-english/[slug]` opens its briefing; canonical `/exams/[slug]` also works.
+- English practice lasts 80 minutes. Official 2011 and 2020 timing rules are linked; the original
+  2006–2010 duration is not independently verified and is labelled as an 80-minute practice setting.
+- 2006–2011 reports count correct choices/cells (one point each), explicitly distinct from historical
+  official weighted scores. 2018 and 2020 use printed key weights. In 2020 D the ambiguous printed
+  2.3e entry `e17` is ungraded, giving a verified maximum of 99. The 2019 listening recording is
+  unavailable: questions 41–46 are retained but ungraded; the written-paper maximum is 88. These
+  limits appear before starting, during the sitting and in the result; no scaled score is calculated.
+- `english-structure.json` holds public answer layouts only; `english-keys.json` is loaded exclusively
+  by server grading/admin code. Keys are snapshotted on start and released only after submission.
+  Old Mathematics snapshots keep their 36-choice/four-seven-digit layout and original grading.
 - The 2006–2011 БҮТ booklets are mirrored by `highschool.num.edu.mn`; original PDFs are retained in
   `assets/papers/english-originals`. Pages are rendered at 2× and clipped only at printed variation
   headings when a PDF page contains the end of one variation and the beginning of the next.

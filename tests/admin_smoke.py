@@ -45,6 +45,12 @@ with sync_playwright() as p:
         expect(page.locator(".admin-preview h1")).to_contain_text(("А" if variant=="A" else variant)+" хувилбар")
         expect(page.locator(".admin-preview a[href*=\"/2020/mat/"+variant+"/\"]")).to_have_count(8)
         expect(page.locator(".admin-preview a[href*=\"2020Key\"]")).to_have_count(3)
+    for slug,total in [("eec-english-2006-a",60),("eec-english-2010-a",50),("eec-english-2019-a",88),("eec-english-2020-d",99)]:
+        page.goto(BASE+"/admin/content/"+slug)
+        expect(page.locator(".admin-preview h1")).to_contain_text("Англи хэл")
+        expect(page.locator(".admin-preview h2").last).to_have_text("Түлхүүр · "+str(total)+" оноо")
+        assert page.locator('.admin-preview a[href*="/exam-assets/eec-english/"]').count()>0
+    member.goto(BASE+"/admin/content/eec-english-2020-a");assert member.locator(".admin-preview").count()==0
     assert admin.request.post(BASE+"/api/admin",headers={"Origin":"https://untrusted.invalid"},data={}).status==403
     for body in [{"action":"drop-db","target":target,"reason":"Invalid operation"},{"action":"grant-month","target":target,"program":"all","reason":"Unknown program"},{"action":"grant-month","target":target,"program":"sat","reason":"bad"},{"action":"grant-month","target":target,"program":"sat","reason":"Unknown fields","amountMnt":1}]:
         assert admin.request.post(BASE+"/api/admin",headers=ORIGIN,data=body).status==400

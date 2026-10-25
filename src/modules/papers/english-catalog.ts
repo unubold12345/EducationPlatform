@@ -1,4 +1,4 @@
-import archive from "../../../assets/papers/english-archive.json";
+import archive from "../../../assets/papers/english-archive.json" with {type:"json"};
 
 // A paper is visible only when its complete source and matching key column were reviewed.
 export const englishPapers=archive.papers.filter(paper=>paper.pages.length>0&&paper.keyPages.length>0&&paper.keyVariants.includes(paper.variant));

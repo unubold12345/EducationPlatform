@@ -525,3 +525,57 @@ Agent: Claude Code (Claude Opus 5.5).
 - Credential scan over all 292 changed/new files: no secret values or key patterns; only the public
   hosted URL matched an env value. Pushing triggers Vercel production deployment; hosted verification
   of images, English archive and dashboard must follow.
+
+
+## 16. English exams replace the self-check viewer — 2026-10-25
+
+Agent: Codex (GPT-6).
+
+- Owner clarified that English must behave like Mathematics exams. Codex replaced the public viewer
+  route with the shared official-paper briefing and sitting lifecycle for all 37 included variations.
+  English now appears as the fourth exam category, with year/variation selection, per-paper checkout
+  or University Prep access, autosave/resume, server deadlines, submission, graded results and history.
+- Added separate public layouts and private per-variation key transcriptions. Historical 2006–2011
+  columns were extracted from the retained original PDFs; 2018–2020 columns were transcribed from
+  the bundled original key images. Shared grading/validation now follows the snapshot's actual counts
+  and digit lengths. Mathematics default validation and old immutable snapshots retain their layout,
+  paired scoring, 100-minute deadline and 100-point result.
+- English duration is 80 minutes. 2011/2020 rules are linked; pre-2011 original timing is unverified
+  and labelled as a practice duration. Historical 2006–2011 results explicitly count correct answers
+  and cells, with no invented original weighting. 2018/2020 use printed key weights. 2020 D's literal
+  `e17` cell (2.3e) is ambiguous and ungraded (maximum 99). 2019's absent listening recording makes
+  41–46 ungraded (written maximum 88). Briefings, answer sheets and results disclose these limits.
+- Codex updated `PROJECT.md` with the corrected exam behavior, data boundary and scoring limits.
+  Verification: lint, typecheck, all 67 unit tests and the production build passed (50 generated
+  pages; the 37 personalized briefings are now dynamic). The English browser suite passed all
+  37 variants, all 218 served hashes, checkout/plan isolation, ownership, saved-answer reload,
+  80-minute deadlines/expiry, CAS rejection, immutable results and a full UI submission. Browser
+  navigation/practice suite passed. English desktop and 320/390px light/dark screenshots were
+  inspected. The full Mathematics suite passed A–D images, exact 100-point grading, old snapshots,
+  autosave, private ownership, access, expiry and mobile layouts. Accounts and exercises suites
+  also passed. Standard exam and admin suites also passed, including the new fourth exam category and
+  admin-only English key previews for historical, missing-audio and ambiguous-key variants.
+- Python compilation and whitespace checks passed. Credential scan passed across 26 changed/new
+  files with zero findings. The built client JavaScript scan found no English key versions or
+  known answer strings; active-sitting browser/API checks likewise exposed no private key.
+- Delivery remains assigned to Claude Code by the owner. Codex has not staged, committed, pushed or
+  deployed this correction. No provider request, email, hosted-data mutation or payment bypass added.
+
+- Final state: all required checks passed on the production build served locally on port 3001
+  (last observed preview PID 13576). Codex ran Python compilation, final whitespace and credential
+  checks; no app code changed after the verified build. Shared preview/database resources released.
+  Ready for Claude Code's owner-assigned push; Codex performed no git mutation or deployment.
+
+
+## 17. Owner-requested Codex delivery — 2026-10-25
+
+Agent: Codex (GPT-6).
+
+- Owner explicitly instructed Codex to push the code itself, superseding the earlier Claude Code
+  handoff for the English exam correction. The active work board had no competing git claim.
+- Reviewed branch `codex/education-foundation`, private EducationPlatform origin, status, history
+  and changes. Fetch confirmed HEAD and the remote branch were aligned before delivery.
+- This delivery contains the verified section 16 English exam correction, tests and documentation.
+  No app code changed since the passing production build and browser suites. Final whitespace,
+  Python compilation and credential scan passed; no ignored env/log/cache/artifact files included.
+- Commit/push outcome is recorded after the authorized operation completes. No manual deployment.

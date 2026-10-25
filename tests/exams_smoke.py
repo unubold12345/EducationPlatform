@@ -35,7 +35,7 @@ with sync_playwright() as p:
     page.on("pageerror",lambda e:errors.append(str(e)))
     page.goto(BASE+"/exams")
     page.wait_for_load_state("networkidle")
-    expect(page.locator(".exam-card")).to_have_count(3)
+    expect(page.locator(".exam-card")).to_have_count(4)
     expect(page.locator(".official-exam-card")).to_contain_text("2020")
     page.screenshot(path=str(ART/"exams-grid-desktop.png"),full_page=True)
     assert context.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"sat-full-01"}).status==401

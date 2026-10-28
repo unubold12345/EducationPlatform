@@ -24,7 +24,7 @@ authentication require provider configuration; see the actual hosted checkpoint 
 | Program practice | 10 sets / 80 original questions: SAT 32, IELTS 24, university entrance 24 |
 | IELTS workshops | Four focused workshops with saved work and grading |
 | Full mocks | Digital SAT and IELTS Academic sittings with server-authoritative timers |
-| Official / regional papers | 2020 Math A–D, 37 historical English variations, plus two 2026 Dornod regional practice exams |
+| Official papers | 2020 Math A–D and 37 historical English variations |
 | Accounts | Better Auth email/password, profile, Google OAuth, verification and password recovery |
 | Plans and payments | Three monthly plans plus per-mock and per-paper simulated purchases |
 | Admin | Protected overview, members, subscriptions, payments, monitoring, content and audits |
@@ -108,25 +108,12 @@ purchases and LEGACY grants are preserved.
   exists but its source paper returns 404, so E is excluded. These are availability/verification
   limits, not a claim that no such exams or answers exist anywhere.
 
-### 2026 Dornod regional practice exams
+### Removed: 2026 Dornod regional practice exams
 
-- `/exams/dornod-2026` lists Mathematics (2026-05-30, 100 minutes) and English
-  (2026-05-31, 80 minutes), both labelled as Dornod Education Department's Online Practice Test 4.
-  They use the same paid/plan access, private sitting, snapshot, autosave, deadline and results flow.
-  Main exams, University Prep and the English library link to them; the 2020 Math category stays 2020-only.
-- Math: 36 choices (1–8 one point, 9–28 two, 29–36 three), plus four fill-ins of 7/8/8/7 digits.
-  Choices total 72. Each whole fill-in is worth 7 when fully correct, with no guessed partial-credit
-  allocation because the source does not specify one. This practice policy is disclosed before starting
-  and during the sitting/results. Total 100; no scaled score.
-- English: 47 choices with the source's variable weights (80 points), and fill-ins of 8/8/4 cells
-  at one point each (20 points). Total 100.
-- Original PDFs are retained under `assets/papers/dornod-2026-originals`. The Math URL's filename
-  says Online 3, but the cover, source listing and dates identify Online 4. The student-facing Math
-  pages crop out the answer column without removing question text or diagrams. English excludes
-  the cover and final key page. Source keys are linked in the submitted report only.
-- All 33 source-derived student/key images are served locally under `public/exam-assets/dornod-2026`.
-  `assets/papers/dornod-2026.json` records original hashes, source pages, crop rectangles and image
-  hashes. `regional.ts` exposes layouts/metadata; `regional-keys.json` is used by server grading/admin.
+The owner removed both Dornod Online Test 4 papers completely on 2026-10-29: their routes, catalog
+entries, layouts, keys, original PDFs and bundled images are deleted, and `tests/dornod-removal.test.mjs`
+guards against their return. Local attempts, purchases and content rows were deleted with the guarded
+`scripts/purge-dornod.mjs` (dry run by default, `--apply` to delete; local database only).
 
 ## 4. Pricing and access
 
@@ -228,7 +215,11 @@ gated by `AUTH_HOSTED_DEMO_ACCOUNTS=true`.
 - Available for authored math practice and completed SAT Math mock review, in Mongolian or English.
 - Supports next-step hints, worked explanations, typed working, mistake review and one ungraded
   similar follow-up question.
-- Students must explicitly consent before any context is sent. No request happens on page load.
+- Each question has an **AI туслах** button. Clicking it slides a chat drawer in from the right
+  (portalled to `<body>`, closes on ×, backdrop or Escape). Nothing renders or is sent on page load
+  or on opening; a request is sent only when the student presses a suggestion chip or sends a message,
+  and the composer states that the problem and the student's answer go to DeepSeek. The former
+  consent checkbox and fine-print notes were removed at the owner's request (2026-10-29).
 - Prompts contain only the relevant problem, options, selected answer, authorized reference
   explanation and at most four bounded prior turns. No account identity, cookies, scratchpad or full
   history is sent.
@@ -416,8 +407,8 @@ See [OPERATIONS.md](./OPERATIONS.md) for the exact latest results and the delive
 ## Appendix: imported 2026 EEC exam notes (not in this working tree)
 
 Imported on 2026-10-28 from `Desktop\codes\apienvfolders\EducationPlatform\docs\PROJECT.md`.
-This describes a later code state from another machine; the active product surface above (including
-the 2026 Dornod regional practice exams) remains accurate for this working tree.
+This describes a later code state from another machine; the active product surface above remains
+accurate for this working tree. The 2026 EEC papers below are not present here.
 
 ### Official 2026 EEC entrance exams
 

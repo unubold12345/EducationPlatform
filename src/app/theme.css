@@ -1164,11 +1164,16 @@ body:has(.exam-session) .education-backdrop { display: none; }
     margin: 0;
     padding: 4px;
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(max-content, 1fr);
+    overflow-x: auto;
+    scrollbar-width: none;
     gap: 2px;
     border-radius: 14px;
     background: color-mix(in srgb, var(--surface) 55%, transparent);
   }
+  .header-inner nav::-webkit-scrollbar { display: none; }
   .header-inner nav a { padding: 9px 4px; font-size: 9.5px; text-align: center; border-radius: 10px; }
   .header-actions { margin-left: auto; gap: 6px; }
   .header-actions .account-link { display: none; }
@@ -1309,3 +1314,16 @@ body:has(.exam-session) .education-backdrop { display: none; }
   .home-ticker-track { animation: none; }
   *, *::before, *::after { scroll-behavior: auto !important; }
 }
+
+/* Workshop index: three-column tile grid; the Speaking partner is the first tile. */
+.workshop-index-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.workshop-tile { display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--line); border-radius: 20px; background: color-mix(in srgb, var(--surface) 70%, transparent); color: inherit; text-decoration: none; transition: border-color .18s, background .18s, transform .18s; }
+.workshop-tile:hover { border-color: color-mix(in srgb, var(--blue) 48%, var(--line)); background: var(--surface); transform: translateY(-2px); }
+.workshop-tile-art { display: grid; place-items: end center; aspect-ratio: 4 / 3; padding: 20px 20px 0; background: radial-gradient(circle at 50% 70%, color-mix(in srgb, var(--blue) 30%, transparent), transparent 68%), color-mix(in srgb, var(--blue) 7%, var(--surface)); border-bottom: 1px solid var(--line); }
+.workshop-tile-art img { width: auto; height: 100%; max-width: 100%; object-fit: contain; }
+.workshop-tile-body { display: flex; flex: 1; flex-direction: column; gap: 10px; padding: 22px; }
+.workshop-tile-body h2 { font-size: 21px; letter-spacing: -.02em; }
+.workshop-tile-body p { margin: 0; }
+.workshop-tile-body .text-link { margin-top: auto; padding-top: 6px; }
+@media (max-width: 1000px) { .workshop-index-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 640px) { .workshop-index-grid { grid-template-columns: 1fr; } }

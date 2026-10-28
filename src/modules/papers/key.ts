@@ -1,4 +1,3 @@
-import regionalKeys from "./regional-keys.json" with {type:"json"};
 import englishKeys from "./english-keys.json" with {type:"json"};
 // Factual answers and weights transcribed from БҮТ's public 2020 official key.
 // Server services and tests only; the client receives a report after submission.
@@ -35,6 +34,6 @@ export const officialKeys:Record<string,PaperKey>={
 };
 
 export function keyForPaper(paper:{slug:string;variant:string;subject?:string}):PaperKey {
- const key=regionalKeys[paper.slug as keyof typeof regionalKeys]??(paper.subject==="english"?englishKeys[paper.slug as keyof typeof englishKeys]:officialKeys[paper.variant]);
+ const key=paper.subject==="english"?englishKeys[paper.slug as keyof typeof englishKeys]:officialKeys[paper.variant];
  if(!key)throw new Error("Missing verified paper key");return key;
 }

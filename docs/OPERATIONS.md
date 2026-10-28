@@ -819,3 +819,110 @@ Agent: Claude Code (Claude Opus 5.5).
 - Checks run by Claude Code: `git diff --check` passed (only LF → CRLF warnings). Secret scan of the
   docs/`AGENTS.md` diff against local env values and key patterns found no secrets; the only match
   was the non-secret `BETTER_AUTH_URL` address already documented above.
+
+## 22. Student-facing programs redesign — 2026-10-29
+
+Agent: Opencode (DeepSeek V4.1 Flash).
+
+- Owner reported that the program index and program detail pages were confusing and asked for a
+  clearer, more student-friendly design. The owner explicitly approved sharing the `programs` area
+  with Claude Code's active claim; Claude Code then recorded the split on `ACTIVE_WORK.md`.
+- `/programs` is now a student decision page: a direct "which exam are you preparing for?" hero, a
+  free three-question sample card, one scannable card per program with an audience line, three
+  benefit chips and a clear open action, a compact 80/04/04 fact strip, and a three-step
+  "choose → practise → review" strip. The Lexlab recommendation remains.
+- `/programs/[slug]` now starts with a breadcrumb, a focused hero and an at-a-glance panel (set,
+  question and minute counts, workshop count where relevant, monthly price, primary start action
+  and the free sample). It continues with the full-mock or Speaking invitation, numbered set cards,
+  IELTS workshops, the two official entrance-paper cards, a plan card with the actual plan features,
+  one next-step card, and a collapsed notes/source block instead of several competing banners.
+- Student-facing additions are data-driven through `audience` and `highlights` on the existing
+  program catalog. `ProgramCard` and the homepage were not changed; the new route-only
+  `ProgramSpotlight` keeps the `.program-card` class needed by browser checks. Every existing test
+  hook is preserved: 3 `.program-card`, 4/3 `.exercise-row`, the exact `SAT` heading, the
+  `Writing & Speaking workshop` heading, the `Жишиг дасгал эхлэх` link to `/practice`, the
+  Speaking invitation target and all plan/exam routes.
+- New styles live in `src/app/programs/programs.css`, loaded by a route-level
+  `src/app/programs/layout.tsx`, and are scoped to `.programs-page` / `.program-detail-page`. This
+  avoided editing Claude Code's claimed `src/app/theme.css`. Claude Code's uncommitted Dornod banner
+  removal and 05→04 category-count edit in the two program pages were preserved; the retired Dornod
+  links were not re-added.
+- Checks actually run:
+  - `npm run lint` — pass; `npm run typecheck` — pass; `npm test` — 70/70 pass.
+  - `python tests/browser_smoke.py` and `python tests/theme_smoke.py` — pass against a throwaway
+    `next dev --webpack` copy on port 3007 (`TEST_BASE_URL`), including navigation, grading,
+    API validation, 404, themes, `/programs/entrance` and 320/390px layouts.
+  - A focused Playwright check on the same 3007 preview covered all four program routes, the 404
+    slug, hook counts, link targets, light/dark desktop and 320/390px overflow. Screenshots were
+    inspected for the index and all three details; card heights, the at-a-glance panel and mobile
+    wrapping were corrected after inspection.
+  - The first focused pass hit one known PGlite `08P01` transient and the real
+    `/api/auth/get-session` 429 after rapid repeated navigation. A paced rerun passed without
+    changing code, tests, rate limits or safeguards.
+  - `git diff --check` scoped to the programs/docs changes passed; a trailing-whitespace scan of the
+    three new files passed. The repo-wide `git diff --check` still reports one pre-existing trailing
+    whitespace line in Claude Code's `src/app/exams/eec-english/page.tsx`; that file and other
+    agents' work were not touched. A secret-pattern scan of the changed programs files found no
+    findings.
+- Not run: the production build and the `accounts`, `exercises` and `exams` browser suites, because
+  Claude Code still holds `build + 3001` and the `database` (QA rows) claim while testing its own
+  increments. The throwaway 3007 preview copied `src`, configuration and the ignored `.env`, linked
+  `node_modules`/`public`, and copied the paper JSON; it served public pages read-only. No database
+  row, account, session, email, provider request, payment or hosted resource was created or changed.
+  No commit, push or deployment was performed.
+- `ACTIVE_WORK.md` was updated to confirm the owner-requested split. `PROJECT.md` was not changed:
+  the stable product surface, access rules, timers, scoring and setup are unchanged by this visual
+  and information-architecture increment.
+
+## 23. Dornod removal, Workshop page, AI assistant drawer and combined delivery — 2026-10-29
+
+Agent: Claude Code (Claude Opus 5.5). Opencode's programs redesign (section 22) is included in this
+delivery unchanged; its results there are Opencode's own.
+
+- **Dornod 2026 deleted.** Owner first asked to remove the two Dornod Online Test 4 papers, then to
+  delete them completely. Removed the `/exams/dornod-2026` route, catalog entries (`regional.ts`),
+  keys (`regional-keys.json`), `assets/papers/dornod-2026*` (original PDFs) and the 33 images under
+  `public/exam-assets/dornod-2026`, every Dornod branch in briefing/checkout/sitting/admin, the
+  homepage/exams/English/University Prep links, and the three Dornod tests. Exam category counts
+  read 04. `tests/dornod-removal.test.mjs` guards against their return. New guarded
+  `scripts/purge-dornod.mjs` (local database only; dry run unless `--apply`) deleted every local
+  Dornod row: 11 paper attempts (including `qa-demo-01`'s in-progress English sitting; the rest
+  were `qa-regional-*` QA accounts) and 2 purchases. A second dry run found 0. Admin audit history
+  was kept. **The hosted Neon database was not queried or changed**; any hosted Dornod attempts or
+  purchases remain until the owner authorizes a hosted cleanup.
+- **Workshop.** New `/workshop` page and a "Workshop" header-nav link. Three-column tile grid
+  (two on tablets, one on phones); the AI Speaking partner is the only tile, illustrated by
+  `public/characters/milo/milo-wave.webp`, a local three.js render of the unchanged CC0
+  RobotExpressive model (recorded in `SOURCE.txt`). The phone header nav now fits five links on
+  one row (scrolls inside itself at 320px). The four IELTS Writing/Speaking tasks stay on
+  `/programs/ielts`.
+- **AI assistant.** Owner rejected an in-layout sidebar. Each math question (exercises, free
+  `/practice`, completed SAT Math review) now has an "AI туслах" button that opens a chat drawer
+  sliding in from the right (portalled to `<body>`; ×, backdrop or Escape close it; focus returns;
+  page scroll is locked while open). Suggestion chips, MN/EN, Enter to send, typing indicator;
+  conversation survives close/reopen per question. At the owner's request the consent checkbox and
+  fine-print notes were removed; one line under the composer states that the problem and answer go
+  to DeepSeek. Nothing is sent on load or on opening. Server quota, origin, ownership, plan and
+  active-exam checks are unchanged. Styles are in `src/modules/tutor/tutor.module.css`. A closing
+  bug (Escape mid-animation left an invisible overlay) was found in the browser and fixed with a
+  timer-based close.
+- Checks run by Claude Code on the final production build (which also contains Opencode's
+  section 22 work): `npm run lint` pass; `npm run typecheck` pass; `npm test` 68/68 pass (three
+  Dornod tests removed, one removal test added); `npm run build` pass (50 generated pages).
+  Browser suites, run serially on that build: `browser`, `accounts`, `exercises`, `exams`,
+  `official_paper`, `admin`, `profile`, `theme`, `homepage_polish`, `english_archive` — all 10 pass
+  (English: all 37 timed exams and 218 asset hashes). This also covers the production build and
+  `accounts`/`exercises`/`exams` runs that Opencode's section 22 left for later. Earlier builds in this increment also passed `regional_papers_smoke.py` for
+  the interim retirement; one interim `official_paper` run failed once with `KeyError: 'report'`
+  (an error body from the API) and passed on every later run without code or test changes.
+- Browser pane checks: `/workshop` at 1440/760/440/390/320px in both themes; the AI drawer at
+  1440 and 390px (open, all three close paths, reopen, zero `/api/math-tutor` requests); Dornod
+  routes and images return 404 and no main page mentions Dornod.
+- **Not run:** `tests/tutor_smoke.py` (updated for the drawer) makes three live DeepSeek requests
+  and was not run without owner authorization; the recovery and hosted suites were not run.
+- After the final build only a blank line was removed from `src/app/exams/eec-english/page.tsx`
+  (whitespace). `git diff --check` and a secret/env-value scan of all 33 changed/new files passed;
+  the only env match is the non-secret local `BETTER_AUTH_URL`.
+- Owner instructed clearing `ACTIVE_WORK.md` (all agents' rows removed) and pushing everything,
+  including Opencode's work. Push to `codex/education-foundation` triggers the Vercel production
+  deployment; the outcome is recorded below.

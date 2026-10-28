@@ -11,7 +11,6 @@ export function exerciseReturnPath(value: unknown) {
   if (value === "/profile") return value;
   if (value === "/admin") return value;
   if (value === "/exams/"+officialPaperCategory.slug) return value;
-  if (value === "/exams/dornod-2026") return value;
   if (value === "/exams/eec-english") return value;
   if (value.startsWith("/exams/eec-english/")&&findOfficialPaper(value.slice("/exams/eec-english/".length))) return value;
   if (value === "/plans") return value;

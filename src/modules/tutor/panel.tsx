@@ -1,15 +1,48 @@
 "use client";
-import { useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import type { TutorInput, TutorTarget, TutorTurn } from "./contracts";
+import styles from "./tutor.module.css";
 
-export function MathTutor({target,review=false}:{target:TutorTarget;review?:boolean}) {
-  const id=useId(),busy=useRef(false);
-  const [open,setOpen]=useState(false),[consent,setConsent]=useState(false),[language,setLanguage]=useState<"mn"|"en">("mn");
-  const [turns,setTurns]=useState<TutorTurn[]>([]),[text,setText]=useState(""),[pending,setPending]=useState(false),[error,setError]=useState(""),[login,setLogin]=useState(false);
-  async function ask(action:TutorInput["action"]) {
-    if(busy.current||!consent)return;
-    const message=text.trim()||({hint:"Санаа өгөх",explain:"Алхам алхмаар тайлбарлах",review:"Алдаагаа ойлгох",followup:"Төстэй нэг бодлого",ask:"Миний бодолтыг шалгах"}[action]);
+type Phase = "closed" | "open" | "closing";
+
+// AI assistant for one question: a button that slides a chat panel in from the right.
+// Nothing is rendered or sent until the student opens it; the conversation survives closing and reopening.
+export function AiAssistant({target,review=false,label}:{target:TutorTarget;review?:boolean;label:string}) {
+  const [phase,setPhase]=useState<Phase>("closed"),[turns,setTurns]=useState<TutorTurn[]>([]);
+  const trigger=useRef<HTMLButtonElement>(null),timer=useRef(0);
+  useEffect(()=>()=>clearTimeout(timer.current),[]);
+  function open(){clearTimeout(timer.current);setPhase("open");}
+  // The exit animation lasts 260ms; finish on a timer so a missed animationend can never strand the overlay.
+  function close(){
+    clearTimeout(timer.current);
+    const done=()=>{setPhase("closed");trigger.current?.focus();};
+    if(matchMedia("(prefers-reduced-motion: reduce)").matches)done();
+    else{setPhase("closing");timer.current=window.setTimeout(done,260);}
+  }
+  return <>
+    <button ref={trigger} type="button" className={"tutor-launch "+styles.launch} aria-haspopup="dialog" aria-expanded={phase==="open"} onClick={open}><span className={styles.spark} aria-hidden="true">✦</span>AI туслах</button>
+    {phase!=="closed"&&createPortal(<Drawer phase={phase} review={review} label={label} target={target} turns={turns} setTurns={setTurns} onClose={close}/>,document.body)}
+  </>;
+}
+
+function Drawer({phase,review,label,target,turns,setTurns,onClose}:{phase:Phase;review:boolean;label:string;target:TutorTarget;turns:TutorTurn[];setTurns:(update:(current:TutorTurn[])=>TutorTurn[])=>void;onClose:()=>void}) {
+  const titleId=useId(),input=useRef<HTMLTextAreaElement>(null),log=useRef<HTMLDivElement>(null),busy=useRef(false);
+  const [language,setLanguage]=useState<"mn"|"en">("mn"),[text,setText]=useState(""),[pending,setPending]=useState(false),[error,setError]=useState(""),[login,setLogin]=useState(false);
+  const closeRef=useRef(onClose);
+  useEffect(()=>{closeRef.current=onClose;});
+  useEffect(()=>{
+    input.current?.focus();
+    const key=(event:KeyboardEvent)=>{if(event.key==="Escape")closeRef.current();};
+    const overflow=document.body.style.overflow;document.body.style.overflow="hidden";
+    addEventListener("keydown",key);
+    return()=>{removeEventListener("keydown",key);document.body.style.overflow=overflow;};
+  },[]);
+  useEffect(()=>{log.current?.scrollTo({top:log.current.scrollHeight,behavior:"smooth"});},[turns,pending]);
+  async function ask(action:TutorInput["action"],label?:string) {
+    if(busy.current)return;
+    const message=text.trim()||label||"";
     busy.current=true;setPending(true);setError("");setLogin(false);
     try {
       const response=await fetch("/api/math-tutor",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({target,action,language,message:text.trim(),history:turns.slice(-4).map(turn=>({...turn,content:turn.content.slice(0,1500)}))}),signal:AbortSignal.timeout(70000)});
@@ -20,18 +53,30 @@ export function MathTutor({target,review=false}:{target:TutorTarget;review?:bool
     }catch(reason){setError(reason instanceof Error&&reason.name!=="TimeoutError"?reason.message:"Хариу удаж байна. Түр хүлээгээд дахин оролдоно уу.");}
     finally{busy.current=false;setPending(false);}
   }
-  return <section className="math-tutor">
-    <button type="button" className="tutor-toggle" aria-expanded={open} aria-controls={id} onClick={()=>setOpen(!open)}><span className="tutor-monogram" aria-hidden="true">✦</span><span><strong>{review?"Алдаагаа ойлгох":"AI математикийн багш"}</strong><small>{review?"Өөрийн бодолтоо тайлбарлаж, бататгаарай":"Санаа авах · Алхмаа тайлбарлуулах"}</small></span><span aria-hidden="true">{open?"−":"+"}</span></button>
-    <div id={id} hidden={!open} className="tutor-body">
-      <div className="tutor-topline"><span className="eyebrow">DEEPSEEK · СУРАЛЦАХ ТУСЛАХ</span><label>Хэл <select aria-label="AI тайлбарын хэл" value={language} onChange={e=>setLanguage(e.target.value as "mn"|"en")} disabled={pending}><option value="mn">Монгол</option><option value="en">English</option></select></label></div>
-      <p className="fine-print">AI тайлбар алдаатай байж болно. Эх тайлбартай харьцуулж шалгаарай. Оноог өөрчлөхгүй. Өдөрт 30 хүсэлт.</p>
-      <label className="tutor-consent"><input type="checkbox" checked={consent} onChange={e=>setConsent(e.target.checked)} disabled={pending}/>Энэ бодлого, миний хариу болон бичсэн яриаг DeepSeek рүү илгээж тусламж авна. Хувийн мэдээлэл бичихгүй.</label>
-      <div className="tutor-conversation" role="log" aria-label="AI багштай ярилцах" aria-live="polite">{turns.map((turn,i)=><div key={i} className={"tutor-turn "+turn.role}><strong>{turn.role==="user"?"Та":"AI багш"}</strong><p>{turn.content}</p></div>)}</div>
-      <div className="tutor-quick-actions"><button type="button" disabled={!consent||pending} onClick={()=>ask(review?"review":"hint")}>{review?"Алдаагаа тайлбарлуулах":"Санаа өгөх"}</button><button type="button" disabled={!consent||pending} onClick={()=>ask("explain")}>Алхам алхмаар</button><button type="button" disabled={!consent||pending} onClick={()=>ask("followup")}>Бататгах асуулт</button></div>
-      <form onSubmit={event=>{event.preventDefault();void ask("ask");}}><label className="tutor-input">Таны бодолт эсвэл асуулт<textarea rows={3} maxLength={1000} value={text} onChange={event=>setText(event.target.value)} placeholder="Би эхлээд хоёр талаас 7-г хассан. Дараа нь…" disabled={pending}/></label><button className="button secondary" type="submit" disabled={!consent||pending||!text.trim()}>{pending?"Тайлбар бэлдэж байна…":"Асуух →"}</button></form>
-      {pending&&<p role="status" className="fine-print">AI багш бодлогыг тайлбарлаж байна…</p>}
-      {error&&<div className="error-message" role="alert"><p>{error}</p>{login&&<Link href="/login" target="_blank" rel="noopener noreferrer">Нэвтэрч орно уу ↗</Link>}</div>}
-      <p className="fine-print">Яриа энэ хуудсанд түр хадгалагдана. AI-ийн бататгах асуулт үнэлгээнд орохгүй.</p>
+  const suggestions:[TutorInput["action"],string][]=[[review?"review":"hint",review?"Алдаагаа тайлбарлуулах":"Санаа өгөх"],["explain","Алхам алхмаар"],["followup","Бататгах асуулт"]];
+  return <div className={styles.layer} data-phase={phase}>
+    <button type="button" className={styles.backdrop} aria-label="AI туслахыг хаах" tabIndex={-1} onClick={onClose}/>
+    <div role="dialog" aria-modal="true" aria-labelledby={titleId} className={"tutor-drawer "+styles.drawer}>
+      <header className={styles.header}>
+        <span className={styles.avatar} aria-hidden="true">✦</span>
+        <div><h2 id={titleId}>AI туслах</h2><p>{label}</p></div>
+        <select aria-label="AI тайлбарын хэл" className={styles.language} value={language} onChange={e=>setLanguage(e.target.value as "mn"|"en")} disabled={pending}><option value="mn">MN</option><option value="en">EN</option></select>
+        <button type="button" className={styles.close} aria-label="Хаах" onClick={onClose}>×</button>
+      </header>
+      <div ref={log} className={styles.log} role="log" aria-label="AI туслахтай ярилцах" aria-live="polite">
+        <div className={styles.bubble+" "+styles.assistant}><p>{review?"Энэ бодлогын хариугаа хамт ойлгоё. Юу нь эргэлзээтэй байна?":"Сайн уу! Энэ бодлогоор хаана гацаж байна?"}</p></div>
+        {turns.map((turn,i)=><div key={i} data-turn={turn.role} className={styles.bubble+" "+(turn.role==="user"?styles.user:styles.assistant)}><p>{turn.content}</p></div>)}
+        {pending&&<div className={styles.bubble+" "+styles.assistant+" "+styles.typing} role="status" aria-label="AI бичиж байна"><i/><i/><i/></div>}
+        {error&&<div className={styles.error} role="alert"><p>{error}</p>{login&&<Link href="/login" target="_blank" rel="noopener noreferrer">Нэвтрэх ↗</Link>}</div>}
+      </div>
+      <footer className={styles.composer}>
+        <div className={styles.chips}>{suggestions.map(([action,text])=><button key={action} type="button" disabled={pending} onClick={()=>ask(action,text)}>{text}</button>)}</div>
+        <form onSubmit={event=>{event.preventDefault();if(text.trim())void ask("ask");}}>
+          <textarea ref={input} aria-label="Таны асуулт" rows={1} maxLength={1000} value={text} onChange={event=>setText(event.target.value)} onKeyDown={event=>{if(event.key==="Enter"&&!event.shiftKey){event.preventDefault();if(text.trim())void ask("ask");}}} placeholder="Асуултаа бичих…" disabled={pending}/>
+          <button type="submit" aria-label="Илгээх" disabled={pending||!text.trim()}>↑</button>
+        </form>
+        <p className={styles.note}>Илгээхэд энэ бодлого, таны хариу DeepSeek руу очно.</p>
+      </footer>
     </div>
-  </section>;
+  </div>;
 }

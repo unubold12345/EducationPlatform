@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { MathTutor } from "@/modules/tutor/panel";
+import { AiAssistant } from "@/modules/tutor/panel";
 import type { PracticeQuestion, PracticeResult } from "./questions";
 import { QuestionText, questionOnly } from "@/modules/exercises/question-text";
 
@@ -11,6 +11,7 @@ export function PracticeClient({ questions, exercise }: { questions: PracticeQue
   const [result, setResult] = useState<PracticeResult | null>(null);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
+  const tutor = exercise?.program !== "ielts";
   const questionHeading = useRef<HTMLHeadingElement>(null);
   const resultHeading = useRef<HTMLHeadingElement>(null);
   const submitting = useRef(false);
@@ -51,7 +52,7 @@ export function PracticeClient({ questions, exercise }: { questions: PracticeQue
     <div className="result-summary"><div><p className="eyebrow">Дасгалын үр дүн</p><h2 tabIndex={-1} ref={resultHeading}>Тайлбараа хараад бататгаарай.</h2><p>Зөв хариултын тоо. Албан ёсны шалгалтын оноо биш.</p></div><div className="score">{result.score}<span> / {result.total}</span></div></div>
     <div className="review-list">{result.reviews.map((review, position) => <article className="review" key={review.id}>
       <span className={review.selected === review.correct ? "review-label correct" : "review-label incorrect"}>{position + 1}. {review.selected === review.correct ? "Зөв" : "Дахин хараарай"}</span>
-      <QuestionText prompt={questions[position].prompt} /><p>Таны хариу: <strong>{questions[position].options[review.selected]}</strong> · Зөв хариу: <strong>{questions[position].options[review.correct]}</strong></p><p className="explanation">{review.explanation}</p>{exercise?.program!=="ielts"&&<MathTutor key={review.id+"-review"} review target={{kind:"practice",slug:exercise?.slug??"demo",...(exercise?{examId:exercise.examId}:{}),questionId:questions[position].id,selected:review.selected}}/>}
+      <QuestionText prompt={questions[position].prompt} /><p>Таны хариу: <strong>{questions[position].options[review.selected]}</strong> · Зөв хариу: <strong>{questions[position].options[review.correct]}</strong></p><p className="explanation">{review.explanation}</p>{tutor&&<AiAssistant review label={"Бодлого " + (position + 1)} target={{kind:"practice",slug:exercise?.slug??"demo",...(exercise?{examId:exercise.examId}:{}),questionId:questions[position].id,selected:review.selected}}/>}
     </article>)}</div>
     <div className="result-actions"><button className="button" onClick={() => { setResult(null); setAnswers(questions.map(() => null)); navigate(0); }}>Дахин бодох ↻</button><Link className="text-link" href={"/programs/" + (exercise?.program ?? "sat")}>Хөтөлбөр рүү →</Link></div>
   </section>;
@@ -60,7 +61,7 @@ export function PracticeClient({ questions, exercise }: { questions: PracticeQue
     <section className="question-panel"><div className="question-meta"><span>Бодлого {index + 1} / {questions.length}</span><span>{exercise?.subject ?? "Algebra"}</span></div>
       <QuestionText prompt={question.prompt}><h2 ref={questionHeading} tabIndex={-1}>{questionOnly(question.prompt)}</h2></QuestionText>
       <fieldset disabled={pending}><legend className="sr-only">Нэг хариулт сонгоно уу</legend>{question.options.map((option, position) => <label className={"answer-option " + (answers[index] === position ? "selected" : "")} key={position}><input type="radio" name={question.id} value={position} checked={answers[index] === position} onChange={() => setAnswers(current => current.map((answer, itemIndex) => itemIndex === index ? position : answer))} /><span className="option-letter" aria-hidden="true">{String.fromCharCode(65 + position)}</span><span lang="en">{option}</span></label>)}</fieldset>
-      {exercise?.program!=="ielts"&&<MathTutor key={question.id} target={{kind:"practice",slug:exercise?.slug??"demo",...(exercise?{examId:exercise.examId}:{}),questionId:question.id,selected:answers[index]}}/>}
+      {tutor&&<AiAssistant key={question.id} label={"Бодлого " + (index + 1) + " / " + questions.length} target={{kind:"practice",slug:exercise?.slug??"demo",...(exercise?{examId:exercise.examId}:{}),questionId:question.id,selected:answers[index]}}/>}
       {error ? <p className="error-message" role="alert">{error}</p> : null}
       <div className="question-actions"><button className="button secondary" disabled={index === 0 || pending} onClick={() => navigate(index - 1)}>← Өмнөх</button>
       {index < questions.length - 1 ? <button className="button" disabled={pending} onClick={() => navigate(index + 1)}>Дараах →</button> : <button className="button" disabled={answered !== questions.length || pending} onClick={submit}>{pending ? "Шалгаж байна…" : "Хариугаа шалгах →"}</button>}</div>

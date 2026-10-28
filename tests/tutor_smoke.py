@@ -27,14 +27,14 @@ with sync_playwright() as p:
     assert context.request.post(BASE+'/api/math-tutor',headers=ORIGIN,data=request_body({'kind':'practice','slug':'sat-algebra','examId':'sat-algebra-v1','questionId':'x'})).status==402
     # First live completion uses the actual practice question through the UI.
     page.goto(BASE+'/practice');page.wait_for_load_state('networkidle')
-    panel=page.locator('.math-tutor');panel.locator('.tutor-toggle').click()
-    expect(panel.get_by_role('button',name='Санаа өгөх',exact=True)).to_be_disabled()
-    panel.locator('.tutor-consent input').check()
+    # Nothing renders or calls the provider until the student opens the assistant.
+    expect(page.locator('.tutor-drawer')).to_have_count(0)
+    page.locator('.tutor-launch').click();panel=page.locator('.tutor-drawer');expect(panel).to_be_visible()
     with page.expect_response(lambda r:r.url.endswith('/api/math-tutor'),timeout=75000) as reply:
         panel.get_by_role('button',name='Санаа өгөх',exact=True).click()
     assert reply.value.status==200,(reply.value.status,reply.value.text())
-    expect(panel.locator('.tutor-turn.assistant')).to_have_count(1)
-    hint=panel.locator('.tutor-turn.assistant').inner_text()
+    expect(panel.locator('[data-turn="assistant"]')).to_have_count(1)
+    hint=panel.locator('[data-turn="assistant"]').inner_text()
     assert re.search('[А-Яа-яӨөҮү]',hint),hint
     assert not re.search(r'x\s*=\s*5\b',hint,re.I),hint
     page.screenshot(path=str(ART/'ai-tutor-desktop.png'),full_page=True)
@@ -57,12 +57,11 @@ with sync_playwright() as p:
     assert other.request.post(BASE+'/api/math-tutor',headers=ORIGIN,data=request_body(saved,'review')).status==404
     quota('unlock',user)
     page.goto(BASE+'/learn/attempts/'+attempt)
-    review=page.locator('.math-tutor').first;review.locator('.tutor-toggle').click()
-    review.locator('.tutor-consent input').check()
+    page.locator('.tutor-launch').first.click();review=page.locator('.tutor-drawer')
     with page.expect_response(lambda r:r.url.endswith('/api/math-tutor'),timeout=75000) as reply:
         review.get_by_role('button',name='Алдаагаа тайлбарлуулах',exact=True).click()
     assert reply.value.status==200,(reply.value.status,reply.value.text())
-    expect(review.locator('.tutor-turn.assistant')).to_have_count(1)
+    expect(review.locator('[data-turn="assistant"]')).to_have_count(1)
     assert context.request.get(endpoint).json()['result']==result['result']
     page.screenshot(path=str(ART/'ai-mistake-review.png'),full_page=True)
     # Third live call asks an ungraded follow-up in English.
@@ -71,7 +70,7 @@ with sync_playwright() as p:
     with page.expect_response(lambda r:r.url.endswith('/api/math-tutor'),timeout=75000) as reply:
         review.get_by_role('button',name='Бататгах асуулт',exact=True).click()
     assert reply.value.status==200,(reply.value.status,reply.value.text())
-    expect(review.locator('.tutor-turn.assistant')).to_have_count(2)
+    expect(review.locator('[data-turn="assistant"]')).to_have_count(2)
     # Server guard also denies help requested from another tab during a mock.
     order=context.request.post(BASE+'/api/mock-payments',headers=ORIGIN,data={'slug':'sat-full-01'}).json()
     assert context.request.post(BASE+'/api/mock-payments/'+order['id']+'/confirm',headers=ORIGIN,data={'decision':'success'}).ok
@@ -81,14 +80,14 @@ with sync_playwright() as p:
     active=context.request.get(mock_endpoint).json()
     assert context.request.post(BASE+'/api/math-tutor',headers=ORIGIN,data=request_body({'kind':'mock','attemptId':mock,'questionId':active['stage']['questions'][0]['id']},'review')).status==403
     page.goto(BASE+'/exams/attempts/'+mock)
-    expect(page.locator('.math-tutor')).to_have_count(0)
+    expect(page.locator('.tutor-drawer')).to_have_count(0);expect(page.locator('.tutor-launch')).to_have_count(0)
     page.goto(BASE+'/practice')
     for _ in range(5):
         subprocess.check_output(['node','tests/mock_fixture.mjs','deadline',mock,'-1000'],cwd=ROOT)
         finished=context.request.get(mock_endpoint).json()
     assert finished['report'] is not None
     page.goto(BASE+'/exams/attempts/'+mock)
-    expect(page.locator('.math-tutor')).to_have_count(44)
+    expect(page.locator('.tutor-launch')).to_have_count(44);expect(page.locator('.tutor-drawer')).to_have_count(0)
     # Force only this QA account's daily budget to its limit; denied before API use.
     quota('exhaust',user)
     math_review=next(q for q in finished['report']['reviews'] if q['id'].startswith('sat-math'))

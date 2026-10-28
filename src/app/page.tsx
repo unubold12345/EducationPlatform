@@ -6,12 +6,12 @@ import { LawTestRecommendation } from "@/components/lawtest";
 import { HomeMotion } from "@/components/home-motion";
 import { SpeakingInvitation } from "@/components/speaking-invitation";
 
-const tickerItems = ["Digital SAT", "IELTS Academic", "ЭЕШ 2020 · A–D", "English archive · 37", "Дорнод 2026", "Speaking workshop", "Writing workshop"];
+const tickerItems = ["Digital SAT", "IELTS Academic", "ЭЕШ 2020 · A–D", "English archive · 37", "Speaking workshop", "Writing workshop"];
 
 const resources = [
   { href: "/exams/eec-math-2020", label: "Official paper", title: "ЭЕШ 2020 · Математик", note: "A, B, C, D · 100 минут · Бодит эх материал", mark: "∑" },
   { href: "/exams/eec-english", label: "Archive", title: "ЭЕШ · Англи хэл", note: "37 хувилбар · Хариуны түлхүүртэй", mark: "Aa" },
-  { href: "/exams/dornod-2026", label: "Regional 2026", title: "Дорнод · Онлайн сорил-4", note: "Математик 100м · Англи 80м", mark: "◈" },
+  { href: "/programs/entrance", label: "University Prep", title: "ЭЕШ бэлтгэл", note: "Математик · Англи хэл · Физик · 24 бодлого", mark: "◈" },
   { href: "/practice", label: "Free sample", title: "Нэг бодлогоос эхэлье", note: "3 бодлого · Бүртгэлгүй · Үнэгүй", mark: "→" },
 ];
 

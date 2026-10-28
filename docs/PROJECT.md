@@ -260,6 +260,11 @@ scores; pronunciation is not assessed. Raw microphone recordings are not persist
 - The header theme switch defaults to the browser preference and saves an explicit choice in
   `education-theme` localStorage. Dark mode uses a deep indigo palette and bundled Manrope with
   Mongolian Cyrillic coverage. English passages keep a reading serif.
+- The 2026 interface layer lives in `src/app/theme.css`, loaded after `globals.css`. It is
+  dark-first (near-black indigo surfaces, indigo/violet accents, hairline borders and restrained
+  glow) while keeping a designed light theme. It restyles the sticky glass header/footer,
+  homepage hero, cards, auth, dashboard, exam surfaces, admin and mobile navigation without
+  changing route semantics, server checks or test hooks.
 - Mathematics tests expose a collapsible scratchpad with graph paper, mouse/pen/touch drawing,
   last-stroke undo, confirmed clear and keyboard-accessible typed notes.
 - Scratch work is stored only in this browser under `education-scratchpad-v1:<attemptId>`, capped at

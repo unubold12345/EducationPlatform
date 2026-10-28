@@ -624,3 +624,79 @@ Agent: Codex (GPT-6).
   The working branch and EducationPlatform origin were rechecked; fetch showed no divergence.
   Only this increment's code, source assets, tests and own documentation are staged. No manual
   deployment or hosted-data change is part of this increment.
+
+## 19. 2026 dark-first interface refresh — 2026-10-27
+
+Agent: Opencode (DeepSeek V4.1 Flash).
+
+- Owner requested a more distinctive 2026 layout and UI/UX across every page in a cool dark theme.
+  The owner chose to keep the existing indigo direction but make it darker, more minimal and more
+  polished. All implementation, verification and documentation in this section are Opencode's work.
+- Added `src/app/theme.css` as a design layer loaded after `globals.css`. It defines dark-first
+  near-black indigo tokens (page `#07070d` preserved), a designed light counterpart, Manrope display
+  type, mono micro-labels, hairline borders, restrained glow, card and form primitives, focus and
+  hover states, reduced-motion handling and responsive rules.
+- Restructured the shared shell in `src/app/layout.tsx`: sticky blurred header, denser brand lockup,
+  pill navigation with an inverted active state, three-column footer with unique link names, and a
+  scroll-progress hairline. The footer navigation uses `role="navigation"` rather than a second
+  `<nav>` element so existing `nav a` selectors stay unambiguous.
+- Rebuilt the homepage in `src/app/page.tsx` around a 2026 editorial hero (live chip, inline stats),
+  a duplicated ticker strip, numbered program cards, and a resource bento that becomes a swipe deck
+  on small screens. The existing `.hero`, `.launch-panel`, `.program-card`, `.approach`,
+  `.speaking-invitation`, `[data-reveal]` and no-JS contracts are unchanged.
+- Refreshed the auth screens with a benefits rail and account kicker while preserving the tested
+  labels, Google button, demo-account controls and return paths. The exams library gained an
+  "EXAM DECK" summary and denser two-column cards; the programs index gained a three-number meta
+  strip; the dashboard gained a dated status line and a real empty-state card; the 404 page was
+  restyled while keeping the exact heading required by `browser_smoke.py`.
+- Global styles now restyle plans, checkout, subscriptions, profile, practice, exercise/workshop,
+  exam briefing and sitting, results, official papers, the English archive, admin and the isolated
+  Speaking Lab. The exam sitting hides the global header/footer for focus. Server-side ownership,
+  timers, quotas, pricing, auth and grading were not touched.
+- Because the documented `3001` preview was occupied by an unrelated `share.mn` application, that
+  process was left running. This increment was previewed from a production build on `3006` with
+  `BETTER_AUTH_URL=http://localhost:3006`; browser suites used `TEST_BASE_URL`. This is why the
+  temporary `homepage_polish` run below needed a port-substituted copy.
+- With the owner's explicit approval, the stale Claude Code row on `ACTIVE_WORK.md` (started
+  2026-10-25 13:20, more than four hours old) was taken over for this task and removed when the work
+  finished. Opencode did not touch that agent's prior code or documentation.
+- The local workspace had no `.env`/`.env.local`. `npm run setup:env` created the ignored `.env` with
+  a fresh secret; the named PGlite instance was started, the seven committed migrations plus
+  `prisma db push` (for newer auth/content tables), and the seed were applied without deleting
+  existing rows. The five local demos were provisioned and `qa-demo-01` was granted local admin.
+  No hosted database, provider account or secret value was read, printed or changed.
+- Checks actually run and outcomes:
+  - `npm run lint` — pass; `npm run typecheck` — pass; `npm test` — 70/70 pass.
+  - `npm run build` — pass, Next.js 16.4.2, 51 routes.
+  - Required suites on the final build: `browser_smoke.py`, `accounts_smoke.py`,
+    `exercises_smoke.py` and `exams_smoke.py` all pass. The first accounts attempt hit the real
+    five-per-minute sign-up window (HTTP 429); a serial rerun passed without changing limits.
+  - `theme_smoke.py` and `admin_smoke.py` pass on the final build.
+  - `official_paper_smoke.py`, `english_archive_smoke.py`, `regional_papers_smoke.py` and
+    `publishing_smoke.py` pass on the final build, including every bundled asset hash, mobile
+    layouts and the full answer-sheet interaction.
+  - `profile_smoke.py`, `demo_accounts_smoke.py`, `payments_smoke.py` and
+    `subscriptions_smoke.py` pass. These ran immediately before the final CSS-only change that
+    enlarged the official-paper radio hit target; no profile, demo, payment or subscription source
+    changed afterwards.
+  - `homepage_polish_smoke.py` hardcodes `http://localhost:3001`, so it could not run canonically
+    against the unrelated process there. An otherwise identical temporary copy was run against
+    `3006` with synthetic Google credentials (the link failure was mocked): pass for animation,
+    reduced motion, no-JS, theme/mobile layouts, Speaking discovery and Google-link recovery. This
+    is local synthetic evidence, not a real Google login.
+  - Desktop/mobile screenshots were inspected in dark and light for the homepage, programs, exams,
+    plans, login, checkout, dashboard, profile, official paper category, English archive, admin,
+    Speaking Lab and 404. A real admin overflow at 320px was found and fixed.
+- `git diff --check` passed with only the expected LF → CRLF warnings. A credential and common-key
+  pattern scan over the 14 changed/new files found zero findings. The unrelated, pre-existing
+  uncommitted `package.json` `allowScripts` edit was preserved and is not part of this increment.
+- The `3006` production preview remains available for owner review; the unrelated `3001` process
+  was not stopped or modified.
+- `tests/payments_smoke.py` expected three mock prices even though the repository already listed
+  four exam cards (SAT, IELTS, EEC Mathematics and EEC English). The assertion was corrected to
+  four existing prices; no payment check, amount or denial assertion was weakened.
+- Limits: the recovery suite was not run (the ignored recovery-server script and separate 3002
+  setup are absent here); the functional Speaking Lab, real DeepSeek tutor and hosted suites were
+  not rerun because they require provider credentials, model caches or an authorized deployment.
+  No email or real payment was sent. No commit, push, PR or deployment was performed.
+- `PROJECT.md` was updated by Opencode with the stable location and scope of the new interface layer.

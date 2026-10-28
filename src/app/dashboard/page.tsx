@@ -37,7 +37,7 @@ export default async function DashboardPage() {
   const resume=recentPaper&&(!recentExercise||recentPaper.updatedAt>recentExercise.updatedAt)&&(!recentMock||recentPaper.updatedAt>recentMock.updatedAt)?{href:"/papers/attempts/"+recentPaper.id,title:findOfficialPaper(recentPaper.slug)?.title??recentPaper.slug,kind:"ЭЕШ"}:existingResume;
   const empty = !attempts.length && !mocks.length && !papers.length;
   return <div className="container page-space dashboard dash">
-    <div className="dash-head"><h1>Сайн уу, {user.name}.</h1><div className="dash-account"><Link className="text-link" href="/profile">Профайл</Link><SignOut /></div></div>
+    <div className="dash-head"><div><span className="dash-status"><i aria-hidden="true"/>2026 · ӨНӨӨДРИЙН БЭЛТГЭЛ</span><h1>Сайн уу, {user.name}.</h1></div><div className="dash-account"><Link className="text-link" href="/profile">Профайл</Link><SignOut /></div></div>
 
     {resume && <section className="resume-card dash-resume"><div><p>Үргэлжлүүлэх · {resume.kind}</p><h2>{resume.title}</h2></div><Link className="button" href={resume.href}>Үргэлжлүүлэх →</Link></section>}
 
@@ -49,7 +49,7 @@ export default async function DashboardPage() {
 
     <div className="dash-grid">
       <div className="dash-history">
-        {empty && <p className="dash-empty">Түүх хоосон байна. Баруун талаас эхлээрэй.</p>}
+        {empty && <section className="dash-empty-card"><span className="dash-empty-index" aria-hidden="true">01</span><div><p className="eyebrow">АНХНЫ АЛХАМ</p><h2>Эхний бэлтгэлээ эхлүүл.</h2><p className="dash-empty">Түүх хоосон байна. Үнэгүй жишиг эсвэл бүтэн шалгалтаас эхэл.</p></div><div className="dash-empty-actions"><Link className="button" href="/practice">Үнэгүй жишиг эхлэх →</Link><Link className="text-link" href="/exams">Бүтэн шалгалт үзэх →</Link></div></section>}
         {attempts.length>0&&<section><h2>Миний дасгалууд</h2><div className="attempt-list"><Fold rows={attempts.map(attempt => <Link href={"/learn/attempts/" + attempt.id} className="attempt-row dash-row" key={attempt.id}><div><h3>{attempt.title}</h3><p>{date.format(attempt.createdAt)}</p></div><span className={"attempt-status" + (attempt.status === "SUBMITTED" ? " done" : "")}>{attempt.status === "SUBMITTED" ? attempt.score + " / " + attempt.total + " зөв" : "Үргэлжлүүлэх →"}</span></Link>)}/></div></section>}
         {mocks.length>0&&<section><h2>Миний бүтэн шалгалтууд</h2><Fold rows={mocks.map(mock=><Link key={mock.id} className="mock-attempt-row dash-row" href={"/exams/attempts/"+mock.id}><div><h3>{findExam(mock.slug)?.title??mock.slug}</h3><p>{date.format(mock.createdAt)}</p></div><span className={mock.status==="SUBMITTED"?"done":""}>{mock.status==="SUBMITTED"?"Үр дүн":"Үргэлжлүүлэх →"}</span></Link>)}/></section>}
         {papers.length>0&&<section><h2>Миний албан материалын шалгалтууд</h2><Fold rows={papers.map(paper=><Link key={paper.id} className="mock-attempt-row dash-row" href={"/papers/attempts/"+paper.id}><div><h3>{findOfficialPaper(paper.slug)?.title??paper.slug}</h3><p>{date.format(paper.createdAt)}</p></div><span className={paper.status==="SUBMITTED"?"done":""}>{paper.status==="SUBMITTED"?"Үр дүн":"Үргэлжлүүлэх →"}</span></Link>)}/></section>}

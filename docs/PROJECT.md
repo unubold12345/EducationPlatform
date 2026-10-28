@@ -412,3 +412,35 @@ See [OPERATIONS.md](./OPERATIONS.md) for the exact latest results and the delive
 - Personal-data retention, account deletion policy, email deliverability and accessibility audits
   remain to be completed.
 - This is a hosted test pilot, not a production education service.
+
+## Appendix: imported 2026 EEC exam notes (not in this working tree)
+
+Imported on 2026-10-28 from `Desktop\codes\apienvfolders\EducationPlatform\docs\PROJECT.md`.
+This describes a later code state from another machine; the active product surface above (including
+the 2026 Dornod regional practice exams) remains accurate for this working tree.
+
+### Official 2026 EEC entrance exams
+
+- `/exams/eec-2026` groups all ten ЭЕШ subjects: Mathematics, Mongolian, English, Russian,
+  Social Studies, History, Geography, Physics, Chemistry and Biology. Each has A–D, for 40 papers.
+  English's four official versions also appear in `/exams/eec-english#year-2026`.
+- Only the public EEC `Элсэлтийн шалгалт 2026` event is imported (ID
+  `cmsij2hq70000ezvjzsx5em9v`); separate Монгол хэл, бичиг tests, school assessments, task-bank
+  placeholders and regional practice papers are excluded.
+- The event's official schedule specifies 100 minutes for Math/Physics/Chemistry and 80 minutes
+  for the other seven subjects. These durations are enforced by the existing server deadline flow.
+- The owner explicitly chose to include all 40 with grading unavailable. The collection contains
+  papers, without verified answer keys. Briefings, checkout, sittings and submitted results disclose
+  that no score is calculated. Answers save/resume and become immutable on submission/expiry.
+  No guessed answers, zero scores or size-based fallback to historical keys are introduced.
+- Layouts follow each source's actual choice count and numeric-cell lengths. Keyless answers are
+  validated server-side against the snapshotted layout. Existing graded Math/English snapshots keep
+  their exact original keys and scoring behavior. Per-paper purchases or University Prep remain
+  required for new starts; timers, ownership, same-origin and verified-email checks remain enforced.
+- All 40 unmodified original PDFs and 432 uncropped JPEG renders are served locally under
+  `public/exam-assets/eec-2026`. `assets/papers/eec-2026.json` records official download URLs,
+  original filenames, byte counts, page numbers, image dimensions, hashes and the source schedule.
+  `scripts/import-eec-2026.py` reproduces the import with `requests` and `pymupdf`.
+- Both Dornod Math/English papers are retired from listings, new starts and checkout. Their old
+  public briefings/category return 404. Existing private attempts retain their immutable snapshots,
+  bundled images and original grading; historical assets/keys are retained for compatibility.

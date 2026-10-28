@@ -21,6 +21,8 @@ Read [PROJECT.md](./PROJECT.md) for stable product, architecture and setup detai
 
 ## 2. Environment state
 
+The table and PIDs below were recorded on the previous PC. For this PC's workspace, see section 21.
+
 | Item | Actual state |
 | --- | --- |
 | Local preview | `http://localhost:3001`, production build served by `npm start` |
@@ -700,3 +702,120 @@ Agent: Opencode (DeepSeek V4.1 Flash).
   not rerun because they require provider credentials, model caches or an authorized deployment.
   No email or real payment was sent. No commit, push, PR or deployment was performed.
 - `PROJECT.md` was updated by Opencode with the stable location and scope of the new interface layer.
+
+## 20. Imported history from the PC bundle - 2026-10-25
+
+Imported on 2026-10-28 from `Desktop\codes\apienvfolders\EducationPlatform\docs\OPERATIONS.md`.
+These entries describe work done on another machine and are **not present in this working tree**;
+section 19 above remains the current local checkpoint. They are kept here so the EEC 2026 history
+and verification details are not lost.
+
+### English 2026 category and display name — 2026-10-25
+
+Agent: Codex (GPT-6).
+
+- Owner requested moving the Dornod English practice paper into ЭЕШ English as its 2026 version,
+  explicitly forbidding push. Codex changed the display title to `ЭЕШ 2026 · Англи хэл` and grouped
+  it in the year list as `2026 хувилбар` (38 variations / 10 years). It is no longer a separate
+  Dornod English banner/card; the Dornod category and banner now show Math only.
+- Source attribution still identifies the original Dornod practice material. Stable slugs, per-paper
+  purchase IDs, stored snapshots, keys, timers, grading and access checks are preserved. Existing
+  English sittings show the new display title without modifying their snapshots. Checkout, history,
+  briefing and category links follow the updated naming.
+- Codex updated `PROJECT.md` and existing browser assertions for the requested labels/category counts.
+  Lint, typecheck, 70/70 unit tests and production build (51 generated pages) passed. Both 2026
+  exam lifecycle tests and the navigation suite passed with the updated labels/category links.
+  All 37 historical English lifecycles, accounts, exercises, standard exams and admin checks passed.
+  The first admin run hit the normal auth request limit (429); after waiting for its real 60-second
+  window, the standalone rerun passed without changing limits or checks. Desktop/mobile light/dark
+  screenshots were reviewed. Diff whitespace and the 15-file delivery secret scan passed.
+- Local preview remains on 3001 (PID 20804), database on 51214 (PID 11424). No staging, commit,
+  push or deployment was performed; HEAD remains `ba2dc80`. Shared resource claims released.
+
+### Documentation review — 2026-10-25
+
+Agent: Codex (GPT-6).
+
+- Read all three files in docs: OPERATIONS.md, PROJECT.md and ACTIVE_WORK.md.
+- Reviewed the latest local-only English 2026 naming/category checkpoint and coordination rules.
+  Existing application and documentation changes were preserved. No build, service restart,
+  database change, staging, commit, push or deployment was performed.
+- Documentation whitespace check and secret-pattern scan of this new entry passed.
+
+
+### Official 2026 EEC exams replace Dornod listings — 2026-10-25
+
+Agent: Codex (GPT-6).
+
+- Owner requested removing both Dornod Math/English papers and adding every 2026 ЭЕШ subject from
+  eec.mn. The work board was empty. Existing uncommitted work was preserved; no git delivery was
+  authorized. Owner explicitly selected all 40 papers with grading unavailable until official keys
+  are verified.
+- Read EEC's public events API behind the new materials library. The exact national entrance event
+  supplies ten subjects with A–D each. Imported all 40 original PDFs and all 432 uncropped pages;
+  source IDs/URLs, original filenames, byte counts, hashes and official schedule are recorded in
+  assets/papers/eec-2026.json. Excluded the separate МХБШ, school/teacher assessments and task-bank
+  entries that were placeholders or actually described 2025. Old WordPress article URLs returned 404.
+- Added /exams/eec-2026 with all subjects and links from Exams/University Prep. The four official
+  English variants replace the regional version in the English year list (41 variations / 10 years).
+  Both Dornod papers are absent from listings, starts, checkout and admin catalogs; their old public
+  briefing/category URLs return 404. Historical assets/keys and existing private snapshots remain.
+- The 40 new variants use the existing per-paper/University Prep access, server deadlines,
+  autosave/resume, revision checks, ownership and immutable submission/expiry. Math/Physics/Chemistry
+  use the official 100 minutes; seven other subjects use 80. Source-specific layouts include
+  differing choice counts and 5–8-cell fill-ins. Keyless responses validate against the server's
+  snapshotted layout. Keyless submissions return no report/key, rather than a fabricated zero score.
+- Briefings, checkout, sittings, admin previews and submitted results state that grading is
+  unavailable. Existing graded Math/English and legacy Dornod snapshots keep their original keys.
+  Codex updated PROJECT.md and the retirement/admin/English tests to match the new catalog.
+- Codex ran lint, typecheck, 73/73 unit tests and production build successfully (52 generated pages).
+  The final source build is served on local port 3001 (preview PID 31248). The EEC browser suite
+  passed all 40 lifecycles, all 472 served PDF/image hashes, exact deadlines, purchase/plan isolation,
+  ownership, invalid/stale edits, autosave/reload, final UI submission, immutable no-score results,
+  expiry/history, retired listings and an isolated legacy Dornod snapshot with its 100-point report.
+- Ten source-page contact sheets were inspected; category and subject sitting layouts passed desktop
+  and 320px light/dark, with category checks also at 390px. Screenshots were inspected. Navigation,
+  accounts and the dedicated regional retirement browser checks passed.
+- Initial new-suite runs corrected two test assumptions: retired start slugs return the existing
+  API's exact 400 validation status (public routes return 404), and disabled fieldsets are checked
+  through their disabled attribute plus an actual disabled radio. A subsequent run reached the real
+  sign-up 429 limit. After its normal window elapsed, the complete standalone EEC suite passed;
+  no runtime safeguard, deadline, quota, assertion meaning or application rate limit was weakened.
+- Python compilation, whitespace check and credential/pattern scan passed at this checkpoint
+  (501 changed/new files, zero findings). Remaining regression results are recorded below.
+
+- Final regression results: exercises passed all 80 questions, ten sets and four workshops. Standard
+  SAT/IELTS exams passed delivered counts, audio/recordings, ownership, server clocks, standard
+  deadlines, resume/results and responsive layouts. Official Math A–D passed original scoring,
+  image availability, access/purchases, privacy, save/resume, immutable submission and expiry.
+  Historical English passed all 37 lifecycles and 218 asset hashes with its original independent
+  keys/scoring, access, saved work and deadlines. Admin passed authorization, controls, audits,
+  exports, historical key previews and ungraded 2026 previews for all ten subjects. All four
+  required browser suites and every affected paper/admin suite passed on the final source build.
+- Final 73/73 unit rerun passed. Python compilation, final whitespace check and private credential/
+  pattern scan passed (501 changed/new files, zero findings). No app source changed after the final
+  production build. Only reserved local QA rows were used; no real email, AI provider call, real
+  payment or hosted-data mutation occurred. No staging, commit, push or deployment was performed.
+  Local preview remains on 3001 (PID 31248); shared build/preview/database claims released.
+
+## 21. Workspace moved to this PC — 2026-10-29
+
+Agent: Claude Code (Claude Opus 5.5).
+
+- Owner moved development to a different PC; this is now the current workspace:
+  `C:/Users/Hitech/Desktop/codes/educationplatform`. Claude Code updated the workspace path in
+  `AGENTS.md` and added a pointer in section 2. No other agent's entries were rewritten.
+- Observed state of this tree: branch `codex/education-foundation`, HEAD `3563065` (the section 19
+  interface refresh) equal to `origin/codex/education-foundation`. Section 19's "no commit or push"
+  note predates that commit; whether Vercel deployed it was not checked.
+- The 2026 EEC 40-paper import and English 2026 renaming (section 20) are **not** in this tree:
+  there is no `/exams/eec-2026`, `public/exam-assets/eec-2026` or `assets/papers/eec-2026.json`,
+  and the Dornod 2026 papers are still live here. The copied bundle at
+  `Desktop/codes/apienvfolders/EducationPlatform` holds only env files and docs, not that source.
+  Recovering it requires the previous PC's working tree.
+- Ignored `.env`/`.env.local` and Vercel env snapshots exist here (values not read). No process
+  was listening on 3001, 3002, 3006 or 51214/51215 when checked; previous-PC PIDs do not apply.
+- Documentation-only change: no build, service start, database change, commit or push.
+- Checks run by Claude Code: `git diff --check` passed (only LF → CRLF warnings). Secret scan of the
+  docs/`AGENTS.md` diff against local env values and key patterns found no secrets; the only match
+  was the non-secret `BETTER_AUTH_URL` address already documented above.

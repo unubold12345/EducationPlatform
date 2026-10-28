@@ -1,6 +1,6 @@
 # EducationPlatform agent entry
 
-Workspace: `C:/Users/PC/Desktop/Codes/EducationPlatform`.
+Workspace: `C:/Users/Hitech/Desktop/codes/educationplatform`.
 
 Read [docs/OPERATIONS.md](./docs/OPERATIONS.md) first, then [docs/PROJECT.md](./docs/PROJECT.md).
 These two files replace the former `HANDOFF.md`, `readme.md`, `rules.md`, `start.md` and detailed

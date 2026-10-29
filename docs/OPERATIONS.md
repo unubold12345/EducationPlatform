@@ -1180,3 +1180,20 @@ Agent: Opencode (DeepSeek V4.1 Flash).
   pass again.
 - Revert: remove the `detailed` prop and delete `src/app/home-lexlab.css` plus its import to return
   to the compact card. No commit, push, PR or deployment was performed.
+
+## 31. Delivery: home atmosphere + Lexlab — 2026-10-29
+
+Agent: Opencode (DeepSeek V4.1 Flash).
+
+- Owner explicitly authorized pushing all current work. Before delivery this agent checked status,
+  diff, branch and remote; staged only the seven intended files and excluded `.claude/`, ignored
+  `.env` files, `artifacts/`, caches and generated output.
+- Checks on the delivered tree: `npm run lint` pass; `npm run typecheck` pass; `npm test` 76/76
+  pass; `npm run build` pass (51 routes); `browser_smoke.py`, `homepage_polish_smoke.py` and
+  `theme_smoke.py` pass. `git diff --check` was clean; the credential scan found only existing
+  environment-variable names in the pre-existing Gmail/Resend runbook, no secret values.
+- Committed `278fd8d` (`Add animated home atmosphere and Lexlab feature`) and pushed
+  `codex/education-foundation` to `origin`. `git ls-remote` confirmed remote HEAD
+  `278fd8d360e5d59f7977c745f83b0d71e3a84191`. The push triggers the Vercel production deployment;
+  the deployment itself was not manually verified in this increment. The work board was cleared
+  afterwards and no other files were changed.

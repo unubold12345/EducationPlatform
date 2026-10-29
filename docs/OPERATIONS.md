@@ -926,3 +926,152 @@ delivery unchanged; its results there are Opencode's own.
 - Owner instructed clearing `ACTIVE_WORK.md` (all agents' rows removed) and pushing everything,
   including Opencode's work. Push to `codex/education-foundation` triggers the Vercel production
   deployment; the outcome is recorded below.
+- Delivery result: commit `9885c6c` pushed to `origin/codex/education-foundation` (`git ls-remote`
+  confirmed). Vercel served the new build on the canonical domain about 260s later. Read-only
+  hosted HTTP checks by Claude Code: `/`, `/exams`, `/programs`, `/programs/entrance`, `/practice`,
+  `/workshop` and the Milo image return 200; Dornod briefing, category and image URLs return 404;
+  the home, exams and University Prep pages have no Dornod mention; `/practice` renders the
+  "AI туслах" button. No hosted account, database row or provider was touched. This note is local.
+- Hosted Dornod check (owner-requested, read-only): Claude Code queried the Singapore Neon database
+  using the `DATABASE_URL` in the ignored `.env.vercel.singapore.local` snapshot (value not printed)
+  inside `BEGIN READ ONLY` transactions that were rolled back. Result: 0 Dornod paper attempts,
+  0 Dornod purchases, 0 Dornod content reviews/drafts/published rows. The database is populated
+  (21 users, 5 purchases, 2 paper attempts, all on `eec-math-2020-a`; latest paper activity
+  2026-10-25), so no hosted cleanup is needed. Nothing was written. Caveat: the connection string
+  comes from a local snapshot, not read from Vercel's current production settings.
+
+## 24. Exam briefing polish and hint cleanup — 2026-10-29
+
+Agent: Opencode (DeepSeek V4.1 Flash).
+
+- Owner asked to apply the planned full-mock and official-paper briefing polish and to remove
+  useless hint copy across the pages. The work board was empty after Claude Code's commit `9885c6c`;
+  this agent claimed `build + 3001` and the local QA database. No hosted resource was touched.
+- Added `src/modules/exams/briefing-summary.ts` and guarded unit tests. The helper derives the
+  briefing facts from the exam definitions instead of hardcoding them: SAT 98 delivered questions,
+  4 modules and a 10-minute break; IELTS 80 unique Listening/Reading questions (the final Listening
+  check is not counted twice), 2 Writing tasks and 3 Speaking stages. It also formats the real
+  total durations (`2ц 24м` SAT, `2ц 44м` IELTS).
+- Full mock briefing (`/exams/[slug]`): breadcrumb → focused hero → right-hand fact/start rail →
+  numbered stage timeline → grouped rules → collapsed source list. The existing `ExamStart`
+  component moved into the rail unchanged, so the access gate, agreement checkbox, IELTS
+  headphone/microphone checks, fetch, login redirect and start flow are the same. A signed-in user
+  with an open attempt now also sees a `Нээлттэй оролдлого · үргэлжлүүлэх` link. Rules are grouped
+  into clock/saving, stage rules and results; the non-official-score caveat stays visible.
+- Official paper briefing (`OfficialPaperBriefing`, shared by `/exams/[slug]` math/English and
+  `/exams/eec-english/[slug]`): breadcrumb → hero → access/price rail → four fact tiles → score
+  breakdown → saving/scoring rules → collapsed provenance. The score breakdown adapts to the
+  existing `custom` layouts: Math 36 + 4 with 72 + 28 marks, while English keeps its printed
+  weights. The material limits stay visible as a highlighted `official-limit` note: 2019 missing
+  audio (88 max) and 2020 D ambiguous 2.3e (99 max). `sourceNote`, `scoringNote`, `timingNote`,
+  publisher, source URLs and the `page-intro` heading hook are preserved.
+- New styles live in `src/app/exams/briefing.css`, imported only by the two briefing routes and
+  scoped to `.exam-briefing-page` / `.official-briefing-page`. No `theme.css` changes were needed.
+- Hint cleanup: removed repetitive helper microcopy while keeping payment, score, auth, access,
+  privacy and security notes. Examples: the duplicate home hero fine print; the free-sample
+  “Бүртгэлгүй · ~2 минут” and “3 бодлого · Бүртгэлгүй · Үнэгүй” lines; the exams panel's repeated
+  server-clock note; the per-plan mock-price footnote (already in each plan's feature list); the
+  redundant program-gate/free-sample clause; the login/restart hint under the start button
+  (shortened to the resume fact); “Нэвтрэх шаардлагатай” on the Speaking invitations (the AI/band
+  caveat stays); and the internal curation/migration notes on the Math/English category pages.
+  Functional password rules, verification state, payment simulation, score limits, privacy and
+  access explanations were intentionally kept.
+- Checks actually run on the final production build:
+  - `npm run lint` — pass; `npm run typecheck` — pass; `npm test` — 70/70 pass (two new briefing tests).
+  - `npm run build` — pass, Next.js 16.4.2, 50 routes.
+  - Required suites: `browser_smoke.py`, `accounts_smoke.py`, `exercises_smoke.py`,
+    `exams_smoke.py` — all pass.
+  - Changed-area suites: `official_paper_smoke.py` (all A–D, 100-point math), `english_archive_smoke.py`
+    (37 variants, 218 assets), `theme_smoke.py`, `homepage_polish_smoke.py`, `payments_smoke.py`,
+    `subscriptions_smoke.py` — all pass.
+  - A read-only Playwright pass covered SAT/IELTS/Math/English briefings at 1440/1024/390/320 in
+    light/dark, confirmed no horizontal overflow, the 98/80/timing facts, the 99/88 limit notes,
+    the retained access links and the removed hint strings. Screenshots under ignored
+    `artifacts/exam-polish/` were inspected; the first full-mock layout left a large empty hero
+    column, so the stage section was moved under the hero copy with a sticky right rail.
+  - Two test-visible regressions were caught and fixed without weakening any assertion:
+    `official_paper_smoke.py` required the briefing heading inside `.page-intro h1`, so the
+    existing `page-intro` hook was restored on the new official hero; `theme_smoke.py` treats
+    `nav a[href="/exams"]` as unique, so the breadcrumb changed from `<nav>` to
+    `<div role="navigation">` while keeping the same accessible name.
+  - One `subscriptions_smoke.py` run hit the real sign-up rate limit (HTTP 429); a serial rerun
+    after the normal window passed. No rate limit, assertion or runtime guard was changed.
+  - `git diff --check` scoped to the changed files passed (only LF → CRLF notices); the new files
+    have no trailing whitespace. A credential/common-key scan of the changed files found no
+    findings.
+- Not run: `profile`, `admin`, `demo_accounts`, `auth_recovery`, `speaking_lab`, live `tutor` and
+  hosted suites, because their source and copy were not changed in this increment and the live
+  provider/hosted checks need separate authorization. No email, provider request, real payment or
+  hosted data was involved. The local QA suites created only reserved `qa-` rows.
+- The `3001` preview was rebuilt and restarted from the final production build. `PROJECT.md` was
+  not changed because stable product behavior, access, timers, scoring and setup did not change.
+  No commit, push, PR or deployment was performed.
+
+## 25. Workshop Essay Studio — 2026-10-29
+
+Agent: Claude Code (Opus 5.5).
+
+- Owner asked for a new Workshop item: essay writing practice with an AI assistant that corrects
+  grammar, complete, minimalistic and with very good UX. The work board was empty; this agent
+  claimed `build + 3001` and the new writing-lab files.
+- Added `/labs/ielts-writing` (`src/modules/writing-lab/**`, `src/app/labs/ielts-writing`,
+  `src/app/api/labs/ielts-writing`) and a second `/workshop` tile with an inline SVG illustration.
+  `writingLabEnabled()` shares the Speaking Lab pilot switch, so no new env var is needed.
+- Features: Essay / Letter / Free writing tasks, 18 original prompts with shuffle and picker, live
+  word target bar, paragraph count, soft practice timer, per-task autosaved drafts, AI ideas (plan and
+  click-to-insert phrases), quick grammar check, full feedback (Ctrl+Enter), highlighted marks view,
+  apply / skip / undo-skip / apply-all corrections, vocabulary upgrades, unofficial four-criteria
+  band estimate, strengths, next steps, rewritten passage, MN/EN explanations and a band history.
+- Server: login, verified email, same origin, strict input, server-resolved bank prompts, minimum
+  word counts, active-exam denial, daily 40-request quota with one in flight, JSON-mode DeepSeek with
+  one silent retry. Corrections that do not quote the essay exactly are dropped; overall band is
+  computed on the server. Nothing is stored server-side except the quota row.
+- Fixed during verification: the 300 ms debounced draft save could lose a fresh result if the page
+  closed immediately; pending changes now flush on `pagehide`.
+- Checks run: `npm run lint` pass, `npm run typecheck` pass, `npm test` 75/75 pass (new
+  `tests/writing-lab.test.mjs`), `npm run build` pass, `git diff --check` clean, new
+  `tests/writing_lab_smoke.py` PASS against the rebuilt 3001 preview (real auth/origin/validation
+  guards; AI responses mocked in the browser, so no DeepSeek request was made). A live DeepSeek
+  call was not run. The other browser suites were not rerun.
+- The `3001` preview was rebuilt and restarted. No commit, push, PR or deployment was performed.
+
+## 26. Essay Studio live spelling with Harper — 2026-10-29
+
+Agent: Claude Code (Opus 5.5).
+
+- Owner chose Harper for automatic spelling in the Essay Studio. This agent claimed `build + 3001`,
+  the writing-lab files and `package.json`/`package-lock.json`.
+- Added `harper.js@2.10.0` (exact pin; Automattic, Apache-2.0). 3.0.0 was two days old, so the
+  older release was chosen. `npm install` reported 0 vulnerabilities.
+- `src/modules/writing-lab/spelling.ts` lazily loads Harper and maps its Unicode-character spans to
+  textarea offsets; `spell-editor.tsx` draws wavy underlines in a transparent mirror behind the
+  textarea (red for spelling, indigo for grammar), keeps them aligned while typing and shows a
+  suggestion popover at the caret (apply, ignore, add to dictionary, Escape to close). The paper bar
+  has a UK / US / off control with a live issue count. Settings and dictionary words are stored in
+  the same browser-only `education-writing-lab-v1` key. The essay is not sent anywhere for this check.
+- Found and fixed during verification: Turbopack emits a root-relative wasm URL that Harper's
+  blob-URL `WorkerLinter` cannot fetch, so setup hung; switched to `LocalLinter` on the main thread
+  after a 320 ms pause. The caret after applying a suggestion was restored one frame late; it is now
+  restored in a layout effect.
+- Checks run: `npm run lint` pass, `npm run typecheck` pass, `npm test` 76/76 pass (new
+  `shiftIssues` test), `npm run build` pass (wasm emitted as a hashed static asset),
+  `tests/writing_lab_smoke.py` PASS with the new live-spelling section (real Harper, no network
+  check; AI responses still mocked). Manually confirmed in the 3001 preview that Harper flags
+  `beleive`, `lesons`, `an usefull`, `usefull`, `recieve` and `alot`. The other browser suites were not rerun.
+- The `3001` preview was rebuilt and restarted. No commit, push, PR or deployment was performed.
+
+## 27. Combined delivery: Essay Studio, Harper spelling and briefing polish — 2026-10-29
+
+Agent: Claude Code (Opus 5.5).
+
+- Owner authorized pushing the Essay Studio (sections 25-26) together with Opencode's exam briefing
+  polish and hint cleanup (section 24, attributed to Opencode). The work board was empty; this agent
+  claimed `git` and `build + 3001`. Opencode's diff was reviewed: copy-only hint removals plus new
+  briefing layouts whose open-attempt lookups are scoped to the signed-in user.
+- Combined-tree checks: `npm run lint` pass, `npm run typecheck` pass, `npm test` 76/76 pass,
+  `npm run build` pass, `git diff --check` clean, secret scan of the 35 staged files clean (only env
+  variable names in docs). Browser suites run serially against the rebuilt 3001 preview:
+  `writing_lab`, `browser`, `exams`, `official_paper`, `homepage_polish` — all pass. The first run
+  failed only because the local Prisma dev database had stopped (`P1001`); it was restarted with
+  `npm run db:start` and every suite passed on the rerun.
+- `.claude/` and `artifacts/` were excluded. No hosted data was read or changed.

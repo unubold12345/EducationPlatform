@@ -27,7 +27,6 @@ export default function ProgramsPage() {
         </span>
         <span className="programs-free-foot">
           <span className="button">Жишиг дасгал эхлэх <span aria-hidden="true">→</span></span>
-          <small>Бүртгэлгүй · ~2 минут</small>
         </span>
       </Link>
     </header>

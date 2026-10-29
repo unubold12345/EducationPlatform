@@ -9,6 +9,6 @@ export default function EnglishArchivePage(){
   <div className="page-intro"><p className="eyebrow">ЭЕШ · АНГЛИ ХЭЛ</p><h1>Англи хэлний шалгалтууд</h1><p>Таймер, хадгалалт, дүнтэй {englishPapers.length} хувилбар · {englishYears.length} он.</p></div>
   <nav className="english-year-nav" aria-label="Шалгалтын он">{englishYears.map(year=><a key={year} href={"#year-"+year}>{year}</a>)}</nav>
   {englishYears.map(year=><section key={year} id={"year-"+year} className="english-year"><div className="section-heading"><h2>{year} · Англи хэл</h2><p>{englishPapers.filter(paper=>paper.year===year).length} хувилбар · Хариутай</p></div><div className="english-variation-grid">{englishPapers.filter(paper=>paper.year===year).map(paper=><Link key={paper.slug} href={"/exams/eec-english/"+paper.slug} className="english-variation"><strong>{paper.variant} хувилбар</strong><span>{paper.pages.length} хуудас · 80 минут</span><span className="text-link">Нээх →</span></Link>)}</div></section>)}
-  <p className="fine-print">Хувилбараа сонгоод шалгалтаа эхлүүлээрэй. Хариулт автоматаар хадгалагдаж, хугацаа дуусахад сервер дээр эцэслэгдэнэ. Хариугүй эсвэл эхтэйгээ таараагүй материалыг оруулаагүй. University Prep сарын багц эсвэл тухайн хувилбарын эрх шаардлагатай.</p>
+  <p className="fine-print">Хувилбараа сонгоод шалгалтаа эхлүүлээрэй. University Prep сарын багц эсвэл тухайн хувилбарын эрх шаардлагатай.</p>
  </div>;
 }

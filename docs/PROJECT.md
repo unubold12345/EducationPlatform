@@ -30,6 +30,7 @@ authentication require provider configuration; see the actual hosted checkpoint 
 | Admin | Protected overview, members, subscriptions, payments, monitoring, content and audits |
 | AI tutor | DeepSeek math hints, explanations and mistake review |
 | Speaking Lab | Isolated IELTS speaking studio at `/labs/ielts-speaking` |
+| Essay Studio | Workshop writing practice with AI corrections at `/labs/ielts-writing` |
 | Study tools | Light/dark theme and a browser-only mathematics scratchpad |
 
 Program practice, workshop grading and new saved attempts require the matching active plan; `/practice`
@@ -242,6 +243,28 @@ transcription and the licensed CC0 RobotExpressive 3D character. It writes no at
 subscriptions or chat history. Bands shown are transcript-only AI estimates, not official IELTS
 scores; pronunciation is not assessed. Raw microphone recordings are not persisted.
 
+### Workshop Essay Studio
+
+`/labs/ielts-writing` is an experimental, `noindex` writing studio linked from `/workshop`. It shares
+the Speaking Lab pilot switch (local pilot, or hosted pilot with `SPEAKING_LAB_ENABLED=true`).
+Students pick an IELTS Task 2 essay, a General Task 1 letter (18 original bank prompts) or free
+writing, write with a live word target and optional soft timer, then ask DeepSeek for ideas, a quick
+grammar check or full feedback. Corrections must quote the student's text exactly or they are
+dropped on the server; each one can be applied, skipped or applied all at once. Full feedback shows
+an unofficial four-criteria band estimate (overall computed server-side with IELTS half-band
+rounding), vocabulary upgrades, strengths, next steps and one rewritten passage.
+- Server checks: login, verified email, same origin, strict input shape, bank prompts resolved on the
+  server, minimum words, active timed-exam denial (before and after the provider call), and a daily
+  40-request budget with one request in flight per student.
+- Drafts, results and band history live only in this browser (`education-writing-lab-v1`). No
+  attempts, scores or essays are stored on the server.
+- Live spelling and grammar underlines come from Harper (`harper.js` 2.10.0, Apache-2.0), which
+  runs as WebAssembly in the page, so this check sends nothing over the network. The 16 MB wasm is a
+  hashed static asset loaded lazily only while auto spelling is on. Students choose UK, US or off,
+  apply suggestions from a popover, ignore an issue or add words to a per-browser dictionary.
+  Harper's `WorkerLinter` cannot load the bundler-emitted wasm from its blob worker, so the studio
+  uses `LocalLinter` on the main thread after a 320 ms typing pause.
+
 ### Homepage, theme and scratchpad
 
 - The homepage has additional education sketches through the page, a dedicated Speaking invitation,
@@ -373,6 +396,7 @@ the changed area:
 | `publishing_smoke.py` | Draft → review → published content |
 | `tutor_smoke.py` | Consent, live DeepSeek calls, quotas and active-exam denial |
 | `speaking_lab_smoke.py` | 3D, conversation, speech and transcription |
+| `writing_lab_smoke.py` | Essay Studio guards and full UI loop (AI responses mocked) |
 | `hosted_demo_smoke.py` | Hosted demo accounts; only run after an authorized deployment |
 
 Fixtures under `tests/` may advance deadlines or manipulate reserved QA rows only. They must never add
@@ -390,8 +414,8 @@ See [OPERATIONS.md](./OPERATIONS.md) for the exact latest results and the delive
   inbox. A completed real Google login, consent and token exchange still require an owner-controlled
   browser session. See `OPERATIONS.md` for exact deployment/check evidence.
 - There is no verified-email production onboarding, no live billing and no real payment provider.
-- Scores are raw; SAT scaled scores and IELTS bands are not calculated. The Speaking Lab's bands are
-  AI estimates only.
+- Scores are raw; SAT scaled scores and IELTS bands are not calculated. The Speaking Lab's and Essay
+  Studio's bands are AI estimates only.
 - The scanned EEC paper has no AI explanations, no structured question text and no independently
   reviewed worked solutions.
 - Creating new catalog items and replacing content media are unfinished.

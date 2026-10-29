@@ -1,3 +1,4 @@
+import "../../briefing.css";
 import { notFound } from "next/navigation";
 import { findOfficialPaper } from "@/modules/papers/catalog";
 import { OfficialPaperBriefing } from "@/modules/papers/briefing";

@@ -26,6 +26,6 @@ export function ExamStart({slug,program,hasAccess,loggedIn}:{slug:string;program
     {program==="ielts"?<div className="equipment-check"><div><h3>1. Чихэвчээ шалгах</h3><audio controls preload="none" src="/api/exams/audio-check" aria-label="Headphone sound check"/><label><input type="checkbox" checked={audioReady} onChange={e=>setAudioReady(e.target.checked)}/>Дууг тод сонсож байна</label></div><div><h3>2. Микрофоноо шалгах</h3><p>Speaking хариуг зөвхөн өөрийн бүртгэлд бичиж хадгална. Дууссаны дараа сонсож, татаж авч болно.</p><button className="button secondary" onClick={testMic} disabled={micBusy}>{micReady?"Микрофон бэлэн ✓":micBusy?"Шалгаж байна…":"Микрофон шалгах"}</button></div></div>:null}
     <label className="exam-agreement"><input type="checkbox" checked={agreed} onChange={e=>setAgreed(e.target.checked)}/>Хэсгийн хугацаа дуусахад хариу түгжигдэж, дараагийн хэсэг автоматаар эхлэхийг ойлголоо.</label>
     <button className="button" onClick={start} disabled={pending||!agreed||(program==="ielts"&&(!audioReady||!micReady))}>{pending?"Нээж байна…":"Шалгалт эхлэх / үргэлжлүүлэх →"}</button>
-    <p className="fine-print">Нэвтрээгүй бол эхлээд нэвтрэх хуудас руу шилжинэ. Энэ шалгалтын нээлттэй оролдлого байвал түүнийг үргэлжлүүлнэ.</p>{error?<p className="error-message" role="alert">{error}</p>:null}
+    <p className="fine-print">Нээлттэй оролдлого байвал үргэлжилнэ.</p>{error?<p className="error-message" role="alert">{error}</p>:null}
   </section>;
 }

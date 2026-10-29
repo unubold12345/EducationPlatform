@@ -68,7 +68,6 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
         </dl>
         {firstSet ? <Link className="button" href={"/exercises/" + firstSet.slug}>Эхний багцаас эхлэх <span aria-hidden="true">→</span></Link> : null}
         <Link className="text-link program-sample-link" href="/practice">Жишиг дасгал эхлэх <span aria-hidden="true">→</span></Link>
-        <p className="fine-print">3 бодлого · Бүртгэлгүй · Үнэгүй</p>
       </aside>
     </section>
 

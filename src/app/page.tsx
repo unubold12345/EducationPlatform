@@ -28,7 +28,6 @@ export default function HomePage() {
           <div><strong>37</strong><span>Англи хувилбар</span></div>
           <div><strong>04</strong><span>IELTS чадвар</span></div>
         </div>
-        <p className="fine-print">Богино жишиг дасгал үнэгүй. Бүртгэлдээ хадгалаад, орхисон газраасаа үргэлжлүүл.</p>
       </div>
       <aside data-reveal className="launch-panel" aria-labelledby="launch-heading">
         <div className="launch-heading"><span className="eyebrow">БЭЛТГЭЛЭЭ ЭХЛҮҮЛ</span><span className="launch-icon" aria-hidden="true">↗</span></div>

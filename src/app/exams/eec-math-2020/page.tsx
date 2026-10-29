@@ -17,6 +17,6 @@ export default function Mathematics2020Page(){
    <div className="exam-price"><strong>{MOCK_PRICE_LABEL}</strong><span>Энэ хувилбарын эрх · Эсвэл University Prep сарын багц</span></div>
    <Link className="button" href={"/exams/"+paper.slug}>{paper.variant} хувилбар нээх →</Link>
   </article>)}</div>
-  <p className="fine-print">Эх материал <a href={officialPapers[0].sourceUrl} target="_blank" rel="noreferrer">БҮТ-ийн архивт</a> үнэгүй. University Prep сарын багцад дөрвөн хувилбар багтана. Өмнөх А хувилбарын эрх, хадгалсан оролдлого хэвээр.</p>
+  <p className="fine-print">Эх материал <a href={officialPapers[0].sourceUrl} target="_blank" rel="noreferrer">БҮТ-ийн архивт</a> үнэгүй. University Prep сарын багцад дөрвөн хувилбар багтана.</p>
  </div>;
 }

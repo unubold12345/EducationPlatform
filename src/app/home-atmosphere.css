@@ -1,0 +1,276 @@
+/* Home atmosphere — "Learning Orbit".
+   Decorative only. Remove this file, the HomeAtmosphere component and the two
+   references in src/app/page.tsx to return to the plain background. */
+
+.home-page { position: relative; z-index: 1; }
+
+.home-atmosphere {
+  --mx: 34%;
+  --my: 18%;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: linear-gradient(180deg,
+    color-mix(in srgb, var(--blue) 4.5%, transparent) 0%,
+    transparent 20%,
+    color-mix(in srgb, #a27acb 4%, transparent) 40%,
+    transparent 58%,
+    color-mix(in srgb, #42a97c 4%, transparent) 76%,
+    transparent 90%,
+    color-mix(in srgb, var(--blue) 5%, transparent) 100%);
+}
+
+/* Film grain: softens gradients and adds a printed-study texture. */
+.home-atmosphere-grain {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+  mix-blend-mode: soft-light;
+  opacity: .032;
+}
+
+.home-atmosphere-vignette {
+  position: absolute;
+  inset: 0 0 auto;
+  height: min(1050px, 100vh);
+  background: radial-gradient(120% 70% at 50% 3%, transparent 52%, color-mix(in srgb, var(--ink) 5%, transparent) 100%);
+  -webkit-mask-image: linear-gradient(#000 0%, #000 55%, transparent 100%);
+  mask-image: linear-gradient(#000 0%, #000 55%, transparent 100%);
+  opacity: .9;
+}
+
+/* Colour fields that give each part of the long page its own temperature. */
+.home-atmosphere-aura {
+  position: absolute;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.aura-hero {
+  width: min(980px, 92vw);
+  top: -300px;
+  right: -250px;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--blue) 17%, transparent), transparent 72%);
+}
+.aura-mid {
+  width: min(820px, 80vw);
+  top: 36%;
+  left: -300px;
+  background: radial-gradient(closest-side, color-mix(in srgb, #a27acb 14%, transparent), transparent 72%);
+}
+.aura-low {
+  width: min(900px, 88vw);
+  top: 69%;
+  right: -280px;
+  background: radial-gradient(closest-side, color-mix(in srgb, #42a97c 12%, transparent), transparent 72%);
+}
+.aura-footer {
+  width: min(1100px, 100vw);
+  bottom: -320px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--blue) 22%, transparent), transparent 72%);
+}
+
+/* A finer graph-paper grid that only appears around the pointer. */
+.home-atmosphere-spotlight {
+  position: absolute;
+  inset: 0 0 auto;
+  height: min(860px, 94vh);
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--blue) 10%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--blue) 10%, transparent) 1px, transparent 1px);
+  background-size: 28px 28px;
+  -webkit-mask-image: radial-gradient(340px circle at var(--mx) var(--my), #000 0%, rgba(0, 0, 0, .62) 42%, transparent 74%);
+  mask-image: radial-gradient(340px circle at var(--mx) var(--my), #000 0%, rgba(0, 0, 0, .62) 42%, transparent 74%);
+  opacity: .65;
+}
+
+/* A matching graph-paper glow at the bottom keeps the footer from going flat. */
+.home-atmosphere-grid-bottom {
+  position: absolute;
+  inset: auto 0 0;
+  height: min(950px, 72vh);
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--blue) 8%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--blue) 8%, transparent) 1px, transparent 1px);
+  background-size: 28px 28px;
+  -webkit-mask-image: radial-gradient(720px 430px at 50% 92%, #000 0%, rgba(0, 0, 0, .55) 45%, transparent 76%);
+  mask-image: radial-gradient(720px 430px at 50% 92%, #000 0%, rgba(0, 0, 0, .55) 45%, transparent 76%);
+  opacity: .55;
+}
+
+/* Large, slow orbit behind the hero / launch panel. */
+.home-orbit {
+  position: absolute;
+  top: 10px;
+  right: -130px;
+  width: min(720px, 58vw);
+  aspect-ratio: 1;
+  opacity: .62;
+  transform-origin: center;
+  pointer-events: none;
+}
+.orbit-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--blue) 16%, transparent);
+}
+.ring-one { inset: 0; }
+.ring-two { inset: 13%; border-style: dashed; border-color: color-mix(in srgb, #a27acb 20%, transparent); }
+.orbit-glyph {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  margin: -21px;
+  border: 1px solid color-mix(in srgb, var(--blue) 24%, transparent);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--surface) 72%, transparent);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: color-mix(in srgb, var(--blue) 55%, var(--muted));
+}
+.glyph-sum { top: 7%; left: 35%; }
+.glyph-aa { top: 47%; right: -1%; }
+.glyph-pi { bottom: 7%; left: 33%; }
+.glyph-pen { top: 42%; left: -1%; }
+
+.home-orbit-bottom {
+  top: auto;
+  right: auto;
+  bottom: -120px;
+  left: -180px;
+  width: min(620px, 48vw);
+  opacity: .55;
+}
+.home-orbit-bottom .ring-two { inset: 15%; }
+.home-orbit-bottom .orbit-glyph { width: 36px; height: 36px; margin: -18px; font-size: 11px; }
+.home-orbit-bottom .glyph-sum { top: 8%; left: 30%; }
+.home-orbit-bottom .glyph-aa { top: 50%; right: -1%; }
+.home-orbit-bottom .glyph-pi { bottom: 8%; left: 28%; }
+.home-orbit-bottom .glyph-pen { top: 45%; left: -1%; }
+
+/* Faint answer chips and formula marks near the page edges. */
+.home-floaters { position: absolute; inset: 0; pointer-events: none; }
+.floater {
+  --r: 0deg;
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid color-mix(in srgb, var(--line) 88%, transparent);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--surface) 46%, transparent);
+  color: color-mix(in srgb, var(--muted) 72%, transparent);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  opacity: .62;
+  transform: rotate(var(--r));
+}
+.floater-a { top: 17%; left: 2%; --r: -8deg; }
+.floater-b { top: 44%; right: 1.5%; --r: 7deg; }
+.floater-c { top: 61%; left: 2.5%; --r: 5deg; }
+.floater-d { top: 77%; right: 2%; --r: -6deg; }
+.floater-integral,
+.floater-curve {
+  width: auto;
+  height: auto;
+  border: 0;
+  background: none;
+  font-size: 28px;
+  opacity: .26;
+}
+.floater-integral { top: 32%; left: 1.2%; --r: -4deg; }
+.floater-curve { top: 56%; right: 1.2%; --r: 3deg; }
+
+/* Dark theme: let the atmosphere glow a little more, without washing out copy. */
+:root[data-theme="dark"] .home-atmosphere-grain { opacity: .046; }
+:root[data-theme="dark"] .home-atmosphere-vignette { background: radial-gradient(120% 70% at 50% 3%, transparent 50%, color-mix(in srgb, var(--ink) 10%, transparent) 100%); }
+:root[data-theme="dark"] .aura-hero { background: radial-gradient(closest-side, color-mix(in srgb, var(--blue) 24%, transparent), transparent 72%); }
+:root[data-theme="dark"] .aura-mid { background: radial-gradient(closest-side, color-mix(in srgb, #a27acb 19%, transparent), transparent 72%); }
+:root[data-theme="dark"] .aura-low { background: radial-gradient(closest-side, color-mix(in srgb, #42a97c 16%, transparent), transparent 72%); }
+:root[data-theme="dark"] .aura-footer { background: radial-gradient(closest-side, color-mix(in srgb, var(--blue) 28%, transparent), transparent 72%); }
+:root[data-theme="dark"] .home-atmosphere-spotlight { background-image: linear-gradient(color-mix(in srgb, var(--blue) 18%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in srgb, var(--blue) 18%, transparent) 1px, transparent 1px); opacity: .75; }
+:root[data-theme="dark"] .home-atmosphere-grid-bottom { background-image: linear-gradient(color-mix(in srgb, var(--blue) 12%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in srgb, var(--blue) 12%, transparent) 1px, transparent 1px); opacity: .7; }
+:root[data-theme="dark"] .home-orbit { opacity: .72; }
+:root[data-theme="dark"] .home-orbit-bottom { opacity: .68; }
+:root[data-theme="dark"] .orbit-glyph { background: color-mix(in srgb, var(--surface) 72%, transparent); }
+:root[data-theme="dark"] .floater { background: color-mix(in srgb, var(--surface) 52%, transparent); }
+
+/* Keep the home footer in the same atmosphere instead of dropping to a flat grey. */
+body:has(.home-atmosphere) .site-footer {
+  background:
+    radial-gradient(760px 280px at 82% 0%, color-mix(in srgb, var(--blue) 12%, transparent), transparent 70%),
+    radial-gradient(640px 260px at 12% 100%, color-mix(in srgb, #a27acb 9%, transparent), transparent 70%),
+    color-mix(in srgb, var(--white) 45%, transparent);
+}
+:root[data-theme="dark"] body:has(.home-atmosphere) .site-footer {
+  background:
+    radial-gradient(760px 280px at 82% 0%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 70%),
+    radial-gradient(640px 260px at 12% 100%, color-mix(in srgb, #42a97c 12%, transparent), transparent 70%),
+    color-mix(in srgb, var(--white) 74%, transparent);
+}
+
+/* Motion is opt-in; reduced-motion users get the same composition, completely still. */
+@media (prefers-reduced-motion: no-preference) {
+  .aura-hero { animation: aura-drift-a 44s ease-in-out infinite alternate; }
+  .aura-mid { animation: aura-drift-b 52s ease-in-out infinite alternate; }
+  .aura-low { animation: aura-drift-c 60s ease-in-out infinite alternate; }
+  .aura-footer { animation: aura-drift-footer 56s ease-in-out infinite alternate; }
+  .home-orbit { animation: orbit-turn 96s linear infinite; }
+  .floater-a { animation: floater-drift 19s ease-in-out infinite alternate; }
+  .floater-b { animation: floater-drift 23s ease-in-out infinite alternate; animation-delay: -5s; }
+  .floater-c { animation: floater-drift 21s ease-in-out infinite alternate; animation-delay: -9s; }
+  .floater-d { animation: floater-drift 25s ease-in-out infinite alternate; animation-delay: -13s; }
+  .floater-integral { animation: floater-drift 27s ease-in-out infinite alternate; animation-delay: -3s; }
+  .floater-curve { animation: floater-drift 24s ease-in-out infinite alternate; animation-delay: -11s; }
+}
+
+@keyframes aura-drift-a {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to { transform: translate3d(-3%, 4%, 0) scale(1.05); }
+}
+@keyframes aura-drift-b {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to { transform: translate3d(4%, -3%, 0) scale(1.04); }
+}
+@keyframes aura-drift-c {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to { transform: translate3d(-4%, -2%, 0) scale(1.06); }
+}
+@keyframes aura-drift-footer {
+  from { transform: translateX(-50%) translate3d(0, 0, 0) scale(1); }
+  to { transform: translateX(-50%) translate3d(2%, -2%, 0) scale(1.04); }
+}
+@keyframes orbit-turn {
+  to { transform: rotate(360deg); }
+}
+@keyframes floater-drift {
+  from { transform: translate3d(0, 0, 0) rotate(var(--r)); }
+  to { transform: translate3d(0, -12px, 0) rotate(calc(var(--r) + 2deg)); }
+}
+
+@media (max-width: 1100px) {
+  .home-floaters { display: none; }
+}
+@media (max-width: 900px) {
+  .home-orbit { display: none; }
+  .home-atmosphere-spotlight { height: 660px; opacity: .38; }
+  .aura-hero { width: min(760px, 120vw); top: -240px; right: -300px; }
+  .aura-mid { width: min(620px, 100vw); left: -260px; }
+  .aura-low { width: min(720px, 110vw); right: -280px; }
+  .aura-footer { width: min(900px, 120vw); bottom: -360px; }
+}
+@media (max-width: 640px) {
+  .home-atmosphere-spotlight { display: none; }
+  .home-atmosphere-grid-bottom { display: none; }
+  .aura-hero { top: -220px; right: -340px; }
+  .aura-mid { left: -300px; }
+  .aura-low { right: -320px; }
+}

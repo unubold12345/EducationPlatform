@@ -1075,3 +1075,108 @@ Agent: Claude Code (Opus 5.5).
   failed only because the local Prisma dev database had stopped (`P1001`); it was restarted with
   `npm run db:start` and every suite passed on the rerun.
 - `.claude/` and `artifacts/` were excluded. No hosted data was read or changed.
+- Delivered as `74f9660` on `codex/education-foundation`. Vercel production verified about six
+  minutes after the push: `/workshop` shows the Essay Studio tile, `/labs/ielts-writing` 200,
+  unauthenticated `POST /api/labs/ielts-writing` 401, `/labs/ielts-speaking`, `/exams/sat-full-01`
+  and `/exams/eec-math-2020` 200, and the SAT briefing serves Opencode's shortened copy. No signed-in
+  hosted AI call was made. This post-deploy verification is recorded here.
+
+## 28. Revertable “Learning Orbit” home background — 2026-10-29
+
+Agent: Opencode (DeepSeek V4.1 Flash).
+
+- Owner asked for a cooler home background while keeping the current home structure, and asked for
+  it to be easy to revert because several visual options will be tried. The work board was empty;
+  this agent claimed `build + 3001`. The concurrent Essay Studio commit `74f9660` was preserved.
+- Chose the “Learning Orbit” concept: the existing home sections, copy, cards, ticker, Speaking
+  invitation, approach, resources and LawTest stay exactly where they are. Only a decorative,
+  `aria-hidden`, pointer-events-none layer was added behind them.
+- New self-contained files: `src/components/home-atmosphere.tsx` and
+  `src/app/home-atmosphere.css`. `src/app/page.tsx` only gained one CSS import, one component
+  import, a `SHOW_HOME_ATMOSPHERE` flag and one conditional `<HomeAtmosphere variant="orbit" />`.
+  The existing `EducationBackdrop`, `HomeMotion`, home copy and all other pages were not changed.
+- The layer contains: film grain; a soft vignette; three slow colour auras (indigo hero, violet
+  mid-page, green lower-page); a large elliptical orbit with `∑`, `Aa`, `π` and `✎` nodes; faint
+  `A/B/C/D` answer chips and `∫`/`∿` marks near the page edges; and a fine graph-paper spotlight
+  that follows the pointer on desktop. The orbit/auras/floaters animate only when
+  `prefers-reduced-motion` is not set.
+- Easy revert: set `SHOW_HOME_ATMOSPHERE = false` in `src/app/page.tsx` to remove the whole
+  atmosphere without deleting anything. Full removal is deleting the two new files and the import,
+  flag and JSX line. The component is keyed by `data-variant="orbit"` so a second concept can later
+  be added/switched without touching the page layout.
+- Preserved test hooks: `.education-backdrop svg:visible` still resolves to exactly one element
+  (no SVG was added inside it), `.home-sketches` still renders, `[data-reveal]` count is unchanged,
+  and the no-JS/reduced-motion versions keep the content and composition. All background animations
+  sit inside `@media (prefers-reduced-motion: no-preference)`, so the reduced-motion check still
+  reports zero animations.
+- Checks run on the combined tree (including `74f9660`): `npm run lint` pass; `npm run typecheck`
+  pass; `npm test` 76/76 pass; `npm run build` pass (51 routes); `browser_smoke.py`,
+  `theme_smoke.py` and `homepage_polish_smoke.py` pass. A focused Playwright pass covered 1440, 390
+  and 320px in light/dark, reduced motion, no-JS, the `.education-backdrop` SVG count, the
+  `.home-sketches` hook, pointer-variable updates and horizontal overflow. Screenshots under ignored
+  `artifacts/home-orbit/` were inspected; the first pass was too faint, so the orbit, glyphs,
+  floaters, auras and spotlight were strengthened slightly without touching the copy.
+- Follow-up (owner: the lower page turned grey and felt empty when scrolling further): the
+  full-page vignette was reduced to a top-only fade; a continuous colour wash was added to the
+  atmosphere; a fourth bottom aura, a bottom graph-paper glow, a second lower orbit with glyphs and
+  a home-only footer gradient now carry the top design down the page. The lower page was checked at
+  1440/390/320 in light/dark and at 900/1800/2700/bottom scroll positions.
+  `homepage_polish_smoke.py`, `browser_smoke.py`, `theme_smoke.py`, `npm run lint` and
+  `npm run typecheck` pass again; the production build and 3001 preview were rebuilt/restarted.
+- Not run: the other browser suites, because the home background is isolated and the prior exam
+  suites were already run on section 24. No new network request, dependency, image asset, hosted
+  data, email, provider call or payment was added. The local QA account created by
+  `homepage_polish_smoke.py` is reserved `qa-` data. The 3001 preview was rebuilt/restarted with the
+  final build. No commit, push, PR or deployment was performed.
+
+## 29. Home Lexlab advertisement — 2026-10-29
+
+Agent: Opencode (DeepSeek V4.1 Flash).
+
+- Owner asked to advertise `lexlab.site` with more details on the home page. Only the public plan
+  page `https://lexlab.site/plan` was read for accurate copy; no Lexlab repository, database or
+  private data was opened. No bank/IBAN/recipient details were copied.
+- Home now uses a new detailed `LawTestRecommendation` variant; `/programs` keeps the existing
+  compact card. The detailed card shows: 1,848 free public-law tests; the 39,900₮ one-time,
+  lifetime plan; all-category tests and exams; saving correct answers; pause/resume; and
+  test history/calendar. It keeps the exact `lexlab.site-ийн эрх үзэх` link to
+  `https://lexlab.site/plan` and the separate-account/disclosure note.
+- New `src/app/home-lexlab.css` is imported only by the home page. The existing `.lawtest`,
+  `#lawtest-title`, `.lexlab-logo-light`/`.lexlab-logo-dark`, link name and href hooks are unchanged;
+  the programs-page compact variant is unchanged.
+- Checks run: `npm run lint` pass; `npm run typecheck` pass; `npm run build` pass (51 routes);
+  `browser_smoke.py`, `homepage_polish_smoke.py` and `theme_smoke.py` pass. The detailed card was
+  inspected at 1440 light/dark and 390px; the price, free-test chip, feature list and CTA render
+  without overflow.
+- Revert: remove the `detailed` prop from the home usage and delete `src/app/home-lexlab.css` plus
+  its import; the original compact card remains available. No commit, push, PR or deployment was
+  performed.
+
+## 30. Lexlab card refinement — 2026-10-29
+
+Agent: Opencode (DeepSeek V4.1 Flash).
+
+- Supersedes the copy details in section 29. Owner asked to remove “.site”, hide the plan price,
+  remove the separate-service hint, and make the home Lexlab card cooler with motion.
+- Branding is now **Lexlab** in the heading and both CTA variants; the `.site` suffix is gone.
+  The detailed card no longer shows the 39,900₮ plan price; the price block is now
+  “Бүтэн эрх / нэг удаа · насан турш”. The separate-service/account fine print was removed from
+  both the detailed and compact cards. The CTA is now “Lexlab-ийн эрх үзэх”; its href
+  `https://lexlab.site/plan` is unchanged.
+- The detailed card now has an animated inline scales-of-justice illustration, two slow orbit
+  rings, floating `A/B/C/D/§` chips and a periodic CTA shine. All motion is inside
+  `@media (prefers-reduced-motion: no-preference)`, so the reduced-motion home still reports zero
+  animations.
+- Updated only the expected title and CTA strings in `tests/browser_smoke.py`; the href assertion
+  and `.lawtest` screenshot contract are unchanged. No assertion was weakened.
+- Checks run: `npm run lint` pass; `npm run typecheck` pass; `npm run build` pass (51 routes);
+  `browser_smoke.py`, `homepage_polish_smoke.py` and `theme_smoke.py` pass. Inspected the card at
+  1440 light/dark and 390px; no price, no `.site`, no separate-service copy, no horizontal overflow.
+- Follow-up (owner: the plan panel should sit beside the information and stop making the card
+  taller on one side): moved the plan/visual/CTA panel into the top-right of the hero, directly
+  beside the Lexlab intro. The four feature points now span the full width below the top row
+  (4 columns on desktop, 2 on tablet, 1 on mobile), so there is no empty left column. Rechecked
+  1440 light/dark and 390px; `browser_smoke.py`, `homepage_polish_smoke.py` and `theme_smoke.py`
+  pass again.
+- Revert: remove the `detailed` prop and delete `src/app/home-lexlab.css` plus its import to return
+  to the compact card. No commit, push, PR or deployment was performed.

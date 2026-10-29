@@ -1,11 +1,16 @@
+import "./home-atmosphere.css";
+import "./home-lexlab.css";
 import Link from "next/link";
 import { programs } from "@/modules/programs/catalog";
 import { ProgramCard } from "@/components/program-card";
 import { LawTestRecommendation } from "@/components/lawtest";
 
+import { HomeAtmosphere } from "@/components/home-atmosphere";
 import { HomeMotion } from "@/components/home-motion";
 import { SpeakingInvitation } from "@/components/speaking-invitation";
 
+// Set to false to return the home page to its plain background without deleting the component.
+const SHOW_HOME_ATMOSPHERE = true;
 const tickerItems = ["Digital SAT", "IELTS Academic", "ЭЕШ 2020 · A–D", "English archive · 37", "Speaking workshop", "Writing workshop"];
 
 const resources = [
@@ -16,8 +21,10 @@ const resources = [
 ];
 
 export default function HomePage() {
-  return <HomeMotion>
-    <section className="hero">
+  return <>
+    {SHOW_HOME_ATMOSPHERE ? <HomeAtmosphere variant="orbit" /> : null}
+    <HomeMotion>
+      <section className="hero">
       <div className="hero-copy" data-reveal>
         <div className="hero-meta"><span className="pill"><i className="live-dot" aria-hidden="true" />2026 · ШИНЭ БЭЛТГЭЛ</span><span className="hero-meta-note">SAT · IELTS · ЭЕШ</span></div>
         <h1>Том зорилго.<br /><span>Өдөр бүрийн</span><br />жижиг алхам.</h1>
@@ -60,6 +67,7 @@ export default function HomePage() {
       <div className="home-bento">{resources.map(item => <Link className="bento-card" href={item.href} key={item.href}><em>{item.label}</em><span><strong>{item.title}</strong><small>{item.note}</small></span><span>{item.mark}<span aria-hidden="true">↗</span></span></Link>)}</div>
     </section>
 
-    <div data-reveal><LawTestRecommendation /></div>
-  </HomeMotion>;
+    <div data-reveal><LawTestRecommendation detailed /></div>
+    </HomeMotion>
+  </>;
 }

@@ -17,8 +17,8 @@ with sync_playwright() as p:
     expect(page.get_by_role("heading", name="Том зорилго.")).to_be_visible()
     assert page.locator("html").get_attribute("lang") == "mn"
     page.screenshot(path=str(artifacts / "homepage-desktop.png"), full_page=True)
-    expect(page.get_by_role("link", name="lexlab.site-ийн эрх үзэх")).to_have_attribute("href", "https://lexlab.site/plan")
-    expect(page.locator('#lawtest-title')).to_have_text('lexlab.site')
+    expect(page.get_by_role("link", name="Lexlab-ийн эрх үзэх")).to_have_attribute("href", "https://lexlab.site/plan")
+    expect(page.locator('#lawtest-title')).to_have_text('Lexlab')
     original_theme = page.locator('html').get_attribute('data-theme')
     for theme in ['light', 'dark']:
         page.evaluate('(theme)=>document.documentElement.dataset.theme=theme', theme)

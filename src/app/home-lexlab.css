@@ -1,0 +1,290 @@
+/* Detailed Lexlab recommendation used on the home page. The compact card is
+   unchanged on /programs; remove this file + the `detailed` prop to revert. */
+
+.lawtest.lawtest-detailed {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  padding: 0;
+  margin: 30px 0 58px;
+  border: 1px solid color-mix(in srgb, var(--blue) 26%, var(--line));
+  border-radius: 26px;
+  background:
+    radial-gradient(700px 300px at 88% 0%, color-mix(in srgb, var(--blue) 16%, transparent), transparent 70%),
+    radial-gradient(600px 300px at 8% 100%, color-mix(in srgb, #a27acb 12%, transparent), transparent 70%),
+    color-mix(in srgb, var(--surface) 92%, transparent);
+  box-shadow: var(--shadow-lift);
+}
+
+.lawtest-mark {
+  position: absolute;
+  top: -42px;
+  right: 18px;
+  z-index: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 210px;
+  line-height: 1;
+  color: var(--blue);
+  opacity: .045;
+  pointer-events: none;
+}
+
+.lawtest-hero {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(300px, .85fr);
+  align-items: center;
+  gap: 24px;
+  padding: 30px 30px 20px;
+}
+.lawtest-intro {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr);
+  align-items: center;
+  gap: 20px;
+  min-width: 0;
+}
+.lawtest.lawtest-detailed .lexlab-logo {
+  flex: 0 0 76px;
+  width: 76px;
+  height: 76px;
+  padding: 9px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+}
+.lawtest-heading .eyebrow { margin: 0 0 6px; color: var(--blue); font-size: 9px; }
+.lawtest.lawtest-detailed h2 {
+  margin: 0;
+  font-size: clamp(34px, 4vw, 48px);
+  line-height: 1.05;
+  letter-spacing: -.05em;
+}
+.lawtest.lawtest-detailed .lawtest-heading > p:last-child {
+  margin: 10px 0 0;
+  max-width: 60ch;
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--muted);
+}
+
+.lawtest-body {
+  position: relative;
+  z-index: 1;
+  display: block;
+  padding: 0 30px 30px;
+}
+
+.lawtest-free {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border: 1px solid color-mix(in srgb, #42a97c 34%, var(--line));
+  border-radius: 999px;
+  background: color-mix(in srgb, #42a97c 8%, transparent);
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: #3f9a71;
+}
+:root[data-theme="dark"] .lawtest-free { color: #7ed3ad; }
+
+.lawtest-features ul {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 7px 18px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.lawtest-features li {
+  display: flex;
+  gap: 7px;
+  font-size: 11.5px;
+  line-height: 1.6;
+}
+.lawtest-features li::before {
+  content: "✓";
+  color: var(--blue);
+  font-weight: 700;
+}
+.lawtest.lawtest-detailed .lawtest-features > .fine-print {
+  margin: 12px 0 0;
+  font-size: 9.5px;
+  line-height: 1.7;
+}
+
+.lawtest-cta {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow: hidden;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--surface) 82%, transparent);
+}
+.lawtest-cta > * { position: relative; z-index: 1; }
+.lawtest-cta::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(115deg, transparent 30%, color-mix(in srgb, var(--blue) 11%, transparent) 48%, transparent 66%);
+  transform: translateX(-120%);
+  pointer-events: none;
+}
+
+.lawtest-visual {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: 128px;
+  margin: -2px 0 2px;
+  color: var(--blue);
+}
+.lexlab-scales {
+  position: relative;
+  z-index: 2;
+  width: 138px;
+  height: 118px;
+  filter: drop-shadow(0 12px 24px color-mix(in srgb, var(--blue) 22%, transparent));
+}
+.lexlab-beam {
+  transform-box: view-box;
+  transform-origin: 90px 38px;
+}
+.lexlab-orbit {
+  position: absolute;
+  border: 1px dashed color-mix(in srgb, var(--blue) 20%, transparent);
+  border-radius: 50%;
+}
+.lexlab-orbit-one { width: 128px; height: 128px; }
+.lexlab-orbit-two { width: 94px; height: 94px; border-style: solid; border-color: color-mix(in srgb, #a27acb 18%, transparent); }
+.lexlab-chip {
+  --r: 0deg;
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 1px solid color-mix(in srgb, var(--blue) 22%, var(--line));
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--surface) 86%, transparent);
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  color: color-mix(in srgb, var(--blue) 60%, var(--muted));
+  transform: rotate(var(--r));
+}
+.lexlab-chip-a { top: 13%; left: 7%; --r: -8deg; }
+.lexlab-chip-b { top: 17%; right: 7%; --r: 7deg; }
+.lexlab-chip-c { bottom: 13%; left: 10%; --r: 5deg; }
+.lexlab-chip-d { bottom: 15%; right: 8%; --r: -6deg; }
+.lexlab-chip-s {
+  top: 6%;
+  left: 47%;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 13px;
+  --r: 0deg;
+}
+
+.lawtest-price strong {
+  display: block;
+  font-size: 20px;
+  line-height: 1.1;
+  letter-spacing: -.02em;
+}
+.lawtest-price span {
+  display: block;
+  margin-top: 4px;
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.lawtest.lawtest-detailed .lawtest-cta .button {
+  width: 100%;
+  justify-content: center;
+  margin: 0;
+  font-size: 11.5px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .lexlab-beam { animation: lexlab-balance 7s ease-in-out infinite alternate; }
+  .lexlab-orbit-one { animation: lexlab-spin 26s linear infinite; }
+  .lexlab-orbit-two { animation: lexlab-spin 34s linear infinite reverse; }
+  .lexlab-chip-a { animation: lexlab-chip-float 8s ease-in-out infinite alternate; }
+  .lexlab-chip-b { animation: lexlab-chip-float 9s ease-in-out infinite alternate; animation-delay: -2s; }
+  .lexlab-chip-c { animation: lexlab-chip-float 7.5s ease-in-out infinite alternate; animation-delay: -4s; }
+  .lexlab-chip-d { animation: lexlab-chip-float 8.5s ease-in-out infinite alternate; animation-delay: -6s; }
+  .lexlab-chip-s { animation: lexlab-chip-float 10s ease-in-out infinite alternate; animation-delay: -1s; }
+  .lawtest-cta::after { animation: lexlab-shine 8s ease-in-out infinite; }
+}
+
+@keyframes lexlab-balance {
+  from { transform: rotate(-2.5deg); }
+  to { transform: rotate(2.5deg); }
+}
+@keyframes lexlab-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes lexlab-chip-float {
+  from { transform: translate3d(0, 0, 0) rotate(var(--r)); }
+  to { transform: translate3d(0, -9px, 0) rotate(calc(var(--r) + 2deg)); }
+}
+@keyframes lexlab-shine {
+  0%, 55% { transform: translateX(-120%); }
+  80%, 100% { transform: translateX(120%); }
+}
+
+:root[data-theme="dark"] .lawtest.lawtest-detailed {
+  background:
+    radial-gradient(700px 300px at 88% 0%, color-mix(in srgb, var(--blue) 22%, transparent), transparent 70%),
+    radial-gradient(600px 300px at 8% 100%, color-mix(in srgb, #a27acb 16%, transparent), transparent 70%),
+    color-mix(in srgb, var(--surface) 94%, transparent);
+}
+:root[data-theme="dark"] .lawtest-mark { opacity: .07; }
+:root[data-theme="dark"] .lawtest-cta { background: color-mix(in srgb, var(--surface) 88%, transparent); }
+
+@media (max-width: 1000px) {
+  .lawtest-hero { grid-template-columns: 1fr; gap: 18px; }
+  .lawtest-cta { max-width: 420px; align-items: stretch; }
+  .lawtest.lawtest-detailed .lawtest-cta .button { width: 100%; min-width: 0; }
+  .lawtest-features ul { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 760px) {
+  .lawtest.lawtest-detailed { margin: 24px 0 40px; border-radius: 22px; }
+  .lawtest-hero { grid-template-columns: 1fr; gap: 18px; padding: 22px 22px 18px; }
+  .lawtest-intro { grid-template-columns: 60px minmax(0, 1fr); gap: 14px; }
+  .lawtest.lawtest-detailed .lexlab-logo { flex-basis: 60px; width: 60px; height: 60px; padding: 7px; border-radius: 16px; }
+  .lawtest.lawtest-detailed h2 { font-size: 34px; }
+  .lawtest.lawtest-detailed .lawtest-heading > p:last-child { font-size: 12px; }
+  .lawtest-body { padding: 0 22px 22px; }
+  .lawtest-features ul { grid-template-columns: 1fr; }
+  .lawtest-mark { font-size: 150px; top: -24px; right: 10px; }
+  .lawtest-cta { max-width: none; }
+  .lawtest-visual { height: 132px; }
+  .lexlab-scales { width: 138px; height: 118px; }
+  .lexlab-orbit-one { width: 130px; height: 130px; }
+  .lexlab-orbit-two { width: 96px; height: 96px; }
+  .lawtest.lawtest-detailed .lawtest-cta .button { width: 100%; min-width: 0; }
+}
+
+@media (max-width: 380px) {
+  .lawtest-intro { grid-template-columns: 1fr; }
+  .lawtest.lawtest-detailed .lexlab-logo { width: 52px; height: 52px; flex-basis: 52px; }
+  .lawtest.lawtest-detailed h2 { font-size: 30px; }
+  .lawtest-visual { height: 118px; }
+  .lexlab-scales { width: 124px; height: 106px; }
+  .lexlab-orbit-one { width: 116px; height: 116px; }
+  .lexlab-orbit-two { width: 86px; height: 86px; }
+}

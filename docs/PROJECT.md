@@ -215,10 +215,28 @@ gated by `AUTH_HOSTED_DEMO_ACCOUNTS=true`.
 
 ## 6. Content, admin and reporting
 
-- `/admin` is protected and offers an overview, members, subscription controls, simulated payment
-  records, attempt monitoring, content previews/review notes, audit history, CSV exports and a
-  configuration reference.
-- Existing catalog items are edited through `ContentDraft` → review → immutable `PublishedContent`.
+- `/admin` is protected and offers an overview (with an attention row), users, subscriptions,
+  payments (plan orders / single-exam purchases), attempts (exercises / mocks / official papers),
+  content, prices, audit history, CSV exports and settings. Every list has search, filters and
+  numbered pagination with totals (20 rows per page).
+- `/admin/users/[id]` is the user record: account facts, sign-in methods, totals paid, active plans,
+  IP addresses and other accounts seen on the same IP, admin notes, and paginated activity
+  (sign-ups, sign-ins with IP/device, password changes), payments, attempts, live sessions and admin
+  history. Actions: note, grant/extend or expire a month, sign out everywhere, suspend/unsuspend.
+- Suspension (`User.suspendedAt`) is admin-only (`input:false`), signs the user out, is refused at
+  session creation (`ACCOUNT_SUSPENDED`) and by `getSession`/`apiUser`. Admins and the acting admin
+  cannot be suspended. `UserEvent` keeps the durable activity record because sessions are deleted on
+  sign-out; logging never blocks sign-in. Activity starts from the 2026-10-30 migration.
+- Monthly plan prices are editable in the Prices tab (`PlanPrice`, ₮1,000–₮1,000,000 in steps of
+  ₮100, reason required, audited). New and unpaid orders use the current price; paid orders keep their
+  amount. Missing rows fall back to `subscriptions/plans.ts`. The single-mock price stays ₮10,000 in
+  code.
+- Wrong answers and typos are fixed per question on `/admin/content/[key]` (searchable, paginated
+  list; prompt, passage, options, answer key, explanation). Each fix is validated with the same shape
+  and answer-key rules and published immediately as a new version by one admin (owner decision
+  2026-10-30); it is blocked while an unpublished draft exists. Earlier attempts keep their version.
+  Official EEC papers stay read-only.
+- Existing catalog items are edited through `ContentDraft` → optional review → immutable `PublishedContent`.
   Runtime definitions must be read through `src/modules/content/published.ts`; never bypass version
   resolution in grading or new attempts.
 - Exact-version stateless grading preserves prior results. Cross-version saved-attempt resume must
@@ -407,7 +425,7 @@ the changed area:
 | --- | --- |
 | `auth_recovery_smoke.py` | Verification, password recovery, auth/linking boundaries; port 3002 |
 | `homepage_polish_smoke.py` | Scroll motion, reduced motion/no JS, themes/mobile, Speaking discovery and return path, Google-link UI recovery |
-| `admin_smoke.py` | Admin access, reports, controls and mobile layout |
+| `admin_smoke.py` | Admin access, user records, suspension, activity, prices, question fixes, pagination and mobile layout |
 | `profile_smoke.py` | Profile updates and session revocation |
 | `theme_smoke.py` | Light/dark persistence and contrast |
 | `demo_accounts_smoke.py` | Local demo login and shared-data protections |

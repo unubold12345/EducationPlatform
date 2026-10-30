@@ -22,6 +22,43 @@ model User {
   subscriptionOrders SubscriptionOrder[]
   adminMembership AdminMembership?
   paperAttempts PaperAttempt[]
+  suspendedAt DateTime?
+  suspendedReason String?
+  events UserEvent[]
+  adminNotes AdminNote[]
+}
+
+// Account activity kept for support and fraud review: sign-ins with IP/device, sign-ups and
+// credential changes. Sessions are deleted on sign-out, so this is the durable record.
+model UserEvent {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields:[userId], references:[id], onDelete:Cascade)
+  type String
+  ipAddress String?
+  userAgent String?
+  details Json?
+  createdAt DateTime @default(now())
+  @@index([userId,createdAt])
+  @@index([ipAddress])
+}
+
+model AdminNote {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields:[userId], references:[id], onDelete:Cascade)
+  authorId String
+  text String
+  createdAt DateTime @default(now())
+  @@index([userId,createdAt])
+}
+
+// Admin-set monthly plan prices. Missing rows fall back to the defaults in subscriptions/plans.ts.
+model PlanPrice {
+  program String @id
+  amountMnt Int
+  updatedBy String
+  updatedAt DateTime @updatedAt
 }
 
 model AdminMembership {

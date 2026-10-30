@@ -1,6 +1,7 @@
 
 :root{--ink:#172b42;--muted:#5b6b7c;--blue:#244ed8;--blue-dark:#1838a7;--sky:#eaf2fc;--line:#dfe6ee;--white:#fff;--paper:#f7f9fc;--purple:#eeeafb;--green:#e8f3ee;--radius:16px;--surface:#fff;--surface-hover:#f1f3fa}
 :root{color-scheme:light}
+select option,select optgroup{background-color:var(--surface);color:var(--ink)}
 :root[data-theme="dark"]{color-scheme:dark;--ink:#efeff7;--muted:#a1a1b6;--blue:#a49bff;--blue-dark:#c8c2ff;--sky:#171529;--line:#252534;--white:#07070d;--paper:#0f0f18;--purple:#21182f;--green:#102820;--surface:#101019;--surface-hover:#171722}
 .header-actions{display:flex;align-items:center;gap:12px;flex-shrink:0}
 .theme-toggle{width:44px;height:44px;padding:11px;display:grid;place-items:center;flex-shrink:0;border:1px solid var(--line);border-radius:10px;background:var(--white);color:var(--ink)}
@@ -212,6 +213,7 @@ main:has(.exam-session)>.education-backdrop{display:none}
 .profile-link{display:inline-flex;align-items:center;gap:9px;min-height:40px;padding:9px 13px;border:1px solid var(--line);background:var(--surface);border-radius:10px;font-size:11px;font-weight:600;white-space:nowrap}
 .profile-link svg{width:18px;height:18px;flex-shrink:0}
 .profile-link:hover{border-color:var(--blue);color:var(--blue)}
+:root:not([data-account="member"]) .account-entry .account-label-member,:root[data-account="member"] .account-entry .account-label-guest{display:none}
 .account-page-heading{display:flex;justify-content:space-between;align-items:center;gap:24px;margin:12px 0 34px}
 .account-page-heading h1{font-size:36px;letter-spacing:-1.4px}
 .account-page-heading>div>p:last-child{font-size:13px;margin-top:12px}

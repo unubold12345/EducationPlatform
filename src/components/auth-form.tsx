@@ -41,6 +41,7 @@ export function AuthForm({ register, nextPath = "/dashboard", demoAccounts = [],
         : await authClient.signIn.email({ email, password });
       if (result.error) {
         if (result.error.code === "EMAIL_NOT_VERIFIED") { router.push("/verify-email?email=" + encodeURIComponent(email)); return; }
+        if (result.error.code === "ACCOUNT_SUSPENDED") { setError("Энэ бүртгэлийг түр хаасан байна. Дэмжлэгтэй холбогдоно уу."); return; }
         setError(result.error.status === 429 ? "Олон удаа оролдсон байна. Түр хүлээгээд дахин оролдоно уу." : register ? "Бүртгэл үүсгэж чадсангүй. Мэдээллээ шалгах эсвэл нэвтрэх хэсгийг ашиглана уу." : "Имэйл эсвэл нууц үг буруу байна.");
       } else if (register && verificationRequired) { router.push("/verify-email?email=" + encodeURIComponent(email)); }
       else { router.push(nextPath); router.refresh(); }

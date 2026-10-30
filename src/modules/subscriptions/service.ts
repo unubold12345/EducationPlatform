@@ -2,12 +2,15 @@ import "server-only";
 import { getDb } from "@/lib/db";
 import { ApiError } from "@/lib/api";
 import { mockPilotPaymentsEnabled } from "@/lib/local-pilot";
-import { findSubscriptionPlan,addCalendarMonth } from "./plans";
+import { addCalendarMonth } from "./plans";
+import { pricedPlan } from "./prices";
 
 const fields={id:true,program:true,amountMnt:true,currency:true,provider:true,status:true,createdAt:true,paidAt:true,periodStart:true,periodEnd:true} as const;
 export async function createSubscriptionOrder(program:string,userId:string) {
   if(!mockPilotPaymentsEnabled())throw new ApiError(403,"Туршилтын төлбөр идэвхгүй байна.");
-  const plan=findSubscriptionPlan(program);if(!plan)throw new ApiError(404,"Багц олдсонгүй.");
+  const plan=await pricedPlan(program);if(!plan)throw new ApiError(404,"Багц олдсонгүй.");
+  // An unpaid order follows the current price; paid orders keep the amount they were paid at.
+  await getDb().subscriptionOrder.updateMany({where:{activeKey:userId+":"+program,status:{not:"PAID"},amountMnt:{not:plan.amountMnt}},data:{amountMnt:plan.amountMnt}});
   return getDb().subscriptionOrder.upsert({where:{activeKey:userId+":"+program},update:{},create:{userId,program,amountMnt:plan.amountMnt,activeKey:userId+":"+program},select:fields});
 }
 export async function confirmSubscriptionOrder(id:string,userId:string,decision:"success"|"decline") {
@@ -16,7 +19,7 @@ export async function confirmSubscriptionOrder(id:string,userId:string,decision:
     const order=await tx.subscriptionOrder.findFirst({where:{id,userId},select:fields});
     if(!order)throw new ApiError(404,"Захиалга олдсонгүй.");
     if(order.status==="PAID")return order;
-    const plan=findSubscriptionPlan(order.program);
+    const plan=await pricedPlan(order.program,tx);
     if(!plan||order.amountMnt!==plan.amountMnt||order.currency!=="MNT"||order.provider!=="MOCK")throw new ApiError(409,"Захиалгын мэдээлэл зөрүүтэй байна.");
     if(decision==="decline") {
       await tx.subscriptionOrder.updateMany({where:{id,userId,status:{not:"PAID"}},data:{status:"DECLINED"}});

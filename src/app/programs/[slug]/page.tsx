@@ -1,5 +1,5 @@
 export const dynamic = "force-dynamic";
-import { findSubscriptionPlan } from "@/modules/subscriptions/plans";
+import { pricedPlan } from "@/modules/subscriptions/prices";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -21,7 +21,7 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
   const exerciseSets = await getExercises();
   const workshops = await Promise.all(guidedTasks.map(task => getWorkshop(task.slug).then(value => value!)));
   const sets = exerciseSets.filter(set => set.program === slug);
-  const plan = findSubscriptionPlan(slug)!;
+  const plan = (await pricedPlan(slug))!;
   const totalQuestions = sets.reduce((sum, set) => sum + set.questions.length, 0);
   const totalMinutes = sets.reduce((sum, set) => sum + set.minutes, 0);
   const firstSet = sets[0];

@@ -11,6 +11,7 @@ export function privateJson(data: unknown, status = 200) {
 export async function apiUser(request: Request) {
   const session = await getAuth().api.getSession({ headers: request.headers });
   if (!session) throw new ApiError(401, "Нэвтэрч орно уу.");
+  if (session.user.suspendedAt) throw new ApiError(403, "Энэ бүртгэлийг түр хаасан байна.");
   if (!verificationAllowed(session.user, process.env)) throw new ApiError(403, "Имэйлээ баталгаажуулж орно уу.");
   return session.user;
 }

@@ -3,11 +3,13 @@ import { getSession } from "@/lib/session";
 import { getDb } from "@/lib/db";
 import { officialPaperCategory, slotsForPaper, type OfficialPaper } from "./catalog";
 import { paperAccess } from "./service";
+import { pricedPlan } from "@/modules/subscriptions/prices";
 import { PaperStart } from "./start";
 import { MOCK_PRICE_LABEL } from "../exams/pricing";
 
 export async function OfficialPaperBriefing({ paper: officialPaper }: { paper: OfficialPaper }) {
   const custom = Boolean(officialPaper.slots);
+  const entrancePrice = (await pricedPlan("entrance"))!.amountMnt;
   const english = officialPaper.subject === "english";
   const slots = slotsForPaper(officialPaper);
   const choiceCount = slots.filter(slot => slot.kind === "choice").length;
@@ -45,7 +47,7 @@ export async function OfficialPaperBriefing({ paper: officialPaper }: { paper: O
           {old ? <p className="briefing-resume-note">Нээлттэй оролдлого байна — үргэлжлүүлэх боломжтой.</p> : null}
           {access ? <PaperStart slug={officialPaper.slug}/> : session ? <div className="briefing-actions">
             <Link className="button primary" href={"/checkout/" + officialPaper.slug}>Шалгалтын эрх авах · {MOCK_PRICE_LABEL}</Link>
-            <Link className="button secondary" href="/subscribe/entrance">University Prep · ₮40,000 / сар</Link>
+            <Link className="button secondary" href="/subscribe/entrance">University Prep · ₮{entrancePrice.toLocaleString("en-US")} / сар</Link>
           </div> : <Link className="button primary" href={"/login?next=" + encodeURIComponent("/exams/" + officialPaper.slug)}>Нэвтэрч эхлэх →</Link>}
           <p className="fine-print briefing-payment-note">Төлбөр нь шалгалтын цаг эхлүүлэхгүй.</p>
         </div>

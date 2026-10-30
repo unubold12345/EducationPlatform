@@ -15,3 +15,8 @@ export function formatBillingDate(value:string) {
   const parts=Object.fromEntries(new Intl.DateTimeFormat("en-GB",{timeZone:"Asia/Ulaanbaatar",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(new Date(value)).map(part=>[part.type,part.value]));
   return `${parts.year}.${parts.month}.${parts.day} · ${parts.hour}:${parts.minute}`;
 }
+// Admin price edits stay in whole hundreds of tugrik within a sane monthly range.
+export const PLAN_PRICE_LIMITS = { min: 1000, max: 1000000, step: 100 } as const;
+export function validPlanPrice(value: unknown): value is number {
+  return typeof value === "number" && Number.isInteger(value) && value >= PLAN_PRICE_LIMITS.min && value <= PLAN_PRICE_LIMITS.max && value % PLAN_PRICE_LIMITS.step === 0;
+}

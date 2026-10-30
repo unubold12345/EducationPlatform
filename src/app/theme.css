@@ -272,7 +272,7 @@ p { color: var(--muted); }
   box-shadow: none;
 }
 :root[data-theme="dark"] .button.secondary { background: transparent; color: var(--ink); border-color: var(--line); }
-.button.secondary:hover:not(:disabled) { background: color-mix(in srgb, var(--ink) 6%, transparent); border-color: color-mix(in srgb, var(--ink) 32%, transparent); }
+.button.secondary:hover:not(:disabled), :root[data-theme="dark"] .button.secondary:hover:not(:disabled) { background: color-mix(in srgb, var(--ink) 6%, transparent); border-color: color-mix(in srgb, var(--ink) 32%, transparent); }
 .button.small { min-height: 40px; padding: 9px 16px; font-size: 12px; }
 
 .text-link { font-size: 12px; font-weight: 600; color: var(--muted); transition: color .15s; }
@@ -903,7 +903,8 @@ body:has(.exam-session) .education-backdrop { display: none; }
 .demo-account-avatar { width: 30px; height: 30px; border-radius: 9px; font-family: var(--font-mono); font-size: 9px; }
 .demo-account-button strong { font-size: 10.5px; }
 .demo-account-button small { font-size: 9px; }
-.google-sign-in { width: 46px; min-height: 46px; border-radius: 50%; margin-inline: auto; }
+.auth-form .google-sign-in { width: 48px; min-height: 48px; padding: 0; display: grid; place-items: center; justify-self: center; border-radius: 50%; margin-inline: auto; }
+.auth-form .google-sign-in:hover:not(:disabled) { transform: none; }
 .auth-recovery .auth-card { margin-inline: auto; }
 .form-success { color: var(--blue); font-size: 12px; }
 .error-message { font-size: 12px; border-radius: 12px; padding: 12px 14px; background: #2a1418; color: #ffb7bd; border: 1px solid #5a2a33; }

@@ -11,7 +11,7 @@ import "./theme.css";
 
 const manrope = localFont({ src: "./fonts/Manrope-Variable.ttf", variable: "--font-ui", weight: "200 800", display: "swap" });
 
-const themeScript = `(function(){var t;try{t=localStorage.getItem('education-theme')}catch{}document.documentElement.dataset.theme=t==='dark'||t==='light'?t:matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'})()`;
+const themeScript = `(function(){var t;try{t=localStorage.getItem('education-theme')}catch{}document.documentElement.dataset.theme=t==='dark'||t==='light'?t:matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';var a;try{a=localStorage.getItem('education-account')}catch{}document.documentElement.dataset.account=a==='member'?'member':'guest'})()`;
 
 export const metadata: Metadata = {
   title: { default: "Education — Суралцах дараагийн алхам", template: "%s | Education" },

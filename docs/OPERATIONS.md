@@ -1375,3 +1375,90 @@ Agent: Claude Code (Opus 5.5).
 - `git diff --check` is clean. A secret scan of 47 text deliverables found only the local `BETTER_AUTH_URL` origin, which is not a secret. `.claude/` is excluded. The real-provider `speaking_lab_smoke.py` and hosted suites were not run.
 - The stale Codex `next start` on 3001 was stopped for the rebuild after its claim was released. A new preview runs on 3001.
 
+## 39. Minimal full-width admin workspace — 2026-10-30
+
+Agent: Opencode (DeepSeek V4.1 Flash).
+
+- Owner asked for a much simpler, minimalistic admin panel: desktop full-width, no decorative
+  homepage background or marketing-page structure.
+- Added `src/app/admin/admin.css`, imported by `/admin` and `/admin/content/[key]`. On admin routes
+  it removes the body aurora/grid, `EducationBackdrop` and marketing footer, stretches the page and
+  header to full width, and replaces the decorative shell with a plain top bar, a text-only sidebar,
+  four flat metric columns, simple bordered tables/forms/cards, a three-column content grid and
+  plain settings sections. The content preview keeps a readable measure.
+- No admin queries, permissions, mutations, exports, previews, pagination or tests were changed;
+  the CSS is scoped to `.admin-page`/`.admin-preview`. The home page keeps its normal decorative
+  backdrop.
+- Checks on the combined tree: `npm run lint` pass; `npm run typecheck` pass; `npm run build` pass
+  (61 routes); `admin_smoke.py` pass (authorization, controls, audit, CSV exports, content and paper
+  previews, 390/320 light/dark, and the home backdrop assertion). Fresh 1440 light/dark and 390
+  screenshots were inspected; no horizontal page overflow.
+- The local 3001 preview and QA database were used after the work board cleared; only reserved QA
+  rows were created. No hosted data was touched. No commit, push or deployment was performed.
+
+## 40. Small dark-mode and header fixes — 2026-10-30
+
+Agent: Claude Code (Opus 5.5).
+
+- Owner listed three small fixes while Opencode works on the admin panel. No `src/app/admin/**` file was touched. Testing used a separate `next dev -p 3005`, not Opencode's `build + 3001`.
+- Dark hovers: `:root[data-theme="dark"] .button:hover` (white `--btn-hover`) outranked `.button.secondary:hover`, so every secondary button, including Google sign-in, turned white on hover in dark mode. The secondary hover now carries the same dark-theme specificity.
+- Google button: `.auth-form .button { width: 100% }` in theme.css overrode the circle size, which made the icon a full-width oval. It is now a 48px circle without the lift on hover.
+- Dropdowns: transparent selects (Essay Studio) opened white option lists with light text on Windows. `select option`/`optgroup` now use `--surface`/`--ink` in both themes, which also covers admin selects through globals.css.
+- Header flash: `AccountLink` waited for the client session and showed "Нэвтрэх" meanwhile. The head theme script now also copies a non-secret `education-account` localStorage hint to `<html data-account>`. While the session loads, the link shows the last known label, and the real session then corrects the label and the hint. Access is unchanged: the hint only picks which label is visible.
+- Checks: lint pass, typecheck pass, 82/82 unit tests pass. A scratch Playwright check on 3005 (dark) passed: Google button 48px with a dark hover, secondary hover stays dark, header label follows the hint from first paint and corrects from "member" to the signed-out session, option colors dark/light. Sign-in could not be exercised on 3005 because the same-origin check trusts only 3001 (HTTP 403, as designed). After Opencode released `build + 3001`, the production build passed. With owner approval, the stale `next start -p 3001` was stopped and the preview restarted on that build. Run serially on 3001: `theme_smoke.py` and `homepage_polish_smoke.py` pass; the small-fixes check passes again; a signed-in refresh check on `/`, `/exams` and `/practice` shows only "Миний профайл" from first paint. Its first run failed only at the final Cyrillic print in the Windows console; the rerun in UTF-8 mode passed.
+- Not committed or pushed.
+
+## 41. Complete admin panel: users, suspension, activity, question fixes, prices, pagination — 2026-10-30
+
+Agent: Claude Code (Opus 5.5).
+
+- Owner asked for an admin panel that can fix exam/exercise answers, see enough about users to manage
+  them and catch scams, change monthly plan prices, and be better organized with pagination. Owner
+  decisions: admins may suspend accounts; one admin may fix and publish without a second reviewer.
+- Database: migration `20261030090000_admin_management` (applied locally only) adds
+  `User.suspendedAt/suspendedReason`, `UserEvent` (sign-up, sign-in with IP/device, password change),
+  `AdminNote` and `PlanPrice`. Vercel's build runs `prisma migrate deploy`, so a push applies it to
+  the hosted database. Activity history starts at this migration; earlier sign-ins are not recorded.
+- Auth: `suspendedAt` is an admin-only additional field (`input:false`). Session creation refuses a
+  suspended user (`ACCOUNT_SUSPENDED`, shown on the login form); `getSession` and `apiUser` refuse
+  one too; suspending also deletes all sessions. Admins and the acting admin cannot be suspended.
+  Activity logging uses Better Auth database hooks and never blocks sign-in. IPv6 is stored in
+  canonical short form so repeat sign-ins group together.
+- Admin UI: one shared shell for `/admin`, `/admin/users/[id]` and `/admin/content/[key]`. Tabs:
+  overview (metrics plus suspended / pending orders / unpublished drafts / prices), users (filters:
+  active plan, paid, unverified, suspended, admin; last sign-in), subscriptions (per program, active
+  or expired), payments (plan orders vs single-exam purchases), attempts (exercises / mocks / papers),
+  content (search, program, edited/draft filters), prices, audit (action filter), settings. Every list
+  has numbered pagination with totals (20 per page); the question list pages by 15.
+- User record: account facts, sign-in methods, total paid and declined count, active plans, top IPs
+  and other accounts seen on the same IPs, admin notes, and paginated activity, payments, attempts,
+  live sessions and admin history. One action form: note, grant/extend month, expire month, sign out
+  everywhere, suspend/unsuspend, each with a required reason and an audit record.
+- Content: `/admin/content/[key]` lists every question (including adaptive module-two variants) with
+  its current answer. "Засах" edits prompt, passage, options, the answer key and explanation; the
+  server applies the fix to the latest published body, re-runs the shape and answer-key validation,
+  publishes a new version and audits field-level before/after. Fixes are refused while an
+  unpublished draft exists or on a stale revision. The full editor now publishes a saved draft
+  without a separate review step. Earlier attempts keep their version; official EEC papers stay
+  read-only. No regrading of past attempts was added.
+- Prices: the Prices tab sets each monthly plan (₮1,000–₮1,000,000, steps of ₮100, reason
+  required, audited with before/after). Checkout, `/plans`, `/programs/[slug]`, `/subscribe/[program]`
+  and the 2020 paper briefing read the current price. Unpaid orders are re-priced; paid orders keep
+  their amount. The single-mock ₮10,000 price is unchanged.
+- Bug caught by the suites and fixed: subscription confirmation returned 503 because the new price
+  lookup used the global client inside the payment transaction. It now reads through the transaction.
+- Checks: lint pass, typecheck pass, 89/89 unit tests (new `admin-management.test.mjs`: question
+  listing for all exercises and mocks, accepted/refused fixes, pagination window, price rules, IP
+  normalization), production build pass. On the final build: `admin` (updated: suspension refusal,
+  self-suspension refusal, notes, activity, price validation and /plans display, question fix
+  publish/restore, invalid and stale fixes, audit filter, pagination), `subscriptions` and
+  `exercises` pass. On the build before the transaction fix: `browser`, `accounts`, `exams`,
+  `payments` and `profile` pass. A first `admin` run passed; one later run hit an auth 429 and its
+  standalone rerun passed. Visual check in the preview: overview, users, user record, content fixer
+  and prices in dark mode.
+- Not run: `auth_recovery_smoke.py` needs the 3002 recovery QA server, and its launcher
+  `artifacts/start-auth-recovery.mjs` is not on this machine. Hosted checks were not run.
+- Test residue: local `sat-algebra` now has two extra published versions (explanation edited and
+  restored) and the SAT price row is back at ₮60,000.
+- Not committed or pushed.
+

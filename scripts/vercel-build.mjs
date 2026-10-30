@@ -11,8 +11,9 @@ try { database=new URL(process.env.DATABASE_URL);auth=new URL(process.env.BETTER
 catch { throw new Error("Invalid deployment database or authentication URL."); }
 const loopback=host=>["localhost","127.0.0.1","[::1]"].includes(host);
 if(!["postgres:","postgresql:"].includes(database.protocol)||loopback(database.hostname))throw new Error("Vercel requires a hosted PostgreSQL database, not the local development database.");
-// A pooled (PgBouncer) DATABASE_URL serves the app; migrations need DIRECT_DATABASE_URL beside it.
-if(database.hostname.includes("-pooler.")&&!process.env.DIRECT_DATABASE_URL?.trim())throw new Error("A pooled DATABASE_URL needs DIRECT_DATABASE_URL for migrations.");
+// A pooled (PgBouncer) DATABASE_URL serves the app. Migrations prefer DIRECT_DATABASE_URL; without
+// it they run through the pooler, which this Neon project has done successfully, so only warn.
+if(database.hostname.includes("-pooler.")&&!process.env.DIRECT_DATABASE_URL?.trim())console.warn("Warning: pooled DATABASE_URL without DIRECT_DATABASE_URL; migrations will use the pooled connection.");
 if(process.env.DIRECT_DATABASE_URL?.trim()){
  let direct;try{direct=new URL(process.env.DIRECT_DATABASE_URL);}catch{throw new Error("Invalid DIRECT_DATABASE_URL.");}
  if(!["postgres:","postgresql:"].includes(direct.protocol)||loopback(direct.hostname)||direct.hostname.includes("-pooler."))throw new Error("DIRECT_DATABASE_URL must be the hosted, non-pooled PostgreSQL address.");

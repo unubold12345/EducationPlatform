@@ -1487,8 +1487,7 @@ Agent: Claude Code (Opus 5.5).
   (`src/lib/account-throttle.ts`, pure rule in `account-throttle-rule.ts`): 10 sign-in attempts per
   email per minute, then 429 for that account only, even with the right password.
 - Pooled database: `prisma.config.ts` uses `DIRECT_DATABASE_URL` (if set) for Prisma CLI;
-  `scripts/vercel-build.mjs` refuses a Neon `-pooler.` `DATABASE_URL` without a direct, non-pooled
-  `DIRECT_DATABASE_URL`. No hosted setting was changed. Whether production already uses the pooled
+  `scripts/vercel-build.mjs` checks `DIRECT_DATABASE_URL` (see section 44 for the corrected rule). No hosted setting was changed. Whether production already uses the pooled
   address was not checked (Vercel CLI is not installed here); switching is an owner action in Vercel.
 - Monitoring: public `GET /api/health` (`{ok,database,databaseMs}`, 503 when the database is down,
   no counts or config). `/admin?tab=settings` adds a system snapshot (database latency, sign-ins
@@ -1511,4 +1510,20 @@ Agent: Claude Code (Opus 5.5).
   missing on this machine). Test residue: 100 load-test accounts with paid simulated mock orders and
   in-progress `sat-full-01` attempts in the local database.
 - Not committed or pushed.
+
+## 44. Delivery and failed-deploy fix: before-growth preparations — 2026-10-30
+
+Agent: Claude Code (Opus 5.5).
+
+- Owner authorized the push. `4543608` (section 43) was pushed, but its Vercel deployment failed after
+  15 seconds, before migrations or `next build` (a normal build takes about 4.5 minutes). Production kept
+  serving `b988c02`. The Vercel logs need a signed-in Vercel session, which was not available here, so
+  the cause is inferred: the only new pre-build check refused a Neon `-pooler.` `DATABASE_URL` without
+  `DIRECT_DATABASE_URL`. That means production already uses the pooled address, and earlier
+  deployments migrated through it successfully.
+- Fix: a pooled `DATABASE_URL` without a direct URL now prints a build warning; a pooled, local or
+  invalid `DIRECT_DATABASE_URL` still fails. The deployment-config test checks that the build continues
+  past the database checks with a pooled URL.
+- Optional owner action: add the direct (non-`-pooler`) Neon address as `DIRECT_DATABASE_URL` in Vercel
+  so migrations use a direct connection.
 

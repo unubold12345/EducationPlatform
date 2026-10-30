@@ -362,7 +362,8 @@ Before writing framework-specific code, read the installed Next.js guides in
   attempts per email per minute (`src/lib/account-throttle.ts`), then HTTP 429 for that account only.
 - Database: each Vercel instance opens up to 5 connections. For many students use Neon's pooled
   address as `DATABASE_URL` and the direct address as `DIRECT_DATABASE_URL`; Prisma CLI (migrate,
-  seed) uses the direct one and `scripts/vercel-build.mjs` refuses a pooled URL without it.
+  seed) uses the direct one. Without it the build warns and migrations use the pooled address, which
+  production does today and has migrated successfully; a pooled or local `DIRECT_DATABASE_URL` fails.
 - Monitoring: `GET /api/health` returns `{ok, database, databaseMs}` (200, or 503 when the database
   is unreachable) for an external uptime monitor. `/admin?tab=settings` shows database latency,
   sign-ins, active users, live exams, the busiest rate-limit keys and when to upgrade.

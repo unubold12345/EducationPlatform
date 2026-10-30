@@ -18,3 +18,10 @@ test("Vercel build rejects unsafe canonical auth URLs and short secrets",()=>{
  }
  const short=run({...base,BETTER_AUTH_URL:"https://education.example",BETTER_AUTH_SECRET:"short"});assert.notEqual(short.status,0);assert.match(short.stderr,/at least 32/);
 });
+test("a pooled Neon DATABASE_URL requires a direct, non-pooled migration URL",()=>{
+ const base={BETTER_AUTH_URL:"https://education.example",BETTER_AUTH_SECRET:"s".repeat(32)};
+ const pooled="postgresql://test:test@ep-x-pooler.ap-southeast-1.aws.neon.tech/education";
+ const missing=run({...base,DATABASE_URL:pooled,DIRECT_DATABASE_URL:""});assert.notEqual(missing.status,0);assert.match(missing.stderr,/needs DIRECT_DATABASE_URL/);
+ const wrong=run({...base,DATABASE_URL:pooled,DIRECT_DATABASE_URL:pooled});assert.notEqual(wrong.status,0);assert.match(wrong.stderr,/non-pooled/);
+ assert.ok(!wrong.stderr.includes("test:test"),"connection strings are not exposed");
+});

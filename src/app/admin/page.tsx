@@ -8,7 +8,7 @@ import { redirect } from "next/navigation";
 import type { Prisma } from "@/generated/prisma/client";
 import { getSession } from "@/lib/session";
 import { getDb } from "@/lib/db";
-import { isAdmin,contentCatalog } from "@/modules/admin/service";
+import { isAdmin,contentCatalog,databaseLatency } from "@/modules/admin/service";
 import { subscriptionPlans } from "@/modules/subscriptions/plans";
 import { planPrices } from "@/modules/subscriptions/prices";
 import { pageInfo,parsePage } from "@/modules/admin/paging";
@@ -186,7 +186,30 @@ export default async function AdminPage({searchParams}:{searchParams:Promise<Rec
     </AdminShell>;
   }
 
-  return <AdminShell tab={tab} title={title} name={name}><div className="admin-settings-grid">
+  // Settings: a live system snapshot to decide when to upgrade hosting, then the security notes.
+  const dbMs=await databaseLatency();
+  const hour=new Date(now.getTime()-36e5),day=new Date(now.getTime()-864e5);
+  const [signInsHour,signInsDay,signUpsDay,activeDay,sessions,mocksLive,papersLive,attemptsDay,limited]=await Promise.all([
+    db.userEvent.count({where:{type:"sign-in",createdAt:{gte:hour}}}),db.userEvent.count({where:{type:"sign-in",createdAt:{gte:day}}}),
+    db.userEvent.count({where:{type:"sign-up",createdAt:{gte:day}}}),db.userEvent.groupBy({by:["userId"],where:{createdAt:{gte:day}}}).then(rows=>rows.length),
+    db.session.count({where:{expiresAt:{gt:now}}}),db.mockAttempt.count({where:{status:"IN_PROGRESS"}}),db.paperAttempt.count({where:{status:"IN_PROGRESS"}}),
+    db.attempt.count({where:{createdAt:{gte:day}}}),
+    db.rateLimit.findMany({where:{lastRequest:{gte:BigInt(now.getTime()-6e4)}},orderBy:{count:"desc"},take:5,select:{key:true,count:true}}),
+  ]);
+  return <AdminShell tab={tab} title={title} name={name}>
+    <div className="admin-section-heading"><h3>Системийн төлөв</h3><span>Одоогийн хуудсыг ачаалах үеийн хэмжилт</span></div>
+    <dl className="admin-facts">
+      <div><dt>Өгөгдлийн сангийн хариу</dt><dd>{dbMs} ms<small>{dbMs<100?"Хэвийн":dbMs<400?"Удаашралтай":"Удаан — сервер сэрж байгаа эсвэл ачаалал их"}</small></dd></div>
+      <div><dt>Нэвтрэлт · 1 цаг / 24 цаг</dt><dd>{signInsHour} / {signInsDay}</dd></div>
+      <div><dt>Идэвхтэй хэрэглэгч · 24 цаг</dt><dd>{activeDay}<small>{signUpsDay} шинэ бүртгэл</small></dd></div>
+      <div><dt>Хүчинтэй сесс</dt><dd>{sessions}</dd></div>
+      <div><dt>Явагдаж буй шалгалт</dt><dd>{mocksLive+papersLive}<small>{mocksLive} mock · {papersLive} албан материал</small></dd></div>
+      <div><dt>Дасгалын оролдлого · 24 цаг</dt><dd>{attemptsDay}</dd></div>
+    </dl>
+    {limited.length>0&&<><div className="admin-section-heading"><h3>Хамгийн их хүсэлт · сүүлийн 1 минут</h3><span>Нэвтрэлтийн хязгаарлалт IP бүрээр</span></div><ul className="admin-log">{limited.map(row=><li key={row.key}><code>{row.key}</code> · {row.count} хүсэлт</li>)}</ul></>}
+    <div className="admin-settings-grid">
+    <section className="settings-card"><h3>Хэзээ өргөжүүлэх вэ</h3><ul><li>Өгөгдлийн сангийн хариу байнга 400 ms-ээс дээш эсвэл Neon CPU 80%+ бол Neon-ийн хэмжээг (CU) нэмэх, autoscaling асаах.</li><li>Өдөр бүр бодит хэрэглэгчтэй болмогц Neon-ийн 5 минутын autosuspend-ийг унтраах.</li><li>Бодит төлбөр авч эхлэхэд Vercel Pro руу шилжих.</li><li>Ярианы лабораторийн дуу хоолой, хөрвүүлэлт хамгийн их тооцоолол шаардана; өсөлттэй үед гадны үйлчилгээ рүү шилжүүлэх.</li></ul></section>
+    <section className="settings-card"><h3>Хяналт</h3><p>Гадны uptime монитор (жишээ нь UptimeRobot) <code>/api/health</code>-ийг 1–5 минут тутам шалгана: 200 бол хэвийн, 503 бол өгөгдлийн сан холбогдохгүй байна.</p></section>
     <section className="settings-card"><h3>Аюулгүй байдал</h3><ul><li>Админ эрх сервер дээр шалгагдана.</li><li>Үйлдэл бүрийн шалтгаан, түүх хадгалагдана.</li><li>Хэрэглэгчид өөртөө админ эрх олгох боломжгүй.</li><li>Түр хаасан бүртгэл нэвтэрч чадахгүй, бүх сесс нь хаагдана.</li><li>Нэвтрэлт бүрийн IP, төхөөрөмж хэрэглэгчийн хуудсанд хадгалагдана.</li></ul></section>
     <section className="settings-card"><h3>Нээлтийн өмнөх ажил</h3><p>Мэргэжлийн IELTS үнэлгээ, бодит төлбөр/буцаалт, нөөц сэргээх туршилт хараахан бэлэн биш. Сарын үнийг “Үнэ” хэсгээс өөрчилнө.</p></section>
   </div></AdminShell>;

@@ -148,6 +148,8 @@ guards against their return. Local attempts, purchases and content rows were del
 | Official EEC paper | 10,000 MNT | Per-paper purchase or University Prep |
 | Free practice | 0 | Always available |
 
+Monthly plan prices above are the defaults; admins can change them in `/admin?tab=pricing`.
+
 Local checkout is explicitly simulated: no real money, card details or payment provider. Hosted
 payments are also simulated under `HOSTED_MOCK_PAYMENTS`. A matching active plan or a prior
 per-exam/per-paper purchase is checked server-side on every new start, read, edit, audio, recording
@@ -352,6 +354,25 @@ snapshots preserve what the student actually saw.
 Before writing framework-specific code, read the installed Next.js guides in
 `node_modules/next/dist/docs/`. This project uses APIs that can differ from older Next.js versions.
 
+### Scaling and load
+
+- Auth rate limits are per IP and a school network shares one IP. `/get-session` (every page load)
+  is not limited; sign-in allows 200/min and sign-up 60/min per IP; password reset 5/min and
+  verification mail 3/min stay strict. Password guessing is capped per account instead: 10 sign-in
+  attempts per email per minute (`src/lib/account-throttle.ts`), then HTTP 429 for that account only.
+- Database: each Vercel instance opens up to 5 connections. For many students use Neon's pooled
+  address as `DATABASE_URL` and the direct address as `DIRECT_DATABASE_URL`; Prisma CLI (migrate,
+  seed) uses the direct one and `scripts/vercel-build.mjs` refuses a pooled URL without it.
+- Monitoring: `GET /api/health` returns `{ok, database, databaseMs}` (200, or 503 when the database
+  is unreachable) for an external uptime monitor. `/admin?tab=settings` shows database latency,
+  sign-ins, active users, live exams, the busiest rate-limit keys and when to upgrade.
+- Load test: `node scripts/load-test.mjs --setup --students 100` once, then
+  `node scripts/load-test.mjs --students 100 --minutes 5`. It signs in a class at once from one IP,
+  opens pages, unlocks and starts a mock with simulated payment, and autosaves every 10 s. It refuses
+  non-local targets unless `LOAD_TEST_ALLOW_REMOTE=1` (approved staging only; never production). Local
+  results run on single-connection PGlite and one Node process, so treat them as a floor, not as
+  hosted capacity.
+
 ## 9. Local development
 
 Requirements: Node.js 24.x, npm 11 or newer, and a local PostgreSQL-compatible PGlite instance
@@ -435,6 +456,7 @@ the changed area:
 | `publishing_smoke.py` | Draft → review → published content |
 | `tutor_smoke.py` | Consent, live DeepSeek calls, quotas and active-exam denial |
 | `speaking_lab_smoke.py` | Partner picker, conversation, speech and transcription |
+| `scripts/load-test.mjs` | 100-student classroom load (sign-in rush, mock start, 10 s autosave); local by default |
 | `writing_lab_smoke.py` | Essay Studio guards and full UI loop (AI responses mocked) |
 | `additional_exams_smoke.py` | All ten added mock lifecycles, isolated purchases, save/resume, exact media, results and mobile/themes |
 | `mock_collections_smoke.py` | Four library categories, six choices per mock collection, navigation, original URLs and responsive grids |

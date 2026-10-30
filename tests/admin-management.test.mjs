@@ -5,6 +5,7 @@ import { validateContentShape, validateAnswerKeys } from "../src/modules/content
 import { pageInfo, pageWindow, parsePage } from "../src/modules/admin/paging.ts";
 import { validPlanPrice } from "../src/modules/subscriptions/plans.ts";
 import { normalizeIp } from "../src/modules/admin/ip.ts";
+import { nextAttempt, ACCOUNT_ATTEMPTS } from "../src/lib/account-throttle-rule.ts";
 import { exerciseSets } from "../src/modules/exercises/content.ts";
 import { examDefinitions } from "../src/modules/exams/definitions.ts";
 
@@ -80,3 +81,12 @@ test("activity IPs are stored in one canonical form so repeat sign-ins group tog
   assert.equal(normalizeIp("203.0.113.7"), "203.0.113.7");
   assert.equal(normalizeIp(""), null); assert.equal(normalizeIp(null), null);
 });
+
+test("per-account sign-in attempts allow ten per minute, then reset after the window", () => {
+  let state = null; const start = 1_000_000;
+  for (let i = 0; i < ACCOUNT_ATTEMPTS; i++) { const next = nextAttempt(state, start + i * 1000); assert.ok(next.allowed, String(i)); state = next; }
+  assert.equal(nextAttempt(state, start + 20_000).allowed, false);
+  const later = nextAttempt(state, start + 60_000);
+  assert.ok(later.allowed); assert.equal(later.count, 1);
+});
+

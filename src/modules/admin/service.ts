@@ -84,3 +84,9 @@ export async function adminMutation(actorId:string, input:unknown) {
   if(action==="set-price"){revalidatePath("/plans");revalidatePath("/programs/[slug]","page");}
   return result;
 }
+// Round-trip time of a trivial query, shared by the health endpoint and the admin system panel.
+export async function databaseLatency() {
+  const started = performance.now();
+  await getDb().$queryRaw`SELECT 1`;
+  return Math.round(performance.now() - started);
+}

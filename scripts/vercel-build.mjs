@@ -11,6 +11,12 @@ try { database=new URL(process.env.DATABASE_URL);auth=new URL(process.env.BETTER
 catch { throw new Error("Invalid deployment database or authentication URL."); }
 const loopback=host=>["localhost","127.0.0.1","[::1]"].includes(host);
 if(!["postgres:","postgresql:"].includes(database.protocol)||loopback(database.hostname))throw new Error("Vercel requires a hosted PostgreSQL database, not the local development database.");
+// A pooled (PgBouncer) DATABASE_URL serves the app; migrations need DIRECT_DATABASE_URL beside it.
+if(database.hostname.includes("-pooler.")&&!process.env.DIRECT_DATABASE_URL?.trim())throw new Error("A pooled DATABASE_URL needs DIRECT_DATABASE_URL for migrations.");
+if(process.env.DIRECT_DATABASE_URL?.trim()){
+ let direct;try{direct=new URL(process.env.DIRECT_DATABASE_URL);}catch{throw new Error("Invalid DIRECT_DATABASE_URL.");}
+ if(!["postgres:","postgresql:"].includes(direct.protocol)||loopback(direct.hostname)||direct.hostname.includes("-pooler."))throw new Error("DIRECT_DATABASE_URL must be the hosted, non-pooled PostgreSQL address.");
+}
 if(auth.protocol!=="https:"||loopback(auth.hostname)||auth.username||auth.password||auth.pathname!=="/"||auth.search||auth.hash)throw new Error("BETTER_AUTH_URL must be the canonical HTTPS site origin.");
 if(process.env.BETTER_AUTH_SECRET.length<32)throw new Error("BETTER_AUTH_SECRET must contain at least 32 characters.");
 if(process.env.AUTH_HOSTED_PILOT!=="true")throw new Error("Explicit AUTH_HOSTED_PILOT opt-in is required for this test deployment.");

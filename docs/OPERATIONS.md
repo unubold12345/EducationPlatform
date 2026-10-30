@@ -1462,3 +1462,53 @@ Agent: Claude Code (Opus 5.5).
   restored) and the SAT price row is back at ₮60,000.
 - Not committed or pushed.
 
+## 42. Delivery: admin completion, small fixes, Opencode admin workspace — 2026-10-30
+
+Agent: Claude Code (Opus 5.5).
+
+- Owner authorized commit and push. Committed `b988c02` with sections 39 (Opencode), 40 and 41 plus
+  the admin-management migration; `.claude/` and the work-board claim were excluded. Pushed to
+  `origin/codex/education-foundation` (f5e5822..b988c02).
+- Vercel production deployment completed successfully, including `prisma migrate deploy`. Checked
+  on the live site: `/`, `/plans`, `/programs/sat`, `/exams`, `/workshop` and `/login` return 200;
+  `/plans` shows the ₮40,000 / ₮60,000 prices read from the new price table; `/admin`, the pricing
+  tab and user pages redirect signed-out visitors (307); `POST /api/admin` returns 401 signed out.
+- No signed-in hosted admin check, price change or suspension was made on production.
+
+## 43. Before-growth preparation: classroom limits, pooled DB, health/monitoring, load test — 2026-10-30
+
+Agent: Claude Code (Opus 5.5).
+
+- Owner asked to do the before-growth items: classroom sign-in limits, database pooling, monitoring
+  and a 100-student load test.
+- Auth limits (`src/lib/auth.ts`): per-IP default 600/min; `/get-session` unlimited (it runs on every
+  page load and each limited call is a database write); sign-in 200/min and sign-up 60/min per IP;
+  password reset 5/min and verification mail 3/min unchanged. New per-account guard
+  (`src/lib/account-throttle.ts`, pure rule in `account-throttle-rule.ts`): 10 sign-in attempts per
+  email per minute, then 429 for that account only, even with the right password.
+- Pooled database: `prisma.config.ts` uses `DIRECT_DATABASE_URL` (if set) for Prisma CLI;
+  `scripts/vercel-build.mjs` refuses a Neon `-pooler.` `DATABASE_URL` without a direct, non-pooled
+  `DIRECT_DATABASE_URL`. No hosted setting was changed. Whether production already uses the pooled
+  address was not checked (Vercel CLI is not installed here); switching is an owner action in Vercel.
+- Monitoring: public `GET /api/health` (`{ok,database,databaseMs}`, 503 when the database is down,
+  no counts or config). `/admin?tab=settings` adds a system snapshot (database latency, sign-ins
+  1 h/24 h, active users, valid sessions, live exams, attempts, busiest rate-limit keys) and upgrade
+  guidance (Neon CU/autoscaling, autosuspend off, Vercel Pro, speech services).
+- Load test (`scripts/load-test.mjs`, results in ignored `artifacts/load-test/`): 100 reserved
+  `qa-load-NNN@example.invalid` accounts; each student signs in within a 30 s ramp from one IP,
+  opens /exams and the SAT mock briefing, unlocks and starts `sat-full-01` with simulated payment,
+  and autosaves/syncs every 10 s for 5 minutes. Local production build, PGlite (one connection).
+  - Run 1 (first limits, sign-in 60/min): 40/100 students refused at sign-in (429); 975 autosaves,
+    0 errors, autosave p95 149 ms.
+  - Run 2 (final limits): 100/100 students in, 3,845 requests, 0 errors, 1,577 autosaves, 0 conflicts.
+    p95: sign-in 2.99 s, mock briefing 2.63 s, mock start 2.22 s, autosave 578 ms, sync 74 ms.
+  - Local numbers are a floor: one Node process hashes 100 passwords and one database connection
+    serializes writes. Hosted capacity needs an approved staging run with `LOAD_TEST_ALLOW_REMOTE=1`.
+- Per-account probe: 10 wrong passwords return 401, the 11th and 12th 429, the correct password is
+  also 429 during the window, another account on the same IP signs in (200).
+- Checks: lint pass, typecheck pass, 91/91 unit tests, production build pass; `accounts`, `profile`,
+  `admin` and `browser` suites pass on the final build. `auth_recovery` not run (3002 server launcher
+  missing on this machine). Test residue: 100 load-test accounts with paid simulated mock orders and
+  in-progress `sat-full-01` attempts in the local database.
+- Not committed or pushed.
+

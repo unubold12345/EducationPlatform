@@ -8,6 +8,7 @@ import { authFeatures, isDemoEmail, verificationAllowed } from "./auth-features"
 import { scheduleAuthEmail } from "./auth-email";
 import { accountLinkingPolicy, validateGoogleIdentity } from "./auth-account-policy";
 import { recordUserEvent } from "./user-events";
+import { allowAccountAttempt } from "./account-throttle";
 
 function createAuth() {
   const baseURL = process.env.BETTER_AUTH_URL;
@@ -56,6 +57,11 @@ function createAuth() {
       if (ctx.path !== "/change-password" || !ctx.context.session) return;
       await recordUserEvent(ctx.context.session.user.id, "password-change", ctx);
     }), before: createAuthMiddleware(async ctx => {
+      // Per-account guard: the IP limit is generous for classrooms, so password guessing is capped
+      // per email address instead, wherever the attempts come from.
+      if (ctx.path === "/sign-in/email" && typeof ctx.body?.email === "string" && !await allowAccountAttempt(ctx.body.email)) {
+        throw new APIError("TOO_MANY_REQUESTS", { message: "Too many sign-in attempts for this account. Try again in a minute." });
+      }
       if (!features.hostedDemo) return;
       const email = typeof ctx.body?.email === "string" ? ctx.body.email : "";
       if (ctx.path === "/sign-up/email" && isDemoEmail(email)) throw new APIError("FORBIDDEN", { message: "Reserved demo account" });
@@ -67,9 +73,16 @@ function createAuth() {
     }) },
     advanced: { cookiePrefix: "education-platform" },
     session: { expiresIn: 60 * 60 * 24 * 7, updateAge: 60 * 60 * 24 },
+    // Limits are per IP. A whole classroom on one school network shares an IP, so sign-in and
+    // sign-up allow a class at once; the read-only session check (every page load) is not limited
+    // and so adds no rate-limit write. Recovery and verification mail stay strict.
     rateLimit: {
-      enabled: true, storage: "database", window: 60, max: 100,
-      customRules: { "/sign-up/email": { window: 60, max: 5 }, "/sign-in/email": { window: 60, max: 10 }, "/request-password-reset": { window: 60, max: 5 }, "/send-verification-email": { window: 60, max: 3 } },
+      enabled: true, storage: "database", window: 60, max: 600,
+      customRules: {
+        "/get-session": false,
+        "/sign-up/email": { window: 60, max: 60 }, "/sign-in/email": { window: 60, max: 200 }, "/sign-in/social": { window: 60, max: 200 },
+        "/request-password-reset": { window: 60, max: 5 }, "/send-verification-email": { window: 60, max: 3 },
+      },
     },
   });
 }

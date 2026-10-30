@@ -1320,7 +1320,7 @@ body:has(.exam-session) .education-backdrop { display: none; }
 .workshop-tile { display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--line); border-radius: 20px; background: color-mix(in srgb, var(--surface) 70%, transparent); color: inherit; text-decoration: none; transition: border-color .18s, background .18s, transform .18s; }
 .workshop-tile:hover { border-color: color-mix(in srgb, var(--blue) 48%, var(--line)); background: var(--surface); transform: translateY(-2px); }
 .workshop-tile-art { display: grid; place-items: end center; aspect-ratio: 4 / 3; padding: 20px 20px 0; background: radial-gradient(circle at 50% 70%, color-mix(in srgb, var(--blue) 30%, transparent), transparent 68%), color-mix(in srgb, var(--blue) 7%, var(--surface)); border-bottom: 1px solid var(--line); }
-.workshop-tile-art img { width: auto; height: 100%; max-width: 100%; object-fit: contain; }
+.workshop-partner { width: auto; height: 100%; max-width: 100%; overflow: visible; }
 .workshop-tile-body { display: flex; flex: 1; flex-direction: column; gap: 10px; padding: 22px; }
 .workshop-tile-body h2 { font-size: 21px; letter-spacing: -.02em; }
 .workshop-tile-body p { margin: 0; }

@@ -28,7 +28,7 @@ with sync_playwright() as p:
     admin=browser.new_context(viewport={"width":1440,"height":1000},color_scheme="light")
     assert admin.request.post(BASE+"/api/auth/sign-in/email",headers=ORIGIN,data={"email":demos[0]["email"],"password":demos[0]["password"]}).ok
     page=admin.new_page();errors=[];page.on("pageerror",lambda error:errors.append(str(error)))
-    page.goto(BASE+"/profile");page.get_by_role("link",name="Удирдлагын төв →").click()
+    page.goto(BASE+"/profile");page.get_by_role("link",name="Удирдлагын төв",exact=True).click()
     expect(page.get_by_role("heading",name="Удирдлагын төв",exact=False)).to_be_visible()
     page.screenshot(path=str(ART/"admin-overview-light.png"),full_page=True)
     for tab in ["users","subscriptions","payments","attempts","content","audit","settings"]:
@@ -38,7 +38,7 @@ with sync_playwright() as p:
     expect(page.locator(".admin-preview article")).to_have_count(8)
     page.locator(".admin-preview article details").first.click()
     expect(page.locator(".admin-preview article details p").first).to_be_visible()
-    for key in ["sat-full-01","ielts-academic-01","ielts-writing-data"]:
+    for key in ["sat-full-01","ielts-academic-01","ielts-writing-data"]+[f"{prefix}-{n:02}" for n in range(2,7) for prefix in ["sat-full","ielts-academic"]]:
         page.goto(BASE+"/admin/content/"+key);expect(page.locator(".admin-preview")).to_be_visible()
     for variant in "ABCD":
         page.goto(BASE+"/admin/content/eec-math-2020-"+variant.lower())

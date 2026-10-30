@@ -40,8 +40,8 @@ export default function HomePage() {
         <div className="launch-heading"><span className="eyebrow">БЭЛТГЭЛЭЭ ЭХЛҮҮЛ</span><span className="launch-icon" aria-hidden="true">↗</span></div>
         <h2 id="launch-heading">Өнөөдөр нэг алхам урагш.</h2>
         <p>Бүтэн шалгалт эсвэл сэдэвчилсэн дасгал — өөрт тохирохоо сонго.</p>
-        <Link href="/exams/sat-full-01" className="launch-option"><span className="launch-symbol">SAT</span><span><strong>Digital SAT</strong><small>98 асуулт · 2ц 14м + завсарлага · ₮10,000</small></span><span className="launch-arrow" aria-hidden="true">↗</span></Link>
-        <Link href="/exams/ielts-academic-01" className="launch-option"><span className="launch-symbol ielts">IELTS</span><span><strong>IELTS Academic</strong><small>Бүх 4 чадвар · ₮10,000</small></span><span className="launch-arrow" aria-hidden="true">↗</span></Link>
+        <Link href="/exams/sat" className="launch-option"><span className="launch-symbol">SAT</span><span><strong>Digital SAT</strong><small>98 асуулт · 2ц 14м + завсарлага · ₮10,000</small></span><span className="launch-arrow" aria-hidden="true">↗</span></Link>
+        <Link href="/exams/ielts" className="launch-option"><span className="launch-symbol ielts">IELTS</span><span><strong>IELTS Academic</strong><small>Бүх 4 чадвар · ₮10,000</small></span><span className="launch-arrow" aria-hidden="true">↗</span></Link>
         <Link className="launch-practice" href="/practice"><span><strong>Эхлээд богино дасгал хийе</strong><small>SAT Algebra · 3 асуулт · Бүртгэлгүй</small></span><span aria-hidden="true">→</span></Link>
         <div className="launch-note"><span aria-hidden="true">◷</span> Хариугаа хадгалаад, орхисон газраасаа үргэлжлүүл.</div>
       </aside>

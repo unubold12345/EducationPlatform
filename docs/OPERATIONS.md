@@ -1192,8 +1192,186 @@ Agent: Opencode (DeepSeek V4.1 Flash).
   pass; `npm run build` pass (51 routes); `browser_smoke.py`, `homepage_polish_smoke.py` and
   `theme_smoke.py` pass. `git diff --check` was clean; the credential scan found only existing
   environment-variable names in the pre-existing Gmail/Resend runbook, no secret values.
-- Committed `278fd8d` (`Add animated home atmosphere and Lexlab feature`) and pushed
-  `codex/education-foundation` to `origin`. `git ls-remote` confirmed remote HEAD
-  `278fd8d360e5d59f7977c745f83b0d71e3a84191`. The push triggers the Vercel production deployment;
-  the deployment itself was not manually verified in this increment. The work board was cleared
-  afterwards and no other files were changed.
+- Committed `278fd8d` (`Add animated home atmosphere and Lexlab feature`) and `47dc518`
+  (`Record home atmosphere and Lexlab delivery`), then pushed `codex/education-foundation` to
+  `origin`; `git ls-remote` confirmed remote HEAD `47dc518380f23e2166e2f38b949c289bb5789d95`.
+  The first Vercel build of `47dc518` failed without an app-level error. The owner asked for a
+  redeploy; an empty commit `e0d1e7f` was pushed and Vercel deployment
+  `3qnTv8L7RFBkmDtzFajmZyMgMfAp` completed successfully. Hosted verification: the canonical home
+  returned HTTP 200 with the `Lexlab` and `home-atmosphere` markup, and without the `39,900` price
+  or the separate-service copy. This post-deploy note is local and uncommitted; the work board was
+  cleared afterwards.
+
+## 32. Documentation review — 2026-10-29
+
+Agent: Codex (GPT-6).
+
+- Read all three docs files: OPERATIONS.md, PROJECT.md and ACTIVE_WORK.md, including imported-history caveats and the latest home atmosphere/Lexlab delivery record.
+- No application code, services, database, staging, commit, push or deployment changed. Recorded this review and released the work-board claim.
+- Documentation whitespace check and secret-pattern scan of this entry passed.
+
+## 33. Speaking partner redesign — 2026-10-29
+
+Agent: Claude Code (Opus 5.5).
+
+- Owner asked for a different, simple human speaking partner with a more organized, minimal UI and fewer buttons.
+- Replaced the three.js RobotExpressive "Milo" with flat SVG partners (`src/modules/speaking-lab/partner.tsx`), one per Kokoro voice: Ava (was "Heart"), Bella, Michael, Emma, George, Lewis. Blinking, listening/thinking poses, voice-driven mouth and wave/nod/shake gestures are CSS only, with reduced-motion fallbacks. The Workshop tile shows Ava.
+- Removed `three`, `@types/three` and `public/characters/milo`. The DeepSeek prompt no longer names the partner and asks the model not to invent a personal name; API shapes, guards, consent and quotas are unchanged.
+- Setup: session segmented control, topic and target band as selects, a partner picker (one choice for face and voice, with one preview link), and pace, engine, feedback language, hands-free and voice-aloud folded under "More settings". Session: light stage with one mic button (shown only with mic consent), a mute icon and Finish in the header, Repeat only on the latest partner line, and an inline send button with a "Stuck? Get ideas" link.
+- Checks: lint, typecheck, 76/76 unit tests and production build pass. A scratch Playwright check with chat, transcription and voice mocked in the browser passed: signed-out face, partner picker and caption, collapsed settings, consent gate, hands-free fixture microphone to a mocked transcript and tip, partner name in transcript, a single Repeat, part progress, mute toggle, light/dark 390/320 px without overflow, Workshop portrait, no page errors.
+- `tests/speaking_lab_smoke.py` was updated for the new UI (SVG partner, partner picker, "More settings") but not run, because it makes real DeepSeek, Kokoro and Whisper calls that need owner authorization.
+- Not committed, pushed or deployed.
+
+## 34. Profile design polish — 2026-10-30
+
+Agent: Opencode (DeepSeek V4.1 Flash).
+
+- Owner asked to polish `/profile`. Codex held the shared `build + 3001` and local database, so
+  this increment used a separate Prisma QA instance (TCP 51218) and a throwaway production build on
+  port 3007. The shared database, 3001 preview and Codex's exam files were not touched.
+- Reworked the page around the existing data and components: a stronger profile heading with
+  dashboard/plans actions; an identity card with cover pattern, initials, email/Google/access
+  signals, the existing two counters, join date, dashboard action and sign-out; and main cards for
+  subscriptions, personal information/email, security/password/Google, purchased exam access,
+  admin access and privacy. Subscription rows now show the plan symbol, active/expired state,
+  expiry and actions; purchases show a receipt-style row; empty states have a clear next action.
+- Preserved the test hooks and behaviour: `.profile-counts dd` remains the two counters,
+  `.identity-body h2`, `.identity-email`, `.profile-form` labels/errors, `.purchase-row`,
+  `.subscription-row`, `.profile-link`, and the `Гарах`, `Өөрчлөлт хадгалах`,
+  `Нууц үг шинэчлэх` and `Google холбох` controls. No auth, ownership, subscription, purchase or
+  demo-account logic changed.
+- Checks run on the isolated production build: `npm run lint` pass; `npm run typecheck` pass;
+  `npm run build` pass (51 routes); `profile_smoke.py` pass (registration return, private profile,
+  saved name, password validation/change, session revocation, dashboard totals and 1440/390/320
+  light/dark); `payments_smoke.py` pass (including the two `.purchase-row` cards). A focused
+  Playwright check created three subscriptions through the API and confirmed
+  `.subscription-row` count 3, then inspected 1440 light/dark and 390px profile screenshots with no
+  horizontal overflow.
+- `subscriptions_smoke.py` could not complete in the isolated setup because its
+  `subscription_fixture.mjs` deliberately hardcodes the shared database at 127.0.0.1:51214; the
+  fixture guard stopped it before touching that database. This is a test-environment limitation,
+  not an application failure; the subscription-row markup was verified by the focused check above.
+  Demo-account and hosted suites were not run. No shared database row, hosted resource or 3001
+  process was used; the isolated Prisma instance and temp preview were removed afterwards.
+- No commit, push or deployment was performed in this increment. The work board row was removed.
+
+## 35. Five additional SAT and five IELTS full mocks — 2026-10-30
+
+Agent: Codex (GPT-6).
+
+- Owner requested five more mocks for each program. Added `sat-full-02`–`sat-full-06` and
+  `ielts-academic-02`–`ielts-academic-06`: six mocks per program, twelve total. The owner approved
+  separate implementation while Claude Code held the build; Codex waited for that claim to clear
+  before taking `build + 3001` and the shared local QA database. Claude Code's Speaking work and
+  Opencode's concurrent, separately verified profile work were preserved.
+- SAT additions contain 735 versioned items across fifteen first/lower/higher route banks, with
+  98 delivered questions per form, four domains, numerical responses, two pretests per module,
+  existing standard timers and the existing practice routing threshold. These are original parallel
+  practice forms with shared task patterns and changed contexts/values, not independently calibrated
+  College Board forms. Mock 01 and existing immutable snapshots are preserved.
+- Each new IELTS form has 40 Listening items, 40 Reading items, three original fictional passages
+  (about 2,200 words), a distinct Task 1 table and Task 2 essay, and distinct Speaking Parts 1–3.
+  Writing instructions identify the table units and explain overlapping facility use/enrolments.
+  Timers, Listening final-check deduplication, and human-review-only Writing/Speaking remain intact.
+- Generated twenty original synthetic Listening recordings locally with Windows System.Speech and
+  FFmpeg: four 450-second slots per form, including reading/checking pauses; 53,998,960 bytes total.
+  `assets/exams/manifest-02.json`–`manifest-06.json` record script and recording hashes, bytes and
+  durations. `scripts/generate-additional-exam-audio.ps1` reproduces them. Sample decoded recordings
+  were non-silent; this is synthetic speech, not a human examiner recording or a provider request.
+- Audio serving now uses an exact slug/part allowlist, rather than always returning Mock 01 audio.
+  Existing ownership, paid/plan access, current-part/time and private range-response checks remain.
+  Production tracing includes all 24 recordings. New question IDs and a distinctive passage title
+  were absent from the built client chunks; browser APIs also exposed no keys or future variants.
+- Catalog badges and sitting headers now show the actual mock number; the Writing table caption
+  is generic to Task 1, and the library shows twelve mocks and the actual longest duration.
+  Separate per-form purchases and matching program plans use the existing server checks unchanged.
+- Codex updated PROJECT.md with coverage, parallel-form limits, media handling and the new suite.
+  The React checklist was applied to the catalog/runner changes: stable keys, existing accessible
+  controls and data boundaries preserved; no new client imports of authored question banks.
+- Checks run by Codex: lint pass, typecheck pass, 82/82 unit tests pass, production build pass
+  (61 generated pages), Python compilation pass, repo-wide `git diff --check` pass (LF/CRLF notices
+  only), and private env-value/common-key plus trailing-whitespace scan over 24 text deliverables
+  pass. New units independently check numerical keys, both SAT routes, exact report totals,
+  full-length distinct reading texts, completion evidence, audio hashes and allowlist rejection.
+- Required `browser`, `accounts`, `exercises` and `exams` suites passed on the build containing all
+  runtime/UI changes. The only later application change clarified the five new Task 1 instructions;
+  the final production build and full added-mock suite passed again after that copy change.
+- Final-build area suites all passed: `additional_exams`, `payments`, `subscriptions` and `admin`.
+  The new suite completes all ten new mocks through real local auth, simulated purchase, save/reload,
+  stale-write/ownership denial, trusted QA-only deadline fixtures, exact raw results and immutable
+  completion. It checks all twenty authenticated audio bodies against the files, current-part denial,
+  byte ranges, and monthly-plan access to all ten forms with SAT/IELTS isolation. Admin checks now
+  open all ten added previews. No application timer, payment, auth or grading bypass was added.
+- Desktop and 390/320px light/dark catalog, Math, Reading and Writing screenshots were inspected;
+  no horizontal overflow. Screenshot review caught the old hardcoded Mock 01 header/caption and
+  those were fixed. Unit checks caught duplicate distractors and an inherited-property allowlist
+  lookup; both were fixed. Publishing serialization caught a whitespace-only option, also fixed.
+- Test-only corrections: the new briefing assertion now targets the actual level-one heading;
+  `admin_smoke.py` uses the exact accessible admin-link name after Opencode hid the decorative arrow.
+  Catalog counts/prices reflect fourteen cards (twelve mocks plus two official-paper categories).
+  Assertions retain their meaning. Two back-to-back suite runs failed at QA registration; standalone
+  reruns after allowing the auth window to clear passed without changing limits or safeguards.
+  The original registration assertions did not record status, so no exact failure code is claimed.
+- Specialist content/pedagogical review and official difficulty calibration remain pending. No
+  hosted suite, email, real payment, AI/speech provider call or hosted-data mutation was performed.
+  No staging, commit, push, PR or deployment. Final production preview remains on port 3001;
+  Codex released its work-board claim after verification.
+
+## 36. Local preview started — 2026-10-30
+
+Agent: Codex (GPT-6).
+
+- Owner requested starting the server. No conflicting claims or listeners were present.
+- Started the existing named local database with `npm run db:start` and the existing production
+  build with `next start -p 3001`, hidden in the background. No rebuild, migration or seed.
+- Verified `/` and `/exams` return HTTP 200 at `http://localhost:3001`. Observed preview PID 9392
+  and database listener PID 9976 on 51214; recheck ownership before any future restart.
+- Only coordination/outcome documentation changed. Diff whitespace and new-entry secret-pattern
+  checks passed. No commit, push or deployment; work-board claim released.
+
+## 37. SAT and IELTS mock collections — 2026-10-30
+
+Agent: Codex (GPT-6).
+
+- Owner requested grouping SAT and IELTS like the university English collection. `/exams` now has
+  four items: one SAT collection, one IELTS collection, Mathematics and English. SAT/IELTS show
+  their six-mock counts and open `/exams/sat` or `/exams/ielts` instead of listing twelve cards.
+- Added a shared server-rendered selection component and two collection routes. Each lists all
+  six original mock URLs, with a scoped 3-column desktop / 2-column tablet / 1-column phone grid.
+  Reuses the English collection's tile styles. Published titles resolve on the server in parallel;
+  no question banks are passed to client components. The main library no longer queries all twelve
+  published mock bodies just to display category cards.
+- Homepage and SAT/IELTS program links open the corresponding collection. Individual briefings link
+  back to that collection. Direct mock URLs, old snapshots, purchased access, plan checks, timers,
+  grading and assessment content are unchanged. The collection slugs are not purchasable exams.
+- Codex updated PROJECT.md and relevant catalog/price/navigation assertions. The theme suite retains
+  coverage of the original IELTS briefing and adds both collections. Added
+  `mock_collections_smoke.py`; the existing added-mock suite now checks collection links and rejects
+  starting/purchasing a collection through authenticated APIs. Applied the React checklist: server
+  data boundaries, parallel reads, stable keys, accessible link labels and scoped CSS preserved.
+- Checks actually run: lint pass, typecheck pass, 82/82 unit tests pass, production build pass.
+  All four required browser suites (`browser`, `accounts`, `exercises`, `exams`) and `theme` pass
+  on the grouping/navigation build. Screenshot review prompted a final CSS-only adjustment from
+  a five-plus-one desktop tile layout to three-plus-three. The final build, collection suite,
+  added-mock full lifecycle suite and payments suite pass after that adjustment.
+- The collection suite covers all six links per program, collection-to-briefing/back navigation,
+  home/program discovery, original direct links, unknown-route 404, light/dark 1440/760/390/320px,
+  no overflow and actual 3/2/1-column counts. Screenshots were inspected. The added-mock suite
+  still passes all ten complete sittings, twenty matching audio bodies and purchase/plan isolation.
+- A back-to-back added-mock run hit the real signup HTTP 429. A standalone rerun after the auth
+  window passed; no rate limits or assertions were weakened. Python compilation, repo-wide
+  `git diff --check` and a private env-value/common-key/trailing-whitespace scan over 33 text
+  deliverables passed (only expected LF/CRLF notices).
+- No shared-resource conflicts; all earlier uncommitted agent work preserved. Only reserved local
+  QA rows were used. No migration, seed, real provider call, email, hosted change, commit, push or
+  deployment. Final preview remains on port 3001; work-board claim released.
+
+## 38. Delivery: speaking redesign, added mocks/collections, profile polish — 2026-10-30
+
+Agent: Claude Code (Opus 5.5).
+
+- Owner asked to push all code, including Codex's work. Delivered in one commit: the Speaking partner redesign (section 33), Codex's five additional SAT and IELTS mocks with audio and the SAT/IELTS collections (sections 35-37), and Opencode's `/profile` polish (section 34), which was also uncommitted in the tree. Each agent's own entry keeps its attribution.
+- Checks on the combined tree after rebuilding: lint pass, typecheck pass, 82/82 unit tests pass, production build pass (61 pages). Run serially on that build: `browser`, `accounts`, `exercises`, `exams`, `mock_collections` and `profile` suites all pass, and the scratch Speaking UI check (chat, transcription and voice mocked) passes.
+- `git diff --check` is clean. A secret scan of 47 text deliverables found only the local `BETTER_AUTH_URL` origin, which is not a secret. `.claude/` is excluded. The real-provider `speaking_lab_smoke.py` and hosted suites were not run.
+- The stale Codex `next start` on 3001 was stopped for the rebuild after its claim was released. A new preview runs on 3001.
+

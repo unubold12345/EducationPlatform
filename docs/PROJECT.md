@@ -23,7 +23,7 @@ authentication require provider configuration; see the actual hosted checkpoint 
 | Free practice | `/practice`, a three-question sample with immediate grading |
 | Program practice | 10 sets / 80 original questions: SAT 32, IELTS 24, university entrance 24 |
 | IELTS workshops | Four focused workshops with saved work and grading |
-| Full mocks | Digital SAT and IELTS Academic sittings with server-authoritative timers |
+| Full mocks | Six Digital SAT and six IELTS Academic mocks (01–06), with server-authoritative timers |
 | Official papers | 2020 Math A–D and 37 historical English variations |
 | Accounts | Better Auth email/password, profile, Google OAuth, verification and password recovery |
 | Plans and payments | Three monthly plans plus per-mock and per-paper simulated purchases |
@@ -38,10 +38,21 @@ stays free. Full mocks accept a matching plan or a prior per-exam purchase. Subs
 sittings keep continuation and review access after expiry, but new starts remain gated. Existing
 purchases and LEGACY grants are preserved.
 
+The `/exams` library has four category items: SAT, IELTS, EEC Mathematics and EEC English.
+`/exams/sat` and `/exams/ielts` collect each program's six mocks in a selection grid, like the
+official English collection. Homepage and program links open these collections; individual mock
+briefings link back to their collection. Existing mock URLs, purchases, saved attempts and access
+rules are unchanged. Collection URLs themselves cannot be purchased or started as exams.
+
 ## 3. Assessments
 
 ### Digital SAT
 
+- Mocks `sat-full-01` through `sat-full-06` are separately purchasable; an active SAT plan
+  includes all six. Mocks 02–06 use original parallel practice forms with different contexts and
+  numerical values, and separate first/lower/higher question banks (147 authored items per form,
+  98 delivered per sitting). Shared question patterns are intentional; these are not calibrated
+  College Board forms or independent official papers. Mock 01 and existing snapshots are preserved.
 - 98 delivered questions: 54 Reading and Writing in two 32-minute modules, a 10-minute break, then
   44 Math in two 35-minute modules.
 - Operational raw counts are 50 Reading/Writing and 40 Math. Routing assumes 65% accuracy; each
@@ -51,12 +62,22 @@ purchases and LEGACY grants are preserved.
 
 ### IELTS Academic
 
+- Mocks `ielts-academic-01` through `ielts-academic-06` are separately purchasable; an active
+  IELTS plan includes all six. Mocks 02–06 each have four matching synthetic recordings, three
+  original fictional case-study passages (about 2,200 words total), a distinct data table and essay,
+  and a distinct speaking interview, cue card and discussion. They share practice task patterns;
+  specialist content and pedagogical review remain pending.
 - Listening: 40 questions in about 30 minutes, plus 2 minutes checking, using four bundled synthetic
   recordings.
 - Reading: 40 questions over three passages (2,265 words) in 60 minutes.
 - Writing: two tasks in 60 minutes.
 - Speaking: a 12-minute simulation.
 - No IELTS band score is calculated.
+- Authenticated audio serving resolves the exact mock slug to its own allowlisted recording files.
+  All 24 recordings are included in the production function trace. New audio provenance, script
+  hashes, file hashes and durations live in `assets/exams/manifest-02.json` through `manifest-06.json`;
+  `scripts/generate-additional-exam-audio.ps1 -Paper 2` (2–6) regenerates a form with Windows
+  System.Speech and FFmpeg. Each part occupies a 450-second slot, including reading/checking pauses.
 
 ### Official 2020 EEC Mathematics · A–D
 
@@ -239,7 +260,7 @@ Speaking invitation only when the studio is enabled: local pilot, or hosted pilo
 `SPEAKING_LAB_ENABLED=true`. Sign-in and registration preserve the return path to the studio.
 The studio stays separate from graded practice and exams. It requires login and explicit transcript/microphone
 consent, uses DeepSeek for text conversation, Kokoro for local British English speech, Whisper for
-transcription and the licensed CC0 RobotExpressive 3D character. It writes no attempts, scores,
+transcription and flat SVG speaking partners (one per voice) drawn for this site. It writes no attempts, scores,
 subscriptions or chat history. Bands shown are transcript-only AI estimates, not official IELTS
 scores; pronunciation is not assessed. Raw microphone recordings are not persisted.
 
@@ -395,8 +416,10 @@ the changed area:
 | `official_paper_smoke.py` | EEC archive, scoring, access and saved work |
 | `publishing_smoke.py` | Draft → review → published content |
 | `tutor_smoke.py` | Consent, live DeepSeek calls, quotas and active-exam denial |
-| `speaking_lab_smoke.py` | 3D, conversation, speech and transcription |
+| `speaking_lab_smoke.py` | Partner picker, conversation, speech and transcription |
 | `writing_lab_smoke.py` | Essay Studio guards and full UI loop (AI responses mocked) |
+| `additional_exams_smoke.py` | All ten added mock lifecycles, isolated purchases, save/resume, exact media, results and mobile/themes |
+| `mock_collections_smoke.py` | Four library categories, six choices per mock collection, navigation, original URLs and responsive grids |
 | `hosted_demo_smoke.py` | Hosted demo accounts; only run after an authorized deployment |
 
 Fixtures under `tests/` may advance deadlines or manipulate reserved QA rows only. They must never add

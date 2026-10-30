@@ -3,12 +3,13 @@ import { mathModule } from "./sat-math.ts";
 import { ieltsReading, readingPassages } from "./ielts-reading.ts";
 import { ieltsListening } from "./ielts-listening.ts";
 import type { ExamDefinition, ExamQuestion } from "./types.ts";
+import { createAdditionalExams } from "./additional-definitions.ts";
 const speaking = (id:string,prompt:string):ExamQuestion => ({id,domain:"Speaking",prompt,kind:"speaking",answers:[],explanation:"Speaking requires a qualified human review of fluency/coherence, vocabulary, grammar and pronunciation. A recording or transcript is not an automatic band score."});
 const writing: ExamQuestion[] = [
   {id:"iw1",domain:"Writing",kind:"essay",minWords:150,answers:[],prompt:"You should spend about 20 minutes on this task. The table shows the percentage of commuters using four types of transport in a fictional town in 2010 and 2025. Summarise the information by selecting and reporting the main features, and make comparisons where relevant. Write at least 150 words.",passage:"Transport | 2010 | 2025\nCar | 60% | 40%\nBus | 25% | 35%\nBicycle | 10% | 20%\nWalking | 5% | 5%",explanation:"Include an overview: car use declined but remained the largest category; bus and bicycle shares rose; walking was unchanged. Compare 20-, 10- and 10-percentage-point changes accurately. Writing must be reviewed by a qualified person for task achievement, coherence/cohesion, vocabulary and grammar; this mock does not assign a band."},
   {id:"iw2",domain:"Writing",kind:"essay",minWords:250,answers:[],prompt:"You should spend about 40 minutes on this task. Some people believe that secondary schools should require all students to take part in community service. Others think students should decide for themselves. Discuss both views and give your own opinion. Give reasons for your answer and include relevant examples from your own knowledge or experience. Write at least 250 words.",explanation:"Address both views and state a consistent personal position. Develop reasons and relevant examples rather than listing assertions. Review task response, coherence/cohesion, vocabulary and grammar. In official IELTS, Task 2 carries twice the weight of Task 1; this mock stores your work for human review and does not invent a band score."},
 ];
-export const examDefinitions: ExamDefinition[] = [
+const originalExamDefinitions: ExamDefinition[] = [
   {slug:"sat-full-01",version:1,program:"sat",title:"Digital SAT · Full Mock 01",description:"54 Reading & Writing + 44 Math questions. Standard-time modules, a ten-minute break, numeric responses and practice adaptive routing.",sources:[
     {label:"College Board — SAT structure",url:"https://satsuite.collegeboard.org/sat/whats-on-the-test/structure"},
     {label:"College Board — Testing rules",url:"https://satsuite.collegeboard.org/testing-rules/sat"},
@@ -40,4 +41,5 @@ export const examDefinitions: ExamDefinition[] = [
     ]},
   ]},
 ];
+export const examDefinitions: ExamDefinition[] = [...originalExamDefinitions,...createAdditionalExams(originalExamDefinitions)];
 export function findExam(slug:string) { return examDefinitions.find(exam=>exam.slug===slug); }

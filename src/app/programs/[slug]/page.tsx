@@ -30,14 +30,14 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
     title: "98 асуулт. Бодит хугацаа.",
     copy: "Reading & Writing 2 модуль, Math 2 модуль. Серверийн цаг, хадгалагдах хариулт, эцсийн дүн.",
     facts: ["98 асуулт", "2ц 14м + 10м завсарлага", "₮10,000 эсвэл SAT эрх"],
-    href: "/exams/sat-full-01",
+    href: "/exams/sat",
     cta: "Бүтэн шалгалт үзэх",
   } : slug === "ielts" ? {
     eyebrow: "БҮТЭН ШАЛГАЛТ · IELTS ACADEMIC",
     title: "Дөрвөн чадвар. Нэг бүтэн оролдлого.",
     copy: "Listening, Reading, Writing, Speaking. Бүтэн Academic mock, серверийн цаг, хадгалагдах хариулт.",
     facts: ["4 чадвар", "Listening 40 · Reading 40", "₮10,000 эсвэл IELTS эрх"],
-    href: "/exams/ielts-academic-01",
+    href: "/exams/ielts",
     cta: "Бүтэн шалгалт үзэх",
   } : null;
 

@@ -42,10 +42,14 @@ with sync_playwright() as p:
  assert context.request.post(BASE+'/api/labs/ielts-speaking',headers=ORIGIN,data=START).status==401
  signup=context.request.post(BASE+'/api/auth/sign-up/email',headers=ORIGIN,data={'name':'Speaking Lab QA','email':'qa-speaking-'+uuid4().hex[:12]+'@example.invalid','password':'Local-Test-'+uuid4().hex});assert signup.ok,signup.status
  # Signed-in pages warm the local models in the background. Cold downloads can
- # outlast networkidle's default timeout; wait for the actual 3D UI readiness.
+ # outlast networkidle's default timeout; wait for the partner drawing instead.
  page.reload(wait_until='domcontentloaded')
  page.wait_for_selector('.speaking-avatar[data-ready="true"]',timeout=30000)
- expect(page.locator('.speaking-avatar canvas')).to_be_visible()
+ expect(page.locator('.speaking-avatar svg')).to_be_visible()
+ # Partner picker: choosing a partner changes the drawing, name and voice preview.
+ page.get_by_role('radio',name='George, British').click();expect(page.locator('.sl-stage-top strong')).to_have_text('George')
+ expect(page.get_by_role('button',name='▶ Hear George')).to_be_visible()
+ page.get_by_role('radio',name='Ava, American').click();expect(page.locator('.sl-stage-top strong')).to_have_text('Ava')
  # Guards before any provider use.
  assert context.request.post(BASE+'/api/labs/ielts-speaking',headers={'Origin':'https://untrusted.invalid'},data=START).status==403
  for bad in [{**START,'part':9},{**START,'action':'feedback'},{**START,'band':9},{**START,'target':9}]:
@@ -54,7 +58,7 @@ with sync_playwright() as p:
  assert context.request.post(BASE+'/api/labs/ielts-speaking/warm',headers=ORIGIN,timeout=180000).status==200
 
  # REAL streamed Kokoro voice: several sentence frames, each a RIFF/WAVE file.
- voiced=context.request.post(BASE+'/api/labs/ielts-speaking/voice',headers=ORIGIN,data={'text':"Hello, I'm Milo, your speaking partner. Take your time. I'm here to listen.",'voice':'af_heart','speed':1},timeout=170000)
+ voiced=context.request.post(BASE+'/api/labs/ielts-speaking/voice',headers=ORIGIN,data={'text':"Hello, I'm Ava, your speaking partner. Take your time. I'm here to listen.",'voice':'af_heart','speed':1},timeout=170000)
  assert voiced.status==200,(voiced.status,voiced.text()[:200])
  parts=frames(voiced.body());assert len(parts)>=2,[c for c,_ in parts]
  for caption,wav in parts:assert wav[:4]==b'RIFF' and wav[8:12]==b'WAVE' and len(wav)>12000,caption
@@ -62,10 +66,10 @@ with sync_playwright() as p:
  # REAL local Whisper on that generated speech.
  transcribed=context.request.post(BASE+'/api/labs/ielts-speaking/transcribe',headers={**ORIGIN,'Content-Type':'audio/wav'},data=to_pcm16k(parts[0][1]),timeout=170000)
  assert transcribed.status==200,(transcribed.status,transcribed.text())
- assert any(w in transcribed.json()['text'].lower() for w in ['milo','speaking','partner','hello']),transcribed.json()
+ assert any(w in transcribed.json()['text'].lower() for w in ['ava','speaking','partner','hello']),transcribed.json()
 
  # REAL DeepSeek conversation through the UI (voice off, typed answers): start, answer, report.
- page.get_by_text('Milo speaks aloud').click()
+ page.get_by_text('More settings').click();page.get_by_text('Partner speaks aloud').click()
  page.get_by_role('radio',name='Practise one part').click()
  expect(page.get_by_role('button',name='Start practice →')).to_be_disabled()
  page.get_by_text('My answers (as text) are sent to DeepSeek').click()
@@ -108,7 +112,7 @@ with sync_playwright() as p:
  page.goto(BASE+'/labs/ielts-speaking');page.wait_for_selector('.speaking-avatar[data-ready="true"]',timeout=30000)
  page.route('**/api/labs/ielts-speaking',lambda route:route.fulfill(status=200,content_type='application/json',body=json.dumps({'reply':'What do you like to read?','tip':None,'cue':None,'hint':None,'report':None})))
  page.route('**/api/labs/ielts-speaking/transcribe',lambda route:route.fulfill(status=200,content_type='application/json',body=json.dumps({'text':'I like reading books in English.'})))
- page.get_by_text('Milo speaks aloud').click()
+ page.get_by_text('More settings').click();page.get_by_text('Partner speaks aloud').click()
  page.get_by_text('My answers (as text) are sent to DeepSeek').click();page.get_by_text('Use my microphone').click()
  page.get_by_role('button',name='Start mock test →').click()
  expect(page.locator('.sl-msg.user')).to_have_count(1,timeout=30000)
@@ -117,4 +121,4 @@ with sync_playwright() as p:
  page.screenshot(path=str(ART/'speaking-lab-desktop.png'))
  assert not errors,errors
  browser.close()
-print('PASS: isolated noindex Speaking Lab studio, 3D character, REAL streamed Kokoro frames, REAL Whisper transcription, three REAL DeepSeek calls (start/answer/report), consent/auth/origin/shape guards, report download + local progress, 320/390px light/dark layout, no production links, hands-free mic loop with fixture microphone (mocked chat/transcription in that section)')
+print('PASS: isolated noindex Speaking Lab studio, illustrated partner picker, REAL streamed Kokoro frames, REAL Whisper transcription, three REAL DeepSeek calls (start/answer/report), consent/auth/origin/shape guards, report download + local progress, 320/390px light/dark layout, no production links, hands-free mic loop with fixture microphone (mocked chat/transcription in that section)')

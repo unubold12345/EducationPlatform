@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { ApiError,apiFailure,apiUser } from "@/lib/api";
 import { accessMock } from "@/modules/exams/service";
+import { listeningFile } from "@/modules/exams/audio-files";
 export const runtime="nodejs";
 export async function GET(request:Request,{params}:{params:Promise<{id:string}>}) {
   try {
@@ -10,7 +11,9 @@ export async function GET(request:Request,{params}:{params:Promise<{id:string}>}
     if(!Number.isInteger(part)||part<1||part>4||attempt.program!=="ielts")throw new ApiError(404,"Бичлэг олдсонгүй.");
     const elapsed=(Date.parse(attempt.serverNow)-Date.parse(attempt.stageStartedAt))/1000;
     if(!attempt.finishedAt&&(attempt.stage?.id!=="ielts-listening"||part!==Math.min(4,Math.floor(elapsed/450)+1)))throw new ApiError(403,"Зөвхөн одоо тоглож буй хэсгийн бичлэгийг нээж болно.");
-    const data=await readFile(path.join(process.cwd(),"assets","exams",`ielts-01-part-${part}.mp3`));
+    const filename=listeningFile(attempt.slug,part);
+    if(!filename)throw new ApiError(404,"Бичлэг олдсонгүй.");
+    const data=await readFile(path.join(process.cwd(),"assets","exams",filename));
     const headers={"Content-Type":"audio/mpeg","Cache-Control":"private, no-store","Accept-Ranges":"bytes"};
     const range=request.headers.get("range");
     if(range) {

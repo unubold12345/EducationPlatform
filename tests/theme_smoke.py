@@ -18,8 +18,8 @@ with sync_playwright() as p:
     assert page.evaluate("getComputedStyle(document.body).backgroundColor") == "rgb(7, 7, 13)"
     page.evaluate("document.fonts.ready")
     assert "manrope" in page.evaluate("getComputedStyle(document.body).fontFamily").lower()
-    expect(page.locator('.launch-panel a[href="/exams/sat-full-01"]')).to_be_visible()
-    expect(page.locator('.launch-panel a[href="/exams/ielts-academic-01"]')).to_be_visible()
+    expect(page.locator('.launch-panel a[href="/exams/sat"]')).to_be_visible()
+    expect(page.locator('.launch-panel a[href="/exams/ielts"]')).to_be_visible()
     expect(page.locator('.launch-panel a[href="/practice"]')).to_be_visible()
     page.screenshot(path=str(ARTIFACTS / "theme-home-dark.png"), full_page=True)
     page.set_viewport_size({"width": 320, "height": 844})
@@ -33,7 +33,7 @@ with sync_playwright() as p:
     page.locator(".theme-toggle").focus()
     page.keyboard.press("Enter")
     expect(page.locator("html")).to_have_attribute("data-theme", "dark")
-    for route in ["/exams", "/exams/ielts-academic-01", "/practice", "/login", "/programs/entrance", "/workshops/ielts-writing-data"]:
+    for route in ["/exams", "/exams/sat", "/exams/ielts", "/exams/ielts-academic-01", "/practice", "/login", "/programs/entrance", "/workshops/ielts-writing-data"]:
         page.goto(BASE + route)
         page.wait_for_load_state("networkidle")
         expect(page.locator("html")).to_have_attribute("data-theme", "dark")

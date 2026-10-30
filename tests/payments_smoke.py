@@ -18,7 +18,7 @@ with sync_playwright() as p:
     expect(page.locator(".account-entry")).to_have_attribute("href","/login")
     assert context.request.post(BASE+"/api/mock-payments",headers=ORIGIN,data={"slug":"sat-full-01"}).status==401
     page.goto(BASE+"/exams")
-    expect(page.locator(".exam-price strong")).to_have_text(["₮10,000","₮10,000","₮10,000","₮10,000"])
+    expect(page.locator(".exam-price strong")).to_have_text(["₮10,000"] * 4)
     page.goto(BASE+"/checkout/sat-full-01")
     expect(page).to_have_url(BASE+"/login?next=%2Fcheckout%2Fsat-full-01")
     page.get_by_role("link",name="Бүртгүүлэх",exact=True).click()

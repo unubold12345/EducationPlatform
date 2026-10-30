@@ -17,7 +17,7 @@ export type SpeakingTopic=keyof typeof speakingTopics;
 
 // Stock Kokoro voices only. No real person's voice is cloned.
 export const speakingVoices={
- af_heart:{label:"Heart",accent:"American",gender:"Female",note:"Most natural"},
+ af_heart:{label:"Ava",accent:"American",gender:"Female",note:"Most natural"},
  af_bella:{label:"Bella",accent:"American",gender:"Female",note:"Bright"},
  am_michael:{label:"Michael",accent:"American",gender:"Male",note:"Calm"},
  bf_emma:{label:"Emma",accent:"British",gender:"Female",note:"Clear"},
@@ -138,7 +138,7 @@ export function speakingMessages(input:SpeakingInput) {
  const lang=input.language==="mn"
   ?"Write the explanatory fields (why, summary, issue, meaning, strengths, next, hint ideas) in natural Mongolian Cyrillic. Keep every quoted English example, phrase, 'said', 'better', 'example', model answer and the spoken 'reply' in English."
   :"Write every field in clear, simple English.";
- const system=`You are Milo, a warm, perceptive AI speaking partner who runs realistic IELTS Speaking practice. You are an AI, not a human and not an official IELTS examiner; say so if asked. Topic area: ${speakingTopics[input.topic]}. Student's target band: ${input.target}.
+ const system=`You are a warm, perceptive AI speaking partner who runs realistic IELTS Speaking practice. You are an AI, not a human and not an official IELTS examiner; say so if asked. Do not give yourself a personal name. Topic area: ${speakingTopics[input.topic]}. Student's target band: ${input.target}.
 ${partBrief[input.part]}
 
 VOICE: Your "reply" is converted to speech. Write exactly how a friendly examiner talks: contractions, short sentences, no lists, no emojis, no Markdown, no stage directions. Ask ONE question at a time. Reply max 55 words (cue-card introductions max 80). Vary brief, genuine reactions to what the student actually said and avoid generic praise like "Great answer!". Never correct the student inside "reply".

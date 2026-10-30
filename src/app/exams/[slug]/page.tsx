@@ -43,7 +43,7 @@ export default async function ExamPage({params}:{params:Promise<{slug:string}>})
     <div className="briefing-breadcrumb" role="navigation" aria-label="Шалгалтын зам">
       <Link className="text-link" href="/exams">← Бүх шалгалт</Link>
       <span aria-hidden="true">/</span>
-      <span>{sat ? "Digital SAT" : "IELTS Academic"}</span>
+      <Link className="text-link" href={sat?"/exams/sat":"/exams/ielts"}>{sat ? "Digital SAT" : "IELTS Academic"}</Link>
     </div>
 
     <div className="exam-briefing-layout">

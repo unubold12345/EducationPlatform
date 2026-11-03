@@ -3,6 +3,7 @@ import Link from "next/link";
 import { programs } from "@/modules/programs/catalog";
 import { ProgramSpotlight } from "@/components/program-spotlight";
 import { LawTestRecommendation } from "@/components/lawtest";
+import { exerciseSets } from "@/modules/exercises/catalog";
 export const metadata: Metadata = { title: "Хөтөлбөрүүд" };
 
 const steps = [
@@ -31,7 +32,7 @@ export default function ProgramsPage() {
       </Link>
     </header>
 
-    <div className="programs-meta" aria-label="Хөтөлбөрийн товч"><div><strong>80</strong><span>Багц дасгалын асуулт</span></div><div><strong>04</strong><span>Writing & Speaking workshop</span></div><div><strong>04</strong><span>Шалгалтын ангилал</span></div></div>
+    <div className="programs-meta" aria-label="Хөтөлбөрийн товч"><div><strong>{exerciseSets.reduce((n,set)=>n+set.questions.length,0)}</strong><span>Багц дасгалын асуулт</span></div><div><strong>04</strong><span>Writing & Speaking workshop</span></div><div><strong>04</strong><span>Шалгалтын ангилал</span></div></div>
 
     <div className="program-grid program-picker">{programs.map((program, index) => <ProgramSpotlight key={program.slug} program={program} index={index} />)}</div>
 

@@ -1527,3 +1527,72 @@ Agent: Claude Code (Opus 5.5).
 - Optional owner action: add the direct (non-`-pooler`) Neon address as `DIRECT_DATABASE_URL` in Vercel
   so migrations use a direct connection.
 
+## 45. Thirty additional exercise sets / 240 questions — 2026-10-30
+
+Agent: Codex (GPT-6).
+
+- Owner requested substantially more student exercises. Added ten eight-question sets per program:
+  30 new sets / 240 original questions, bringing the library to 40 sets / 320 questions. SAT has
+  14 sets / 112 questions; IELTS and entrance each have 13 sets / 104 questions. No active claims
+  conflicted. Earlier uncommitted documentation and ignored files were preserved.
+- SAT additions: systems/modeling, functions, data/probability, circles/similarity, plus six Reading
+  & Writing sets (vocabulary, inference, evidence, conventions, transitions and synthesis). IELTS:
+  six original source passages with eight questions each, plus collocations, clauses, word forms
+  and paraphrase. Entrance: four Math, three Physics and three English sets, including a source
+  reading exercise. Explanations are in Mongolian, with worked quantitative steps and language
+  reasoning. Independent pedagogical/editorial review is still pending; these are authored practice,
+  not official questions or calibrated exam forms.
+- New content lives in the three `*-expansion.ts` files with a small deterministic option-order
+  builder. Every new set/question has its own v1 ID. An exact comparison against HEAD confirmed
+  all ten original sets / eighty questions are unchanged, including IDs, option order, answer keys
+  and explanations. Existing attempts and published versions retain their original snapshots.
+- Seed remains additive (`update: {}` for existing records), now classifies SAT Reading & Writing
+  under English, groups entrance additions under their real subjects and reports actual counts.
+  Ran `npm run db:seed` locally: 30 new exams / 240 new question versions verified with ordered
+  exam items. Five draft explanations were clarified after initial checks; a loopback-only setup
+  transaction checked zero attempts for all new exams, zero snapshot references and identical
+  prompt/options/keys before syncing only those five previously unattempted new explanation rows.
+  Original records and student attempts were not rewritten. No migration or hosted seeding ran.
+- Program cards, index totals and the homepage entrance count reflect the expanded library.
+  Screenshot review caught cramped Mongolian numbers/units; a display-only formatter now adds
+  spacing without changing stored text, equations, snapshots or grading inputs.
+- Mathematics tutor capability now uses quantitative exercise IDs on the server and in the UI.
+  SAT Reading & Writing, IELTS and entrance English are rejected before any provider request,
+  including saved attempts and published versions. Existing Math/Physics and the free algebra
+  sample retain support. Saved-attempt responses expose a server-derived `mathTutor` UI capability;
+  the server independently checks the owned record. All origin, plan, ownership, active-exam,
+  verified-email and quota checks are preserved. No AI provider request was made.
+- Codex updated PROJECT.md with coverage and capability boundaries. Applied the React checklist:
+  pure public metadata helpers, no answer-bank imports into client components, unchanged hook
+  lifecycles and stable question keys/accessible controls.
+- Final checks: lint pass; typecheck pass; 96/96 unit tests pass; production build pass (91 generated
+  pages); Python compilation pass; repo-wide `git diff --check` pass (LF/CRLF notices only); private
+  env-value/common-key and trailing-whitespace scan over 22 final text deliverables pass. New units verify
+  30 distinct additions, reading evidence structure, original IDs, 88 quantitative answers against
+  independent calculations, math-tutor scope and display formatting. No assertions were weakened.
+- Required `exercises`, `browser`, `accounts` and `exams` suites passed on the expansion build;
+  `subscriptions` and `admin` also passed. After the final display-only spacing adjustment, the
+  final build and the complete `exercises` suite passed again: all 320 questions graded through
+  the UI, all forty sets validated, wrong/forged inputs rejected, answers hidden before grading,
+  original save/resume/concurrent-submit checks preserved, and three new saved-set workflows passed.
+  Language exercises denied forged practice/saved tutor references without calling DeepSeek.
+- A focused local browser check passed new library totals and representative SAT reading, IELTS
+  reading and entrance Physics pages at 1440/390/320px in light/dark, without overflow or page errors.
+  Screenshots were inspected, including the corrected unit spacing and absent language tutor.
+  The full exercise suite also checked every set at both mobile widths and all four workshops.
+- Only reserved local QA accounts/subscriptions/attempts were created by browser checks. No real
+  email, payment, provider call, hosted write, commit, push, PR or deployment. Final production
+  preview remains on 3001. Shared build/preview/database claim released after verification.
+
+## 46. Exercise expansion delivery — 2026-11-04
+
+Agent: Codex (GPT-6).
+
+- Owner explicitly authorized committing and pushing the exercise expansion to
+  `origin/codex/education-foundation`. No competing work-board claims were present.
+- Reviewed branch, remote, recent history and application diff; origin matched HEAD before delivery.
+  Staged only the exercise expansion, its tests, PROJECT changes and Codex operations entries.
+  Claude's uncommitted section 44 deployment note and `.claude/` remain outside this commit.
+- Re-ran all unit tests: 96/96 pass. Diff/whitespace and private credential scans pass.
+  Application build and browser evidence remain as recorded in section 45; no application changes
+  were made during delivery. The configured Vercel build performs the additive seed on deployment.

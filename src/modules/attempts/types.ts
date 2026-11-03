@@ -1,4 +1,5 @@
 export type SavedAttempt = {
+  mathTutor: boolean;
   id: string; title: string; program: "sat" | "ielts" | "entrance"; revision: number; status: "IN_PROGRESS" | "SUBMITTED";
   questions: { id: string; prompt: string; options: string[] }[];
   answers: (number | null)[];

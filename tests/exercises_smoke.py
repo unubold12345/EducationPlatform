@@ -44,7 +44,7 @@ with sync_playwright() as p:
     for program in ["sat", "ielts", "entrance"]:
         page.goto(BASE + "/programs/" + program)
         page.wait_for_load_state("networkidle")
-        expect(page.locator(".exercise-row")).to_have_count(4 if program == "sat" else 3)
+        expect(page.locator(".exercise-row")).to_have_count(sum(s["program"]==program for s in SETS))
         page.screenshot(path=str(ARTIFACTS / (program + "-library-desktop.png")), full_page=True)
 
     for exercise in SETS:
@@ -54,6 +54,11 @@ with sync_playwright() as p:
         for q in exercise["questions"]:
             # HTML may escape text, so also check the hydrated serialized prop keys.
             assert q["explanation"] not in page.locator("body").inner_text()
+        quantitative=(exercise["program"]=="sat" and exercise["subject"]!="Reading and Writing") or (exercise["program"]=="entrance" and exercise["subject"] in ["Математик","Физик"])
+        expect(page.get_by_role("button",name="AI туслах",exact=True)).to_have_count(1 if quantitative else 0)
+        if not quantitative:
+            denied=context.request.post(BASE+"/api/math-tutor",headers=ORIGIN,data={"target":{"kind":"practice","slug":slug,"examId":exercise["examId"],"questionId":exercise["questions"][0]["id"]},"action":"hint","language":"mn","message":"","history":[]})
+            assert denied.status==404,(slug,denied.status)
         assert '"correct":' not in page.content() and '\\"correct\\":' not in page.content()
         assert '"explanation":' not in page.content() and '\\"explanation\\":' not in page.content()
         endpoint = BASE + "/api/exercises/" + slug
@@ -62,7 +67,7 @@ with sync_playwright() as p:
         assert context.request.post(endpoint, headers={**ORIGIN,"Content-Type":"text/plain"}, data="bad").status == 415
         assert context.request.post(endpoint, headers={**ORIGIN,"Content-Type":"application/json"}, data="bad").status == 400
         assert context.request.post(endpoint, headers=ORIGIN, data={"padding": "x" * 9000}).status == 413
-        # Fully answer all 80 questions in the UI and verify server explanations.
+        # Fully answer every question in the UI and verify server explanations.
         for i, question in enumerate(exercise["questions"]):
             page.get_by_role("radio").nth(question["correct"]).check()
             if i < 7:
@@ -128,6 +133,30 @@ with sync_playwright() as p:
     page.goto(BASE + "/dashboard")
     expect(page.locator(".attempt-row")).to_have_count(3)
 
+    # Newly seeded content supports real private save/resume and exact-version grading too.
+    for slug in ["sat-rw-evidence","ielts-reading-bicycles","entrance-physics-circuits"]:
+        exercise=next(s for s in SETS if s["slug"]==slug)
+        started=context.request.post(BASE+"/api/attempts",headers=ORIGIN,data={"examId":exercise["examId"]})
+        assert started.status==200,(slug,started.status,started.text())
+        attempt_id=started.json()["id"]
+        endpoint=BASE+"/api/attempts/"+attempt_id
+        initial=context.request.get(endpoint).json()
+        assert initial["mathTutor"]==(slug=="entrance-physics-circuits")
+        first_answers=[exercise["questions"][0]["correct"]]+[None]*7
+        saved=context.request.patch(endpoint,headers=ORIGIN,data={"revision":initial["revision"],"answers":first_answers})
+        assert saved.status==200,(slug,saved.status)
+        page.goto(BASE+"/learn/attempts/"+attempt_id)
+        page.reload()
+        page.get_by_role("button",name="Бодлого 1",exact=True).click()
+        expect(page.get_by_role("radio").nth(first_answers[0])).to_be_checked()
+        expect(page.get_by_role("button",name="AI туслах",exact=True)).to_have_count(1 if initial["mathTutor"] else 0)
+        if not initial["mathTutor"]:
+            denied=context.request.post(BASE+"/api/math-tutor",headers=ORIGIN,data={"target":{"kind":"saved","attemptId":attempt_id,"questionId":initial["questions"][0]["id"]},"action":"hint","language":"mn","message":"","history":[]})
+            assert denied.status==404,(slug,denied.status)
+        current=context.request.get(endpoint).json()
+        finished=context.request.post(endpoint+"/submit",headers=ORIGIN,data={"revision":current["revision"],"answers":[q["correct"] for q in exercise["questions"]]})
+        assert finished.status==200 and finished.json()["result"]["score"]==8,(slug,finished.status)
+
     workshops = ["ielts-writing-data", "ielts-writing-opinion", "ielts-speaking-place", "ielts-speaking-discussion"]
     for slug in workshops:
         page.goto(BASE + "/workshops/" + slug)
@@ -162,4 +191,4 @@ with sync_playwright() as p:
     expect(page).to_have_url(BASE + "/dashboard")
     assert not errors, errors
     browser.close()
-print("PASS: all 80 questions, 10 sets, 4 workshops, private multi-program save/resume/history, identical concurrent submits, grading validation, return-path safety, downloads, and 320/390px layouts.")
+print(f"PASS: all {sum(len(s['questions']) for s in SETS)} questions, {len(SETS)} sets, 4 workshops, private multi-program save/resume/history, identical concurrent submits, grading validation, return-path safety, downloads, and 320/390px layouts.")

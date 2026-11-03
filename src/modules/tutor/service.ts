@@ -11,6 +11,7 @@ import { makeReport } from "@/modules/exams/engine";
 import type { ExamState } from "@/modules/exams/types";
 import { validTutorInput, tutorDay, type TutorInput, type TutorContext } from "./contracts";
 import { deepseekTutor } from "./provider";
+import { supportsMathTutor } from "@/modules/exercises/math-support";
 
 async function ensureNoTimedExam(userId:string) {
   const db=getDb();
@@ -33,7 +34,7 @@ async function contextFor(input: TutorInput,userId: string):Promise<TutorContext
   if(target.kind==="saved") {
     const row=await db.attempt.findFirst({where:{id:target.attemptId,userId},include:{items:{where:{id:target.questionId}}}});
     const q=row?.items[0];
-    if(!row||!q||row.examId.startsWith("ielts-"))throw new ApiError(404,"Математикийн бодлого олдсонгүй.");
+    if(!row||!q||!supportsMathTutor(row.examId))throw new ApiError(404,"Математикийн бодлого олдсонгүй.");
     return {title:row.title,prompt:q.prompt,options:q.options,selected:q.selected===null?"":q.options[q.selected],...(row.status==="SUBMITTED"?{answer:q.options[q.correct],explanation:q.explanation}:{}),review:row.status==="SUBMITTED"};
   }
   if(target.slug==="demo") {
@@ -43,7 +44,7 @@ async function contextFor(input: TutorInput,userId: string):Promise<TutorContext
     return {title:"SAT Algebra · Practice",prompt:q.prompt,options:q.options,selected:target.selected==null?"":q.options[target.selected],...(input.action!=="hint"?{answer:q.options[review.correct],explanation:review.explanation}:{}),review:false};
   }
   const set=await getExercise(target.slug!,target.examId);
-  if(!set||set.program==="ielts")throw new ApiError(404,"Математикийн дасгал олдсонгүй.");
+  if(!set||!supportsMathTutor(set.examId))throw new ApiError(404,"Математикийн дасгал олдсонгүй.");
   await requireSubscription(userId,set.program);
   const q=set.questions.find(q=>q.id===target.questionId);if(!q)throw new ApiError(404,"Бодлого олдсонгүй.");
   if(target.selected!=null&&target.selected>=q.options.length)throw new ApiError(400,"Сонголт буруу байна.");

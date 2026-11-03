@@ -15,7 +15,7 @@ export function SavedPractice({ initial }: { initial: SavedAttempt }) {
   const [error, setError] = useState("");
   const [conflict, setConflict] = useState(false);
   const [saved, setSaved] = useState(true);
-  const tutor = attempt.program !== "ielts";
+  const tutor = attempt.mathTutor;
   const busy = useRef(false);
   const resultHeading = useRef<HTMLHeadingElement>(null);
   const questionHeading = useRef<HTMLHeadingElement>(null);

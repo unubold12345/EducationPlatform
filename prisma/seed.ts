@@ -28,7 +28,7 @@ try {
   for (const set of exerciseSets) {
     await db.$transaction(async tx => {
       const programTitle = set.program === "sat" ? "SAT" : set.program === "ielts" ? "IELTS" : "Элсэлтийн шалгалт";
-      const subjectSlug = set.program === "sat" ? "math" : set.program === "ielts" ? "english" : set.slug.replace("entrance-", "");
+      const subjectSlug = set.program === "sat" ? (set.subject === "Reading and Writing" ? "english" : "math") : set.program === "ielts" ? "english" : set.slug.startsWith("entrance-math") ? "math" : set.slug.startsWith("entrance-physics") ? "physics" : "english";
       const subjectId = `${set.program}-${subjectSlug}`;
       await tx.program.upsert({ where: { id: set.program }, update: {}, create: { id: set.program, slug: set.program, title: programTitle } });
       await tx.subject.upsert({ where: { id: subjectId }, update: {}, create: { id: subjectId, programId: set.program, slug: subjectSlug, title: set.program === "entrance" ? set.subject : subjectSlug === "math" ? "Mathematics" : "English" } });
@@ -38,7 +38,7 @@ try {
         await tx.question.upsert({ where: { id }, update: {}, create: { id, topicId: set.slug } });
         await tx.questionVersion.upsert({ where: { id: q.id }, update: {}, create: {
           id: q.id, questionId: id, version: 1, prompt: q.prompt, options: q.options, correct: q.correct,
-          explanation: q.explanation, provenance: "Original EducationPlatform practice, 2026-10-22. Pending independent editorial review; not official exam material.",
+          explanation: q.explanation, provenance: "Original EducationPlatform practice. Pending independent editorial review; not official exam material.",
         } });
       }
       await tx.exam.upsert({ where: { id: set.examId }, update: {}, create: {
@@ -48,6 +48,6 @@ try {
       } });
     });
   }
-  console.log("Seeded legacy SAT sample and 10 practice sets (80 questions); existing versions and student data left unchanged.");
+  console.log(`Seeded legacy SAT sample and ${exerciseSets.length} practice sets (${exerciseSets.reduce((n,set)=>n+set.questions.length,0)} questions); existing versions and student data left unchanged.`);
 } finally { await db.$disconnect(); }
 

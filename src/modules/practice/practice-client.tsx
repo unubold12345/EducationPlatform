@@ -1,4 +1,5 @@
 "use client";
+import { supportsMathTutor } from "@/modules/exercises/math-support";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { AiAssistant } from "@/modules/tutor/panel";
@@ -11,7 +12,7 @@ export function PracticeClient({ questions, exercise }: { questions: PracticeQue
   const [result, setResult] = useState<PracticeResult | null>(null);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
-  const tutor = exercise?.program !== "ielts";
+  const tutor = !exercise || supportsMathTutor(exercise.examId);
   const questionHeading = useRef<HTMLHeadingElement>(null);
   const resultHeading = useRef<HTMLHeadingElement>(null);
   const submitting = useRef(false);

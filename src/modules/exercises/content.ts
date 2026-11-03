@@ -1,6 +1,9 @@
 // Original practice material. Import from server modules only; publicExercise strips keys.
 // IDs describe immutable v1 content. Publish a new version rather than editing saved content.
 import type { ExerciseProgram, ExerciseSet } from "./types.ts";
+import { satExpansion } from "./sat-expansion.ts";
+import { ieltsExpansion } from "./ielts-expansion.ts";
+import { entranceExpansion } from "./entrance-expansion.ts";
 
 type Item = [prompt: string, options: string[], answer: string, explanation: string];
 function set(slug: string, program: ExerciseProgram, title: string, subject: string, description: string, minutes: number, items: Item[]): ExerciseSet {
@@ -30,7 +33,7 @@ function reading(passage: string, items: Item[]): Item[] {
   return items.map(([prompt, options, answer, explanation]) => [passage + "\n\n[QUESTION]\n\n" + prompt, options, answer, explanation]);
 }
 
-export const exerciseSets: ExerciseSet[] = [
+export const originalExerciseSets: ExerciseSet[] = [
   set("sat-algebra", "sat", "Algebra · Тэгшитгэл ба шугаман хамаарал", "Algebra", "Тэгшитгэл, систем, налалт, тэнцэтгэл бишийг нөхцөлтэй нь холбож бодоорой.", 18, [
     ["If 5x − 9 = 26, what is x?", ["5", "6", "7", "9"], "7", "Хоёр талд 9 нэмэхэд 5x = 35. 5-д хуваавал x = 7."],
     ["A line passes through (2, 7) and (6, 19). What is its slope?", ["2", "3", "4", "6"], "3", "Налалт = (19 − 7)/(6 − 2) = 12/4 = 3."],
@@ -133,6 +136,7 @@ export const exerciseSets: ExerciseSet[] = [
   ]),
 ];
 
+export const exerciseSets:ExerciseSet[]=[...originalExerciseSets,...satExpansion,...ieltsExpansion,...entranceExpansion];
 export function findExercise(slug: string) { return exerciseSets.find(item => item.slug === slug); }
 export function publicExercise(set: ExerciseSet) {
   return { ...set, questions: set.questions.map(({ id, prompt, options }) => ({ id, prompt, options })) };

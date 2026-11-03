@@ -4,6 +4,7 @@ import { ApiError } from "@/lib/api";
 import { Prisma } from "@/generated/prisma/client";
 import { validateAnswers } from "./validation";
 import type { SavedAttempt } from "./types";
+import { supportsMathTutor } from "@/modules/exercises/math-support";
 import { getExercises,getExercise } from "@/modules/content/published";
 import { exerciseSets as sourceExercises } from "@/modules/exercises/content";
 import { requireSubscription } from "@/modules/subscriptions/access";
@@ -13,7 +14,7 @@ type AttemptWithItems = Prisma.AttemptGetPayload<{ include: typeof withItems }>;
 
 export function publicAttempt(attempt: AttemptWithItems): SavedAttempt {
   return {
-    id: attempt.id, title: attempt.title, revision: attempt.revision, status: attempt.status,
+    id: attempt.id, title: attempt.title, revision: attempt.revision, status: attempt.status, mathTutor: supportsMathTutor(attempt.examId),
     program: attempt.examId.startsWith("ielts-") ? "ielts" : attempt.examId.startsWith("entrance-") ? "entrance" : "sat",
     questions: attempt.items.map(item => ({ id: item.id, prompt: item.prompt, options: item.options })),
     answers: attempt.items.map(item => item.selected),

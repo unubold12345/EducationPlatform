@@ -21,7 +21,7 @@ authentication require provider configuration; see the actual hosted checkpoint 
 | Area | What exists |
 | --- | --- |
 | Free practice | `/practice`, a three-question sample with immediate grading |
-| Program practice | 10 sets / 80 original questions: SAT 32, IELTS 24, university entrance 24 |
+| Program practice | 40 sets / 320 original questions: SAT 112, IELTS 104, university entrance 104 |
 | IELTS workshops | Four focused workshops with saved work and grading |
 | Full mocks | Six Digital SAT and six IELTS Academic mocks (01–06), with server-authoritative timers |
 | Official papers | 2020 Math A–D and 37 historical English variations |
@@ -37,6 +37,20 @@ Program practice, workshop grading and new saved attempts require the matching a
 stays free. Full mocks accept a matching plan or a prior per-exam purchase. Subscription-backed
 sittings keep continuation and review access after expiry, but new starts remain gated. Existing
 purchases and LEGACY grants are preserved.
+
+Each practice set has eight questions with authored explanations. SAT now has fourteen sets:
+eight Mathematics and six Reading & Writing (vocabulary, inference, evidence, conventions,
+transitions and synthesis). IELTS has thirteen Reading/Academic English sets; the six added
+reading texts include source-based True/False/Not Given questions. University entrance has
+thirteen sets across Mathematics, English and Physics. The original ten sets retain their v1
+IDs/content; thirty new sets have independent v1 IDs and work through the existing published
+content, plan access, saved-attempt and grading paths. These are original practice materials,
+with independent editorial and pedagogical review still pending.
+
+The mathematics tutor is offered only for quantitative Math/Physics exercise IDs, including
+published versions. SAT Reading & Writing, IELTS and entrance English exercises do not show
+the tutor, and the server also rejects those references. Saved-attempt responses include the
+server-derived `mathTutor` capability; this UI flag does not authorise provider access by itself.
 
 The `/exams` library has four category items: SAT, IELTS, EEC Mathematics and EEC English.
 `/exams/sat` and `/exams/ielts` collect each program's six mocks in a selection grid, like the

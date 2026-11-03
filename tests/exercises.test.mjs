@@ -4,11 +4,11 @@ import { exerciseSets, publicExercise, findExercise } from "../src/modules/exerc
 import { gradeExercise } from "../src/modules/exercises/grading.ts";
 
 test("all three programs have complete, uniquely versioned exercise sets", () => {
-  assert.equal(exerciseSets.length, 10);
+  assert.equal(exerciseSets.length, 40);
   const questions = exerciseSets.flatMap(set => set.questions);
-  assert.equal(questions.length, 80);
-  assert.equal(new Set(questions.map(q => q.id)).size, 80);
-  assert.equal(new Set(exerciseSets.map(set => set.examId)).size, 10);
+  assert.equal(questions.length, 320);
+  assert.equal(new Set(questions.map(q => q.id)).size, 320);
+  assert.equal(new Set(exerciseSets.map(set => set.examId)).size, 40);
   for (const program of ["sat", "ielts", "entrance"]) assert.ok(exerciseSets.filter(set => set.program === program).length >= 3);
   for (const q of questions) {
     assert.equal(new Set(q.options).size, q.options.length);

@@ -16,7 +16,7 @@ const tickerItems = ["Digital SAT", "IELTS Academic", "ЭЕШ 2020 · A–D", "E
 const resources = [
   { href: "/exams/eec-math-2020", label: "Official paper", title: "ЭЕШ 2020 · Математик", note: "A, B, C, D · 100 минут · Бодит эх материал", mark: "∑" },
   { href: "/exams/eec-english", label: "Archive", title: "ЭЕШ · Англи хэл", note: "37 хувилбар · Хариуны түлхүүртэй", mark: "Aa" },
-  { href: "/programs/entrance", label: "University Prep", title: "ЭЕШ бэлтгэл", note: "Математик · Англи хэл · Физик · 24 бодлого", mark: "◈" },
+  { href: "/programs/entrance", label: "University Prep", title: "ЭЕШ бэлтгэл", note: "Математик · Англи хэл · Физик · 104 бодлого", mark: "◈" },
   { href: "/practice", label: "Free sample", title: "Нэг бодлогоос эхэлье", note: "3 бодлого · Бүртгэлгүй · Үнэгүй", mark: "→" },
 ];
 

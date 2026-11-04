@@ -31,63 +31,36 @@ with sync_playwright() as p:
     expect(page.locator(".program-card")).to_have_count(3)
     page.locator('a[href="/programs/sat"]').click()
     expect(page.get_by_role("heading", name="SAT", exact=True)).to_be_visible()
-    page.get_by_role("link", name="Жишиг дасгал эхлэх").click()
-    expect(page.get_by_role("heading", name="If 3x + 7 = 22")).to_be_visible()
-    page.get_by_role("radio").nth(1).check()
-    page.get_by_role("button", name="Дараах").click()
-    page.get_by_role("radio").nth(2).check()
-    page.get_by_role("button", name="Өмнөх").click()
-    expect(page.get_by_role("radio").nth(1)).to_be_checked()
-    page.get_by_role("button", name="Бодлого 3", exact=False).click()
-    expect(page.get_by_role("button", name="Хариугаа шалгах")).to_be_disabled()
-    page.get_by_role("radio").nth(3).check()
-    # Check recoverable submission failure without losing answers.
-    page.route("**/api/practice", lambda route: route.abort())
-    page.get_by_role("button", name="Хариугаа шалгах").click()
-    expect(page.locator('.error-message[role="alert"]')).to_be_visible()
-    expect(page.get_by_role("radio").nth(3)).to_be_checked()
-    page.unroute("**/api/practice")
-    page.get_by_role("button", name="Хариугаа шалгах").click()
-    expect(page.locator(".score")).to_have_text("3 / 3")
-    expect(page.locator(".result-summary h2")).to_be_focused()
-    expect(page.locator(".review")).to_have_count(3)
-    page.screenshot(path=str(artifacts / "practice-results.png"), full_page=True)
-    page.get_by_role("button", name="Дахин бодох").click()
-    expect(page.get_by_role("radio").nth(1)).not_to_be_checked()
+    expect(page.locator(".program-mock-card a")).to_have_attribute("href", "/exams/sat")
+    # Practice exercises were removed: their pages and APIs are gone and nothing links to them.
+    for path in ["/practice", "/exercises/sat-algebra", "/learn/attempts/missing"]:
+        assert page.goto(BASE + path).status == 404, path
+    for path in ["/api/practice", "/api/exercises/sat-algebra", "/api/attempts"]:
+        assert page.request.post(BASE + path, data={}).status == 404, path
+    for path in ["/", "/programs", "/programs/sat", "/programs/ielts", "/programs/entrance", "/plans", "/exams"]:
+        page.goto(BASE + path)
+        assert page.locator('a[href*="/practice"], a[href*="/exercises"], a[href*="/learn/"]').count() == 0, path
     page.goto(BASE + "/programs/ielts")
     expect(page.get_by_role("heading", name="Writing & Speaking workshop")).to_be_visible()
     response = page.goto(BASE + "/programs/not-a-program")
     assert response.status == 404
     expect(page.get_by_role("heading", name="Энэ хуудас олдсонгүй.")).to_be_visible()
-    assert page.request.post(BASE + "/api/practice", data={"answers": [1, 2]}).status == 400
-    assert page.request.post(BASE + "/api/practice", data={"answers": [1, 2, 3], "score": 999}).json()["score"] == 3
-    assert page.request.post(BASE + "/api/practice", data="bad", headers={"Content-Type": "application/json"}).status == 400
-    assert page.request.post(BASE + "/api/practice", data="bad", headers={"Content-Type": "text/plain"}).status == 415
     # Desktop keyboard entry includes an accessible skip link.
     page.goto(BASE)
     page.keyboard.press("Tab")
     expect(page.get_by_role("link", name="Үндсэн агуулга руу")).to_be_focused()
     for width in [390, 320]:
         page.set_viewport_size({"width": width, "height": 844})
-        for path in ["/", "/programs", "/programs/sat", "/programs/ielts", "/programs/entrance", "/practice"]:
+        for path in ["/", "/programs", "/programs/sat", "/programs/ielts", "/programs/entrance", "/plans"]:
             page.goto(BASE + path)
             page.wait_for_load_state("networkidle")
             assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth"), f"Overflow: {width} {path}"
         if width == 390:
             page.goto(BASE)
             page.screenshot(path=str(artifacts / "homepage-mobile.png"), full_page=True)
-            page.goto(BASE + "/practice")
-            page.get_by_role("radio").nth(0).check()
-            page.get_by_role("button", name="Дараах").click()
-            page.get_by_role("radio").nth(0).check()
-            page.get_by_role("button", name="Дараах").click()
-            page.get_by_role("radio").nth(0).check()
-            page.get_by_role("button", name="Хариугаа шалгах").click()
-            expect(page.locator(".score")).to_have_text("0 / 3")
-            page.screenshot(path=str(artifacts / "practice-mobile.png"), full_page=True)
     assert not errors, errors
     browser.close()
-    print("PASS: navigation, grading, back navigation, retry, reset, API validation, 404, keyboard skip link, desktop and mobile layouts; no browser page errors.")
+    print("PASS: navigation, removed exercise routes and links, 404, keyboard skip link, desktop and mobile layouts; no browser page errors.")
 
 
 

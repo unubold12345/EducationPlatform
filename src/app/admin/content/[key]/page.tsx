@@ -7,7 +7,7 @@ import Link from "next/link";
 import { notFound,redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
 import { isAdmin,contentCatalog } from "@/modules/admin/service";
-import { getExercise,getExam,getWorkshop,sourceContent } from "@/modules/content/published";
+import { getExam,getWorkshop,sourceContent } from "@/modules/content/published";
 import { editableQuestions } from "@/modules/content/fix";
 import { getDb } from "@/lib/db";
 import { ContentEditor } from "@/components/content-editor";
@@ -30,15 +30,15 @@ export default async function ContentPreview({params}:{params:Promise<{key:strin
     <section className="admin-panel"><h3>Эх хуудсууд · {officialPaper.seconds/60} минут</h3>{officialPaper.pageUrls.map((url,i)=><p key={url}><a href={url} target="_blank" rel="noreferrer">БҮТ · {i+1}-р хуудас ↗</a></p>)}</section>
     <section className="admin-panel"><h3>Түлхүүр · {officialPaper.totalMarks} оноо</h3><p>{officialKey.choices.map((answer,i)=>`${i+1}: ${answer} (${officialKey.choiceMarks[i]})`).join(" · ")}</p>{officialKey.corrections?.map(item=><p key={item.id}>Засвар · {item.id}: хэвлэгдсэн {item.printed} → {item.answer}</p>)}{officialKey.fills.map(q=><p key={q.id}>{q.id}: {q.digits} · {q.groups.reduce((sum,g)=>sum+g.marks,0)} оноо</p>)}{officialKey.sourceUrls.map((url,i)=><p key={url}><a href={url} target="_blank" rel="noreferrer">Албан түлхүүрийн {i+1}-р хуудас ↗</a></p>)}</section>
   </AdminShell>;
-  const [set,exam,task]=await Promise.all([getExercise(key),getExam(key),getWorkshop(key)]);
-  if(!set&&!exam&&!task)notFound();
+  const [exam,task]=await Promise.all([getExam(key),getWorkshop(key)]);
+  if(!exam&&!task)notFound();
   const db=getDb();
   const [draft,versions,review,fixes]=await Promise.all([db.contentDraft.findUnique({where:{key}}),db.publishedContent.findMany({where:{key},orderBy:{version:"desc"},take:5}),db.contentReview.findUnique({where:{key}}),db.adminAudit.findMany({where:{target:key,action:{startsWith:"content-"}},orderBy:{createdAt:"desc"},take:8})]);
   const published=JSON.parse(JSON.stringify(versions[0]?.body??sourceContent(key)));
   const initial=JSON.parse(JSON.stringify(draft?.body??published));
   const questions=editableQuestions(published);
   const item=contentCatalog().find(entry=>entry.key===key);
-  return <AdminShell tab="content" title={set?.title??exam?.title??task?.title??key} name={session.user.name} actions={back}>
+  return <AdminShell tab="content" title={exam?.title??task?.title??key} name={session.user.name} actions={back}>
     <dl className="admin-facts">
       <div><dt>Төрөл</dt><dd>{item?`${item.program.toUpperCase()} · ${item.kind}`:"—"}</dd></div>
       <div><dt>Нийтлэгдсэн</dt><dd>v{versions[0]?.version??1}</dd></div>

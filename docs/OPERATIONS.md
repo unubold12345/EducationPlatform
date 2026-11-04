@@ -138,8 +138,8 @@ Important limits on that evidence:
 ### Changes and verification
 
 - Read the installed Next.js guides in `node_modules/next/dist/docs/` before framework-specific code.
-- Application changes require lint, typecheck, all unit tests, a production build, and the four
-  required browser suites (`browser`, `accounts`, `exercises`, `exams`), plus any area-specific
+- Application changes require lint, typecheck, all unit tests, a production build, and the three
+  required browser suites (`browser`, `accounts`, `exams`), plus any area-specific
   suites. Inspect affected screenshots when UI changes.
 - Documentation-only changes require `git diff --check` and a secret scan; they do not require an
   application rebuild.
@@ -243,7 +243,6 @@ npm run setup:env
 npm run db:start
 npm run db:migrate
 npm run db:generate
-npm run db:seed
 npm run dev
 
 # Production-mode local preview
@@ -256,7 +255,6 @@ npm run typecheck
 npm test
 python tests/browser_smoke.py
 python tests/accounts_smoke.py
-python tests/exercises_smoke.py
 python tests/exams_smoke.py
 
 # Area suites (run the relevant ones)
@@ -1826,3 +1824,43 @@ Agent: Claude Code (Claude Opus 5.5). This agent also edited `PROJECT.md` sectio
 - This agent also ran on this full tree: `profile`, `theme`, `subscriptions`, `payments`, `demo_accounts`,
   `mock_collections`, and `homepage_polish` through a temporary copy aimed at 3006, because it hardcodes 3001, now
   held by Lexlab. All passed; the Google-link failure there is mocked. Hosted checks follow deployment.
+
+### Section 54 delivery result
+
+- Commit `d9d56f0` (52 files) pushed to `codex/education-foundation`; `git ls-remote` matches. GitHub's Vercel status
+  for the commit reports "Deployment has completed" (success). This note is local, after the pushed commit.
+- Read-only hosted checks only: `/api/health` ok, `/exams/eec-math-2020` and its A briefing 200, `/dashboard` redirects
+  to login when signed out. `tests/hosted_demo_smoke.py` and a signed-in hosted sitting have not been run, so hosted
+  rendering of the questions and the redesigned signed-in pages are unconfirmed.
+- Migration: none in this commit. Local preview stays on 3006; 3001 is held by Lexlab, which was not touched.
+
+## 55. Practice exercises removed — 2026-11-05
+
+Agent: Claude Code (Claude Opus 5.5). This agent also edited `PROJECT.md` and the required-check lists in this file.
+
+- Owner asked to remove exercises and their Vercel and GitHub data, and confirmed that workshops stay. Removed practice
+  sets, the free `/practice` sample, saved exercise attempts, their routes, APIs, modules and data, and `prisma/seed.ts`.
+  Mocks, official papers, workshops, the Speaking Lab and Essay Studio stay. Workshop files moved to `src/modules/workshops`.
+- Follow-on changes: dashboard, profile, admin, program pages, plan text and home links; the AI tutor now only reviews a
+  submitted SAT Math mock; the required suites are now `browser`, `accounts`, `exams`. University Prep now covers only
+  official papers but its price is unchanged at ₮40,000, as is the ₮60,000 SAT plan: an owner pricing question.
+- Deploys no longer seed, which should remove most of the slower build time in section 54's question. Not yet measured.
+- **Hosted data not deleted.** Permanent deletion is left to the owner. `scripts/purge-exercises.mjs` previews by default,
+  needs `--confirm-host` for a hosted database and `--apply` to delete. Local dry run listed 169 attempts, 67 exams,
+  323 questions and old `sat-algebra` content. A rollback rehearsal of the table deletes passed on the local database, with
+  nothing changed. The script has not run against the hosted database. Tables stay in the schema until purged.
+- **GitHub:** files are deleted by a normal commit; history was not rewritten, since rewriting cannot remove existing clones
+  and the content is original practice material, not secrets. They stay readable in old commits. The repository is public
+  although section 1 calls it private; the owner chose to change that in GitHub settings.
+- Checks by this agent: lint, typecheck, 91/91 unit tests (removed exercise tests; added `exercises-removal.test.mjs`) and
+  production build pass. On 3006, passed: `browser`, `accounts`, `exams`, `official_paper`, `english_archive`, `admin`,
+  `publishing`, `subscriptions`, `profile`, `payments`, `theme`, `demo_accounts`, `mock_collections`, `writing_lab`,
+  `homepage_polish` (temporary copy aimed at 3006). These ran before a final dashboard CSS change to the stat columns;
+  `accounts`, `profile` and `payments` were repeated after it.
+- First-run failures that were test fixes, not app changes: stale stat counts (`profile`, `payments`), a radio check that
+  exercise questions needed (`admin`), and `publishing` asserting an admin hint removed earlier and a review-before-publish
+  rule dropped by the 2026-10-30 owner decision. Accounts and subscription suites were rewritten around mocks, because they
+  used exercise attempts; attempt ownership and autosave are now covered by the exam suites.
+- Not run: `tutor_smoke.py` (rewritten, compile-checked only; real DeepSeek calls), `additional_exams`, `speaking_lab`,
+  `auth_recovery` (one route edited; needs the 3002 setup). Unused exercise CSS remains in `theme.css`, `globals.css` and
+  `programs.css`. The 3006 preview is the current local build.

@@ -104,7 +104,7 @@ with sync_playwright() as p:
  page.set_viewport_size({'width':1440,'height':1000})
  for route in ['/','/programs/ielts']:
   page.goto(BASE+route);expect(page.locator('a[href="/labs/ielts-speaking"]')).to_have_count(1)
- for route in ['/practice','/exams']:
+ for route in ['/programs','/exams']:
   page.goto(BASE+route);expect(page.locator('a[href="/labs/ielts-speaking"]')).to_have_count(0)
 
  # Hands-free loop with REAL getUserMedia/MediaRecorder on a fixture microphone file (3s tone, then silence).

@@ -2,9 +2,8 @@ import { allOfficialPapers,slotsForPaper } from "@/modules/papers/catalog";
 import "server-only";
 import { getDb } from "@/lib/db";
 import { ApiError } from "@/lib/api";
-import { exerciseSets } from "@/modules/exercises/content";
 import { examDefinitions } from "@/modules/exams/definitions";
-import { guidedTasks } from "@/modules/exercises/guided";
+import { guidedTasks } from "@/modules/workshops/guided";
 import { addCalendarMonth, findSubscriptionPlan, validPlanPrice } from "@/modules/subscriptions/plans";
 import { revalidatePath } from "next/cache";
 import { authFeatures, isDemoEmail } from "@/lib/auth-features";
@@ -19,7 +18,6 @@ export async function assertAdmin(userId: string) {
 export function contentCatalog() {
   return [
     ...allOfficialPapers.map(paper=>({key:paper.slug,title:paper.title,program:paper.program,kind:"Албан материал",count:slotsForPaper(paper).length,href:"/exams/"+paper.slug})),
-    ...exerciseSets.map(set=>({key:set.slug,title:set.title,program:set.program,kind:"Дасгал",count:set.questions.length,href:"/exercises/"+set.slug})),
     ...examDefinitions.map(exam=>({key:exam.slug,title:exam.title,program:exam.program,kind:"Бүтэн mock",count:exam.program==="sat"?98:80,href:"/exams/"+exam.slug})),
     ...guidedTasks.map(task=>({key:task.slug,title:task.title,program:"ielts",kind:"Workshop",count:1,href:"/workshops/"+task.slug})),
   ];

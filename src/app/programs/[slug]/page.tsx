@@ -4,9 +4,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { programs, findProgram } from "@/modules/programs/catalog";
-import { getExercises, getWorkshop } from "@/modules/content/published";
+import { getWorkshop } from "@/modules/content/published";
+import { examDefinitions } from "@/modules/exams/definitions";
+import { allOfficialPapers } from "@/modules/papers/catalog";
 import { SpeakingInvitation } from "@/components/speaking-invitation";
-import { guidedTasks } from "@/modules/exercises/guided";
+import { guidedTasks } from "@/modules/workshops/guided";
 
 export function generateStaticParams() { return programs.map(({ slug }) => ({ slug })); }
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
@@ -18,13 +20,9 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
   const { slug } = await params;
   const program = findProgram(slug);
   if (!program) notFound();
-  const exerciseSets = await getExercises();
   const workshops = await Promise.all(guidedTasks.map(task => getWorkshop(task.slug).then(value => value!)));
-  const sets = exerciseSets.filter(set => set.program === slug);
+  const mockCount = examDefinitions.filter(exam => exam.program === slug).length;
   const plan = (await pricedPlan(slug))!;
-  const totalQuestions = sets.reduce((sum, set) => sum + set.questions.length, 0);
-  const totalMinutes = sets.reduce((sum, set) => sum + set.minutes, 0);
-  const firstSet = sets[0];
   const mock = slug === "sat" ? {
     eyebrow: "БҮТЭН ШАЛГАЛТ · DIGITAL SAT",
     title: "98 асуулт. Бодит хугацаа.",
@@ -60,14 +58,11 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
       <aside className="program-facts" aria-label="Хөтөлбөрийн товч мэдээлэл">
         <div className="program-facts-head"><span className="eyebrow">НЭГ ХАРААСАЙ</span><span className="status">{program.status}</span></div>
         <dl>
-          <div><dt>Дасгалын багц</dt><dd>{sets.length}</dd></div>
-          <div><dt>Нийт асуулт</dt><dd>{totalQuestions}</dd></div>
-          <div><dt>Нийт хугацаа</dt><dd>~{totalMinutes} мин</dd></div>
+          {slug === "entrance" ? <div><dt>Албан хувилбар</dt><dd>{allOfficialPapers.length}</dd></div> : <div><dt>Бүтэн mock</dt><dd>{mockCount}</dd></div>}
           {slug === "ielts" ? <div><dt>Workshop</dt><dd>{workshops.length}</dd></div> : null}
           <div><dt>Сарын эрх</dt><dd>₮{plan.amountMnt.toLocaleString("en-US")}</dd></div>
         </dl>
-        {firstSet ? <Link className="button" href={"/exercises/" + firstSet.slug}>Эхний багцаас эхлэх <span aria-hidden="true">→</span></Link> : null}
-        <Link className="text-link program-sample-link" href="/practice">Жишиг дасгал эхлэх <span aria-hidden="true">→</span></Link>
+        <Link className="button" href={mock?.href ?? "/exams/eec-math-2020"}>Шалгалт эхлэх <span aria-hidden="true">→</span></Link>
       </aside>
     </section>
 
@@ -83,36 +78,23 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
 
     {slug === "ielts" ? <SpeakingInvitation /> : null}
 
-    <section className="program-sets" aria-labelledby="program-sets-heading">
-      <div className="library-heading">
-        <div><p className="eyebrow">АЛХАМ 1 · СЭДЭВЧИЛСЭН ДАСГАЛ</p><h2 id="program-sets-heading">Дасгалын багцууд</h2></div>
-        <p>{sets.length} багц · {totalQuestions} асуулт</p>
-      </div>
-      <div className="set-deck">{sets.map((set, index) => <Link className="exercise-row set-card" href={"/exercises/" + set.slug} key={set.slug}>
-        <span className="set-card-top"><span className="exercise-count" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span><span className="set-subject">{set.subject}</span></span>
-        <h3>{set.title}</h3>
-        <p>{set.description}</p>
-        <span className="set-card-foot"><span className="exercise-meta">{set.questions.length} асуулт · ~{set.minutes} минут</span><span className="exercise-open">Эхлэх <span aria-hidden="true">→</span></span></span>
-      </Link>)}</div>
-    </section>
-
     {slug === "ielts" ? <section className="guided-library program-workshops" aria-labelledby="program-workshops-heading">
       <div className="library-heading">
-        <div><p className="eyebrow">АЛХАМ 2 · ӨӨРИЙН ҮГЭЭР</p><h2 id="program-workshops-heading">Writing &amp; Speaking workshop</h2></div>
+        <div><p className="eyebrow">ӨӨРИЙН ҮГЭЭР</p><h2 id="program-workshops-heading">Writing &amp; Speaking workshop</h2></div>
         <p>{workshops.length} даалгавар</p>
       </div>
       <div className="workshop-grid">{workshops.map(task => <Link className="workshop-link" key={task.slug} href={"/workshops/" + task.slug}>
         <p className="eyebrow">{task.skill} · ~{task.minutes} минут</p>
         <h3>{task.title}</h3>
         <p>Даалгавар, жишиг хариу, өөрийгөө шалгах жагсаалт</p>
-        <span className="text-link">Дасгал нээх <span aria-hidden="true">→</span></span>
+        <span className="text-link">Даалгавар нээх <span aria-hidden="true">→</span></span>
       </Link>)}</div>
-      <p className="fine-print source-note">Энэ сан нь Reading, хэлний суурь, Writing болон Speaking дасгалтай. Listening дасгал хараахан нэмэгдээгүй. <a href="https://ielts.org/take-a-test/test-types/ielts-academic-test" target="_blank" rel="noopener noreferrer">IELTS Academic-ийн хэсгүүдтэй танилцах ↗</a></p>
+      <p className="fine-print source-note">Бичих, ярих чадварыг бүтэн шалгалтаас гадуур бэлтгэх даалгаврууд. <a href="https://ielts.org/take-a-test/test-types/ielts-academic-test" target="_blank" rel="noopener noreferrer">IELTS Academic-ийн хэсгүүдтэй танилцах ↗</a></p>
     </section> : null}
 
     {slug === "entrance" ? <section className="program-official" aria-labelledby="program-official-heading">
       <div className="library-heading">
-        <div><p className="eyebrow">АЛХАМ 2 · АЛБАН ЁСНЫ МАТЕРИАЛ</p><h2 id="program-official-heading">Бодит шалгалтууд</h2></div>
+        <div><p className="eyebrow">АЛБАН ЁСНЫ МАТЕРИАЛ</p><h2 id="program-official-heading">Бодит шалгалтууд</h2></div>
         <p>2 архив</p>
       </div>
       <div className="program-official-grid">
@@ -131,11 +113,6 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
       </div>
     </section> : null}
 
-    <details className="program-notes">
-      <summary>Тэмдэглэл ба эх сурвалж</summary>
-      <p className="fine-print source-note">Өөрсдийн зохиосон сэдэвчилсэн дасгалууд. Багшийн хяналт хүлээгдэж буй туршилтын агуулга. Бүтэн mock шалгалт, албан ёсны оноо эсвэл band үнэлгээ биш.</p>
-      {slug === "sat" ? <p className="fine-print source-note">Сэдвийн ангилал: <a href="https://satsuite.collegeboard.org/sat/whats-on-the-test/math/overview" target="_blank" rel="noopener noreferrer">College Board — Math overview ↗</a>.</p> : null}
-      {slug === "entrance" ? <p className="fine-print source-note">Математик, англи хэл, физикийн суурь чадварын дасгал. Тухайн жилийн ЭШ-ийн албан ёсны блюпринт, бүрэн сэдвийн хамрах хүрээг орлохгүй.</p> : null}
-    </details>
+    {slug === "sat" ? <p className="fine-print source-note">Сэдвийн ангилал: <a href="https://satsuite.collegeboard.org/sat/whats-on-the-test/math/overview" target="_blank" rel="noopener noreferrer">College Board — Math overview ↗</a>.</p> : null}
   </div>;
 }

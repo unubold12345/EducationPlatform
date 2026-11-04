@@ -17,12 +17,10 @@ function question(item: Item, path: QuestionPath, section: string): EditableQues
   return out;
 }
 
-// Every question of an exercise set (questions[]) or a full mock (stages[].questions[] and the
-// adaptive stages[].variants.lower/higher[]), with the path the server needs to apply a fix.
+// Every question of a full mock (stages[].questions[] and the adaptive stages[].variants.lower/higher[]),
+// with the path the server needs to apply a fix.
 export function editableQuestions(body: unknown): EditableQuestion[] {
   if (!isItem(body)) return [];
-  const title = String(body.title ?? "");
-  if (Array.isArray(body.questions)) return body.questions.filter(isItem).map((item, i) => question(item, ["questions", i], title));
   if (!Array.isArray(body.stages)) return [];
   return body.stages.flatMap((stage, s) => {
     if (!isItem(stage)) return [];
@@ -39,7 +37,7 @@ export function editableQuestions(body: unknown): EditableQuestion[] {
 function validPath(path: unknown): path is QuestionPath {
   if (!Array.isArray(path) || path.length < 2 || path.length > 5) return false;
   const text = path.map(String).join("/");
-  return /^questions\/\d+$/.test(text) || /^stages\/\d+\/questions\/\d+$/.test(text) || /^stages\/\d+\/variants\/(lower|higher)\/\d+$/.test(text);
+  return /^stages\/\d+\/questions\/\d+$/.test(text) || /^stages\/\d+\/variants\/(lower|higher)\/\d+$/.test(text);
 }
 
 // Returns a new body with the fix applied, or null when the path or patch is not allowed. Fields must

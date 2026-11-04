@@ -31,7 +31,7 @@ export default async function AdminUserPage({ params, searchParams }: { params: 
     id: true, name: true, email: true, emailVerified: true, createdAt: true, updatedAt: true, suspendedAt: true, suspendedReason: true,
     adminMembership: { select: { createdAt: true } }, accounts: { select: { providerId: true, createdAt: true } },
     subscriptions: { orderBy: { endsAt: "desc" }, select: { program: true, startsAt: true, endsAt: true } },
-    _count: { select: { sessions: true, events: true, attempts: true, mockAttempts: true, paperAttempts: true, subscriptionOrders: true, mockPurchases: true } },
+    _count: { select: { sessions: true, events: true, mockAttempts: true, paperAttempts: true, subscriptionOrders: true, mockPurchases: true } },
   } });
   if (!user) notFound();
   const [lastEvent, ipRows, paidOrders, paidPurchases, declined, notes, auditTotal] = await Promise.all([
@@ -48,7 +48,7 @@ export default async function AdminUserPage({ params, searchParams }: { params: 
   const sharedUsers = sharedIps.length ? await db.user.findMany({ where: { id: { in: sharedIps.map(row => row.userId) } }, select: { id: true, email: true, suspendedAt: true } }) : [];
 
   const href = (next: Partial<{ view: string; page: number }>) => `/admin/users/${id}?` + new URLSearchParams({ view: next.view ?? view, page: String(next.page ?? 1) });
-  const counts: Record<View, number> = { activity: user._count.events, payments: user._count.subscriptionOrders + user._count.mockPurchases, attempts: user._count.attempts + user._count.mockAttempts + user._count.paperAttempts, sessions: user._count.sessions, admin: auditTotal };
+  const counts: Record<View, number> = { activity: user._count.events, payments: user._count.subscriptionOrders + user._count.mockPurchases, attempts: user._count.mockAttempts + user._count.paperAttempts, sessions: user._count.sessions, admin: auditTotal };
   const info = pageInfo(counts[view], requested);
   let body: React.ReactNode = null;
 
@@ -68,13 +68,11 @@ export default async function AdminUserPage({ params, searchParams }: { params: 
     body = <Table head={["Огноо", "Бүтээгдэхүүн", "Дүн / төлөв", "Баримт"]} empty="Төлбөр алга." rows={rows.map(row => cells(adminDate(row.at), <>{row.label}<small>{row.extra}</small></>, <><strong>{money(row.amount)}</strong><small><StatusPill status={row.status}/>{row.paidAt ? " " + adminDate(row.paidAt) : ""}</small></>, <><code>{row.id}</code><small>{row.provider}</small></>))}/>;
   } else if (view === "attempts") {
     const take = info.skip + info.size;
-    const [attempts, mocks, papers] = await Promise.all([
-      db.attempt.findMany({ where: { userId: id }, orderBy: [{ createdAt: "desc" }, { id: "desc" }], take, select: { id: true, title: true, status: true, score: true, total: true, createdAt: true, updatedAt: true } }),
+    const [mocks, papers] = await Promise.all([
       db.mockAttempt.findMany({ where: { userId: id }, orderBy: [{ createdAt: "desc" }, { id: "desc" }], take, select: { id: true, slug: true, status: true, createdAt: true, updatedAt: true, subscriptionAccess: true } }),
       db.paperAttempt.findMany({ where: { userId: id }, orderBy: [{ createdAt: "desc" }, { id: "desc" }], take, select: { id: true, slug: true, status: true, createdAt: true, updatedAt: true } }),
     ]);
-    const rows = [...attempts.map(row => ({ id: row.id, at: row.createdAt, updated: row.updatedAt, label: "Дасгал · " + row.title, status: row.status, result: row.status === "SUBMITTED" ? `${row.score ?? 0} / ${row.total}` : "" })),
-      ...mocks.map(row => ({ id: row.id, at: row.createdAt, updated: row.updatedAt, label: "Mock · " + (findExam(row.slug)?.title ?? row.slug), status: row.status, result: row.subscriptionAccess ? "Сарын эрхээр" : "Нэг удаагийн эрхээр" })),
+    const rows = [...mocks.map(row => ({ id: row.id, at: row.createdAt, updated: row.updatedAt, label: "Mock · " + (findExam(row.slug)?.title ?? row.slug), status: row.status, result: row.subscriptionAccess ? "Сарын эрхээр" : "Нэг удаагийн эрхээр" })),
       ...papers.map(row => ({ id: row.id, at: row.createdAt, updated: row.updatedAt, label: "Албан материал · " + (findOfficialPaper(row.slug)?.title ?? row.slug), status: row.status, result: "" }))]
       .sort((a, b) => b.at.getTime() - a.at.getTime()).slice(info.skip, info.skip + info.size);
     body = <Table head={["Эхэлсэн", "Материал", "Төлөв / оноо", "Сүүлд"]} empty="Оролдлого алга." rows={rows.map(row => cells(adminDate(row.at), <>{row.label}<small><code>{row.id}</code></small></>, <><StatusPill status={row.status}/><small>{row.result}</small></>, adminDate(row.updated)))}/>;

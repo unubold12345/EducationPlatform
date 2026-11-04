@@ -1,8 +1,8 @@
 export type SubscriptionProgram = "entrance" | "ielts" | "sat";
 export const subscriptionPlans = [
-  { program:"entrance", title:"Их сургуулийн бэлтгэл", shortTitle:"University Prep", amountMnt:40000, symbol:"∑", description:"Элсэлтийн бэлтгэлийн бүх боломжит хичээл, дасгал.", features:["Математикийн бүх дасгал", "Англи хэлний бүх дасгал", "Физикийн бүх дасгал", "ЭЕШ 2020 Математик · бүтэн албан материал", "Хадгалсан явц, тайлбар, үр дүн"] },
-  { program:"ielts", title:"IELTS", shortTitle:"IELTS", amountMnt:60000, symbol:"Aa", description:"IELTS-ийн бүх дасгал, бүтэн mock шалгалт нэг эрхэд.", features:["Reading, Academic English дасгал", "Writing, Speaking workshops", "Бүтэн Academic mock · бүх 4 чадвар", "Дахин өгөх, хадгалсан явц, үр дүн"] },
-  { program:"sat", title:"SAT", shortTitle:"SAT", amountMnt:60000, symbol:"x²", description:"SAT-ийн бүх дасгал, Digital SAT mock шалгалт.", features:["Математикийн бүх 4 сэдвийн дасгал", "Бүтэн Digital SAT · 98 асуулт", "Reading & Writing, Math модулиуд", "Дахин өгөх, тайлбар, хадгалсан явц"] },
+  { program:"entrance", title:"Их сургуулийн бэлтгэл", shortTitle:"University Prep", amountMnt:40000, symbol:"∑", description:"ЭЕШ-ийн албан материалаар хугацаатай шалгалт өгөх эрх.", features:["ЭЕШ 2020 Математик · A–D хувилбар", "ЭЕШ Англи хэл · 37 хувилбар", "Хадгалсан явц, үр дүн"] },
+  { program:"ielts", title:"IELTS", shortTitle:"IELTS", amountMnt:60000, symbol:"Aa", description:"IELTS-ийн бүтэн mock шалгалт, workshop нэг эрхэд.", features:["Writing, Speaking workshops", "Бүтэн Academic mock · бүх 4 чадвар", "Дахин өгөх, хадгалсан явц, үр дүн"] },
+  { program:"sat", title:"SAT", shortTitle:"SAT", amountMnt:60000, symbol:"x²", description:"Digital SAT-ийн бүтэн mock шалгалтууд нэг эрхэд.", features:["Бүтэн Digital SAT · 98 асуулт", "Reading & Writing, Math модулиуд", "Дахин өгөх, тайлбар, хадгалсан явц"] },
 ] as const;
 export function findSubscriptionPlan(program:unknown) { return subscriptionPlans.find(plan=>plan.program===program); }
 export function addCalendarMonth(value:Date) {

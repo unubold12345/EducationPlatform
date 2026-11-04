@@ -1,4 +1,4 @@
-export type TutorTarget = { kind: "practice" | "saved" | "mock"; questionId: string; slug?: string; examId?: string; attemptId?: string; selected?: number | null };
+export type TutorTarget = { kind: "mock"; questionId: string; attemptId: string };
 export type TutorTurn = { role: "user" | "assistant"; content: string };
 export type TutorInput = { target: TutorTarget; action: "hint" | "explain" | "review" | "followup" | "ask"; language: "mn" | "en"; message: string; history: TutorTurn[] };
 const record = (v: unknown): v is Record<string, unknown> => !!v && typeof v === "object" && !Array.isArray(v);
@@ -7,11 +7,9 @@ export function validTutorInput(v: unknown): v is TutorInput {
   if (!["hint","explain","review","followup","ask"].includes(String(v.action)) || !["mn","en"].includes(String(v.language)) || typeof v.message!=="string" || v.message.length>1000) return false;
   if (!Array.isArray(v.history) || v.history.length>4 || !v.history.every(t=>record(t)&&Object.keys(t).length===2&&["user","assistant"].includes(String(t.role))&&typeof t.content==="string"&&t.content.length<=1500)) return false;
   const t=v.target;
-  if (!record(t) || Object.keys(t).some(k=>!["kind","questionId","slug","examId","attemptId","selected"].includes(k))) return false;
-  if (!["practice","saved","mock"].includes(String(t.kind)) || typeof t.questionId!=="string" || !t.questionId || t.questionId.length>150) return false;
-  for (const key of ["slug","examId","attemptId"]) if (t[key]!==undefined&&(typeof t[key]!=="string"||!(t[key] as string).length||(t[key] as string).length>150)) return false;
-  if (t.selected!==undefined&&t.selected!==null&&(!Number.isInteger(t.selected)||(t.selected as number)<0||(t.selected as number)>10)) return false;
-  return t.kind==="practice" ? typeof t.slug==="string" && (t.slug==="demo" || typeof t.examId==="string") && t.attemptId===undefined : typeof t.attemptId==="string"&&t.slug===undefined&&t.examId===undefined&&t.selected===undefined;
+  if (!record(t) || Object.keys(t).some(k=>!["kind","questionId","attemptId"].includes(k))) return false;
+  if (t.kind!=="mock" || typeof t.questionId!=="string" || !t.questionId || t.questionId.length>150) return false;
+  return typeof t.attemptId==="string" && t.attemptId.length>0 && t.attemptId.length<=150;
 }
 export function tutorDay(now: number) { return new Date(now+8*3600000).toISOString().slice(0,10); }
 export type TutorContext = { title: string; prompt: string; options?: string[]; selected: string; answer?: string; explanation?: string; review: boolean };

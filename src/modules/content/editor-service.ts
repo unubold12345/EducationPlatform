@@ -2,10 +2,8 @@ import "server-only";
 import { getDb } from "@/lib/db";
 import { ApiError } from "@/lib/api";
 import { sourceContent } from "./published";
-import { findExercise } from "@/modules/exercises/content";
 import { validateContentShape,validateAnswerKeys } from "./validation";
 import { applyQuestionFix,fixChanges } from "./fix";
-import type { ExerciseSet } from "@/modules/exercises/types";
 import type { Prisma } from "@/generated/prisma/client";
 const json=(value:unknown):Prisma.InputJsonValue=>JSON.parse(JSON.stringify(value));
 export async function editContent(actorId:string,key:string,input:unknown) {
@@ -48,15 +46,6 @@ async function publishVersion(tx:Tx,key:string,body:Prisma.JsonValue,provenance:
   const version=(last?.version??1)+1;
   await tx.publishedContent.create({data:{key,version,body:body as Prisma.InputJsonValue,provenance,publishedBy:actorId,reviewedBy:reviewerId}});
   await tx.contentReview.upsert({where:{key},create:{key,status:"REVIEWED",notes:provenance,reviewerId},update:{status:"REVIEWED",notes:provenance,reviewerId}});
-  if(findExercise(key)) {
-    const set=body as unknown as ExerciseSet;
-    const ids:string[]=[];
-    for(const q of set.questions){const stable=q.id.replace(/-v1$/,"");const id=stable+"-published-v"+version;ids.push(id);
-      await tx.questionVersion.create({data:{id,questionId:stable,version,prompt:q.prompt,options:q.options,correct:q.correct,explanation:q.explanation,provenance}});
-    }
-    const examId=key+"-published-v"+version;
-    await tx.exam.create({data:{id:examId,slug:examId,programId:set.program,title:set.title,version,scoringVersion:"raw-correct-v1",items:{create:ids.map((id,position)=>({questionVersionId:id,position}))}}});
-  }
   return version;
 }
 

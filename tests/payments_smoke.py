@@ -67,7 +67,7 @@ with sync_playwright() as p:
     expect(page.locator(".checkout-success")).to_contain_text("Бодит мөнгө суутгаагүй")
     page.screenshot(path=str(ART/"mock-checkout-paid.png"),full_page=True)
     page.goto(BASE+"/dashboard")
-    expect(page.locator(".learning-stats strong")).to_have_text(["0","0","0"])
+    expect(page.locator(".learning-stats strong")).to_have_text(["0","0"])
     assert context.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"ielts-academic-01"}).status==402
     sat=context.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"sat-full-01"})
     assert sat.status==200

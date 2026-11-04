@@ -31,7 +31,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <main id="main"><EducationBackdrop />{children}</main>
     <footer className="site-footer"><div className="footer-inner">
       <div className="footer-brand-block"><Link href="/" className="footer-brand">Education<span>·</span></Link><p>{site.descriptor}</p><span className="footer-year">© 2026 · MONGOLIA</span></div>
-      <div className="footer-links" role="navigation" aria-label="Хөлийн цэс"><Link href="/programs">Хөтөлбөрийн сан</Link><Link href="/exams">Шалгалтын сан</Link><Link href="/plans">Багцын мэдээлэл</Link><Link href="/practice">Жишиг дасгал</Link><Link href="/dashboard">Бэлтгэлийн явц</Link></div>
+      <div className="footer-links" role="navigation" aria-label="Хөлийн цэс"><Link href="/programs">Хөтөлбөрийн сан</Link><Link href="/exams">Шалгалтын сан</Link><Link href="/plans">Багцын мэдээлэл</Link><Link href="/workshop">Workshop</Link><Link href="/dashboard">Бэлтгэлийн явц</Link></div>
       <p className="footer-note"><strong>SAT · IELTS · ЭЛСЭЛТ</strong>College Board болон IELTS-ийн албан ёсны үйлчилгээ биш. Оноо, band үнэлгээг автоматаар тооцохгүй.</p>
     </div></footer>
   </body></html>;

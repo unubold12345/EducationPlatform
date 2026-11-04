@@ -38,7 +38,7 @@ with sync_playwright() as p:
     # Existing unverified sessions from before verification activation cannot read protected pages/APIs.
     created=context.request.post(NORMAL+'/api/auth/sign-up/email',headers={'Origin':NORMAL},data={'name':'Recovery QA','email':EMAIL,'password':PASSWORD})
     assert created.status==200
-    assert context.request.post(BASE+'/api/attempts',headers=origin,data={}).status==403
+    assert context.request.post(BASE+'/api/mock-attempts',headers=origin,data={}).status==403
     page=context.new_page();page.goto(BASE+'/profile');expect(page).to_have_url(BASE+'/login?next=%2Fprofile')
     context.clear_cookies()
     blocked=context.request.post(BASE+'/api/auth/sign-in/email',headers=origin,data={'email':EMAIL,'password':PASSWORD})

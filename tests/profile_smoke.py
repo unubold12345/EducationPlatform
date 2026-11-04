@@ -32,7 +32,7 @@ with sync_playwright() as p:
     page.get_by_label("Нууц үг",exact=True).fill(password)
     page.get_by_role("button",name="Бүртгүүлэх",exact=True).click()
     expect(page).to_have_url(BASE + "/profile",timeout=20000)
-    expect(page.locator(".profile-counts dd")).to_have_text(["0","0"])
+    expect(page.locator(".profile-counts dd")).to_have_text(["0"])
     page.get_by_label("Харагдах нэр").fill("Өүлэн Суралцагч")
     page.get_by_role("button",name="Өөрчлөлт хадгалах").click()
     expect(page.get_by_role("status")).to_have_text("Профайл хадгалагдлаа.")
@@ -59,11 +59,13 @@ with sync_playwright() as p:
     assert other.request.get(BASE+"/api/auth/get-session").json() is None
     other.close()
     assert context.request.get(BASE+"/api/auth/get-session").json()["user"]["email"] == email
-    attempt = context.request.post(BASE+"/api/attempts",headers=ORIGIN).json()
+    order = context.request.post(BASE+"/api/mock-payments",headers=ORIGIN,data={"slug":"sat-full-01"}).json()
+    assert context.request.post(BASE+"/api/mock-payments/"+order["id"]+"/confirm",headers=ORIGIN,data={"decision":"success"}).ok
+    attempt = context.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"sat-full-01"}).json()
     assert "id" in attempt
     page.goto(BASE+"/dashboard")
-    expect(page.locator(".learning-stats strong")).to_have_text(["0","0","1"])
-    expect(page.locator(".resume-card a")).to_have_attribute("href","/learn/attempts/"+attempt["id"])
+    expect(page.locator(".learning-stats strong")).to_have_text(["0","1"])
+    expect(page.locator(".resume-card a")).to_have_attribute("href","/exams/attempts/"+attempt["id"])
     page.screenshot(path=str(ART / "dashboard-polished-dark.png"),full_page=True)
     for scheme in ["dark","light"]:
         page.emulate_media(color_scheme=scheme)

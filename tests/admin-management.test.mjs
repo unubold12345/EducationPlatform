@@ -6,13 +6,11 @@ import { pageInfo, pageWindow, parsePage } from "../src/modules/admin/paging.ts"
 import { validPlanPrice } from "../src/modules/subscriptions/plans.ts";
 import { normalizeIp } from "../src/modules/admin/ip.ts";
 import { nextAttempt, ACCOUNT_ATTEMPTS } from "../src/lib/account-throttle-rule.ts";
-import { exerciseSets } from "../src/modules/exercises/content.ts";
 import { examDefinitions } from "../src/modules/exams/definitions.ts";
 
 const clone = value => JSON.parse(JSON.stringify(value));
 
-test("every exercise and mock question is listed for fixing with a reachable path", () => {
-  for (const set of exerciseSets) assert.equal(editableQuestions(clone(set)).length, set.questions.length, set.slug);
+test("every mock question is listed for fixing with a reachable path", () => {
   for (const exam of examDefinitions) {
     const expected = exam.stages.reduce((sum, stage) => sum + stage.questions.length + (stage.variants ? stage.variants.lower.length + stage.variants.higher.length : 0), 0);
     const listed = editableQuestions(clone(exam));
@@ -21,17 +19,15 @@ test("every exercise and mock question is listed for fixing with a reachable pat
   }
 });
 
-test("an exercise answer fix publishes a valid body and records only the changed fields", () => {
-  const set = clone(exerciseSets[0]);
-  const first = editableQuestions(set)[0];
-  const correct = (set.questions[0].correct + 1) % set.questions[0].options.length;
-  const fixed = applyQuestionFix(set, first.path, { correct, explanation: "  Corrected explanation.  " });
+test("a mock question fix publishes a valid body and records only the changed fields", () => {
+  const source = examDefinitions.find(item => item.program === "sat");
+  const exam = clone(source);
+  const first = editableQuestions(exam).find(q => q.kind === "choice" && q.explanation);
+  const fixed = applyQuestionFix(exam, first.path, { prompt: "  Corrected prompt.  ", explanation: "  Corrected explanation.  " });
   assert.ok(fixed);
-  assert.equal(fixed.questions[0].correct, correct);
-  assert.equal(fixed.questions[0].explanation, "Corrected explanation.");
-  assert.ok(validateContentShape(exerciseSets[0], fixed) && validateAnswerKeys(fixed));
-  assert.deepEqual(Object.keys(fixChanges(set, fixed, first.path)).sort(), ["correct", "explanation"]);
-  assert.equal(set.questions[0].correct, exerciseSets[0].questions[0].correct, "input body is not mutated");
+  assert.ok(validateContentShape(source, fixed) && validateAnswerKeys(fixed));
+  assert.deepEqual(Object.keys(fixChanges(exam, fixed, first.path)).sort(), ["explanation", "prompt"]);
+  assert.equal(JSON.stringify(exam), JSON.stringify(source), "input body is not mutated");
 });
 
 test("a mock choice fix must keep the answer among the options; adaptive variants are reachable", () => {
@@ -46,17 +42,18 @@ test("a mock choice fix must keep the answer among the options; adaptive variant
 });
 
 test("fixes cannot reach structure, add fields, change counts or retype values", () => {
-  const set = clone(exerciseSets[0]);
-  const path = ["questions", 0];
-  assert.equal(applyQuestionFix(set, ["slug"], { prompt: "x" }), null);
-  assert.equal(applyQuestionFix(set, ["questions", 999], { prompt: "x" }), null);
-  assert.equal(applyQuestionFix(set, ["questions", "0"], { prompt: "x" }), null);
-  assert.equal(applyQuestionFix(set, path, { id: "other" }), null);
-  assert.equal(applyQuestionFix(set, path, { answers: ["a"] }), null, "exercise questions have no answers field");
-  assert.equal(applyQuestionFix(set, path, { options: ["only one"] }), null);
-  assert.equal(applyQuestionFix(set, path, { correct: "1" }), null);
-  assert.equal(applyQuestionFix(set, path, {}), null);
-  assert.equal(applyQuestionFix(set, ["__proto__", 0], { prompt: "x" }), null);
+  const exam = clone(examDefinitions.find(item => item.program === "sat"));
+  const path = editableQuestions(exam).find(q => q.kind === "choice" && q.options?.length).path;
+  assert.equal(applyQuestionFix(exam, ["slug"], { prompt: "x" }), null);
+  assert.equal(applyQuestionFix(exam, ["questions", 0], { prompt: "x" }), null, "the removed exercise shape is not reachable");
+  assert.equal(applyQuestionFix(exam, ["stages", 0, "questions", 999], { prompt: "x" }), null);
+  assert.equal(applyQuestionFix(exam, ["stages", "0", "questions", 0], { prompt: "x" }), null);
+  assert.equal(applyQuestionFix(exam, path, { id: "other" }), null);
+  assert.equal(applyQuestionFix(exam, path, { correct: 1 }), null, "mock questions have no correct field");
+  assert.equal(applyQuestionFix(exam, path, { options: ["only one"] }), null);
+  assert.equal(applyQuestionFix(exam, path, { prompt: 1 }), null);
+  assert.equal(applyQuestionFix(exam, path, {}), null);
+  assert.equal(applyQuestionFix(exam, ["__proto__", 0], { prompt: "x" }), null);
 });
 
 test("admin pagination clamps pages and shows a short window with gaps", () => {

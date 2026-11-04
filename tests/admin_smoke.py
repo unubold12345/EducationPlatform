@@ -22,11 +22,11 @@ with sync_playwright() as p:
     for action in ["grant-month","expire-plan","revoke-sessions","review-content","suspend","unsuspend","add-note"]:
         assert student.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":action,"target":target,"reason":"Unauthorized attempt","program":"sat"}).status==403
     assert student.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":"set-price","target":"sat","amount":100,"reason":"Unauthorized attempt"}).status==403
-    assert student.request.post(BASE+"/api/admin/content/sat-algebra",headers=ORIGIN,data={"action":"fix","revision":0,"path":["questions",0],"patch":{"correct":1},"reason":"Unauthorized attempt"}).status==403
+    assert student.request.post(BASE+"/api/admin/content/sat-full-01",headers=ORIGIN,data={"action":"fix","revision":0,"path":["stages",0,"questions",0],"patch":{"prompt":"x"},"reason":"Unauthorized attempt"}).status==403
     assert student.request.get(BASE+"/api/admin/export?kind=users").status==403
     member=student.new_page();member.goto(BASE+"/admin")
     expect(member.get_by_role("heading",name="Админ эрх шаардлагатай.")).to_be_visible()
-    member.goto(BASE+"/admin/content/sat-algebra");assert member.locator(".admin-main").count()==0
+    member.goto(BASE+"/admin/content/sat-full-01");assert member.locator(".admin-main").count()==0
     member.goto(BASE+"/admin/users/"+target);assert member.locator(".admin-main").count()==0
     admin=browser.new_context(viewport={"width":1440,"height":1000},color_scheme="light")
     assert admin.request.post(BASE+"/api/auth/sign-in/email",headers=ORIGIN,data={"email":demos[0]["email"],"password":demos[0]["password"]}).ok
@@ -37,10 +37,12 @@ with sync_playwright() as p:
     for tab in ["users","subscriptions","payments","attempts","content","pricing","audit","settings"]:
         page.goto(BASE+"/admin?tab="+tab);page.wait_for_load_state("networkidle")
         assert page.locator(".admin-main").count()==1
-    page.goto(BASE+"/admin/content/sat-algebra")
-    expect(page.locator(".admin-questions > li")).to_have_count(8)
+    assert admin.request.get(BASE+"/api/admin/content/sat-algebra").status==404
+    assert page.goto(BASE+"/admin/content/sat-algebra").status==404
+    page.goto(BASE+"/admin/content/sat-full-01")
+    expect(page.locator(".admin-questions > li")).to_have_count(15)
     page.locator(".admin-questions > li").first.get_by_role("button",name="Засах").click()
-    expect(page.locator(".admin-fix-form")).to_be_visible();expect(page.locator(".admin-fix-form input[type=radio]")).to_have_count(4)
+    expect(page.locator(".admin-fix-form")).to_be_visible();expect(page.locator('.admin-fix-form input[aria-label^="Сонголт"]')).to_have_count(4)
     page.locator(".admin-questions > li").first.get_by_role("button",name="Хаах").click()
     page.goto(BASE+"/admin/content/sat-full-02");expect(page.locator(".admin-fixer-bar span")).to_contain_text("асуулт")
     expect(page.locator(".admin-questions > li")).to_have_count(15);expect(page.locator(".admin-fixer .admin-pager button[aria-current=page]")).to_have_text("1")
@@ -69,12 +71,12 @@ with sync_playwright() as p:
     def mutate(action,**kwargs):
         response=admin.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":action,"target":target,"program":"sat","reason":"Local admin browser verification",**kwargs})
         assert response.ok,(response.status,response.text())
-    assert student.request.post(BASE+"/api/attempts",headers=ORIGIN,data={"examId":"sat-algebra-v1"}).status==402
+    assert student.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"sat-full-01"}).status==402
     mutate("grant-month")
-    assert student.request.post(BASE+"/api/attempts",headers=ORIGIN,data={"examId":"sat-algebra-v1"}).ok
-    assert student.request.post(BASE+"/api/attempts",headers=ORIGIN,data={"examId":"entrance-math-v1"}).status==402
+    assert student.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"sat-full-01"}).ok
+    assert student.request.post(BASE+"/api/paper-attempts",headers=ORIGIN,data={"slug":"eec-math-2020-a"}).status==402
     mutate("expire-plan")
-    assert student.request.post(BASE+"/api/exercises/sat-algebra",headers=ORIGIN,data={"answers":[0]*8}).status==402
+    assert student.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"sat-full-02"}).status==402
     page.goto(BASE+"/admin?tab=users&data=test&q="+response.json()["user"]["email"])
     expect(page.locator("tbody tr")).to_have_count(1)
     page.locator("tbody tr a").first.click();page.wait_for_url("**/admin/users/"+target)
@@ -85,8 +87,8 @@ with sync_playwright() as p:
     page.get_by_role("button",name="Тэмдэглэл нэмэх").click()
     expect(page.locator(".admin-user-actions [role=status]")).to_contain_text("Хадгаллаа")
     expect(page.locator(".admin-log")).to_contain_text("Local admin UI verification note")
-    mutate("review-content",target="sat-algebra",status="IN_REVIEW")
-    mutate("review-content",target="sat-algebra",status="PENDING",reason="Local smoke verification completed; independent editorial review remains pending")
+    mutate("review-content",target="sat-full-01",status="IN_REVIEW")
+    mutate("review-content",target="sat-full-01",status="PENDING",reason="Local smoke verification completed; independent editorial review remains pending")
     for kind in ["users","subscriptions","payments","audit"]:
         exported=admin.request.get(BASE+"/api/admin/export?kind="+kind+"&data=test")
         assert exported.ok and "private, no-store" in exported.headers["cache-control"]
@@ -103,12 +105,12 @@ with sync_playwright() as p:
     # Suspension: refused at sign-in until lifted; admins and self cannot be suspended.
     email=response.json()["user"]["email"]
     assert student.request.post(BASE+"/api/auth/sign-in/email",headers=ORIGIN,data={"email":email,"password":password}).ok
-    assert student.request.post(BASE+"/api/attempts",headers=ORIGIN,data={"examId":"entrance-math-v1"}).status==402
+    assert student.request.post(BASE+"/api/paper-attempts",headers=ORIGIN,data={"slug":"eec-math-2020-a"}).status==402
     mutate("suspend",reason="Local suspension verification")
     assert student.request.get(BASE+"/api/auth/get-session").json() is None
     refused=student.request.post(BASE+"/api/auth/sign-in/email",headers=ORIGIN,data={"email":email,"password":password})
     assert refused.status==403 and "ACCOUNT_SUSPENDED" in refused.text(),(refused.status,refused.text())
-    assert student.request.post(BASE+"/api/attempts",headers=ORIGIN,data={"examId":"entrance-math-v1"}).status==401
+    assert student.request.post(BASE+"/api/paper-attempts",headers=ORIGIN,data={"slug":"eec-math-2020-a"}).status==401
     me=admin.request.get(BASE+"/api/auth/get-session").json()["user"]["id"]
     assert admin.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":"suspend","target":me,"reason":"Self suspension attempt"}).status==400
     page.goto(BASE+"/admin/users/"+target);expect(page.locator(".admin-warning")).to_contain_text("Local suspension verification")
@@ -128,18 +130,18 @@ with sync_playwright() as p:
     price(60000,"Local price restored after verification")
     page.goto(BASE+"/plans");expect(page.locator("main")).to_contain_text("60,000")
     # Single-question fix publishes a new version through validation; invalid fixes are refused.
-    detail=admin.request.get(BASE+"/api/admin/content/sat-algebra").json()
+    detail=admin.request.get(BASE+"/api/admin/content/sat-full-01").json()
     revision=(detail["draft"] or {}).get("revision",0)
     body=detail["history"][0]["body"] if detail["history"] else detail["source"]
-    for bad in [{"path":["slug"],"patch":{"prompt":"x"}},{"path":["questions",0],"patch":{"id":"forged"}},{"path":["questions",0],"patch":{"correct":9}},{"path":["questions",0],"patch":{"options":["one"]}}]:
-        assert admin.request.post(BASE+"/api/admin/content/sat-algebra",headers=ORIGIN,data={"action":"fix","revision":revision,"reason":"Invalid fix check",**bad}).status==400,bad
-    old=body["questions"][0]["explanation"]
-    fixed=admin.request.post(BASE+"/api/admin/content/sat-algebra",headers=ORIGIN,data={"action":"fix","revision":revision,"path":["questions",0],"patch":{"explanation":old+" (verified)"},"reason":"Local question fix verification"})
+    for bad in [{"path":["slug"],"patch":{"prompt":"x"}},{"path":["stages",0,"questions",0],"patch":{"id":"forged"}},{"path":["stages",0,"questions",0],"patch":{"correct":9}},{"path":["stages",0,"questions",0],"patch":{"options":["one"]}},{"path":["questions",0],"patch":{"prompt":"x"}}]:
+        assert admin.request.post(BASE+"/api/admin/content/sat-full-01",headers=ORIGIN,data={"action":"fix","revision":revision,"reason":"Invalid fix check",**bad}).status==400,bad
+    old=body["stages"][0]["questions"][0]["explanation"]
+    fixed=admin.request.post(BASE+"/api/admin/content/sat-full-01",headers=ORIGIN,data={"action":"fix","revision":revision,"path":["stages",0,"questions",0],"patch":{"explanation":old+" (verified)"},"reason":"Local question fix verification"})
     assert fixed.ok,(fixed.status,fixed.text())
-    restored=admin.request.post(BASE+"/api/admin/content/sat-algebra",headers=ORIGIN,data={"action":"fix","revision":fixed.json()["revision"],"path":["questions",0],"patch":{"explanation":old},"reason":"Local question fix restored"})
+    restored=admin.request.post(BASE+"/api/admin/content/sat-full-01",headers=ORIGIN,data={"action":"fix","revision":fixed.json()["revision"],"path":["stages",0,"questions",0],"patch":{"explanation":old},"reason":"Local question fix restored"})
     assert restored.ok,(restored.status,restored.text())
-    assert admin.request.post(BASE+"/api/admin/content/sat-algebra",headers=ORIGIN,data={"action":"fix","revision":0,"path":["questions",0],"patch":{"explanation":"stale"},"reason":"Stale revision check"}).status==409
-    page.goto(BASE+"/admin?tab=audit&filter=content-fix");expect(page.locator("tbody tr").first).to_contain_text("sat-algebra")
+    assert admin.request.post(BASE+"/api/admin/content/sat-full-01",headers=ORIGIN,data={"action":"fix","revision":0,"path":["stages",0,"questions",0],"patch":{"explanation":"stale"},"reason":"Stale revision check"}).status==409
+    page.goto(BASE+"/admin?tab=audit&filter=content-fix");expect(page.locator("tbody tr").first).to_contain_text("sat-full-01")
     expect(page.locator(".admin-pager")).to_contain_text("нийт")
     page.goto(BASE+"/admin?tab=content");page.screenshot(path=str(ART/"admin-content-light.png"),full_page=True)
     for theme in ["light","dark"]:

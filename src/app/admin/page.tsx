@@ -44,9 +44,9 @@ export default async function AdminPage({searchParams}:{searchParams:Promise<Rec
   const userLink=(user:{id:string;email:string;name?:string})=><Link href={"/admin/users/"+user.id}>{user.name?<><strong>{user.name}</strong><small>{user.email}</small></>:user.email}</Link>;
 
   if(tab==="overview") {
-    const [usersTotal,newUsers,activePlans,attemptTotal,mockTotal,paperCount,paidMocks,paidPlans,suspended,pending,drafts,audits,recentUsers]=await Promise.all([
+    const [usersTotal,newUsers,activePlans,mockTotal,paperCount,paidMocks,paidPlans,suspended,pending,drafts,audits,recentUsers]=await Promise.all([
       db.user.count({where:userFilter}),db.user.count({where:{AND:[userFilter,{createdAt:{gte:new Date(now.getTime()-7*864e5)}}]}}),
-      db.subscription.count({where:{startsAt:{lte:now},endsAt:{gt:now},user:userFilter}}),db.attempt.count({where:{user:userFilter}}),db.mockAttempt.count({where:{user:userFilter}}),db.paperAttempt.count({where:{user:userFilter}}),
+      db.subscription.count({where:{startsAt:{lte:now},endsAt:{gt:now},user:userFilter}}),db.mockAttempt.count({where:{user:userFilter}}),db.paperAttempt.count({where:{user:userFilter}}),
       db.mockPurchase.aggregate({where:{status:"PAID",...paymentScope,user:userFilter},_sum:{amountMnt:true}}),db.subscriptionOrder.aggregate({where:{status:"PAID",...paymentScope,user:userFilter},_sum:{amountMnt:true}}),
       db.user.count({where:{AND:[userFilter,{suspendedAt:{not:null}}]}}),db.subscriptionOrder.count({where:{status:"PENDING",...paymentScope,user:userFilter}}),
       db.contentDraft.count({where:{status:{not:"PUBLISHED"}}}),
@@ -54,7 +54,7 @@ export default async function AdminPage({searchParams}:{searchParams:Promise<Rec
       db.user.findMany({where:userFilter,orderBy:[{createdAt:"desc"},{id:"desc"}],take:6,select:{id:true,name:true,email:true,createdAt:true}}),
     ]);
     return <AdminShell tab={tab} title={title} name={name} testData={testData} scope={scope} description={description}>{testBanner}
-      <div className="admin-metrics">{([["Нийт хэрэглэгч",usersTotal,`+${newUsers} энэ 7 хоногт`],["Идэвхтэй сарын эрх",activePlans,""],["Дасгал / шалгалт",`${attemptTotal} / ${mockTotal+paperCount}`,"оролдлого"],[testData?"Туршилтын төлбөр":"Бодит төлбөр",money((paidMocks._sum.amountMnt??0)+(paidPlans._sum.amountMnt??0)),testData?"Бодит орлого биш":"нийт"]] as const).map(([label,value,sub])=><article key={label}><p>{label}</p><strong>{value}</strong>{sub&&<small>{sub}</small>}</article>)}</div>
+      <div className="admin-metrics">{([["Нийт хэрэглэгч",usersTotal,`+${newUsers} энэ 7 хоногт`],["Идэвхтэй сарын эрх",activePlans,""],["Шалгалт",mockTotal+paperCount,"оролдлого"],[testData?"Туршилтын төлбөр":"Бодит төлбөр",money((paidMocks._sum.amountMnt??0)+(paidPlans._sum.amountMnt??0)),testData?"Бодит орлого биш":"нийт"]] as const).map(([label,value,sub])=><article key={label}><p>{label}</p><strong>{value}</strong>{sub&&<small>{sub}</small>}</article>)}</div>
       <section className="admin-block"><h3>Анхаарах зүйл</h3><div className="admin-attention">
         {([["Түр хаасан бүртгэл",suspended,"/admin?tab=users&filter=suspended"+(testData?"&data=test":"")],["Хүлээгдэж буй захиалга",pending,"/admin?tab=payments&kind=orders&filter=PENDING"+(testData?"&data=test":"")],["Нийтлээгүй ноорог",drafts,"/admin?tab=content&filter=draft"]] as const).map(([label,count,href])=><Link key={label} className={count?"has-items":""} href={href}><strong>{count}</strong><span>{label}</span></Link>)}
       </div></section>
@@ -70,7 +70,7 @@ export default async function AdminPage({searchParams}:{searchParams:Promise<Rec
     const status:Prisma.UserWhereInput=filter==="suspended"?{suspendedAt:{not:null}}:filter==="admin"?{adminMembership:{isNot:null}}:filter==="plan"?{subscriptions:{some:{startsAt:{lte:now},endsAt:{gt:now}}}}:filter==="unverified"?{emailVerified:false}:filter==="paid"?{OR:[{subscriptionOrders:{some:{status:"PAID"}}},{mockPurchases:{some:{status:"PAID"}}}]}:{};
     const where:Prisma.UserWhereInput={AND:[userFilter,status]};
     const info=pageInfo(await db.user.count({where}),requested);
-    const users=await db.user.findMany({where,skip:info.skip,take:info.size,orderBy:[{createdAt:"desc"},{id:"desc"}],select:{id:true,name:true,email:true,emailVerified:true,createdAt:true,suspendedAt:true,adminMembership:{select:{userId:true}},_count:{select:{sessions:true,attempts:true,mockAttempts:true,paperAttempts:true}},subscriptions:{select:{program:true,endsAt:true,startsAt:true}}}});
+    const users=await db.user.findMany({where,skip:info.skip,take:info.size,orderBy:[{createdAt:"desc"},{id:"desc"}],select:{id:true,name:true,email:true,emailVerified:true,createdAt:true,suspendedAt:true,adminMembership:{select:{userId:true}},_count:{select:{sessions:true,mockAttempts:true,paperAttempts:true}},subscriptions:{select:{program:true,endsAt:true,startsAt:true}}}});
     const lastSeen=users.length?await db.userEvent.groupBy({by:["userId"],where:{userId:{in:users.map(user=>user.id)},type:"sign-in"},_max:{createdAt:true}}):[];
     return <AdminShell tab={tab} title={title} name={name} testData={testData} scope={scope} description={description}>{testBanner}
       {search("Нэр, имэйл эсвэл ID-аар хайх…",{name:"filter",value:filter,options:[["","Бүх хэрэглэгч"],["plan","Идэвхтэй эрхтэй"],["paid","Төлбөр төлсөн"],["unverified","Имэйл баталгаажаагүй"],["suspended","Түр хаасан"],["admin","Админ"]]})}
@@ -80,7 +80,7 @@ export default async function AdminPage({searchParams}:{searchParams:Promise<Rec
         <td><span className={"ws-pill "+(user.suspendedAt?"bad":user.adminMembership?"info":"")}>{user.suspendedAt?"Хаасан":user.adminMembership?"Админ":"Суралцагч"}</span>{!user.emailVerified&&<small>Имэйл баталгаажаагүй</small>}</td>
         <td>{date(user.createdAt)}<small>{seen?"Сүүлд: "+date(seen):"Нэвтрэлтийн бүртгэлгүй"}</small></td>
         <td>{user.subscriptions.filter(plan=>plan.startsAt<=now&&plan.endsAt>now).map(plan=><small key={plan.program}>{plan.program.toUpperCase()} → {date(plan.endsAt)}</small>)}{!user.subscriptions.some(plan=>plan.startsAt<=now&&plan.endsAt>now)&&<small>—</small>}</td>
-        <td>{user._count.attempts} дасгал · {user._count.mockAttempts+user._count.paperAttempts} шалгалт<small>{user._count.sessions} идэвхтэй сесс</small></td>
+        <td>{user._count.mockAttempts+user._count.paperAttempts} шалгалт<small>{user._count.sessions} идэвхтэй сесс</small></td>
       </tr>;})}</tbody></table>{!users.length&&empty("Хэрэглэгч олдсонгүй.")}</div>
       <Pager info={info} href={page=>link({page})} label="хэрэглэгч"/>
     </AdminShell>;
@@ -119,19 +119,17 @@ export default async function AdminPage({searchParams}:{searchParams:Promise<Rec
   }
 
   if(tab==="attempts") {
-    const view=kind==="mocks"||kind==="papers"?kind:"exercises";
+    const view=kind==="papers"?"papers":"mocks";
     const statusWhere=["IN_PROGRESS","SUBMITTED"].includes(filter)?{status:filter as "IN_PROGRESS"|"SUBMITTED"}:{};
     const where={user:userFilter,...statusWhere};
-    const [exerciseTotal,mockTotal,paperTotal]=await Promise.all([db.attempt.count({where}),db.mockAttempt.count({where}),db.paperAttempt.count({where})]);
-    const info=pageInfo(view==="exercises"?exerciseTotal:view==="mocks"?mockTotal:paperTotal,requested);
+    const [mockTotal,paperTotal]=await Promise.all([db.mockAttempt.count({where}),db.paperAttempt.count({where})]);
+    const info=pageInfo(view==="mocks"?mockTotal:paperTotal,requested);
     const page={where,skip:info.skip,take:info.size,orderBy:[{createdAt:"desc" as const},{id:"desc" as const}]};
-    const rows=view==="exercises"
-      ?(await db.attempt.findMany({...page,select:{id:true,title:true,status:true,score:true,total:true,createdAt:true,updatedAt:true,user:{select:{id:true,email:true}}}})).map(row=>({...row,label:row.title,result:row.status==="SUBMITTED"?`${row.score??0} / ${row.total}`:"—"}))
-      :view==="mocks"
+    const rows=view==="mocks"
       ?(await db.mockAttempt.findMany({...page,select:{id:true,slug:true,status:true,createdAt:true,updatedAt:true,subscriptionAccess:true,user:{select:{id:true,email:true}}}})).map(row=>({...row,label:findExam(row.slug)?.title??row.slug,result:row.subscriptionAccess?"Сарын эрхээр":"Нэг удаагийн эрхээр"}))
       :(await db.paperAttempt.findMany({...page,select:{id:true,slug:true,status:true,createdAt:true,updatedAt:true,user:{select:{id:true,email:true}}}})).map(row=>({...row,label:findOfficialPaper(row.slug)?.title??row.slug,result:"—"}));
     return <AdminShell tab={tab} title={title} name={name} testData={testData} scope={scope} description={description}>{testBanner}
-      <SubTabs items={[["exercises","Дасгал",exerciseTotal],["mocks","Бүтэн mock",mockTotal],["papers","Албан материал",paperTotal]]} current={view} href={key=>link({kind:key,page:1})}/>
+      <SubTabs items={[["mocks","Бүтэн mock",mockTotal],["papers","Албан материал",paperTotal]]} current={view} href={key=>link({kind:key,page:1})}/>
       {search("Хэрэглэгчийн нэр эсвэл имэйл…",{name:"filter",value:filter,options:[["","Бүх төлөв"],["IN_PROGRESS","Үргэлжилж байна"],["SUBMITTED","Дууссан"]]})}
       <div className="admin-table-wrap"><table><thead><tr><th>Эхэлсэн</th><th>Суралцагч</th><th>Материал</th><th>Төлөв</th><th>Сүүлд</th></tr></thead><tbody>{rows.map(row=><tr key={row.id}><td>{date(row.createdAt)}</td><td>{userLink(row.user)}</td><td>{row.label}<small><code>{row.id}</code></small></td><td><StatusPill status={row.status}/><small>{row.result}</small></td><td>{date(row.updatedAt)}</td></tr>)}</tbody></table>{!rows.length&&empty("Оролдлого олдсонгүй.")}</div>
       <Pager info={info} href={page=>link({page})} label="оролдлого"/>
@@ -185,15 +183,14 @@ export default async function AdminPage({searchParams}:{searchParams:Promise<Rec
   // Settings: a live system snapshot to decide when to upgrade hosting, then the security notes.
   const dbMs=await databaseLatency();
   const hour=new Date(now.getTime()-36e5),day=new Date(now.getTime()-864e5);
-  const [signInsHour,signInsDay,signUpsDay,activeDay,sessions,mocksLive,papersLive,attemptsDay,limited]=await Promise.all([
+  const [signInsHour,signInsDay,signUpsDay,activeDay,sessions,mocksLive,papersLive,limited]=await Promise.all([
     db.userEvent.count({where:{type:"sign-in",createdAt:{gte:hour}}}),db.userEvent.count({where:{type:"sign-in",createdAt:{gte:day}}}),
     db.userEvent.count({where:{type:"sign-up",createdAt:{gte:day}}}),db.userEvent.groupBy({by:["userId"],where:{createdAt:{gte:day}}}).then(rows=>rows.length),
     db.session.count({where:{expiresAt:{gt:now}}}),db.mockAttempt.count({where:{status:"IN_PROGRESS"}}),db.paperAttempt.count({where:{status:"IN_PROGRESS"}}),
-    db.attempt.count({where:{createdAt:{gte:day}}}),
     db.rateLimit.findMany({where:{lastRequest:{gte:BigInt(now.getTime()-6e4)}},orderBy:{count:"desc"},take:5,select:{key:true,count:true}}),
   ]);
   return <AdminShell tab={tab} title={title} name={name} description={description}>
-    <div className="admin-metrics admin-metrics-wide">{([["Өгөгдлийн сангийн хариу",dbMs+" ms",dbMs<100?"Хэвийн":dbMs<400?"Удаашралтай":"Удаан"],["Нэвтрэлт · 1 цаг",signInsHour,signInsDay+" · 24 цаг"],["Идэвхтэй хэрэглэгч · 24 цаг",activeDay,signUpsDay+" шинэ бүртгэл"],["Хүчинтэй сесс",sessions,""],["Явагдаж буй шалгалт",mocksLive+papersLive,mocksLive+" mock · "+papersLive+" албан материал"],["Дасгалын оролдлого · 24 цаг",attemptsDay,""]] as const).map(([label,value,sub])=><article key={label}><p>{label}</p><strong>{value}</strong>{sub&&<small>{sub}</small>}</article>)}</div>
+    <div className="admin-metrics admin-metrics-wide">{([["Өгөгдлийн сангийн хариу",dbMs+" ms",dbMs<100?"Хэвийн":dbMs<400?"Удаашралтай":"Удаан"],["Нэвтрэлт · 1 цаг",signInsHour,signInsDay+" · 24 цаг"],["Идэвхтэй хэрэглэгч · 24 цаг",activeDay,signUpsDay+" шинэ бүртгэл"],["Хүчинтэй сесс",sessions,""],["Явагдаж буй шалгалт",mocksLive+papersLive,mocksLive+" mock · "+papersLive+" албан материал"]] as const).map(([label,value,sub])=><article key={label}><p>{label}</p><strong>{value}</strong>{sub&&<small>{sub}</small>}</article>)}</div>
     {limited.length>0&&<section className="ws-card admin-block"><div className="ws-card-head"><h3>Хамгийн их хүсэлт · сүүлийн 1 минут</h3></div><ul className="admin-log">{limited.map(row=><li key={row.key}><code>{row.key}</code><small>{row.count} хүсэлт</small></li>)}</ul></section>}
     <h3 className="admin-subhead">Тэмдэглэл</h3>
     <div className="admin-notes">

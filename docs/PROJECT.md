@@ -7,7 +7,8 @@ current delivery state, checks, credentials and next actions.
 ## 1. What this is
 
 EducationPlatform is an independent Mongolian exam-preparation web application. It started with SAT
-Mathematics and now covers SAT, IELTS Academic and university entrance preparation. It is not
+Mathematics and now covers SAT, IELTS Academic and university entrance exams. Practice exercises were
+removed on 2026-11-05; students prepare through full mocks, official papers and workshops. It is not
 affiliated with the College Board, IELTS, or the Mongolian ЕШ; all practice content is original unless
 an official source is explicitly labelled. LawTest/Lexlab is a separate service: this project only
 links to <https://lexlab.site/plan> and must never read LawTest code or data.
@@ -20,8 +21,6 @@ authentication require provider configuration; see the actual hosted checkpoint 
 
 | Area | What exists |
 | --- | --- |
-| Free practice | `/practice`, a three-question sample with immediate grading |
-| Program practice | 40 sets / 320 original questions: SAT 112, IELTS 104, university entrance 104 |
 | IELTS workshops | Four focused workshops with saved work and grading |
 | Full mocks | Six Digital SAT and six IELTS Academic mocks (01–06), with server-authoritative timers |
 | Official papers | 2020 Math A–D and 37 historical English variations |
@@ -33,24 +32,24 @@ authentication require provider configuration; see the actual hosted checkpoint 
 | Essay Studio | Workshop writing practice with AI corrections at `/labs/ielts-writing` |
 | Study tools | Light/dark theme and a browser-only mathematics scratchpad |
 
-Program practice, workshop grading and new saved attempts require the matching active plan; `/practice`
-stays free. Full mocks accept a matching plan or a prior per-exam purchase. Subscription-backed
+Workshops require the IELTS plan. Full mocks accept a matching plan or a prior per-exam purchase. Subscription-backed
 sittings keep continuation and review access after expiry, but new starts remain gated. Existing
 purchases and LEGACY grants are preserved.
 
-Each practice set has eight questions with authored explanations. SAT now has fourteen sets:
-eight Mathematics and six Reading & Writing (vocabulary, inference, evidence, conventions,
-transitions and synthesis). IELTS has thirteen Reading/Academic English sets; the six added
-reading texts include source-based True/False/Not Given questions. University entrance has
-thirteen sets across Mathematics, English and Physics. The original ten sets retain their v1
-IDs/content; thirty new sets have independent v1 IDs and work through the existing published
-content, plan access, saved-attempt and grading paths. These are original practice materials,
-with independent editorial and pedagogical review still pending.
+The mathematics tutor is offered only when reviewing a submitted SAT Math mock.
 
-The mathematics tutor is offered only for quantitative Math/Physics exercise IDs, including
-published versions. SAT Reading & Writing, IELTS and entrance English exercises do not show
-the tutor, and the server also rejects those references. Saved-attempt responses include the
-server-derived `mathTutor` capability; this UI flag does not authorise provider access by itself.
+### Removed: practice exercises
+
+The owner removed practice sets, the free `/practice` sample and saved exercise attempts on 2026-11-05. Their
+routes (`/exercises`, `/practice`, `/learn/attempts`, `/api/exercises`, `/api/practice`, `/api/attempts`), modules,
+catalog data and `prisma/seed.ts` are deleted, and deploys no longer seed. `tests/exercises-removal.test.mjs` guards
+against their return. Workshops, the Speaking Lab and the Essay Studio stay, in `src/modules/workshops`.
+
+The tables (`Attempt`, `AttemptItem`, `Exam`, `ExamItem`, `Question`, `QuestionVersion`, `Topic`, `Subject`, `Program`)
+remain in the schema, unused, because a dropping migration would delete hosted data during the Vercel build.
+`scripts/purge-exercises.mjs` previews, and with `--apply` permanently deletes, their rows and old exercise content
+versions; hosted databases also need `--confirm-host=<hostname>`. Mocks, papers, workshops, purchases, plans, accounts
+and audit history are not touched. A later migration can drop the empty tables.
 
 The `/exams` library has four category items: SAT, IELTS, EEC Mathematics and EEC English.
 `/exams/sat` and `/exams/ielts` collect each program's six mocks in a selection grid, like the
@@ -163,12 +162,11 @@ guards against their return. Local attempts, purchases and content rows were del
 
 | Item | Price | Access rule |
 | --- | --- | --- |
-| University Prep | 40,000 MNT/month | Entrance sets, workshops, new official-paper starts |
-| IELTS | 60,000 MNT/month | IELTS sets and workshops |
-| SAT | 60,000 MNT/month | SAT sets and workshops |
+| University Prep | 40,000 MNT/month | New official-paper starts |
+| IELTS | 60,000 MNT/month | IELTS mocks and workshops |
+| SAT | 60,000 MNT/month | SAT mocks |
 | Full SAT or IELTS mock | 10,000 MNT each | Per-exam purchase, including retakes, or a matching plan |
 | Official EEC paper | 10,000 MNT | Per-paper purchase or University Prep |
-| Free practice | 0 | Always available |
 
 Monthly plan prices above are the defaults; admins can change them in `/admin?tab=pricing`.
 
@@ -240,7 +238,7 @@ gated by `AUTH_HOSTED_DEMO_ACCOUNTS=true`.
 ## 6. Content, admin and reporting
 
 - `/admin` is protected and offers an overview (with an attention row and section directory), users,
-  attempts (exercises / mocks / official papers), subscriptions, payments (plan orders / single-exam
+  attempts (mocks / official papers), subscriptions, payments (plan orders / single-exam
   purchases), prices, content, audit history, CSV exports and a system status page (`tab=settings`,
   labelled "Систем"). Its sidebar groups these by purpose and each section states what it is for. Every
   list has search, filters and numbered pagination with totals (20 rows per page).
@@ -277,7 +275,7 @@ gated by `AUTH_HOSTED_DEMO_ACCOUNTS=true`.
 ### DeepSeek mathematics tutor
 
 - Fixed endpoint `https://api.deepseek.com/chat/completions`; server-side `DEEPSEEK_API_KEY`.
-- Available for authored math practice and completed SAT Math mock review, in Mongolian or English.
+- Available for completed SAT Math mock review, in Mongolian or English.
 - Supports next-step hints, worked explanations, typed working, mistake review and one ungraded
   similar follow-up question.
 - Each question has an **AI туслах** button. Clicking it slides a chat drawer in from the right
@@ -360,15 +358,14 @@ rounding), vocabulary upgrades, strengths, next steps and one rewritten passage.
 | `src/components` | Shared UI, forms, navigation and exam tools |
 | `src/lib` | Auth, session, API, config, email and shared helpers |
 | `src/modules/content` | Catalog, drafts, review and published content resolution |
-| `src/modules/practice` | Practice sets, workshops and grading |
+| `src/modules/workshops` | IELTS writing and speaking workshop tasks |
 | `src/modules/exams` | SAT/IELTS sitting lifecycle, timers and scoring |
 | `src/modules/papers` | EEC paper access, answer sheet, paired-digit scoring and 2020 Mathematics question data |
 | `src/modules/subscriptions` | Plans, purchases, entitlements and legacy grants |
-| `src/modules/attempts` | Shared attempt ownership, validation and saved practice |
 | `src/modules/admin` | Admin services, reporting, exports and audit |
 | `src/modules/tutor` | DeepSeek prompt contracts, quotas and provider calls |
 | `prisma` | Schema and migrations |
-| `scripts` | Setup, provisioning, seeding and deployment/readiness checks |
+| `scripts` | Setup, provisioning, operator purges and deployment/readiness checks |
 | `tests` | Unit, contract and Playwright browser suites |
 
 Server-side checks are authoritative. Ownership, plan entitlement, exam ownership, active-exam
@@ -410,7 +407,6 @@ npm run setup:env
 npm run db:start
 npm run db:migrate
 npm run db:generate
-npm run db:seed
 npm run dev
 ```
 
@@ -422,7 +418,7 @@ Open <http://localhost:3001>. Local services:
 | Local database | 51214 (and 51215) | PGlite, database `template1`; never reset casually |
 | Recovery QA server | 3002 | Optional, built app plus loopback outbox and synthetic Google credentials |
 
-With `AUTH_LOCAL_PILOT=true`, the app and seed scripts use a single database connection
+With `AUTH_LOCAL_PILOT=true`, the app uses a single database connection
 (`max: 1`). This keeps PGlite stable locally; production connection behavior is not verified by that
 setting. The local database is independent: do not point it at LawTest, hosted Neon, or production
 data.
@@ -461,11 +457,10 @@ npm test
 npm run build
 python tests/browser_smoke.py
 python tests/accounts_smoke.py
-python tests/exercises_smoke.py
 python tests/exams_smoke.py
 ```
 
-The four required browser suites run against a local preview on port 3001. Add the suites that match
+The three required browser suites run against a local preview on port 3001. Add the suites that match
 the changed area:
 
 | Suite | Target / purpose |

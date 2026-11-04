@@ -22,8 +22,7 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
   const administrator = await isAdmin(user.id);
   const features = authFeatures(process.env);
   const sharedDemo = features.hostedDemo && isDemoEmail(user.email);
-  const [exercises, exams, purchases, officialExams, googleAccount] = await Promise.all([
-    getDb().attempt.count({ where: { userId: user.id, status: "SUBMITTED" } }),
+  const [exams, purchases, officialExams, googleAccount] = await Promise.all([
     getDb().mockAttempt.count({ where: { userId: user.id, status: "SUBMITTED" } }),
     getDb().mockPurchase.findMany({where:{userId:user.id,status:"PAID"},orderBy:{createdAt:"desc"},select:{id:true,examSlug:true,provider:true,amountMnt:true}}),
     getDb().paperAttempt.count({where:{userId:user.id,status:"SUBMITTED"}}),
@@ -93,7 +92,6 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
           <span className="identity-badge ws-pill info">{administrator ? "Education админ" : "Education суралцагч"}</span>
         </div>
         <dl className="profile-counts">
-          <div><dt>Дууссан дасгал</dt><dd>{exercises}</dd></div>
           <div><dt>Дууссан шалгалт</dt><dd>{exams+officialExams}</dd></div>
         </dl>
       </aside>

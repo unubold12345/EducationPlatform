@@ -26,7 +26,6 @@ if(Boolean(process.env.GOOGLE_CLIENT_ID)!==Boolean(process.env.GOOGLE_CLIENT_SEC
 for(const [script,args] of [
  ["node_modules/prisma/build/index.js",["generate"]],
  ["node_modules/prisma/build/index.js",["migrate","deploy"]],
- ["--import",["tsx","prisma/seed.ts"]],
  ["node_modules/next/dist/bin/next",["build"]],
 ]){
  const result=spawnSync(process.execPath,[script,...args],{stdio:"inherit",env:process.env});

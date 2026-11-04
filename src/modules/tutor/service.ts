@@ -2,16 +2,11 @@ import "server-only";
 import { randomUUID } from "node:crypto";
 import { getDb } from "@/lib/db";
 import { ApiError } from "@/lib/api";
-import { getExercise } from "@/modules/content/published";
-import { requireSubscription } from "@/modules/subscriptions/access";
-import { questions } from "@/modules/practice/questions";
-import { gradePractice } from "@/modules/practice/grading";
 import { ownMock } from "@/modules/exams/service";
 import { makeReport } from "@/modules/exams/engine";
 import type { ExamState } from "@/modules/exams/types";
 import { validTutorInput, tutorDay, type TutorInput, type TutorContext } from "./contracts";
 import { deepseekTutor } from "./provider";
-import { supportsMathTutor } from "@/modules/exercises/math-support";
 
 async function ensureNoTimedExam(userId:string) {
   const db=getDb();
@@ -23,40 +18,19 @@ async function ensureNoTimedExam(userId:string) {
 }
 
 async function contextFor(input: TutorInput,userId: string):Promise<TutorContext> {
-  const target=input.target, db=getDb();
-  if(target.kind==="mock") {
-    const row=await ownMock(target.attemptId!,userId),state=row.state as unknown as ExamState;
-    if(row.status!=="SUBMITTED"||!state.finishedAt)throw new ApiError(403,"AI тусламжийг шалгалт дууссаны дараа ашиглана уу.");
-    const q=makeReport(state).reviews.find(q=>q.id===target.questionId&&q.id.startsWith("sat-math"));
-    if(!q)throw new ApiError(404,"Математикийн бодлого олдсонгүй.");
-    return {title:state.definition.title,prompt:q.prompt,selected:q.selected,answer:q.answer,explanation:q.explanation,review:true};
-  }
-  if(target.kind==="saved") {
-    const row=await db.attempt.findFirst({where:{id:target.attemptId,userId},include:{items:{where:{id:target.questionId}}}});
-    const q=row?.items[0];
-    if(!row||!q||!supportsMathTutor(row.examId))throw new ApiError(404,"Математикийн бодлого олдсонгүй.");
-    return {title:row.title,prompt:q.prompt,options:q.options,selected:q.selected===null?"":q.options[q.selected],...(row.status==="SUBMITTED"?{answer:q.options[q.correct],explanation:q.explanation}:{}),review:row.status==="SUBMITTED"};
-  }
-  if(target.slug==="demo") {
-    const i=questions.findIndex(q=>q.id===target.questionId);if(i<0)throw new ApiError(404,"Бодлого олдсонгүй.");
-    const q=questions[i];if(target.selected!=null&&target.selected>=q.options.length)throw new ApiError(400,"Сонголт буруу байна.");
-    const review=gradePractice({answers:[0,0,0]})!.reviews[i];
-    return {title:"SAT Algebra · Practice",prompt:q.prompt,options:q.options,selected:target.selected==null?"":q.options[target.selected],...(input.action!=="hint"?{answer:q.options[review.correct],explanation:review.explanation}:{}),review:false};
-  }
-  const set=await getExercise(target.slug!,target.examId);
-  if(!set||!supportsMathTutor(set.examId))throw new ApiError(404,"Математикийн дасгал олдсонгүй.");
-  await requireSubscription(userId,set.program);
-  const q=set.questions.find(q=>q.id===target.questionId);if(!q)throw new ApiError(404,"Бодлого олдсонгүй.");
-  if(target.selected!=null&&target.selected>=q.options.length)throw new ApiError(400,"Сонголт буруу байна.");
-  return {title:set.title,prompt:q.prompt,options:q.options,selected:target.selected==null?"":q.options[target.selected],...(input.action!=="hint"?{answer:q.options[q.correct],explanation:q.explanation}:{}),review:false};
+  const target=input.target;
+  const row=await ownMock(target.attemptId,userId),state=row.state as unknown as ExamState;
+  if(row.status!=="SUBMITTED"||!state.finishedAt)throw new ApiError(403,"AI тусламжийг шалгалт дууссаны дараа ашиглана уу.");
+  const q=makeReport(state).reviews.find(q=>q.id===target.questionId&&q.id.startsWith("sat-math"));
+  if(!q)throw new ApiError(404,"Математикийн бодлого олдсонгүй.");
+  return {title:state.definition.title,prompt:q.prompt,selected:q.selected,answer:q.answer,explanation:q.explanation,review:true};
 }
 export async function tutorReply(userId:string,body:unknown) {
   if(!validTutorInput(body))throw new ApiError(400,"AI хүсэлтийн бүтэц буруу байна.");
   const db=getDb(),now=Date.now();
   await ensureNoTimedExam(userId);
   const context=await contextFor(body,userId);
-  if(body.action==="review"&&!context.review&&body.target.kind!=="practice")throw new ApiError(403,"Алдааны тайлбарыг дасгалаа дуусгасны дараа нээнэ.");
-  // Never include hidden saved-attempt keys in hints, even after a prior review.
+  // Hints never carry the key, even after a prior review.
   if(body.action==="hint"){delete context.answer;delete context.explanation;}
   if(!process.env.DEEPSEEK_API_KEY?.trim())throw new ApiError(503,"AI багш одоогоор холбогдоогүй байна.");
   const key=`education-tutor:${userId}:${tutorDay(now)}`;

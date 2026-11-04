@@ -1,15 +1,13 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { programs } from "@/modules/programs/catalog";
 import { ProgramSpotlight } from "@/components/program-spotlight";
 import { LawTestRecommendation } from "@/components/lawtest";
-import { exerciseSets } from "@/modules/exercises/catalog";
 export const metadata: Metadata = { title: "Хөтөлбөрүүд" };
 
 const steps = [
   { title: "Хөтөлбөрөө сонго", copy: "Зорилгодоо тохирох шалгалтаа сонго. Хөтөлбөр бүр өөр өөрийн замтай." },
-  { title: "Богино багцаар бод", copy: "8 бодлогын багц. Хариугаа хадгаад, өөрийн хурдаар үргэлжлүүл." },
-  { title: "Тайлбараар бататга", copy: "Алдсан бодлогоо алхам алхмаар ойлгоод, дахин оролдож шалга." },
+  { title: "Бүтэн шалгалт өг", copy: "Бодит хугацаатай шалгалт. Хариу чинь хадгалагдаж, орхисон газраасаа үргэлжилнэ." },
+  { title: "Дүнгээ шинжил", copy: "Алдсан асуултаа хараад, дараагийн шалгалтаа илүү сайн өг." },
 ];
 
 export default function ProgramsPage() {
@@ -18,21 +16,11 @@ export default function ProgramsPage() {
       <div className="page-intro">
         <p className="eyebrow">ХӨТӨЛБӨРҮҮД</p>
         <h1>Аль шалгалтад<br /><span>бэлдэх вэ?</span></h1>
-        <p>Гурван замаас сонго. Багц дасгал, тайлбар, бүтэн шалгалт — нэг дор. Эхлэхэд бүртгэл шаардлагагүй жишиг дасгал бий.</p>
+        <p>Гурван замаас сонго. Бүтэн шалгалт, албан материал, workshop — нэг дор.</p>
       </div>
-      <Link className="programs-free-card" href="/practice">
-        <span className="eyebrow">ЭХЛЭЭД ҮЗЭЭД ШИЙД</span>
-        <span className="programs-free-copy">
-          <strong>3 бодлогын үнэгүй жишиг</strong>
-          <span>SAT алгебрийн богино дасгал. Хариултаа шалгаад, тайлбарыг хараарай.</span>
-        </span>
-        <span className="programs-free-foot">
-          <span className="button">Жишиг дасгал эхлэх <span aria-hidden="true">→</span></span>
-        </span>
-      </Link>
     </header>
 
-    <div className="programs-meta" aria-label="Хөтөлбөрийн товч"><div><strong>{exerciseSets.reduce((n,set)=>n+set.questions.length,0)}</strong><span>Багц дасгалын асуулт</span></div><div><strong>04</strong><span>Writing & Speaking workshop</span></div><div><strong>04</strong><span>Шалгалтын ангилал</span></div></div>
+    <div className="programs-meta" aria-label="Хөтөлбөрийн товч"><div><strong>12</strong><span>Бүтэн mock шалгалт</span></div><div><strong>41</strong><span>ЭЕШ албан хувилбар</span></div><div><strong>04</strong><span>Writing & Speaking workshop</span></div></div>
 
     <div className="program-grid program-picker">{programs.map((program, index) => <ProgramSpotlight key={program.slug} program={program} index={index} />)}</div>
 

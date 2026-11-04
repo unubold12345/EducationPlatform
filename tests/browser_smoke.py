@@ -42,6 +42,13 @@ with sync_playwright() as p:
         assert page.locator('a[href*="/practice"], a[href*="/exercises"], a[href*="/learn/"]').count() == 0, path
     page.goto(BASE + "/programs/ielts")
     expect(page.get_by_role("heading", name="Writing & Speaking workshop")).to_be_visible()
+    # The library lists four categories; SAT and IELTS each collect six mocks.
+    page.goto(BASE + "/exams")
+    expect(page.locator(".exam-card")).to_have_count(4)
+    for program, prefix in [("sat", "sat-full"), ("ielts", "ielts-academic")]:
+        page.goto(BASE + "/exams/" + program)
+        expect(page.locator(".mock-variant")).to_have_count(6)
+        expect(page.locator(f'a[href="/exams/{prefix}-06"]')).to_have_count(1)
     response = page.goto(BASE + "/programs/not-a-program")
     assert response.status == 404
     expect(page.get_by_role("heading", name="Энэ хуудас олдсонгүй.")).to_be_visible()

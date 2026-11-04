@@ -441,54 +441,14 @@ npm run demo:accounts
 npm run admin:grant -- qa-demo-01@example.invalid
 ```
 
-The recovery QA server is started after a production build with
-`node artifacts/start-auth-recovery.mjs`. It forces the loopback outbox, enables verification and
-uses synthetic Google credentials. It is for local QA only; it cannot perform a real Google login or
-send real mail.
+The recovery QA server (`artifacts/start-auth-recovery.mjs`, port 3002) forces the loopback outbox and synthetic Google
+credentials. Its launcher is ignored by git and absent on this PC.
 
 ## 10. Verification and delivery
 
-Application changes require, at minimum:
-
-```powershell
-npm run lint
-npm run typecheck
-npm test
-npm run build
-python tests/browser_smoke.py
-python tests/accounts_smoke.py
-python tests/exams_smoke.py
-```
-
-The three required browser suites run against a local preview on port 3001. Add the suites that match
-the changed area:
-
-| Suite | Target / purpose |
-| --- | --- |
-| `auth_recovery_smoke.py` | Verification, password recovery, auth/linking boundaries; port 3002 |
-| `homepage_polish_smoke.py` | Scroll motion, reduced motion/no JS, themes/mobile, Speaking discovery and return path, Google-link UI recovery |
-| `admin_smoke.py` | Admin access, user records, suspension, activity, prices, question fixes, pagination and mobile layout |
-| `profile_smoke.py` | Profile updates and session revocation |
-| `theme_smoke.py` | Light/dark persistence and contrast |
-| `demo_accounts_smoke.py` | Local demo login and shared-data protections |
-| `payments_smoke.py` | Simulated mock purchases |
-| `subscriptions_smoke.py` | Plan purchase and access enforcement |
-| `official_paper_smoke.py` | EEC archive, scoring, access and saved work |
-| `publishing_smoke.py` | Draft → review → published content |
-| `tutor_smoke.py` | Consent, live DeepSeek calls, quotas and active-exam denial |
-| `speaking_lab_smoke.py` | Partner picker, conversation, speech and transcription |
-| `scripts/load-test.mjs` | 100-student classroom load (sign-in rush, mock start, 10 s autosave); local by default |
-| `writing_lab_smoke.py` | Essay Studio guards and full UI loop (AI responses mocked) |
-| `additional_exams_smoke.py` | All ten added mock lifecycles, isolated purchases, save/resume, exact media, results and mobile/themes |
-| `mock_collections_smoke.py` | Four library categories, six choices per mock collection, navigation, original URLs and responsive grids |
-| `hosted_demo_smoke.py` | Hosted demo accounts; only run after an authorized deployment |
-
-Fixtures under `tests/` may advance deadlines or manipulate reserved QA rows only. They must never add
-a runtime timer or payment bypass, shorten a public exam, or change a real learner's data. Inspect
-affected screenshots whenever the UI changes. Documentation-only edits need a diff/whitespace check
-and a secret scan, not an application rebuild.
-
-See [OPERATIONS.md](./OPERATIONS.md) for the exact latest results and the delivery contract.
+`npm run check`, `check:push` and `check:all` (`scripts/check.mjs`) run lint, typecheck, unit tests and browser suites by area.
+[OPERATIONS.md](./OPERATIONS.md) section 3 says which to run. Fixtures under `tests/` may alter only reserved QA rows and advance
+deadlines; they must never add a runtime bypass, shorten a public exam or change a real learner's data.
 
 ## 11. Known limits
 
@@ -511,35 +471,3 @@ See [OPERATIONS.md](./OPERATIONS.md) for the exact latest results and the delive
 - Personal-data retention, account deletion policy, email deliverability and accessibility audits
   remain to be completed.
 - This is a hosted test pilot, not a production education service.
-
-## Appendix: imported 2026 EEC exam notes (not in this working tree)
-
-Imported on 2026-10-28 from `Desktop\codes\apienvfolders\EducationPlatform\docs\PROJECT.md`.
-This describes a later code state from another machine; the active product surface above remains
-accurate for this working tree. The 2026 EEC papers below are not present here.
-
-### Official 2026 EEC entrance exams
-
-- `/exams/eec-2026` groups all ten ЭЕШ subjects: Mathematics, Mongolian, English, Russian,
-  Social Studies, History, Geography, Physics, Chemistry and Biology. Each has A–D, for 40 papers.
-  English's four official versions also appear in `/exams/eec-english#year-2026`.
-- Only the public EEC `Элсэлтийн шалгалт 2026` event is imported (ID
-  `cmsij2hq70000ezvjzsx5em9v`); separate Монгол хэл, бичиг tests, school assessments, task-bank
-  placeholders and regional practice papers are excluded.
-- The event's official schedule specifies 100 minutes for Math/Physics/Chemistry and 80 minutes
-  for the other seven subjects. These durations are enforced by the existing server deadline flow.
-- The owner explicitly chose to include all 40 with grading unavailable. The collection contains
-  papers, without verified answer keys. Briefings, checkout, sittings and submitted results disclose
-  that no score is calculated. Answers save/resume and become immutable on submission/expiry.
-  No guessed answers, zero scores or size-based fallback to historical keys are introduced.
-- Layouts follow each source's actual choice count and numeric-cell lengths. Keyless answers are
-  validated server-side against the snapshotted layout. Existing graded Math/English snapshots keep
-  their exact original keys and scoring behavior. Per-paper purchases or University Prep remain
-  required for new starts; timers, ownership, same-origin and verified-email checks remain enforced.
-- All 40 unmodified original PDFs and 432 uncropped JPEG renders are served locally under
-  `public/exam-assets/eec-2026`. `assets/papers/eec-2026.json` records official download URLs,
-  original filenames, byte counts, page numbers, image dimensions, hashes and the source schedule.
-  `scripts/import-eec-2026.py` reproduces the import with `requests` and `pymupdf`.
-- Both Dornod Math/English papers are retired from listings, new starts and checkout. Their old
-  public briefings/category return 404. Existing private attempts retain their immutable snapshots,
-  bundled images and original grading; historical assets/keys are retained for compatibility.

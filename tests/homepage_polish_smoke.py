@@ -1,9 +1,10 @@
 """Homepage motion/accessibility, Speaking discovery/return path and Google-link recovery UI."""
 import json
+import os
 from pathlib import Path
 from uuid import uuid4
 from playwright.sync_api import sync_playwright, expect
-BASE='http://localhost:3001'
+BASE=os.environ.get('TEST_BASE_URL','http://localhost:3001').rstrip('/')
 ART=Path(__file__).resolve().parent.parent/'artifacts'
 with sync_playwright() as p:
     browser=p.chromium.launch(headless=True)

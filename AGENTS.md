@@ -19,13 +19,12 @@ Non-negotiables:
 - Read installed Next.js guides in `node_modules/next/dist/docs/` before framework-specific code.
 - Keep owner, plan, exam, active-exam, quota, same-origin, ownership and verified-email checks
   server-side. Never add timer, payment, grading or AI bypasses.
-- Run the checks required by `docs/OPERATIONS.md` for the change type. Report only checks actually run
-  and update `docs/OPERATIONS.md` with actual outcomes.
-- Attribute your work: start every new `docs/OPERATIONS.md` entry with an `Agent:` line (tool and
-  model) and never re-attribute another agent's work. See the AI agent attribution rules in OPERATIONS.
+- Run only the checks `docs/OPERATIONS.md` requires for the change type (`npm run check`). Report only checks
+  actually run.
+- Record outcomes in `docs/OPERATIONS.md` as one short entry of at most five lines, naming your tool and model. Never
+  re-attribute another agent's work or paste play-by-play there.
 - Keep LawTest/Lexlab completely separate; this project only links to <https://lexlab.site/plan>.
-- Payments are simulated, hosted accounts are a test pilot, and new auth/Gmail source is currently
-  uncommitted and undeployed.
+- Payments are simulated and hosted accounts are a test pilot.
 
 <!-- BEGIN:nextjs-agent-rules -->
 

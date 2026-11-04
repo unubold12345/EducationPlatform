@@ -131,24 +131,6 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
       </div>
     </section> : null}
 
-    <section className="program-plan-banner" aria-labelledby="program-plan-heading">
-      <div>
-        <p className="eyebrow">БҮГД НЭГ ЭРХЭД</p>
-        <h2 id="program-plan-heading">Бүх бэлтгэл · ₮{plan.amountMnt.toLocaleString("en-US")} / сар</h2>
-        <p>Энэ хөтөлбөрийн бүх дасгал{slug !== "entrance" ? ", бүтэн mock шалгалт" : ""} нэг сарын эрхэд багтана.</p>
-        <ul className="program-plan-features">{plan.features.map(feature => <li key={feature}>{feature}</li>)}</ul>
-      </div>
-      <div className="program-plan-action">
-        <Link className="button" href={"/subscribe/" + slug}>Сарын багц сонгох <span aria-hidden="true">→</span></Link>
-        <p className="fine-print">Туршилтын (симуляцлагдсан) төлбөр. Картын мэдээлэл шаардахгүй.</p>
-      </div>
-    </section>
-
-    <section className="practice-guidance program-next">
-      <div><p className="eyebrow">ДАРААГИЙН АЛХАМ</p><h2>Алдаагаа ойлгоод дахин оролд.</h2><p>Идэвхтэй сарын багцаар бүх дасгалыг тайлбартай нь хийнэ. Бүртгэлдээ хадгалах горимыг сонговол дараа үргэлжлүүлж, үр дүнгээ эргэн харна.</p></div>
-      <Link className="button secondary" href="/dashboard">Миний бэлтгэл <span aria-hidden="true">→</span></Link>
-    </section>
-
     <details className="program-notes">
       <summary>Тэмдэглэл ба эх сурвалж</summary>
       <p className="fine-print source-note">Өөрсдийн зохиосон сэдэвчилсэн дасгалууд. Багшийн хяналт хүлээгдэж буй туршилтын агуулга. Бүтэн mock шалгалт, албан ёсны оноо эсвэл band үнэлгээ биш.</p>

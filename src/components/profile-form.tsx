@@ -28,7 +28,6 @@ export function ProfileForm({ name }: { name: string }) {
     <div className="profile-field">
       <label htmlFor="profile-name">Харагдах нэр</label>
       <input id="profile-name" name="name" defaultValue={name} minLength={2} maxLength={100} autoComplete="name" required disabled={pending}/>
-      <p className="fine-print">Мэндчилгээ болон таны профайлд харагдана.</p>
     </div>
     <div className="profile-form-actions">
       <button className="button" disabled={pending}>{pending ? "Хадгалж байна…" : "Өөрчлөлт хадгалах"}</button>
@@ -74,7 +73,6 @@ export function PasswordForm() {
           <input id="confirm-password" name="confirmPassword" type="password" autoComplete="new-password" minLength={12} maxLength={128} required/>
         </div>
       </div>
-      <p className="fine-print">12–128 тэмдэгт ашиглана уу. Шинэчилсний дараа бусад төхөөрөмжийн нэвтрэлт хаагдана.</p>
       <div className="profile-form-actions">
         <button className="button secondary">{pending ? "Шинэчилж байна…" : "Нууц үг шинэчлэх"}</button>
         {message && <p className="form-success" role="status">{message}</p>}

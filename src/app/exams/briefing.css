@@ -55,7 +55,7 @@
   margin: 6px 0 0;
   font-size: clamp(38px, 4.6vw, 58px);
   line-height: 1.02;
-  letter-spacing: -.055em;
+  letter-spacing: -.028em;
   overflow-wrap: anywhere;
 }
 .exam-briefing-page .exam-briefing-copy h1,
@@ -97,8 +97,8 @@
 .briefing-facts dl > div { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--line); }
 .briefing-facts dl > div:last-child { border-bottom: 0; }
 .briefing-facts dt { font-family: var(--font-mono); font-size: 8.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
-.briefing-facts dd { margin: 0; font-size: 13px; font-weight: 650; text-align: right; }
-.briefing-price { font-size: 12px; font-weight: 650; line-height: 1.6; }
+.briefing-facts dd { margin: 0; font-size: 13px; font-weight: 600; text-align: right; }
+.briefing-price { font-size: 12px; font-weight: 600; line-height: 1.6; }
 .briefing-price span { display: block; margin-top: 2px; font-size: 9px; font-weight: 400; color: var(--muted); }
 .briefing-resume {
   display: block;
@@ -148,13 +148,13 @@
 .briefing-section-head { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 16px; }
 .briefing-section-head > span { padding-top: 4px; font-family: var(--font-mono); font-size: 9px; letter-spacing: .12em; color: var(--blue); }
 .briefing-section-head .eyebrow { margin: 0 0 4px; font-size: 8.5px; }
-.briefing-section-head h2 { margin: 0; font-size: clamp(20px, 2vw, 26px); line-height: 1.2; letter-spacing: -.035em; }
+.briefing-section-head h2 { margin: 0; font-size: clamp(20px, 2vw, 26px); line-height: 1.2; letter-spacing: -.018em; }
 
 .exam-briefing-page .exam-stage-plan.briefing-timeline { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
 .briefing-timeline li { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; align-items: start; gap: 12px; padding: 13px 0; border-top: 1px solid var(--line); }
 .briefing-timeline li:first-child { padding-top: 0; border-top: 0; }
 .briefing-timeline .timeline-index { padding-top: 2px; font-family: var(--font-mono); font-size: 9px; letter-spacing: .1em; color: var(--muted); }
-.briefing-timeline strong { display: block; font-size: 13.5px; line-height: 1.4; letter-spacing: -.01em; }
+.briefing-timeline strong { display: block; font-size: 13.5px; line-height: 1.4; letter-spacing: -.005em; }
 .briefing-timeline p { margin: 3px 0 0; font-size: 10.5px; line-height: 1.6; color: var(--muted); }
 .briefing-timeline .timeline-duration { padding-top: 1px; font-family: var(--font-mono); font-size: 9px; letter-spacing: .04em; color: var(--muted); white-space: nowrap; }
 .briefing-timeline li[data-kind="break"] { background: color-mix(in srgb, var(--paper) 45%, transparent); border-radius: 12px; padding-inline: 10px; }
@@ -163,7 +163,7 @@
 
 .exam-briefing-page .exam-rules { padding: 26px; border-radius: 24px; background: color-mix(in srgb, var(--surface) 66%, transparent); }
 .briefing-rule-grid { display: grid; gap: 14px; }
-.briefing-rule-grid h3 { margin: 0 0 5px; font-size: 12px; letter-spacing: -.01em; }
+.briefing-rule-grid h3 { margin: 0 0 5px; font-size: 12px; letter-spacing: -.005em; }
 .briefing-rule-grid ul { margin: 0; padding-left: 16px; }
 .briefing-rule-grid li { margin: 4px 0; font-size: 11px; line-height: 1.75; color: var(--muted); }
 .briefing-caveat { margin: 15px 0 0; padding-top: 12px; border-top: 1px solid var(--line); font-size: 10px; line-height: 1.7; color: var(--muted); }
@@ -184,7 +184,7 @@
 
 .official-briefing-page .official-facts { gap: 10px; margin: 0 0 18px; }
 .official-briefing-page .official-facts > div { padding: 16px 18px; border-radius: 16px; background: color-mix(in srgb, var(--surface) 66%, transparent); }
-.official-briefing-page .official-facts strong { font-size: 25px; letter-spacing: -.05em; }
+.official-briefing-page .official-facts strong { font-size: 25px; letter-spacing: -.025em; }
 .official-briefing-page .official-facts span { margin-top: 5px; font-family: var(--font-mono); font-size: 8px; letter-spacing: .05em; line-height: 1.5; }
 
 .official-briefing-page .official-launch { padding: 22px; }
@@ -193,7 +193,7 @@
 .official-briefing-page .official-structure > p { margin: 8px 0 0; font-size: 11px; line-height: 1.8; color: var(--muted); }
 .official-score-split { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 0 0 14px; }
 .official-score-split > div { min-width: 0; padding: 12px; border: 1px solid var(--line); border-radius: 14px; background: color-mix(in srgb, var(--paper) 48%, transparent); }
-.official-score-split strong { display: block; font-size: 21px; line-height: 1.1; letter-spacing: -.04em; }
+.official-score-split strong { display: block; font-size: 21px; line-height: 1.1; letter-spacing: -.02em; }
 .official-score-split span { display: block; margin-top: 4px; font-family: var(--font-mono); font-size: 8px; letter-spacing: .04em; line-height: 1.4; color: var(--muted); }
 .official-limit { padding: 10px 12px; border: 1px solid color-mix(in srgb, #a27acb 34%, var(--line)); border-radius: 12px; background: color-mix(in srgb, #a27acb 8%, transparent); font-size: 10.5px !important; line-height: 1.7 !important; color: var(--ink) !important; }
 .official-briefing-page .official-rules { align-self: start; }

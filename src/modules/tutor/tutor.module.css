@@ -1,6 +1,6 @@
 /* AI assistant: an inline trigger and a chat drawer that slides in from the right (portalled to <body>). */
 
-.launch { display: inline-flex; align-items: center; gap: 8px; margin-top: 14px; padding: 9px 16px 9px 12px; border: 1px solid color-mix(in srgb, var(--blue) 45%, var(--line)); border-radius: 999px; background: linear-gradient(135deg, color-mix(in srgb, var(--blue) 18%, transparent), color-mix(in srgb, #a78bfa 14%, transparent)); color: var(--ink); font: inherit; font-size: 13px; font-weight: 650; cursor: pointer; transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
+.launch { display: inline-flex; align-items: center; gap: 8px; margin-top: 14px; padding: 9px 16px 9px 12px; border: 1px solid color-mix(in srgb, var(--blue) 45%, var(--line)); border-radius: 999px; background: linear-gradient(135deg, color-mix(in srgb, var(--blue) 18%, transparent), color-mix(in srgb, #a78bfa 14%, transparent)); color: var(--ink); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
 .launch:hover { transform: translateY(-1px); border-color: var(--blue); box-shadow: 0 8px 24px color-mix(in srgb, var(--blue) 28%, transparent); }
 .launch:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
 .spark { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: linear-gradient(135deg, var(--blue), #a78bfa); color: #fff; font-size: 11px; }
@@ -14,10 +14,10 @@
 
 .header { display: flex; align-items: center; gap: 12px; padding: 18px 18px 16px; border-bottom: 1px solid var(--line); animation: rise .4s .12s ease both; }
 .header > div { flex: 1; min-width: 0; }
-.header h2 { margin: 0; font-size: 16px; letter-spacing: -.01em; }
+.header h2 { margin: 0; font-size: 16px; letter-spacing: -.005em; }
 .header p { margin: 2px 0 0; font-size: 12px; color: var(--muted); }
 .avatar { display: grid; place-items: center; width: 38px; height: 38px; flex-shrink: 0; border-radius: 12px; background: linear-gradient(135deg, var(--blue), #a78bfa); color: #fff; font-size: 16px; box-shadow: 0 6px 18px color-mix(in srgb, var(--blue) 35%, transparent); }
-.language { padding: 6px 8px; border: 1px solid var(--line); border-radius: 9px; background: transparent; color: var(--ink); font: inherit; font-size: 11px; font-weight: 700; }
+.language { padding: 6px 8px; border: 1px solid var(--line); border-radius: 9px; background: transparent; color: var(--ink); font: inherit; font-size: 11px; font-weight: 600; }
 .close { display: grid; place-items: center; width: 36px; height: 36px; border: 0; border-radius: 10px; background: transparent; color: var(--muted); font-size: 22px; line-height: 1; cursor: pointer; transition: background .15s, color .15s, transform .2s; }
 .close:hover { color: var(--ink); background: color-mix(in srgb, var(--ink) 7%, transparent); transform: rotate(90deg); }
 
@@ -41,7 +41,7 @@
 .composer form { display: flex; align-items: flex-end; gap: 8px; padding: 6px 6px 6px 14px; border: 1px solid var(--line); border-radius: 16px; background: color-mix(in srgb, var(--ink) 3%, var(--surface)); transition: border-color .15s, box-shadow .15s; }
 .composer form:focus-within { border-color: var(--blue); box-shadow: 0 0 0 3px color-mix(in srgb, var(--blue) 18%, transparent); }
 .composer textarea { flex: 1; min-width: 0; max-height: 140px; padding: 8px 0; border: 0; outline: 0; resize: none; field-sizing: content; background: transparent; color: var(--ink); font: inherit; font-size: 14px; }
-.composer form button { display: grid; place-items: center; width: 36px; height: 36px; flex-shrink: 0; border: 0; border-radius: 11px; background: var(--blue); color: #fff; font-size: 17px; font-weight: 700; cursor: pointer; transition: transform .15s, opacity .15s; }
+.composer form button { display: grid; place-items: center; width: 36px; height: 36px; flex-shrink: 0; border: 0; border-radius: 11px; background: var(--blue); color: #fff; font-size: 17px; font-weight: 600; cursor: pointer; transition: transform .15s, opacity .15s; }
 .composer form button:hover:not(:disabled) { transform: translateY(-1px); }
 .composer form button:disabled { opacity: .35; cursor: default; }
 .note { margin: 8px 2px 0; font-size: 10.5px; color: var(--muted); }

@@ -32,7 +32,7 @@ export function AdminUserActions({ target, suspended, protectedUser }: { target:
     } catch (error) { setMessage(error instanceof Error ? error.message : "Алдаа гарлаа."); }
     finally { setBusy(false); }
   }}>
-    <label>Үйлдэл<select name="action" value={available.includes(action) ? action : "add-note"} onChange={event => { setAction(event.target.value as Action); setMessage(""); }}>{available.map(key => <option key={key} value={key}>{actions[key].label}</option>)}</select></label>
+    <label>Юу хийх вэ<select name="action" value={available.includes(action) ? action : "add-note"} onChange={event => { setAction(event.target.value as Action); setMessage(""); }}>{available.map(key => <option key={key} value={key}>{actions[key].label}</option>)}</select></label>
     {plan && <label>Хөтөлбөр<select name="program"><option value="sat">SAT</option><option value="ielts">IELTS</option><option value="entrance">University Prep</option></select></label>}
     <label>{actions[action].field}<textarea name="reason" required minLength={5} maxLength={1000} rows={3}/></label>
     <button className={"button " + (action === "suspend" ? "danger" : "primary")} disabled={busy}>{busy ? "Хадгалж байна…" : actions[action].label}</button>

@@ -7,7 +7,7 @@ import { isAdmin } from "@/modules/admin/service";
 import { findExam } from "@/modules/exams/definitions";
 import { findOfficialPaper } from "@/modules/papers/catalog";
 import { pageInfo, parsePage } from "@/modules/admin/paging";
-import { AdminShell, Pager, SubTabs, adminDate, eventLabel, money, statusLabel } from "@/modules/admin/ui";
+import { AdminShell, Pager, StatusPill, SubTabs, adminDate, auditLabel, eventLabel, money } from "@/modules/admin/ui";
 import { AdminUserActions } from "@/components/admin-user-actions";
 
 export const metadata = { title: "Хэрэглэгч", robots: { index: false, follow: false } };
@@ -65,7 +65,7 @@ export default async function AdminUserPage({ params, searchParams }: { params: 
     const rows = [...orders.map(row => ({ id: row.id, at: row.createdAt, label: `Сарын эрх · ${row.program.toUpperCase()}`, extra: row.periodEnd ? `${adminDate(row.periodStart!)} → ${adminDate(row.periodEnd)}` : "", amount: row.amountMnt, status: row.status, provider: row.provider, paidAt: row.paidAt })),
       ...purchases.map(row => ({ id: row.id, at: row.createdAt, label: `Нэг шалгалт · ${findExam(row.examSlug)?.title ?? findOfficialPaper(row.examSlug)?.title ?? row.examSlug}`, extra: "", amount: row.amountMnt, status: row.status, provider: row.provider, paidAt: row.paidAt }))]
       .sort((a, b) => b.at.getTime() - a.at.getTime()).slice(info.skip, info.skip + info.size);
-    body = <Table head={["Огноо", "Бүтээгдэхүүн", "Дүн / төлөв", "Баримт"]} empty="Төлбөр алга." rows={rows.map(row => cells(adminDate(row.at), <>{row.label}<small>{row.extra}</small></>, <>{money(row.amount)}<small>{statusLabel(row.status)}{row.paidAt ? " · " + adminDate(row.paidAt) : ""}</small></>, <><code>{row.id}</code><small>{row.provider}</small></>))}/>;
+    body = <Table head={["Огноо", "Бүтээгдэхүүн", "Дүн / төлөв", "Баримт"]} empty="Төлбөр алга." rows={rows.map(row => cells(adminDate(row.at), <>{row.label}<small>{row.extra}</small></>, <><strong>{money(row.amount)}</strong><small><StatusPill status={row.status}/>{row.paidAt ? " " + adminDate(row.paidAt) : ""}</small></>, <><code>{row.id}</code><small>{row.provider}</small></>))}/>;
   } else if (view === "attempts") {
     const take = info.skip + info.size;
     const [attempts, mocks, papers] = await Promise.all([
@@ -77,13 +77,13 @@ export default async function AdminUserPage({ params, searchParams }: { params: 
       ...mocks.map(row => ({ id: row.id, at: row.createdAt, updated: row.updatedAt, label: "Mock · " + (findExam(row.slug)?.title ?? row.slug), status: row.status, result: row.subscriptionAccess ? "Сарын эрхээр" : "Нэг удаагийн эрхээр" })),
       ...papers.map(row => ({ id: row.id, at: row.createdAt, updated: row.updatedAt, label: "Албан материал · " + (findOfficialPaper(row.slug)?.title ?? row.slug), status: row.status, result: "" }))]
       .sort((a, b) => b.at.getTime() - a.at.getTime()).slice(info.skip, info.skip + info.size);
-    body = <Table head={["Эхэлсэн", "Материал", "Төлөв / оноо", "Сүүлд"]} empty="Оролдлого алга." rows={rows.map(row => cells(adminDate(row.at), <>{row.label}<small><code>{row.id}</code></small></>, <>{statusLabel(row.status)}<small>{row.result}</small></>, adminDate(row.updated)))}/>;
+    body = <Table head={["Эхэлсэн", "Материал", "Төлөв / оноо", "Сүүлд"]} empty="Оролдлого алга." rows={rows.map(row => cells(adminDate(row.at), <>{row.label}<small><code>{row.id}</code></small></>, <><StatusPill status={row.status}/><small>{row.result}</small></>, adminDate(row.updated)))}/>;
   } else if (view === "sessions") {
     const rows = await db.session.findMany({ where: { userId: id }, orderBy: [{ updatedAt: "desc" }, { id: "desc" }], skip: info.skip, take: info.size, select: { id: true, createdAt: true, updatedAt: true, expiresAt: true, ipAddress: true, userAgent: true } });
     body = <Table head={["Нэвтэрсэн", "Сүүлд идэвхтэй", "IP хаяг", "Төхөөрөмж"]} empty="Идэвхтэй сесс алга." rows={rows.map(row => cells(adminDate(row.createdAt), <>{adminDate(row.updatedAt)}<small>Дуусах: {adminDate(row.expiresAt)}</small></>, <code>{row.ipAddress ?? "—"}</code>, <span title={row.userAgent ?? ""}>{device(row.userAgent)}</span>))}/>;
   } else {
     const rows = await db.adminAudit.findMany({ where: { target: id }, orderBy: [{ createdAt: "desc" }, { id: "desc" }], skip: info.skip, take: info.size });
-    body = <Table head={["Огноо", "Үйлдэл", "Шалтгаан", "Админ"]} empty="Админы үйлдэл алга." rows={rows.map(row => cells(adminDate(row.createdAt), <strong>{row.action}</strong>, <>{row.reason}<details><summary>Дэлгэрэнгүй</summary><pre>{JSON.stringify(row.details, null, 2)}</pre></details></>, <code>{row.actorId}</code>))}/>;
+    body = <Table head={["Огноо", "Үйлдэл", "Шалтгаан", "Админ"]} empty="Админы үйлдэл алга." rows={rows.map(row => cells(adminDate(row.createdAt), <><strong>{auditLabel(row.action)}</strong><small>{row.action}</small></>, <>{row.reason}<details><summary>Дэлгэрэнгүй</summary><pre>{JSON.stringify(row.details, null, 2)}</pre></details></>, <code>{row.actorId}</code>))}/>;
   }
 
   const active = user.subscriptions.filter(plan => plan.startsAt <= now && plan.endsAt > now);
@@ -91,13 +91,13 @@ export default async function AdminUserPage({ params, searchParams }: { params: 
   return <AdminShell tab="users" title={user.name} name={session.user.name} actions={<Link href="/admin?tab=users" className="text-link">← Бүх хэрэглэгч</Link>}>
     {user.suspendedAt && <p className="admin-warning" role="note"><strong>Түр хаасан</strong> · {adminDate(user.suspendedAt)} · {user.suspendedReason}</p>}
     <div className="admin-user">
-      <section className="admin-panel admin-user-card">
+      <section className="ws-card admin-user-card">
         <p className="admin-user-email">{user.email}</p>
         <div className="admin-badges">
-          <span className="admin-badge">{user.adminMembership ? "Админ" : "Суралцагч"}</span>
-          <span className={"admin-badge " + (user.emailVerified ? "ok" : "warn")}>{user.emailVerified ? "Имэйл баталгаажсан" : "Имэйл баталгаажаагүй"}</span>
-          {user.suspendedAt ? <span className="admin-badge bad">Хаасан</span> : <span className="admin-badge ok">Идэвхтэй</span>}
-          {user.email.endsWith(".invalid") && <span className="admin-badge">Тест бүртгэл</span>}
+          <span className={"ws-pill " + (user.adminMembership ? "info" : "")}>{user.adminMembership ? "Админ" : "Суралцагч"}</span>
+          <span className={"ws-pill " + (user.emailVerified ? "ok" : "warn")}>{user.emailVerified ? "Имэйл баталгаажсан" : "Имэйл баталгаажаагүй"}</span>
+          {user.suspendedAt ? <span className="ws-pill bad">Хаасан</span> : <span className="ws-pill ok">Идэвхтэй</span>}
+          {user.email.endsWith(".invalid") && <span className="ws-pill">Тест бүртгэл</span>}
         </div>
         <dl className="admin-facts">
           <div><dt>Бүртгүүлсэн</dt><dd>{adminDate(user.createdAt)}</dd></div>
@@ -108,12 +108,12 @@ export default async function AdminUserPage({ params, searchParams }: { params: 
           <div><dt>ID</dt><dd><code>{user.id}</code></dd></div>
         </dl>
         {(ipRows.length > 0 || sharedUsers.length > 0) && <div className="admin-signals">
-          <h4>Эрсдэлийн дохио</h4>
+          <h4>Ижил IP хаяг</h4>
           {ipRows.length > 0 && <p>IP хаягууд: {ipRows.map(row => <code key={row.ipAddress}>{row.ipAddress} ×{row._count}</code>)}</p>}
           {sharedUsers.length > 0 ? <p>Ижил IP-ээс нэвтэрсэн бусад бүртгэл: {sharedUsers.map(other => <Link key={other.id} href={"/admin/users/" + other.id}>{other.email}{other.suspendedAt ? " (хаасан)" : ""}</Link>)}</p> : <p>Ижил IP-ээс өөр бүртгэл нэвтрээгүй.</p>}
         </div>}
       </section>
-      <section className="admin-panel">
+      <section className="ws-card">
         <h3>Үйлдэл</h3>
         <AdminUserActions target={user.id} suspended={!!user.suspendedAt} protectedUser={user.id === session.user.id || !!user.adminMembership}/>
         <h4>Тэмдэглэл</h4>

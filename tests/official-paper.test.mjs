@@ -39,7 +39,7 @@ test("all four 2020 variants resolve to distinct source pages and official keys"
   const answers=Object.fromEntries([...key.choices.map((a,i)=>[String(i+1),a]),...key.fills.map(q=>[q.id,q.digits])]);
   assert.equal(gradePaper(key,answers).score,100);
   assert.equal(gradePaper(key,{}).score,0);
-  assert.equal(key.version,`eec-2020-${paper.variant}-key-v1`);
+  assert.equal(key.version,`eec-2020-${paper.variant}-key-${paper.variant==="C"?"v1":"v2"}`);
  }
  assert.equal(findOfficialPaper("eec-math-2020-e"),undefined);
  assert.equal(findOfficialPaper("eec-math-2020"),undefined);
@@ -49,10 +49,12 @@ test("variant-specific official digits and paired marks do not reuse A's key",()
  assert.deepEqual(officialKeys.C.fills.map(q=>q.digits),["8660834","9544555","5835874","2693633"]);
  assert.deepEqual(officialKeys.D.fills.map(q=>q.digits),["8644828","9544553","4035827","2693423"]);
  for(const variant of ["B","D"]){
-  assert.equal(gradePaper(officialKeys[variant],{"2.1":"864_828"}).score,6);
+  assert.equal(gradePaper(officialKeys[variant],{"2.1":"864_828"}).score,5);
+  assert.equal(gradePaper(officialKeys[variant],{"2.1":"8644828"}).score,7);
   assert.equal(gradePaper(officialKeys[variant],{"2.3":"40358_7"}).score,5);
  }
  assert.equal(gradePaper(officialKeys.C,{"2.1":"866_834"}).score,5);
+ for(const variant of ["A","B","C","D"])assert.deepEqual(officialKeys[variant].fills[0].groups.map(group=>group.positions),[[0],[1],[2],[3,4],[5],[6]]);
  const aAnswers=Object.fromEntries([...officialKey.choices.map((a,i)=>[String(i+1),a]),...officialKey.fills.map(q=>[q.id,q.digits])]);
  for(const variant of ["B","C","D"])assert.ok(gradePaper(officialKeys[variant],aAnswers).score<100);
 });

@@ -40,6 +40,7 @@ with sync_playwright() as p:
     page.reload()
     expect(page.get_by_label("Харагдах нэр")).to_have_value("Өүлэн Суралцагч")
     page.screenshot(path=str(ART / "profile-desktop-dark.png"),full_page=True)
+    page.get_by_role("tab",name="Аюулгүй байдал",exact=True).click()
     # Current-password validation and confirmation prevent accidental changes.
     new_password = "Changed-Local-" + uuid4().hex
     page.get_by_label("Одоогийн нууц үг",exact=True).fill("wrong-password-123")

@@ -35,7 +35,7 @@ export async function paperAttempt(id:string,userId:string,input?:unknown){
    if(changed.count!==1)throw new ApiError(409,"Өөр цонхонд шинэ хадгалалт байна.");
    row=await tx.paperAttempt.findUniqueOrThrow({where:{id}});
   }
-  return {id:row.id,paper:snapshot.paper,status:row.status,revision:row.revision,deadline:row.deadline.toISOString(),serverNow:now.toISOString(),responses:row.responses as PaperResponses,finishedAt:row.finishedAt?.toISOString()??null,report:row.status==="SUBMITTED"?gradePaper(snapshot.key,row.responses as PaperResponses):null,keySources:row.status==="SUBMITTED"?snapshot.key.sourceUrls:[]};
+  return {id:row.id,paper:snapshot.paper,status:row.status,revision:row.revision,deadline:row.deadline.toISOString(),serverNow:now.toISOString(),responses:row.responses as PaperResponses,finishedAt:row.finishedAt?.toISOString()??null,report:row.status==="SUBMITTED"?gradePaper(snapshot.key,row.responses as PaperResponses):null,keySources:row.status==="SUBMITTED"?snapshot.key.sourceUrls:[],keyCorrections:row.status==="SUBMITTED"?snapshot.key.corrections??[]:[]};
  });}catch(error){
   if(error instanceof ApiError&&error.status===409&&input&&typeof input==="object"&&"submit" in input&&input.submit===true){
    const saved=await getDb().paperAttempt.findFirst({where:{id,userId,status:"SUBMITTED"},select:{id:true}});if(saved)return paperAttempt(id,userId);

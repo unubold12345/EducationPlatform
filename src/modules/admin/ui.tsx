@@ -3,23 +3,66 @@ import type { ReactNode } from "react";
 import { pageWindow, type pageInfo } from "./paging";
 
 export const adminTabs = [
-  ["overview", "Тойм"], ["users", "Хэрэглэгчид"], ["subscriptions", "Сарын эрх"], ["payments", "Төлбөрүүд"],
-  ["attempts", "Шалгалтын явц"], ["content", "Контент"], ["pricing", "Үнэ"], ["audit", "Үйлдлийн түүх"], ["settings", "Тохиргоо"],
+  ["overview", "Тойм"], ["users", "Хэрэглэгчид"], ["attempts", "Оролдлого"], ["subscriptions", "Сарын эрх"], ["payments", "Төлбөр"],
+  ["pricing", "Үнэ"], ["content", "Контент"], ["audit", "Үйлдлийн түүх"], ["settings", "Систем"],
 ] as const;
 export type AdminTab = typeof adminTabs[number][0];
+
+// The sidebar groups, plus one plain line saying what each section is for.
+export const adminGroups: readonly { label: string; tabs: readonly AdminTab[] }[] = [
+  { label: "Хүмүүс", tabs: ["users", "attempts"] },
+  { label: "Орлого", tabs: ["subscriptions", "payments", "pricing"] },
+  { label: "Агуулга", tabs: ["content"] },
+  { label: "Хяналт", tabs: ["audit", "settings"] },
+];
+export const adminTabInfo: Record<AdminTab, string> = {
+  overview: "Анхаарах зүйл, гол тоонууд.",
+  users: "Бүртгэлтэй хүмүүс. Нэрэн дээр дарж эрх олгох, түр хаах зэрэг үйлдэл хийнэ.",
+  attempts: "Суралцагчдын эхлүүлсэн дасгал, шалгалт. Зөвхөн харна.",
+  subscriptions: "Хэн аль багцыг хэдий хүртэл эзэмшиж байгаа.",
+  payments: "Багц болон нэг шалгалтын төлбөрийн гүйлгээ.",
+  pricing: "Сарын багцын үнийг өөрчилнө.",
+  content: "Дасгал, шалгалтын асуулт, хариуг засна.",
+  audit: "Админууд юу хийсэн, ямар шалтгаанаар.",
+  settings: "Серверийн ачаалал, өгөгдлийн сангийн төлөв.",
+};
+const tabLabel = (key: AdminTab) => adminTabs.find(([tab]) => tab === key)![1];
 
 export const adminDate = (value: Date) => new Intl.DateTimeFormat("mn-MN", { timeZone: "Asia/Ulaanbaatar", dateStyle: "short", timeStyle: "short" }).format(value);
 export const money = (value: number) => "₮" + value.toLocaleString("en-US");
 export const statusLabel = (value: string) => ({ PAID: "Төлөгдсөн", PENDING: "Хүлээгдэж байна", DECLINED: "Амжилтгүй", IN_PROGRESS: "Үргэлжилж байна", SUBMITTED: "Дууссан", IN_REVIEW: "Хянаж байна", REVIEWED: "Хянасан", CHANGES_NEEDED: "Засвар шаардлагатай", DRAFT: "Ноорог", PUBLISHED: "Нийтлэгдсэн" }[value] ?? value);
 export const eventLabel = (value: string) => ({ "sign-in": "Нэвтэрсэн", "sign-up": "Бүртгүүлсэн", "password-change": "Нууц үг сольсон" }[value] ?? value);
+export const auditActions: readonly (readonly [string, string])[] = [
+  ["grant-month", "Сарын эрх олгосон"], ["expire-plan", "Сарын эрх дуусгасан"], ["revoke-sessions", "Төхөөрөмжөөс гаргасан"],
+  ["suspend", "Бүртгэл хаасан"], ["unsuspend", "Хаалт цуцалсан"], ["add-note", "Тэмдэглэл нэмсэн"], ["set-price", "Үнэ өөрчилсөн"],
+  ["content-fix", "Асуулт зассан"], ["content-save", "Ноорог хадгалсан"], ["content-review", "Ноорог хянасан"], ["content-publish", "Контент нийтэлсэн"], ["review-content", "Хяналтын төлөв өөрчилсөн"],
+];
+export const auditLabel = (action: string) => auditActions.find(([key]) => key === action)?.[1] ?? action;
 
-// One frame for every admin screen: header, section navigation and the working area.
-export function AdminShell({ tab, title, name, testData = false, actions, children }: { tab: AdminTab; title: string; name: string; testData?: boolean; actions?: ReactNode; children: ReactNode }) {
-  return <div className="container page-space admin-page">
-    <div className="admin-top"><div><p className="eyebrow">EDUCATION / CONTROL ROOM</p><h1>Удирдлагын төв<span>● Local pilot</span></h1><p>Суралцах орчны бүх чухал үзүүлэлт, нэг дор.</p></div><Link className="button secondary" href="/profile">{name} ↗</Link></div>
+const statusTone: Record<string, string> = { PAID: "ok", SUBMITTED: "ok", PUBLISHED: "ok", REVIEWED: "ok", PENDING: "warn", CHANGES_NEEDED: "warn", DECLINED: "bad", IN_PROGRESS: "info", IN_REVIEW: "info" };
+export function StatusPill({ status, label }: { status: string; label?: string }) {
+  return <span className={"ws-pill " + (statusTone[status] ?? "")}>{label ?? statusLabel(status)}</span>;
+}
+
+// One frame for every admin screen: grouped navigation on the left, the current section on the right.
+export function AdminShell({ tab, title, name, testData = false, actions, scope, description, children }: { tab: AdminTab; title: string; name: string; testData?: boolean; actions?: ReactNode; scope?: ReactNode; description?: string; children: ReactNode }) {
+  const link = (key: AdminTab) => <Link key={key} href={"/admin?tab=" + key + (testData ? "&data=test" : "")} aria-current={tab === key ? "page" : undefined}>{tabLabel(key)}</Link>;
+  return <div className="container page-space ws admin-page">
     <div className="admin-shell">
-      <aside className="admin-sidebar"><p>УДИРДЛАГА</p><nav aria-label="Админ цэс">{adminTabs.map(([key, label]) => <Link key={key} href={"/admin?tab=" + key + (testData ? "&data=test" : "")} aria-current={tab === key ? "page" : undefined}>{label}</Link>)}</nav></aside>
-      <div className="admin-main"><div className="admin-section-heading"><h2>{title}</h2>{actions ?? <span>Улаанбаатар · UTC+08</span>}</div>{children}</div>
+      <aside className="admin-sidebar">
+        <div className="admin-brand"><h1>Удирдлагын төв</h1><Link href="/profile">{name}</Link></div>
+        <nav aria-label="Админ цэс">
+          <div className="admin-nav-group">{link("overview")}</div>
+          {adminGroups.map(group => <div className="admin-nav-group" key={group.label}><p>{group.label}</p>{group.tabs.map(link)}</div>)}
+        </nav>
+      </aside>
+      <div className="admin-main">
+        <header className="admin-section-heading admin-head">
+          <div><h2>{title}</h2>{description && <p>{description}</p>}</div>
+          {actions}{scope}
+        </header>
+        {children}
+      </div>
     </div>
   </div>;
 }

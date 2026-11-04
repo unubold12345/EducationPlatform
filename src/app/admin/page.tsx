@@ -12,11 +12,12 @@ import { isAdmin,contentCatalog,databaseLatency } from "@/modules/admin/service"
 import { subscriptionPlans } from "@/modules/subscriptions/plans";
 import { planPrices } from "@/modules/subscriptions/prices";
 import { pageInfo,parsePage } from "@/modules/admin/paging";
-import { AdminShell,Pager,SubTabs,adminTabs,adminDate as date,money,statusLabel,type AdminTab } from "@/modules/admin/ui";
+import { AdminShell,Pager,StatusPill,SubTabs,adminGroups,adminTabInfo,adminTabs,auditActions,auditLabel,adminDate as date,money,statusLabel,type AdminTab } from "@/modules/admin/ui";
 import { AdminPriceForm } from "@/components/admin-price-form";
 
 export const metadata:Metadata={title:"Удирдлагын төв",robots:{index:false,follow:false}};
 const one=(value:string|string[]|undefined)=>typeof value==="string"?value:"";
+const StatusLabelText=({status}:{status:string})=>statusLabel(status);
 
 export default async function AdminPage({searchParams}:{searchParams:Promise<Record<string,string|string[]|undefined>>}) {
   const session=await getSession();if(!session)redirect("/login?next=%2Fadmin");
@@ -34,9 +35,12 @@ export default async function AdminPage({searchParams}:{searchParams:Promise<Rec
   const link=(patch:Record<string,string|number>={})=>"/admin?"+new URLSearchParams(Object.entries({tab,q,data:testData?"test":"",filter,kind,...patch}).filter(([,value])=>value!==""&&value!==undefined).map(([key,value])=>[key,String(value)]));
   const name=session.user.name;
   const title=adminTabs.find(([key])=>key===tab)![1];
-  const scopeBar=<div className="admin-data-scope"><Link aria-current={!testData?"page":undefined} href={"/admin?tab="+tab}>Бодит өгөгдөл</Link><Link aria-current={testData?"page":undefined} href={"/admin?tab="+tab+"&data=test"}>Туршилтын өгөгдөл</Link><p>{testData?"Зөвхөн тест бүртгэл ба дуурайлгасан төлбөр. Бодит орлого биш.":"Тест бүртгэл, дуурайлгасан төлбөрийг хассан."}</p></div>;
+  const scope=<div className="admin-data-scope" role="group" aria-label="Өгөгдөл"><Link aria-current={!testData?"page":undefined} href={"/admin?tab="+tab}>Бодит</Link><Link aria-current={testData?"page":undefined} href={"/admin?tab="+tab+"&data=test"}>Туршилт</Link></div>;
+  const testBanner=testData&&<p className="admin-test-banner">Туршилтын өгөгдөл: тест бүртгэл, дуурайлгасан төлбөр. Бодит орлого биш.</p>;
+  const empty=(text:string)=><p className="admin-empty">{text}{!testData&&<> <Link href={"/admin?tab="+tab+"&data=test"}>Туршилтын өгөгдөл харах →</Link></>}</p>;
+  const description=adminTabInfo[tab];
   const search=(placeholder:string,filters?:{name:string;value:string;options:[string,string][]})=><form className="admin-search" action="/admin"><input type="hidden" name="tab" value={tab}/>{testData&&<input type="hidden" name="data" value="test"/>}{kind&&<input type="hidden" name="kind" value={kind}/>}<label className="sr-only" htmlFor="admin-search">Хайх</label><input id="admin-search" name="q" defaultValue={q} maxLength={100} placeholder={placeholder}/>{filters&&<select name={filters.name} aria-label="Шүүлтүүр" defaultValue={filters.value}>{filters.options.map(([value,label])=><option key={value} value={value}>{label}</option>)}</select>}<button className="button secondary">Хайх</button>{(q||filter)&&<Link className="text-link" href={"/admin?tab="+tab+(testData?"&data=test":"")+(kind?"&kind="+kind:"")}>Цэвэрлэх</Link>}</form>;
-  const exportLink=(what:string,label:string)=><a className="admin-export" href={"/api/admin/export?kind="+what+(testData?"&data=test":"")}>CSV татах · {label} · сүүлийн 1,000 ↓</a>;
+  const exportLink=(what:string,label:string)=><a className="admin-export" title={"Сүүлийн 1,000 мөр: "+label} href={"/api/admin/export?kind="+what+(testData?"&data=test":"")}>CSV татах ↓</a>;
   const userLink=(user:{id:string;email:string;name?:string})=><Link href={"/admin/users/"+user.id}>{user.name?<><strong>{user.name}</strong><small>{user.email}</small></>:user.email}</Link>;
 
   if(tab==="overview") {
@@ -49,19 +53,16 @@ export default async function AdminPage({searchParams}:{searchParams:Promise<Rec
       db.adminAudit.findMany({orderBy:[{createdAt:"desc"},{id:"desc"}],take:6}),
       db.user.findMany({where:userFilter,orderBy:[{createdAt:"desc"},{id:"desc"}],take:6,select:{id:true,name:true,email:true,createdAt:true}}),
     ]);
-    return <AdminShell tab={tab} title={title} name={name} testData={testData}>{scopeBar}
-      <div className="admin-metrics">{([["Нийт хэрэглэгч",usersTotal,`+${newUsers} энэ 7 хоногт`],["Идэвхтэй сарын эрх",activePlans,""],["Дасгал / шалгалт",`${attemptTotal} / ${mockTotal+paperCount}`,"оролдлого"],[testData?"Туршилтын төлбөр":"Бодит төлбөр",money((paidMocks._sum.amountMnt??0)+(paidPlans._sum.amountMnt??0)),"нийт"]] as const).map(([label,value,sub])=><article key={label}><p>{label}</p><strong>{value}</strong>{sub&&<small>{sub}</small>}</article>)}</div>
-      <div className="admin-attention">
-        <Link href={"/admin?tab=users&filter=suspended"+(testData?"&data=test":"")}><strong>{suspended}</strong><span>Түр хаасан бүртгэл</span></Link>
-        <Link href={"/admin?tab=payments&kind=orders&filter=PENDING"+(testData?"&data=test":"")}><strong>{pending}</strong><span>Хүлээгдэж буй захиалга</span></Link>
-        <Link href="/admin?tab=content&filter=draft"><strong>{drafts}</strong><span>Нийтлээгүй ноорог</span></Link>
-        <Link href="/admin?tab=pricing"><strong>₮</strong><span>Сарын үнэ өөрчлөх</span></Link>
-      </div>
+    return <AdminShell tab={tab} title={title} name={name} testData={testData} scope={scope} description={description}>{testBanner}
+      <div className="admin-metrics">{([["Нийт хэрэглэгч",usersTotal,`+${newUsers} энэ 7 хоногт`],["Идэвхтэй сарын эрх",activePlans,""],["Дасгал / шалгалт",`${attemptTotal} / ${mockTotal+paperCount}`,"оролдлого"],[testData?"Туршилтын төлбөр":"Бодит төлбөр",money((paidMocks._sum.amountMnt??0)+(paidPlans._sum.amountMnt??0)),testData?"Бодит орлого биш":"нийт"]] as const).map(([label,value,sub])=><article key={label}><p>{label}</p><strong>{value}</strong>{sub&&<small>{sub}</small>}</article>)}</div>
+      <section className="admin-block"><h3>Анхаарах зүйл</h3><div className="admin-attention">
+        {([["Түр хаасан бүртгэл",suspended,"/admin?tab=users&filter=suspended"+(testData?"&data=test":"")],["Хүлээгдэж буй захиалга",pending,"/admin?tab=payments&kind=orders&filter=PENDING"+(testData?"&data=test":"")],["Нийтлээгүй ноорог",drafts,"/admin?tab=content&filter=draft"]] as const).map(([label,count,href])=><Link key={label} className={count?"has-items":""} href={href}><strong>{count}</strong><span>{label}</span></Link>)}
+      </div></section>
       <div className="admin-columns">
-        <section><div className="admin-section-heading"><h3>Шинэ хэрэглэгчид</h3><Link href="/admin?tab=users">Бүгд →</Link></div><ul className="admin-log">{recentUsers.map(user=><li key={user.id}>{userLink(user)}<small>{date(user.createdAt)}</small></li>)}</ul>{!recentUsers.length&&<p className="admin-empty">Хэрэглэгч алга.</p>}</section>
-        <section><div className="admin-section-heading"><h3>Сүүлийн админ үйлдэл</h3><Link href="/admin?tab=audit">Бүгд →</Link></div><ul className="admin-log">{audits.map(row=><li key={row.id}><strong>{row.action}</strong> · {row.reason}<small>{date(row.createdAt)} · {row.target}</small></li>)}</ul>{!audits.length&&<p className="admin-empty">Үйлдэл алга.</p>}</section>
+        <section className="ws-card"><div className="ws-card-head"><h3>Шинэ хэрэглэгчид</h3><Link className="text-link" href={"/admin?tab=users"+(testData?"&data=test":"")}>Бүгд</Link></div>{recentUsers.length?<ul className="admin-log">{recentUsers.map(user=><li key={user.id}>{userLink(user)}<small>{date(user.createdAt)}</small></li>)}</ul>:empty("Хэрэглэгч алга.")}</section>
+        <section className="ws-card"><div className="ws-card-head"><h3>Сүүлийн админ үйлдэл</h3><Link className="text-link" href="/admin?tab=audit">Бүгд</Link></div>{audits.length?<ul className="admin-log">{audits.map(row=><li key={row.id}><strong>{auditLabel(row.action)}</strong><span>{row.reason}</span><small>{date(row.createdAt)}</small></li>)}</ul>:<p className="admin-empty">Үйлдэл алга.</p>}</section>
       </div>
-      <p className="fine-print">{testData?"Энэ хэсгийн төлбөр нь зөвхөн туршилтынх.":"Бодит төлбөр хараахан холбогдоогүй. Дуурайлгасан төлбөрийг орлогод тооцохгүй."}</p>
+      <section className="admin-block"><h3>Хэсгүүд</h3><div className="admin-directory">{adminGroups.flatMap(group=>group.tabs).map(key=><Link key={key} href={"/admin?tab="+key+(testData?"&data=test":"")}><strong>{adminTabs.find(([tabKey])=>tabKey===key)![1]}</strong><span>{adminTabInfo[key]}</span></Link>)}</div></section>
     </AdminShell>;
   }
 
@@ -71,16 +72,16 @@ export default async function AdminPage({searchParams}:{searchParams:Promise<Rec
     const info=pageInfo(await db.user.count({where}),requested);
     const users=await db.user.findMany({where,skip:info.skip,take:info.size,orderBy:[{createdAt:"desc"},{id:"desc"}],select:{id:true,name:true,email:true,emailVerified:true,createdAt:true,suspendedAt:true,adminMembership:{select:{userId:true}},_count:{select:{sessions:true,attempts:true,mockAttempts:true,paperAttempts:true}},subscriptions:{select:{program:true,endsAt:true,startsAt:true}}}});
     const lastSeen=users.length?await db.userEvent.groupBy({by:["userId"],where:{userId:{in:users.map(user=>user.id)},type:"sign-in"},_max:{createdAt:true}}):[];
-    return <AdminShell tab={tab} title={title} name={name} testData={testData}>{scopeBar}
+    return <AdminShell tab={tab} title={title} name={name} testData={testData} scope={scope} description={description}>{testBanner}
       {search("Нэр, имэйл эсвэл ID-аар хайх…",{name:"filter",value:filter,options:[["","Бүх хэрэглэгч"],["plan","Идэвхтэй эрхтэй"],["paid","Төлбөр төлсөн"],["unverified","Имэйл баталгаажаагүй"],["suspended","Түр хаасан"],["admin","Админ"]]})}
       {exportLink("users","хэрэглэгчид")}
       <div className="admin-table-wrap"><table><thead><tr><th>Хэрэглэгч</th><th>Төлөв</th><th>Бүртгүүлсэн / сүүлд</th><th>Эрх</th><th>Явц</th></tr></thead><tbody>{users.map(user=>{const seen=lastSeen.find(row=>row.userId===user.id)?._max.createdAt;return <tr key={user.id}>
         <td>{userLink(user)}</td>
-        <td><span className={"admin-badge"+(user.suspendedAt?" bad":"")}>{user.suspendedAt?"Хаасан":user.adminMembership?"Админ":"Суралцагч"}</span>{!user.emailVerified&&<small>Имэйл баталгаажаагүй</small>}</td>
+        <td><span className={"ws-pill "+(user.suspendedAt?"bad":user.adminMembership?"info":"")}>{user.suspendedAt?"Хаасан":user.adminMembership?"Админ":"Суралцагч"}</span>{!user.emailVerified&&<small>Имэйл баталгаажаагүй</small>}</td>
         <td>{date(user.createdAt)}<small>{seen?"Сүүлд: "+date(seen):"Нэвтрэлтийн бүртгэлгүй"}</small></td>
         <td>{user.subscriptions.filter(plan=>plan.startsAt<=now&&plan.endsAt>now).map(plan=><small key={plan.program}>{plan.program.toUpperCase()} → {date(plan.endsAt)}</small>)}{!user.subscriptions.some(plan=>plan.startsAt<=now&&plan.endsAt>now)&&<small>—</small>}</td>
         <td>{user._count.attempts} дасгал · {user._count.mockAttempts+user._count.paperAttempts} шалгалт<small>{user._count.sessions} идэвхтэй сесс</small></td>
-      </tr>;})}</tbody></table>{!users.length&&<p className="admin-empty">Хэрэглэгч олдсонгүй.</p>}</div>
+      </tr>;})}</tbody></table>{!users.length&&empty("Хэрэглэгч олдсонгүй.")}</div>
       <Pager info={info} href={page=>link({page})} label="хэрэглэгч"/>
     </AdminShell>;
   }
@@ -90,12 +91,11 @@ export default async function AdminPage({searchParams}:{searchParams:Promise<Rec
     const where:Prisma.SubscriptionWhereInput={user:userFilter,...state,...(kind?{program:kind}:{})};
     const info=pageInfo(await db.subscription.count({where}),requested);
     const rows=await db.subscription.findMany({where,skip:info.skip,take:info.size,orderBy:[{endsAt:"desc"},{id:"desc"}],select:{id:true,program:true,startsAt:true,endsAt:true,user:{select:{id:true,name:true,email:true}}}});
-    return <AdminShell tab={tab} title={title} name={name} testData={testData}>{scopeBar}
+    return <AdminShell tab={tab} title={title} name={name} testData={testData} scope={scope} description={description}>{testBanner}
       <SubTabs items={[["","Бүх багц"],...subscriptionPlans.map(plan=>[plan.program,plan.shortTitle] as const)]} current={kind} href={key=>link({kind:key,page:1})}/>
       {search("Нэр эсвэл имэйлээр хайх…",{name:"filter",value:filter,options:[["","Бүх төлөв"],["active","Идэвхтэй"],["expired","Дууссан"]]})}
       {exportLink("subscriptions","сарын эрх")}
-      <p className="admin-help">Эрх олгох, сунгах, дуусгахыг хэрэглэгчийн хуудаснаас хийнэ. Өмнөх төлбөрийн баримт өөрчлөгдөхгүй.</p>
-      <div className="admin-table-wrap"><table><thead><tr><th>Хэрэглэгч</th><th>Багц</th><th>Хугацаа</th><th>Төлөв</th></tr></thead><tbody>{rows.map(row=><tr key={row.id}><td>{userLink(row.user)}</td><td>{row.program.toUpperCase()}</td><td>{date(row.startsAt)}<small>→ {date(row.endsAt)}</small></td><td><span className="admin-badge">{row.startsAt<=now&&row.endsAt>now?"Идэвхтэй":"Дууссан"}</span></td></tr>)}</tbody></table>{!rows.length&&<p className="admin-empty">Сарын эрх олдсонгүй.</p>}</div>
+      <div className="admin-table-wrap"><table><thead><tr><th>Хэрэглэгч</th><th>Багц</th><th>Хугацаа</th><th>Төлөв</th></tr></thead><tbody>{rows.map(row=><tr key={row.id}><td>{userLink(row.user)}</td><td>{row.program.toUpperCase()}</td><td>{date(row.startsAt)}<small>→ {date(row.endsAt)}</small></td><td><span className={"ws-pill "+(row.startsAt<=now&&row.endsAt>now?"ok":"")}>{row.startsAt<=now&&row.endsAt>now?"Идэвхтэй":"Дууссан"}</span></td></tr>)}</tbody></table>{!rows.length&&empty("Сарын эрх олдсонгүй.")}</div>
       <Pager info={info} href={page=>link({page})}/>
     </AdminShell>;
   }
@@ -109,12 +109,11 @@ export default async function AdminPage({searchParams}:{searchParams:Promise<Rec
     const rows=view==="orders"
       ?(await db.subscriptionOrder.findMany({where:{...base,...statusWhere},skip:info.skip,take:info.size,orderBy:[{createdAt:"desc"},{id:"desc"}],select:{id:true,program:true,status:true,provider:true,amountMnt:true,createdAt:true,paidAt:true,user:{select:{id:true,email:true}}}})).map(row=>({...row,label:row.program.toUpperCase()+" · сарын эрх"}))
       :(await db.mockPurchase.findMany({where:{...base,...statusWhere},skip:info.skip,take:info.size,orderBy:[{createdAt:"desc"},{id:"desc"}],select:{id:true,examSlug:true,status:true,provider:true,amountMnt:true,createdAt:true,paidAt:true,user:{select:{id:true,email:true}}}})).map(row=>({...row,label:findExam(row.examSlug)?.title??findOfficialPaper(row.examSlug)?.title??row.examSlug}));
-    return <AdminShell tab={tab} title={title} name={name} testData={testData}>{scopeBar}
+    return <AdminShell tab={tab} title={title} name={name} testData={testData} scope={scope} description={description}>{testBanner}
       <SubTabs items={[["orders","Сарын багцын захиалга",orderTotal],["purchases","Нэг шалгалтын эрх",purchaseTotal]]} current={view} href={key=>link({kind:key,page:1})}/>
       {search("Хэрэглэгчийн нэр эсвэл имэйл…",{name:"filter",value:filter,options:[["","Бүх төлөв"],["PAID","Төлөгдсөн"],["PENDING","Хүлээгдэж байна"],["DECLINED","Амжилтгүй"]]})}
       {view==="orders"&&exportLink("payments","сарын багцын захиалга")}
-      <p className="admin-help">{testData?"Дуурайлгасан төлбөрийн хадгалсан баримтууд. Бодит мөнгө суутгаагүй.":"Бодит төлбөрийн үйлчилгээ хараахан холбогдоогүй. Туршилтын гүйлгээ энд харагдахгүй."}</p>
-      <div className="admin-table-wrap"><table><thead><tr><th>Огноо</th><th>Хэрэглэгч</th><th>Бүтээгдэхүүн</th><th>Дүн / төлөв</th><th>Баримт</th></tr></thead><tbody>{rows.map(row=><tr key={row.id}><td>{date(row.createdAt)}{row.paidAt&&<small>Төлсөн: {date(row.paidAt)}</small>}</td><td>{userLink(row.user)}</td><td>{row.label}</td><td>{money(row.amountMnt)}<small>{statusLabel(row.status)}</small></td><td><code>{row.id}</code><small>{row.provider}</small></td></tr>)}</tbody></table>{!rows.length&&<p className="admin-empty">Гүйлгээ олдсонгүй.</p>}</div>
+      <div className="admin-table-wrap"><table><thead><tr><th>Огноо</th><th>Хэрэглэгч</th><th>Бүтээгдэхүүн</th><th>Дүн</th><th>Төлөв</th><th>Баримт</th></tr></thead><tbody>{rows.map(row=><tr key={row.id}><td>{date(row.createdAt)}{row.paidAt&&<small>Төлсөн: {date(row.paidAt)}</small>}</td><td>{userLink(row.user)}</td><td>{row.label}</td><td><strong>{money(row.amountMnt)}</strong></td><td><StatusPill status={row.status}/></td><td><code>{row.id}</code><small>{row.provider}</small></td></tr>)}</tbody></table>{!rows.length&&empty(testData?"Гүйлгээ олдсонгүй.":"Бодит төлбөр хараахан холбогдоогүй.")}</div>
       <Pager info={info} href={page=>link({page})} label="гүйлгээ"/>
     </AdminShell>;
   }
@@ -131,11 +130,10 @@ export default async function AdminPage({searchParams}:{searchParams:Promise<Rec
       :view==="mocks"
       ?(await db.mockAttempt.findMany({...page,select:{id:true,slug:true,status:true,createdAt:true,updatedAt:true,subscriptionAccess:true,user:{select:{id:true,email:true}}}})).map(row=>({...row,label:findExam(row.slug)?.title??row.slug,result:row.subscriptionAccess?"Сарын эрхээр":"Нэг удаагийн эрхээр"}))
       :(await db.paperAttempt.findMany({...page,select:{id:true,slug:true,status:true,createdAt:true,updatedAt:true,user:{select:{id:true,email:true}}}})).map(row=>({...row,label:findOfficialPaper(row.slug)?.title??row.slug,result:"—"}));
-    return <AdminShell tab={tab} title={title} name={name} testData={testData}>{scopeBar}
+    return <AdminShell tab={tab} title={title} name={name} testData={testData} scope={scope} description={description}>{testBanner}
       <SubTabs items={[["exercises","Дасгал",exerciseTotal],["mocks","Бүтэн mock",mockTotal],["papers","Албан материал",paperTotal]]} current={view} href={key=>link({kind:key,page:1})}/>
       {search("Хэрэглэгчийн нэр эсвэл имэйл…",{name:"filter",value:filter,options:[["","Бүх төлөв"],["IN_PROGRESS","Үргэлжилж байна"],["SUBMITTED","Дууссан"]]})}
-      <p className="admin-help">Хадгалсан хариулт, хугацаа, оноог эндээс өөрчлөхгүй. IELTS бичих, ярих хэсэг автоматаар band авахгүй.</p>
-      <div className="admin-table-wrap"><table><thead><tr><th>Эхэлсэн</th><th>Суралцагч</th><th>Материал</th><th>Төлөв / оноо</th><th>Сүүлд</th></tr></thead><tbody>{rows.map(row=><tr key={row.id}><td>{date(row.createdAt)}</td><td>{userLink(row.user)}</td><td>{row.label}<small><code>{row.id}</code></small></td><td>{statusLabel(row.status)}<small>{row.result}</small></td><td>{date(row.updatedAt)}</td></tr>)}</tbody></table>{!rows.length&&<p className="admin-empty">Оролдлого олдсонгүй.</p>}</div>
+      <div className="admin-table-wrap"><table><thead><tr><th>Эхэлсэн</th><th>Суралцагч</th><th>Материал</th><th>Төлөв</th><th>Сүүлд</th></tr></thead><tbody>{rows.map(row=><tr key={row.id}><td>{date(row.createdAt)}</td><td>{userLink(row.user)}</td><td>{row.label}<small><code>{row.id}</code></small></td><td><StatusPill status={row.status}/><small>{row.result}</small></td><td>{date(row.updatedAt)}</td></tr>)}</tbody></table>{!rows.length&&empty("Оролдлого олдсонгүй.")}</div>
       <Pager info={info} href={page=>link({page})} label="оролдлого"/>
     </AdminShell>;
   }
@@ -146,15 +144,14 @@ export default async function AdminPage({searchParams}:{searchParams:Promise<Rec
     const items=contentCatalog().filter(item=>(!kind||item.program===kind)&&(!needle||[item.key,item.title,item.kind].some(text=>text.toLowerCase().includes(needle)))&&(filter!=="draft"||drafts.some(row=>row.key===item.key&&row.status!=="PUBLISHED"))&&(filter!=="edited"||published.some(row=>row.key===item.key)));
     const info=pageInfo(items.length,requested);
     const programs=[...new Set(contentCatalog().map(item=>item.program))];
-    return <AdminShell tab={tab} title={title} name={name}>
+    return <AdminShell tab={tab} title={title} name={name} description={description}>
       <SubTabs items={[["","Бүгд"],...programs.map(program=>[program,program==="entrance"?"Элсэлт":program.toUpperCase()] as const)]} current={kind} href={key=>link({kind:key,page:1})}/>
       {search("Гарчиг, төрөл эсвэл түлхүүрээр хайх…",{name:"filter",value:filter,options:[["","Бүх материал"],["edited","Засварласан"],["draft","Нийтлээгүй ноорогтой"]]})}
-      <p className="admin-help">Буруу хариу, үсгийн алдааг материалын хуудсанд асуулт тус бүрээр засаж нийтэлнэ. Шинэ хувилбар зөвхөн шинэ оролдлогод үйлчилнэ.</p>
       <div className="admin-table-wrap"><table><thead><tr><th>Материал</th><th>Төрөл</th><th>Хувилбар</th><th>Ноорог / хяналт</th><th></th></tr></thead><tbody>{items.slice(info.skip,info.skip+info.size).map(item=>{const review=reviews.find(row=>row.key===item.key);const draft=drafts.find(row=>row.key===item.key);const current=published.find(row=>row.key===item.key);return <tr key={item.key}>
         <td><Link href={"/admin/content/"+item.key}><strong>{item.title}</strong><small>{item.key}</small></Link></td>
         <td>{item.program.toUpperCase()} · {item.kind}<small>{item.count} асуулт</small></td>
         <td>v{current?.version??1}<small>{current?date(current.createdAt):"Эх хувилбар"}</small></td>
-        <td>{draft?statusLabel(draft.status):"—"}<small>{statusLabel(review?.status??"PENDING")}</small></td>
+        <td>{draft?<StatusPill status={draft.status}/>:"—"}<small>Хяналт: <StatusLabelText status={review?.status??"PENDING"}/></small></td>
         <td><Link className="admin-small-button" href={"/admin/content/"+item.key}>Засах →</Link></td>
       </tr>;})}</tbody></table>{!items.length&&<p className="admin-empty">Материал олдсонгүй.</p>}</div>
       <Pager info={info} href={page=>link({page})} label="материал"/>
@@ -163,25 +160,24 @@ export default async function AdminPage({searchParams}:{searchParams:Promise<Rec
 
   if(tab==="pricing") {
     const [prices,history]=await Promise.all([planPrices(),db.adminAudit.findMany({where:{action:"set-price"},orderBy:[{createdAt:"desc"},{id:"desc"}],take:20})]);
-    return <AdminShell tab={tab} title={title} name={name}>
-      <p className="admin-help">Сарын багцын үнийг өөрчилбөл шинэ захиалгад шууд үйлчилнэ. Төлөгдсөн захиалга анхны дүнгээрээ үлдэнэ; төлөгдөөгүй захиалга шинэ үнээр шинэчлэгдэнэ.</p>
+    return <AdminShell tab={tab} title={title} name={name} description={description}>
+      <p className="admin-help">Шинэ болон төлөгдөөгүй захиалгад шууд үйлчилнэ. Төлөгдсөн захиалга анхны дүнгээрээ үлдэнэ.</p>
       <div className="admin-prices">{subscriptionPlans.map(plan=><AdminPriceForm key={plan.program} program={plan.program} title={plan.title} amount={prices[plan.program]} fallback={plan.amountMnt}/>)}</div>
-      <div className="admin-section-heading"><h3>Үнийн өөрчлөлтийн түүх</h3></div>
+      <h3 className="admin-subhead">Үнийн өөрчлөлтийн түүх</h3>
       <div className="admin-table-wrap"><table><thead><tr><th>Огноо</th><th>Багц</th><th>Өмнө → дараа</th><th>Шалтгаан</th></tr></thead><tbody>{history.map(row=>{const d=row.details as {program?:string;before?:number;after?:number};return <tr key={row.id}><td>{date(row.createdAt)}</td><td>{d.program?.toUpperCase()}</td><td>{money(d.before??0)} → {money(d.after??0)}</td><td>{row.reason}<small><code>{row.actorId}</code></small></td></tr>;})}</tbody></table>{!history.length&&<p className="admin-empty">Үнэ өөрчлөгдөөгүй. Анхны үнэ үйлчилж байна.</p>}</div>
       <p className="fine-print">Нэг mock шалгалтын үнэ ₮10,000 хэвээр (кодонд тогтмол).</p>
     </AdminShell>;
   }
 
   if(tab==="audit") {
-    const actions=["grant-month","expire-plan","revoke-sessions","suspend","unsuspend","add-note","set-price","content-fix","content-save","content-review","content-publish","review-content"];
+    const actions=auditActions.map(([key])=>key);
     const where:Prisma.AdminAuditWhereInput={...(actions.includes(filter)?{action:filter}:{}),...(q?{OR:[{target:{contains:q}},{action:{contains:q}},{reason:{contains:q,mode:"insensitive"}},{actorId:q}]}:{})};
     const info=pageInfo(await db.adminAudit.count({where}),requested);
     const audits=await db.adminAudit.findMany({where,skip:info.skip,take:info.size,orderBy:[{createdAt:"desc"},{id:"desc"}]});
-    return <AdminShell tab={tab} title={title} name={name}>
-      {search("Зорилт, шалтгаан эсвэл админы ID…",{name:"filter",value:filter,options:[["","Бүх үйлдэл"],...actions.map(action=>[action,action] as [string,string])]})}
+    return <AdminShell tab={tab} title={title} name={name} description={description}>
+      {search("Зорилт, шалтгаан эсвэл админы ID…",{name:"filter",value:filter,options:[["","Бүх үйлдэл"],...auditActions.map(([key,label])=>[key,label] as [string,string])]})}
       {exportLink("audit","үйлдлийн түүх")}
-      <p className="admin-help">Өөрчлөлт бүрийн шалтгаан, гүйцэтгэгч, зорилт. Энэ интерфэйсээс түүхийг засах, устгах боломжгүй.</p>
-      <div className="admin-table-wrap"><table><thead><tr><th>Огноо</th><th>Үйлдэл / зорилт</th><th>Шалтгаан</th><th>Гүйцэтгэгч</th></tr></thead><tbody>{audits.map(row=><tr key={row.id}><td>{date(row.createdAt)}</td><td><strong>{row.action}</strong><small>{row.target}</small></td><td>{row.reason}<details><summary>Өөрчлөлтийн мэдээлэл</summary><pre>{JSON.stringify(row.details,null,2)}</pre></details></td><td><code>{row.actorId}</code></td></tr>)}</tbody></table>{!audits.length&&<p className="admin-empty">Бүртгэгдсэн үйлдэл алга.</p>}</div>
+      <div className="admin-table-wrap"><table><thead><tr><th>Огноо</th><th>Үйлдэл</th><th>Шалтгаан</th><th>Гүйцэтгэгч</th></tr></thead><tbody>{audits.map(row=><tr key={row.id}><td>{date(row.createdAt)}</td><td><strong>{auditLabel(row.action)}</strong><small>{row.target}</small></td><td>{row.reason}<details><summary>Өөрчлөлтийн мэдээлэл</summary><pre>{JSON.stringify(row.details,null,2)}</pre></details></td><td><code>{row.actorId}</code></td></tr>)}</tbody></table>{!audits.length&&<p className="admin-empty">Бүртгэгдсэн үйлдэл алга.</p>}</div>
       <Pager info={info} href={page=>link({page})} label="үйлдэл"/>
     </AdminShell>;
   }
@@ -196,21 +192,14 @@ export default async function AdminPage({searchParams}:{searchParams:Promise<Rec
     db.attempt.count({where:{createdAt:{gte:day}}}),
     db.rateLimit.findMany({where:{lastRequest:{gte:BigInt(now.getTime()-6e4)}},orderBy:{count:"desc"},take:5,select:{key:true,count:true}}),
   ]);
-  return <AdminShell tab={tab} title={title} name={name}>
-    <div className="admin-section-heading"><h3>Системийн төлөв</h3><span>Одоогийн хуудсыг ачаалах үеийн хэмжилт</span></div>
-    <dl className="admin-facts">
-      <div><dt>Өгөгдлийн сангийн хариу</dt><dd>{dbMs} ms<small>{dbMs<100?"Хэвийн":dbMs<400?"Удаашралтай":"Удаан — сервер сэрж байгаа эсвэл ачаалал их"}</small></dd></div>
-      <div><dt>Нэвтрэлт · 1 цаг / 24 цаг</dt><dd>{signInsHour} / {signInsDay}</dd></div>
-      <div><dt>Идэвхтэй хэрэглэгч · 24 цаг</dt><dd>{activeDay}<small>{signUpsDay} шинэ бүртгэл</small></dd></div>
-      <div><dt>Хүчинтэй сесс</dt><dd>{sessions}</dd></div>
-      <div><dt>Явагдаж буй шалгалт</dt><dd>{mocksLive+papersLive}<small>{mocksLive} mock · {papersLive} албан материал</small></dd></div>
-      <div><dt>Дасгалын оролдлого · 24 цаг</dt><dd>{attemptsDay}</dd></div>
-    </dl>
-    {limited.length>0&&<><div className="admin-section-heading"><h3>Хамгийн их хүсэлт · сүүлийн 1 минут</h3><span>Нэвтрэлтийн хязгаарлалт IP бүрээр</span></div><ul className="admin-log">{limited.map(row=><li key={row.key}><code>{row.key}</code> · {row.count} хүсэлт</li>)}</ul></>}
-    <div className="admin-settings-grid">
-    <section className="settings-card"><h3>Хэзээ өргөжүүлэх вэ</h3><ul><li>Өгөгдлийн сангийн хариу байнга 400 ms-ээс дээш эсвэл Neon CPU 80%+ бол Neon-ийн хэмжээг (CU) нэмэх, autoscaling асаах.</li><li>Өдөр бүр бодит хэрэглэгчтэй болмогц Neon-ийн 5 минутын autosuspend-ийг унтраах.</li><li>Бодит төлбөр авч эхлэхэд Vercel Pro руу шилжих.</li><li>Ярианы лабораторийн дуу хоолой, хөрвүүлэлт хамгийн их тооцоолол шаардана; өсөлттэй үед гадны үйлчилгээ рүү шилжүүлэх.</li></ul></section>
-    <section className="settings-card"><h3>Хяналт</h3><p>Гадны uptime монитор (жишээ нь UptimeRobot) <code>/api/health</code>-ийг 1–5 минут тутам шалгана: 200 бол хэвийн, 503 бол өгөгдлийн сан холбогдохгүй байна.</p></section>
-    <section className="settings-card"><h3>Аюулгүй байдал</h3><ul><li>Админ эрх сервер дээр шалгагдана.</li><li>Үйлдэл бүрийн шалтгаан, түүх хадгалагдана.</li><li>Хэрэглэгчид өөртөө админ эрх олгох боломжгүй.</li><li>Түр хаасан бүртгэл нэвтэрч чадахгүй, бүх сесс нь хаагдана.</li><li>Нэвтрэлт бүрийн IP, төхөөрөмж хэрэглэгчийн хуудсанд хадгалагдана.</li></ul></section>
-    <section className="settings-card"><h3>Нээлтийн өмнөх ажил</h3><p>Мэргэжлийн IELTS үнэлгээ, бодит төлбөр/буцаалт, нөөц сэргээх туршилт хараахан бэлэн биш. Сарын үнийг “Үнэ” хэсгээс өөрчилнө.</p></section>
+  return <AdminShell tab={tab} title={title} name={name} description={description}>
+    <div className="admin-metrics admin-metrics-wide">{([["Өгөгдлийн сангийн хариу",dbMs+" ms",dbMs<100?"Хэвийн":dbMs<400?"Удаашралтай":"Удаан"],["Нэвтрэлт · 1 цаг",signInsHour,signInsDay+" · 24 цаг"],["Идэвхтэй хэрэглэгч · 24 цаг",activeDay,signUpsDay+" шинэ бүртгэл"],["Хүчинтэй сесс",sessions,""],["Явагдаж буй шалгалт",mocksLive+papersLive,mocksLive+" mock · "+papersLive+" албан материал"],["Дасгалын оролдлого · 24 цаг",attemptsDay,""]] as const).map(([label,value,sub])=><article key={label}><p>{label}</p><strong>{value}</strong>{sub&&<small>{sub}</small>}</article>)}</div>
+    {limited.length>0&&<section className="ws-card admin-block"><div className="ws-card-head"><h3>Хамгийн их хүсэлт · сүүлийн 1 минут</h3></div><ul className="admin-log">{limited.map(row=><li key={row.key}><code>{row.key}</code><small>{row.count} хүсэлт</small></li>)}</ul></section>}
+    <h3 className="admin-subhead">Тэмдэглэл</h3>
+    <div className="admin-notes">
+    <details className="admin-panel"><summary>Хэзээ өргөжүүлэх вэ</summary><ul><li>Өгөгдлийн сангийн хариу байнга 400 ms-ээс дээш эсвэл Neon CPU 80%+ бол Neon-ийн хэмжээг (CU) нэмэх, autoscaling асаах.</li><li>Өдөр бүр бодит хэрэглэгчтэй болмогц Neon-ийн 5 минутын autosuspend-ийг унтраах.</li><li>Бодит төлбөр авч эхлэхэд Vercel Pro руу шилжих.</li><li>Ярианы лабораторийн дуу хоолой, хөрвүүлэлт хамгийн их тооцоолол шаардана; өсөлттэй үед гадны үйлчилгээ рүү шилжүүлэх.</li></ul></details>
+    <details className="admin-panel"><summary>Хяналт</summary><p>Гадны uptime монитор (жишээ нь UptimeRobot) <code>/api/health</code>-ийг 1–5 минут тутам шалгана: 200 бол хэвийн, 503 бол өгөгдлийн сан холбогдохгүй байна.</p></details>
+    <details className="admin-panel"><summary>Аюулгүй байдал</summary><ul><li>Админ эрх сервер дээр шалгагдана.</li><li>Үйлдэл бүрийн шалтгаан, түүх хадгалагдана.</li><li>Хэрэглэгчид өөртөө админ эрх олгох боломжгүй.</li><li>Түр хаасан бүртгэл нэвтэрч чадахгүй, бүх сесс нь хаагдана.</li><li>Нэвтрэлт бүрийн IP, төхөөрөмж хэрэглэгчийн хуудсанд хадгалагдана.</li></ul></details>
+    <details className="admin-panel"><summary>Нээлтийн өмнөх ажил</summary><p>Мэргэжлийн IELTS үнэлгээ, бодит төлбөр/буцаалт, нөөц сэргээх туршилт хараахан бэлэн биш.</p></details>
   </div></AdminShell>;
 }

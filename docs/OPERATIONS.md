@@ -1526,6 +1526,11 @@ Agent: Claude Code (Opus 5.5).
   past the database checks with a pooled URL.
 - Optional owner action: add the direct (non-`-pooler`) Neon address as `DIRECT_DATABASE_URL` in Vercel
   so migrations use a direct connection.
+- Redeployed as `f8bcf66`: Vercel deployment succeeded (about 4.5 minutes). Live checks: `/api/health`
+  returns `{"ok":true,"database":"ok"}` (250 ms on the first call, then lower); `/`, `/plans`,
+  `/exams` and `/login` return 200 and `/admin` redirects signed-out visitors (307). No hosted load
+  test, sign-in rush or Neon/Vercel setting change was made.
+
 
 ## 45. Thirty additional exercise sets / 240 questions — 2026-10-30
 
@@ -1596,3 +1601,228 @@ Agent: Codex (GPT-6).
 - Re-ran all unit tests: 96/96 pass. Diff/whitespace and private credential scans pass.
   Application build and browser evidence remain as recorded in section 45; no application changes
   were made during delivery. The configured Vercel build performs the additive seed on deployment.
+- Committed as `810f4b2` and successfully pushed `f8bcf66..810f4b2` to the authorized branch.
+  Remote tip confirmed after push. Vercel deployment status has not been checked in this delivery.
+  This delivery-result note remains local; the work-board claim was released.
+
+## 47. Local preview started — 2026-11-04
+
+Agent: Opencode (DeepSeek V4.1 Flash).
+
+- Owner requested starting the server. The work board was empty and no listener existed on 3001,
+  3002 or 51214/51215.
+- Started the existing named local Prisma database with `npm run db:start` (`--detach`; no reset,
+  migration or seed) and served the existing production build with `npm start` (`next start -p 3001`)
+  in the background. No rebuild was needed: the newest `src` file predates `.next/BUILD_ID`.
+- Verified `http://localhost:3001/` and `/exams` both return HTTP 200. Observed preview PID 7260 on
+  3001 and database listener PID 20908 on 51214; check listeners and ownership before any future
+  restart.
+- Documentation-only change. `git diff --check` over the docs edits passed with the expected
+  LF → CRLF notices; no secret value was added. No commit, push or deployment.
+
+## 48. Profile page simplified and split into tabs — 2026-11-04
+
+Agent: Opencode (DeepSeek V4.1 Flash).
+
+- Owner asked to remove the profile icons and excess hint copy, remake the layout simply, then split
+  the content into tabs so it stays organized. The board had only this task; no other claim was
+  present. Kept all server-side profile, password, Google, subscription, purchase and ownership
+  checks unchanged.
+- Rebuilt `/profile` around three accessible tabs (`Профайл`, `Багц ба эрх`, `Аюулгүй байдал`) with
+  a plain underline tablist, URL-hash memory and arrow/Home/End keyboard support. Removed the cover,
+  avatar/initials, glyph icons, kickers, subtitles and most explanatory fine print. The header keeps
+  `Удирдлагын төв` only for admins and `Гарах` for everyone; on mobile the actions now stack under
+  the title. The marketing sketch backdrop is hidden on `/profile` for a calm account surface.
+- Simplified the account summary to name, role, email, join/verification line and two result counts;
+  personal details (name form plus email state/verification), plans and purchases, password and
+  Google linking now live in their own panels. Rewrote `subscription-overview.tsx`, trimmed helper
+  copy from `profile-form.tsx`, and reduced `connect-google.tsx` to status, action and error.
+- Updated profile-dependent tests to open the tab they assert against: `profile_smoke`,
+  `homepage_polish_smoke`, `subscriptions_smoke` and `payments_smoke`. No assertion was weakened.
+- Checks on the final build: `npm run typecheck` pass; `npm run lint` pass; `npm test` 96/96 pass;
+  production `npm run build` pass (91 generated pages). Required browser suites passed: `browser`,
+  `accounts`, `exercises` (all 320 questions, 40 sets, 40 workshops) and `exams` (SAT, IELTS,
+  papers, ownership and mobile). Area suites passed: `profile` (private profile, name/password
+  checks, session revocation, 390/320px), `subscriptions` (three plans), `payments` (two purchases),
+  `homepage_polish` (Google UI recovery), `admin`, `hosted_demo` (identity, demo disclosure, 320px),
+  `demo_accounts` and `official_paper`. One earlier `profile` run hit a pre-existing login hydration
+  race before the final rebuild and passed on rerun without code changes.
+- Visual audit at 1440/390/320 in dark theme inspected all three tabs: no page errors and no
+  horizontal overflow. The old preview PID 17296 was stopped, the final production build replaced
+  it, and the preview was restarted on 3001 (PID 28200, background shell
+  `sh_1a5cf93fe001vLbKjhgrovdVED`). The PGlite database remained PID 20908 on 51214/51215.
+- No schema, seed, migration, payment, provider or hosted change. Only local test records were
+  created. No commit, push or deployment.
+
+## 49. Profile cards and contrast pass — 2026-11-04
+
+Agent: Opencode (DeepSeek V4.1 Flash).
+
+- Owner shared a card-based dashboard reference and asked for similar distinct div backgrounds on
+  `/profile`, calling the current flat layout poor. The board had only this task; no other claim was
+  present.
+- Reworked `/profile` into visible card surfaces without changing auth, ownership, subscription,
+  purchase, email or password logic. The identity block and two result counts are separate cards;
+  personal details use two inset panels; plans/exam access and password/Google sit in responsive
+  two-card grids.
+- Added profile-scoped surface tokens (`--profile-surface`, `--profile-inset`, `--profile-border`,
+  `--profile-shadow`) so dark cards sit above the page and light cards stay tinted, turned the
+  tablist into a compact segmented control, widened content to 1040px, and tightened mobile rows so
+  actions no longer stretch vertically.
+- Checks: `npm run typecheck` pass; `npm run lint` pass; `npm test` 96/96 pass; production
+  `npm run build` pass (91 generated pages). Browser suites passed: `profile`, `subscriptions`,
+  `payments`, `homepage_polish`, `admin`, `hosted_demo`, `demo_accounts`. No assertions changed.
+- Visual audit at 1440/390/320 in dark and light themes inspected all three tabs; no page errors and
+  no horizontal overflow. Screenshots are in
+  `C:\Users\Hitech\AppData\Local\Temp\opencode\profile-tabs\`.
+- Preview reached PID 9284 on 3001 for the final build (background shell
+  `sh_1a5eae880001w4CnVkXrDRKBwN`); PGlite remained PID 20908 on 51214/51215. No schema, seed,
+  migration, payment, provider or hosted change. No commit, push or deployment.
+- After delivery, a newer Claude Code claim at 17:45 took `build + 3001` and the profile area for a
+  further redesign. The 3001 preview then exited; this task did not restart it or touch the newly
+  claimed files. The shared preview remains with that owner.
+
+## 50. Dashboard, profile and admin redesign — 2026-11-04
+
+Agent: Claude Code (Claude Opus 5.5).
+
+- Owner disliked the design and layout of `/dashboard` and `/profile`, and found `/admin` hard to read,
+  unorganized and unclear about what its sections are. This builds on Opencode's uncommitted sections
+  48-49 and keeps their tabs, no-icon profile and card surfaces. Server checks, queries, API routes,
+  schema and seed are unchanged.
+- Added `src/app/workspace.css`, shared by all three: one card surface, status pill, compact buttons and
+  theme tokens. Visible text on the three main pages is now 12px or larger, with no monospace labels for
+  Cyrillic (admin previously went down to 8px). Marketing sketches are hidden on these pages.
+- Dashboard (`dashboard/dashboard.css`, `db-` classes): next step, stats and history cards on the left;
+  start links and plans with days left on the right. Old `.dash*`/`.dashboard*` rules were deleted from
+  `globals.css` and `theme.css`.
+- Profile: a sticky identity card with counts sits beside the three tabs; nested cards and the separate
+  identity meta line were removed. Plans list active items first and show dates without times.
+- Admin (`ui.tsx`, `admin.css` rewritten): sidebar grouped as Хүмүүс / Орлого / Агуулга / Хяналт, a one-line
+  description per section and a directory on the overview. The real/test switch moved to the header, with
+  a banner in test view and a test-data link in empty real lists. Audit actions and statuses have readable
+  Mongolian labels and pills. "Тохиргоо" is now "Систем" because it holds no settings (the `settings` key
+  stays) and its notes are collapsed. The hardcoded "Local pilot" label and the fake price metric are gone.
+  Long help lines on subscriptions, payments, attempts, content and audit were removed or shortened.
+- Added a `BETTER_AUTH_URL` override to the `dev3005` entry in the untracked `.claude/launch.json`, because
+  sign-in on 3005 was otherwise refused with 403.
+- Checks by this agent on the final build: `npm run lint` pass; `npm run typecheck` pass; `npm test` 96/96
+  pass; `npm run build` pass. Browser suites passed on the first run with no test file changed: `browser`,
+  `accounts`, `exercises`, `exams`, `profile`, `admin`, `subscriptions`, `payments`, `demo_accounts`,
+  `homepage_polish`, `theme`, `official_paper`. Not run: `hosted_demo` (needs a deployment), recovery,
+  tutor, Speaking Lab, `publishing`, `english_archive`.
+- Screenshots inspected for dashboard, profile and admin pages at 1440/390/320 across dark and light
+  themes (not every page in every combination). No page errors or horizontal page overflow. The >5-row
+  history fold and the hosted demo's profile note were not viewed. Admin tables still scroll sideways
+  inside their frame on phones.
+- Stopped the old 3001 preview (PID 9284, confirmed `next start -p 3001`) for the rebuild and restarted
+  it on the final build. PGlite was not restarted. Browser suites created local QA rows only. No commit,
+  push or deployment.
+
+## 51. Golos Text, lighter weights and program page cleanup — 2026-11-04
+
+Agent: Claude Code (Claude Opus 5.5).
+
+- Owner asked to try a different Cyrillic font and different weights. Onest, Golos Text, Inter, Noto Sans,
+  Rubik and Commissioner were rendered with Mongolian text; each had its own Ө/Ү glyphs. Chose Golos Text,
+  loaded site-wide through `next/font/google` with the `latin`, `cyrillic` and `cyrillic-ext` subsets
+  (Ө/Ү are in `cyrillic-ext`). Next self-hosts the files, but builds now fetch them from Google Fonts.
+  `src/app/fonts/Manrope-Variable.ttf` is kept but unused, so reverting is one line in `layout.tsx`.
+- Weights across all CSS: 650/700 to 600, 750 to 650, 800 to 700. On dashboard, profile and admin, 600 labels
+  became 500. Negative em letter-spacing was halved, and `--font-mono` labels now use the UI font because
+  their Cyrillic fell back badly. This also changes homepage and other public page labels.
+- `tests/theme_smoke.py` asserted the font name "manrope"; it now asserts "golos" with the same strictness.
+- Owner then asked to remove the monthly plan and "route to dashboard" sections from `/programs/[slug]`.
+  Removed `.program-plan-banner` and `.program-next` plus their rules. The "Сарын эрх" price row in the hero
+  facts stays. Plan purchase remains reachable from the Багцууд nav and the exercise access gate.
+- Checks by this agent: lint, typecheck, 96/96 unit tests and build pass on the final source. On the font
+  build, `browser`, `accounts`, `exercises`, `exams`, `profile`, `admin`, `subscriptions`, `payments`,
+  `demo_accounts`, `homepage_polish` and `official_paper` passed; `theme` failed only on the font-name
+  assertion above. On the final build, `theme`, `browser`, `exercises`, `mock_collections` and
+  `homepage_polish` passed; the others were not repeated after the program page and test edit.
+- Screenshots inspected: home, dashboard, admin overview, exams and SAT program in dark at 1440; dashboard
+  in light at 390. Entrance and IELTS program pages, profile and light/mobile home were captured with no
+  overflow or page errors but not viewed. Small labels on public pages remain small; this only changed
+  their font.
+- A dev-only reload loop on 3005 appeared with both fonts and stopped after deleting the generated
+  `.next/dev` cache. Final preview is on 3001. No commit, push or deployment.
+
+## 52. 2020 Mathematics questions from site data — 2026-11-04
+
+Agent: Claude Code (Claude Opus 5.5). This agent also edited `PROJECT.md` section 3, 7, 8 and 11 for this change.
+
+- Owner: "Exam questions should show from our site data not from images." Owner confirmed Mathematics A–D only;
+  English 2020 still shows page images.
+- All 160 questions (40 per variant) and the page 1 formula sheet are data in `src/modules/papers/math-2020`,
+  typeset with KaTeX 0.16.22 (new dependency) on the server. The 10 question diagrams per variant and the grid
+  are redrawn as SVG. The sitting no longer requests page images; it links to the 8 retained source pages. Admin
+  previews gain a collapsed list of the same questions.
+- Grading, keys, timers, deadlines, autosave, purchases, access and the service are unchanged. Questions are
+  resolved by slug at render time and are not snapshotted. All 59 local Math attempts from before 2026-11-04
+  have the same snapshot shape and slug as new ones, so they use this view. This was a read-only data check; those
+  attempts were not opened individually.
+- Transcription was checked by this agent, question by question, against enlarged source pages and the three
+  official key pages. No item was unreadable. There has been no independent human review. Text is as printed.
+  Page 1's closing line ("Эрхэм шалгуулагч танд амжилт хүсье!") was left out as not exam content. Q31's
+  drawing is schematic, with no computed vertex positions, and the papers state figures are not to scale.
+- **Source issues for the owner; nothing changed:**
+  - A14 is keyed B ($b\sqrt2$); the maths gives $b$ (D). A22 is keyed C (6); the maths gives 10 (A). The printed
+    key says this in `mat-1.jpg`, and B/C/D key the same questions correctly. Students answering correctly in A
+    lose 2 marks on each. `math-2020-content.test.mjs` pins this so it cannot change silently.
+  - `mat-2.jpg` prints 2.1 d/e as one 2-mark pair in all four variants. `key.ts` and earlier docs score B/D d and e
+    separately, 1 mark each. The maximum is the same, but partial credit differs. This predates this change.
+  - The formula sheet prints the sine rule as $a/\sin x$ where $\alpha$ would be expected. Kept as printed.
+- Checks by this agent on the final build: lint pass, typecheck pass, 103/103 unit tests, production build pass,
+  `git diff --check` pass, secret pattern scan of changed paper/test/doc files no findings. Serial browser suites
+  on 3001 all passed: `official_paper`, `admin`, `english_archive`, `browser`, `accounts`, `exercises`, `exams`.
+  Client JS scan: no key version, key digits, or question text. `official_paper_smoke.py` now asserts 40 questions,
+  180 options, 10 figures, no KaTeX errors, no images and no page image request per variant, replacing its image
+  assertions. `admin_smoke.py` needed no change.
+- The first suite run failed all seven: `/api/health` reported the database down (P1017, PGlite closing
+  connections). Restarted the named database with `npm run db:stop` and `db:start`, with no reset, migration or
+  seed, and reran all seven with no assertion changes. Cause of the drop not established.
+- Screenshots inspected: A at 1440 dark and light, 390 dark, 320 light (page fits, no console errors); full question
+  lists for A dark, and B and D sections. 390 light was captured but not viewed. Local QA accounts were added.
+- Preview on 3001 restarted on the new build (last observed PID 30172); the database restart gave PID 17524.
+  No commit, push or deployment.
+
+## 53. 2020 Mathematics A14 and A22 key correction — 2026-11-05
+
+Agent: Claude Code (Claude Opus 5.5). This agent also edited `PROJECT.md` section 3 and supersedes the "nothing
+changed" note on A14/A22 in section 52.
+
+- Owner: "if official keys are wrong, fix it." This agent solved all 36 choices and every fill-in cell in all four
+  variants against the key: only A14 and A22 disagree. This is one agent's working; no teacher has reviewed it.
+- `key.ts` now has A14 = D (printed B) and A22 = A (printed C), version `eec-2020-A-key-v2`. B/C/D are unchanged.
+  Results disclose both corrections after submission only (`keyCorrections`, empty before submission), and the
+  admin preview lists them. The source page and printed key image are unchanged.
+- Snapshots stay immutable. Local Variant A counts: 47 submitted and 4 in-progress attempts keep v1 and its
+  grades; 5 submitted are v2. Hosted attempts were not inspected, and this change is not deployed.
+- Still open for the owner: `mat-2.jpg` prints 2.1 d/e as one 2-mark pair in all four variants, while B/D score
+  them separately here. That is our scoring differing from the print, not an official-key error, so it was left.
+  English keys were not audited.
+- Checks by this agent on the final build: lint pass, typecheck pass, 103/103 unit tests, production build pass,
+  `git diff --check` pass, secret pattern scan no findings. Serial suites on 3006 all passed: `official_paper`
+  (extended to assert the note and empty pre-submission corrections), `admin`, `english_archive`, `browser`,
+  `accounts`, `exercises`, `exams`. A QA sitting answering only 14=D and 22=A scored 4. Note screenshots
+  inspected at 1440 dark and 390 light.
+- Port 3001 now serves the separate Lexlab app, started outside this work, so section 52's 3001 preview is gone.
+  Lexlab was not touched beyond one health request and one port check that returned its page. This project's
+  production preview is on 3006 (new `prod3006` in `.claude/launch.json`). No commit, push or deployment.
+
+## 54. 2.1 d/e pairing and delivery of the 2020 Mathematics work — 2026-11-05
+
+Agent: Claude Code (Claude Opus 5.5). This agent also edited `PROJECT.md` section 3.
+
+- Owner left the 2.1 d/e decision to this agent and authorized the push. B and D now score 2.1 d/e as one 2-mark
+  pair, as `mat-2.jpg` prints in all four variants (`eec-2020-B-key-v2`, `eec-2020-D-key-v2`). The maximum stays 7;
+  one right cell of the pair now earns 0, not 1. Earlier attempts keep v1. This changes section 11's B/D description.
+- Checks by this agent on the final full working tree: lint pass, typecheck pass, 103/103 unit tests, production
+  build pass. Serial suites on 3006 all passed: `official_paper`, `admin`, `english_archive`, `browser`, `accounts`,
+  `exercises`, `exams`. The B/D unit assertion was changed to the new partial credit, as intended.
+- Scope of the push: the owner asked to include the profile, dashboard and program page work, so this delivers
+  sections 48 to 54 together. Only local `.claude/` and the live board are excluded. A narrower export without the
+  redesign passed typecheck, unit tests and a clean `npm ci` build, but was abandoned and is not what shipped.
+- This agent also ran on this full tree: `profile`, `theme`, `subscriptions`, `payments`, `demo_accounts`,
+  `mock_collections`, and `homepage_polish` through a temporary copy aimed at 3006, because it hardcodes 3001, now
+  held by Lexlab. All passed; the Google-link failure there is mocked. Hosted checks follow deployment.

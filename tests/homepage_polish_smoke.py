@@ -32,7 +32,7 @@ with sync_playwright() as p:
         page.get_by_label('Нууц үг',exact=True).fill('Homepage-Test-'+uuid4().hex)
         page.get_by_role('button',name='Бүртгүүлэх',exact=True).click()
         expect(page).to_have_url(BASE+'/labs/ielts-speaking',timeout=20000)
-        page.goto(BASE+'/profile');expect(page.get_by_role('button',name='Google холбох',exact=True)).to_be_visible()
+        page.goto(BASE+'/profile');page.get_by_role('tab',name='Аюулгүй байдал',exact=True).click();expect(page.get_by_role('button',name='Google холбох',exact=True)).to_be_visible()
         # UI failure recovery uses a mocked link response; OAuth policy has separate in-memory tests.
         page.route('**/api/auth/link-social',lambda route:route.fulfill(status=400,content_type='application/json',body=json.dumps({'message':'Unable to link','code':'TEST_FAILURE'})))
         page.get_by_role('button',name='Google холбох',exact=True).click()

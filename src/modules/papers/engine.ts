@@ -1,4 +1,4 @@
-export type PaperKey={choices:string[];choiceMarks:number[];fills:{id:string;digits:string;groups:{positions:number[];marks:number}[]}[];sourceUrls:string[];version:string};
+export type PaperKey={choices:string[];choiceMarks:number[];fills:{id:string;digits:string;groups:{positions:number[];marks:number}[]}[];sourceUrls:string[];version:string;corrections?:{id:string;printed:string;answer:string}[]};
 export type PaperResponses=Record<string,string>;
 export function validPaperResponses(value:unknown,key?:PaperKey):value is PaperResponses {
  if(!value||typeof value!=="object"||Array.isArray(value))return false;

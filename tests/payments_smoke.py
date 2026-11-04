@@ -78,6 +78,7 @@ with sync_playwright() as p:
     page.get_by_role("button",name="Туршилтаар төлөх",exact=False).click()
     expect(page.locator(".checkout-success")).to_be_visible()
     page.goto(BASE+"/profile")
+    page.get_by_role("tab",name="Багц ба эрх",exact=True).click()
     expect(page.locator(".purchase-row")).to_have_count(2)
     page.screenshot(path=str(ART/"profile-exam-access.png"),full_page=True)
     for route in ["/checkout/sat-full-01","/checkout/ielts-academic-01","/exams"]:

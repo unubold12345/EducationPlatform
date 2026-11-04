@@ -96,19 +96,27 @@ rules are unchanged. Collection URLs themselves cannot be purchased or started a
 ### Official 2020 EEC Mathematics · A–D
 
 - `/exams/eec-math-2020` groups only 2020 Mathematics, with A, B, C and D variation links.
-- Each variation has eight unchanged archive page copies served from the app, its own official key and a private saved
-  100-minute answer sheet. Attempts, immutable snapshots, timers and history retain the variation.
+- Each variation shows its 40 questions, the formula sheet and all diagrams from site data
+  (`src/modules/papers/math-2020`, typeset with KaTeX on the server, figures redrawn as SVG in
+  `question-figures.tsx`), beside its own official key and a private saved 100-minute answer sheet.
+  Page images are no longer shown in the sitting. Attempts, immutable snapshots, timers and history
+  retain the variation. Question text is resolved by slug at render time and is not snapshotted, so
+  attempts saved before this change open with the same paper, unchanged, and grading never reads it.
 - Existing `/exams/eec-math-2020-a` purchases and saved attempts remain valid. B/C/D use their own
   per-paper purchases; University Prep includes all four. The category itself is not a purchasable paper.
 - Exact official weighting: 36 multiple-choice and 4 fill-in questions, 72 + 28 = 100 points.
-- Variant-specific digit scoring: A/C question 2.1 groups d/e; B/D scores those cells separately.
-  Question 2.3 groups d/e and f/g in all four. Raw /100 only, with no 200–800 conversion.
-- Read-only official material. Do not treat it as editable authored mock content.
-- The 32 JPEGs in `public/exam-assets/eec-math-2020/` are byte-identical to the reviewed originals.
-  `assets/papers/eec-math-2020.json` records provenance, dimensions and SHA-256 hashes.
-  Original source URLs remain in snapshots and attribution links. The workspace maps only the exact
-  2020 A–D page URLs to same-origin files, so existing saved attempts work over HTTPS too.
-  Browser image loading does not depend on the external archive or its TLS certificate.
+- Digit scoring follows the printed key: question 2.1 groups d/e and 2.3 groups d/e and f/g in all
+  four variants. Raw /100 only, with no 200–800 conversion.
+- Official material transcribed as site data, not editable authored mock content: there is no admin
+  editor for it, and text is kept as printed, including source oddities. Figures are redrawn, not to scale,
+  as the paper itself states. `tests/math-2020-content.test.mjs` ties the data to the key's marks and order.
+- The key follows the print except for two owner-approved corrections in Variant A: 14 (printed B, now D) and
+  22 (printed C, now A), version `eec-2020-A-key-v2`. All 160 questions were solved independently; no others
+  disagree. Results disclose the corrections after submission. B/D are at key v2 for the 2.1 d/e pairing.
+  Attempts started earlier keep v1 in their snapshots.
+- The 32 JPEGs in `public/exam-assets/eec-math-2020/` stay as the source record, byte-identical to the
+  reviewed originals; the sitting only links to them. `assets/papers/eec-math-2020.json` records provenance,
+  dimensions and SHA-256 hashes. Original source URLs remain in snapshots and admin links.
 - New starts require the University Prep plan or an existing 10,000 MNT per-paper simulated purchase.
   Saved work and review remain available after subscription expiry.
 
@@ -117,7 +125,7 @@ rules are unchanged. Collection URLs themselves cannot be purchased or started a
 - `/exams/eec-english` groups every verified, retrievable paper/key pair by year and variation.
   Published coverage is 37 variations across nine years: 2006 A–E; 2007 A–C; 2008 B–F;
   2009 B/D/H/I; 2010–2011 A–D; 2018–2020 A–D.
-- Each variation uses the same timed sitting flow as Mathematics: source pages beside a variation-specific
+- Each variation uses the same timed sitting flow as Mathematics, but still shows source page images, beside a variation-specific
   answer sheet, server deadlines, autosave/resume, final submission, immutable graded results and
   dashboard history. New starts require the matching per-paper purchase or University Prep plan.
   `/exams/eec-english/[slug]` opens its briefing; canonical `/exams/[slug]` also works.
@@ -231,10 +239,11 @@ gated by `AUTH_HOSTED_DEMO_ACCOUNTS=true`.
 
 ## 6. Content, admin and reporting
 
-- `/admin` is protected and offers an overview (with an attention row), users, subscriptions,
-  payments (plan orders / single-exam purchases), attempts (exercises / mocks / official papers),
-  content, prices, audit history, CSV exports and settings. Every list has search, filters and
-  numbered pagination with totals (20 rows per page).
+- `/admin` is protected and offers an overview (with an attention row and section directory), users,
+  attempts (exercises / mocks / official papers), subscriptions, payments (plan orders / single-exam
+  purchases), prices, content, audit history, CSV exports and a system status page (`tab=settings`,
+  labelled "Систем"). Its sidebar groups these by purpose and each section states what it is for. Every
+  list has search, filters and numbered pagination with totals (20 rows per page).
 - `/admin/users/[id]` is the user record: account facts, sign-in methods, totals paid, active plans,
   IP addresses and other accounts seen on the same IP, admin notes, and paginated activity
   (sign-ups, sign-ins with IP/device, password changes), payments, attempts, live sessions and admin
@@ -284,8 +293,8 @@ gated by `AUTH_HOSTED_DEMO_ACCOUNTS=true`.
 - Requests are denied while the same user has an active mock or official-paper sitting. Timers,
   grading, answers and immutable results are untouched.
 - Conversations are temporary page state and are not saved to the account. Answers are learning
-  feedback, never official grading. The scanned EEC paper is outside AI coverage until its questions
-  and worked solutions are verified.
+  feedback, never official grading. Official EEC papers are outside AI coverage until worked solutions
+  are verified.
 
 ### IELTS Speaking Lab
 
@@ -327,13 +336,15 @@ rounding), vocabulary upgrades, strengths, next steps and one rewritten passage.
   respects reduced-motion settings (including live changes), and leaves content readable without JS.
 
 - The header theme switch defaults to the browser preference and saves an explicit choice in
-  `education-theme` localStorage. Dark mode uses a deep indigo palette and bundled Manrope with
+  `education-theme` localStorage. Dark mode uses a deep indigo palette and self-hosted Golos Text (`next/font/google`, fetched at build) with
   Mongolian Cyrillic coverage. English passages keep a reading serif.
 - The 2026 interface layer lives in `src/app/theme.css`, loaded after `globals.css`. It is
   dark-first (near-black indigo surfaces, indigo/violet accents, hairline borders and restrained
   glow) while keeping a designed light theme. It restyles the sticky glass header/footer,
   homepage hero, cards, auth, dashboard, exam surfaces, admin and mobile navigation without
   changing route semantics, server checks or test hooks.
+- `/dashboard`, `/profile` and `/admin` share `src/app/workspace.css` (card surface, status pill and
+  tokens) through their own stylesheets, with readable type and no monospace Cyrillic labels.
 - Mathematics tests expose a collapsible scratchpad with graph paper, mouse/pen/touch drawing,
   last-stroke undo, confirmed clear and keyboard-accessible typed notes.
 - Scratch work is stored only in this browser under `education-scratchpad-v1:<attemptId>`, capped at
@@ -351,7 +362,7 @@ rounding), vocabulary upgrades, strengths, next steps and one rewritten passage.
 | `src/modules/content` | Catalog, drafts, review and published content resolution |
 | `src/modules/practice` | Practice sets, workshops and grading |
 | `src/modules/exams` | SAT/IELTS sitting lifecycle, timers and scoring |
-| `src/modules/papers` | EEC paper access, answer sheet and paired-digit scoring |
+| `src/modules/papers` | EEC paper access, answer sheet, paired-digit scoring and 2020 Mathematics question data |
 | `src/modules/subscriptions` | Plans, purchases, entitlements and legacy grants |
 | `src/modules/attempts` | Shared attempt ownership, validation and saved practice |
 | `src/modules/admin` | Admin services, reporting, exports and audit |
@@ -494,8 +505,8 @@ See [OPERATIONS.md](./OPERATIONS.md) for the exact latest results and the delive
 - There is no verified-email production onboarding, no live billing and no real payment provider.
 - Scores are raw; SAT scaled scores and IELTS bands are not calculated. The Speaking Lab's and Essay
   Studio's bands are AI estimates only.
-- The scanned EEC paper has no AI explanations, no structured question text and no independently
-  reviewed worked solutions.
+- Official EEC papers have no AI explanations and no independently reviewed worked solutions. Only 2020
+  Mathematics has structured question text; English papers remain page images.
 - Creating new catalog items and replacing content media are unfinished.
 - Content and official-page accuracy depend on manual review. Original archive and answer-key links are external and can be unavailable; exam page images are bundled.
 - Local PGlite works with single-connection settings; broad production concurrency and scale are

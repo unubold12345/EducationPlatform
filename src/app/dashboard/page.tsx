@@ -1,3 +1,4 @@
+import "./dashboard.css";
 import { findOfficialPaper } from "@/modules/papers/catalog";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
@@ -12,7 +13,7 @@ export const metadata: Metadata = { title: "Миний бэлтгэл" };
 const FOLD_AFTER = 5;
 function Fold({ rows }: { rows: ReactNode[] }) {
   if (rows.length <= FOLD_AFTER) return <>{rows}</>;
-  return <>{rows.slice(0, FOLD_AFTER)}<details className="dash-more"><summary>Бусад {rows.length - FOLD_AFTER}</summary>{rows.slice(FOLD_AFTER)}</details></>;
+  return <>{rows.slice(0, FOLD_AFTER)}<details className="db-more"><summary>Бусад {rows.length - FOLD_AFTER}</summary>{rows.slice(FOLD_AFTER)}</details></>;
 }
 export default async function DashboardPage() {
   const user = await requireUser();
@@ -36,37 +37,40 @@ export default async function DashboardPage() {
     : recentExercise ? { href: "/learn/attempts/" + recentExercise.id, title: recentExercise.title, kind: "Дасгал" } : null;
   const resume=recentPaper&&(!recentExercise||recentPaper.updatedAt>recentExercise.updatedAt)&&(!recentMock||recentPaper.updatedAt>recentMock.updatedAt)?{href:"/papers/attempts/"+recentPaper.id,title:findOfficialPaper(recentPaper.slug)?.title??recentPaper.slug,kind:"ЭЕШ"}:existingResume;
   const empty = !attempts.length && !mocks.length && !papers.length;
-  return <div className="container page-space dashboard dash">
-    <div className="dash-head"><div><span className="dash-status"><i aria-hidden="true"/>2026 · ӨНӨӨДРИЙН БЭЛТГЭЛ</span><h1>Сайн уу, {user.name}.</h1></div><div className="dash-account"><Link className="text-link" href="/profile">Профайл</Link><SignOut /></div></div>
+  const dayMs = 864e5;
+  return <div className="container page-space ws db-page">
+    <header className="db-head">
+      <div><h1>Сайн уу, {user.name}.</h1><p>{date.format(now)}</p></div>
+      <SignOut />
+    </header>
 
-    {resume && <section className="resume-card dash-resume"><div><p>Үргэлжлүүлэх · {resume.kind}</p><h2>{resume.title}</h2></div><Link className="button" href={resume.href}>Үргэлжлүүлэх →</Link></section>}
+    <div className="db-grid">
+      <div className="db-main">
+        {resume && <section className="resume-card db-next"><div><p>Үргэлжлүүлэх · {resume.kind}</p><h2>{resume.title}</h2></div><Link className="button" href={resume.href}>Үргэлжлүүлэх →</Link></section>}
+        {empty && !resume && <section className="db-next"><div><p>Түүх хоосон байна</p><h2>Эхний бэлтгэлээ эхлүүл.</h2></div><div className="db-next-actions"><Link className="button" href="/practice">Үнэгүй жишиг эхлэх →</Link><Link className="text-link" href="/exams">Бүтэн шалгалт үзэх →</Link></div></section>}
 
-    <div className="learning-stats dash-stats">
-      <div><strong>{completed}</strong><p>Дууссан дасгал</p></div>
-      <div><strong>{completedMocks+paperComplete}</strong><p>Дууссан шалгалт</p></div>
-      <div><strong>{openExercises + openMocks + paperOpen}</strong><p>Дуусаагүй</p></div>
-    </div>
+        <div className="learning-stats db-stats">
+          <div><strong>{completed}</strong><p>Дууссан дасгал</p></div>
+          <div><strong>{completedMocks+paperComplete}</strong><p>Дууссан шалгалт</p></div>
+          <div><strong>{openExercises + openMocks + paperOpen}</strong><p>Дуусаагүй</p></div>
+        </div>
 
-    <div className="dash-grid">
-      <div className="dash-history">
-        {empty && <section className="dash-empty-card"><span className="dash-empty-index" aria-hidden="true">01</span><div><p className="eyebrow">АНХНЫ АЛХАМ</p><h2>Эхний бэлтгэлээ эхлүүл.</h2><p className="dash-empty">Түүх хоосон байна. Үнэгүй жишиг эсвэл бүтэн шалгалтаас эхэл.</p></div><div className="dash-empty-actions"><Link className="button" href="/practice">Үнэгүй жишиг эхлэх →</Link><Link className="text-link" href="/exams">Бүтэн шалгалт үзэх →</Link></div></section>}
-        {attempts.length>0&&<section><h2>Миний дасгалууд</h2><div className="attempt-list"><Fold rows={attempts.map(attempt => <Link href={"/learn/attempts/" + attempt.id} className="attempt-row dash-row" key={attempt.id}><div><h3>{attempt.title}</h3><p>{date.format(attempt.createdAt)}</p></div><span className={"attempt-status" + (attempt.status === "SUBMITTED" ? " done" : "")}>{attempt.status === "SUBMITTED" ? attempt.score + " / " + attempt.total + " зөв" : "Үргэлжлүүлэх →"}</span></Link>)}/></div></section>}
-        {mocks.length>0&&<section><h2>Миний бүтэн шалгалтууд</h2><Fold rows={mocks.map(mock=><Link key={mock.id} className="mock-attempt-row dash-row" href={"/exams/attempts/"+mock.id}><div><h3>{findExam(mock.slug)?.title??mock.slug}</h3><p>{date.format(mock.createdAt)}</p></div><span className={mock.status==="SUBMITTED"?"done":""}>{mock.status==="SUBMITTED"?"Үр дүн":"Үргэлжлүүлэх →"}</span></Link>)}/></section>}
-        {papers.length>0&&<section><h2>Миний албан материалын шалгалтууд</h2><Fold rows={papers.map(paper=><Link key={paper.id} className="mock-attempt-row dash-row" href={"/papers/attempts/"+paper.id}><div><h3>{findOfficialPaper(paper.slug)?.title??paper.slug}</h3><p>{date.format(paper.createdAt)}</p></div><span className={paper.status==="SUBMITTED"?"done":""}>{paper.status==="SUBMITTED"?"Үр дүн":"Үргэлжлүүлэх →"}</span></Link>)}/></section>}
+        {attempts.length>0&&<section className="ws-card"><h2>Миний дасгалууд</h2><div className="db-list"><Fold rows={attempts.map(attempt => <Link href={"/learn/attempts/" + attempt.id} className="attempt-row db-row" key={attempt.id}><div><h3>{attempt.title}</h3><p>{date.format(attempt.createdAt)}</p></div><span className={"ws-pill " + (attempt.status === "SUBMITTED" ? "ok" : "info")}>{attempt.status === "SUBMITTED" ? attempt.score + " / " + attempt.total + " зөв" : "Үргэлжлүүлэх →"}</span></Link>)}/></div></section>}
+        {mocks.length>0&&<section className="ws-card"><h2>Миний бүтэн шалгалтууд</h2><div className="db-list"><Fold rows={mocks.map(mock=><Link key={mock.id} className="mock-attempt-row db-row" href={"/exams/attempts/"+mock.id}><div><h3>{findExam(mock.slug)?.title??mock.slug}</h3><p>{date.format(mock.createdAt)}</p></div><span className={"ws-pill "+(mock.status==="SUBMITTED"?"":"info")}>{mock.status==="SUBMITTED"?"Үр дүн":"Үргэлжлүүлэх →"}</span></Link>)}/></div></section>}
+        {papers.length>0&&<section className="ws-card"><h2>Миний албан материалын шалгалтууд</h2><div className="db-list"><Fold rows={papers.map(paper=><Link key={paper.id} className="mock-attempt-row db-row" href={"/papers/attempts/"+paper.id}><div><h3>{findOfficialPaper(paper.slug)?.title??paper.slug}</h3><p>{date.format(paper.createdAt)}</p></div><span className={"ws-pill "+(paper.status==="SUBMITTED"?"":"info")}>{paper.status==="SUBMITTED"?"Үр дүн":"Үргэлжлүүлэх →"}</span></Link>)}/></div></section>}
       </div>
 
-      <aside className="dash-aside">
-        <section><h2>Эхлэх</h2>
-          <nav className="dash-links" aria-label="Эхлэх">
-            <Link href="/programs"><span aria-hidden="true">✎</span>Дасгал<i aria-hidden="true">→</i></Link>
-            <Link href="/exams"><span aria-hidden="true">▤</span>Бүтэн шалгалт<i aria-hidden="true">→</i></Link>
-            <Link href="/exams/eec-math-2020"><span aria-hidden="true">∑</span>ЭЕШ 2020 математик<i aria-hidden="true">→</i></Link>
+      <aside className="db-rail">
+        <section className="ws-card"><h2>Шинээр эхлэх</h2>
+          <nav className="db-links" aria-label="Шинээр эхлэх">
+            <Link href="/programs">Дасгал<span aria-hidden="true">→</span></Link>
+            <Link href="/exams">Бүтэн шалгалт<span aria-hidden="true">→</span></Link>
+            <Link href="/exams/eec-math-2020">ЭЕШ 2020 математик<span aria-hidden="true">→</span></Link>
           </nav>
-          <div className="dash-sample"><p>Үнэгүй SAT жишиг · 3 бодлого</p><StartAttempt /></div>
+          <div className="db-sample"><p>Үнэгүй SAT жишиг · 3 бодлого</p><StartAttempt /></div>
         </section>
-        <section><h2>Багц</h2>
-          {plans.length ? <ul className="dash-plans">{plans.map(plan => <li key={plan.id}><span>{findSubscriptionPlan(plan.program)?.title ?? plan.program}</span><small>{date.format(plan.endsAt)} хүртэл</small></li>)}</ul> : <p className="dash-muted">Идэвхтэй багц алга.</p>}
-          <Link className="text-link dash-plan-link" href="/plans">Багцууд →</Link>
+        <section className="ws-card"><div className="ws-card-head"><h2>Миний багц</h2><Link className="text-link" href="/plans">Бүх багц</Link></div>
+          {plans.length ? <ul className="db-plans">{plans.map(plan => {const left=Math.ceil((plan.endsAt.getTime()-now.getTime())/dayMs);return <li key={plan.id}><strong>{findSubscriptionPlan(plan.program)?.title ?? plan.program}</strong><div><span>{date.format(plan.endsAt)} хүртэл</span><span className={"ws-pill "+(left<=5?"warn":"ok")}>{left} хоног</span></div></li>;})}</ul> : <p className="db-muted">Идэвхтэй багц алга.</p>}
         </section>
       </aside>
     </div>

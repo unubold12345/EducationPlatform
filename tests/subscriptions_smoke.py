@@ -81,6 +81,7 @@ with sync_playwright() as p:
     assert context.request.post(BASE+"/api/exercises/entrance-math",headers=ORIGIN,data={"answers":[0]*8}).status==200
     assert context.request.post(BASE+"/api/exercises/sat-algebra",headers=ORIGIN,data={"answers":[0]*8}).status==200
     page.goto(BASE+"/profile")
+    page.get_by_role("tab",name="Багц ба эрх",exact=True).click()
     expect(page.locator(".subscription-row")).to_have_count(3)
     page.screenshot(path=str(ART/"profile-subscriptions.png"),full_page=True)
     for program in ["ielts","sat"]:

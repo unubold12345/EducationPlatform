@@ -45,17 +45,22 @@ with sync_playwright() as p:
     page.get_by_role("link",name="Шалгалтаа нээх →",exact=True).click();page.get_by_role("button",name="Эхлэх / үргэлжлүүлэх →").click()
     page.wait_for_url("**/papers/attempts/*");attempt_id=page.url.rsplit("/",1)[1];endpoint=BASE+"/api/paper-attempts/"+attempt_id
     check_scratchpad(page,context,endpoint,ART,"official-paper")
-    initial=context.request.get(endpoint).json();assert initial["report"] is None and initial["keySources"]==[]
+    initial=context.request.get(endpoint).json();assert initial["report"] is None and initial["keySources"]==[] and initial["keyCorrections"]==[]
     assert 5990<=(datetime.fromisoformat(initial["deadline"])-datetime.fromisoformat(initial["serverNow"])).total_seconds()<=6000
     assert '"choices":' not in page.content() and '"fills":' not in page.content()
-    image=page.locator(".official-page-image");expect(image).to_be_visible()
-    # The real bundled pages must render even when the external archive is unavailable.
-    page.wait_for_function("document.querySelector('.official-page-image')?.naturalWidth>500",timeout=45000)
-    for n in range(1,9):
-        page.get_by_label("Албан материалын хуудас",exact=True).select_option(str(n))
-        page.wait_for_function("document.querySelector('.official-page-image')?.naturalWidth>500",timeout=45000)
-        assert image.get_attribute("src")==f"/exam-assets/eec-math-2020/A/{n}.jpg"
-    page.get_by_label("Албан материалын хуудас",exact=True).select_option("2")
+    # Every question comes from site data: real text, typeset math and drawn figures, with no page image.
+    def check_questions(tab,variant):
+        expect(tab.locator(".paper-question")).to_have_count(40)
+        assert tab.locator(".official-page-image").count()==0 and tab.locator(".paper-questions img").count()==0
+        assert tab.locator(".paper-question .katex").count()>100 and tab.locator(".katex-error").count()==0
+        assert tab.locator(".paper-question .paper-figure").count()==10 and tab.locator(".paper-question-options").count()==36
+        assert tab.locator(".paper-question-options li").count()==180
+        expect(tab.locator('.paper-question[data-question="2.4"]')).to_contain_text("таван өнцөгтийн")
+        expect(tab.locator('.paper-sources a[href="/exam-assets/eec-math-2020/'+variant+'/1.jpg"]')).to_have_count(1)
+        assert tab.evaluate("document.fonts.ready.then(()=>getComputedStyle(document.querySelector('.katex')).fontFamily.includes('KaTeX'))")
+        assert not [name for name in tab.evaluate("performance.getEntriesByType('resource').map(r=>r.name)") if "/exam-assets/" in name],"page image requested"
+    check_questions(page,"A")
+    expect(page.locator(".paper-formulas summary")).to_contain_text("томьёо")
     page.screenshot(path=str(ART/"official-paper-desktop.png"),full_page=True)
     page.get_by_label("1 · B",exact=True).check();expect(page.get_by_role("status")).to_have_text("Бүх өөрчлөлт хадгалагдсан",timeout=10000)
     deadline=context.request.get(endpoint).json()["deadline"];page.reload();expect(page.get_by_label("1 · B",exact=True)).to_be_checked()
@@ -80,7 +85,9 @@ with sync_playwright() as p:
         page.screenshot(path=str(ART/f"official-paper-{width}.png"),full_page=True)
     page.on("dialog",lambda dialog:dialog.accept());page.get_by_role("button",name="Шалгалтыг эцэслэн илгээх",exact=True).click()
     expect(page.locator(".paper-result h2")).to_have_text("100 / 100",timeout=15000)
+    expect(page.locator(".paper-key-note")).to_contain_text("14-р даалгавар B → D")
     result=context.request.get(endpoint).json();assert result["report"]["score"]==100 and len(result["keySources"])==3
+    assert [c["id"] for c in result["keyCorrections"]]==["14","22"]
     assert context.request.put(endpoint,headers=ORIGIN,data={"revision":0,"responses":{},"submit":True}).json()["report"]==result["report"]
     page.goto(BASE+"/dashboard");expect(page.get_by_role("heading",name="Миний албан материалын шалгалтууд")).to_be_visible()
     # A second sitting uses the same permanent purchase. Expiry retains only saved answers.
@@ -133,10 +140,7 @@ with sync_playwright() as p:
         variants_page.goto(BASE+"/papers/attempts/"+variant_id)
         expect(variants_page.locator(".paper-toolbar .eyebrow")).to_contain_text(variant+" ХУВИЛБАР")
         assert '\"choices\":' not in variants_page.content() and '\"fills\":' not in variants_page.content()
-        for n in range(1,9):
-            variants_page.get_by_label("Албан материалын хуудас",exact=True).select_option(str(n))
-            variants_page.wait_for_function("document.querySelector('.official-page-image')?.naturalWidth>500",timeout=45000)
-            assert variants_page.locator(".official-page-image").get_attribute("src")==f"/exam-assets/eec-math-2020/{variant}/{n}.jpg"
+        check_questions(variants_page,variant)
         variants_page.get_by_label("1 · "+key["choices"][0],exact=True).check()
         expect(variants_page.get_by_role("status")).to_have_text("Бүх өөрчлөлт хадгалагдсан",timeout=10000)
         variants_page.reload();expect(variants_page.get_by_label("1 · "+key["choices"][0],exact=True)).to_be_checked()
@@ -145,7 +149,7 @@ with sync_playwright() as p:
         variant_answers={str(i+1):a for i,a in enumerate(key["choices"])};variant_answers.update({q["id"]:q["digits"] for q in key["fills"]})
         saved=other.request.get(url).json()
         result=other.request.put(url,headers=ORIGIN,data={"revision":saved["revision"],"responses":variant_answers,"submit":True}).json()
-        assert result["status"]=="SUBMITTED" and result["report"]["score"]==100 and len(result["keySources"])==3
+        assert result["status"]=="SUBMITTED" and result["report"]["score"]==100 and len(result["keySources"])==3 and result["keyCorrections"]==[]
         assert other.request.put(url,headers=ORIGIN,data={"revision":0,"responses":{},"submit":True}).json()["report"]==result["report"]
         variants_page.reload();expect(variants_page.locator(".paper-result h2")).to_have_text("100 / 100")
     assert len(set(variant_ids+[included_id]))==4
@@ -158,5 +162,5 @@ with sync_playwright() as p:
     assert other.request.post(BASE+"/api/paper-attempts",headers=ORIGIN,data={"slug":SLUG}).status==402
     assert not errors,errors
     browser.close()
-print("PASS: 2020 mathematics category, all A/B/C/D bundled pages with archive blocked, variant keys/grades/history/access isolated, 100-minute clock, per-exam access, all 36 choices/28 digit cells, exact 100-mark scoring, autosave/resume, privacy, stale writes, immutable concurrent submit, expiry and responsive layouts")
+print("PASS: 2020 mathematics category, all A/B/C/D questions from site data with no page image requested, variant keys/grades/history/access isolated, 100-minute clock, per-exam access, all 36 choices/28 digit cells, exact 100-mark scoring, autosave/resume, privacy, stale writes, immutable concurrent submit, expiry and responsive layouts")
 

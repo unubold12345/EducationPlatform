@@ -17,7 +17,7 @@ with sync_playwright() as p:
     expect(page.locator("html")).to_have_attribute("data-theme", "dark")
     assert page.evaluate("getComputedStyle(document.body).backgroundColor") == "rgb(7, 7, 13)"
     page.evaluate("document.fonts.ready")
-    assert "manrope" in page.evaluate("getComputedStyle(document.body).fontFamily").lower()
+    assert "golos" in page.evaluate("getComputedStyle(document.body).fontFamily").lower()
     expect(page.locator('.launch-panel a[href="/exams/sat"]')).to_be_visible()
     expect(page.locator('.launch-panel a[href="/exams/ielts"]')).to_be_visible()
     expect(page.locator('.launch-panel a[href="/practice"]')).to_be_visible()

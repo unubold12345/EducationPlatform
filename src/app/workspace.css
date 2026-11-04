@@ -1,0 +1,75 @@
+/* Shared look for signed-in work pages: /dashboard, /profile and /admin.
+   Readable type (nothing under 12px, no monospace labels), one card surface and one status pill. */
+
+.ws {
+  --ws-card: #ffffff;
+  --ws-inset: #f6f5fb;
+  --ws-line: #e3e2ec;
+  --ws-hover: #f3f2fa;
+  --ws-ok: #14724f;
+  --ws-ok-bg: #e3f4ec;
+  --ws-warn: #8f5a0c;
+  --ws-warn-bg: #fbf0dc;
+  --ws-bad: #b3202d;
+  --ws-bad-bg: #fce8ea;
+  --ws-info: #4438c4;
+  --ws-info-bg: #ecebfb;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+:root[data-theme="dark"] .ws {
+  --ws-card: #12121d;
+  --ws-inset: #191926;
+  --ws-line: #272738;
+  --ws-hover: #1b1b29;
+  --ws-ok: #6fdcae;
+  --ws-ok-bg: #12291f;
+  --ws-warn: #f2bd6b;
+  --ws-warn-bg: #2c2110;
+  --ws-bad: #ff9aa5;
+  --ws-bad-bg: #2f1519;
+  --ws-info: #bdb4ff;
+  --ws-info-bg: #1f1b3a;
+}
+
+/* Work pages drop the marketing sketches so the content stands on a calm page. */
+body:has(.ws) .education-backdrop { display: none; }
+
+.ws h1, .ws h2, .ws h3 { letter-spacing: -.007em; }
+
+.ws-card {
+  min-width: 0;
+  padding: 22px;
+  border: 1px solid var(--ws-line);
+  border-radius: 16px;
+  background: var(--ws-card);
+}
+
+.ws-card-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin: 0 0 14px; }
+.ws-card-head h2, .ws-card > h2 { margin: 0; font-size: 16px; font-weight: 600; line-height: 1.35; color: var(--ink); }
+.ws-card > h2 { margin-bottom: 14px; }
+.ws-card-head .text-link { flex-shrink: 0; }
+
+.ws .text-link { font-size: 13.5px; font-weight: 500; color: var(--blue); }
+.ws .text-link:hover { color: var(--blue-dark); text-decoration: underline; text-underline-offset: 3px; }
+
+.ws .button { width: auto; min-height: 40px; padding: 8px 18px; font-size: 13.5px; }
+
+.ws-pill {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--ws-inset);
+  color: var(--muted);
+  font-size: 12.5px;
+  font-weight: 500;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+.ws-pill.ok { background: var(--ws-ok-bg); color: var(--ws-ok); }
+.ws-pill.warn { background: var(--ws-warn-bg); color: var(--ws-warn); }
+.ws-pill.bad { background: var(--ws-bad-bg); color: var(--ws-bad); }
+.ws-pill.info { background: var(--ws-info-bg); color: var(--ws-info); }

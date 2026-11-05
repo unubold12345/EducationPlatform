@@ -27,4 +27,6 @@ export type PublicExamAttempt = {
   responses: Record<string, string>; flags: string[]; completed: string[]; finishedAt: string | null;
   timeline: { title: string; seconds: number; kind: ExamStage["kind"] }[]; report: ExamReport | null;
   recordings: { stageId: string; mime: string }[];
+  /** The caller said it already holds this stage, so `stage` is null and it keeps its own copy. */
+  stageUnchanged?: boolean;
 };

@@ -1,8 +1,7 @@
-import { readFile } from "node:fs/promises";
-import path from "node:path";
 import { ApiError,apiFailure,apiUser } from "@/lib/api";
 import { accessMock } from "@/modules/exams/service";
 import { listeningFile } from "@/modules/exams/audio-files";
+import { listeningAudioResponse } from "@/modules/exams/audio-response";
 export const runtime="nodejs";
 export async function GET(request:Request,{params}:{params:Promise<{id:string}>}) {
   try {
@@ -13,15 +12,6 @@ export async function GET(request:Request,{params}:{params:Promise<{id:string}>}
     if(!attempt.finishedAt&&(attempt.stage?.id!=="ielts-listening"||part!==Math.min(4,Math.floor(elapsed/450)+1)))throw new ApiError(403,"Зөвхөн одоо тоглож буй хэсгийн бичлэгийг нээж болно.");
     const filename=listeningFile(attempt.slug,part);
     if(!filename)throw new ApiError(404,"Бичлэг олдсонгүй.");
-    const data=await readFile(path.join(process.cwd(),"assets","exams",filename));
-    const headers={"Content-Type":"audio/mpeg","Cache-Control":"private, no-store","Accept-Ranges":"bytes"};
-    const range=request.headers.get("range");
-    if(range) {
-      const match=/^bytes=(\d+)-(\d*)$/.exec(range);if(!match)return new Response(null,{status:416,headers:{"Content-Range":`bytes */${data.length}`}});
-      const start=Number(match[1]),end=Math.min(match[2]?Number(match[2]):data.length-1,data.length-1);
-      if(start>end||start>=data.length)return new Response(null,{status:416,headers:{"Content-Range":`bytes */${data.length}`}});
-      return new Response(data.subarray(start,end+1),{status:206,headers:{...headers,"Content-Range":`bytes ${start}-${end}/${data.length}`,"Content-Length":String(end-start+1)}});
-    }
-    return new Response(data,{headers:{...headers,"Content-Length":String(data.length)}});
+    return await listeningAudioResponse(filename,request);
   }catch(error){return apiFailure(error);}
 }

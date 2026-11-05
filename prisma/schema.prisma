@@ -17,6 +17,7 @@ model User {
   accounts Account[]
   attempts Attempt[]
   mockAttempts MockAttempt[]
+  practiceSessions PracticeSession[]
   mockPurchases MockPurchase[]
   subscriptions Subscription[]
   subscriptionOrders SubscriptionOrder[]
@@ -284,6 +285,22 @@ model MockAttempt {
   // A sitting started under a valid subscription may finish and retain private review.
   subscriptionAccess Boolean @default(false)
   @@index([userId, createdAt])
+}
+
+// Untimed practice on a mock or official paper: one per student and exam, never an attempt or a result.
+model PracticeSession {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug String
+  responses Json @default("{}")
+  flags Json @default("[]")
+  results Json @default("{}")
+  revision Int @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([userId, slug])
+  @@index([userId, updatedAt])
 }
 
 model MockRecording {

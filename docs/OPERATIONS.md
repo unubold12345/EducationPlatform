@@ -9,7 +9,7 @@ in git: `git show 2928af3:docs/OPERATIONS.md`. Read it only when old evidence is
 - Branch and only remote: `codex/education-foundation` on `unubold12345/EducationPlatform`. Never reuse LawTest's remote.
   The repository is **public** (observed 2026-11-05); the owner chose to make it private in GitHub settings.
 - Hosted: <https://education-platform-seven-neon.vercel.app>, Vercel project `prj_MTzsdRQuLeMAjpUnvhScHcYnF37n`, region
-  `sin1`. A push to the branch deploys to production. Latest deployed commit: `2928af3`.
+  `sin1`. A push to the branch deploys to production. Latest deployed commit: `8a81f43`.
 - Hosted database: Singapore Neon, reached through its pooled address (migrations too; see section 4). The old US Neon
   database is read-only for rollback; do not resume writes to it.
 - Hosted flags: `AUTH_HOSTED_PILOT`, `AUTH_HOSTED_DEMO_ACCOUNTS`, `SPEAKING_LAB_ENABLED`, `AUTH_HOSTED_GMAIL` and
@@ -23,9 +23,9 @@ in git: `git show 2928af3:docs/OPERATIONS.md`. Read it only when old evidence is
 ## 2. Open items
 
 Owner actions:
-1. Delete old exercise data from the live database: `scripts/purge-exercises.mjs` (dry run, then `--apply`; hosted needs
-   `--confirm-host=<hostname>`). Not confirmed as done. Afterward a migration can drop the empty tables.
-2. Make the repository private.
+1. Owner chose on 2026-11-05 to leave old exercise rows in Neon for now (a few MB, unused). Keep the tables in the schema;
+   do not add a dropping migration unless asked. `scripts/purge-exercises.mjs` remains available for a later cleanup.
+2. Make the repository private. Still public on 2026-11-06, and it holds the БҮТ pages; 2018 A and 2019 A print a no-copying notice, with no permission on record.
 3. Decide whether University Prep (₮40,000, papers only) and SAT (₮60,000, mocks only) prices still fit.
 4. Complete one real Google sign-in with an owner-controlled account. Only the authorization start has been verified.
 5. Buy a sender domain if wanted, then switch to Resend (section 5).
@@ -34,6 +34,8 @@ For agents:
 - Not verified on the hosted site: signed-in dashboard, profile and admin, or a real sitting with the new questions.
   `tests/hosted_demo_smoke.py` is ready; ask the owner first.
 - Rewritten but never run: `tutor_smoke.py` (needs live DeepSeek approval).
+- Practice assistant: one real DeepSeek reply checked (SAT, Mongolian, before a check). IELTS, papers, English replies and the later
+  field-name prompt fix are untested; `exam_practice_smoke` intercepts it, so real calls need owner approval. Teacher review of its paper answers is pending.
 - Not runnable here: `auth_recovery_smoke.py`, because `artifacts/start-auth-recovery.mjs` is not on this machine.
 - Remove unused exercise CSS from `theme.css`, `globals.css` and `programs.css`.
 - Teacher review is pending for original mock content and the 2020 Math transcription and key corrections.
@@ -63,6 +65,7 @@ restarts, database changes, commits or pushes, and remove the row when done. Nev
 | `core` | routing, sessions, layout, exam engine | `browser`, `accounts`, `exams` |
 | `papers` | official papers, keys, English archive | `official_paper`, `english_archive` |
 | `mocks` | added SAT/IELTS forms | `additional_exams` |
+| `practice` | practice mode, its assistant, sitting tools | `exam_practice` |
 | `admin` | admin, content publishing | `admin`, `publishing` |
 | `billing` | plans, prices, checkout, access | `payments`, `subscriptions` |
 | `account` | profile, password, demo accounts | `profile`, `demo_accounts` |
@@ -86,8 +89,12 @@ unverified. No play-by-play. When `Recent` passes eight entries, compress the ol
 ## 4. Known problems
 
 - **Local database drops** (`P1017`, `P1001`, `ECONNREFUSED`, or `{"database":"down"}`; every suite then fails). Run `npm run db:stop`,
-  wait a few seconds, `npm run db:start`; never reset. It dropped three times on 2026-11-04/05. Cause not established; its
-  `durable-streams.sqlite` was 2.8 GB and growing. Transient `P2028` or `08P01`: rerun once.
+  wait a few seconds, `npm run db:start`; never reset. Transient `P2028` or `08P01`: rerun once. Cause not proven; suspect
+  below. It dropped three times on 2026-11-04/05, then stayed up through two runs after the log was set aside.
+- **Local change log grows forever.** `prisma-dev-nodejs/Data/durable-streams/education-platform` is Prisma's one-way copy of every
+  write, has no retention setting, and our app does not use it; each `check:all` adds about 60 MB. Above about 1 GB: stop the
+  database, move that folder elsewhere and start again; Prisma recreates it. Moved aside 2026-11-05 at 2.8 GB with identical row counts;
+  the old copy is `Data/durable-streams-log-backup-2026-11-05`, for the owner to delete.
 - **Only one app on the local database.** PGlite uses one connection, so stop other previews before running suites.
 - **Build replaces `.next`.** Restart any running preview after a build. If `next dev` reload-loops, delete `.next/dev`.
 - **Vercel build.** It runs `scripts/vercel-build.mjs`: generate, `migrate deploy`, `next build`, with no seed; about 2 minutes.
@@ -136,4 +143,7 @@ Before 2026-10-25 agents were not recorded. Commits and details are in the full 
   11 min to 1 min 50 s. Workshops, labs, mocks and papers stay. 404s confirmed on the hosted site; hosted data not deleted.
 - **2026-11-05 · Claude Code (Opus 5.5) · Docs and checks.** This file cut from 150 KB; `scripts/check.mjs` replaces hand-run suites with
   no pauses. Removed `mock_collections_smoke` (core checks moved to `browser_smoke`) and one-off `hosted_auth_activation_smoke`.
-  `check:all` passed, all 16 suites in about 5.5 min. Not committed unless noted later.
+  `check:all` passed, all 16 suites in about 5.5 min. Pushed as `8a81f43`; Vercel reports success.
+- **2026-11-06 · Claude Code (Opus 5.5) · Practice mode (uncommitted).** Untimed practice, instant checks and a DeepSeek assistant on all 12 mocks and 41 papers;
+  additive `PracticeSession` migration, local only. Sitting tools, result filters, lighter polling; timers and grading unchanged. `check` plus `practice`, `core`, `papers`,
+  `mocks` passed; `exams` timed out once at the start page, passed on rerun, cause unproven. One real DeepSeek reply withheld the answer (3 s); hosted site unverified. See PROJECT section 7.

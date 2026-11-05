@@ -23,6 +23,6 @@ export async function MockCollection({program}:{program:"sat"|"ielts"}) {
         <span className="text-link">Танилцах →</span>
       </Link>)}</div>
     </section>
-    <p className="fine-print">Нэг mock-ийн эрх {MOCK_PRICE_LABEL} · Эсвэл {sat?"SAT":"IELTS"} сарын багц. Хувилбараа сонгоод нөхцөл, агуулгатай танилцаж эхлүүлээрэй.</p>
+    <p className="fine-print">Нэг mock-ийн эрх {MOCK_PRICE_LABEL} · Эсвэл {sat?"SAT":"IELTS"} сарын багц. Эрхэд цагтай шалгалт болон цаггүй, AI туслахтай дадлагын горим хоёул багтана.</p>
   </div>;
 }

@@ -24,6 +24,7 @@ authentication require provider configuration; see the actual hosted checkpoint 
 | IELTS workshops | Four focused workshops with saved work and grading |
 | Full mocks | Six Digital SAT and six IELTS Academic mocks (01–06), with server-authoritative timers |
 | Official papers | 2020 Math A–D and 37 historical English variations |
+| Practice mode | Untimed practice on every mock and official paper, with instant checks and a DeepSeek assistant |
 | Accounts | Better Auth email/password, profile, Google OAuth, verification and password recovery |
 | Plans and payments | Three monthly plans plus per-mock and per-paper simulated purchases |
 | Admin | Protected overview, members, subscriptions, payments, monitoring, content and audits |
@@ -36,14 +37,16 @@ Workshops require the IELTS plan. Full mocks accept a matching plan or a prior p
 sittings keep continuation and review access after expiry, but new starts remain gated. Existing
 purchases and LEGACY grants are preserved.
 
-The mathematics tutor is offered only when reviewing a submitted SAT Math mock.
+The mathematics tutor is offered when reviewing a submitted SAT Math mock. Every mock and official paper also has
+practice mode at `/exams/<slug>/practice`, with its own assistant (section 7).
 
 ### Removed: practice exercises
 
 The owner removed practice sets, the free `/practice` sample and saved exercise attempts on 2026-11-05. Their
 routes (`/exercises`, `/practice`, `/learn/attempts`, `/api/exercises`, `/api/practice`, `/api/attempts`), modules,
 catalog data and `prisma/seed.ts` are deleted, and deploys no longer seed. `tests/exercises-removal.test.mjs` guards
-against their return. Workshops, the Speaking Lab and the Essay Studio stay, in `src/modules/workshops`.
+against their return. Workshops, the Speaking Lab and the Essay Studio stay, in `src/modules/workshops`. Practice mode
+(2026-11-06) is a different feature: it opens the existing mocks and papers without a clock and adds no question bank.
 
 The tables (`Attempt`, `AttemptItem`, `Exam`, `ExamItem`, `Question`, `QuestionVersion`, `Topic`, `Subject`, `Program`)
 remain in the schema, unused, because a dropping migration would delete hosted data during the Vercel build.
@@ -272,6 +275,32 @@ gated by `AUTH_HOSTED_DEMO_ACCOUNTS=true`.
 
 ## 7. AI, Speaking Lab and study tools
 
+### Practice mode and its assistant
+
+- `/exams/<slug>/practice` opens any of the 12 mocks or 41 official papers without a clock. Access is the same as the timed
+  exam (matching plan or per-exam purchase), checked on every read, save, check, audio and AI request. The owner asked for this
+  on 2026-11-06, including AI on official papers.
+- SAT practice covers all 147 authored items, both Module 2 routes included. IELTS has replayable audio, the part's transcript
+  after a check, both Writing tasks and all Speaking prompts; recordings are not stored here. Math papers show typeset questions;
+  English papers show their scanned pages beside an A–E or digit answer.
+- One `PracticeSession` per student and exam (`responses`, `flags`, `results`), created on the first save. It is not an attempt:
+  it never appears in exam history, reports or admin scores. **Дахин эхлэх** deletes only that row.
+- Answers, explanations, keys and transcripts stay on the server (`exam-practice/form.ts`) until the student checks that question.
+  The first check is recorded and the answer locks until the student retries it. Writing and speaking stay editable.
+- While the student has an open timed sitting, on any exam, practice pages, answers, audio and AI are all refused
+  (`exams/active-sitting.ts`, also used by the tutor). Sittings whose deadline passed while closed are settled first and do not block.
+- Assistant: `POST /api/exam-practice/<slug>/assistant`, 60 requests per student per Ulaanbaatar day with one in flight, sharing the
+  tutor's provider code. The page sends only the question id and the student's words; the server adds the question, the saved
+  answer and, only after a check, the key, explanation and transcript. Before a check the prompt forbids stating or confirming the answer.
+- Limits: official Math has a key but no worked solution, so the model derives the steps and must say when it disagrees. English
+  papers are images the model cannot read, so it asks the student to type the question. It gives no IELTS bands.
+
+### Timed sitting tools
+
+Timers, locks and grading are unchanged. The sitting also has an always-visible question strip, keyboard shortcuts (arrows, A–E or
+1–5, F), option elimination and passage text size (both browser-only), and time notices for screen readers. Polls and saves send
+`?have=<stageId>` so the server omits stage text the page already holds. Results add per-skill totals, review filters and a link to practice.
+
 ### DeepSeek mathematics tutor
 
 - Fixed endpoint `https://api.deepseek.com/chat/completions`; server-side `DEEPSEEK_API_KEY`.
@@ -291,8 +320,7 @@ gated by `AUTH_HOSTED_DEMO_ACCOUNTS=true`.
 - Requests are denied while the same user has an active mock or official-paper sitting. Timers,
   grading, answers and immutable results are untouched.
 - Conversations are temporary page state and are not saved to the account. Answers are learning
-  feedback, never official grading. Official EEC papers are outside AI coverage until worked solutions
-  are verified.
+  feedback, never official grading. Official EEC papers are outside this tutor; practice mode's assistant covers them.
 
 ### IELTS Speaking Lab
 
@@ -360,6 +388,7 @@ rounding), vocabulary upgrades, strengths, next steps and one rewritten passage.
 | `src/modules/content` | Catalog, drafts, review and published content resolution |
 | `src/modules/workshops` | IELTS writing and speaking workshop tasks |
 | `src/modules/exams` | SAT/IELTS sitting lifecycle, timers and scoring |
+| `src/modules/exam-practice` | Untimed practice on mocks and papers: forms, checks, progress and the assistant |
 | `src/modules/papers` | EEC paper access, answer sheet, paired-digit scoring and 2020 Mathematics question data |
 | `src/modules/subscriptions` | Plans, purchases, entitlements and legacy grants |
 | `src/modules/admin` | Admin services, reporting, exports and audit |
@@ -460,8 +489,8 @@ deadlines; they must never add a runtime bypass, shorten a public exam or change
 - There is no verified-email production onboarding, no live billing and no real payment provider.
 - Scores are raw; SAT scaled scores and IELTS bands are not calculated. The Speaking Lab's and Essay
   Studio's bands are AI estimates only.
-- Official EEC papers have no AI explanations and no independently reviewed worked solutions. Only 2020
-  Mathematics has structured question text; English papers remain page images.
+- Official EEC papers have no independently reviewed worked solutions, so AI explanations of them are unverified. Only 2020
+  Mathematics has structured question text; English papers remain page images the assistant cannot read.
 - Creating new catalog items and replacing content media are unfinished.
 - Content and official-page accuracy depend on manual review. Original archive and answer-key links are external and can be unavailable; exam page images are bundled.
 - Local PGlite works with single-connection settings; broad production concurrency and scale are

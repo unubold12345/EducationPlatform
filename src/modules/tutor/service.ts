@@ -3,18 +3,14 @@ import { randomUUID } from "node:crypto";
 import { getDb } from "@/lib/db";
 import { ApiError } from "@/lib/api";
 import { ownMock } from "@/modules/exams/service";
+import { activeTimedSitting } from "@/modules/exams/active-sitting";
 import { makeReport } from "@/modules/exams/engine";
 import type { ExamState } from "@/modules/exams/types";
 import { validTutorInput, tutorDay, type TutorInput, type TutorContext } from "./contracts";
 import { deepseekTutor } from "./provider";
 
 async function ensureNoTimedExam(userId:string) {
-  const db=getDb();
-  const [mock,paper]=await Promise.all([
-    db.mockAttempt.findFirst({where:{userId,status:"IN_PROGRESS"},select:{id:true}}),
-    db.paperAttempt.findFirst({where:{userId,status:"IN_PROGRESS",deadline:{gt:new Date()}},select:{id:true}}),
-  ]);
-  if(mock||paper)throw new ApiError(403,"Хугацаатай шалгалт нээлттэй байна. Шалгалтаа дуусгасны дараа AI багшийг ашиглана уу.");
+  if(await activeTimedSitting(userId))throw new ApiError(403,"Хугацаатай шалгалт нээлттэй байна. Шалгалтаа дуусгасны дараа AI багшийг ашиглана уу.");
 }
 
 async function contextFor(input: TutorInput,userId: string):Promise<TutorContext> {

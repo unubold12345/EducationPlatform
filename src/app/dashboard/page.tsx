@@ -8,6 +8,7 @@ import { getDb } from "@/lib/db";
 import { SignOut } from "@/components/sign-out";
 import { findExam } from "@/modules/exams/definitions";
 import { findSubscriptionPlan } from "@/modules/subscriptions/plans";
+import { practiceSummaries } from "@/modules/exam-practice/service";
 export const metadata: Metadata = { title: "Миний бэлтгэл" };
 const FOLD_AFTER = 5;
 function Fold({ rows }: { rows: ReactNode[] }) {
@@ -26,6 +27,7 @@ export default async function DashboardPage() {
   ]);
   const papers=await getDb().paperAttempt.findMany({where:{userId:user.id},orderBy:{createdAt:"desc"},take:20,select:{id:true,slug:true,status:true,createdAt:true}});
   const [paperComplete,paperOpen,recentPaper]=await Promise.all([getDb().paperAttempt.count({where:{userId:user.id,status:"SUBMITTED"}}),getDb().paperAttempt.count({where:{userId:user.id,status:"IN_PROGRESS"}}),getDb().paperAttempt.findFirst({where:{userId:user.id,status:"IN_PROGRESS"},orderBy:{updatedAt:"desc"},select:{id:true,slug:true,updatedAt:true}})]);
+  const practice=await practiceSummaries(user.id);
   const date = new Intl.DateTimeFormat("mn-MN", { timeZone: "Asia/Ulaanbaatar", dateStyle: "medium" });
   const mockResume = recentMock ? { href: "/exams/attempts/" + recentMock.id, title: findExam(recentMock.slug)?.title ?? recentMock.slug, kind: "Бүтэн шалгалт" } : null;
   const resume=recentPaper&&(!recentMock||recentPaper.updatedAt>recentMock.updatedAt)?{href:"/papers/attempts/"+recentPaper.id,title:findOfficialPaper(recentPaper.slug)?.title??recentPaper.slug,kind:"ЭЕШ"}:mockResume;
@@ -47,6 +49,7 @@ export default async function DashboardPage() {
           <div><strong>{openMocks + paperOpen}</strong><p>Дуусаагүй</p></div>
         </div>
 
+        {practice.length>0&&<section className="ws-card"><h2>Дадлагын горим</h2><div className="db-list"><Fold rows={practice.map(item=><Link key={item.slug} className="mock-attempt-row db-row" href={"/exams/"+item.slug+"/practice"}><div><h3>{item.title}</h3><p>{item.checked} / {item.total} шалгасан · {item.correct} / {item.graded} зөв</p></div><span className="ws-pill info">Үргэлжлүүлэх →</span></Link>)}/></div></section>}
         {mocks.length>0&&<section className="ws-card"><h2>Миний бүтэн шалгалтууд</h2><div className="db-list"><Fold rows={mocks.map(mock=><Link key={mock.id} className="mock-attempt-row db-row" href={"/exams/attempts/"+mock.id}><div><h3>{findExam(mock.slug)?.title??mock.slug}</h3><p>{date.format(mock.createdAt)}</p></div><span className={"ws-pill "+(mock.status==="SUBMITTED"?"":"info")}>{mock.status==="SUBMITTED"?"Үр дүн":"Үргэлжлүүлэх →"}</span></Link>)}/></div></section>}
         {papers.length>0&&<section className="ws-card"><h2>Миний албан материалын шалгалтууд</h2><div className="db-list"><Fold rows={papers.map(paper=><Link key={paper.id} className="mock-attempt-row db-row" href={"/papers/attempts/"+paper.id}><div><h3>{findOfficialPaper(paper.slug)?.title??paper.slug}</h3><p>{date.format(paper.createdAt)}</p></div><span className={"ws-pill "+(paper.status==="SUBMITTED"?"":"info")}>{paper.status==="SUBMITTED"?"Үр дүн":"Үргэлжлүүлэх →"}</span></Link>)}/></div></section>}
       </div>

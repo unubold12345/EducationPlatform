@@ -11,16 +11,17 @@ import { hasSubscription } from "@/modules/subscriptions/access";
 const withRecordings={recordings:{select:{stageId:true,mime:true}}};
 type Row=Prisma.MockAttemptGetPayload<{include:typeof withRecordings}>;
 function json(state:ExamState):Prisma.InputJsonValue {return JSON.parse(JSON.stringify(state));}
-function publicMock(row:Row,state:ExamState,now:number):PublicExamAttempt {
+function publicMock(row:Row,state:ExamState,now:number,knownStage?:string):PublicExamAttempt {
   const current=stageFor(state);
-  const stage=current ? {
+  const unchanged=Boolean(current&&knownStage===current.id);
+  const stage=current&&!unchanged ? {
     id:current.id,title:current.title,seconds:current.seconds,kind:current.kind,instructions:current.instructions,passages:current.passages,
     questions:current.questions.map(({id,domain,prompt,passage,options,kind,maxWords,minWords})=>({id,domain,prompt,passage,options,kind,maxWords,minWords})),
   } : null;
   return {id:row.id,slug:row.slug,title:state.definition.title,program:state.definition.program,revision:row.revision,stageIndex:state.stageIndex,
     stage,serverNow:new Date(now).toISOString(),deadline:state.deadline,stageStartedAt:state.stageStartedAt,responses:state.responses,flags:state.flags,
     completed:state.completed,finishedAt:state.finishedAt,timeline:state.definition.stages.map(({title,seconds,kind})=>({title,seconds,kind})),
-    report:state.finishedAt ? makeReport(state) : null,recordings:row.recordings};
+    report:state.finishedAt ? makeReport(state) : null,recordings:row.recordings,...(unchanged?{stageUnchanged:true}:{})};
 }
 export async function startMock(slug:string,userId:string) {
   const definition=await getExam(slug);
@@ -39,7 +40,7 @@ export async function startMock(slug:string,userId:string) {
     throw error;
   }
 }
-export async function accessMock(id:string,userId:string,input?:unknown) {
+export async function accessMock(id:string,userId:string,input?:unknown,knownStage?:string) {
   return getDb().$transaction(async tx=>{
     let row=await tx.mockAttempt.findFirst({where:{id,userId},include:withRecordings});
     if(!row)throw new ApiError(404,"Шалгалт олдсонгүй.");
@@ -57,7 +58,7 @@ export async function accessMock(id:string,userId:string,input?:unknown) {
       if(changed.count!==1)throw new ApiError(409,"Өөр цонхонд өөрчлөлт байна. Хадгалсан хувилбарыг ачаална уу.");
       row={...row,revision:row.revision+1};
     }
-    return publicMock(row,state,now);
+    return publicMock(row,state,now,knownStage);
   });
 }
 export async function ownMock(id:string,userId:string) {

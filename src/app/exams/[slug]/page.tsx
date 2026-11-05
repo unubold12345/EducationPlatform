@@ -13,6 +13,7 @@ import { getSession } from "@/lib/session";
 import { getDb } from "@/lib/db";
 import { hasSubscription } from "@/modules/subscriptions/access";
 import { mockBriefingSummary } from "@/modules/exams/briefing-summary";
+import { PracticeEntry } from "@/modules/exam-practice/entry";
 
 export function generateStaticParams(){return examDefinitions.map(({slug})=>({slug}));}
 export async function generateMetadata({params}:{params:Promise<{slug:string}>}):Promise<Metadata>{return{title:findOfficialPaper((await params).slug)?.title??(await getExam((await params).slug))?.title??"Шалгалт олдсонгүй"};}
@@ -61,7 +62,7 @@ export default async function ExamPage({params}:{params:Promise<{slug:string}>})
           <p className="briefing-price">{summary.priceNote}</p>
           {activeAttempt ? <Link className="briefing-resume" href={"/exams/attempts/" + activeAttempt.id}>Нээлттэй оролдлого · үргэлжлүүлэх <span aria-hidden="true">→</span></Link> : null}
         </div>
-        <div className="briefing-start"><ExamStart slug={exam.slug} program={exam.program} hasAccess={hasAccess} loggedIn={Boolean(session)}/></div>
+        <div className="briefing-start"><ExamStart slug={exam.slug} program={exam.program} hasAccess={hasAccess} loggedIn={Boolean(session)}/><PracticeEntry slug={exam.slug} hasAccess={Boolean(access)||subscribed}/></div>
       </aside>
 
       <section className="briefing-section exam-stages" aria-labelledby="exam-stages-heading">

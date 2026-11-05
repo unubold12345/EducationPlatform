@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
    `./node_modules/onnxruntime-node/bin/napi-v3/${process.platform}/${process.arch}/*`,
   ],
   "/api/mock-attempts/*/audio":["./assets/exams/ielts-*-part-*.mp3"],
+  "/api/exam-practice/*/audio":["./assets/exams/ielts-*-part-*.mp3"],
   "/api/exams/audio-check":["./assets/exams/audio-check.mp3"],
  },
 };

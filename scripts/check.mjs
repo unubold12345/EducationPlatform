@@ -12,6 +12,7 @@ const groups = {
   core: ["browser", "accounts", "exams"],
   papers: ["official_paper", "english_archive"],
   mocks: ["additional_exams"],
+  practice: ["exam_practice"],
   admin: ["admin", "publishing"],
   billing: ["payments", "subscriptions"],
   account: ["profile", "demo_accounts"],

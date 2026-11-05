@@ -1,0 +1,53 @@
+.practice-score { text-align: right; flex-shrink: 0; }
+.practice-score strong { display: block; font-size: 26px; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.practice-score strong span { font-size: 15px; color: var(--muted); font-weight: 500; }
+.practice-score small { font-size: 11px; color: var(--muted); }
+.practice-session .exam-session-meta > div { align-items: center; }
+
+.practice-sections { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 14px; scrollbar-width: thin; }
+.practice-sections button { flex: 0 0 auto; display: grid; gap: 2px; max-width: 280px; padding: 9px 14px; border: 1px solid var(--line); border-radius: 12px; background: transparent; color: var(--muted); font: inherit; font-size: 13px; text-align: left; cursor: pointer; }
+.practice-sections button:hover { border-color: var(--blue); color: var(--ink); }
+.practice-sections button[aria-current="true"] { border-color: var(--blue); background: color-mix(in srgb, var(--blue) 12%, transparent); color: var(--ink); font-weight: 600; }
+.practice-sections small { font-size: 11px; font-weight: 400; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+.practice-hint { margin: 0 0 14px; font-size: 13.5px; color: var(--muted); }
+.practice-filter { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 12px; }
+.practice-filter button { padding: 5px 12px; border: 1px solid var(--line); border-radius: 99px; background: transparent; color: var(--muted); font: inherit; font-size: 12.5px; cursor: pointer; }
+.practice-filter button[aria-pressed="true"] { border-color: var(--blue); background: color-mix(in srgb, var(--blue) 14%, transparent); color: var(--ink); }
+.practice-filter .practice-retry-all { margin-left: auto; border-color: #d9534f; color: var(--ink); }
+
+.practice-audio { margin-bottom: 18px; display: grid; gap: 10px; }
+.practice-audio audio { width: 100%; }
+.practice-pages .official-page-image { display: block; }
+.practice-pages { overflow: auto; }
+.practice-rendered { margin: 16px 0 18px; line-height: 1.75; }
+.practice-rendered .paper-question { border: 0; padding: 0; margin: 0; background: none; box-shadow: none; }
+.practice-digits { margin-top: 6px; }
+
+.practice-feedback { display: grid; gap: 8px; margin-top: 18px; padding: 16px 18px; border: 1px solid var(--line); border-left-width: 4px; border-radius: 12px; background: color-mix(in srgb, var(--paper) 42%, transparent); font-size: 14.5px; line-height: 1.7; }
+.practice-feedback p { margin: 0; }
+.practice-feedback > strong { font-size: 15px; }
+.practice-feedback[data-result="correct"] { border-left-color: #22a06b; }
+.practice-feedback[data-result="wrong"] { border-left-color: #d9534f; }
+.practice-feedback[data-result="review"] { border-left-color: #a78bfa; }
+.practice-feedback > button { justify-self: start; padding: 0; border: 0; background: none; font: inherit; font-size: 13px; cursor: pointer; }
+.practice-transcript summary { cursor: pointer; font-weight: 600; font-size: 13.5px; }
+.practice-transcript div { max-height: 300px; overflow-y: auto; margin-top: 10px; padding-right: 8px; font-size: 13.5px; }
+.practice-transcript p + p { margin-top: 8px; }
+
+.practice-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 20px; }
+.practice-actions .tutor-launch { margin-top: 0; }
+.practice-session .question-actions { margin-top: 18px; }
+
+.practice-entry { margin-top: 16px; padding: 18px 20px; border: 1px solid color-mix(in srgb, var(--blue) 40%, var(--line)); border-radius: 16px; background: color-mix(in srgb, var(--blue) 7%, transparent); }
+.practice-entry h2, .practice-entry h3 { margin: 0 0 6px; font-size: 16px; }
+.practice-entry p { margin: 0 0 12px; font-size: 13.5px; line-height: 1.65; color: var(--muted); }
+.practice-entry .button { display: inline-flex; }
+.practice-blocked { max-width: 620px; }
+
+@media (max-width: 600px) {
+  .practice-score strong { font-size: 20px; }
+  .practice-session .exam-toolbar h1 { font-size: 15px; }
+  .practice-sections button { max-width: 220px; padding: 8px 11px; }
+  .practice-filter .practice-retry-all { margin-left: 0; }
+}

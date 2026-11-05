@@ -11,7 +11,7 @@ export const getSession = cache(async () => {
   const session = await getAuth().api.getSession({ headers: requestHeaders });
   return session && !session.user.suspendedAt && verificationAllowed(session.user, process.env) ? session : null;
 });
-export async function requireUser(returnPath?: "/profile" | `/checkout/${string}` | `/subscribe/${string}`) {
+export async function requireUser(returnPath?: "/profile" | `/checkout/${string}` | `/subscribe/${string}` | `/exams/${string}`) {
   const session = await getSession();
   if (!session) redirect(returnPath ? "/login?next=" + encodeURIComponent(returnPath) : "/login");
   return session.user;

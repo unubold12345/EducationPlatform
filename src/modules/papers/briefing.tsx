@@ -5,6 +5,7 @@ import { officialPaperCategory, slotsForPaper, type OfficialPaper } from "./cata
 import { paperAccess } from "./service";
 import { pricedPlan } from "@/modules/subscriptions/prices";
 import { PaperStart } from "./start";
+import { PracticeEntry } from "../exam-practice/entry";
 import { MOCK_PRICE_LABEL } from "../exams/pricing";
 
 export async function OfficialPaperBriefing({ paper: officialPaper }: { paper: OfficialPaper }) {
@@ -51,6 +52,7 @@ export async function OfficialPaperBriefing({ paper: officialPaper }: { paper: O
           </div> : <Link className="button primary" href={"/login?next=" + encodeURIComponent("/exams/" + officialPaper.slug)}>Нэвтэрч эхлэх →</Link>}
           <p className="fine-print briefing-payment-note">Төлбөр нь шалгалтын цаг эхлүүлэхгүй.</p>
         </div>
+        <PracticeEntry slug={officialPaper.slug} hasAccess={Boolean(session && await paperAccess(session.user.id, officialPaper.slug))}/>
       </aside>
     </header>
 

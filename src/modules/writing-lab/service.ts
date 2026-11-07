@@ -11,8 +11,8 @@ const DAILY_LIMIT=40;
 async function requireWritingLab(userId:string) {
  if(!writingLabEnabled())throw new ApiError(404,"Туршилтын хуудас идэвхгүй байна.");
  const db=getDb();
- const [mock,paper]=await Promise.all([db.mockAttempt.findFirst({where:{userId,status:"IN_PROGRESS"},select:{id:true}}),db.paperAttempt.findFirst({where:{userId,status:"IN_PROGRESS",deadline:{gt:new Date()}},select:{id:true}})]);
- if(mock||paper)throw new ApiError(403,"Хугацаатай шалгалтаа дуусгасны дараа бичгийн AI туслахыг ашиглана уу.");
+ const mock=await db.mockAttempt.findFirst({where:{userId,status:"IN_PROGRESS"},select:{id:true}});
+ if(mock)throw new ApiError(403,"Хугацаатай шалгалтаа дуусгасны дараа бичгийн AI туслахыг ашиглана уу.");
 }
 
 export async function writingReply(userId:string,body:unknown) {

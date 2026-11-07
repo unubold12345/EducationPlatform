@@ -35,8 +35,9 @@ with sync_playwright() as p:
     page.on("pageerror",lambda e:errors.append(str(e)))
     page.goto(BASE+"/exams")
     page.wait_for_load_state("networkidle")
-    expect(page.locator(".exam-card")).to_have_count(4)
-    expect(page.locator(".official-exam-card")).to_contain_text("2020")
+    expect(page.locator(".library-list .exam-card")).to_have_count(3)
+    expect(page.locator(".library-list .exam-card.entrance")).to_have_count(1)
+    expect(page.locator(".library-list .exam-card.entrance").first).to_contain_text("Элсэлтийн ерөнхий шалгалт")
     page.screenshot(path=str(ART/"exams-grid-desktop.png"),full_page=True)
     assert context.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"sat-full-01"}).status==401
     assert page.goto(BASE+"/exams/not-an-exam").status==404
@@ -148,12 +149,12 @@ with sync_playwright() as p:
     assert context.request.get(endpoint+"/audio?part=2").status==403
     assert context.request.get(endpoint+"/audio?part=../1").status==404
     assert other.request.get(endpoint+"/audio?part=1").status==404
-    page.locator(".listening-player audio").wait_for(state="attached")
-    page.wait_for_function("document.querySelector('.listening-player audio').readyState >= 1")
+    page.locator("[data-listening-player] audio").wait_for(state="attached")
+    page.wait_for_function("document.querySelector('[data-listening-player] audio').readyState >= 1")
     reconnect=page.get_by_role("button",name="Дууг одоогийн байрлалаас холбох",exact=False)
     if reconnect.is_visible():reconnect.click()
-    page.wait_for_function("document.querySelector('.listening-player audio').currentTime > 0.2 && !document.querySelector('.listening-player audio').paused")
-    assert page.locator(".listening-player audio").get_attribute("controls") is None
+    page.wait_for_function("document.querySelector('[data-listening-player] audio').currentTime > 0.2 && !document.querySelector('[data-listening-player] audio').paused")
+    assert page.locator("[data-listening-player] audio").get_attribute("controls") is None
     page.screenshot(path=str(ART/"ielts-listening-desktop.png"),full_page=True)
     for stage_id in ["ielts-listening","ielts-listening-check","ielts-reading","ielts-writing","ielts-speaking-1","ielts-speaking-prep","ielts-speaking-2","ielts-speaking-3"]:
         stage_response=context.request.get(endpoint)

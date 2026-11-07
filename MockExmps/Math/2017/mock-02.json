@@ -1,0 +1,3585 @@
+{
+  "schemaVersion": 1,
+  "subject": "mathematics",
+  "language": "mn",
+  "referenceYear": 2017,
+  "mockVariant": "M2",
+  "title": "ЭЕШ математик 2017 оны жишиг — M2",
+  "official": false,
+  "author": "Codex (GPT-6)",
+  "referenceVariant": "D",
+  "referenceDirectory": "reference",
+  "durationMinutes": 100,
+  "calculatorAllowed": false,
+  "difficulty": {
+    "target": "Match reference item order, tested operations and reasoning depth",
+    "status": "Author review; empirical equivalence has not been established"
+  },
+  "answerProvenance": "Independently calculated by Codex; not an official answer key",
+  "responseFormat": "A–E for Part I; exact mathematical values for Part II (not official digit-box encoding)",
+  "instructions": [
+    "Нэгдүгээр хэсэгт нэг зөв хариултыг сонгоно.",
+    "Хоёрдугаар хэсгийн дэд асуулт бүрийн хариуг нөхнө.",
+    "Тооцоолуур хэрэглэхгүй."
+  ],
+  "questions": [
+    {
+      "number": "1",
+      "referenceQuestion": "1",
+      "skill": "Decimal fraction",
+      "type": "multiple_choice",
+      "points": 1,
+      "prompt": "0.375 аравтын бутархайг энгийн бутархай болго.",
+      "options": {
+        "A": "5/8",
+        "B": "3/7",
+        "C": "1/2",
+        "D": "3/8",
+        "E": "1/3"
+      },
+      "answer": "D",
+      "answerValue": "3/8",
+      "solution": "Гурван аравтын орон тул 1000-д хувааж хураана."
+    },
+    {
+      "number": "2",
+      "referenceQuestion": "2",
+      "skill": "Principal root",
+      "type": "multiple_choice",
+      "points": 1,
+      "prompt": "A=√49−1. A-г ол.",
+      "options": {
+        "A": "6",
+        "B": "4",
+        "C": "8",
+        "D": "7",
+        "E": "5"
+      },
+      "answer": "A",
+      "answerValue": "6",
+      "solution": "Эерэг квадрат язгуур нь k+3."
+    },
+    {
+      "number": "3",
+      "referenceQuestion": "3",
+      "skill": "Power of a power",
+      "type": "multiple_choice",
+      "points": 1,
+      "prompt": "((−4²)³) утгыг зэрэг хэлбэрээр бич.",
+      "options": {
+        "A": "4⁶",
+        "B": "−4⁶",
+        "C": "4⁵",
+        "D": "−4⁵",
+        "E": "4^(−6)"
+      },
+      "answer": "B",
+      "answerValue": "−4⁶",
+      "solution": "Сөрөг тооны сондгой зэрэг сөрөг; (k²)³=k⁶."
+    },
+    {
+      "number": "4",
+      "referenceQuestion": "4",
+      "skill": "Difference of squares fraction",
+      "type": "multiple_choice",
+      "points": 1,
+      "prompt": "(c²−16)/(c+4)-г хураа, c≠−4.",
+      "options": {
+        "A": "c−4",
+        "B": "c+4",
+        "C": "c−16",
+        "D": "1/(c−4)",
+        "E": "c²−4"
+      },
+      "answer": "A",
+      "answerValue": "c−4",
+      "solution": "(c−k)(c+k)/(c+k)=c−k."
+    },
+    {
+      "number": "5",
+      "referenceQuestion": "5",
+      "skill": "Square root of square",
+      "type": "multiple_choice",
+      "points": 1,
+      "prompt": "√(4²)−√((−4)²)-г хялбарчил.",
+      "options": {
+        "A": "1",
+        "B": "-1",
+        "C": "2",
+        "D": "-2",
+        "E": "0"
+      },
+      "answer": "E",
+      "answerValue": "0",
+      "solution": "√(a²)=|a| тул k−k=0."
+    },
+    {
+      "number": "6",
+      "referenceQuestion": "6",
+      "skill": "Opposite parallel vectors",
+      "type": "multiple_choice",
+      "points": 1,
+      "prompt": "a=(16,−4), b=(−4,1). Ямар хамааралтай вэ?",
+      "options": {
+        "A": "Перпендикуляр",
+        "B": "Эсрэг чиглэлтэй параллель",
+        "C": "a=b",
+        "D": "Ижил чиглэлтэй параллель",
+        "E": "a=−b"
+      },
+      "answer": "B",
+      "answerValue": "Эсрэг чиглэлтэй параллель",
+      "solution": "a=−k b бөгөөд k>0."
+    },
+    {
+      "number": "7",
+      "referenceQuestion": "7",
+      "skill": "Percentage of a book",
+      "type": "multiple_choice",
+      "points": 1,
+      "prompt": "Сурагч өгүүллэгийн 25%-ийг уншаад нэмж 11 хуудас уншихад нийт 37.5% болов. Нийт хуудасны тоог ол.",
+      "options": {
+        "A": "88",
+        "B": "90",
+        "C": "86",
+        "D": "89",
+        "E": "87"
+      },
+      "answer": "A",
+      "answerValue": "88",
+      "solution": "Нэмсэн хуудас нь 12.5%=1/8 хэсэг."
+    },
+    {
+      "number": "8",
+      "referenceQuestion": "8",
+      "skill": "Complement probability",
+      "type": "multiple_choice",
+      "points": 1,
+      "prompt": "Багийн гишүүдийн 70% нь эмэгтэй. Нэгийг жигд сонгоход эрэгтэй байх магадлалыг ол.",
+      "options": {
+        "A": "3/11",
+        "B": "3/10",
+        "C": "2/5",
+        "D": "1/3",
+        "E": "1/2"
+      },
+      "answer": "B",
+      "answerValue": "3/10",
+      "solution": "100%-аас эмэгтэй гишүүдийн хувийг хас."
+    },
+    {
+      "number": "9",
+      "referenceQuestion": "9",
+      "skill": "Scientific units speed",
+      "type": "multiple_choice",
+      "points": 2,
+      "prompt": "Гэрлийн хурд 3×10⁸ м/с. Нарнаас 156 сая км зайд буй хэмжигчид гэрэл хэдэн секундэд хүрэх вэ?",
+      "options": {
+        "A": "522",
+        "B": "521",
+        "C": "518",
+        "D": "519",
+        "E": "520"
+      },
+      "answer": "E",
+      "answerValue": "520",
+      "solution": "Сая км-ийг 10⁹ м болгон хувирга. t=d/c."
+    },
+    {
+      "number": "10",
+      "referenceQuestion": "10",
+      "skill": "Splitting teams",
+      "type": "multiple_choice",
+      "points": 2,
+      "prompt": "10 хүнийг 2 хүнтэй ба 8 хүнтэй хоёр багт хэдэн янзаар хувааж болох вэ?",
+      "options": {
+        "A": "47",
+        "B": "46",
+        "C": "44",
+        "D": "45",
+        "E": "43"
+      },
+      "answer": "D",
+      "answerValue": "45",
+      "solution": "Хоёр хүнтэй багийн гишүүдийг сонговол нөгөө баг тогтоно."
+    },
+    {
+      "number": "11",
+      "referenceQuestion": "11",
+      "skill": "Repeated root parameter",
+      "type": "multiple_choice",
+      "points": 2,
+      "prompt": "x²+8x+7−a=0 тэнцэтгэлийн язгуурууд тэнцүү. a-г ол.",
+      "options": {
+        "A": "-11",
+        "B": "-7",
+        "C": "-9",
+        "D": "-8",
+        "E": "-10"
+      },
+      "answer": "C",
+      "answerValue": "-9",
+      "solution": "Дискриминант 4k²−4(k+3−a)=0."
+    },
+    {
+      "number": "12",
+      "referenceQuestion": "12",
+      "skill": "Quadrant trig",
+      "type": "multiple_choice",
+      "points": 2,
+      "prompt": "tan α=12/5, π<α<3π/2. cos α-г ол.",
+      "options": {
+        "A": "-5/13",
+        "B": "-3/13",
+        "C": "-5/12",
+        "D": "-4/13",
+        "E": "-5/14"
+      },
+      "answer": "A",
+      "answerValue": "-5/13",
+      "solution": "1+tan²α=1/cos²α; III мөчид cos сөрөг."
+    },
+    {
+      "number": "13",
+      "referenceQuestion": "13",
+      "skill": "Two digit algebra",
+      "type": "multiple_choice",
+      "points": 2,
+      "prompt": "a,b нь тэгээс ялгаатай цифр, a+b=10. ab̅+ba̅+aa̅+bb̅ нийлбэрийг ол. Энд ab̅=10a+b.",
+      "options": {
+        "A": "220",
+        "B": "222",
+        "C": "218",
+        "D": "219",
+        "E": "221"
+      },
+      "answer": "A",
+      "answerValue": "220",
+      "solution": "Гишүүн бүрийг аравт ба нэгжээр задлахад 22(a+b)."
+    },
+    {
+      "number": "14",
+      "referenceQuestion": "14",
+      "skill": "Sine rule",
+      "type": "multiple_choice",
+      "points": 2,
+      "prompt": "ABC гурвалжны ∠B=75°, ∠C=45°, BC=7. AB-г ол.",
+      "options": {
+        "A": "7√3/2",
+        "B": "7√6/3",
+        "C": "7√2/2",
+        "D": "7√6/2",
+        "E": "14√6/3"
+      },
+      "answer": "B",
+      "answerValue": "7√6/3",
+      "solution": "∠A=60°, AB=BC sin45°/sin60°=BC√6/3."
+    },
+    {
+      "number": "15",
+      "referenceQuestion": "15",
+      "skill": "Exponential integral",
+      "type": "multiple_choice",
+      "points": 2,
+      "prompt": "∫4e^(4x)dx-г ол.",
+      "options": {
+        "A": "4e^(4x)+C",
+        "B": "e^x+C",
+        "C": "16e^(4x)+C",
+        "D": "e^(4x)/4+C",
+        "E": "e^(4x)+C"
+      },
+      "answer": "E",
+      "answerValue": "e^(4x)+C",
+      "solution": "e^(kx)-ийн уламжлал k e^(kx)."
+    },
+    {
+      "number": "16",
+      "referenceQuestion": "16",
+      "skill": "Logarithm comparison",
+      "type": "multiple_choice",
+      "points": 2,
+      "prompt": "a=log₈25, b=log₂(1/2), c=log₄8. Эдгээрийг өсөхөөр эрэмбэл.",
+      "options": {
+        "A": "b<a<c",
+        "B": "a<c<b",
+        "C": "b<c<a",
+        "D": "a<b<c",
+        "E": "c<a<b"
+      },
+      "answer": "C",
+      "answerValue": "b<c<a",
+      "solution": "b=−1, c=3/2. 8^(3/2)=16√2<24 тул a>3/2."
+    },
+    {
+      "number": "17",
+      "referenceQuestion": "17",
+      "skill": "Independent misses",
+      "type": "multiple_choice",
+      "points": 2,
+      "prompt": "Хоёр тоглогч байг онох магадлал 2/5, 1/2. Бие биеэс үл хамааран нэг нэг удаа буудахад хоёулаа алдах магадлалыг ол.",
+      "options": {
+        "A": "1/3",
+        "B": "1/2",
+        "C": "3/10",
+        "D": "3/11",
+        "E": "2/5"
+      },
+      "answer": "C",
+      "answerValue": "3/10",
+      "solution": "Алдах магадлалуудыг үржүүл."
+    },
+    {
+      "number": "18",
+      "referenceQuestion": "18",
+      "skill": "Largest integer exponential inequality",
+      "type": "multiple_choice",
+      "points": 2,
+      "prompt": "5^((x−4)²−3(x−4))≤5²⁸ тэнцэтгэл бишийн хамгийн их бүхэл шийдийг ол.",
+      "options": {
+        "A": "10",
+        "B": "11",
+        "C": "9",
+        "D": "12",
+        "E": "13"
+      },
+      "answer": "B",
+      "answerValue": "11",
+      "solution": "u²−3u−28=(u−7)(u+4)≤0 →−4≤u≤7."
+    },
+    {
+      "number": "19",
+      "referenceQuestion": "19",
+      "skill": "Rational decreasing interval",
+      "type": "multiple_choice",
+      "points": 2,
+      "prompt": "y=1/(16−x²) функц хаана буурах вэ?",
+      "options": {
+        "A": "(−∞; −4) ∪ (−4; 0)",
+        "B": "(0; 4) ∪ (4; +∞)",
+        "C": "(−4; 4)",
+        "D": "(−∞; 0)",
+        "E": "R"
+      },
+      "answer": "A",
+      "answerValue": "(−∞; −4) ∪ (−4; 0)",
+      "solution": "y′=2x/(k²−x²)²; x<0 үед сөрөг, ±k дээр тодорхойгүй."
+    },
+    {
+      "number": "20",
+      "referenceQuestion": "20",
+      "skill": "Sequence from partial sums",
+      "type": "multiple_choice",
+      "points": 2,
+      "prompt": "Sₙ=4n²+4n. Дарааллын төрлийг ба тогтмол ялгавар/харьцааг сонго.",
+      "options": {
+        "A": "Арифметик; d=4",
+        "B": "Геометр; q=4",
+        "C": "Арифметик; d=16",
+        "D": "Геометр; q=8",
+        "E": "Арифметик; d=8"
+      },
+      "answer": "E",
+      "answerValue": "Арифметик; d=8",
+      "solution": "aₙ=Sₙ−Sₙ₋₁=2kn."
+    },
+    {
+      "number": "21",
+      "referenceQuestion": "21",
+      "skill": "Square diagonal point distance",
+      "type": "multiple_choice",
+      "points": 2,
+      "prompt": "ABCD квадратын AC диагональ дээр M цэг авч AM=6, MC=10 гэв. BM уртыг ол.",
+      "options": {
+        "A": "-1 + 2*sqrt(17)",
+        "B": "2 + 2*sqrt(17)",
+        "C": "-2 + 2*sqrt(17)",
+        "D": "2*sqrt(17)",
+        "E": "1 + 2*sqrt(17)"
+      },
+      "answer": "D",
+      "answerValue": "2*sqrt(17)",
+      "solution": "Диагоналын дундаж O-оос B хүртэл (AM+MC)/2, OM=(MC−AM)/2. Пифагор хэрэглэ.",
+      "figure": {
+        "schema": "education.math.figure.v1",
+        "kind": "scene",
+        "title": "Координатын дүрс",
+        "space": "2d",
+        "coordinateSystem": "schematic",
+        "notToScale": true,
+        "points": {
+          "A": {
+            "position": [
+              0.0,
+              0.0
+            ],
+            "label": "A"
+          },
+          "B": {
+            "position": [
+              6.0,
+              0.0
+            ],
+            "label": "B"
+          },
+          "C": {
+            "position": [
+              6.0,
+              6.0
+            ],
+            "label": "C"
+          },
+          "D": {
+            "position": [
+              0.0,
+              6.0
+            ],
+            "label": "D"
+          },
+          "M": {
+            "position": [
+              2.25,
+              2.25
+            ],
+            "label": "M"
+          }
+        },
+        "objects": [
+          {
+            "kind": "polygon",
+            "points": [
+              "A",
+              "B",
+              "C",
+              "D"
+            ],
+            "fill": null
+          },
+          {
+            "kind": "segment",
+            "from": "A",
+            "to": "C",
+            "style": "solid",
+            "arrow": false
+          },
+          {
+            "kind": "segment",
+            "from": "B",
+            "to": "M",
+            "style": "solid",
+            "arrow": false
+          }
+        ],
+        "measurements": [
+          {
+            "kind": "length",
+            "from": "A",
+            "to": "M",
+            "text": "6",
+            "provenance": "question_given"
+          },
+          {
+            "kind": "length",
+            "from": "M",
+            "to": "C",
+            "text": "10",
+            "provenance": "question_given"
+          }
+        ],
+        "relations": [
+          {
+            "kind": "square",
+            "vertices": [
+              "A",
+              "B",
+              "C",
+              "D"
+            ]
+          }
+        ],
+        "notes": [],
+        "sourceQuestion": {
+          "year": 2017,
+          "variant": "D",
+          "number": "21",
+          "figureCatalog": "2017/reference/figures.json"
+        },
+        "displayPolicy": "question_figure",
+        "answerLabelsIncluded": false,
+        "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 420 300\" role=\"img\"><title>Координатын дүрс</title><rect width=\"420\" height=\"300\" fill=\"white\"/><g stroke=\"#172b4d\" stroke-width=\"1.6\" fill=\"none\" stroke-linejoin=\"round\"><polygon points=\"100.00,260.00 320.00,260.00 320.00,40.00 100.00,40.00\" fill=\"none\"/><line x1=\"100.00\" y1=\"260.00\" x2=\"320.00\" y2=\"40.00\"/><line x1=\"320.00\" y1=\"260.00\" x2=\"182.50\" y2=\"177.50\"/></g><g font-family=\"Segoe UI, sans-serif\" font-size=\"13\" fill=\"#172b4d\"><rect x=\"103.00\" y=\"242.00\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"105.00\" y=\"254.00\">A</text><rect x=\"323.00\" y=\"242.00\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"325.00\" y=\"254.00\">B</text><rect x=\"323.00\" y=\"22.00\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"325.00\" y=\"34.00\">C</text><rect x=\"103.00\" y=\"22.00\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"105.00\" y=\"34.00\">D</text><rect x=\"185.50\" y=\"159.50\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"187.50\" y=\"171.50\">M</text><rect x=\"144.25\" y=\"201.75\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"146.25\" y=\"213.75\">6</text><rect x=\"254.25\" y=\"91.75\" width=\"17\" height=\"16\" fill=\"white\"/><text x=\"256.25\" y=\"103.75\">10</text></g></svg>"
+      }
+    },
+    {
+      "number": "22",
+      "referenceQuestion": "22",
+      "skill": "Shifted trig squares",
+      "type": "multiple_choice",
+      "points": 2,
+      "prompt": "sin²(90°+x−2°)+3sin²(180°+x−2°)=2, 92°≤x≤182°. Шийдийг ол.",
+      "options": {
+        "A": "90°",
+        "B": "150°",
+        "C": "120°",
+        "D": "137°",
+        "E": "180°"
+      },
+      "answer": "D",
+      "answerValue": "137°",
+      "solution": "cos²x+3sin²x=2 →sin²x=1/2. Өгсөн завсарт x=135°."
+    },
+    {
+      "number": "23",
+      "referenceQuestion": "23",
+      "skill": "Functional substitution derivative",
+      "type": "multiple_choice",
+      "points": 2,
+      "prompt": "f(4x+6)=16x²+48x+32. f′(−4)-г ол.",
+      "options": {
+        "A": "-7",
+        "B": "-6",
+        "C": "-10",
+        "D": "-8",
+        "E": "-9"
+      },
+      "answer": "D",
+      "answerValue": "-8",
+      "solution": "t=ax+b гэж орлуулбал f(t)=t²−k, уламжлал 2t."
+    },
+    {
+      "number": "24",
+      "referenceQuestion": "24",
+      "skill": "Circle from center and radius",
+      "type": "multiple_choice",
+      "points": 2,
+      "prompt": "Тойргийн төв O(4,4), радиус 2. Тэгшитгэлийг бич.",
+      "options": {
+        "A": "(x−4)²+(y+4)²=4",
+        "B": "(x−4)²+(y−4)²=4",
+        "C": "(x+4)²+(y−4)²=4",
+        "D": "(x−4)²+(y−4)²=2",
+        "E": "(x−4)²+(y−4)²=16"
+      },
+      "answer": "B",
+      "answerValue": "(x−4)²+(y−4)²=4",
+      "solution": "(x−h)²+(y−j)²=r².",
+      "figure": {
+        "schema": "education.math.figure.v1",
+        "kind": "scene",
+        "title": "Координатын тойрог",
+        "space": "2d",
+        "coordinateSystem": "cartesian",
+        "notToScale": false,
+        "points": {
+          "O": {
+            "position": [
+              4.0,
+              4.0
+            ],
+            "label": "O"
+          },
+          "R": {
+            "position": [
+              6.0,
+              4.0
+            ],
+            "label": ""
+          }
+        },
+        "objects": [
+          {
+            "kind": "circle",
+            "center": "O",
+            "radius": 2.0,
+            "style": "solid",
+            "fill": null
+          }
+        ],
+        "measurements": [
+          {
+            "kind": "length",
+            "from": "O",
+            "to": "R",
+            "text": "2",
+            "provenance": "question_given"
+          }
+        ],
+        "relations": [],
+        "notes": [],
+        "sourceQuestion": {
+          "year": 2017,
+          "variant": "D",
+          "number": "24",
+          "figureCatalog": "2017/reference/figures.json"
+        },
+        "displayPolicy": "question_figure",
+        "answerLabelsIncluded": false,
+        "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 420 300\" role=\"img\"><title>Координатын тойрог</title><rect width=\"420\" height=\"300\" fill=\"white\"/><g stroke=\"#172b4d\" stroke-width=\"1.6\" fill=\"none\" stroke-linejoin=\"round\"><circle cx=\"210.00\" cy=\"150.00\" r=\"110.00\" fill=\"none\"/></g><g font-family=\"Segoe UI, sans-serif\" font-size=\"13\" fill=\"#172b4d\"><rect x=\"213.00\" y=\"132.00\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"215.00\" y=\"144.00\">O</text><rect x=\"268.00\" y=\"133.00\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"270.00\" y=\"145.00\">2</text></g></svg>"
+      }
+    },
+    {
+      "number": "25",
+      "referenceQuestion": "25",
+      "skill": "Absolute quadratic symmetric roots",
+      "type": "multiple_choice",
+      "points": 2,
+      "prompt": "x²−9|x|+20=0 тэгшитгэлийн бодит шийдүүдийн нийлбэрийг ол.",
+      "options": {
+        "A": "2",
+        "B": "-2",
+        "C": "-1",
+        "D": "0",
+        "E": "1"
+      },
+      "answer": "D",
+      "answerValue": "0",
+      "solution": "u=|x|≥0 үед (u−k)(u−k−1)=0; язгуурууд ±k,±(k+1)."
+    },
+    {
+      "number": "26",
+      "referenceQuestion": "26",
+      "skill": "Reciprocal ratio system",
+      "type": "multiple_choice",
+      "points": 2,
+      "prompt": "(x−2y)/(5x+2y)+(5x+2y)/(x−2y)=2, x−y=10. xy-г ол.",
+      "options": {
+        "A": "-23",
+        "B": "-24",
+        "C": "-25",
+        "D": "-26",
+        "E": "-27"
+      },
+      "answer": "C",
+      "answerValue": "-25",
+      "solution": "t+1/t=2→t=1. x−2y=5x+2y→x=−y. Иймд x=N/2,y=−N/2."
+    },
+    {
+      "number": "27",
+      "referenceQuestion": "27",
+      "skill": "Two internally tangent circles",
+      "type": "multiple_choice",
+      "points": 2,
+      "prompt": "Дотоод шүргэлцсэн хоёр тойргийн ерөнхий шүргэгч TA. Түүн дээрх A нь тойргуудын нийтлэг шүргэлтийн цэг. T-ээс татсан өөр шулуун том тойргийг B,D цэгт огтолж, жижиг тойргийг C дээр шүргэнэ. Дараалал T,B,C,D; BC=4, CD=8. TA-г ол.",
+      "options": {
+        "A": "10",
+        "B": "9",
+        "C": "8",
+        "D": "6",
+        "E": "7"
+      },
+      "answer": "C",
+      "answerValue": "8",
+      "solution": "TA=TC=TB+k. TA²=TB·TD; x²=(x−k)(x+2k)→x=2k.",
+      "figure": {
+        "schema": "education.math.figure.v1",
+        "kind": "scene",
+        "title": "Дотоод шүргэлцсэн тойргууд",
+        "space": "2d",
+        "coordinateSystem": "schematic",
+        "notToScale": true,
+        "points": {
+          "A": {
+            "position": [
+              0.0,
+              0.0
+            ],
+            "label": "A"
+          },
+          "T": {
+            "position": [
+              0.0,
+              -2.0
+            ],
+            "label": "T"
+          },
+          "O": {
+            "position": [
+              1.7320508075688772,
+              0.0
+            ],
+            "label": "O"
+          },
+          "o": {
+            "position": [
+              1.1547005383792517,
+              0.0
+            ],
+            "label": "O₁"
+          },
+          "B": {
+            "position": [
+              0.8660254037844386,
+              -1.5
+            ],
+            "label": "B"
+          },
+          "C": {
+            "position": [
+              1.7320508075688772,
+              -1.0
+            ],
+            "label": "C"
+          },
+          "D": {
+            "position": [
+              3.4641016151377544,
+              0.0
+            ],
+            "label": "D"
+          }
+        },
+        "objects": [
+          {
+            "kind": "circle",
+            "center": "O",
+            "radius": 1.7320508075688772,
+            "style": "solid",
+            "fill": null
+          },
+          {
+            "kind": "circle",
+            "center": "o",
+            "radius": 1.1547005383792517,
+            "style": "solid",
+            "fill": null
+          },
+          {
+            "kind": "segment",
+            "from": "T",
+            "to": "A",
+            "style": "solid",
+            "arrow": false
+          },
+          {
+            "kind": "segment",
+            "from": "T",
+            "to": "D",
+            "style": "solid",
+            "arrow": false
+          }
+        ],
+        "measurements": [
+          {
+            "kind": "length",
+            "from": "B",
+            "to": "C",
+            "text": "4",
+            "provenance": "question_given"
+          },
+          {
+            "kind": "length",
+            "from": "C",
+            "to": "D",
+            "text": "8",
+            "provenance": "question_given"
+          }
+        ],
+        "relations": [
+          {
+            "kind": "ordered_collinear",
+            "points": [
+              "T",
+              "B",
+              "C",
+              "D"
+            ]
+          },
+          {
+            "kind": "tangent",
+            "circleCenter": "o",
+            "point": "C",
+            "line": [
+              "T",
+              "C"
+            ]
+          },
+          {
+            "kind": "internally_tangent",
+            "circles": [
+              "O",
+              "o"
+            ],
+            "point": "A"
+          }
+        ],
+        "notes": [
+          "Зураг нь зөвхөн өгөгдлийн холбоог дүрслэнэ; хэмжээг зургаас хэмжиж болохгүй."
+        ],
+        "sourceQuestion": {
+          "year": 2017,
+          "variant": "D",
+          "number": "27",
+          "figureCatalog": "2017/reference/figures.json"
+        },
+        "displayPolicy": "question_figure",
+        "answerLabelsIncluded": false,
+        "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 420 300\" role=\"img\"><title>Дотоод шүргэлцсэн тойргууд</title><rect width=\"420\" height=\"300\" fill=\"white\"/><g stroke=\"#172b4d\" stroke-width=\"1.6\" fill=\"none\" stroke-linejoin=\"round\"><circle cx=\"210.00\" cy=\"142.10\" r=\"102.10\" fill=\"none\"/><circle cx=\"175.97\" cy=\"142.10\" r=\"68.07\" fill=\"none\"/><line x1=\"107.90\" y1=\"260.00\" x2=\"107.90\" y2=\"142.10\"/><line x1=\"107.90\" y1=\"260.00\" x2=\"312.10\" y2=\"142.10\"/></g><g font-family=\"Segoe UI, sans-serif\" font-size=\"13\" fill=\"#172b4d\"><rect x=\"110.90\" y=\"124.10\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"112.90\" y=\"136.10\">A</text><rect x=\"110.90\" y=\"242.00\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"112.90\" y=\"254.00\">T</text><rect x=\"213.00\" y=\"124.10\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"215.00\" y=\"136.10\">O</text><rect x=\"178.97\" y=\"124.10\" width=\"17\" height=\"16\" fill=\"white\"/><text x=\"180.97\" y=\"136.10\">O₁</text><rect x=\"161.95\" y=\"212.53\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"163.95\" y=\"224.53\">B</text><rect x=\"213.00\" y=\"183.05\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"215.00\" y=\"195.05\">C</text><rect x=\"315.10\" y=\"124.10\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"317.10\" y=\"136.10\">D</text><rect x=\"187.47\" y=\"198.79\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"189.47\" y=\"210.79\">4</text><rect x=\"264.05\" y=\"154.58\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"266.05\" y=\"166.58\">8</text></g></svg>"
+      }
+    },
+    {
+      "number": "28",
+      "referenceQuestion": "28",
+      "skill": "Vieta reciprocal sum",
+      "type": "multiple_choice",
+      "points": 2,
+      "prompt": "x³+4x²−4x−16=0-ийн язгуурууд x₁,x₂,x₃. 1/x₁+1/x₂+1/x₃-г ол.",
+      "options": {
+        "A": "-1/5",
+        "B": "0",
+        "C": "1/4",
+        "D": "-1/3",
+        "E": "-1/4"
+      },
+      "answer": "E",
+      "answerValue": "-1/4",
+      "solution": "Хос үржвэрийн нийлбэр −4, гуравласан үржвэр 4k; харьцаа −1/k."
+    },
+    {
+      "number": "29",
+      "referenceQuestion": "29",
+      "skill": "Cubic and line area",
+      "type": "multiple_choice",
+      "points": 3,
+      "prompt": "y=4x³ ба y=4x функцийн графикуудаар хязгаарлагдсан нийт талбайг ол.",
+      "options": {
+        "A": "0",
+        "B": "4",
+        "C": "3",
+        "D": "1",
+        "E": "2"
+      },
+      "answer": "E",
+      "answerValue": "2",
+      "solution": "Огтлолууд −1,0,1. Тэгш хэмээр 2∫₀¹ k(x−x³)dx=k/2.",
+      "figure": {
+        "schema": "education.math.figure.v1",
+        "kind": "scene",
+        "title": "Функцийн график",
+        "space": "2d",
+        "coordinateSystem": "cartesian",
+        "notToScale": false,
+        "points": {},
+        "objects": [
+          {
+            "kind": "polyline",
+            "positions": [
+              [
+                -1.06875,
+                -4.883018554687501
+              ],
+              [
+                -1.0575,
+                -4.7304354375000015
+              ],
+              [
+                -1.0462500000000001,
+                -4.581064476562502
+              ],
+              [
+                -1.0350000000000001,
+                -4.434871500000002
+              ],
+              [
+                -1.0237500000000002,
+                -4.291822335937502
+              ],
+              [
+                -1.0125000000000002,
+                -4.151882812500002
+              ],
+              [
+                -1.0012500000000002,
+                -4.015018757812502
+              ],
+              [
+                -0.99,
+                -3.881196
+              ],
+              [
+                -0.97875,
+                -3.7503803671875002
+              ],
+              [
+                -0.9675,
+                -3.6225376875000004
+              ],
+              [
+                -0.95625,
+                -3.4976337890625007
+              ],
+              [
+                -0.9450000000000001,
+                -3.3756345000000008
+              ],
+              [
+                -0.9337500000000001,
+                -3.256505648437501
+              ],
+              [
+                -0.9225000000000001,
+                -3.140213062500001
+              ],
+              [
+                -0.9112500000000001,
+                -3.026722570312501
+              ],
+              [
+                -0.9000000000000001,
+                -2.9160000000000013
+              ],
+              [
+                -0.8887500000000002,
+                -2.8080111796875014
+              ],
+              [
+                -0.8775000000000001,
+                -2.7027219375000007
+              ],
+              [
+                -0.8662500000000001,
+                -2.6000981015625007
+              ],
+              [
+                -0.855,
+                -2.5001054999999996
+              ],
+              [
+                -0.84375,
+                -2.4027099609375
+              ],
+              [
+                -0.8325000000000001,
+                -2.307877312500001
+              ],
+              [
+                -0.82125,
+                -2.2155733828125004
+              ],
+              [
+                -0.8099999999999999,
+                -2.1257639999999998
+              ],
+              [
+                -0.7987500000000001,
+                -2.0384149921875006
+              ],
+              [
+                -0.7875000000000001,
+                -1.9534921875000006
+              ],
+              [
+                -0.77625,
+                -1.8709614140625
+              ],
+              [
+                -0.765,
+                -1.7907885000000001
+              ],
+              [
+                -0.75375,
+                -1.7129392734375002
+              ],
+              [
+                -0.7425,
+                -1.6373795625000003
+              ],
+              [
+                -0.7312500000000001,
+                -1.5640751953125005
+              ],
+              [
+                -0.72,
+                -1.4929919999999999
+              ],
+              [
+                -0.7087500000000001,
+                -1.4240958046875005
+              ],
+              [
+                -0.6975,
+                -1.3573524375000001
+              ],
+              [
+                -0.68625,
+                -1.2927277265625001
+              ],
+              [
+                -0.675,
+                -1.2301875000000002
+              ],
+              [
+                -0.6637500000000001,
+                -1.1696975859375003
+              ],
+              [
+                -0.6525000000000001,
+                -1.1112238125000005
+              ],
+              [
+                -0.64125,
+                -1.0547320078125
+              ],
+              [
+                -0.63,
+                -1.000188
+              ],
+              [
+                -0.6187500000000001,
+                -0.9475576171875006
+              ],
+              [
+                -0.6075,
+                -0.8968066875000001
+              ],
+              [
+                -0.5962500000000001,
+                -0.8479010390625003
+              ],
+              [
+                -0.585,
+                -0.8008064999999999
+              ],
+              [
+                -0.5737500000000001,
+                -0.7554888984375003
+              ],
+              [
+                -0.5625000000000001,
+                -0.7119140625000004
+              ],
+              [
+                -0.55125,
+                -0.6700478203125001
+              ],
+              [
+                -0.54,
+                -0.6298560000000001
+              ],
+              [
+                -0.5287499999999999,
+                -0.5913044296874999
+              ],
+              [
+                -0.5175000000000001,
+                -0.5543589375000002
+              ],
+              [
+                -0.5062500000000001,
+                -0.5189853515625003
+              ],
+              [
+                -0.495,
+                -0.4851495
+              ],
+              [
+                -0.48375,
+                -0.45281721093750005
+              ],
+              [
+                -0.47250000000000003,
+                -0.4219543125000001
+              ],
+              [
+                -0.46125000000000005,
+                -0.3925266328125001
+              ],
+              [
+                -0.45000000000000007,
+                -0.36450000000000016
+              ],
+              [
+                -0.43875,
+                -0.3378402421874999
+              ],
+              [
+                -0.4275000000000001,
+                -0.31251318750000023
+              ],
+              [
+                -0.41625,
+                -0.2884846640625
+              ],
+              [
+                -0.405,
+                -0.2657205
+              ],
+              [
+                -0.39374999999999993,
+                -0.24418652343749989
+              ],
+              [
+                -0.38250000000000006,
+                -0.2238485625000001
+              ],
+              [
+                -0.3712500000000001,
+                -0.20467244531250015
+              ],
+              [
+                -0.36,
+                -0.18662399999999998
+              ],
+              [
+                -0.3487500000000001,
+                -0.16966905468750018
+              ],
+              [
+                -0.3374999999999999,
+                -0.1537734374999999
+              ],
+              [
+                -0.32624999999999993,
+                -0.13890297656249992
+              ],
+              [
+                -0.31500000000000017,
+                -0.1250235000000002
+              ],
+              [
+                -0.30374999999999996,
+                -0.11210083593749996
+              ],
+              [
+                -0.2925,
+                -0.10010081249999998
+              ],
+              [
+                -0.28125,
+                -0.0889892578125
+              ],
+              [
+                -0.2699999999999998,
+                -0.07873199999999982
+              ],
+              [
+                -0.25875000000000004,
+                -0.06929486718750003
+              ],
+              [
+                -0.24750000000000005,
+                -0.060643687500000036
+              ],
+              [
+                -0.23625000000000007,
+                -0.05274428906250005
+              ],
+              [
+                -0.2250000000000001,
+                -0.045562500000000054
+              ],
+              [
+                -0.21374999999999988,
+                -0.03906414843749994
+              ],
+              [
+                -0.2024999999999999,
+                -0.033215062499999955
+              ],
+              [
+                -0.19124999999999992,
+                -0.027981070312499964
+              ],
+              [
+                -0.17999999999999994,
+                -0.023327999999999977
+              ],
+              [
+                -0.16875000000000018,
+                -0.019221679687500062
+              ],
+              [
+                -0.15749999999999997,
+                -0.01562793749999999
+              ],
+              [
+                -0.14625,
+                -0.012512601562499998
+              ],
+              [
+                -0.135,
+                -0.009841500000000001
+              ],
+              [
+                -0.12375000000000003,
+                -0.0075804609375000045
+              ],
+              [
+                -0.11250000000000004,
+                -0.005695312500000007
+              ],
+              [
+                -0.10124999999999984,
+                -0.0041518828124999805
+              ],
+              [
+                -0.08999999999999986,
+                -0.0029159999999999863
+              ],
+              [
+                -0.0787500000000001,
+                -0.001953492187500007
+              ],
+              [
+                -0.06750000000000012,
+                -0.0012301875000000062
+              ],
+              [
+                -0.05625000000000013,
+                -0.0007119140625000051
+              ],
+              [
+                -0.04499999999999993,
+                -0.0003644999999999983
+              ],
+              [
+                -0.03374999999999995,
+                -0.00015377343749999926
+              ],
+              [
+                -0.022499999999999964,
+                -4.5562499999999786e-05
+              ],
+              [
+                -0.011249999999999982,
+                -5.695312499999973e-06
+              ],
+              [
+                0.0,
+                0.0
+              ],
+              [
+                0.011250000000000204,
+                5.69531250000031e-06
+              ],
+              [
+                0.022499999999999964,
+                4.5562499999999786e-05
+              ],
+              [
+                0.03374999999999995,
+                0.00015377343749999926
+              ],
+              [
+                0.04499999999999993,
+                0.0003644999999999983
+              ],
+              [
+                0.05624999999999991,
+                0.0007119140624999966
+              ],
+              [
+                0.06750000000000012,
+                0.0012301875000000062
+              ],
+              [
+                0.0787500000000001,
+                0.001953492187500007
+              ],
+              [
+                0.09000000000000008,
+                0.0029160000000000076
+              ],
+              [
+                0.10125000000000006,
+                0.004151882812500007
+              ],
+              [
+                0.11249999999999982,
+                0.005695312499999973
+              ],
+              [
+                0.12375000000000003,
+                0.0075804609375000045
+              ],
+              [
+                0.135,
+                0.009841500000000001
+              ],
+              [
+                0.14625,
+                0.012512601562499998
+              ],
+              [
+                0.15749999999999997,
+                0.01562793749999999
+              ],
+              [
+                0.16874999999999996,
+                0.019221679687499986
+              ],
+              [
+                0.18000000000000016,
+                0.02332800000000006
+              ],
+              [
+                0.19125000000000014,
+                0.02798107031250006
+              ],
+              [
+                0.2024999999999999,
+                0.033215062499999955
+              ],
+              [
+                0.21374999999999988,
+                0.03906414843749994
+              ],
+              [
+                0.22499999999999987,
+                0.04556249999999992
+              ],
+              [
+                0.23625000000000007,
+                0.05274428906250005
+              ],
+              [
+                0.24750000000000005,
+                0.060643687500000036
+              ],
+              [
+                0.25875000000000004,
+                0.06929486718750003
+              ],
+              [
+                0.27,
+                0.07873200000000001
+              ],
+              [
+                0.28125,
+                0.0889892578125
+              ],
+              [
+                0.2925000000000002,
+                0.1001008125000002
+              ],
+              [
+                0.30374999999999996,
+                0.11210083593749996
+              ],
+              [
+                0.31499999999999995,
+                0.12502349999999993
+              ],
+              [
+                0.32624999999999993,
+                0.13890297656249992
+              ],
+              [
+                0.3374999999999999,
+                0.1537734374999999
+              ],
+              [
+                0.3487500000000001,
+                0.16966905468750018
+              ],
+              [
+                0.3600000000000001,
+                0.18662400000000015
+              ],
+              [
+                0.3712500000000001,
+                0.20467244531250015
+              ],
+              [
+                0.38250000000000006,
+                0.2238485625000001
+              ],
+              [
+                0.3937499999999998,
+                0.24418652343749966
+              ],
+              [
+                0.405,
+                0.2657205
+              ],
+              [
+                0.41625,
+                0.2884846640625
+              ],
+              [
+                0.4275,
+                0.31251318749999996
+              ],
+              [
+                0.43875,
+                0.3378402421874999
+              ],
+              [
+                0.44999999999999996,
+                0.3644999999999999
+              ],
+              [
+                0.46125000000000016,
+                0.3925266328125004
+              ],
+              [
+                0.47250000000000014,
+                0.4219543125000004
+              ],
+              [
+                0.4837499999999999,
+                0.4528172109374997
+              ],
+              [
+                0.4949999999999999,
+                0.4851494999999997
+              ],
+              [
+                0.5062500000000001,
+                0.5189853515625003
+              ],
+              [
+                0.5175000000000001,
+                0.5543589375000002
+              ],
+              [
+                0.52875,
+                0.5913044296875002
+              ],
+              [
+                0.54,
+                0.6298560000000001
+              ],
+              [
+                0.55125,
+                0.6700478203125001
+              ],
+              [
+                0.5625000000000002,
+                0.7119140625000009
+              ],
+              [
+                0.5737500000000002,
+                0.7554888984375008
+              ],
+              [
+                0.585,
+                0.8008064999999999
+              ],
+              [
+                0.59625,
+                0.8479010390624998
+              ],
+              [
+                0.6074999999999999,
+                0.8968066874999997
+              ],
+              [
+                0.6187500000000001,
+                0.9475576171875006
+              ],
+              [
+                0.6300000000000001,
+                1.0001880000000005
+              ],
+              [
+                0.6412500000000001,
+                1.0547320078125004
+              ],
+              [
+                0.6524999999999999,
+                1.1112238124999994
+              ],
+              [
+                0.6637499999999998,
+                1.1696975859374992
+              ],
+              [
+                0.6750000000000003,
+                1.2301875000000015
+              ],
+              [
+                0.6862500000000002,
+                1.2927277265625015
+              ],
+              [
+                0.6975000000000002,
+                1.3573524375000015
+              ],
+              [
+                0.7087500000000002,
+                1.4240958046875012
+              ],
+              [
+                0.7199999999999998,
+                1.4929919999999985
+              ],
+              [
+                0.7312500000000002,
+                1.5640751953125012
+              ],
+              [
+                0.7425000000000002,
+                1.6373795625000012
+              ],
+              [
+                0.7537500000000001,
+                1.712939273437501
+              ],
+              [
+                0.7650000000000001,
+                1.7907885000000008
+              ],
+              [
+                0.7762500000000001,
+                1.8709614140625008
+              ],
+              [
+                0.7875000000000001,
+                1.9534921875000006
+              ],
+              [
+                0.7987500000000001,
+                2.0384149921875006
+              ],
+              [
+                0.8100000000000005,
+                2.1257640000000038
+              ],
+              [
+                0.82125,
+                2.2155733828125004
+              ],
+              [
+                0.8325,
+                2.3078773125
+              ],
+              [
+                0.84375,
+                2.4027099609375
+              ],
+              [
+                0.855,
+                2.5001054999999996
+              ],
+              [
+                0.8662500000000004,
+                2.6000981015625038
+              ],
+              [
+                0.8775,
+                2.7027219374999993
+              ],
+              [
+                0.8887500000000004,
+                2.8080111796875036
+              ],
+              [
+                0.8999999999999999,
+                2.915999999999999
+              ],
+              [
+                0.9112499999999999,
+                3.026722570312499
+              ],
+              [
+                0.9225000000000003,
+                3.140213062500003
+              ],
+              [
+                0.9337499999999999,
+                3.2565056484374986
+              ],
+              [
+                0.9450000000000003,
+                3.375634500000003
+              ],
+              [
+                0.9562499999999998,
+                3.497633789062498
+              ],
+              [
+                0.9675000000000002,
+                3.6225376875000026
+              ],
+              [
+                0.9787500000000002,
+                3.7503803671875025
+              ],
+              [
+                0.9900000000000002,
+                3.8811960000000023
+              ],
+              [
+                1.0012500000000002,
+                4.015018757812502
+              ],
+              [
+                1.0124999999999997,
+                4.151882812499997
+              ],
+              [
+                1.0237500000000002,
+                4.291822335937502
+              ],
+              [
+                1.0350000000000001,
+                4.434871500000002
+              ],
+              [
+                1.0462500000000001,
+                4.581064476562502
+              ],
+              [
+                1.0575,
+                4.7304354375000015
+              ],
+              [
+                1.06875,
+                4.883018554687501
+              ]
+            ],
+            "label": "y=4x³",
+            "style": "solid"
+          },
+          {
+            "kind": "polyline",
+            "positions": [
+              [
+                -1.24875,
+                -4.995
+              ],
+              [
+                -1.2375,
+                -4.95
+              ],
+              [
+                -1.22625,
+                -4.905
+              ],
+              [
+                -1.215,
+                -4.86
+              ],
+              [
+                -1.20375,
+                -4.815
+              ],
+              [
+                -1.1925000000000001,
+                -4.7700000000000005
+              ],
+              [
+                -1.1812500000000001,
+                -4.7250000000000005
+              ],
+              [
+                -1.1700000000000002,
+                -4.680000000000001
+              ],
+              [
+                -1.15875,
+                -4.635
+              ],
+              [
+                -1.1475,
+                -4.59
+              ],
+              [
+                -1.13625,
+                -4.545
+              ],
+              [
+                -1.125,
+                -4.5
+              ],
+              [
+                -1.11375,
+                -4.455
+              ],
+              [
+                -1.1025,
+                -4.41
+              ],
+              [
+                -1.09125,
+                -4.365
+              ],
+              [
+                -1.08,
+                -4.32
+              ],
+              [
+                -1.06875,
+                -4.275
+              ],
+              [
+                -1.0575,
+                -4.23
+              ],
+              [
+                -1.0462500000000001,
+                -4.1850000000000005
+              ],
+              [
+                -1.0350000000000001,
+                -4.140000000000001
+              ],
+              [
+                -1.0237500000000002,
+                -4.095000000000001
+              ],
+              [
+                -1.0125000000000002,
+                -4.050000000000001
+              ],
+              [
+                -1.0012500000000002,
+                -4.005000000000001
+              ],
+              [
+                -0.99,
+                -3.96
+              ],
+              [
+                -0.97875,
+                -3.915
+              ],
+              [
+                -0.9675,
+                -3.87
+              ],
+              [
+                -0.95625,
+                -3.825
+              ],
+              [
+                -0.9450000000000001,
+                -3.7800000000000002
+              ],
+              [
+                -0.9337500000000001,
+                -3.7350000000000003
+              ],
+              [
+                -0.9225000000000001,
+                -3.6900000000000004
+              ],
+              [
+                -0.9112500000000001,
+                -3.6450000000000005
+              ],
+              [
+                -0.9000000000000001,
+                -3.6000000000000005
+              ],
+              [
+                -0.8887500000000002,
+                -3.5550000000000006
+              ],
+              [
+                -0.8775000000000001,
+                -3.5100000000000002
+              ],
+              [
+                -0.8662500000000001,
+                -3.4650000000000003
+              ],
+              [
+                -0.855,
+                -3.42
+              ],
+              [
+                -0.84375,
+                -3.375
+              ],
+              [
+                -0.8325000000000001,
+                -3.3300000000000005
+              ],
+              [
+                -0.82125,
+                -3.285
+              ],
+              [
+                -0.8099999999999999,
+                -3.2399999999999998
+              ],
+              [
+                -0.7987500000000001,
+                -3.1950000000000003
+              ],
+              [
+                -0.7875000000000001,
+                -3.1500000000000004
+              ],
+              [
+                -0.77625,
+                -3.105
+              ],
+              [
+                -0.765,
+                -3.06
+              ],
+              [
+                -0.75375,
+                -3.015
+              ],
+              [
+                -0.7425,
+                -2.97
+              ],
+              [
+                -0.7312500000000001,
+                -2.9250000000000003
+              ],
+              [
+                -0.72,
+                -2.88
+              ],
+              [
+                -0.7087500000000001,
+                -2.8350000000000004
+              ],
+              [
+                -0.6975,
+                -2.79
+              ],
+              [
+                -0.68625,
+                -2.745
+              ],
+              [
+                -0.675,
+                -2.7
+              ],
+              [
+                -0.6637500000000001,
+                -2.6550000000000002
+              ],
+              [
+                -0.6525000000000001,
+                -2.6100000000000003
+              ],
+              [
+                -0.64125,
+                -2.565
+              ],
+              [
+                -0.63,
+                -2.52
+              ],
+              [
+                -0.6187500000000001,
+                -2.4750000000000005
+              ],
+              [
+                -0.6075,
+                -2.43
+              ],
+              [
+                -0.5962500000000001,
+                -2.3850000000000002
+              ],
+              [
+                -0.585,
+                -2.34
+              ],
+              [
+                -0.5737500000000001,
+                -2.2950000000000004
+              ],
+              [
+                -0.5625000000000001,
+                -2.2500000000000004
+              ],
+              [
+                -0.55125,
+                -2.205
+              ],
+              [
+                -0.54,
+                -2.16
+              ],
+              [
+                -0.5287499999999999,
+                -2.1149999999999998
+              ],
+              [
+                -0.5175000000000001,
+                -2.0700000000000003
+              ],
+              [
+                -0.5062500000000001,
+                -2.0250000000000004
+              ],
+              [
+                -0.495,
+                -1.98
+              ],
+              [
+                -0.48375,
+                -1.935
+              ],
+              [
+                -0.47250000000000003,
+                -1.8900000000000001
+              ],
+              [
+                -0.46125000000000005,
+                -1.8450000000000002
+              ],
+              [
+                -0.45000000000000007,
+                -1.8000000000000003
+              ],
+              [
+                -0.43875,
+                -1.755
+              ],
+              [
+                -0.4275000000000001,
+                -1.7100000000000004
+              ],
+              [
+                -0.41625,
+                -1.665
+              ],
+              [
+                -0.405,
+                -1.62
+              ],
+              [
+                -0.39374999999999993,
+                -1.5749999999999997
+              ],
+              [
+                -0.38250000000000006,
+                -1.5300000000000002
+              ],
+              [
+                -0.3712500000000001,
+                -1.4850000000000003
+              ],
+              [
+                -0.36,
+                -1.44
+              ],
+              [
+                -0.3487500000000001,
+                -1.3950000000000005
+              ],
+              [
+                -0.3374999999999999,
+                -1.3499999999999996
+              ],
+              [
+                -0.32624999999999993,
+                -1.3049999999999997
+              ],
+              [
+                -0.31500000000000017,
+                -1.2600000000000007
+              ],
+              [
+                -0.30374999999999996,
+                -1.2149999999999999
+              ],
+              [
+                -0.2925,
+                -1.17
+              ],
+              [
+                -0.28125,
+                -1.125
+              ],
+              [
+                -0.2699999999999998,
+                -1.0799999999999992
+              ],
+              [
+                -0.25875000000000004,
+                -1.0350000000000001
+              ],
+              [
+                -0.24750000000000005,
+                -0.9900000000000002
+              ],
+              [
+                -0.23625000000000007,
+                -0.9450000000000003
+              ],
+              [
+                -0.2250000000000001,
+                -0.9000000000000004
+              ],
+              [
+                -0.21374999999999988,
+                -0.8549999999999995
+              ],
+              [
+                -0.2024999999999999,
+                -0.8099999999999996
+              ],
+              [
+                -0.19124999999999992,
+                -0.7649999999999997
+              ],
+              [
+                -0.17999999999999994,
+                -0.7199999999999998
+              ],
+              [
+                -0.16875000000000018,
+                -0.6750000000000007
+              ],
+              [
+                -0.15749999999999997,
+                -0.6299999999999999
+              ],
+              [
+                -0.14625,
+                -0.585
+              ],
+              [
+                -0.135,
+                -0.54
+              ],
+              [
+                -0.12375000000000003,
+                -0.4950000000000001
+              ],
+              [
+                -0.11250000000000004,
+                -0.4500000000000002
+              ],
+              [
+                -0.10124999999999984,
+                -0.40499999999999936
+              ],
+              [
+                -0.08999999999999986,
+                -0.35999999999999943
+              ],
+              [
+                -0.0787500000000001,
+                -0.3150000000000004
+              ],
+              [
+                -0.06750000000000012,
+                -0.27000000000000046
+              ],
+              [
+                -0.05625000000000013,
+                -0.22500000000000053
+              ],
+              [
+                -0.04499999999999993,
+                -0.17999999999999972
+              ],
+              [
+                -0.03374999999999995,
+                -0.1349999999999998
+              ],
+              [
+                -0.022499999999999964,
+                -0.08999999999999986
+              ],
+              [
+                -0.011249999999999982,
+                -0.04499999999999993
+              ],
+              [
+                0.0,
+                0.0
+              ],
+              [
+                0.011250000000000204,
+                0.04500000000000082
+              ],
+              [
+                0.022499999999999964,
+                0.08999999999999986
+              ],
+              [
+                0.03374999999999995,
+                0.1349999999999998
+              ],
+              [
+                0.04499999999999993,
+                0.17999999999999972
+              ],
+              [
+                0.05624999999999991,
+                0.22499999999999964
+              ],
+              [
+                0.06750000000000012,
+                0.27000000000000046
+              ],
+              [
+                0.0787500000000001,
+                0.3150000000000004
+              ],
+              [
+                0.09000000000000008,
+                0.3600000000000003
+              ],
+              [
+                0.10125000000000006,
+                0.40500000000000025
+              ],
+              [
+                0.11249999999999982,
+                0.4499999999999993
+              ],
+              [
+                0.12375000000000003,
+                0.4950000000000001
+              ],
+              [
+                0.135,
+                0.54
+              ],
+              [
+                0.14625,
+                0.585
+              ],
+              [
+                0.15749999999999997,
+                0.6299999999999999
+              ],
+              [
+                0.16874999999999996,
+                0.6749999999999998
+              ],
+              [
+                0.18000000000000016,
+                0.7200000000000006
+              ],
+              [
+                0.19125000000000014,
+                0.7650000000000006
+              ],
+              [
+                0.2024999999999999,
+                0.8099999999999996
+              ],
+              [
+                0.21374999999999988,
+                0.8549999999999995
+              ],
+              [
+                0.22499999999999987,
+                0.8999999999999995
+              ],
+              [
+                0.23625000000000007,
+                0.9450000000000003
+              ],
+              [
+                0.24750000000000005,
+                0.9900000000000002
+              ],
+              [
+                0.25875000000000004,
+                1.0350000000000001
+              ],
+              [
+                0.27,
+                1.08
+              ],
+              [
+                0.28125,
+                1.125
+              ],
+              [
+                0.2925000000000002,
+                1.1700000000000008
+              ],
+              [
+                0.30374999999999996,
+                1.2149999999999999
+              ],
+              [
+                0.31499999999999995,
+                1.2599999999999998
+              ],
+              [
+                0.32624999999999993,
+                1.3049999999999997
+              ],
+              [
+                0.3374999999999999,
+                1.3499999999999996
+              ],
+              [
+                0.3487500000000001,
+                1.3950000000000005
+              ],
+              [
+                0.3600000000000001,
+                1.4400000000000004
+              ],
+              [
+                0.3712500000000001,
+                1.4850000000000003
+              ],
+              [
+                0.38250000000000006,
+                1.5300000000000002
+              ],
+              [
+                0.3937499999999998,
+                1.5749999999999993
+              ],
+              [
+                0.405,
+                1.62
+              ],
+              [
+                0.41625,
+                1.665
+              ],
+              [
+                0.4275,
+                1.71
+              ],
+              [
+                0.43875,
+                1.755
+              ],
+              [
+                0.44999999999999996,
+                1.7999999999999998
+              ],
+              [
+                0.46125000000000016,
+                1.8450000000000006
+              ],
+              [
+                0.47250000000000014,
+                1.8900000000000006
+              ],
+              [
+                0.4837499999999999,
+                1.9349999999999996
+              ],
+              [
+                0.4949999999999999,
+                1.9799999999999995
+              ],
+              [
+                0.5062500000000001,
+                2.0250000000000004
+              ],
+              [
+                0.5175000000000001,
+                2.0700000000000003
+              ],
+              [
+                0.52875,
+                2.115
+              ],
+              [
+                0.54,
+                2.16
+              ],
+              [
+                0.55125,
+                2.205
+              ],
+              [
+                0.5625000000000002,
+                2.250000000000001
+              ],
+              [
+                0.5737500000000002,
+                2.295000000000001
+              ],
+              [
+                0.585,
+                2.34
+              ],
+              [
+                0.59625,
+                2.385
+              ],
+              [
+                0.6074999999999999,
+                2.4299999999999997
+              ],
+              [
+                0.6187500000000001,
+                2.4750000000000005
+              ],
+              [
+                0.6300000000000001,
+                2.5200000000000005
+              ],
+              [
+                0.6412500000000001,
+                2.5650000000000004
+              ],
+              [
+                0.6524999999999999,
+                2.6099999999999994
+              ],
+              [
+                0.6637499999999998,
+                2.6549999999999994
+              ],
+              [
+                0.6750000000000003,
+                2.700000000000001
+              ],
+              [
+                0.6862500000000002,
+                2.745000000000001
+              ],
+              [
+                0.6975000000000002,
+                2.790000000000001
+              ],
+              [
+                0.7087500000000002,
+                2.835000000000001
+              ],
+              [
+                0.7199999999999998,
+                2.879999999999999
+              ],
+              [
+                0.7312500000000002,
+                2.9250000000000007
+              ],
+              [
+                0.7425000000000002,
+                2.9700000000000006
+              ],
+              [
+                0.7537500000000001,
+                3.0150000000000006
+              ],
+              [
+                0.7650000000000001,
+                3.0600000000000005
+              ],
+              [
+                0.7762500000000001,
+                3.1050000000000004
+              ],
+              [
+                0.7875000000000001,
+                3.1500000000000004
+              ],
+              [
+                0.7987500000000001,
+                3.1950000000000003
+              ],
+              [
+                0.8100000000000005,
+                3.240000000000002
+              ],
+              [
+                0.82125,
+                3.285
+              ],
+              [
+                0.8325,
+                3.33
+              ],
+              [
+                0.84375,
+                3.375
+              ],
+              [
+                0.855,
+                3.42
+              ],
+              [
+                0.8662500000000004,
+                3.4650000000000016
+              ],
+              [
+                0.8775,
+                3.51
+              ],
+              [
+                0.8887500000000004,
+                3.5550000000000015
+              ],
+              [
+                0.8999999999999999,
+                3.5999999999999996
+              ],
+              [
+                0.9112499999999999,
+                3.6449999999999996
+              ],
+              [
+                0.9225000000000003,
+                3.6900000000000013
+              ],
+              [
+                0.9337499999999999,
+                3.7349999999999994
+              ],
+              [
+                0.9450000000000003,
+                3.780000000000001
+              ],
+              [
+                0.9562499999999998,
+                3.8249999999999993
+              ],
+              [
+                0.9675000000000002,
+                3.870000000000001
+              ],
+              [
+                0.9787500000000002,
+                3.915000000000001
+              ],
+              [
+                0.9900000000000002,
+                3.960000000000001
+              ],
+              [
+                1.0012500000000002,
+                4.005000000000001
+              ],
+              [
+                1.0124999999999997,
+                4.049999999999999
+              ],
+              [
+                1.0237500000000002,
+                4.095000000000001
+              ],
+              [
+                1.0350000000000001,
+                4.140000000000001
+              ],
+              [
+                1.0462500000000001,
+                4.1850000000000005
+              ],
+              [
+                1.0575,
+                4.23
+              ],
+              [
+                1.06875,
+                4.275
+              ],
+              [
+                1.08,
+                4.32
+              ],
+              [
+                1.0912500000000005,
+                4.365000000000002
+              ],
+              [
+                1.1025,
+                4.41
+              ],
+              [
+                1.11375,
+                4.455
+              ],
+              [
+                1.125,
+                4.5
+              ],
+              [
+                1.13625,
+                4.545
+              ],
+              [
+                1.1475000000000004,
+                4.590000000000002
+              ],
+              [
+                1.15875,
+                4.635
+              ],
+              [
+                1.1700000000000004,
+                4.6800000000000015
+              ],
+              [
+                1.18125,
+                4.725
+              ],
+              [
+                1.1925,
+                4.77
+              ],
+              [
+                1.2037500000000003,
+                4.815000000000001
+              ],
+              [
+                1.2149999999999999,
+                4.859999999999999
+              ],
+              [
+                1.2262500000000003,
+                4.905000000000001
+              ],
+              [
+                1.2374999999999998,
+                4.949999999999999
+              ],
+              [
+                1.2487500000000002,
+                4.995000000000001
+              ]
+            ],
+            "label": "y=4x",
+            "style": "solid"
+          }
+        ],
+        "measurements": [],
+        "relations": [],
+        "notes": [],
+        "sourceQuestion": {
+          "year": 2017,
+          "variant": "D",
+          "number": "29",
+          "figureCatalog": "2017/reference/figures.json"
+        },
+        "displayPolicy": "question_figure",
+        "answerLabelsIncluded": false,
+        "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 420 300\" role=\"img\"><title>Функцийн график</title><rect width=\"420\" height=\"300\" fill=\"white\"/><g stroke=\"#172b4d\" stroke-width=\"1.6\" fill=\"none\" stroke-linejoin=\"round\"><line x1=\"210.00\" y1=\"260.00\" x2=\"210.00\" y2=\"40.00\" stroke-dasharray=\"5 4\"/><line x1=\"182.50\" y1=\"150.00\" x2=\"237.50\" y2=\"150.00\" stroke-dasharray=\"5 4\"/><polyline points=\"186.46,257.53 186.71,254.17 186.96,250.88 187.21,247.66 187.45,244.51 187.70,241.43 187.95,238.42 188.20,235.47 188.45,232.59 188.69,229.78 188.94,227.02 189.19,224.34 189.44,221.71 189.68,219.15 189.93,216.65 190.18,214.22 190.43,211.84 190.68,209.52 190.92,207.26 191.17,205.06 191.42,202.91 191.67,200.82 191.91,198.79 192.16,196.81 192.41,194.89 192.66,193.02 192.91,191.20 193.15,189.44 193.40,187.72 193.65,186.06 193.90,184.44 194.14,182.88 194.39,181.36 194.64,179.89 194.89,178.47 195.14,177.09 195.38,175.76 195.63,174.47 195.88,173.23 196.13,172.03 196.37,170.87 196.62,169.75 196.87,168.67 197.12,167.64 197.36,166.64 197.61,165.68 197.86,164.76 198.11,163.87 198.36,163.02 198.60,162.21 198.85,161.43 199.10,160.68 199.35,159.97 199.59,159.29 199.84,158.64 200.09,158.03 200.34,157.44 200.59,156.88 200.83,156.35 201.08,155.85 201.33,155.38 201.58,154.93 201.82,154.51 202.07,154.11 202.32,153.74 202.57,153.39 202.82,153.06 203.06,152.75 203.31,152.47 203.56,152.20 203.81,151.96 204.05,151.73 204.30,151.53 204.55,151.34 204.80,151.16 205.05,151.00 205.29,150.86 205.54,150.73 205.79,150.62 206.04,150.51 206.28,150.42 206.53,150.34 206.78,150.28 207.03,150.22 207.27,150.17 207.52,150.13 207.77,150.09 208.02,150.06 208.27,150.04 208.51,150.03 208.76,150.02 209.01,150.01 209.26,150.00 209.50,150.00 209.75,150.00 210.00,150.00 210.25,150.00 210.50,150.00 210.74,150.00 210.99,149.99 211.24,149.98 211.49,149.97 211.73,149.96 211.98,149.94 212.23,149.91 212.48,149.87 212.73,149.83 212.97,149.78 213.22,149.72 213.47,149.66 213.72,149.58 213.96,149.49 214.21,149.38 214.46,149.27 214.71,149.14 214.95,149.00 215.20,148.84 215.45,148.66 215.70,148.47 215.95,148.27 216.19,148.04 216.44,147.80 216.69,147.53 216.94,147.25 217.18,146.94 217.43,146.61 217.68,146.26 217.93,145.89 218.18,145.49 218.42,145.07 218.67,144.62 218.92,144.15 219.17,143.65 219.41,143.12 219.66,142.56 219.91,141.97 220.16,141.36 220.41,140.71 220.65,140.03 220.90,139.32 221.15,138.57 221.40,137.79 221.64,136.98 221.89,136.13 222.14,135.24 222.39,134.32 222.64,133.36 222.88,132.36 223.13,131.33 223.38,130.25 223.63,129.13 223.87,127.97 224.12,126.77 224.37,125.53 224.62,124.24 224.86,122.91 225.11,121.53 225.36,120.11 225.61,118.64 225.86,117.12 226.10,115.56 226.35,113.94 226.60,112.28 226.85,110.56 227.09,108.80 227.34,106.98 227.59,105.11 227.84,103.19 228.09,101.21 228.33,99.18 228.58,97.09 228.83,94.94 229.08,92.74 229.32,90.48 229.57,88.16 229.82,85.78 230.07,83.35 230.32,80.85 230.56,78.29 230.81,75.66 231.06,72.98 231.31,70.22 231.55,67.41 231.80,64.53 232.05,61.58 232.30,58.57 232.55,55.49 232.79,52.34 233.04,49.12 233.29,45.83 233.54,42.47\" fill=\"none\"/><polyline points=\"182.50,260.00 182.75,259.01 183.00,258.02 183.24,257.03 183.49,256.04 183.74,255.05 183.99,254.05 184.23,253.06 184.48,252.07 184.73,251.08 184.98,250.09 185.23,249.10 185.47,248.11 185.72,247.12 185.97,246.13 186.22,245.14 186.46,244.14 186.71,243.15 186.96,242.16 187.21,241.17 187.45,240.18 187.70,239.19 187.95,238.20 188.20,237.21 188.45,236.22 188.69,235.23 188.94,234.23 189.19,233.24 189.44,232.25 189.68,231.26 189.93,230.27 190.18,229.28 190.43,228.29 190.68,227.30 190.92,226.31 191.17,225.32 191.42,224.32 191.67,223.33 191.91,222.34 192.16,221.35 192.41,220.36 192.66,219.37 192.91,218.38 193.15,217.39 193.40,216.40 193.65,215.41 193.90,214.41 194.14,213.42 194.39,212.43 194.64,211.44 194.89,210.45 195.14,209.46 195.38,208.47 195.63,207.48 195.88,206.49 196.13,205.50 196.37,204.50 196.62,203.51 196.87,202.52 197.12,201.53 197.36,200.54 197.61,199.55 197.86,198.56 198.11,197.57 198.36,196.58 198.60,195.59 198.85,194.59 199.10,193.60 199.35,192.61 199.59,191.62 199.84,190.63 200.09,189.64 200.34,188.65 200.59,187.66 200.83,186.67 201.08,185.68 201.33,184.68 201.58,183.69 201.82,182.70 202.07,181.71 202.32,180.72 202.57,179.73 202.82,178.74 203.06,177.75 203.31,176.76 203.56,175.77 203.81,174.77 204.05,173.78 204.30,172.79 204.55,171.80 204.80,170.81 205.05,169.82 205.29,168.83 205.54,167.84 205.79,166.85 206.04,165.86 206.28,164.86 206.53,163.87 206.78,162.88 207.03,161.89 207.27,160.90 207.52,159.91 207.77,158.92 208.02,157.93 208.27,156.94 208.51,155.95 208.76,154.95 209.01,153.96 209.26,152.97 209.50,151.98 209.75,150.99 210.00,150.00 210.25,149.01 210.50,148.02 210.74,147.03 210.99,146.04 211.24,145.05 211.49,144.05 211.73,143.06 211.98,142.07 212.23,141.08 212.48,140.09 212.73,139.10 212.97,138.11 213.22,137.12 213.47,136.13 213.72,135.14 213.96,134.14 214.21,133.15 214.46,132.16 214.71,131.17 214.95,130.18 215.20,129.19 215.45,128.20 215.70,127.21 215.95,126.22 216.19,125.23 216.44,124.23 216.69,123.24 216.94,122.25 217.18,121.26 217.43,120.27 217.68,119.28 217.93,118.29 218.18,117.30 218.42,116.31 218.67,115.32 218.92,114.32 219.17,113.33 219.41,112.34 219.66,111.35 219.91,110.36 220.16,109.37 220.41,108.38 220.65,107.39 220.90,106.40 221.15,105.41 221.40,104.41 221.64,103.42 221.89,102.43 222.14,101.44 222.39,100.45 222.64,99.46 222.88,98.47 223.13,97.48 223.38,96.49 223.63,95.50 223.87,94.50 224.12,93.51 224.37,92.52 224.62,91.53 224.86,90.54 225.11,89.55 225.36,88.56 225.61,87.57 225.86,86.58 226.10,85.59 226.35,84.59 226.60,83.60 226.85,82.61 227.09,81.62 227.34,80.63 227.59,79.64 227.84,78.65 228.09,77.66 228.33,76.67 228.58,75.68 228.83,74.68 229.08,73.69 229.32,72.70 229.57,71.71 229.82,70.72 230.07,69.73 230.32,68.74 230.56,67.75 230.81,66.76 231.06,65.77 231.31,64.77 231.55,63.78 231.80,62.79 232.05,61.80 232.30,60.81 232.55,59.82 232.79,58.83 233.04,57.84 233.29,56.85 233.54,55.86 233.78,54.86 234.03,53.87 234.28,52.88 234.53,51.89 234.77,50.90 235.02,49.91 235.27,48.92 235.52,47.93 235.77,46.94 236.01,45.95 236.26,44.95 236.51,43.96 236.76,42.97 237.00,41.98 237.25,40.99 237.50,40.00\" fill=\"none\"/></g><g font-family=\"Segoe UI, sans-serif\" font-size=\"13\" fill=\"#172b4d\"><rect x=\"20.00\" y=\"8.00\" width=\"38\" height=\"16\" fill=\"white\"/><text x=\"22.00\" y=\"20.00\">y=4x³</text><rect x=\"20.00\" y=\"24.00\" width=\"31\" height=\"16\" fill=\"white\"/><text x=\"22.00\" y=\"36.00\">y=4x</text><rect x=\"188.98\" y=\"153.00\" width=\"17\" height=\"16\" fill=\"white\"/><text x=\"190.98\" y=\"165.00\">-1</text><rect x=\"211.00\" y=\"153.00\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"213.00\" y=\"165.00\">0</text><rect x=\"233.02\" y=\"153.00\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"235.02\" y=\"165.00\">1</text><rect x=\"211.00\" y=\"241.09\" width=\"17\" height=\"16\" fill=\"white\"/><text x=\"213.00\" y=\"253.09\">-4</text><rect x=\"211.00\" y=\"219.07\" width=\"17\" height=\"16\" fill=\"white\"/><text x=\"213.00\" y=\"231.07\">-3</text><rect x=\"211.00\" y=\"197.04\" width=\"17\" height=\"16\" fill=\"white\"/><text x=\"213.00\" y=\"209.04\">-2</text><rect x=\"211.00\" y=\"175.02\" width=\"17\" height=\"16\" fill=\"white\"/><text x=\"213.00\" y=\"187.02\">-1</text><rect x=\"211.00\" y=\"153.00\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"213.00\" y=\"165.00\">0</text><rect x=\"211.00\" y=\"130.98\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"213.00\" y=\"142.98\">1</text><rect x=\"211.00\" y=\"108.96\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"213.00\" y=\"120.96\">2</text><rect x=\"211.00\" y=\"86.93\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"213.00\" y=\"98.93\">3</text><rect x=\"211.00\" y=\"64.91\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"213.00\" y=\"76.91\">4</text></g></svg>"
+      }
+    },
+    {
+      "number": "30",
+      "referenceQuestion": "30",
+      "skill": "Cosine limit",
+      "type": "multiple_choice",
+      "points": 3,
+      "prompt": "lim[x→0] x²/(cos(4x)−1)-г ол.",
+      "options": {
+        "A": "-1/7",
+        "B": "-1/9",
+        "C": "1/8",
+        "D": "0",
+        "E": "-1/8"
+      },
+      "answer": "E",
+      "answerValue": "-1/8",
+      "solution": "cos t−1=−2sin²(t/2), sin t/t→1."
+    },
+    {
+      "number": "31",
+      "referenceQuestion": "31",
+      "skill": "Acute inscribed triangle probability",
+      "type": "multiple_choice",
+      "points": 3,
+      "prompt": "Нэгж тойрог дээр A нь 75°, B нь -15° туйлын өнцөгтэй. C цэгийг тойргийн уртын дагуу жигд сонгоход ABC хурц өнцөгт болох магадлалыг ол.",
+      "options": {
+        "A": "3/4",
+        "B": "1/4",
+        "C": "1/2",
+        "D": "1/5",
+        "E": "1/3"
+      },
+      "answer": "B",
+      "answerValue": "1/4",
+      "solution": "Диаметруудаар эсрэг талд хязгаарлагдсан 90° нум дээр C байрлахад гурван өнцөг хурц. Магадлал 90/360.",
+      "figure": {
+        "schema": "education.math.figure.v1",
+        "kind": "scene",
+        "title": "Нэгж тойрог",
+        "space": "2d",
+        "coordinateSystem": "schematic",
+        "notToScale": true,
+        "points": {
+          "O": {
+            "position": [
+              0.0,
+              0.0
+            ],
+            "label": "O"
+          },
+          "A": {
+            "position": [
+              0.7764571353075622,
+              2.897777478867205
+            ],
+            "label": "A"
+          },
+          "B": {
+            "position": [
+              2.897777478867205,
+              -0.7764571353075622
+            ],
+            "label": "B"
+          },
+          "C": {
+            "position": [
+              -2.598076211353316,
+              -1.5000000000000004
+            ],
+            "label": "C"
+          }
+        },
+        "objects": [
+          {
+            "kind": "circle",
+            "center": "O",
+            "radius": 3.0,
+            "style": "solid",
+            "fill": null
+          },
+          {
+            "kind": "polygon",
+            "points": [
+              "A",
+              "B",
+              "C"
+            ],
+            "fill": null
+          }
+        ],
+        "measurements": [],
+        "relations": [
+          {
+            "kind": "point_on_circle",
+            "point": "C",
+            "circleCenter": "O"
+          }
+        ],
+        "notes": [
+          "Зураг нь зөвхөн өгөгдлийн холбоог дүрслэнэ; хэмжээг зургаас хэмжиж болохгүй.",
+          "C нь дурын байрлалыг төлөөлсөн жишээ; магадлалын таатай мужийг будаагүй."
+        ],
+        "sourceQuestion": {
+          "year": 2017,
+          "variant": "D",
+          "number": "31",
+          "figureCatalog": "2017/reference/figures.json"
+        },
+        "displayPolicy": "question_figure",
+        "answerLabelsIncluded": false,
+        "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 420 300\" role=\"img\"><title>Нэгж тойрог</title><rect width=\"420\" height=\"300\" fill=\"white\"/><g stroke=\"#172b4d\" stroke-width=\"1.6\" fill=\"none\" stroke-linejoin=\"round\"><circle cx=\"210.00\" cy=\"150.00\" r=\"110.00\" fill=\"none\"/><polygon points=\"238.47,43.75 316.25,178.47 114.74,205.00\" fill=\"none\"/></g><g font-family=\"Segoe UI, sans-serif\" font-size=\"13\" fill=\"#172b4d\"><rect x=\"213.00\" y=\"132.00\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"215.00\" y=\"144.00\">O</text><rect x=\"241.47\" y=\"25.75\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"243.47\" y=\"37.75\">A</text><rect x=\"319.25\" y=\"160.47\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"321.25\" y=\"172.47\">B</text><rect x=\"117.74\" y=\"187.00\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"119.74\" y=\"199.00\">C</text></g></svg>"
+      }
+    },
+    {
+      "number": "32",
+      "referenceQuestion": "32",
+      "skill": "Coefficient in derivative",
+      "type": "multiple_choice",
+      "points": 3,
+      "prompt": "f(x)=(x²+4x)⁴ бол f′(x)-ийн x³ гишүүний коэффициентийг ол.",
+      "options": {
+        "A": "1025",
+        "B": "1023",
+        "C": "1024",
+        "D": "1026",
+        "E": "1022"
+      },
+      "answer": "C",
+      "answerValue": "1024",
+      "solution": "f-ийн x⁴ гишүүн k⁴x⁴. Уламжлалын x³ гишүүн зөвхөн үүнээс үүснэ."
+    },
+    {
+      "number": "33",
+      "referenceQuestion": "33",
+      "skill": "Arithmetic geometric infinite series",
+      "type": "multiple_choice",
+      "points": 3,
+      "prompt": "Σ[n=0…∞] (4n+2)/3ⁿ нийлбэрийг ол.",
+      "options": {
+        "A": "4",
+        "B": "8",
+        "C": "5",
+        "D": "6",
+        "E": "7"
+      },
+      "answer": "D",
+      "answerValue": "6",
+      "solution": "Σrⁿ=1/(1−r)=3/2; Σnrⁿ=r/(1−r)²=3/4."
+    },
+    {
+      "number": "34",
+      "referenceQuestion": "34",
+      "skill": "Integer exponential equation",
+      "type": "multiple_choice",
+      "points": 3,
+      "prompt": "(x−4+1)^((x−4)²−3(x−4)+2)=1 тэгшитгэл хэдэн бүхэл шийдтэй вэ?",
+      "options": {
+        "A": "4",
+        "B": "3",
+        "C": "6",
+        "D": "2",
+        "E": "5"
+      },
+      "answer": "A",
+      "answerValue": "4",
+      "solution": "u=x−k: суурь1 үед u=0; суурь−1 үед u=−2 ба зэрэг12; зэрэг0 үед u=1,2. Бусад боломжгүй."
+    },
+    {
+      "number": "35",
+      "referenceQuestion": "35",
+      "skill": "Minimum quadratic under linear constraint",
+      "type": "multiple_choice",
+      "points": 3,
+      "prompt": "2x+y=20 нөхцөлд x²+y²-ийн хамгийн бага утгыг ол.",
+      "options": {
+        "A": "81",
+        "B": "79",
+        "C": "78",
+        "D": "80",
+        "E": "82"
+      },
+      "answer": "D",
+      "answerValue": "80",
+      "solution": "Коши: (4+1)(x²+y²)≥(2x+y)². Тэнцэл x=2k,y=k."
+    },
+    {
+      "number": "36",
+      "referenceQuestion": "36",
+      "skill": "Oblique cylinder cap volume",
+      "type": "multiple_choice",
+      "points": 3,
+      "prompt": "Радиус 4 цилиндрийн дээд талыг налуу хавтгайгаар огтлов. Үлдсэн хамгийн урт байгуулагч 14, хамгийн богино нь 10. Эзлэхүүнийг ол.",
+      "options": {
+        "A": "160π",
+        "B": "64π",
+        "C": "192π",
+        "D": "384π",
+        "E": "224π"
+      },
+      "answer": "C",
+      "answerValue": "192π",
+      "solution": "Хавтгайн өндрийн дугуйн дээрх дундаж нь төвийн өндөр=(урт+богино)/2. V=πr²h.",
+      "figure": {
+        "schema": "education.math.figure.v1",
+        "kind": "scene",
+        "title": "Налуу хавтгайгаар огтолсон цилиндр",
+        "space": "3d",
+        "coordinateSystem": "schematic",
+        "notToScale": true,
+        "points": {
+          "O": {
+            "position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "label": "O"
+          },
+          "H": {
+            "position": [
+              0.0,
+              0.0,
+              6.0
+            ],
+            "label": "O₁"
+          },
+          "L": {
+            "position": [
+              -3.0,
+              0.0,
+              0.0
+            ],
+            "label": ""
+          },
+          "L1": {
+            "position": [
+              -3.0,
+              0.0,
+              4.5
+            ],
+            "label": ""
+          },
+          "R": {
+            "position": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "label": ""
+          },
+          "R1": {
+            "position": [
+              3.0,
+              0.0,
+              6.5
+            ],
+            "label": ""
+          }
+        },
+        "objects": [
+          {
+            "kind": "circle3d",
+            "center": "O",
+            "radius": 3.0,
+            "style": "solid",
+            "fill": null
+          },
+          {
+            "kind": "circle3d",
+            "center": "H",
+            "radius": 3.0,
+            "style": "solid",
+            "fill": null
+          },
+          {
+            "kind": "segment",
+            "from": "L",
+            "to": "L1",
+            "style": "solid",
+            "arrow": false
+          },
+          {
+            "kind": "segment",
+            "from": "R",
+            "to": "R1",
+            "style": "solid",
+            "arrow": false
+          },
+          {
+            "kind": "segment",
+            "from": "O",
+            "to": "H",
+            "style": "dashed",
+            "arrow": false
+          },
+          {
+            "kind": "polyline",
+            "positions": [
+              [
+                3.0,
+                0.0,
+                6.5
+              ],
+              [
+                2.990752001199384,
+                0.23537728718353484,
+                6.496917333733128
+              ],
+              [
+                2.9630650217854133,
+                0.46930339512069263,
+                6.487688340595138
+              ],
+              [
+                2.9171097611930294,
+                0.7003360915677161,
+                6.472369920397677
+              ],
+              [
+                2.8531695488854605,
+                0.9270509831248421,
+                6.451056516295154
+              ],
+              [
+                2.77163859753386,
+                1.1480502970952693,
+                6.423879532511287
+              ],
+              [
+                2.673019572565104,
+                1.3619714992186402,
+                6.391006524188368
+              ],
+              [
+                2.557920493062277,
+                1.5674956941478464,
+                6.352640164354092
+              ],
+              [
+                2.4270509831248424,
+                1.7633557568774194,
+                6.3090169943749475
+              ],
+              [
+                2.2812178968000927,
+                1.948344144990551,
+                6.260405965600031
+              ],
+              [
+                2.121320343559643,
+                2.121320343559643,
+                6.207106781186548
+              ],
+              [
+                1.9483441449905512,
+                2.2812178968000927,
+                6.149448048330184
+              ],
+              [
+                1.7633557568774194,
+                2.4270509831248424,
+                6.087785252292473
+              ],
+              [
+                1.5674956941478468,
+                2.5579204930622765,
+                6.022498564715949
+              ],
+              [
+                1.3619714992186405,
+                2.6730195725651034,
+                5.953990499739547
+              ],
+              [
+                1.1480502970952695,
+                2.77163859753386,
+                5.88268343236509
+              ],
+              [
+                0.9270509831248424,
+                2.8531695488854605,
+                5.8090169943749475
+              ],
+              [
+                0.7003360915677164,
+                2.9171097611930294,
+                5.733445363855905
+              ],
+              [
+                0.46930339512069275,
+                2.9630650217854133,
+                5.656434465040231
+              ],
+              [
+                0.235377287183535,
+                2.990752001199384,
+                5.578459095727845
+              ],
+              [
+                1.8369701987210297e-16,
+                3.0,
+                5.5
+              ],
+              [
+                -0.23537728718353462,
+                2.990752001199384,
+                5.421540904272155
+              ],
+              [
+                -0.46930339512069175,
+                2.9630650217854133,
+                5.34356553495977
+              ],
+              [
+                -0.700336091567716,
+                2.91710976119303,
+                5.266554636144095
+              ],
+              [
+                -0.927050983124842,
+                2.853169548885461,
+                5.1909830056250525
+              ],
+              [
+                -1.1480502970952693,
+                2.77163859753386,
+                5.11731656763491
+              ],
+              [
+                -1.3619714992186402,
+                2.673019572565104,
+                5.046009500260453
+              ],
+              [
+                -1.5674956941478464,
+                2.557920493062277,
+                4.977501435284051
+              ],
+              [
+                -1.7633557568774192,
+                2.4270509831248424,
+                4.912214747707527
+              ],
+              [
+                -1.9483441449905508,
+                2.2812178968000927,
+                4.850551951669816
+              ],
+              [
+                -2.1213203435596424,
+                2.121320343559643,
+                4.792893218813452
+              ],
+              [
+                -2.2812178968000927,
+                1.9483441449905512,
+                4.739594034399969
+              ],
+              [
+                -2.427050983124842,
+                1.7633557568774196,
+                4.6909830056250525
+              ],
+              [
+                -2.5579204930622765,
+                1.5674956941478468,
+                4.647359835645908
+              ],
+              [
+                -2.6730195725651034,
+                1.3619714992186407,
+                4.608993475811632
+              ],
+              [
+                -2.77163859753386,
+                1.1480502970952697,
+                4.576120467488713
+              ],
+              [
+                -2.8531695488854605,
+                0.9270509831248426,
+                4.548943483704846
+              ],
+              [
+                -2.9171097611930294,
+                0.7003360915677166,
+                4.527630079602323
+              ],
+              [
+                -2.963065021785413,
+                0.46930339512069297,
+                4.512311659404863
+              ],
+              [
+                -2.990752001199384,
+                0.2353772871835352,
+                4.503082666266872
+              ],
+              [
+                -3.0,
+                3.6739403974420594e-16,
+                4.5
+              ],
+              [
+                -2.9907520011993842,
+                -0.23537728718353312,
+                4.503082666266872
+              ],
+              [
+                -2.9630650217854133,
+                -0.4693033951206922,
+                4.512311659404862
+              ],
+              [
+                -2.91710976119303,
+                -0.7003360915677158,
+                4.527630079602323
+              ],
+              [
+                -2.8531695488854614,
+                -0.9270509831248407,
+                4.548943483704846
+              ],
+              [
+                -2.7716385975338604,
+                -1.148050297095269,
+                4.576120467488713
+              ],
+              [
+                -2.673019572565104,
+                -1.3619714992186398,
+                4.608993475811632
+              ],
+              [
+                -2.557920493062276,
+                -1.5674956941478473,
+                4.647359835645908
+              ],
+              [
+                -2.4270509831248424,
+                -1.7633557568774192,
+                4.6909830056250525
+              ],
+              [
+                -2.281217896800094,
+                -1.9483441449905496,
+                4.7395940343999685
+              ],
+              [
+                -2.121320343559643,
+                -2.1213203435596424,
+                4.792893218813452
+              ],
+              [
+                -1.9483441449905523,
+                -2.281217896800092,
+                4.850551951669816
+              ],
+              [
+                -1.7633557568774196,
+                -2.427050983124842,
+                4.912214747707527
+              ],
+              [
+                -1.5674956941478457,
+                -2.5579204930622774,
+                4.977501435284052
+              ],
+              [
+                -1.3619714992186407,
+                -2.6730195725651034,
+                5.046009500260453
+              ],
+              [
+                -1.1480502970952684,
+                -2.7716385975338604,
+                5.11731656763491
+              ],
+              [
+                -0.9270509831248427,
+                -2.8531695488854605,
+                5.1909830056250525
+              ],
+              [
+                -0.700336091567718,
+                -2.9171097611930294,
+                5.266554636144094
+              ],
+              [
+                -0.4693033951206931,
+                -2.963065021785413,
+                5.343565534959769
+              ],
+              [
+                -0.2353772871835367,
+                -2.990752001199384,
+                5.421540904272154
+              ],
+              [
+                -5.51091059616309e-16,
+                -3.0,
+                5.5
+              ],
+              [
+                0.23537728718353562,
+                -2.990752001199384,
+                5.578459095727845
+              ],
+              [
+                0.469303395120692,
+                -2.9630650217854133,
+                5.65643446504023
+              ],
+              [
+                0.700336091567717,
+                -2.9171097611930294,
+                5.733445363855906
+              ],
+              [
+                0.9270509831248417,
+                -2.853169548885461,
+                5.8090169943749475
+              ],
+              [
+                1.1480502970952675,
+                -2.771638597533861,
+                5.88268343236509
+              ],
+              [
+                1.3619714992186398,
+                -2.673019572565104,
+                5.953990499739547
+              ],
+              [
+                1.567495694147845,
+                -2.5579204930622774,
+                6.022498564715948
+              ],
+              [
+                1.7633557568774187,
+                -2.427050983124843,
+                6.087785252292473
+              ],
+              [
+                1.9483441449905516,
+                -2.2812178968000927,
+                6.149448048330184
+              ],
+              [
+                2.121320343559642,
+                -2.121320343559643,
+                6.207106781186547
+              ],
+              [
+                2.281217896800093,
+                -1.9483441449905503,
+                6.260405965600031
+              ],
+              [
+                2.427050983124842,
+                -1.76335575687742,
+                6.3090169943749475
+              ],
+              [
+                2.5579204930622756,
+                -1.5674956941478484,
+                6.352640164354092
+              ],
+              [
+                2.6730195725651034,
+                -1.361971499218641,
+                6.391006524188368
+              ],
+              [
+                2.7716385975338595,
+                -1.148050297095271,
+                6.423879532511286
+              ],
+              [
+                2.8531695488854605,
+                -0.927050983124843,
+                6.451056516295154
+              ],
+              [
+                2.91710976119303,
+                -0.7003360915677156,
+                6.472369920397677
+              ],
+              [
+                2.963065021785413,
+                -0.4693033951206933,
+                6.487688340595137
+              ],
+              [
+                2.990752001199384,
+                -0.23537728718353423,
+                6.496917333733128
+              ],
+              [
+                3.0,
+                -7.347880794884119e-16,
+                6.5
+              ]
+            ],
+            "label": null,
+            "style": "solid"
+          }
+        ],
+        "measurements": [
+          {
+            "kind": "length",
+            "from": "O",
+            "to": "R",
+            "text": "4",
+            "provenance": "question_given"
+          },
+          {
+            "kind": "length",
+            "from": "L",
+            "to": "L1",
+            "text": "10",
+            "provenance": "question_given"
+          },
+          {
+            "kind": "length",
+            "from": "R",
+            "to": "R1",
+            "text": "14",
+            "provenance": "question_given"
+          }
+        ],
+        "relations": [],
+        "notes": [
+          "Зураг нь зөвхөн өгөгдлийн холбоог дүрслэнэ; хэмжээг зургаас хэмжиж болохгүй."
+        ],
+        "sourceQuestion": {
+          "year": 2017,
+          "variant": "D",
+          "number": "36",
+          "figureCatalog": "2017/reference/figures.json"
+        },
+        "displayPolicy": "question_figure",
+        "answerLabelsIncluded": false,
+        "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 420 300\" role=\"img\"><title>Налуу хавтгайгаар огтолсон цилиндр</title><rect width=\"420\" height=\"300\" fill=\"white\"/><g stroke=\"#172b4d\" stroke-width=\"1.6\" fill=\"none\" stroke-linejoin=\"round\"><polyline points=\"295.94,235.94 299.06,233.58 301.33,231.24 302.71,228.95 303.21,226.73 302.80,224.59 301.51,222.57 299.33,220.67 296.29,218.92 292.42,217.34 287.76,215.93 282.34,214.72 276.23,213.71 269.49,212.91 262.17,212.34 254.34,211.99 246.09,211.88 237.50,211.99 228.63,212.34 219.59,212.91 210.46,213.71 201.32,214.72 192.27,215.93 183.38,217.34 174.76,218.92 166.47,220.67 158.60,222.57 151.22,224.59 144.42,226.73 138.24,228.95 132.76,231.24 128.01,233.58 124.06,235.94 120.94,238.30 118.67,240.63 117.29,242.92 116.79,245.15 117.20,247.28 118.49,249.31 120.67,251.20 123.71,252.95 127.58,254.54 132.24,255.94 137.66,257.16 143.77,258.17 150.51,258.96 157.83,259.54 165.66,259.88 173.91,260.00 182.50,259.88 191.37,259.54 200.41,258.96 209.54,258.17 218.68,257.16 227.73,255.94 236.62,254.54 245.24,252.95 253.53,251.20 261.40,249.31 268.78,247.28 275.58,245.15 281.76,242.92 287.24,240.63 291.99,238.30 295.94,235.94\"/><polyline points=\"295.94,64.06 299.06,61.70 301.33,59.37 302.71,57.08 303.21,54.85 302.80,52.72 301.51,50.69 299.33,48.80 296.29,47.05 292.42,45.46 287.76,44.06 282.34,42.84 276.23,41.83 269.49,41.04 262.17,40.46 254.34,40.12 246.09,40.00 237.50,40.12 228.63,40.46 219.59,41.04 210.46,41.83 201.32,42.84 192.27,44.06 183.38,45.46 174.76,47.05 166.47,48.80 158.60,50.69 151.22,52.72 144.42,54.85 138.24,57.08 132.76,59.37 128.01,61.70 124.06,64.06 120.94,66.42 118.67,68.76 117.29,71.05 116.79,73.27 117.20,75.41 118.49,77.43 120.67,79.33 123.71,81.08 127.58,82.66 132.24,84.07 137.66,85.28 143.77,86.29 150.51,87.09 157.83,87.66 165.66,88.01 173.91,88.12 182.50,88.01 191.37,87.66 200.41,87.09 209.54,86.29 218.68,85.28 227.73,84.07 236.62,82.66 245.24,81.08 253.53,79.33 261.40,77.43 268.78,75.41 275.58,73.27 281.76,71.05 287.24,68.76 291.99,66.42 295.94,64.06\"/><line x1=\"124.06\" y1=\"235.94\" x2=\"124.06\" y2=\"107.03\"/><line x1=\"295.94\" y1=\"235.94\" x2=\"295.94\" y2=\"49.74\"/><line x1=\"210.00\" y1=\"235.94\" x2=\"210.00\" y2=\"64.06\" stroke-dasharray=\"5 4\"/><polyline points=\"295.94,49.74 298.50,47.94 300.53,46.33 301.99,44.91 302.89,43.71 303.21,42.71 302.96,41.94 302.13,41.39 300.74,41.07 298.79,40.98 296.29,41.11 293.26,41.48 289.71,42.08 285.68,42.90 281.17,43.94 276.23,45.19 270.88,46.65 265.16,48.30 259.09,50.14 252.73,52.15 246.09,54.32 239.24,56.64 232.21,59.10 225.03,61.68 217.77,64.35 210.46,67.12 203.14,69.95 195.87,72.84 188.69,75.76 181.63,78.69 174.76,81.63 168.09,84.54 161.69,87.42 155.59,90.24 149.82,92.98 144.42,95.64 139.42,98.19 134.86,100.62 130.77,102.91 127.16,105.06 124.06,107.03 121.50,108.83 119.47,110.44 118.01,111.86 117.11,113.06 116.79,114.06 117.04,114.83 117.87,115.38 119.26,115.70 121.21,115.80 123.71,115.66 126.74,115.29 130.29,114.69 134.32,113.87 138.83,112.83 143.77,111.58 149.12,110.12 154.84,108.47 160.91,106.63 167.27,104.62 173.91,102.45 180.76,100.13 187.79,97.67 194.97,95.10 202.23,92.42 209.54,89.65 216.86,86.82 224.13,83.93 231.31,81.01 238.37,78.08 245.24,75.14 251.91,72.23 258.31,69.35 264.41,66.53 270.18,63.79 275.58,61.13 280.58,58.58 285.14,56.15 289.23,53.86 292.84,51.72 295.94,49.74\" fill=\"none\"/></g><g font-family=\"Segoe UI, sans-serif\" font-size=\"13\" fill=\"#172b4d\"><rect x=\"213.00\" y=\"217.94\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"215.00\" y=\"229.94\">O</text><rect x=\"213.00\" y=\"46.06\" width=\"17\" height=\"16\" fill=\"white\"/><text x=\"215.00\" y=\"58.06\">O₁</text><rect x=\"255.97\" y=\"218.94\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"257.97\" y=\"230.94\">4</text><rect x=\"127.06\" y=\"154.48\" width=\"17\" height=\"16\" fill=\"white\"/><text x=\"129.06\" y=\"166.48\">10</text><rect x=\"298.94\" y=\"125.84\" width=\"17\" height=\"16\" fill=\"white\"/><text x=\"300.94\" y=\"137.84\">14</text></g></svg>"
+      }
+    },
+    {
+      "number": "2.1",
+      "referenceQuestion": "2.1",
+      "skill": "Cubic radical rationalization",
+      "type": "structured_response",
+      "points": 7,
+      "prompt": "r=∛4. 1/(2r²+r−1) бутархайн хуваарийг иррационалиас чөлөөл.",
+      "parts": [
+        {
+          "id": "1",
+          "prompt": "Хуваарийн үржигдэхүүнд задаргаа",
+          "answer": "(r+1)(2r−1)"
+        },
+        {
+          "id": "2",
+          "prompt": "Рационалчилсан хариу",
+          "answer": "3*r**2/155 + 17*r/155 - 7/155"
+        },
+        {
+          "id": "3",
+          "prompt": "r²-ийн коэффициент",
+          "answer": "3/155"
+        },
+        {
+          "id": "4",
+          "prompt": "r-ийн коэффициент",
+          "answer": "17/155"
+        },
+        {
+          "id": "5",
+          "prompt": "Тогтмол гишүүн",
+          "answer": "-7/155"
+        }
+      ],
+      "solution": "(r+1)-ийг r²−r+1-ээр, (2r−1)-ийг 4r²+2r+1-ээр үржүүл. Хуваарь (n+1)(8n−1). r³=n-ийг ашиглан хүртвэрийг хураа."
+    },
+    {
+      "number": "2.2",
+      "referenceQuestion": "2.2",
+      "skill": "Harmonic function amplitude period inequality tangent",
+      "type": "structured_response",
+      "points": 7,
+      "prompt": "f(x)=cos(6πx)−√3 sin(6πx).",
+      "parts": [
+        {
+          "id": "1",
+          "prompt": "Нэг косинусын хэлбэр",
+          "answer": "2cos(6πx+π/3)"
+        },
+        {
+          "id": "2",
+          "prompt": "Үндсэн үе",
+          "answer": "1/3"
+        },
+        {
+          "id": "3",
+          "prompt": "f(x)≥1 шийд",
+          "answer": "[−1/9+n/3; n/3], n∈Z"
+        },
+        {
+          "id": "4",
+          "prompt": "x=1 дээрх шүргэгч",
+          "answer": "y−1=−6√3π(x−1)"
+        }
+      ],
+      "solution": "cosθ−√3sinθ=2cos(θ+π/3). Үе 1/freq. cos≥1/2 нөхцөлийг аргументын завсарт буулган бодно. f(1)=1, f′(1)=−2freq√3π."
+    },
+    {
+      "number": "2.3",
+      "referenceQuestion": "2.3",
+      "skill": "Three cards without replacement",
+      "type": "structured_response",
+      "points": 7,
+      "prompt": "1-ээс 12 хүртэл дугаарласан 12 картаас гурвыг зэрэг жигд сонгоно.",
+      "parts": [
+        {
+          "id": "1",
+          "prompt": "Бүгд сондгой дугаартай байх магадлал",
+          "answer": "1/11"
+        },
+        {
+          "id": "2",
+          "prompt": "Хамгийн их дугаар 7 байх магадлал",
+          "answer": "3/44"
+        },
+        {
+          "id": "3",
+          "prompt": "Үржвэр нь тэгш байх магадлал",
+          "answer": "10/11"
+        }
+      ],
+      "solution": "Нийт C(N,3) сонголт. Бүгд сондгой C(N/2,3). Хамгийн их M үед M картыг тогтоож бусад хоёрыг 1,…,M−1-ээс сонго."
+    },
+    {
+      "number": "2.4",
+      "referenceQuestion": "2.4",
+      "skill": "Regular square pyramid and optimization",
+      "type": "structured_response",
+      "points": 7,
+      "prompt": "Бүх ирмэг нь 6 урттай зөв дөрвөн өнцөгт пирамид өгөгдөв.",
+      "parts": [
+        {
+          "id": "1",
+          "prompt": "Суурийн диагональ",
+          "answer": "6√2"
+        },
+        {
+          "id": "2",
+          "prompt": "Диагональ огтлолын талбай",
+          "answer": "18"
+        },
+        {
+          "id": "3",
+          "prompt": "Пирамидын эзлэхүүн",
+          "answer": "36*sqrt(2)"
+        },
+        {
+          "id": "4",
+          "prompt": "Багтсан бөмбөрцгийн радиус",
+          "answer": "-3*sqrt(2)/2 + 3*sqrt(6)/2"
+        },
+        {
+          "id": "5",
+          "prompt": "Дөрвөн орой нь суурь дээр, бусад дөрөв нь хажуу ирмэг дээр байх тэгш өнцөгт хайрцгийн хамгийн их эзлэхүүн",
+          "answer": "16*sqrt(2)"
+        }
+      ],
+      "solution": "Өндөр a/√2. Диагональ огтлол a²/2. V=a³√2/6. Бөмбөрцгийн r=3V/Sнийт=a√2/[2(1+√3)]. Төсөөгөөр хайрцгийн тал b=a(1−z/h); b²z хамгийн их үед z=h/3, Vmax=4a²h/27.",
+      "figure": {
+        "schema": "education.math.figure.v1",
+        "kind": "scene",
+        "title": "Пирамид",
+        "space": "3d",
+        "coordinateSystem": "schematic",
+        "notToScale": true,
+        "points": {
+          "A": {
+            "position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "label": "A"
+          },
+          "B": {
+            "position": [
+              6.0,
+              0.0,
+              0.0
+            ],
+            "label": "B"
+          },
+          "C": {
+            "position": [
+              6.0,
+              6.0,
+              0.0
+            ],
+            "label": "C"
+          },
+          "D": {
+            "position": [
+              0.0,
+              6.0,
+              0.0
+            ],
+            "label": "D"
+          },
+          "S": {
+            "position": [
+              3.0,
+              3.0,
+              4.242640687119286
+            ],
+            "label": "S"
+          },
+          "O": {
+            "position": [
+              3.0,
+              3.0,
+              0.0
+            ],
+            "label": "O"
+          }
+        },
+        "objects": [
+          {
+            "kind": "polygon",
+            "points": [
+              "A",
+              "B",
+              "C",
+              "D"
+            ],
+            "fill": null
+          },
+          {
+            "kind": "segment",
+            "from": "A",
+            "to": "S",
+            "style": "solid",
+            "arrow": false
+          },
+          {
+            "kind": "segment",
+            "from": "B",
+            "to": "S",
+            "style": "solid",
+            "arrow": false
+          },
+          {
+            "kind": "segment",
+            "from": "C",
+            "to": "S",
+            "style": "solid",
+            "arrow": false
+          },
+          {
+            "kind": "segment",
+            "from": "D",
+            "to": "S",
+            "style": "solid",
+            "arrow": false
+          },
+          {
+            "kind": "segment",
+            "from": "S",
+            "to": "O",
+            "style": "dashed",
+            "arrow": false
+          }
+        ],
+        "measurements": [
+          {
+            "kind": "length",
+            "from": "A",
+            "to": "B",
+            "text": "6",
+            "provenance": "question_given"
+          }
+        ],
+        "relations": [
+          {
+            "kind": "regular_pyramid",
+            "base": [
+              "A",
+              "B",
+              "C",
+              "D"
+            ],
+            "apex": "S"
+          },
+          {
+            "kind": "all_edges_equal",
+            "vertices": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "S"
+            ],
+            "length": "6"
+          }
+        ],
+        "notes": [
+          "Зураг нь зөвхөн өгөгдлийн холбоог дүрслэнэ; хэмжээг зургаас хэмжиж болохгүй.",
+          "Бөмбөрцөг болон хайрцаг нь тусдаа дэд бодлогын байгууламж; оновчтой хэмжээг зурагт өгөгдөөгүй."
+        ],
+        "constructionRequests": [
+          {
+            "kind": "insphere",
+            "solid": "pyramid"
+          },
+          {
+            "kind": "inscribed_rectangular_box",
+            "upperVerticesOnLateralEdges": true,
+            "height": "variable"
+          }
+        ],
+        "sourceQuestion": {
+          "year": 2017,
+          "variant": "D",
+          "number": "2.4",
+          "figureCatalog": "2017/reference/figures.json"
+        },
+        "displayPolicy": "question_figure",
+        "answerLabelsIncluded": false,
+        "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 420 300\" role=\"img\"><title>Пирамид</title><rect width=\"420\" height=\"300\" fill=\"white\"/><g stroke=\"#172b4d\" stroke-width=\"1.6\" fill=\"none\" stroke-linejoin=\"round\"><polygon points=\"40.00,251.41 279.44,251.41 380.00,184.37 140.56,184.37\" fill=\"none\"/><line x1=\"40.00\" y1=\"251.41\" x2=\"210.00\" y2=\"48.59\"/><line x1=\"279.44\" y1=\"251.41\" x2=\"210.00\" y2=\"48.59\"/><line x1=\"380.00\" y1=\"184.37\" x2=\"210.00\" y2=\"48.59\"/><line x1=\"140.56\" y1=\"184.37\" x2=\"210.00\" y2=\"48.59\"/><line x1=\"210.00\" y1=\"48.59\" x2=\"210.00\" y2=\"217.89\" stroke-dasharray=\"5 4\"/></g><g font-family=\"Segoe UI, sans-serif\" font-size=\"13\" fill=\"#172b4d\"><rect x=\"43.00\" y=\"233.41\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"45.00\" y=\"245.41\">A</text><rect x=\"282.44\" y=\"233.41\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"284.44\" y=\"245.41\">B</text><rect x=\"383.00\" y=\"166.37\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"385.00\" y=\"178.37\">C</text><rect x=\"143.56\" y=\"166.37\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"145.56\" y=\"178.37\">D</text><rect x=\"213.00\" y=\"30.59\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"215.00\" y=\"42.59\">S</text><rect x=\"213.00\" y=\"199.89\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"215.00\" y=\"211.89\">O</text><rect x=\"162.72\" y=\"234.41\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"164.72\" y=\"246.41\">6</text></g></svg>"
+      }
+    }
+  ],
+  "figureSchema": "education.math.figure.v1"
+}

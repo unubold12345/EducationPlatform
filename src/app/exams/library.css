@@ -1,0 +1,25 @@
+/* Deployed exam-card presentation, scoped to the current library items. */
+.library-page { padding-top: 34px; }
+.library-topline { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding-bottom: 22px; border-bottom: 1px solid var(--line); }
+.library-list { display: grid; margin-top: 26px; }
+.library-list .exam-price { margin-top: auto; }
+.library-list .exam-card > .button { margin-top: 0; }
+.library-subjects { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-bottom: 20px; }
+.library-subjects a { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; gap: 2px 8px; padding: 9px 11px; border: 1px solid var(--line); border-radius: 10px; background: color-mix(in srgb, var(--paper) 32%, transparent); }
+.library-subjects a:hover { border-color: #42a97c; background: color-mix(in srgb, #42a97c 7%, transparent); }
+.library-subjects span { font-size: 12px; font-weight: 600; }
+.library-subjects strong { font-size: 17px; line-height: 1; letter-spacing: -.03em; text-align: right; }
+.library-subjects small { grid-column: 1 / -1; font-family: var(--font-mono); font-size: 8px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+
+.library-note { display: flex; align-items: flex-start; justify-content: space-between; gap: 34px; margin-top: 36px; padding-top: 20px; border-top: 1px solid var(--line); }
+.library-note p { max-width: 76ch; margin: 0; font-size: 10.5px; line-height: 1.8; color: var(--muted); }
+.library-note > div { display: flex; flex-wrap: wrap; gap: 14px 22px; flex-shrink: 0; }
+.library-note .text-link { font-size: 11px; }
+
+@media (max-width: 700px) {
+  .library-page { padding-top: 24px; }
+  .library-subjects { grid-template-columns: minmax(0, 1fr); gap: 5px; }
+  .library-subjects a { grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; }
+  .library-subjects small { grid-column: auto; }
+  .library-note { display: grid; gap: 16px; }
+}

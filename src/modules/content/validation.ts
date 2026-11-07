@@ -1,7 +1,7 @@
 // Pure validation shared by unit tests and the admin publishing service.
 import { isCorrect } from "../exams/engine.ts";
 import type { ExamQuestion } from "../exams/types.ts";
-const immutable=new Set(["slug","program","examId","id","version","seconds","kind","pretest","minWords","maxWords","minutes","audioPart","skill","url"]);
+const immutable=new Set(["slug","program","examId","id","version","seconds","kind","pretest","minWords","maxWords","minutes","audioPart","skill","url","figure"]);
 export function validateContentShape(base:unknown,value:unknown,field=""):boolean {
   if(base===undefined)return value===undefined;
   if(base===null)return value===null;

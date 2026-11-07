@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, type ReactNode } from "react";
 
-export function HomeMotion({ children }: { children: ReactNode }) {
+export function HomeMotion({ children, className = "home-page" }: { children: ReactNode; className?: string }) {
   const root = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const media = matchMedia("(prefers-reduced-motion: reduce)");
@@ -34,5 +34,5 @@ export function HomeMotion({ children }: { children: ReactNode }) {
       animations.forEach(animation => animation.cancel());
     };
   }, []);
-  return <div ref={root} className="container home-page">{children}</div>;
+  return <div ref={root} className={"container " + className}>{children}</div>;
 }

@@ -5,15 +5,12 @@ import { ApiError } from "@/lib/api";
 import { Prisma } from "@/generated/prisma/client";
 import { getExam } from "@/modules/content/published";
 import { activeTimedSitting } from "@/modules/exams/active-sitting";
-import { findExam } from "@/modules/exams/definitions";
-import { findOfficialPaper } from "@/modules/papers/catalog";
-import { keyForPaper } from "@/modules/papers/key";
-import { paperAccess } from "@/modules/papers/service";
+import { practiceDuringMockAllowed } from "@/lib/local-pilot";
 import { hasSubscription } from "@/modules/subscriptions/access";
 import { deepseekChat } from "@/modules/tutor/provider";
 import { tutorDay } from "@/modules/tutor/contracts";
 import { PRACTICE_AI_DAILY_LIMIT, practiceMessages, validAssistantInput } from "./assistant-contract";
-import { applyPracticeCheck, applyPracticeEdit, mockPractice, paperPractice, practiceStats, validPracticeCheck, validPracticeEdit, type PracticeSource } from "./form";
+import { applyPracticeCheck, applyPracticeEdit, mockPractice, practiceStats, validPracticeCheck, validPracticeEdit, type PracticeSource } from "./form";
 import type { PracticeProgress, PracticeResult, PracticeView } from "./types";
 
 export class TimedSittingOpen extends ApiError {
@@ -22,14 +19,11 @@ export class TimedSittingOpen extends ApiError {
 const json = (value: unknown): Prisma.InputJsonValue => JSON.parse(JSON.stringify(value));
 
 async function sourceFor(slug: string): Promise<PracticeSource | null> {
-  const paper = findOfficialPaper(slug);
-  if (paper) return paperPractice(paper, keyForPaper(paper));
   const definition = await getExam(slug);
   return definition ? mockPractice(definition) : null;
 }
 export async function practiceAllowed(userId: string, slug: string) {
-  if (findOfficialPaper(slug)) return paperAccess(userId, slug);
-  const definition = findExam(slug);
+  const definition = await getExam(slug);
   if (!definition) return false;
   return Boolean(await getDb().mockPurchase.findFirst({ where: { userId, examSlug: slug, status: "PAID" }, select: { id: true } })) || await hasSubscription(userId, definition.program);
 }
@@ -38,7 +32,8 @@ async function requirePractice(userId: string, slug: string): Promise<PracticeSo
   const source = await sourceFor(slug);
   if (!source) throw new ApiError(404, "Шалгалт олдсонгүй.");
   if (!await practiceAllowed(userId, slug)) throw new ApiError(402, "Энэ шалгалтын эрх эсвэл сарын багц шаардлагатай.");
-  const sitting = await activeTimedSitting(userId);
+  // A local developer can switch this block off (DEV_PRACTICE_DURING_MOCK); a hosted server never can.
+  const sitting = practiceDuringMockAllowed() ? null : await activeTimedSitting(userId);
   if (sitting) throw new TimedSittingOpen(sitting.href);
   return source;
 }
@@ -131,7 +126,7 @@ export async function practiceAssistantReply(userId: string, slug: string, body:
   try {
     const message = await deepseekChat(practiceMessages(body, context), 2000);
     // Another tab may have started a timed exam while the provider was answering.
-    const sitting = await activeTimedSitting(userId);
+    const sitting = practiceDuringMockAllowed() ? null : await activeTimedSitting(userId);
     if (sitting) throw new TimedSittingOpen(sitting.href);
     return { message, provider: "DeepSeek" };
   } finally {

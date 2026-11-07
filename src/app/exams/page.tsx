@@ -1,19 +1,79 @@
-import { englishPapers,englishYears } from "@/modules/papers/english-catalog";
-import { officialPaperCategory } from "@/modules/papers/catalog";
 export const dynamic="force-dynamic";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { examDefinitions } from "@/modules/exams/definitions";
 import { MOCK_PRICE_LABEL } from "@/modules/exams/pricing";
+import { entranceCounts, entranceTotal } from "@/modules/exams/entrance/catalog";
+import "./library.css";
 export const metadata:Metadata={title:"Бүтэн шалгалтууд"};
+
+type Programme = {
+  id: "sat" | "ielts" | "eesh";
+  tone: "sat" | "ielts" | "entrance";
+  kicker: string;
+  title: string;
+  copy: string;
+  facts: { label: string; value: string }[];
+  chips: string[];
+  subjects?: { label: string; count: number; href: string }[];
+  count: number;
+  href: string;
+  cta: string;
+  plan: string;
+};
+
 export default async function ExamsPage(){
-  const exams=(["sat","ielts"] as const).map(program=>({program,slug:program,title:program==="sat"?"Digital SAT":"IELTS Academic",count:examDefinitions.filter(exam=>exam.program===program).length}));
-  return <div className="container page-space exams-library"><div className="library-topline"><span className="eyebrow">ШАЛГАЛТЫН САН</span><Link className="text-link" href="/dashboard">Миний шалгалтууд ↗</Link></div><div className="exam-hero"><div className="page-intro"><h1>Бэлтгэлээ бодитоор<br/><span>сорьж үз.</span></h1><p>SAT, IELTS Academic mock болон БҮТ-ийн бодит ЭЕШ материал. Стандарт хугацаа, хадгалагдах хариулт, хувийн үр дүн.</p></div><aside className="exam-hero-panel" aria-label="Шалгалтын сангийн товч"><div className="exam-hero-panel-top"><span className="eyebrow">EXAM DECK</span><span className="status">2026</span></div><dl><div><dt>Ангилал</dt><dd>04</dd></div><div><dt>Англи хувилбар</dt><dd>37</dd></div><div><dt>Хамгийн урт</dt><dd>2ц 44м</dd></div><div><dt>Цаг</dt><dd>Server</dd></div></dl></aside></div><div className="exam-library-label"><h2>Бүтэн шалгалтууд</h2><span>12 mock · 4 шалгалтын ангилал · Хугацаатай</span></div>
-    <div className="exam-grid">{exams.map(exam=><article className={"exam-card "+exam.program} key={exam.slug}><div className="exam-card-top"><span className="exam-subject">{exam.program==="sat"?"SAT":"IELTS Academic"}</span><span className="status">{exam.count} бүтэн mock</span></div><h2>{exam.title}</h2><p>{exam.program==="sat"?"Reading & Writing-ээс Math хүртэл. Модуль бүрийн цаг, завсарлага болон сонгох/тоон хариулттай.":"Listening, Reading, Writing, Speaking. Бичлэг сонсож, эх уншиж, эсээ бичиж, яриагаа бичүүлээрэй."}</p>
-      <dl className="exam-card-facts"><div><dt>Агуулга</dt><dd>{exam.program==="sat"?"98 асуулт · 4 модуль":"80 асуулт + 2 Writing task + Speaking"}</dd></div><div><dt>Хугацаа</dt><dd>{exam.program==="sat"?"2ц 14м + 10м завсарлага":"32м Listening · 60м Reading · 60м Writing · 12м Speaking"}</dd></div></dl>
-      <ol className="exam-timing-strip">{(exam.program==="sat"?["R&W · 64м","Break · 10м","Math · 70м"]:["Listen · 32м","Read · 60м","Write · 60м","Speak · 12м"]).map(text=><li key={text}>{text}</li>)}</ol>
-      <div className="exam-price"><strong>{MOCK_PRICE_LABEL}</strong><span>Нэг шалгалтын эрх · Дахин өгч болно</span></div><Link className="button" href={"/exams/"+exam.slug}>Mock сонгох →</Link>
-    </article>)}<article className="exam-card entrance official-exam-card"><div className="exam-card-top"><span className="exam-subject">ЭЛСЭЛТИЙН ЕРӨНХИЙ ШАЛГАЛТ</span><span className="status">БҮТ · 2020 · A–D</span></div><h2>{officialPaperCategory.title}</h2><p>Бодит өмнөх оны албан материал. A, B, C, D дөрвөн хувилбар. Хувилбар бүр эх 8 хуудас, өөрийн албан түлхүүр, хариултын хуудастай.</p><dl className="exam-card-facts"><div><dt>Агуулга</dt><dd>36 сонгох + 4 нөхөх даалгавар</dd></div><div><dt>Хугацаа</dt><dd>100 минут · 100 анхны оноо</dd></div></dl><ol className="exam-timing-strip"><li>Сонгох · 72 оноо</li><li>Нөхөх · 28 оноо</li></ol><div className="exam-price"><strong>{MOCK_PRICE_LABEL}</strong><span>Эсвэл University Prep сарын багц</span></div><Link className="button" href={"/exams/"+officialPaperCategory.slug}>Хувилбараа сонгох →</Link></article><article className="exam-card entrance english-exam-card english-archive-entry"><div className="exam-card-top"><span className="exam-subject">ЭЛСЭЛТИЙН ЕРӨНХИЙ ШАЛГАЛТ</span><span className="status">БҮТ · {englishYears.length} он</span></div><h2>ЭЕШ · Англи хэл</h2><p>{englishPapers.length} хувилбар. Эх материалын хамт хариултаа оруулж, хадгалж, түлхүүрээр дүнгээ гаргаарай.</p><dl className="exam-card-facts"><div><dt>Хугацаа</dt><dd>80 минут</dd></div><div><dt>Үр дүн</dt><dd>Автомат хадгалалт · Түлхүүртэй задаргаа</dd></div></dl><div className="exam-price"><strong>{MOCK_PRICE_LABEL}</strong><span>Эсвэл University Prep сарын багц</span></div><Link className="button" href="/exams/eec-english">Он, хувилбараа сонгох →</Link></article></div>
-    <div className="exam-accuracy"><h2>Эх сурвалж нь тодорхой, бэлтгэл нь бодит.</h2><p>Хугацаа, хэсгийн дараалал, асуултын тоог албан ёсны тайлбарт тулгасан. SAT/IELTS нь өөрсдийн зохиосон mock агуулга. ЭЕШ 2020 Математикийн A–D хувилбар нь БҮТ-ийн албан архивын эх материал. SAT-ийн хоёрдугаар модулийн чиглүүлэлт нь дадлагын загвар; албан ёсны difficulty calibration, 1600 онооны хөрвүүлэлт биш. IELTS Writing, Speaking нь багшийн үнэлгээ шаарддаг.</p><Link className="text-link" href="/programs">Хөтөлбөрүүд →</Link></div>
+  const subjects=entranceCounts();
+  const sat=examDefinitions.filter(exam=>exam.program==="sat").length;
+  const ielts=examDefinitions.filter(exam=>exam.program==="ielts").length;
+  const programmes: Programme[]=[
+    {
+      id:"sat",tone:"sat",kicker:"SAT",title:"Digital SAT",
+      copy:"Reading & Writing-ээс Math хүртэл. Модуль бүрийн цаг, завсарлага болон сонгох/тоон хариулттай.",
+      facts:[{label:"Агуулга",value:"98 асуулт · 4 модуль"},{label:"Хугацаа",value:"2ц 14м + 10м завсарлага"}],
+      chips:["R&W · 64м","Break · 10м","Math · 70м"],
+      count:sat,href:"/exams/sat",cta:"6 mock үзэх",plan:"SAT багц",
+    },
+    {
+      id:"ielts",tone:"ielts",kicker:"IELTS Academic",title:"IELTS Academic",
+      copy:"Listening, Reading, Writing, Speaking. Бичлэг сонсож, эх уншиж, эсээ бичиж, яриагаа бичүүлээрэй.",
+      facts:[{label:"Агуулга",value:"80 асуулт + 2 Writing task + Speaking"},{label:"Хугацаа",value:"32м Listening · 60м Reading · 60м Writing · 12м Speaking"}],
+      chips:["Listen · 32м","Read · 60м","Write · 60м","Speak · 12м"],
+      count:ielts,href:"/exams/ielts",cta:"6 mock үзэх",plan:"IELTS багц",
+    },
+    {
+      id:"eesh",tone:"entrance",kicker:"ЭЛСЭЛТИЙН ЕРӨНХИЙ ШАЛГАЛТ",title:"Элсэлтийн ерөнхий шалгалт",
+      copy:"Математик, физик 2015–2026; англи хэл 2018–2026. Жил, хувилбараар эрэмбэлсэн бүтэн mock.",
+      facts:[{label:"Агуулга",value:"3 хичээл · 100 оноо"},{label:"Хугацаа",value:"80–100 минут"}],
+      chips:[],
+      subjects:[
+        {label:"Математик",count:subjects.math,href:"/exams/eesh?subject=math"},
+        {label:"Физик",count:subjects.physics,href:"/exams/eesh?subject=physics"},
+        {label:"Англи хэл",count:subjects.english,href:"/exams/eesh?subject=english"},
+      ],
+      count:entranceTotal,href:"/exams/eesh",cta:"Бүх 155 mock",plan:"University Prep",
+    },
+  ];
+  return <div className="container page-space library-page">
+    <div className="library-topline"><span className="eyebrow">ШАЛГАЛТЫН САН · 2026</span><Link className="text-link" href="/dashboard">Миний бэлтгэл ↗</Link></div>
+    <h1 className="sr-only">Бүтэн шалгалтууд</h1>
+
+    <section className="exam-grid library-list" aria-label="Шалгалтын хөтөлбөрүүд">
+      {programmes.map(item => <article className={"exam-card "+item.tone} id={item.id} key={item.id} aria-labelledby={item.id+"-title"}>
+        <div className="exam-card-top"><span className="exam-subject">{item.kicker}</span><span className="status">{item.count} бүтэн mock</span></div>
+        <h2 id={item.id+"-title"}>{item.title}</h2>
+        <p>{item.copy}</p>
+        <dl className="exam-card-facts">{item.facts.map(fact=><div key={fact.label}><dt>{fact.label}</dt><dd>{fact.value}</dd></div>)}</dl>
+        {item.subjects?<nav className="library-subjects" aria-label="ЭЕШ-ийн хичээлүүд">{item.subjects.map(subject=><Link key={subject.href} href={subject.href}><span>{subject.label}</span><strong>{subject.count}</strong><small>mock</small></Link>)}</nav>:
+          <ol className="exam-timing-strip">{item.chips.map(chip=><li key={chip}>{chip}</li>)}</ol>}
+        <div className="exam-price"><strong>{MOCK_PRICE_LABEL}</strong><span>{item.id==="eesh"?`Эсвэл ${item.plan} сарын багц`:"Нэг шалгалтын эрх · Дахин өгч болно"}</span></div>
+        <Link className="button" href={item.href}>{item.id==="eesh"?item.cta:"Mock сонгох"} <span aria-hidden="true">→</span></Link>
+      </article>)}
+    </section>
+
+    <footer className="library-note">
+      <p>Бүх даалгаврыг энэ сайтад зориулж зохиосон; College Board, IELTS, БҮТ-ийн албан материал биш. SAT, IELTS-ийн албан оноо, band тооцохгүй.</p>
+      <div><Link className="text-link" href="/plans">Сарын багцууд →</Link><Link className="text-link" href="/programs">Хөтөлбөрүүд →</Link></div>
+    </footer>
   </div>;
 }

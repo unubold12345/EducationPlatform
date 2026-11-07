@@ -1,12 +1,9 @@
 import "../briefing.css";
-import { findOfficialPaper } from "@/modules/papers/catalog";
-import { OfficialPaperBriefing } from "@/modules/papers/briefing";
 export const dynamic="force-dynamic";
 import { getExam } from "@/modules/content/published";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { examDefinitions } from "@/modules/exams/definitions";
 import type { ExamStage } from "@/modules/exams/types";
 import { ExamStart } from "@/modules/exams/start-client";
 import { getSession } from "@/lib/session";
@@ -14,9 +11,9 @@ import { getDb } from "@/lib/db";
 import { hasSubscription } from "@/modules/subscriptions/access";
 import { mockBriefingSummary } from "@/modules/exams/briefing-summary";
 import { PracticeEntry } from "@/modules/exam-practice/entry";
+import { EntranceBriefing } from "@/modules/exams/entrance/briefing";
 
-export function generateStaticParams(){return examDefinitions.map(({slug})=>({slug}));}
-export async function generateMetadata({params}:{params:Promise<{slug:string}>}):Promise<Metadata>{return{title:findOfficialPaper((await params).slug)?.title??(await getExam((await params).slug))?.title??"Шалгалт олдсонгүй"};}
+export async function generateMetadata({params}:{params:Promise<{slug:string}>}):Promise<Metadata>{return{title:(await getExam((await params).slug))?.title??"Шалгалт олдсонгүй"};}
 
 function stageDetail(stage: ExamStage) {
   if (stage.kind === "break") return "Асуултгүй завсарлага";
@@ -28,8 +25,6 @@ function stageDetail(stage: ExamStage) {
 }
 
 export default async function ExamPage({params}:{params:Promise<{slug:string}>}){
-  const paper=findOfficialPaper((await params).slug);
-  if(paper)return <OfficialPaperBriefing paper={paper}/>;
   const exam=await getExam((await params).slug);if(!exam)notFound();
   const session=await getSession();
   const access=session?await getDb().mockPurchase.findFirst({where:{userId:session.user.id,examSlug:exam.slug,status:"PAID"},select:{id:true}}):null;
@@ -37,14 +32,16 @@ export default async function ExamPage({params}:{params:Promise<{slug:string}>})
   const subscriptionSitting=session?await getDb().mockAttempt.findFirst({where:{userId:session.user.id,slug:exam.slug,status:"IN_PROGRESS",subscriptionAccess:true},select:{id:true}}):null;
   const activeAttempt=session?await getDb().mockAttempt.findFirst({where:{userId:session.user.id,slug:exam.slug,status:"IN_PROGRESS"},select:{id:true}}):null;
   const hasAccess=Boolean(access)||subscribed||Boolean(subscriptionSitting);
+  if(exam.program==="entrance")return <EntranceBriefing exam={exam} hasAccess={hasAccess} loggedIn={Boolean(session)} activeAttemptId={activeAttempt?.id}/>;
   const summary=mockBriefingSummary(exam);
   const sat=exam.program==="sat";
+  const collection=sat?{href:"/exams/sat",title:"Digital SAT"}:{href:"/exams/ielts",title:"IELTS Academic"};
 
   return <div className="container page-space exam-detail exam-briefing-page">
     <div className="briefing-breadcrumb" role="navigation" aria-label="Шалгалтын зам">
       <Link className="text-link" href="/exams">← Бүх шалгалт</Link>
       <span aria-hidden="true">/</span>
-      <Link className="text-link" href={sat?"/exams/sat":"/exams/ielts"}>{sat ? "Digital SAT" : "IELTS Academic"}</Link>
+      <Link className="text-link" href={collection.href}>{collection.title}</Link>
     </div>
 
     <div className="exam-briefing-layout">

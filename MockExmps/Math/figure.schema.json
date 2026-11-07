@@ -1,0 +1,163 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:education:math:figure:v1",
+  "title": "Offline Math question figure",
+  "type": "object",
+  "required": [
+    "schema",
+    "kind",
+    "title",
+    "svg",
+    "sourceQuestion",
+    "displayPolicy",
+    "answerLabelsIncluded"
+  ],
+  "properties": {
+    "schema": {
+      "const": "education.math.figure.v1"
+    },
+    "kind": {
+      "enum": [
+        "scene",
+        "statistical"
+      ]
+    },
+    "title": {
+      "type": "string"
+    },
+    "svg": {
+      "type": "string",
+      "pattern": "^<svg "
+    },
+    "answerLabelsIncluded": {
+      "const": false
+    },
+    "displayPolicy": {
+      "enum": [
+        "question_figure",
+        "optional_illustration"
+      ]
+    },
+    "space": {
+      "enum": [
+        "2d",
+        "3d"
+      ]
+    },
+    "coordinateSystem": {
+      "enum": [
+        "cartesian",
+        "schematic"
+      ]
+    },
+    "notToScale": {
+      "type": "boolean"
+    },
+    "sourceQuestion": {
+      "type": "object",
+      "required": [
+        "year",
+        "variant",
+        "number",
+        "figureCatalog"
+      ]
+    },
+    "points": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "position",
+          "label"
+        ],
+        "properties": {
+          "position": {
+            "type": "array",
+            "items": {
+              "type": "number"
+            },
+            "minItems": 2,
+            "maxItems": 3
+          },
+          "label": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "objects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "kind"
+        ],
+        "properties": {
+          "kind": {
+            "enum": [
+              "segment",
+              "polygon",
+              "polyline",
+              "circle",
+              "circle3d"
+            ]
+          }
+        }
+      }
+    },
+    "measurements": {
+      "type": "array"
+    },
+    "relations": {
+      "type": "array"
+    },
+    "chartType": {
+      "enum": [
+        "histogram",
+        "stem_leaf",
+        "boxplot",
+        "probability_bars"
+      ]
+    },
+    "data": {
+      "type": "object"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "scene"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "space",
+          "coordinateSystem",
+          "notToScale",
+          "points",
+          "objects",
+          "measurements",
+          "relations"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "statistical"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "chartType",
+          "data"
+        ]
+      }
+    }
+  ]
+}

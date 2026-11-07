@@ -1,0 +1,1434 @@
+{
+  "slug": "eesh-math-2024-m1",
+  "subject": "math",
+  "year": 2024,
+  "form": "M1",
+  "title": "ЭЕШ · Математик · 2024 · M1",
+  "description": "2024 оны ЭЕШ-ийн математикийн бүтэцтэй, энэ сайтад зориулж зохиосон дадлагын шалгалт. 36 сонгох, 4 бодолт; тооцоолуур хэрэглэхгүй.",
+  "durationMinutes": 100,
+  "points": 100,
+  "calculator": false,
+  "language": "mn",
+  "instructions": [
+    "Нэгдүгээр хэсэгт 36 даалгаврын A–E сонголтоос нэгийг сонгоно.",
+    "Хоёрдугаар хэсгийн 4 бодолтын дэд асуултад хариугаа бичнэ. Бүхэл тоо, бутархай, интервал эсвэл илэрхийлэл бичиж болно.",
+    "Тооцоолуур хэрэглэхгүй. Ноорог самбар нээлттэй."
+  ],
+  "groups": [
+    {
+      "id": "part-1",
+      "title": "Нэгдүгээр хэсэг · Сонгох даалгавар",
+      "section": "I хэсэг",
+      "instructions": "Даалгавар бүрт нэг зөв хариултыг сонго."
+    },
+    {
+      "id": "task-1",
+      "title": "2.1",
+      "section": "II хэсэг",
+      "pageMode": "group",
+      "instructions": "f(x)=1+√(7(x−1)−3)−1.",
+      "figure": {
+        "kind": "image",
+        "src": "/exam-assets/eesh/math/eesh-math-2024-m1/t2-1.svg",
+        "alt": "Функцийн график",
+        "width": 420,
+        "height": 370
+      }
+    },
+    {
+      "id": "task-2",
+      "title": "2.2",
+      "section": "II хэсэг",
+      "pageMode": "group",
+      "instructions": "D оройд огтлолцох AD=4√5,DC=4√11,DH=2√5 ирмэгүүдтэй тэгш өнцөгт хайрцаг. D-ээс ACH хавтгай хүртэлх зайг ол.",
+      "figure": {
+        "kind": "image",
+        "src": "/exam-assets/eesh/math/eesh-math-2024-m1/t2-2.svg",
+        "alt": "Тэгш өнцөгт хайрцгийн огтлогч хавтгай",
+        "width": 420,
+        "height": 265
+      }
+    },
+    {
+      "id": "task-3",
+      "title": "2.3",
+      "section": "II хэсэг",
+      "pageMode": "group",
+      "instructions": "Аялагчдын замын гистограммын завсрууд [[2, 4], [4, 6], [6, 8], [8, 10]] км, давтамжийн нягтууд харгалзан [4, 12, 6, 2].",
+      "figure": {
+        "kind": "image",
+        "src": "/exam-assets/eesh/math/eesh-math-2024-m1/t2-3.svg",
+        "alt": "Frequency density histogram statistics",
+        "width": 420,
+        "height": 302
+      }
+    },
+    {
+      "id": "task-4",
+      "title": "2.4",
+      "section": "II хэсэг",
+      "pageMode": "group",
+      "instructions": "u=x−1, f(x)=(2/2)|u²−7u|. График ба (4,12) цэгт татсан шүргэгчээр хүрээлэгдэх талбайг ол.",
+      "figure": {
+        "kind": "image",
+        "src": "/exam-assets/eesh/math/eesh-math-2024-m1/t2-4.svg",
+        "alt": "Функцийн график",
+        "width": 420,
+        "height": 408
+      }
+    }
+  ],
+  "questions": [
+    {
+      "id": "eesh-math-2024-m1-q1",
+      "number": "1",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 1,
+      "domain": "Тоо, илэрхийлэл",
+      "prompt": "4-т хуваагдах тоог сонго.",
+      "options": [
+        "146",
+        "145",
+        "149",
+        "144",
+        "147"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "144"
+      ],
+      "answerDisplay": "144",
+      "explanation": "Сүүлийн хоёр цифрээс үүсэх тоо 4-т хуваагдах эсэхийг шалга."
+    },
+    {
+      "id": "eesh-math-2024-m1-q2",
+      "number": "2",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 1,
+      "domain": "Магадлал, статистик",
+      "prompt": "Хоёр удаагийн туршилтад амжилтын тоо X=0,1,2. Харгалзах магадлалууд 9/49,24/49,16/49. P(X≥1)-ийг ол.",
+      "options": [
+        "5/6",
+        "4/5",
+        "40/49",
+        "6/7",
+        "41/49"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "40/49"
+      ],
+      "answerDisplay": "40/49",
+      "explanation": "Нэгээс бага цорын ганц утга X=0; эсрэг үзэгдлийн магадлалыг 1-ээс хас.",
+      "figure": {
+        "kind": "image",
+        "src": "/exam-assets/eesh/math/eesh-math-2024-m1/q2.svg",
+        "alt": "Probability bar chart",
+        "width": 420,
+        "height": 199
+      }
+    },
+    {
+      "id": "eesh-math-2024-m1-q3",
+      "number": "3",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 1,
+      "domain": "Алгебр",
+      "prompt": "(4/9)x+3+5/6=4-г бод.",
+      "options": [
+        "1/3",
+        "3/7",
+        "3/8",
+        "1/2",
+        "5/8"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "3/8"
+      ],
+      "answerDisplay": "3/8",
+      "explanation": "Тогтмолуудын ялгавар 1/6. x=(1/6)/(4/9)=3/8."
+    },
+    {
+      "id": "eesh-math-2024-m1-q4",
+      "number": "4",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 1,
+      "domain": "Тоо, илэрхийлэл",
+      "prompt": "∛(3²)·3^(1/3)-г хялбарчил.",
+      "options": [
+        "3",
+        "1",
+        "5",
+        "2",
+        "4"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "3"
+      ],
+      "answerDisplay": "3",
+      "explanation": "Илтгэгчүүд 2/3+1/3=1."
+    },
+    {
+      "id": "eesh-math-2024-m1-q5",
+      "number": "5",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 1,
+      "domain": "Тригонометр",
+      "prompt": "O төвтэй тойргийн A дээрх шүргэгч B-г дайрна. B,O,C нэг шулуун дээр, C нь OB цацрагийн тойрог дээрх цэг. ∠AOB=62°. ∠BAC-г ол.",
+      "options": [
+        "29",
+        "30",
+        "31",
+        "32",
+        "33"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "31"
+      ],
+      "answerDisplay": "31",
+      "explanation": "OA⊥AB, харин OAC адил хажуут тул ∠OAC=(180−θ)/2. ∠BAC=90−∠OAC=θ/2.",
+      "figure": {
+        "kind": "image",
+        "src": "/exam-assets/eesh/math/eesh-math-2024-m1/q5.svg",
+        "alt": "Тойрог, шүргэгч ба хөвч",
+        "width": 420,
+        "height": 279
+      }
+    },
+    {
+      "id": "eesh-math-2024-m1-q6",
+      "number": "6",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 1,
+      "domain": "Тоо, илэрхийлэл",
+      "prompt": "3 улаан,4 цагаан,5 хөх бөмбөгөөс өөр өнгийн хоёрыг хэдэн янзаар сонгох вэ?",
+      "options": [
+        "45",
+        "48",
+        "47",
+        "46",
+        "49"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "47"
+      ],
+      "answerDisplay": "47",
+      "explanation": "Өнгөний гурван хос тус бүрийн боломжийг үржүүлж нэм."
+    },
+    {
+      "id": "eesh-math-2024-m1-q7",
+      "number": "7",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 1,
+      "domain": "Геометр",
+      "prompt": "Тэгш өнцөгт хайрцагт A(0,0,0),B(3,0,0),E(0,0,4),G(3,5,4). BG−AE векторыг ол.",
+      "options": [
+        "(0; 0; 4)",
+        "(3; 5; 0)",
+        "(0; 5; 0)",
+        "(0; -5; 0)",
+        "(0; 5; 4)"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "(0; 5; 0)"
+      ],
+      "answerDisplay": "(0; 5; 0)",
+      "explanation": "BG=(0,k+2,k+1), AE=(0,0,k+1); хас.",
+      "figure": {
+        "kind": "image",
+        "src": "/exam-assets/eesh/math/eesh-math-2024-m1/q7.svg",
+        "alt": "Тэгш өнцөгт параллелепипед",
+        "width": 420,
+        "height": 443
+      }
+    },
+    {
+      "id": "eesh-math-2024-m1-q8",
+      "number": "8",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 1,
+      "domain": "Функц, анализ",
+      "prompt": "y=ln(3x)−3x. y′-ийг ол.",
+      "options": [
+        "3/x−3",
+        "1/x+3",
+        "1/(3x)−3",
+        "1/x−3",
+        "ln(3x)−3"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "1/x−3"
+      ],
+      "answerDisplay": "1/x−3",
+      "explanation": "ln(kx)-ийн уламжлал k/(kx)=1/x."
+    },
+    {
+      "id": "eesh-math-2024-m1-q9",
+      "number": "9",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 2,
+      "domain": "Тоо, илэрхийлэл",
+      "prompt": "Нэг ширхэг нунтаг талст 3×10^(−7) мг. 3000 талстын нийт массыг мг-аар ол.",
+      "options": [
+        "3×10^(−4)",
+        "9×10^(−5)",
+        "9×10^(−4)",
+        "9×10^(−3)",
+        "9×10^(−10)"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "9×10^(−4)"
+      ],
+      "answerDisplay": "9×10^(−4)",
+      "explanation": "k·10^(−7)·3·10³=3k·10^(−4)."
+    },
+    {
+      "id": "eesh-math-2024-m1-q10",
+      "number": "10",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 2,
+      "domain": "Тоо, илэрхийлэл",
+      "prompt": "360-ын 5/24 нь x-ийн 5/8-тай тэнцүү. x-г ол.",
+      "options": [
+        "118",
+        "119",
+        "122",
+        "121",
+        "120"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "120"
+      ],
+      "answerDisplay": "120",
+      "explanation": "Хоёр талаас 5-ыг хураахад x=(120k)/3."
+    },
+    {
+      "id": "eesh-math-2024-m1-q11",
+      "number": "11",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 2,
+      "domain": "Тоо, илэрхийлэл",
+      "prompt": "(x²+3x)/(x²−4)·(x+2)/x−(x+3)/(2x−4)-г хялбарчил. x≠−2,0,2.",
+      "options": [
+        "(x+3)/(x−2)",
+        "(x+3)/(2(x+2))",
+        "1/(2(x−2))",
+        "(x+3)/(2(x−2))",
+        "(x−3)/(2(x−2))"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "(x+3)/(2(x−2))"
+      ],
+      "answerDisplay": "(x+3)/(2(x−2))",
+      "explanation": "Эхний үржвэр (x+k)/(x−2); түүнээс талыг нь хасна."
+    },
+    {
+      "id": "eesh-math-2024-m1-q12",
+      "number": "12",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 2,
+      "domain": "Магадлал, статистик",
+      "prompt": "ABC гурвалжны AN=9,BM=12 медианууд перпендикуляр, O дээр огтолно. N нь BC-ийн, M нь AC-ийн дундаж. ONCM талбайг ол.",
+      "options": [
+        "22",
+        "25",
+        "23",
+        "24",
+        "26"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "24"
+      ],
+      "answerDisplay": "24",
+      "explanation": "ON=a, OM=b. O=(0,0),N=(a,0),M=(0,−b),C=(2a,−2b) гэж координат сонгоход дөрвөн өнцөгтийн талбай 2ab.",
+      "figure": {
+        "kind": "image",
+        "src": "/exam-assets/eesh/math/eesh-math-2024-m1/q12.svg",
+        "alt": "Координатын дүрс",
+        "width": 420,
+        "height": 541
+      }
+    },
+    {
+      "id": "eesh-math-2024-m1-q13",
+      "number": "13",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 2,
+      "domain": "Тригонометр",
+      "prompt": "tan α=−3/4,90°<α<180°. cosα-г ол.",
+      "options": [
+        "-4/5",
+        "-1",
+        "-2/5",
+        "-3/5",
+        "-2/3"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "-4/5"
+      ],
+      "answerDisplay": "-4/5",
+      "explanation": "1+tan²α=sec²α. II мөчид cos сөрөг."
+    },
+    {
+      "id": "eesh-math-2024-m1-q14",
+      "number": "14",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 2,
+      "domain": "Тоо, илэрхийлэл",
+      "prompt": "A(−5,−2),B(5,4),C(1,a) нэг шулуун дээр. a-г ол.",
+      "options": [
+        "4/3",
+        "2",
+        "9/5",
+        "7/5",
+        "8/5"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "8/5"
+      ],
+      "answerDisplay": "8/5",
+      "explanation": "Налалт 3/5. y+2=(3/5)(x+5)."
+    },
+    {
+      "id": "eesh-math-2024-m1-q15",
+      "number": "15",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 2,
+      "domain": "Функц, анализ",
+      "prompt": "∫[1→8] dx/√(3x+1)-г ол.",
+      "options": [
+        "1",
+        "3",
+        "4",
+        "2",
+        "0"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "2"
+      ],
+      "answerDisplay": "2",
+      "explanation": "Эх функц (2/3)√(3x+1); төгсгөлийн язгуурууд 2,k+2."
+    },
+    {
+      "id": "eesh-math-2024-m1-q16",
+      "number": "16",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 2,
+      "domain": "Алгебр",
+      "prompt": "z²+6z+45=0. Im z>0 байх язгуурыг ол.",
+      "options": [
+        "−3+36i",
+        "3+6i",
+        "3−6i",
+        "−3−6i",
+        "−3+6i"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "−3+6i"
+      ],
+      "answerDisplay": "−3+6i",
+      "explanation": "Квадрат гүйцээвэл (z+k)²=−36."
+    },
+    {
+      "id": "eesh-math-2024-m1-q17",
+      "number": "17",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 2,
+      "domain": "Магадлал, статистик",
+      "prompt": "X нь 1,2 утгыг p₁,p₂ магадлалаар авна. E(X)=11/10. p₁,p₂-ыг ол.",
+      "options": [
+        "(9/10; 1/10)",
+        "(1/5; 4/5)",
+        "(2/5; 3/5)",
+        "(1/10; 9/10)",
+        "(3/10; 7/10)"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "(9/10; 1/10)"
+      ],
+      "answerDisplay": "(9/10; 1/10)",
+      "explanation": "p₁+p₂=1, p₁+2p₂=mean; ялгавраас p₂=mean−1."
+    },
+    {
+      "id": "eesh-math-2024-m1-q18",
+      "number": "18",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 2,
+      "domain": "Магадлал, статистик",
+      "prompt": "Нэг төвтэй 3,5 радиустай дугуйн цагирагийг дөрвөн тэнцүү секторт хувааж, эсрэг хоёр секторыг буджээ. Том дугуйд цэг жигд сонгоход будсан хэсэгт байх магадлалыг ол.",
+      "options": [
+        "4/13",
+        "9/25",
+        "1/3",
+        "8/25",
+        "2/5"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "8/25"
+      ],
+      "answerDisplay": "8/25",
+      "explanation": "Будсан талбай нь цагирагийн тал: π(R²−r²)/2. Том дугуйн талбайд хуваа.",
+      "figure": {
+        "kind": "image",
+        "src": "/exam-assets/eesh/math/eesh-math-2024-m1/q18.svg",
+        "alt": "Будсан цагираг",
+        "width": 420,
+        "height": 420
+      }
+    },
+    {
+      "id": "eesh-math-2024-m1-q19",
+      "number": "19",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 2,
+      "domain": "Функц, анализ",
+      "prompt": "y′=sin x−sin3x, y(π/3)=3−1/3. y-г ол.",
+      "options": [
+        "−cosx−cos3x/3+3",
+        "cosx−cos3x/3+3",
+        "−cosx+cos3x/3+3+1/2",
+        "−cosx+cos3x/3+3−1/2",
+        "−cosx+3cos3x+3"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "−cosx+cos3x/3+3+1/2"
+      ],
+      "answerDisplay": "−cosx+cos3x/3+3+1/2",
+      "explanation": "Эх функц −cosx+cos3x/3+C. π/3 дээр −5/6 тул C=k+1/2."
+    },
+    {
+      "id": "eesh-math-2024-m1-q20",
+      "number": "20",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 2,
+      "domain": "Тоо, илэрхийлэл",
+      "prompt": "Үнэ хоёр удаа ижил хувиар өсөөд анхнаасаа 41/4% нэмэгджээ. Нэг удаагийн өсөлтийн хувь хэд вэ?",
+      "options": [
+        "3",
+        "5",
+        "6",
+        "7",
+        "4"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "5"
+      ],
+      "answerDisplay": "5",
+      "explanation": "(1+r/100)²=1+growth/100. Эерэг квадрат язгуур авч r-г ол."
+    },
+    {
+      "id": "eesh-math-2024-m1-q21",
+      "number": "21",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 2,
+      "domain": "Тоо, илэрхийлэл",
+      "prompt": "(x−1)²−3(x−1)<0, 2−(x−1)≥0-ийг хамтад нь бод.",
+      "options": [
+        "[1;3]",
+        "(1;4)",
+        "(−∞;3]",
+        "(1;3)",
+        "(1;3]"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "(1;3]"
+      ],
+      "answerDisplay": "(1;3]",
+      "explanation": "u=x−v: 0<u<3 ба u≤2; огтлол 0<u≤2."
+    },
+    {
+      "id": "eesh-math-2024-m1-q22",
+      "number": "22",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 2,
+      "domain": "Магадлал, статистик",
+      "prompt": "Хоёр шударга шооны нүдний үржвэр 3-д хуваагдах магадлалыг ол.",
+      "options": [
+        "5/8",
+        "5/9",
+        "7/9",
+        "2/3",
+        "1/2"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "5/9"
+      ],
+      "answerDisplay": "5/9",
+      "explanation": "36 хосын үржвэрийн хуваагдах нөхцөлийг тоол."
+    },
+    {
+      "id": "eesh-math-2024-m1-q23",
+      "number": "23",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 2,
+      "domain": "Тоо, илэрхийлэл",
+      "prompt": "y=(3x+6)/(x+5) график (1,3/2)-ийг дайрна. Босоо асимптотыг ол.",
+      "options": [
+        "y=−5",
+        "x=−5",
+        "x=5",
+        "y=3",
+        "x=−3"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "x=−5"
+      ],
+      "answerDisplay": "x=−5",
+      "explanation": "Хуваарь тэг болох x=−(2b−1); хүртвэр тэнд тэг биш."
+    },
+    {
+      "id": "eesh-math-2024-m1-q24",
+      "number": "24",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 2,
+      "domain": "Алгебр",
+      "prompt": "log₂(4−3x)+log₂x=0. Шийдүүдийн нийлбэрийг ол.",
+      "options": [
+        "1",
+        "5/4",
+        "5/3",
+        "4/3",
+        "2"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "4/3"
+      ],
+      "answerDisplay": "4/3",
+      "explanation": "x(k+1−kx)=1 →kx²−(k+1)x+1=0; язгуурууд 1,1/k, хоёулаа логийн мужид."
+    },
+    {
+      "id": "eesh-math-2024-m1-q25",
+      "number": "25",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 2,
+      "domain": "Геометр",
+      "prompt": "Конусын байгуулагч суурийн хавтгайтай үүсгэх өнцгийн sin=12/13, суурийн радиус 15. Хажуу талбайг ол.",
+      "options": [
+        "225π",
+        "540π",
+        "1404π",
+        "585π",
+        "1521π"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "585π"
+      ],
+      "answerDisplay": "585π",
+      "explanation": "cos=5/13; байгуулагч l=r/(5/13)=13k. S=πrl."
+    },
+    {
+      "id": "eesh-math-2024-m1-q26",
+      "number": "26",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 2,
+      "domain": "Тоо, илэрхийлэл",
+      "prompt": "P(x)=2x³+11x²+15x−5. (x+3)²-д хуваах үлдэгдлийг ол.",
+      "options": [
+        "3*x + 6",
+        "3*x + 2",
+        "3*x + 3",
+        "3*x + 5",
+        "3*x + 4"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "3*x + 4"
+      ],
+      "answerDisplay": "3*x + 4",
+      "explanation": "Шугаман R(x)=P(−3)+P′(−3)(x+3), эсвэл урт хуваалт хэрэглэ."
+    },
+    {
+      "id": "eesh-math-2024-m1-q27",
+      "number": "27",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 2,
+      "domain": "Геометр",
+      "prompt": "x²+y²=36 тойрог дээр A(12,9)-д хамгийн ойр цэгийн x-г ол.",
+      "options": [
+        "24/5",
+        "4",
+        "6",
+        "26/5",
+        "5"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "24/5"
+      ],
+      "answerDisplay": "24/5",
+      "explanation": "Хамгийн ойр цэг OA цацраг дээр: радиус 2k, |OA|=5k; x=4k·2/5."
+    },
+    {
+      "id": "eesh-math-2024-m1-q28",
+      "number": "28",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 2,
+      "domain": "Тоо, илэрхийлэл",
+      "prompt": "Зөвхөн ['3', '4', '5'] цифрээр дөрвөн оронтой тоо бичнэ. Цифр бүр хоёроос олонгүй орсон боломж хэд вэ?",
+      "options": [
+        "56",
+        "55",
+        "54",
+        "53",
+        "52"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "54"
+      ],
+      "answerDisplay": "54",
+      "explanation": "Нийт 3⁴. Нэг цифр 3 эсвэл 4 орсон тоонуудыг хас: 3(4·2+1)."
+    },
+    {
+      "id": "eesh-math-2024-m1-q29",
+      "number": "29",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 3,
+      "domain": "Тоо, илэрхийлэл",
+      "prompt": "101-аас хэтрэхгүй, 3 ба 8-ын алинд ч хуваагдахгүй натурал тоонуудын нийлбэрийг ол.",
+      "options": [
+        "3082",
+        "3084",
+        "3085",
+        "3086",
+        "3083"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "3084"
+      ],
+      "answerDisplay": "3084",
+      "explanation": "Нийт нийлбэрээс 3 ба 8-ын үржвэрүүдийн нийлбэрийг хасаад 24-ийн үржвэрийн нийлбэрийг нэм."
+    },
+    {
+      "id": "eesh-math-2024-m1-q30",
+      "number": "30",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 3,
+      "domain": "Алгебр",
+      "prompt": "(1−3x)³(1+x)⁵-ийн x²-ийн коэффициентийг ол.",
+      "options": [
+        "-8",
+        "-10",
+        "-7",
+        "-9",
+        "-6"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "-8"
+      ],
+      "answerDisplay": "-8",
+      "explanation": "x²-ыг (2,0),(1,1),(0,2) зэргийн нийлбэрүүд үүсгэнэ: 3k²−15k+10."
+    },
+    {
+      "id": "eesh-math-2024-m1-q31",
+      "number": "31",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 3,
+      "domain": "Функц, анализ",
+      "prompt": "∫e^(2x)/(e^x−3) dx-г ол.",
+      "options": [
+        "e^(2x)/2+C",
+        "e^x+3ln|e^x−3|+C",
+        "3e^x+ln|e^x−3|+C",
+        "ln|e^x−3|+C",
+        "e^x−3ln|e^x−3|+C"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "e^x+3ln|e^x−3|+C"
+      ],
+      "answerDisplay": "e^x+3ln|e^x−3|+C",
+      "explanation": "u=e^x; ∫u/(u−k)du=∫(1+k/(u−k))du."
+    },
+    {
+      "id": "eesh-math-2024-m1-q32",
+      "number": "32",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 3,
+      "domain": "Тоо, илэрхийлэл",
+      "prompt": "Эхлээд y=x-ийн хувьд тольдоод, дараа нь O төвтэй цагийн зүүний дагуу 90° эргүүлэв. Нийлмэл матрицыг ол.",
+      "options": [
+        "[[0, 1], [1, 0]]",
+        "[[1, 0], [0, -1]]",
+        "[[1, 0], [0, 1]]",
+        "[[0, -1], [-1, 0]]",
+        "[[-1, 0], [0, 1]]"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "[[1, 0], [0, -1]]"
+      ],
+      "answerDisplay": "[[1, 0], [0, -1]]",
+      "explanation": "Үйлдлийн дарааллаар эргэлтийн матрицыг тольдолтын матрицын зүүн талаас үржүүл."
+    },
+    {
+      "id": "eesh-math-2024-m1-q33",
+      "number": "33",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 3,
+      "domain": "Тригонометр",
+      "prompt": "ABC гурвалжны AD өндөр. D төвтэй,DA радиустай тойрог AB,AC-г A-аас өөр M,N дээр огтолно. AM=10,BM=6,AN=8. AC-г ол.",
+      "options": [
+        "18",
+        "22",
+        "20",
+        "19",
+        "21"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "20"
+      ],
+      "answerDisplay": "20",
+      "explanation": "Тэгш өнцөгт гурвалжин ба цэгийн зэргээс AB·AM=AC·AN=2AD². AB=8s, иймд AC=8s·5s/(4s).",
+      "figure": {
+        "kind": "image",
+        "src": "/exam-assets/eesh/math/eesh-math-2024-m1/q33.svg",
+        "alt": "Гурвалжин",
+        "width": 420,
+        "height": 269
+      }
+    },
+    {
+      "id": "eesh-math-2024-m1-q34",
+      "number": "34",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 3,
+      "domain": "Функц, анализ",
+      "prompt": "f′(x)=−(x−1−1)²+4 параболын графиктай; f(1)=−4. f-ийн локал максимум утгыг ол.",
+      "options": [
+        "3",
+        "7",
+        "5",
+        "6",
+        "4"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "5"
+      ],
+      "answerDisplay": "5",
+      "explanation": "u=x−v; f′=−u²+2u+3. Максимум u=3 дээр. f(3+v)=−4+∫₀³(−u²+2u+3)du=5.",
+      "figure": {
+        "kind": "image",
+        "src": "/exam-assets/eesh/math/eesh-math-2024-m1/q34.svg",
+        "alt": "Функцийн график",
+        "width": 420,
+        "height": 360
+      }
+    },
+    {
+      "id": "eesh-math-2024-m1-q35",
+      "number": "35",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 3,
+      "domain": "Алгебр",
+      "prompt": "A=[[x,−3],[1,y]], A−3A⁻¹=6I. x²+y²-г ол.",
+      "options": [
+        "48",
+        "46",
+        "50",
+        "49",
+        "47"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "48"
+      ],
+      "answerDisplay": "48",
+      "explanation": "Диагональ бус гишүүнээс detA=−3. Иймд xy=−6, x+y=t. x²+y²=t²−2xy."
+    },
+    {
+      "id": "eesh-math-2024-m1-q36",
+      "number": "36",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 3,
+      "domain": "Тригонометр",
+      "prompt": "OAB гурвалжны OB дээр ON:NB=3:2. BM медиан ба AN нь P дээр огтлолцоно. OA=a,OB=b. OP-г илэрхийл.",
+      "options": [
+        "(2a+3b)/5",
+        "(2a+3b)/7",
+        "(5a+3b)/7",
+        "(2a+5b)/7",
+        "(3a+2b)/7"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "(2a+3b)/7"
+      ],
+      "answerDisplay": "(2a+3b)/7",
+      "explanation": "M=a/2, N=rb/(r+s). Хоёр шулууны параметрүүдийг координатаар тэнцүүл.",
+      "figure": {
+        "kind": "image",
+        "src": "/exam-assets/eesh/math/eesh-math-2024-m1/q36.svg",
+        "alt": "Гурвалжин",
+        "width": 420,
+        "height": 304
+      }
+    },
+    {
+      "id": "eesh-math-2024-m1-task-1-a",
+      "number": "2.1a",
+      "groupId": "task-1",
+      "kind": "number",
+      "matcher": "numeric",
+      "points": 2,
+      "domain": "Функц, анализ",
+      "prompt": "Тодорхойлогдох мужийн доод хязгаар",
+      "answers": [
+        "10/7"
+      ],
+      "answerDisplay": "10/7",
+      "explanation": "u=x−h гэж шилжүүл. Урвууг y+1=√(7u−3)-аас олно. Өсөх функцийн графикууд y=x дээр u=1,4-т огтлолцож, хооронд нь f≥f⁻¹ байна."
+    },
+    {
+      "id": "eesh-math-2024-m1-task-1-b",
+      "number": "2.1b",
+      "groupId": "task-1",
+      "kind": "number",
+      "matcher": "numeric",
+      "points": 2,
+      "domain": "Функц, анализ",
+      "prompt": "Утгын мужийн доод хязгаар",
+      "answers": [
+        "0"
+      ],
+      "answerDisplay": "0",
+      "explanation": "u=x−h гэж шилжүүл. Урвууг y+1=√(7u−3)-аас олно. Өсөх функцийн графикууд y=x дээр u=1,4-т огтлолцож, хооронд нь f≥f⁻¹ байна."
+    },
+    {
+      "id": "eesh-math-2024-m1-task-1-c",
+      "number": "2.1c",
+      "groupId": "task-1",
+      "kind": "short",
+      "matcher": "math",
+      "points": 1,
+      "domain": "Функц, анализ",
+      "prompt": "Урвуу функц",
+      "answers": [
+        "1+((x−1+1)²+3)/7"
+      ],
+      "answerDisplay": "1+((x−1+1)²+3)/7",
+      "explanation": "u=x−h гэж шилжүүл. Урвууг y+1=√(7u−3)-аас олно. Өсөх функцийн графикууд y=x дээр u=1,4-т огтлолцож, хооронд нь f≥f⁻¹ байна."
+    },
+    {
+      "id": "eesh-math-2024-m1-task-1-d",
+      "number": "2.1d",
+      "groupId": "task-1",
+      "kind": "number",
+      "matcher": "numeric",
+      "points": 1,
+      "domain": "Функц, анализ",
+      "prompt": "Урвуугийн тодорхойлогдох мужийн доод хязгаар",
+      "answers": [
+        "0"
+      ],
+      "answerDisplay": "0",
+      "explanation": "u=x−h гэж шилжүүл. Урвууг y+1=√(7u−3)-аас олно. Өсөх функцийн графикууд y=x дээр u=1,4-т огтлолцож, хооронд нь f≥f⁻¹ байна."
+    },
+    {
+      "id": "eesh-math-2024-m1-task-1-e",
+      "number": "2.1e",
+      "groupId": "task-1",
+      "kind": "short",
+      "matcher": "math",
+      "points": 1,
+      "domain": "Функц, анализ",
+      "prompt": "f(x)≥f⁻¹(x) шийд",
+      "answers": [
+        "[2;5]"
+      ],
+      "answerDisplay": "[2;5]",
+      "explanation": "u=x−h гэж шилжүүл. Урвууг y+1=√(7u−3)-аас олно. Өсөх функцийн графикууд y=x дээр u=1,4-т огтлолцож, хооронд нь f≥f⁻¹ байна."
+    },
+    {
+      "id": "eesh-math-2024-m1-task-2-a",
+      "number": "2.2a",
+      "groupId": "task-2",
+      "kind": "number",
+      "matcher": "numeric",
+      "points": 2,
+      "domain": "Геометр",
+      "prompt": "S(ADH)",
+      "answers": [
+        "20"
+      ],
+      "answerDisplay": "20",
+      "explanation": "Ирмэгүүд харилцан перпендикуляр. V=AD·DC·DH/6; ACH-ийн талууд 5s,7s,8s, Героны талбай 10s²√3. Зай 3V/S."
+    },
+    {
+      "id": "eesh-math-2024-m1-task-2-b",
+      "number": "2.2b",
+      "groupId": "task-2",
+      "kind": "short",
+      "matcher": "math",
+      "points": 1,
+      "domain": "Геометр",
+      "prompt": "V(ADHC)",
+      "answers": [
+        "80√11/3"
+      ],
+      "answerDisplay": "80√11/3",
+      "explanation": "Ирмэгүүд харилцан перпендикуляр. V=AD·DC·DH/6; ACH-ийн талууд 5s,7s,8s, Героны талбай 10s²√3. Зай 3V/S."
+    },
+    {
+      "id": "eesh-math-2024-m1-task-2-c",
+      "number": "2.2c",
+      "groupId": "task-2",
+      "kind": "number",
+      "matcher": "numeric",
+      "points": 1,
+      "domain": "Геометр",
+      "prompt": "AC",
+      "answers": [
+        "16"
+      ],
+      "answerDisplay": "16",
+      "explanation": "Ирмэгүүд харилцан перпендикуляр. V=AD·DC·DH/6; ACH-ийн талууд 5s,7s,8s, Героны талбай 10s²√3. Зай 3V/S."
+    },
+    {
+      "id": "eesh-math-2024-m1-task-2-d",
+      "number": "2.2d",
+      "groupId": "task-2",
+      "kind": "short",
+      "matcher": "math",
+      "points": 1,
+      "domain": "Геометр",
+      "prompt": "AH ба CH",
+      "answers": [
+        "(10; 14)"
+      ],
+      "answerDisplay": "(10; 14)",
+      "explanation": "Ирмэгүүд харилцан перпендикуляр. V=AD·DC·DH/6; ACH-ийн талууд 5s,7s,8s, Героны талбай 10s²√3. Зай 3V/S."
+    },
+    {
+      "id": "eesh-math-2024-m1-task-2-e",
+      "number": "2.2e",
+      "groupId": "task-2",
+      "kind": "short",
+      "matcher": "math",
+      "points": 1,
+      "domain": "Геометр",
+      "prompt": "S(ACH)",
+      "answers": [
+        "40√3"
+      ],
+      "answerDisplay": "40√3",
+      "explanation": "Ирмэгүүд харилцан перпендикуляр. V=AD·DC·DH/6; ACH-ийн талууд 5s,7s,8s, Героны талбай 10s²√3. Зай 3V/S."
+    },
+    {
+      "id": "eesh-math-2024-m1-task-2-f",
+      "number": "2.2f",
+      "groupId": "task-2",
+      "kind": "short",
+      "matcher": "math",
+      "points": 1,
+      "domain": "Геометр",
+      "prompt": "D-ээс ACH хүртэлх зай",
+      "answers": [
+        "2√33/3"
+      ],
+      "answerDisplay": "2√33/3",
+      "explanation": "Ирмэгүүд харилцан перпендикуляр. V=AD·DC·DH/6; ACH-ийн талууд 5s,7s,8s, Героны талбай 10s²√3. Зай 3V/S."
+    },
+    {
+      "id": "eesh-math-2024-m1-task-3-a",
+      "number": "2.3a",
+      "groupId": "task-3",
+      "kind": "number",
+      "matcher": "numeric",
+      "points": 2,
+      "domain": "Магадлал, статистик",
+      "prompt": "[6;8) км явсан хүний тоо",
+      "answers": [
+        "12"
+      ],
+      "answerDisplay": "12",
+      "explanation": "Завсар бүрийн өргөн 2 тул давтамжууд 4s,12s,6s,2s. Суурь төвүүд 2,4,6,8 ба шилжилт v; дундаж v+4.5, дисперс 11/4."
+    },
+    {
+      "id": "eesh-math-2024-m1-task-3-b",
+      "number": "2.3b",
+      "groupId": "task-3",
+      "kind": "number",
+      "matcher": "numeric",
+      "points": 2,
+      "domain": "Магадлал, статистик",
+      "prompt": "Нийт хүний тоо",
+      "answers": [
+        "48"
+      ],
+      "answerDisplay": "48",
+      "explanation": "Завсар бүрийн өргөн 2 тул давтамжууд 4s,12s,6s,2s. Суурь төвүүд 2,4,6,8 ба шилжилт v; дундаж v+4.5, дисперс 11/4."
+    },
+    {
+      "id": "eesh-math-2024-m1-task-3-c",
+      "number": "2.3c",
+      "groupId": "task-3",
+      "kind": "number",
+      "matcher": "numeric",
+      "points": 2,
+      "domain": "Магадлал, статистик",
+      "prompt": "Ангийн төвөөр тооцсон дундаж",
+      "answers": [
+        "11/2"
+      ],
+      "answerDisplay": "11/2",
+      "explanation": "Завсар бүрийн өргөн 2 тул давтамжууд 4s,12s,6s,2s. Суурь төвүүд 2,4,6,8 ба шилжилт v; дундаж v+4.5, дисперс 11/4."
+    },
+    {
+      "id": "eesh-math-2024-m1-task-3-d",
+      "number": "2.3d",
+      "groupId": "task-3",
+      "kind": "short",
+      "matcher": "math",
+      "points": 1,
+      "domain": "Магадлал, статистик",
+      "prompt": "Стандарт хазайлт",
+      "answers": [
+        "√11/2"
+      ],
+      "answerDisplay": "√11/2",
+      "explanation": "Завсар бүрийн өргөн 2 тул давтамжууд 4s,12s,6s,2s. Суурь төвүүд 2,4,6,8 ба шилжилт v; дундаж v+4.5, дисперс 11/4."
+    },
+    {
+      "id": "eesh-math-2024-m1-task-4-a",
+      "number": "2.4a",
+      "groupId": "task-4",
+      "kind": "short",
+      "matcher": "math",
+      "points": 2,
+      "domain": "Тригонометр",
+      "prompt": "Модулийн доторх илэрхийлэл сөрөг байх x муж",
+      "answers": [
+        "(1;8)"
+      ],
+      "answerDisplay": "(1;8)",
+      "explanation": "0<u<7 үед f=s(7u−u²)/2. u=3 дээр налалт s/2. Гадна салбаруудтай шүргэгчийн огтлол u=−1,9. [−1,0],[0,7],[7,9] хэсгүүдээр интегралын нийлбэр 157s/6."
+    },
+    {
+      "id": "eesh-math-2024-m1-task-4-b",
+      "number": "2.4b",
+      "groupId": "task-4",
+      "kind": "short",
+      "matcher": "math",
+      "points": 2,
+      "domain": "Тригонометр",
+      "prompt": "Шүргэгчийн тэгшитгэл",
+      "answers": [
+        "y=2(x−1+9)/2"
+      ],
+      "answerDisplay": "y=2(x−1+9)/2",
+      "explanation": "0<u<7 үед f=s(7u−u²)/2. u=3 дээр налалт s/2. Гадна салбаруудтай шүргэгчийн огтлол u=−1,9. [−1,0],[0,7],[7,9] хэсгүүдээр интегралын нийлбэр 157s/6."
+    },
+    {
+      "id": "eesh-math-2024-m1-task-4-c",
+      "number": "2.4c",
+      "groupId": "task-4",
+      "kind": "short",
+      "matcher": "math",
+      "points": 2,
+      "domain": "Тригонометр",
+      "prompt": "Шүргэлтийн цэгээс өөр огтлолцлуудын x",
+      "answers": [
+        "(0; 10)"
+      ],
+      "answerDisplay": "(0; 10)",
+      "explanation": "0<u<7 үед f=s(7u−u²)/2. u=3 дээр налалт s/2. Гадна салбаруудтай шүргэгчийн огтлол u=−1,9. [−1,0],[0,7],[7,9] хэсгүүдээр интегралын нийлбэр 157s/6."
+    },
+    {
+      "id": "eesh-math-2024-m1-task-4-d",
+      "number": "2.4d",
+      "groupId": "task-4",
+      "kind": "number",
+      "matcher": "numeric",
+      "points": 1,
+      "domain": "Тригонометр",
+      "prompt": "Талбай",
+      "answers": [
+        "157/3"
+      ],
+      "answerDisplay": "157/3",
+      "explanation": "0<u<7 үед f=s(7u−u²)/2. u=3 дээр налалт s/2. Гадна салбаруудтай шүргэгчийн огтлол u=−1,9. [−1,0],[0,7],[7,9] хэсгүүдээр интегралын нийлбэр 157s/6."
+    }
+  ],
+  "passages": [],
+  "sourceNote": "2022–2026 оны жишиг эх нь MathX-ийн нийтэлсэн транскрипц; албан БҮТ эх биш."
+}

@@ -4,10 +4,7 @@
 
 .db-page { padding-top: 32px; }
 
-.db-head { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin: 0 0 24px; }
-.db-head h1 { margin: 0; font-size: clamp(25px, 3vw, 32px); font-weight: 600; line-height: 1.2; overflow-wrap: anywhere; }
-.db-head p { margin: 4px 0 0; color: var(--muted); }
-.db-head > div:last-child { flex-shrink: 0; }
+.db-head { display: flex; align-items: center; justify-content: flex-end; gap: 20px; margin: 0 0 24px; }
 
 .db-grid { display: grid; grid-template-columns: minmax(0, 1fr) 340px; align-items: start; gap: 20px; }
 .db-main, .db-rail { display: grid; gap: 20px; min-width: 0; }

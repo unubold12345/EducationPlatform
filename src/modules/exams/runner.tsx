@@ -1,12 +1,19 @@
 "use client";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { AiAssistant } from "@/modules/tutor/panel";
 import { MathScratchpad } from "@/components/math-scratchpad";
-import { useEffect,useRef,useState } from "react";
+import { useCallback,useEffect,useRef,useState } from "react";
 import type { PublicExamAttempt } from "./types";
 import { SpeakingRecorder } from "./speaking-recorder";
-import { ListeningPlayer } from "./listening-player";
+import { ListeningSection } from "./listening-section";
 import { AnswerOptions, MathTools, PassagePane, QuestionStrip, shortcutHint, useEliminations, usePassageScale, useQuestionShortcuts } from "./session-tools";
+import { questionFigure } from "./math-paper-model";
+import { EntranceRunner } from "./entrance/session";
+
+const MathText = dynamic(() => import("./math-text").then(module => module.MathText));
+const MathFormula = dynamic(() => import("./math-text").then(module => module.MathFormula));
+const MathFigure = dynamic(() => import("./math-figure").then(module => module.MathFigure));
 
 type ReviewFilter="all"|"wrong"|"blank"|"correct";
 const reviewFilters:[ReviewFilter,string][]=[["all","Бүгд"],["wrong","Алдсан"],["blank","Хоосон"],["correct","Зөв"]];
@@ -32,6 +39,10 @@ function DomainBreakdown({reviews}:{reviews:NonNullable<PublicExamAttempt["repor
   return <section className="review-domains" aria-label="Чадвар бүрийн үр дүн"><h2>Чадвар бүрийн үр дүн</h2>{rows.map(([domain,{correct,total}])=><div className="review-domain" key={domain}><span lang="en">{domain}</span><i aria-hidden="true"><b style={{width:Math.round(correct/total*100)+"%"}}/></i><span>{correct} / {total}</span></div>)}</section>;
 }
 export function ExamRunner({initial}:{initial:PublicExamAttempt}){
+  return initial.program === "entrance" ? <EntranceRunner initial={initial}/> : <StandardExamRunner initial={initial}/>;
+}
+
+function StandardExamRunner({initial}:{initial:PublicExamAttempt}){
   const [attempt,setAttempt]=useState(initial),[answers,setAnswers]=useState(initial.responses),[flags,setFlags]=useState(initial.flags),[index,setIndex]=useState(0);
   const [remaining,setRemaining]=useState(Math.max(0,Math.ceil((Date.parse(initial.deadline)-Date.parse(initial.serverNow))/1000)));
   const [status,setStatus]=useState("Хадгалсан"),[error,setError]=useState(""),[conflict,setConflict]=useState(false),[grid,setGrid]=useState(false),[tools,setTools]=useState(false),[hiddenTimer,setHiddenTimer]=useState(false);
@@ -43,7 +54,9 @@ export function ExamRunner({initial}:{initial:PublicExamAttempt}){
   const [reviewFilter,setReviewFilter]=useState<ReviewFilter>("all");
   const {struck,toggle:strike}=useEliminations(initial.id);
   const {scale,controls:passageControls}=usePassageScale();
-  useQuestionShortcuts({
+  // The Listening layout shows a whole part at once, so single-question shortcuts are off there.
+  const listeningView=(stage:PublicExamAttempt["stage"])=>stage?.kind==="listening"||stage?.id==="ielts-listening-check";
+  useQuestionShortcuts(listeningView(attempt.stage)?{}:{
     onPrevious:()=>{if(index>0&&latest.current.stage?.questions.length)navigate(index-1);},
     onNext:()=>{const count=latest.current.stage?.questions.length??0;if(index<count-1)navigate(index+1);},
     onFlag:()=>{if(latest.current.stage?.questions.length&&!paused.current)flag();},
@@ -95,13 +108,16 @@ export function ExamRunner({initial}:{initial:PublicExamAttempt}){
   },[]);
   useEffect(()=>{questionHeading.current?.focus();},[attempt.stage?.id]);
 
-  function change(value:string){
-    const question=latest.current.stage!.questions[index];draft.current={...draft.current,[question.id]:value};generation.current++;setAnswers(draft.current);setStatus("Хадгалж байна…");clearTimeout(debounce.current);debounce.current=setTimeout(()=>void worker.current("save"),500);
-  }
-  function flag(){
-    const id=latest.current.stage!.questions[index].id;
+  const changeFor=useCallback((id:string,value:string)=>{
+    if(paused.current||latest.current.finishedAt||!latest.current.stage?.questions.some(question=>question.id===id))return;
+    draft.current={...draft.current,[id]:value};generation.current++;setAnswers(draft.current);setStatus("Хадгалж байна…");clearTimeout(debounce.current);debounce.current=setTimeout(()=>void worker.current("save"),500);
+  },[]);
+  function change(value:string){const question=latest.current.stage?.questions[index];if(question)changeFor(question.id,value);}
+  const flagFor=useCallback((id:string)=>{
+    if(paused.current||latest.current.finishedAt||!latest.current.stage?.questions.some(question=>question.id===id))return;
     flagDraft.current=flagDraft.current.includes(id)?flagDraft.current.filter(q=>q!==id):[...flagDraft.current,id];generation.current++;setFlags(flagDraft.current);setStatus("Хадгалж байна…");clearTimeout(debounce.current);debounce.current=setTimeout(()=>void worker.current("save"),500);
-  }
+  },[]);
+  function flag(){const question=latest.current.stage?.questions[index];if(question)flagFor(question.id);}
   function navigate(next:number){setIndex(next);setGrid(false);requestAnimationFrame(()=>questionHeading.current?.focus());}
   async function uploadRecording(blob:Blob,stageId:string){
     const url=URL.createObjectURL(blob);setRecoveries(current=>[...current,{stageId,url,error:"Бичлэг хадгалж байна…"}]);
@@ -110,42 +126,44 @@ export function ExamRunner({initial}:{initial:PublicExamAttempt}){
       if(!response.ok)throw Error("upload");setRecoveries(current=>current.filter(item=>item.url!==url));URL.revokeObjectURL(url);setTimeout(()=>void worker.current("sync"),1000);
     }catch{setRecoveries(current=>current.map(item=>item.url===url?{...item,error:"Бичлэг илгээгдсэнгүй. Алдахгүйн тулд татаж аваарай."}:item));}
   }
+  // ЭЕШ Mathematics is in Mongolian; every other mock's questions are in English.
+  const questionLang:string="en";
   const recovery=<>{recoveries.map(item=><div className="notice" key={item.url}><p>{item.error}</p><a className="text-link" href={item.url} download={item.stageId+".webm"}>Бичлэгээ татах ↓</a></div>)}</>;
 
   if(attempt.report)return <div className="container page-space exam-results"><p className="eyebrow">Шалгалт дууссан · Хадгалсан үр дүн</p><h1>{attempt.title}</h1><p>Хугацаа дууссан хэсгүүдийн хариу өөрчлөгдөхгүй.</p>{recovery}
     <div className="exam-report-grid">{attempt.report.sections.map(section=><section key={section.title}><p className="eyebrow">{section.title}</p>{section.pending?<><strong>Хяналт хүлээгдэж байна</strong><p>{section.pending} хариу / prompt · Багшаар үнэлүүлнэ</p></>:<><strong>{section.correct}<span> / {section.total}</span></strong><p>Зөв хариулт · Raw count</p></>}</section>)}</div>
-    <div className="notice">{attempt.program==="sat"?"SAT-ийн хоёрдугаар модуль нь 65%-ийн дадлагын босгоор сонгогдсон. Модуль бүрийн хоёр туршилтын асуултыг үндсэн raw тоонд оруулаагүй. Доор бүх 98 асуултын тайлбар бий. Үүнийг 400–1600 албан ёсны SAT оноонд хөрвүүлэхгүй.":"Listening болон Reading-ийн raw тоо гарлаа. Writing, Speaking нь task response, fluency, vocabulary, grammar болон pronunciation зэрэг шалгуураар багшийн үнэлгээ шаарддаг. Энэ mock нь band оноо зохиож гаргахгүй."}</div>
+    <div className="notice">{attempt.program==="sat"?"SAT-ийн хоёрдугаар модуль нь 65%-ийн дадлагын босгоор сонгогдсон. Модуль бүрийн хоёр туршилтын асуултыг үндсэн raw тоонд оруулаагүй. Доор бүх 98 асуултын тайлбар бий. Үүнийг 400–1600 албан ёсны SAT оноонд хөрвүүлэхгүй.":attempt.program==="entrance"?"Зөв хариултын тоо (raw) гарлаа. Хариулт бүр нэг оноотой; албан ЭЕШ-ийн жинлэсэн оноо болон 800 онооны хөрвүүлэлт биш. Энэ mock-ийн даалгавруудыг энэ сайтад зориулж зохиосон.":"Listening болон Reading-ийн raw тоо гарлаа. Writing, Speaking нь task response, fluency, vocabulary, grammar болон pronunciation зэрэг шалгуураар багшийн үнэлгээ шаарддаг. Энэ mock нь band оноо зохиож гаргахгүй."}</div>
     {attempt.program==="ielts"?<section className="exam-recordings"><h2>Speaking бичлэгүүд</h2>{attempt.recordings.length?attempt.recordings.map(recording=><div key={recording.stageId}><h3>{recording.stageId.replace("ielts-","")}</h3><audio controls preload="none" src={endpoint+"/recordings/"+recording.stageId}/><a className="text-link" download={recording.stageId+(recording.mime.includes("mp4")?".m4a":".webm")} href={endpoint+"/recordings/"+recording.stageId}>Татах ↓</a></div>):<p>Хадгалсан бичлэг одоогоор алга. Илгээж буй бичлэг байвал дуусмагц шинэчилнэ.</p>}</section>:null}
     <DomainBreakdown reviews={attempt.report.reviews}/>
     <div className="result-actions"><Link className="button" href={"/exams/"+attempt.slug+"/practice"}>Дадлагын горимд давтах →</Link><button className="button secondary" onClick={()=>downloadText("mock-exam-result.json",JSON.stringify(attempt,null,2),"application/json")}>Хариу, үр дүнгээ татах ↓</button><Link className="button secondary" href="/exams">Бүх шалгалт →</Link><Link className="text-link" href="/dashboard">Миний бэлтгэл</Link></div>
     <h2 className="exam-review-title">Хариу ба тайлбар</h2>
     <div className="review-filter" role="group" aria-label="Хариу шүүх">{reviewFilters.map(([name,label])=>{const count=name==="all"?attempt.report!.reviews.length:attempt.report!.reviews.filter(review=>reviewGroup(review)===name).length;return <button key={name} type="button" aria-pressed={reviewFilter===name} onClick={()=>setReviewFilter(name)}>{label} · {count}</button>;})}</div>
-    <div className="exam-review-list">{attempt.report.reviews.map((review,i)=>reviewFilter!=="all"&&reviewGroup(review)!==reviewFilter?null:<details className="exam-review" key={review.id}><summary><span className={review.correct===null?"pending-label":review.correct?"correct":"incorrect"}>{review.pretest?"Pretest · ":""}{review.correct===null?"Хяналт":review.correct?"Зөв":"Алдсан / хоосон"}</span><span>{i+1}. {review.prompt.slice(0,140)}{review.prompt.length>140?"…":""}</span></summary><p lang="en">{review.prompt}</p>{review.passage?<details className="review-passage"><summary>Эх / өгөгдөл</summary><p lang="en">{review.passage}</p></details>:null}<p><strong>Таны хариу:</strong> {review.selected||"Хариулаагүй / аудио бичлэгийг үзнэ үү"}</p>{review.answer?<p><strong>Зөв хариу:</strong> {review.answer}</p>:null}<p className="explanation" lang="en">{review.explanation}</p>{review.id.startsWith("sat-math")&&<AiAssistant review label={"Асуулт "+(i+1)} target={{kind:"mock",attemptId:attempt.id,questionId:review.id}}/>}</details>)}</div>
+    <div className="exam-review-list">{attempt.report.reviews.map((review,i)=>reviewFilter!=="all"&&reviewGroup(review)!==reviewFilter?null:<details className="exam-review" key={review.id}><summary><span className={review.correct===null?"pending-label":review.correct?"correct":"incorrect"}>{review.pretest?"Pretest · ":""}{review.correct===null?"Хяналт":review.correct?"Зөв":"Алдсан / хоосон"}</span><span>{i+1}. {questionLang==="mn"?<MathText text={review.prompt}/>:<>{review.prompt.slice(0,140)}{review.prompt.length>140?"…":""}</>}</span></summary><p lang={questionLang}>{questionLang==="mn"?<MathText text={review.prompt}/>:review.prompt}</p>{questionFigure(review)?<MathFigure figure={questionFigure(review)!}/>:null}{review.passage?<details className="review-passage"><summary>Эх / өгөгдөл</summary><p lang="en">{review.passage}</p></details>:null}<p><strong>Таны хариу:</strong> {review.selected?(questionLang==="mn"?<MathFormula text={review.selected}/>:review.selected):"Хариулаагүй / аудио бичлэгийг үзнэ үү"}</p>{review.answer?<p><strong>Зөв хариу:</strong> {questionLang==="mn"?<MathFormula text={review.answer}/>:review.answer}</p>:null}<p className="explanation" lang={attempt.program==="entrance"?"mn":"en"}>{questionLang==="mn"?<MathText text={review.explanation}/>:review.explanation}</p>{review.id.startsWith("sat-math")&&<AiAssistant review label={"Асуулт "+(i+1)} target={{kind:"mock",attemptId:attempt.id,questionId:review.id}}/>}</details>)}</div>
   </div>;
 
   const stage=attempt.stage!;const question=stage.questions[index]??stage.questions[0];
-  const math=stage.id.startsWith("sat-math");const elapsed=stage.seconds-remaining;
+  const math=/^sat-math/.test(stage.id),calculator=math;const elapsed=stage.seconds-remaining;const listening=listeningView(stage);
   const passage=question?.passage ? stage.passages?.find(p=>p.title===question.passage)?.text??question.passage : "";
   const answered=stage.questions.filter(q=>!!answers[q.id]?.trim()).length;
   // Changes only at the two thresholds, so a screen reader announces each one once.
   const timeNotice=remaining<=60?"1 минутаас бага хугацаа үлдлээ. "+(stage.questions.length-answered)+" асуултад хариулаагүй.":remaining<=300?"5 минутаас бага хугацаа үлдлээ.":"";
   return <div className="exam-session"><div className="exam-toolbar"><div><p className="eyebrow">{attempt.title}</p><h1>{stage.title}</h1></div><div className="exam-clock"><span role="timer" aria-label="Үлдсэн хугацаа" className={remaining<=300?"urgent":""}>{hiddenTimer&&remaining>300?"Цаг нуугдсан":time(remaining)}</span>{remaining>300?<button onClick={()=>setHiddenTimer(v=>!v)}>{hiddenTimer?"Харуулах":"Нуух"}</button>:null}</div></div>
-    <div className="exam-session-meta"><p role="status">{status}</p><p>{attempt.stageIndex+1} / {attempt.timeline.length} хэсэг · {answered} / {stage.questions.length} хариулсан</p><div>{math?<button className="text-link" onClick={()=>setTools(v=>!v)}>Тооны машин / томьёо</button>:null}<button className="text-link" onClick={()=>setGrid(v=>!v)}>Асуултууд / Review</button></div></div>
+    <div className="exam-session-meta"><p role="status">{status}</p><p>{attempt.stageIndex+1} / {attempt.timeline.length} хэсэг · {answered} / {stage.questions.length} хариулсан</p><div>{calculator?<button className="text-link" onClick={()=>setTools(v=>!v)}>Тооны машин / томьёо</button>:null}{listening?null:<button className="text-link" onClick={()=>setGrid(v=>!v)}>Асуултууд / Review</button>}</div></div>
     {error?<div className="container error-message" role="alert"><p>{error}</p><div className="result-actions">{conflict?<button className="button secondary" onClick={()=>void network("sync",true)}>Хадгалсан хувилбарыг ачаалах</button>:<button className="button secondary" onClick={()=>void network("save")}>Дахин хадгалах</button>}<a className="text-link" href="/login" target="_blank" rel="noopener noreferrer">Нэвтрэх ↗</a><button className="text-link" onClick={()=>downloadText("unsent-exam-answers.json",JSON.stringify(draft.current,null,2),"application/json")}>Хариугаа татах ↓</button></div></div>:null}{recovery}
     <p className="sr-only" aria-live="polite">{timeNotice}</p>
     <div className="container exam-workspace"><details className="exam-directions"><summary>Directions / Заавар</summary><p>{stage.instructions}</p></details>
-      {stage.questions.length>1?<QuestionStrip current={question.id} onSelect={id=>navigate(stage.questions.findIndex(q=>q.id===id))} items={stage.questions.map((q,i)=>({id:q.id,label:String(i+1),state:answers[q.id]?.trim()?"answered":undefined,flagged:flags.includes(q.id)}))}/>:null}
-      {grid?<section className="exam-question-map"><h2>Асуултаа шалгах</h2><p>Тэмдэгтэй = дараа харах · Цэнхэр = хариулсан. Зөвхөн энэ хэсгийн асуултууд.</p><div>{stage.questions.map((q,i)=><button key={q.id} className={(answers[q.id]?"answered ":"")+(flags.includes(q.id)?"flagged":"")} onClick={()=>navigate(i)} aria-label={"Асуулт "+(i+1)+(flags.includes(q.id)?", тэмдэгтэй":"")}>{i+1}{flags.includes(q.id)?" ⚑":""}</button>)}</div><p className="fine-print">Хугацаа дуусахад дараагийн хэсэг автоматаар эхэлнэ. Эрт дуусгах боломжгүй.</p></section>:null}
-      {stage.kind==="listening"?<ListeningPlayer attemptId={attempt.id} elapsed={Math.max(0,elapsed)}/>:null}
+      {listening?<ListeningSection attemptId={attempt.id} slug={attempt.slug} stage={stage} elapsed={stage.kind==="listening"?Math.max(0,elapsed):null} answers={answers} flags={flags} disabled={conflict} onChange={changeFor} onFlag={flagFor}/>:null}
+      {!listening&&stage.questions.length>1?<QuestionStrip current={question.id} onSelect={id=>navigate(stage.questions.findIndex(q=>q.id===id))} items={stage.questions.map((q,i)=>({id:q.id,label:String(i+1),state:answers[q.id]?.trim()?"answered":undefined,flagged:flags.includes(q.id)}))}/>:null}
+      {!listening&&grid?<section className="exam-question-map"><h2>Асуултаа шалгах</h2><p>Тэмдэгтэй = дараа харах · Цэнхэр = хариулсан. Зөвхөн энэ хэсгийн асуултууд.</p><div>{stage.questions.map((q,i)=><button key={q.id} className={(answers[q.id]?"answered ":"")+(flags.includes(q.id)?"flagged":"")} onClick={()=>navigate(i)} aria-label={"Асуулт "+(i+1)+(flags.includes(q.id)?", тэмдэгтэй":"")}>{i+1}{flags.includes(q.id)?" ⚑":""}</button>)}</div><p className="fine-print">Хугацаа дуусахад дараагийн хэсэг автоматаар эхэлнэ. Эрт дуусгах боломжгүй.</p></section>:null}
       {stage.kind==="speaking"?<SpeakingRecorder key={stage.id} onComplete={blob=>void uploadRecording(blob,stage.id)}/>:null}
       {math&&<MathScratchpad key={attempt.id} attemptId={attempt.id}/>}
-      {tools&&math?<MathTools/>:null}
-      {stage.kind==="break"?<section className="exam-break"><p className="eyebrow">Scheduled break · 10 minutes</p><h2>Амраад, Math хэсэгт бэлдээрэй.</h2><p>Завсарлага дуусмагц дараагийн хэсэг эхэлнэ. Энэ цагийг урагшлуулах эсвэл дахин эхлүүлэх боломжгүй.</p><strong>{time(remaining)}</strong></section>:question?<div className={"exam-question-layout "+(passage?"with-passage":"")}>
+      {tools&&calculator?<MathTools/>:null}
+      {listening?null:stage.kind==="break"?<section className="exam-break"><p className="eyebrow">Scheduled break · 10 minutes</p><h2>Амраад, Math хэсэгт бэлдээрэй.</h2><p>Завсарлага дуусмагц дараагийн хэсэг эхэлнэ. Энэ цагийг урагшлуулах эсвэл дахин эхлүүлэх боломжгүй.</p><strong>{time(remaining)}</strong></section>:question?<div className={"exam-question-layout "+(passage?"with-passage":"")}>
         {passage?<PassagePane title={stage.passages?question.passage!:"Passage / Information"} text={passage} caption={question.kind==="essay"?"Academic Writing · Task 1 data":undefined} controls={passageControls} scale={scale}/>:null}
-        <section className="exam-answer-panel"><div className="exam-question-number"><strong>{question.kind==="essay"?"Task":"Question"} {index+1} of {stage.questions.length}</strong><button aria-pressed={flags.includes(question.id)} onClick={flag} disabled={conflict}>⚑ {flags.includes(question.id)?"Тэмдэглэсэн":"Дараа харах"}</button></div><h2 lang="en" ref={questionHeading} tabIndex={-1}>{question.prompt}</h2>
-          {question.kind==="choice"?<AnswerOptions name={question.id} selected={answers[question.id]} disabled={conflict} onSelect={change} struck={struck[question.id]} onStrike={option=>strike(question.id,option)} options={question.options!.map(option=>({value:option,content:option}))}/>:
+        <section className="exam-answer-panel"><div className="exam-question-number"><strong>{question.kind==="essay"?"Task":questionLang==="mn"?"Даалгавар":"Question"} {index+1} {questionLang==="mn"?"/":"of"} {stage.questions.length}</strong><button aria-pressed={flags.includes(question.id)} onClick={flag} disabled={conflict}>⚑ {flags.includes(question.id)?"Тэмдэглэсэн":"Дараа харах"}</button></div><h2 lang={questionLang} ref={questionHeading} tabIndex={-1}>{question.prompt}</h2>
+          {question.kind==="choice"?<AnswerOptions name={question.id} selected={answers[question.id]} disabled={conflict} onSelect={change} lang={questionLang} struck={struck[question.id]} onStrike={option=>strike(question.id,option)} options={question.options!.map(option=>({value:option,content:option}))}/>:
           question.kind==="essay"||question.kind==="speaking"?<div className="exam-written-response"><label htmlFor="exam-text">{stage.kind==="speaking"?"Туслах тэмдэглэл (үнэлгээ нь ярианы бичлэгээр хийгдэнэ)":stage.kind==="preparation"?"Нэг минутын төлөвлөгөө":"Your response"}</label><textarea id="exam-text" lang="en" rows={question.kind==="essay"?17:5} maxLength={question.kind==="essay"?16000:4000} value={answers[question.id]??""} onChange={e=>change(e.target.value)} disabled={conflict}/><p className="fine-print">{(answers[question.id]??"").trim().split(/\s+/).filter(Boolean).length} words{question.minWords?" · Minimum "+question.minWords:""}</p></div>:
-          <div className="exam-short-response"><label htmlFor="exam-short">{question.kind==="number"?"Numerical response — integer, decimal or fraction":"Your answer — follow the word/number limit above"}</label><input id="exam-short" lang="en" autoComplete="off" maxLength={question.kind==="number"?32:120} value={answers[question.id]??""} onChange={e=>change(e.target.value)} disabled={conflict}/></div>}
+          <div className="exam-short-response"><label htmlFor="exam-short">{question.kind==="number"?(attempt.program==="entrance"?"Хариу: бүхэл тоо эсвэл энгийн бутархай (жишээ нь −3, 9/2)":"Numerical response — integer, decimal or fraction"):"Your answer — follow the word/number limit above"}</label><input id="exam-short" lang="en" autoComplete="off" maxLength={question.kind==="number"?32:120} value={answers[question.id]??""} onChange={e=>change(e.target.value)} disabled={conflict}/></div>}
           <div className="question-actions"><button className="button secondary" disabled={index===0} onClick={()=>navigate(index-1)}>← Өмнөх</button>{index<stage.questions.length-1?<button className="button" onClick={()=>navigate(index+1)}>Дараах →</button>:<button className="button" onClick={()=>setGrid(true)}>Хариугаа эргэн харах →</button>}</div>
           {question.kind==="choice"?<p className="shortcut-hint">{shortcutHint}</p>:null}
         </section></div>:null}

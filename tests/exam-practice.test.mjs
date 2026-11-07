@@ -2,19 +2,18 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { examDefinitions, findExam } from "../src/modules/exams/definitions.ts";
-import { allOfficialPapers, findOfficialPaper } from "../src/modules/papers/catalog.ts";
-import { keyForPaper } from "../src/modules/papers/key.ts";
-import { applyPracticeCheck, applyPracticeEdit, mockPractice, paperPractice, practiceStats, validPracticeCheck, validPracticeEdit } from "../src/modules/exam-practice/form.ts";
+import { entranceDefinition } from "../src/modules/exams/entrance/content.ts";
+import { entranceMocks } from "../src/modules/exams/entrance/catalog.ts";
+import { applyPracticeCheck, applyPracticeEdit, mockPractice, practiceStats, validPracticeCheck, validPracticeEdit } from "../src/modules/exam-practice/form.ts";
 import { PRACTICE_AI_DAILY_LIMIT, practiceMessages, validAssistantInput } from "../src/modules/exam-practice/assistant-contract.ts";
 import { listeningFile } from "../src/modules/exams/audio-files.ts";
 
 const empty = () => ({ responses: {}, flags: [], results: {} });
 const text = path => readFileSync(new URL("../" + path, import.meta.url), "utf8");
-const paperSource = slug => { const paper = findOfficialPaper(slug); return paperPractice(paper, keyForPaper(paper)); };
 
 test("every SAT and IELTS mock has a practice form with the whole authored bank", () => {
   assert.equal(examDefinitions.length, 12);
-  for (const definition of examDefinitions) {
+  for (const definition of examDefinitions.filter(exam => exam.program !== "entrance")) {
     const { form } = mockPractice(definition);
     assert.equal(new Set(form.questions.map(q => q.id)).size, form.questions.length, definition.slug);
     assert.ok(form.questions.every(q => form.sections.some(section => section.id === q.section)));
@@ -33,25 +32,29 @@ test("every SAT and IELTS mock has a practice form with the whole authored bank"
   }
 });
 
-test("every official paper has a practice form, and all of it is graded by its own key", () => {
-  assert.equal(allOfficialPapers.length, 41);
-  for (const paper of allOfficialPapers) {
-    const source = paperPractice(paper, keyForPaper(paper));
-    assert.equal(source.form.subject, paper.subject === "english" ? "eec-english" : "eec-math");
-    for (const question of source.form.questions) {
-      const result = source.grade(question.id, "");
-      assert.equal(result.correct === true, false, paper.slug + question.id);
-      assert.ok(source.reveal(question.id, result).answer, paper.slug + question.id);
+test("every ЭЕШ mock has a practice form, graded by its own answers", () => {
+  assert.equal(entranceMocks.length, 155);
+  for (const slug of ["eesh-math-2024-m1", "eesh-physics-2024-p1", "eesh-english-2024-e1"]) {
+    const definition = entranceDefinition(slug);
+    const source = mockPractice(definition);
+    assert.ok(source.form.subject.startsWith("eesh-"), slug);
+    assert.ok(source.form.sections.length >= 2, slug);
+    assert.ok(source.form.sections.some(section => section.math) === (definition.subject !== "english"), slug);
+    for (const question of definition.stages[0].questions) {
+      assert.equal(source.grade(question.id, question.answers[0]).correct, true, question.id);
+      assert.equal(source.grade(question.id, "").correct, false, question.id);
+      if (definition.subject !== "english") assert.ok(source.reveal(question.id, { correct: true }).explanation, question.id);
     }
   }
 });
 
 test("practice forms never send an answer, explanation or transcript to the browser", () => {
   const secret = /"(answers?|explanation|pretest|transcript|digits|choices|choiceMarks)":/;
-  for (const definition of examDefinitions) assert.doesNotMatch(JSON.stringify(mockPractice(definition).form), secret);
-  for (const paper of allOfficialPapers) assert.doesNotMatch(JSON.stringify(paperSource(paper.slug).form), secret);
-  for (const client of ["src/modules/exam-practice/workspace.tsx", "src/modules/exam-practice/types.ts"]) {
-    assert.doesNotMatch(text(client), /exam-practice\/form|from "\.\/form"|papers\/key|english-keys/);
+  const definitions = [...examDefinitions, ...["eesh-math-2024-m1", "eesh-physics-2024-p1", "eesh-english-2024-e1"].map(slug => entranceDefinition(slug))];
+  for (const definition of definitions) assert.doesNotMatch(JSON.stringify(mockPractice(definition).form), secret);
+  // Client components never import a file that carries answers.
+  for (const client of ["src/modules/exam-practice/workspace.tsx", "src/modules/exam-practice/types.ts", "src/modules/exams/runner.tsx", "src/modules/exams/session-tools.tsx", "src/modules/exams/entrance/session.tsx"]) {
+    assert.doesNotMatch(text(client), /exam-practice\/form|from "\.\/form"|exams\/entrance\/(content|catalog|index)|exams\/definitions|from "\.\/definitions/);
   }
 });
 
@@ -82,7 +85,8 @@ test("a checked answer stays locked until retried, while writing stays editable"
   assert.equal(progress.results[essay].correct, null);
   progress = applyPracticeEdit(form, progress, { responses: { [essay]: "Better draft." } });
   assert.equal(progress.responses[essay], "Better draft.");
-  assert.deepEqual(practiceStats(form, progress.results), { checked: 1, total: form.questions.length, graded: 0, correct: 0 });
+  const stats = practiceStats(form, progress.results);
+  assert.deepEqual([stats.checked, stats.graded, stats.correct], [1, 0, 0]);
 });
 
 test("listening transcripts appear only in a reveal, and belong to the question's own part", () => {
@@ -98,25 +102,19 @@ test("listening transcripts appear only in a reveal, and belong to the question'
   }
 });
 
-test("paper practice uses the corrected key, paired digit marks and ungraded slots", () => {
-  const math = paperSource("eec-math-2020-a");
-  assert.equal(math.grade("14", "D").correct, true);
-  assert.equal(math.grade("14", "B").correct, false);
-  assert.match(math.reveal("14", { correct: true }).explanation, /B.*D/);
-  const whole = math.grade("2.1", "8660834");
-  assert.deepEqual([whole.correct, whole.marks, whole.maxMarks], [true, 7, 7]);
-  const partial = math.grade("2.1", "8660934");
-  assert.equal(partial.correct, false);
-  assert.equal(partial.marks, 5);
-  assert.match(math.material("1").prompt, /frac/);
-  assert.equal(math.material("1").options.length, 5);
-  assert.match(math.material("2.1").work, /cell/);
-  const english = paperSource("eec-english-2019-a");
-  assert.equal(english.form.pages.length > 0, true);
-  assert.equal(english.material("1").questionTextAvailable, false);
-  assert.ok(english.form.questions.find(q => q.id === "41").ungraded);
-  const stats = practiceStats(english.form, { 41: { correct: true }, 1: { correct: true } });
-  assert.deepEqual([stats.checked, stats.graded, stats.correct], [2, 1, 1]);
+test("ЭЕШ practice takes fractions, equivalent intervals and either minus sign, and keeps the task text", () => {
+  const definition = entranceDefinition("eesh-math-2024-m1"), math = mockPractice(definition);
+  const fraction = definition.stages[0].questions.find(question => question.kind === "number" && question.answers[0] === "10/7");
+  assert.ok(fraction);
+  assert.equal(math.grade(fraction.id, "10/7").correct, true);
+  assert.equal(math.grade(fraction.id, "1.42857").correct, true);
+  assert.equal(math.grade(fraction.id, "0").correct, false);
+  const interval = definition.stages[0].questions.find(question => question.matcher === "math" && question.answers[0].includes(";"));
+  assert.ok(interval);
+  assert.equal(math.grade(interval.id, interval.answers[0].replaceAll(";", ",")).correct, true);
+  assert.match(math.material(fraction.id).prompt, /Урвуу|хязгаар|муж/);
+  const stats = practiceStats(math.form, { [fraction.id]: { correct: true }, [interval.id]: { correct: false } });
+  assert.deepEqual([stats.checked, stats.graded, stats.correct], [2, 2, 1]);
 });
 
 test("practice saves and checks reject unknown questions, bad shapes and over-long values", () => {
@@ -124,16 +122,17 @@ test("practice saves and checks reject unknown questions, bad shapes and over-lo
   const choice = form.questions.find(q => q.kind === "choice"), number = form.questions.find(q => q.kind === "number");
   assert.ok(validPracticeEdit(form, { responses: { [choice.id]: choice.options[1] }, flags: [choice.id] }));
   assert.ok(validPracticeEdit(form, { retry: [choice.id] }));
-  for (const bad of [null, [], { admin: true }, { responses: { unknown: "x" } }, { responses: { [choice.id]: "not an option" } }, { responses: { [number.id]: "1".repeat(33) } }, { flags: ["unknown"] }, { retry: ["unknown"] }, { responses: { [number.id]: 5 } }]) assert.equal(validPracticeEdit(form, bad), false);
+  for (const bad of [null, [], { admin: true }, { responses: { unknown: "x" } }, { responses: { [choice.id]: "not an option" } }, { responses: { [number.id]: "1".repeat(161) } }, { flags: ["unknown"] }, { retry: ["unknown"] }, { responses: { [number.id]: 5 } }]) assert.equal(validPracticeEdit(form, bad), false);
   assert.ok(validPracticeCheck(form, { questionId: choice.id, response: choice.options[0] }));
   for (const bad of [{ questionId: choice.id }, { questionId: "x", response: "" }, { questionId: choice.id, response: "forged" }, { questionId: choice.id, response: "", correct: true }]) assert.equal(validPracticeCheck(form, bad), false);
-  const paper = paperSource("eec-math-2020-b").form;
-  assert.ok(validPracticeEdit(paper, { responses: { 1: "C", "2.1": "86_4" } }));
-  for (const bad of [{ 1: "Z" }, { "2.1": "86a" }, { "2.1": "12345678" }]) assert.equal(validPracticeEdit(paper, { responses: bad }), false);
+  const entrance = mockPractice(entranceDefinition("eesh-math-2024-m1")).form;
+  const [first, fill] = [entrance.questions[0], entrance.questions.find(question => question.kind === "number")];
+  assert.ok(validPracticeEdit(entrance, { responses: { [first.id]: first.options[2], [fill.id]: "9/2" } }));
+  for (const bad of [{ [first.id]: "Z" }, { [fill.id]: "1".repeat(161) }]) assert.equal(validPracticeEdit(entrance, { responses: bad }), false);
 });
 
 const input = { questionId: "q1", action: "hint", language: "mn", message: "", history: [] };
-const material = { section: "Math", domain: "Algebra", prompt: "3x + 7 = 22", questionTextAvailable: true };
+const material = { section: "Math", domain: "Algebra", prompt: "3x + 7 = 22" };
 
 test("assistant accepts only bounded requests with student and assistant history", () => {
   assert.ok(validAssistantInput(input));
@@ -162,9 +161,11 @@ test("assistant never receives a key before the check, and separates untrusted t
 
 test("assistant guidance matches each subject's limits", () => {
   const rules = subject => practiceMessages(input, { title: "x", subject, checked: false, selected: "", material })[0].content;
-  assert.match(rules("eec-english"), /cannot see it/);
+  assert.match(rules("eesh-math"), /original practice mock/);
   assert.match(rules("ielts"), /Never give a band score/);
-  assert.match(rules("eec-math"), /no worked solution/);
+  assert.match(rules("eesh-math"), /Calculators are not allowed/);
+  assert.match(rules("eesh-physics"), /g = 10/);
+  assert.match(rules("eesh-english"), /band score/);
   assert.match(rules("sat"), /evidence/);
   assert.equal(practiceMessages(input, { title: "x", subject: "ielts", checked: false, selected: "y".repeat(9000), material }).some(message => message.content.includes("y".repeat(6001))), false);
 });

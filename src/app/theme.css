@@ -50,6 +50,10 @@
 html { scroll-padding-top: 110px; }
 
 body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
   background: var(--white);
   color: var(--ink);
   font-size: 16px;
@@ -57,6 +61,8 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
+
+main { flex: 1 0 auto; }
 
 /* Soft aurora + engineered grid behind the whole product. */
 body::before {
@@ -185,6 +191,7 @@ main, .site-footer { position: relative; z-index: 1; }
 .profile-link svg { width: 16px; height: 16px; color: var(--blue); }
 
 .site-footer {
+  flex-shrink: 0;
   border-top: 1px solid var(--line);
   padding: 48px max(32px, calc((100vw - 1160px) / 2)) 34px;
   background: color-mix(in srgb, var(--white) 65%, transparent);

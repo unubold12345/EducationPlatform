@@ -5,7 +5,6 @@ import { getSession } from "@/lib/session";
 import { getDb } from "@/lib/db";
 import { isAdmin } from "@/modules/admin/service";
 import { findExam } from "@/modules/exams/definitions";
-import { findOfficialPaper } from "@/modules/papers/catalog";
 import { pageInfo, parsePage } from "@/modules/admin/paging";
 import { AdminShell, Pager, StatusPill, SubTabs, adminDate, auditLabel, eventLabel, money } from "@/modules/admin/ui";
 import { AdminUserActions } from "@/components/admin-user-actions";
@@ -63,7 +62,7 @@ export default async function AdminUserPage({ params, searchParams }: { params: 
       db.mockPurchase.findMany({ where: { userId: id }, orderBy: [{ createdAt: "desc" }, { id: "desc" }], take }),
     ]);
     const rows = [...orders.map(row => ({ id: row.id, at: row.createdAt, label: `Сарын эрх · ${row.program.toUpperCase()}`, extra: row.periodEnd ? `${adminDate(row.periodStart!)} → ${adminDate(row.periodEnd)}` : "", amount: row.amountMnt, status: row.status, provider: row.provider, paidAt: row.paidAt })),
-      ...purchases.map(row => ({ id: row.id, at: row.createdAt, label: `Нэг шалгалт · ${findExam(row.examSlug)?.title ?? findOfficialPaper(row.examSlug)?.title ?? row.examSlug}`, extra: "", amount: row.amountMnt, status: row.status, provider: row.provider, paidAt: row.paidAt }))]
+      ...purchases.map(row => ({ id: row.id, at: row.createdAt, label: `Нэг шалгалт · ${findExam(row.examSlug)?.title ?? row.examSlug}`, extra: "", amount: row.amountMnt, status: row.status, provider: row.provider, paidAt: row.paidAt }))]
       .sort((a, b) => b.at.getTime() - a.at.getTime()).slice(info.skip, info.skip + info.size);
     body = <Table head={["Огноо", "Бүтээгдэхүүн", "Дүн / төлөв", "Баримт"]} empty="Төлбөр алга." rows={rows.map(row => cells(adminDate(row.at), <>{row.label}<small>{row.extra}</small></>, <><strong>{money(row.amount)}</strong><small><StatusPill status={row.status}/>{row.paidAt ? " " + adminDate(row.paidAt) : ""}</small></>, <><code>{row.id}</code><small>{row.provider}</small></>))}/>;
   } else if (view === "attempts") {
@@ -73,7 +72,7 @@ export default async function AdminUserPage({ params, searchParams }: { params: 
       db.paperAttempt.findMany({ where: { userId: id }, orderBy: [{ createdAt: "desc" }, { id: "desc" }], take, select: { id: true, slug: true, status: true, createdAt: true, updatedAt: true } }),
     ]);
     const rows = [...mocks.map(row => ({ id: row.id, at: row.createdAt, updated: row.updatedAt, label: "Mock · " + (findExam(row.slug)?.title ?? row.slug), status: row.status, result: row.subscriptionAccess ? "Сарын эрхээр" : "Нэг удаагийн эрхээр" })),
-      ...papers.map(row => ({ id: row.id, at: row.createdAt, updated: row.updatedAt, label: "Албан материал · " + (findOfficialPaper(row.slug)?.title ?? row.slug), status: row.status, result: "" }))]
+      ...papers.map(row => ({ id: row.id, at: row.createdAt, updated: row.updatedAt, label: "Хасагдсан албан материал · " + row.slug, status: row.status, result: "" }))]
       .sort((a, b) => b.at.getTime() - a.at.getTime()).slice(info.skip, info.skip + info.size);
     body = <Table head={["Эхэлсэн", "Материал", "Төлөв / оноо", "Сүүлд"]} empty="Оролдлого алга." rows={rows.map(row => cells(adminDate(row.at), <>{row.label}<small><code>{row.id}</code></small></>, <><StatusPill status={row.status}/><small>{row.result}</small></>, adminDate(row.updated)))}/>;
   } else if (view === "sessions") {

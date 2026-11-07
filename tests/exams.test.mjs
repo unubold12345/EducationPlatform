@@ -7,6 +7,7 @@ import { readingModule } from "../src/modules/exams/sat-reading.ts";
 import { mathModule } from "../src/modules/exams/sat-math.ts";
 import { readingPassages,ieltsReading } from "../src/modules/exams/ielts-reading.ts";
 import { ieltsListening,listeningScripts } from "../src/modules/exams/ielts-listening.ts";
+import { listeningParts,listeningPosition } from "../src/modules/exams/audio-files.ts";
 import { createExamState,expireStages,stageFor,isCorrect,validateExamEdit,editExam,makeReport } from "../src/modules/exams/engine.ts";
 
 test("SAT has standard module counts, timing, pretests, response types and distinct adaptive banks",()=>{
@@ -79,9 +80,18 @@ test("exam snapshots are isolated from later definition changes",()=>{
  const definition=structuredClone(examDefinitions[0]);const state=createExamState(definition,0);const prompt=stageFor(state).questions[0].prompt;
  definition.stages[0].questions[0].prompt="edited later";assert.equal(stageFor(state).questions[0].prompt,prompt);
 });
-test("four bundled Listening recordings cover thirty minutes and match the authored script version",()=>{
+test("four bundled Listening recordings fit the thirty-minute stage and match the authored script version",()=>{
  const manifest=JSON.parse(readFileSync(new URL("../assets/exams/manifest.json",import.meta.url),"utf8").replace(/^\uFEFF/,""));
  const hash=createHash("sha256").update(readFileSync(new URL("../src/modules/exams/ielts-listening.ts",import.meta.url))).digest("hex");
  assert.equal(manifest.sourceSha256,hash);assert.equal(manifest.parts.length,4);
- for(const part of manifest.parts){assert.ok(Math.abs(part.seconds-450)<0.2);assert.equal(statSync(new URL(`../assets/exams/ielts-01-part-${part.part}.mp3`,import.meta.url)).size,part.bytes);}
+ const timeline=listeningParts("ielts-academic-01");
+ for(const part of manifest.parts){assert.ok(Math.abs(part.seconds-timeline[part.part-1])<0.01);assert.equal(statSync(new URL(`../assets/exams/ielts-01-part-${part.part}.mp3`,import.meta.url)).size,part.bytes);}
+ assert.ok(timeline.reduce((a,b)=>a+b,0)<=findExam("ielts-academic-01").stages[0].seconds);
+});
+test("Listening parts play back to back from the recorded lengths",()=>{
+ const [one,two]=listeningParts("ielts-academic-02");
+ assert.deepEqual(listeningPosition("ielts-academic-02",0),{part:1,offset:0,ended:false});
+ assert.deepEqual(listeningPosition("ielts-academic-02",one+5),{part:2,offset:5,ended:false});
+ assert.equal(listeningPosition("ielts-academic-02",one+two).part,3);
+ assert.equal(listeningPosition("ielts-academic-02",1799).ended,true);
 });

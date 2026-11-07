@@ -1,0 +1,1467 @@
+{
+  "schemaVersion": 1,
+  "subject": "mathematics",
+  "language": "mn",
+  "referenceYear": 2016,
+  "mockVariant": "M1",
+  "title": "ЭЕШ математик 2016 оны жишиг — M1",
+  "official": false,
+  "author": "Codex (GPT-6)",
+  "referenceVariant": "C",
+  "referenceDirectory": "reference",
+  "durationMinutes": 100,
+  "calculatorAllowed": false,
+  "difficulty": {
+    "target": "Match reference item order, tested operations and reasoning depth",
+    "status": "Author review; empirical equivalence has not been established"
+  },
+  "answerProvenance": "Independently calculated by Codex; not an official answer key",
+  "responseFormat": "A–E for Part I; exact mathematical values for Part II (not official digit-box encoding)",
+  "instructions": [
+    "Нэгдүгээр хэсэгт нэг зөв хариултыг сонгоно.",
+    "Хоёрдугаар хэсгийн дэд асуулт бүрийн хариуг нөхнө.",
+    "Тооцоолуур хэрэглэхгүй."
+  ],
+  "questions": [
+    {
+      "number": "1",
+      "referenceQuestion": "1",
+      "skill": "Reciprocal",
+      "type": "multiple_choice",
+      "points": 1,
+      "prompt": "3/4 тооны урвууг ол.",
+      "options": {
+        "A": "-3/4",
+        "B": "3/4",
+        "C": "0",
+        "D": "-4/3",
+        "E": "4/3"
+      },
+      "answer": "E",
+      "answerValue": "4/3",
+      "solution": "a/b-ийн урвуу b/a."
+    },
+    {
+      "number": "2",
+      "referenceQuestion": "2",
+      "skill": "Prime factors",
+      "type": "multiple_choice",
+      "points": 1,
+      "prompt": "Аль үржвэр зөвхөн анхны тоон үржигдэхүүнтэй вэ?",
+      "options": {
+        "A": "2·5·21",
+        "B": "2·5·11",
+        "C": "2·7·15",
+        "D": "3·5·9",
+        "E": "3·7·27"
+      },
+      "answer": "B",
+      "answerValue": "2·5·11",
+      "solution": "2,5 ба өгсөн гурав дахь тоо анхны; бусад сонголт нийлмэл үржигдэхүүнтэй."
+    },
+    {
+      "number": "3",
+      "referenceQuestion": "3",
+      "skill": "Fraction comparison",
+      "type": "multiple_choice",
+      "points": 1,
+      "prompt": "Аль тэнцэтгэл биш худал вэ?",
+      "options": {
+        "A": "3/5 > 3/4",
+        "B": "3/5 < 4/5",
+        "C": "4/6 > 4/7",
+        "D": "3/4 < 1",
+        "E": "4/3 > 1"
+      },
+      "answer": "A",
+      "answerValue": "3/5 > 3/4",
+      "solution": "Ижил эерэг хүртвэртэй үед хуваарь их бол бутархай бага."
+    },
+    {
+      "number": "4",
+      "referenceQuestion": "4",
+      "skill": "Square properties",
+      "type": "multiple_choice",
+      "points": 1,
+      "prompt": "Квадратын талаар аль өгүүлбэр худал вэ?",
+      "options": {
+        "A": "Эсрэг талууд параллель",
+        "B": "Диагональ нь оройн өнцгийг хуваана",
+        "C": "Диагоналиудын урт тэнцүү",
+        "D": "Дотоод өнцгүүдийн нийлбэр 180°",
+        "E": "Диагоналиуд перпендикуляр"
+      },
+      "answer": "D",
+      "answerValue": "Дотоод өнцгүүдийн нийлбэр 180°",
+      "solution": "Дөрвөн өнцөгтийн дотоод өнцгийн нийлбэр 360°."
+    },
+    {
+      "number": "5",
+      "referenceQuestion": "5",
+      "skill": "Single draw probability",
+      "type": "multiple_choice",
+      "points": 1,
+      "prompt": "Хайрцагт 5 цэнхэр, 3 шар, 6 улаан карт бий. Нэгийг сугалахад цэнхэр байх магадлалыг ол.",
+      "options": {
+        "A": "5/13",
+        "B": "1/3",
+        "C": "5/14",
+        "D": "1/2",
+        "E": "3/7"
+      },
+      "answer": "C",
+      "answerValue": "5/14",
+      "solution": "Таатай картын тоог нийт картын тоонд хуваана."
+    },
+    {
+      "number": "6",
+      "referenceQuestion": "6",
+      "skill": "Linear equation",
+      "type": "multiple_choice",
+      "points": 1,
+      "prompt": "−2x/5=1 тэгшитгэлийг бод.",
+      "options": {
+        "A": "-5/3",
+        "B": "-5",
+        "C": "-5/2",
+        "D": "-2",
+        "E": "-3/2"
+      },
+      "answer": "C",
+      "answerValue": "-5/2",
+      "solution": "Хоёр талыг −(k+2)/2-оор үржүүл."
+    },
+    {
+      "number": "7",
+      "referenceQuestion": "7",
+      "skill": "Polynomial derivative",
+      "type": "multiple_choice",
+      "points": 1,
+      "prompt": "y=x⁴−3x²+6 функцийн уламжлалыг ол.",
+      "options": {
+        "A": "x³−6x",
+        "B": "4x³+6x",
+        "C": "4x³−3x",
+        "D": "4x³−6x",
+        "E": "4x⁴−6x"
+      },
+      "answer": "D",
+      "answerValue": "4x³−6x",
+      "solution": "Зэргийн дүрэм хэрэглэ."
+    },
+    {
+      "number": "8",
+      "referenceQuestion": "8",
+      "skill": "Rational exponents",
+      "type": "multiple_choice",
+      "points": 1,
+      "prompt": "8^(2/3)+⁵√1024 утгыг ол.",
+      "options": {
+        "A": "8",
+        "B": "9",
+        "C": "7",
+        "D": "6",
+        "E": "10"
+      },
+      "answer": "A",
+      "answerValue": "8",
+      "solution": "8^(1/3)=2 тул эхний гишүүн 4; тавдугаар язгуур k+1."
+    },
+    {
+      "number": "9",
+      "referenceQuestion": "9",
+      "skill": "Double angle",
+      "type": "multiple_choice",
+      "points": 2,
+      "prompt": "2cos²15°−1 утгыг ол.",
+      "options": {
+        "A": "sqrt(3)/2 + 1",
+        "B": "sqrt(3)/2",
+        "C": "-1 + sqrt(3)/2",
+        "D": "-2 + sqrt(3)/2",
+        "E": "sqrt(3)/2 + 2"
+      },
+      "answer": "B",
+      "answerValue": "sqrt(3)/2",
+      "solution": "cos2θ=2cos²θ−1."
+    },
+    {
+      "number": "10",
+      "referenceQuestion": "10",
+      "skill": "Factoring limit",
+      "type": "multiple_choice",
+      "points": 2,
+      "prompt": "lim[x→3] (x−3)/(x²−9)-г ол.",
+      "options": {
+        "A": "1/7",
+        "B": "1/2",
+        "C": "1/6",
+        "D": "1/5",
+        "E": "1/3"
+      },
+      "answer": "C",
+      "answerValue": "1/6",
+      "solution": "Хуваарь=(x−k)(x+k); хураагаад x=k орлуул."
+    },
+    {
+      "number": "11",
+      "referenceQuestion": "11",
+      "skill": "Dot product from lengths and sine",
+      "type": "multiple_choice",
+      "points": 2,
+      "prompt": "|a|=√78, |b|=√39, хоорондох өнцөг arcsin(5/13). a·b-г ол.",
+      "options": {
+        "A": "36",
+        "B": "36√2",
+        "C": "39√2",
+        "D": "15",
+        "E": "15√2"
+      },
+      "answer": "B",
+      "answerValue": "36√2",
+      "solution": "Өнцөг хурц тул cos=12/13. Уртнуудын үржвэр 13k√2."
+    },
+    {
+      "number": "12",
+      "referenceQuestion": "12",
+      "skill": "Power difference",
+      "type": "multiple_choice",
+      "points": 2,
+      "prompt": "(5⁸−5⁷)/4 илэрхийллийг хялбарчил.",
+      "options": {
+        "A": "78124",
+        "B": "78126",
+        "C": "78127",
+        "D": "78125",
+        "E": "78123"
+      },
+      "answer": "D",
+      "answerValue": "78125",
+      "solution": "a⁸−a⁷=a⁷(a−1)."
+    },
+    {
+      "number": "13",
+      "referenceQuestion": "13",
+      "skill": "Radical equation",
+      "type": "multiple_choice",
+      "points": 2,
+      "prompt": "√(x−2)=x−4 тэгшитгэлийг бод.",
+      "options": {
+        "A": "7",
+        "B": "8",
+        "C": "4",
+        "D": "6",
+        "E": "5"
+      },
+      "answer": "D",
+      "answerValue": "6",
+      "solution": "u=x−k гэвэл √(u+1)=u−1; u≥1. Квадратлаад u=0,3; зөвхөн 3."
+    },
+    {
+      "number": "14",
+      "referenceQuestion": "14",
+      "skill": "Cone lateral area",
+      "type": "multiple_choice",
+      "points": 2,
+      "prompt": "Байгуулагч 39, өндөр 36 конусын хажуу гадаргуугийн талбайг ол.",
+      "options": {
+        "A": "1521π",
+        "B": "225π",
+        "C": "585π",
+        "D": "540π",
+        "E": "1404π"
+      },
+      "answer": "C",
+      "answerValue": "585π",
+      "solution": "r=√(l²−h²)=5k; S=πrl.",
+      "figure": {
+        "schema": "education.math.figure.v1",
+        "kind": "scene",
+        "title": "Конус",
+        "space": "3d",
+        "coordinateSystem": "schematic",
+        "notToScale": true,
+        "points": {
+          "O": {
+            "position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "label": "O"
+          },
+          "H": {
+            "position": [
+              0.0,
+              0.0,
+              6.0
+            ],
+            "label": "S"
+          },
+          "L": {
+            "position": [
+              -2.5,
+              0.0,
+              0.0
+            ],
+            "label": ""
+          },
+          "R": {
+            "position": [
+              2.5,
+              0.0,
+              0.0
+            ],
+            "label": ""
+          }
+        },
+        "objects": [
+          {
+            "kind": "circle3d",
+            "center": "O",
+            "radius": 2.5,
+            "style": "solid",
+            "fill": null
+          },
+          {
+            "kind": "segment",
+            "from": "L",
+            "to": "H",
+            "style": "solid",
+            "arrow": false
+          },
+          {
+            "kind": "segment",
+            "from": "R",
+            "to": "H",
+            "style": "solid",
+            "arrow": false
+          },
+          {
+            "kind": "segment",
+            "from": "O",
+            "to": "H",
+            "style": "dashed",
+            "arrow": false
+          }
+        ],
+        "measurements": [
+          {
+            "kind": "length",
+            "from": "H",
+            "to": "R",
+            "text": "39",
+            "provenance": "question_given"
+          },
+          {
+            "kind": "length",
+            "from": "O",
+            "to": "H",
+            "text": "36",
+            "provenance": "question_given"
+          }
+        ],
+        "relations": [
+          {
+            "kind": "right_angle",
+            "points": [
+              "H",
+              "O",
+              "R"
+            ]
+          }
+        ],
+        "notes": [
+          "Зураг нь зөвхөн өгөгдлийн холбоог дүрслэнэ; хэмжээг зургаас хэмжиж болохгүй."
+        ],
+        "sourceQuestion": {
+          "year": 2016,
+          "variant": "C",
+          "number": "14",
+          "figureCatalog": "2016/reference/figures.json"
+        },
+        "displayPolicy": "question_figure",
+        "answerLabelsIncluded": false,
+        "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 420 300\" role=\"img\"><title>Конус</title><rect width=\"420\" height=\"300\" fill=\"white\"/><g stroke=\"#172b4d\" stroke-width=\"1.6\" fill=\"none\" stroke-linejoin=\"round\"><polyline points=\"292.09,237.01 295.07,234.76 297.24,232.53 298.56,230.34 299.03,228.22 298.65,226.18 297.41,224.25 295.33,222.43 292.43,220.76 288.73,219.25 284.27,217.90 279.10,216.74 273.27,215.78 266.82,215.02 259.83,214.47 252.36,214.14 244.48,214.03 236.27,214.14 227.80,214.47 219.16,215.02 210.44,215.78 201.71,216.74 193.06,217.90 184.57,219.25 176.33,220.76 168.42,222.43 160.90,224.25 153.86,226.18 147.35,228.22 141.45,230.34 136.21,232.53 131.69,234.76 127.91,237.01 124.93,239.27 122.76,241.50 121.44,243.69 120.97,245.81 121.35,247.85 122.59,249.78 124.67,251.60 127.57,253.27 131.27,254.78 135.73,256.13 140.90,257.29 146.73,258.25 153.18,259.01 160.17,259.56 167.64,259.89 175.52,260.00 183.73,259.89 192.20,259.56 200.84,259.01 209.56,258.25 218.29,257.29 226.94,256.13 235.43,254.78 243.67,253.27 251.58,251.60 259.10,249.78 266.14,247.85 272.65,245.81 278.55,243.69 283.79,241.50 288.31,239.27 292.09,237.01\"/><line x1=\"127.91\" y1=\"237.01\" x2=\"210.00\" y2=\"40.00\"/><line x1=\"292.09\" y1=\"237.01\" x2=\"210.00\" y2=\"40.00\"/><line x1=\"210.00\" y1=\"237.01\" x2=\"210.00\" y2=\"40.00\" stroke-dasharray=\"5 4\"/><line x1=\"210.00\" y1=\"228.01\" x2=\"219.00\" y2=\"228.01\"/><line x1=\"219.00\" y1=\"228.01\" x2=\"219.00\" y2=\"237.01\"/></g><g font-family=\"Segoe UI, sans-serif\" font-size=\"13\" fill=\"#172b4d\"><rect x=\"213.00\" y=\"219.01\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"215.00\" y=\"231.01\">O</text><rect x=\"213.00\" y=\"22.00\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"215.00\" y=\"34.00\">S</text><rect x=\"254.04\" y=\"121.51\" width=\"17\" height=\"16\" fill=\"white\"/><text x=\"256.04\" y=\"133.51\">39</text><rect x=\"213.00\" y=\"121.51\" width=\"17\" height=\"16\" fill=\"white\"/><text x=\"215.00\" y=\"133.51\">36</text></g></svg>"
+      }
+    },
+    {
+      "number": "15",
+      "referenceQuestion": "15",
+      "skill": "Log base conversion",
+      "type": "multiple_choice",
+      "points": 2,
+      "prompt": "log_58 / log_√516 утгыг ол.",
+      "options": {
+        "A": "1/2",
+        "B": "3/8",
+        "C": "5/8",
+        "D": "1/3",
+        "E": "3/7"
+      },
+      "answer": "B",
+      "answerValue": "3/8",
+      "solution": "ln8/lnb-ийг ln16/[(lnb)/2]-д хуваавал 3/8."
+    },
+    {
+      "number": "16",
+      "referenceQuestion": "16",
+      "skill": "Multiplication rule round trip",
+      "type": "multiple_choice",
+      "points": 2,
+      "prompt": "А→Б чиглэлд 3 зам, Б→В чиглэлд 5 зам бий. А→Б→В→Б→А аяллын боломжийн тоог ол. Зам давтан ашиглаж болно.",
+      "options": {
+        "A": "225",
+        "B": "226",
+        "C": "227",
+        "D": "224",
+        "E": "223"
+      },
+      "answer": "A",
+      "answerValue": "225",
+      "solution": "Дөрвөн хэсгийн сонголтыг үржүүлнэ: k(k+2)(k+2)k."
+    },
+    {
+      "number": "17",
+      "referenceQuestion": "17",
+      "skill": "Exponential quadratic inequality",
+      "type": "multiple_choice",
+      "points": 2,
+      "prompt": "(1/5)^(−(x−3)²+(x−3)+9)>125 тэнцэтгэл бишийг бод.",
+      "options": {
+        "A": "(−∞; 0] ∪ [7; +∞)",
+        "B": "(-1; 6)",
+        "C": "(0; 7)",
+        "D": "R",
+        "E": "(−∞; 0) ∪ (7; +∞)"
+      },
+      "answer": "E",
+      "answerValue": "(−∞; 0) ∪ (7; +∞)",
+      "solution": "Илтгэгчийг 5 сууринд шилжүүлбэл u²−u−9>3, өөрөөр (u−4)(u+3)>0."
+    },
+    {
+      "number": "18",
+      "referenceQuestion": "18",
+      "skill": "Arithmetic middle sum",
+      "type": "multiple_choice",
+      "points": 2,
+      "prompt": "Арифметик прогрессийн a₅=7. S₉-ийг ол.",
+      "options": {
+        "A": "65",
+        "B": "61",
+        "C": "62",
+        "D": "64",
+        "E": "63"
+      },
+      "answer": "E",
+      "answerValue": "63",
+      "solution": "Тэгш хэмтэй хос бүрийн нийлбэр 2a₅; S₉=9a₅."
+    },
+    {
+      "number": "19",
+      "referenceQuestion": "19",
+      "skill": "Nested radical rationalization",
+      "type": "multiple_choice",
+      "points": 2,
+      "prompt": "2/√(8+2√15)+√3-г хялбарчил.",
+      "options": {
+        "A": "√5",
+        "B": "2√5",
+        "C": "√3",
+        "D": "√5+√3",
+        "E": "√5−2√3"
+      },
+      "answer": "A",
+      "answerValue": "√5",
+      "solution": "√(a+b+2√ab)=√a+√b. a−b=2 тул 2/(√a+√b)=√a−√b."
+    },
+    {
+      "number": "20",
+      "referenceQuestion": "20",
+      "skill": "Letter sampling",
+      "type": "multiple_choice",
+      "points": 2,
+      "prompt": "«СУРГАЛТ» үгийн үсгийн байрлалаас хоёрыг буцаахгүйгээр сонгоно. Хоёулаа гийгүүлэгч байх магадлалыг ол.",
+      "options": {
+        "A": "11/21",
+        "B": "10/21",
+        "C": "1/2",
+        "D": "4/7",
+        "E": "5/11"
+      },
+      "answer": "B",
+      "answerValue": "10/21",
+      "solution": "Үсгийн ижил дүрстэй байрлалууд ч тусдаа сонголт. C(c,2)/C(n,2)."
+    },
+    {
+      "number": "21",
+      "referenceQuestion": "21",
+      "skill": "Successive percentage changes",
+      "type": "multiple_choice",
+      "points": 2,
+      "prompt": "Барааны үнэ 11% өсөөд 10% буурав. Анхны үнэтэй харьцуулахад хэдэн хувиар өөрчлөгдөв? Эерэг бол өсөлт, сөрөг бол бууралт.",
+      "options": {
+        "A": "0",
+        "B": "1/10",
+        "C": "-1/11",
+        "D": "-1/10",
+        "E": "-1/9"
+      },
+      "answer": "D",
+      "answerValue": "-1/10",
+      "solution": "Үнийн үржигдэхүүн (1+up/100)(1−down/100); нэгийг хасаад 100-аар үржүүл."
+    },
+    {
+      "number": "22",
+      "referenceQuestion": "22",
+      "skill": "Comparing real expressions",
+      "type": "multiple_choice",
+      "points": 2,
+      "prompt": "log_5(5), 5^(log_52), ∛9, sin(3π/2), √10 тоонуудаас хамгийн бага УТГЫГ ол.",
+      "options": {
+        "A": "-3",
+        "B": "-2",
+        "C": "-1",
+        "D": "1",
+        "E": "0"
+      },
+      "answer": "C",
+      "answerValue": "-1",
+      "solution": "sin(3π/2)=−1; логарифм 1 ба бусад тоонууд эерэг."
+    },
+    {
+      "number": "23",
+      "referenceQuestion": "23",
+      "skill": "Logarithm substitution",
+      "type": "multiple_choice",
+      "points": 2,
+      "prompt": "2log_x2+log₄x=5/2. log₁₀(3x+96/x)-ийн утгыг ол.",
+      "options": {
+        "A": "log₁₀54",
+        "B": "log₁₀102",
+        "C": "log₁₀27",
+        "D": "log₁₀48",
+        "E": "log₁₀96"
+      },
+      "answer": "A",
+      "answerValue": "log₁₀54",
+      "solution": "t=log₂x≠0 гэвэл 2/t+t/2=5/2 → t=1,4; x=2,16. Аль алинд x+32/x=18."
+    },
+    {
+      "number": "24",
+      "referenceQuestion": "24",
+      "skill": "Radical rational domain",
+      "type": "multiple_choice",
+      "points": 2,
+      "prompt": "y=√(−9/x+1) функцийн мужийг ол.",
+      "options": {
+        "A": "[0; 9]",
+        "B": "R",
+        "C": "(0; 9]",
+        "D": "[9; +∞)",
+        "E": "(−∞; 0) ∪ [9; +∞)"
+      },
+      "answer": "E",
+      "answerValue": "(−∞; 0) ∪ [9; +∞)",
+      "solution": "(x−k²)/x≥0, x≠0; тэмдгийн хүснэгт хэрэглэ."
+    },
+    {
+      "number": "25",
+      "referenceQuestion": "25",
+      "skill": "Identity recognition",
+      "type": "multiple_choice",
+      "points": 2,
+      "prompt": "Аль тэнцэтгэл бүх бодит x-д үнэн биш вэ?",
+      "options": {
+        "A": "sin2x=3sin²x",
+        "B": "1+tan²x=1/cos²x (cosx≠0)",
+        "C": "sin²x+cos²x=1",
+        "D": "sin(π/2−x)=cosx",
+        "E": "cos2x=cos²x−sin²x"
+      },
+      "answer": "A",
+      "answerValue": "sin2x=3sin²x",
+      "solution": "sin2x=2sinx cosx; x=0.3 гэх мэтээр худал болохыг харуулж болно."
+    },
+    {
+      "number": "26",
+      "referenceQuestion": "26",
+      "skill": "Factorial sequence ratio",
+      "type": "multiple_choice",
+      "points": 2,
+      "prompt": "aₙ=3^(n−1)/(n−1)! бол aₙ₊₁/aₙ-г ол.",
+      "options": {
+        "A": "3n",
+        "B": "n/3",
+        "C": "3/(n−1)",
+        "D": "3/n",
+        "E": "3/(n+1)"
+      },
+      "answer": "D",
+      "answerValue": "3/n",
+      "solution": "Зэрэг нэгээр нэмэгдэж, факториал n-ээр үржигдэнэ."
+    },
+    {
+      "number": "27",
+      "referenceQuestion": "27",
+      "skill": "Area under quadratic",
+      "type": "multiple_choice",
+      "points": 2,
+      "prompt": "y=0 ба y=3x²−3 муруйгаар хүрээлсэн талбайг ол.",
+      "options": {
+        "A": "4",
+        "B": "5",
+        "C": "2",
+        "D": "3",
+        "E": "6"
+      },
+      "answer": "A",
+      "answerValue": "4",
+      "solution": "Огтлолууд ±1; ∫[-1,1] k(1−x²)dx=4k/3."
+    },
+    {
+      "number": "28",
+      "referenceQuestion": "28",
+      "skill": "Binomial alternating sum",
+      "type": "multiple_choice",
+      "points": 2,
+      "prompt": "Σ[j=0…82] C(82,j)(−1)^j3^j нийлбэрийг ол.",
+      "options": {
+        "A": "3^82",
+        "B": "2^82",
+        "C": "2^81",
+        "D": "4^82",
+        "E": "−2^82"
+      },
+      "answer": "B",
+      "answerValue": "2^82",
+      "solution": "Биномын томьёогоор (1−k)^N; N тэгш тул (k−1)^N."
+    },
+    {
+      "number": "29",
+      "referenceQuestion": "29",
+      "skill": "Trig inequality",
+      "type": "multiple_choice",
+      "points": 3,
+      "prompt": "sin(x−3π/6)cos(x−3π/6)<√2/4 тэнцэтгэл бишийг бод.",
+      "options": {
+        "A": "x∈[3π/6+π/8+πn; 3π/6+3π/8+πn], n∈Z",
+        "B": "x∉[3π/6+π/8+πn; 3π/6+3π/8+πn], n∈Z",
+        "C": "x∈(3π/6+π/8+πn; 3π/6+3π/8+πn), n∈Z",
+        "D": "Шийдгүй",
+        "E": "Бүх бодит x"
+      },
+      "answer": "B",
+      "answerValue": "x∉[3π/6+π/8+πn; 3π/6+3π/8+πn], n∈Z",
+      "solution": "2sin u cos u=sin2u. sin2u≥√2/2 байх хаалттай завсруудыг хасна."
+    },
+    {
+      "number": "30",
+      "referenceQuestion": "30",
+      "skill": "Cubic decreasing interval length",
+      "type": "multiple_choice",
+      "points": 3,
+      "prompt": "f(x)=x³/3−7/2x²+12x. Буурах завсрын уртыг ол.",
+      "options": {
+        "A": "1",
+        "B": "-1",
+        "C": "3",
+        "D": "0",
+        "E": "2"
+      },
+      "answer": "A",
+      "answerValue": "1",
+      "solution": "f′=(x−k)(x−k−1); буурах муж (k,k+1)."
+    },
+    {
+      "number": "31",
+      "referenceQuestion": "31",
+      "skill": "Exponential inverse value",
+      "type": "multiple_choice",
+      "points": 3,
+      "prompt": "f(x)=4^(8x−5)+33. f⁻¹(97)-ийг ол.",
+      "options": {
+        "A": "-1",
+        "B": "2",
+        "C": "0",
+        "D": "1",
+        "E": "3"
+      },
+      "answer": "D",
+      "answerValue": "1",
+      "solution": "f(x)=k+94 гэвэл 4^(8x−5)=64=4³; x=1."
+    },
+    {
+      "number": "32",
+      "referenceQuestion": "32",
+      "skill": "Trig roots product",
+      "type": "multiple_choice",
+      "points": 3,
+      "prompt": "cos²x−sin²x=sin x тэгшитгэлийн [−π+π/7;π+π/7] дэх шийдүүдийн үржвэрийг ол.",
+      "options": {
+        "A": "0",
+        "B": "−5π³/72",
+        "C": "−π³/72",
+        "D": "−5π³/36",
+        "E": "5π³/72"
+      },
+      "answer": "B",
+      "answerValue": "−5π³/72",
+      "solution": "s=sinx: 1−2s²=s → s=1/2,−1; шийдүүд π/6,5π/6,−π/2."
+    },
+    {
+      "number": "33",
+      "referenceQuestion": "33",
+      "skill": "Quadratic log inequality",
+      "type": "multiple_choice",
+      "points": 3,
+      "prompt": "(log_(1/5)x)²−3log_(1/5)x+2≤0-г бод.",
+      "options": {
+        "A": "(1/25; 1/5)",
+        "B": "(0; 1/25]",
+        "C": "[1/25; 1/5]",
+        "D": "R",
+        "E": "[5; 25]"
+      },
+      "answer": "C",
+      "answerValue": "[1/25; 1/5]",
+      "solution": "t²−3t+2≤0 →1≤t≤2. Суурь<1 тул x=b^(−t)."
+    },
+    {
+      "number": "34",
+      "referenceQuestion": "34",
+      "skill": "Triangle heights",
+      "type": "multiple_choice",
+      "points": 3,
+      "prompt": "ABC хурц өнцөгт гурвалжны B-ээс AC-д буулгасан өндөр 48/5, A-аас BC-д буулгасан AE=12. BE:EC=1:3. AC-г ол.",
+      "options": {
+        "A": "16",
+        "B": "13",
+        "C": "14",
+        "D": "17",
+        "E": "15"
+      },
+      "answer": "E",
+      "answerValue": "15",
+      "solution": "BE=t, EC=3t. AB²=t²+16k², AC²=9t²+16k². Талбайгаас BC·4k=AC·(16k/5) → AC=5t. 25t²=9t²+16k²→t=k.",
+      "figure": {
+        "schema": "education.math.figure.v1",
+        "kind": "scene",
+        "title": "Гурвалжин",
+        "space": "2d",
+        "coordinateSystem": "schematic",
+        "notToScale": true,
+        "points": {
+          "A": {
+            "position": [
+              0.0,
+              4.0
+            ],
+            "label": "A"
+          },
+          "B": {
+            "position": [
+              -1.0,
+              0.0
+            ],
+            "label": "B"
+          },
+          "C": {
+            "position": [
+              3.0,
+              0.0
+            ],
+            "label": "C"
+          },
+          "E": {
+            "position": [
+              0.0,
+              0.0
+            ],
+            "label": "E"
+          },
+          "D": {
+            "position": [
+              1.56,
+              1.92
+            ],
+            "label": "D"
+          }
+        },
+        "objects": [
+          {
+            "kind": "polygon",
+            "points": [
+              "A",
+              "B",
+              "C"
+            ],
+            "fill": null
+          },
+          {
+            "kind": "segment",
+            "from": "A",
+            "to": "E",
+            "style": "solid",
+            "arrow": false
+          },
+          {
+            "kind": "segment",
+            "from": "B",
+            "to": "D",
+            "style": "solid",
+            "arrow": false
+          }
+        ],
+        "measurements": [
+          {
+            "kind": "length",
+            "from": "A",
+            "to": "E",
+            "text": "12",
+            "provenance": "question_given"
+          },
+          {
+            "kind": "length",
+            "from": "B",
+            "to": "D",
+            "text": "48/5",
+            "provenance": "question_given"
+          }
+        ],
+        "relations": [
+          {
+            "kind": "right_angle",
+            "points": [
+              "A",
+              "E",
+              "C"
+            ]
+          },
+          {
+            "kind": "right_angle",
+            "points": [
+              "B",
+              "D",
+              "C"
+            ]
+          },
+          {
+            "kind": "ratio",
+            "segments": [
+              [
+                "B",
+                "E"
+              ],
+              [
+                "E",
+                "C"
+              ]
+            ],
+            "values": [
+              1,
+              3
+            ]
+          }
+        ],
+        "notes": [
+          "Зураг нь зөвхөн өгөгдлийн холбоог дүрслэнэ; хэмжээг зургаас хэмжиж болохгүй."
+        ],
+        "sourceQuestion": {
+          "year": 2016,
+          "variant": "C",
+          "number": "34",
+          "figureCatalog": "2016/reference/figures.json"
+        },
+        "displayPolicy": "question_figure",
+        "answerLabelsIncluded": false,
+        "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 420 300\" role=\"img\"><title>Гурвалжин</title><rect width=\"420\" height=\"300\" fill=\"white\"/><g stroke=\"#172b4d\" stroke-width=\"1.6\" fill=\"none\" stroke-linejoin=\"round\"><polygon points=\"155.00,40.00 100.00,260.00 320.00,260.00\" fill=\"none\"/><line x1=\"155.00\" y1=\"40.00\" x2=\"155.00\" y2=\"260.00\"/><line x1=\"100.00\" y1=\"260.00\" x2=\"240.80\" y2=\"154.40\"/><line x1=\"155.00\" y1=\"251.00\" x2=\"164.00\" y2=\"251.00\"/><line x1=\"164.00\" y1=\"251.00\" x2=\"164.00\" y2=\"260.00\"/><line x1=\"233.60\" y1=\"159.80\" x2=\"239.00\" y2=\"167.00\"/><line x1=\"239.00\" y1=\"167.00\" x2=\"246.20\" y2=\"161.60\"/></g><g font-family=\"Segoe UI, sans-serif\" font-size=\"13\" fill=\"#172b4d\"><rect x=\"158.00\" y=\"22.00\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"160.00\" y=\"34.00\">A</text><rect x=\"103.00\" y=\"242.00\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"105.00\" y=\"254.00\">B</text><rect x=\"323.00\" y=\"242.00\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"325.00\" y=\"254.00\">C</text><rect x=\"158.00\" y=\"242.00\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"160.00\" y=\"254.00\">E</text><rect x=\"243.80\" y=\"136.40\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"245.80\" y=\"148.40\">D</text><rect x=\"158.00\" y=\"133.00\" width=\"17\" height=\"16\" fill=\"white\"/><text x=\"160.00\" y=\"145.00\">12</text><rect x=\"173.40\" y=\"190.20\" width=\"31\" height=\"16\" fill=\"white\"/><text x=\"175.40\" y=\"202.20\">48/5</text></g></svg>"
+      }
+    },
+    {
+      "number": "35",
+      "referenceQuestion": "35",
+      "skill": "Common tangent trapezoid area",
+      "type": "multiple_choice",
+      "points": 3,
+      "prompt": "6, 54 радиустай хоёр тойрог гадаад байдлаар шүргэлцэнэ. Ерөнхий гадна шүргэгчийн шүргэлтийн цэгүүд ба төвүүдээр үүссэн дөрвөн өнцөгтийн талбайг ол.",
+      "options": {
+        "A": "1082",
+        "B": "1081",
+        "C": "1079",
+        "D": "1078",
+        "E": "1080"
+      },
+      "answer": "E",
+      "answerValue": "1080",
+      "solution": "Төвүүдийн зай 20k, радиусын зөрүү 16k; шүргэгчийн завсар 12k. Параллель талууд 2k,18k тул S=(20k)·12k/2.",
+      "figure": {
+        "schema": "education.math.figure.v1",
+        "kind": "scene",
+        "title": "Гадна шүргэлцсэн хоёр тойрог ба ерөнхий шүргэгч",
+        "space": "2d",
+        "coordinateSystem": "schematic",
+        "notToScale": true,
+        "points": {
+          "O1": {
+            "position": [
+              0.0,
+              0.0
+            ],
+            "label": "O₁"
+          },
+          "O2": {
+            "position": [
+              5.0,
+              0.0
+            ],
+            "label": "O₂"
+          },
+          "A": {
+            "position": [
+              -0.4,
+              0.3
+            ],
+            "label": "A"
+          },
+          "B": {
+            "position": [
+              1.4,
+              2.7
+            ],
+            "label": "B"
+          }
+        },
+        "objects": [
+          {
+            "kind": "circle",
+            "center": "O1",
+            "radius": 0.5,
+            "style": "solid",
+            "fill": null
+          },
+          {
+            "kind": "circle",
+            "center": "O2",
+            "radius": 4.5,
+            "style": "solid",
+            "fill": null
+          },
+          {
+            "kind": "segment",
+            "from": "A",
+            "to": "B",
+            "style": "solid",
+            "arrow": false
+          },
+          {
+            "kind": "segment",
+            "from": "O1",
+            "to": "A",
+            "style": "solid",
+            "arrow": false
+          },
+          {
+            "kind": "segment",
+            "from": "O2",
+            "to": "B",
+            "style": "solid",
+            "arrow": false
+          },
+          {
+            "kind": "segment",
+            "from": "O1",
+            "to": "O2",
+            "style": "solid",
+            "arrow": false
+          }
+        ],
+        "measurements": [
+          {
+            "kind": "length",
+            "from": "O1",
+            "to": "A",
+            "text": "6",
+            "provenance": "question_given"
+          },
+          {
+            "kind": "length",
+            "from": "O2",
+            "to": "B",
+            "text": "54",
+            "provenance": "question_given"
+          }
+        ],
+        "relations": [
+          {
+            "kind": "right_angle",
+            "points": [
+              "O1",
+              "A",
+              "B"
+            ]
+          },
+          {
+            "kind": "right_angle",
+            "points": [
+              "O2",
+              "B",
+              "A"
+            ]
+          }
+        ],
+        "notes": [
+          "Зураг нь зөвхөн өгөгдлийн холбоог дүрслэнэ; хэмжээг зургаас хэмжиж болохгүй."
+        ],
+        "sourceQuestion": {
+          "year": 2016,
+          "variant": "C",
+          "number": "35",
+          "figureCatalog": "2016/reference/figures.json"
+        },
+        "displayPolicy": "question_figure",
+        "answerLabelsIncluded": false,
+        "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 420 300\" role=\"img\"><title>Гадна шүргэлцсэн хоёр тойрог ба ерөнхий шүргэгч</title><rect width=\"420\" height=\"300\" fill=\"white\"/><g stroke=\"#172b4d\" stroke-width=\"1.6\" fill=\"none\" stroke-linejoin=\"round\"><circle cx=\"100.00\" cy=\"150.00\" r=\"12.22\" fill=\"none\"/><circle cx=\"222.22\" cy=\"150.00\" r=\"110.00\" fill=\"none\"/><line x1=\"90.22\" y1=\"142.67\" x2=\"134.22\" y2=\"84.00\"/><line x1=\"100.00\" y1=\"150.00\" x2=\"90.22\" y2=\"142.67\"/><line x1=\"222.22\" y1=\"150.00\" x2=\"134.22\" y2=\"84.00\"/><line x1=\"100.00\" y1=\"150.00\" x2=\"222.22\" y2=\"150.00\"/><line x1=\"97.42\" y1=\"148.07\" x2=\"102.82\" y2=\"140.87\"/><line x1=\"102.82\" y1=\"140.87\" x2=\"95.62\" y2=\"135.47\"/><line x1=\"141.42\" y1=\"89.40\" x2=\"136.02\" y2=\"96.60\"/><line x1=\"136.02\" y1=\"96.60\" x2=\"128.82\" y2=\"91.20\"/></g><g font-family=\"Segoe UI, sans-serif\" font-size=\"13\" fill=\"#172b4d\"><rect x=\"103.00\" y=\"132.00\" width=\"17\" height=\"16\" fill=\"white\"/><text x=\"105.00\" y=\"144.00\">O₁</text><rect x=\"225.22\" y=\"132.00\" width=\"17\" height=\"16\" fill=\"white\"/><text x=\"227.22\" y=\"144.00\">O₂</text><rect x=\"93.22\" y=\"124.67\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"95.22\" y=\"136.67\">A</text><rect x=\"137.22\" y=\"66.00\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"139.22\" y=\"78.00\">B</text><rect x=\"98.11\" y=\"129.33\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"100.11\" y=\"141.33\">6</text><rect x=\"181.22\" y=\"100.00\" width=\"17\" height=\"16\" fill=\"white\"/><text x=\"183.22\" y=\"112.00\">54</text></g></svg>"
+      }
+    },
+    {
+      "number": "36",
+      "referenceQuestion": "36",
+      "skill": "Regular triangular frustum volume",
+      "type": "multiple_choice",
+      "points": 3,
+      "prompt": "Зөв гурвалжин огтлогдсон пирамидын суурийн талууд 12, 18; хажуу ирмэг суурьтай 30° өнцөг үүсгэнэ. Эзлэхүүнийг ол.",
+      "options": {
+        "A": "1026√3/9",
+        "B": "513√3/9",
+        "C": "2052√3/9",
+        "D": "1026√3/3",
+        "E": "1026/9"
+      },
+      "answer": "A",
+      "answerValue": "1026√3/9",
+      "solution": "Оройнуудын проекцын зай (6k−4k)/√3. Өндөр=2k/3. Суурийн талбайнууд 4k²√3,9k²√3. V=h(S₁+S₂+√S₁S₂)/3=38k³√3/9.",
+      "figure": {
+        "schema": "education.math.figure.v1",
+        "kind": "scene",
+        "title": "Зөв гурвалжин огтлогдсон пирамид",
+        "space": "3d",
+        "coordinateSystem": "schematic",
+        "notToScale": true,
+        "points": {
+          "A": {
+            "position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "label": "A"
+          },
+          "B": {
+            "position": [
+              6.0,
+              0.0,
+              0.0
+            ],
+            "label": "B"
+          },
+          "C": {
+            "position": [
+              3.0,
+              5.196152422706632,
+              0.0
+            ],
+            "label": "C"
+          },
+          "A1": {
+            "position": [
+              1.0,
+              0.5773502691896257,
+              0.6666666666666666
+            ],
+            "label": "A₁"
+          },
+          "B1": {
+            "position": [
+              5.0,
+              0.5773502691896257,
+              0.6666666666666666
+            ],
+            "label": "B₁"
+          },
+          "C1": {
+            "position": [
+              3.0,
+              4.041451884327381,
+              0.6666666666666666
+            ],
+            "label": "C₁"
+          }
+        },
+        "objects": [
+          {
+            "kind": "polygon",
+            "points": [
+              "A",
+              "B",
+              "C"
+            ],
+            "fill": null
+          },
+          {
+            "kind": "segment",
+            "from": "A",
+            "to": "A1",
+            "style": "solid",
+            "arrow": false
+          },
+          {
+            "kind": "segment",
+            "from": "B",
+            "to": "B1",
+            "style": "solid",
+            "arrow": false
+          },
+          {
+            "kind": "segment",
+            "from": "C",
+            "to": "C1",
+            "style": "solid",
+            "arrow": false
+          },
+          {
+            "kind": "polygon",
+            "points": [
+              "A1",
+              "B1",
+              "C1"
+            ],
+            "fill": null
+          }
+        ],
+        "measurements": [
+          {
+            "kind": "length",
+            "from": "A",
+            "to": "B",
+            "text": "18",
+            "provenance": "question_given"
+          },
+          {
+            "kind": "length",
+            "from": "A1",
+            "to": "B1",
+            "text": "12",
+            "provenance": "question_given"
+          }
+        ],
+        "relations": [
+          {
+            "kind": "edge_to_base_angle",
+            "edge": [
+              "A",
+              "A1"
+            ],
+            "degrees": 30
+          }
+        ],
+        "notes": [
+          "Зураг нь зөвхөн өгөгдлийн холбоог дүрслэнэ; хэмжээг зургаас хэмжиж болохгүй."
+        ],
+        "sourceQuestion": {
+          "year": 2016,
+          "variant": "C",
+          "number": "36",
+          "figureCatalog": "2016/reference/figures.json"
+        },
+        "displayPolicy": "question_figure",
+        "answerLabelsIncluded": false,
+        "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 420 300\" role=\"img\"><title>Зөв гурвалжин огтлогдсон пирамид</title><rect width=\"420\" height=\"300\" fill=\"white\"/><g stroke=\"#172b4d\" stroke-width=\"1.6\" fill=\"none\" stroke-linejoin=\"round\"><polygon points=\"40.00,200.95 380.00,200.95 333.67,118.51\" fill=\"none\"/><line x1=\"40.00\" y1=\"200.95\" x2=\"110.41\" y2=\"154.01\"/><line x1=\"380.00\" y1=\"200.95\" x2=\"337.07\" y2=\"154.01\"/><line x1=\"333.67\" y1=\"118.51\" x2=\"306.19\" y2=\"99.05\"/><polygon points=\"110.41,154.01 337.07,154.01 306.19,99.05\" fill=\"none\"/></g><g font-family=\"Segoe UI, sans-serif\" font-size=\"13\" fill=\"#172b4d\"><rect x=\"43.00\" y=\"182.95\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"45.00\" y=\"194.95\">A</text><rect x=\"383.00\" y=\"182.95\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"385.00\" y=\"194.95\">B</text><rect x=\"336.67\" y=\"100.51\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"338.67\" y=\"112.51\">C</text><rect x=\"113.41\" y=\"136.01\" width=\"17\" height=\"16\" fill=\"white\"/><text x=\"115.41\" y=\"148.01\">A₁</text><rect x=\"340.07\" y=\"136.01\" width=\"17\" height=\"16\" fill=\"white\"/><text x=\"342.07\" y=\"148.01\">B₁</text><rect x=\"309.19\" y=\"81.05\" width=\"17\" height=\"16\" fill=\"white\"/><text x=\"311.19\" y=\"93.05\">C₁</text><rect x=\"213.00\" y=\"183.95\" width=\"17\" height=\"16\" fill=\"white\"/><text x=\"215.00\" y=\"195.95\">18</text><rect x=\"226.74\" y=\"137.01\" width=\"17\" height=\"16\" fill=\"white\"/><text x=\"228.74\" y=\"149.01\">12</text></g></svg>"
+      }
+    },
+    {
+      "number": "2.1",
+      "referenceQuestion": "2.1",
+      "skill": "Induction divisibility proof",
+      "type": "structured_response",
+      "points": 7,
+      "prompt": "n≥1 үед F(n)=4^n+33n+35 нь 9-д хуваагдахыг индукцээр батал.",
+      "parts": [
+        {
+          "id": "1",
+          "prompt": "F(1)",
+          "answer": "72"
+        },
+        {
+          "id": "2",
+          "prompt": "F(n+1)−4F(n)",
+          "answer": "−99n−72"
+        },
+        {
+          "id": "3",
+          "prompt": "9-өөр хуваасан шилжилтийн илэрхийлэл",
+          "answer": "−11n−8"
+        }
+      ],
+      "solution": "F(1)=18m+18 нь 9-д хуваагдана. F(n+1)−4F(n)=−3(9m+6)n−18m−18=−9[(3m+2)n+2m+2]. Индукцийн таамагтай нэгтгэвэл F(n+1) ч хуваагдана."
+    },
+    {
+      "number": "2.2",
+      "referenceQuestion": "2.2",
+      "skill": "Product to sum trig equation",
+      "type": "structured_response",
+      "points": 7,
+      "prompt": "sin(7x)cos(8x)=sin(5x)cos(6x) тэгшитгэлийг бод.",
+      "parts": [
+        {
+          "id": "1",
+          "prompt": "Үржвэрийн ялгаврын хувиргасан хэлбэр",
+          "answer": "sin(15x)−sin(11x)=0"
+        },
+        {
+          "id": "2",
+          "prompt": "Үржвэрт задаргаа",
+          "answer": "2cos(13x)sin(2x)=0"
+        },
+        {
+          "id": "3",
+          "prompt": "Шийдийн нэгдэл",
+          "answer": "x=πn/2 эсвэл x=(π/2+πn)/13, n∈Z"
+        }
+      ],
+      "solution": "2sin u cos v=sin(u+v)+sin(u−v). Хоёр талын −sinx хасагдана. Нийлбэрийг үржвэрт хувирга."
+    },
+    {
+      "number": "2.3",
+      "referenceQuestion": "2.3",
+      "skill": "Two dice distribution",
+      "type": "structured_response",
+      "points": 7,
+      "prompt": "Хоёр шударга шооны нүдний нийлбэр дээр 1 нэмснийг X гэв.",
+      "parts": [
+        {
+          "id": "1",
+          "prompt": "X=7 давтамж",
+          "answer": "5"
+        },
+        {
+          "id": "2",
+          "prompt": "X=8 давтамж",
+          "answer": "6"
+        },
+        {
+          "id": "3",
+          "prompt": "P(X=8)",
+          "answer": "1/6"
+        },
+        {
+          "id": "4",
+          "prompt": "P(4≤X≤8)",
+          "answer": "5/9"
+        },
+        {
+          "id": "5",
+          "prompt": "P(X≤7)",
+          "answer": "5/12"
+        }
+      ],
+      "solution": "36 тэнцүү боломжийг хүснэгтэл. Нийлбэрүүдийн давтамж 1,2,3,4,5,6,5,4,3,2,1."
+    },
+    {
+      "number": "2.4",
+      "referenceQuestion": "2.4",
+      "skill": "Skew lines in triangular pyramid",
+      "type": "structured_response",
+      "points": 7,
+      "prompt": "ABC зөв гурвалжны тал 24√2. SC=24, SC⊥(ABC). E нь BC-ийн, D нь AB-ийн дундаж цэг. SE ба CD шулуунуудын хоорондох хурц өнцөг, зайг ол.",
+      "parts": [
+        {
+          "id": "1",
+          "prompt": "Өнцгийн косинус",
+          "answer": "1/2"
+        },
+        {
+          "id": "2",
+          "prompt": "Хурц өнцөг",
+          "answer": "60°"
+        },
+        {
+          "id": "3",
+          "prompt": "Шулуунуудын хоорондох зай",
+          "answer": "8"
+        }
+      ],
+      "solution": "Координат сонго: A=(0,0,0), B=(8k√2,0,0), C=(4k√2,4k√6,0), S=C+(0,0,8k). u=E−S, w=D−C. cosθ=|u·w|/(|u||w|); d=|(C−S)·(u×w)|/|u×w|.",
+      "figure": {
+        "schema": "education.math.figure.v1",
+        "kind": "scene",
+        "title": "Пирамид",
+        "space": "3d",
+        "coordinateSystem": "schematic",
+        "notToScale": true,
+        "points": {
+          "A": {
+            "position": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "label": "A"
+          },
+          "B": {
+            "position": [
+              6.0,
+              0.0,
+              0.0
+            ],
+            "label": "B"
+          },
+          "C": {
+            "position": [
+              3.0,
+              5.196152422706632,
+              0.0
+            ],
+            "label": "C"
+          },
+          "S": {
+            "position": [
+              3,
+              5.196152422706632,
+              5
+            ],
+            "label": "S"
+          },
+          "E": {
+            "position": [
+              4.5,
+              2.598076211353316,
+              0.0
+            ],
+            "label": "E"
+          },
+          "D": {
+            "position": [
+              3.0,
+              0.0,
+              0.0
+            ],
+            "label": "D"
+          }
+        },
+        "objects": [
+          {
+            "kind": "polygon",
+            "points": [
+              "A",
+              "B",
+              "C"
+            ],
+            "fill": null
+          },
+          {
+            "kind": "segment",
+            "from": "A",
+            "to": "S",
+            "style": "solid",
+            "arrow": false
+          },
+          {
+            "kind": "segment",
+            "from": "B",
+            "to": "S",
+            "style": "solid",
+            "arrow": false
+          },
+          {
+            "kind": "segment",
+            "from": "C",
+            "to": "S",
+            "style": "solid",
+            "arrow": false
+          },
+          {
+            "kind": "segment",
+            "from": "S",
+            "to": "E",
+            "style": "solid",
+            "arrow": false
+          },
+          {
+            "kind": "segment",
+            "from": "C",
+            "to": "D",
+            "style": "solid",
+            "arrow": false
+          },
+          {
+            "kind": "segment",
+            "from": "S",
+            "to": "C",
+            "style": "dashed",
+            "arrow": false
+          }
+        ],
+        "measurements": [
+          {
+            "kind": "length",
+            "from": "A",
+            "to": "B",
+            "text": "24√2",
+            "provenance": "question_given"
+          },
+          {
+            "kind": "length",
+            "from": "C",
+            "to": "S",
+            "text": "24",
+            "provenance": "question_given"
+          }
+        ],
+        "relations": [
+          {
+            "kind": "perpendicular_to_plane",
+            "line": [
+              "S",
+              "C"
+            ],
+            "plane": [
+              "A",
+              "B",
+              "C"
+            ]
+          },
+          {
+            "kind": "midpoint",
+            "point": "E",
+            "segment": [
+              "B",
+              "C"
+            ]
+          },
+          {
+            "kind": "midpoint",
+            "point": "D",
+            "segment": [
+              "A",
+              "B"
+            ]
+          }
+        ],
+        "notes": [
+          "Зураг нь зөвхөн өгөгдлийн холбоог дүрслэнэ; хэмжээг зургаас хэмжиж болохгүй."
+        ],
+        "sourceQuestion": {
+          "year": 2016,
+          "variant": "C",
+          "number": "2.4",
+          "figureCatalog": "2016/reference/figures.json"
+        },
+        "displayPolicy": "question_figure",
+        "answerLabelsIncluded": false,
+        "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 420 300\" role=\"img\"><title>Пирамид</title><rect width=\"420\" height=\"300\" fill=\"white\"/><g stroke=\"#172b4d\" stroke-width=\"1.6\" fill=\"none\" stroke-linejoin=\"round\"><polygon points=\"107.75,260.00 312.25,260.00 284.38,210.41\" fill=\"none\"/><line x1=\"107.75\" y1=\"260.00\" x2=\"284.38\" y2=\"40.00\"/><line x1=\"312.25\" y1=\"260.00\" x2=\"284.38\" y2=\"40.00\"/><line x1=\"284.38\" y1=\"210.41\" x2=\"284.38\" y2=\"40.00\"/><line x1=\"284.38\" y1=\"40.00\" x2=\"298.31\" y2=\"235.21\"/><line x1=\"284.38\" y1=\"210.41\" x2=\"210.00\" y2=\"260.00\"/><line x1=\"284.38\" y1=\"40.00\" x2=\"284.38\" y2=\"210.41\" stroke-dasharray=\"5 4\"/></g><g font-family=\"Segoe UI, sans-serif\" font-size=\"13\" fill=\"#172b4d\"><rect x=\"110.75\" y=\"242.00\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"112.75\" y=\"254.00\">A</text><rect x=\"315.25\" y=\"242.00\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"317.25\" y=\"254.00\">B</text><rect x=\"287.38\" y=\"192.41\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"289.38\" y=\"204.41\">C</text><rect x=\"287.38\" y=\"22.00\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"289.38\" y=\"34.00\">S</text><rect x=\"301.31\" y=\"217.21\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"303.31\" y=\"229.21\">E</text><rect x=\"213.00\" y=\"242.00\" width=\"11\" height=\"16\" fill=\"white\"/><text x=\"215.00\" y=\"254.00\">D</text><rect x=\"213.00\" y=\"243.00\" width=\"31\" height=\"16\" fill=\"white\"/><text x=\"215.00\" y=\"255.00\">24√2</text><rect x=\"287.38\" y=\"108.21\" width=\"17\" height=\"16\" fill=\"white\"/><text x=\"289.38\" y=\"120.21\">24</text></g></svg>"
+      }
+    }
+  ],
+  "figureSchema": "education.math.figure.v1"
+}

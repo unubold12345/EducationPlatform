@@ -1,6 +1,6 @@
 // Explicit operator command. Never imported by the application or exposed as an API.
 // Owner removed practice exercises (2026-11-05). This lists, then with --apply permanently deletes, their
-// saved attempts, question bank and old published versions. Mocks, official papers, workshops, purchases,
+// saved attempts, question bank and old published versions. Mocks, workshops, purchases,
 // plans, accounts and audit history are not touched. Dry run by default.
 //
 //   Local preview:   node --import tsx scripts/purge-exercises.mjs
@@ -11,7 +11,6 @@ import { readFileSync } from "node:fs";
 import { PrismaClient } from "../src/generated/prisma/client.ts";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { examDefinitions } from "../src/modules/exams/definitions.ts";
-import { allOfficialPapers } from "../src/modules/papers/catalog.ts";
 
 const target=new URL(process.env.DATABASE_URL??"");
 const local=["localhost","127.0.0.1","[::1]"].includes(target.hostname);
@@ -22,8 +21,8 @@ const apply=process.argv.includes("--apply");
 // guided.ts is server-only, so its slugs are read as text. Stop rather than risk deleting workshop edits.
 const workshops=[...readFileSync(new URL("../src/modules/workshops/guided.ts",import.meta.url),"utf8").matchAll(/slug: "([^"]+)"/g)].map(match=>match[1]);
 if(workshops.length!==4)throw Error("Expected 4 workshops; refusing to continue.");
-const keep=[...examDefinitions.map(exam=>exam.slug),...allOfficialPapers.map(paper=>paper.slug),...workshops];
-if(keep.length<50)throw Error("Unexpected catalog size; refusing to continue.");
+const keep=[...examDefinitions.map(exam=>exam.slug),...workshops];
+if(keep.length<20)throw Error("Unexpected catalog size; refusing to continue.");
 const contentWhere={key:{notIn:keep}};
 
 const db=new PrismaClient({adapter:new PrismaPg({connectionString:process.env.DATABASE_URL,max:1})});

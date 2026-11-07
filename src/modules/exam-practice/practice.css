@@ -35,6 +35,20 @@
 .practice-transcript div { max-height: 300px; overflow-y: auto; margin-top: 10px; padding-right: 8px; font-size: 13.5px; }
 .practice-transcript p + p { margin-top: 8px; }
 
+.practice-context { margin: 16px 0 4px; padding: 16px 18px; border: 1px solid var(--line); border-left: 3px solid color-mix(in srgb, var(--blue) 60%, transparent); border-radius: 0 12px 12px 0; background: color-mix(in srgb, var(--paper) 55%, transparent); max-height: 340px; overflow: auto; }
+.practice-context .eyebrow { margin: 0 0 8px; }
+.practice-context > div { font-size: 14px; line-height: 1.8; white-space: pre-line; }
+.practice-bank { margin: 14px 0 4px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 12px; background: color-mix(in srgb, var(--surface) 50%, transparent); }
+.practice-bank .eyebrow { margin: 0 0 8px; }
+.practice-bank ol { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 18px; margin: 0; padding: 0; list-style: none; }
+.practice-bank li { display: flex; gap: 8px; font-size: 12.5px; line-height: 1.6; }
+.practice-bank li > span:first-child { flex: 0 0 16px; font-family: var(--font-mono); color: var(--blue); font-size: 11px; }
+.practice-points { font-family: var(--font-mono); font-size: 10px; font-weight: 500; color: var(--muted); }
+.practice-session .exam-answer-panel h2 .rich-text { white-space: pre-line; }
+@media (max-width: 600px) {
+  .practice-bank ol { grid-template-columns: minmax(0, 1fr); }
+}
+
 .practice-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 20px; }
 .practice-actions .tutor-launch { margin-top: 0; }
 .practice-session .question-actions { margin-top: 18px; }

@@ -56,6 +56,30 @@ export function mockBriefingSummary(exam: ExamDefinition): MockBriefingSummary {
     };
   }
 
+  if (exam.program === "entrance") {
+    const questions = exam.stages.flatMap(stage => stage.questions);
+    const choices = questions.filter(question => question.kind === "choice").length;
+    const tasks = exam.stages.flatMap(stage => stage.groups ?? []).filter(group => group.pageMode === "group").length;
+    const subject = exam.subject ?? (exam.slug.startsWith("eesh-math") ? "math" : exam.slug.startsWith("eesh-physics") ? "physics" : "english");
+    const label = subject === "math" ? "МАТЕМАТИК" : subject === "physics" ? "ФИЗИК" : "АНГЛИ ХЭЛ";
+    const structure = subject === "english" ? "Part I + Part II" : `${choices} сонгох + ${tasks} бодолт`;
+    return {
+      eyebrow: `ЭЕШ · ${label} · MOCK`,
+      chips: [`${questions.length} хариулт`, structure, `${formatExamDuration(totalSeconds)}`, `${exam.points ?? 100} оноо`],
+      facts: [
+        { label: "Хариулт", value: `${questions.length}` },
+        { label: "Бүтэц", value: structure },
+        { label: "Хугацаа", value: `${formatExamDuration(totalSeconds)}` },
+        { label: "Оноо", value: `${exam.points ?? 100}` },
+      ],
+      priceNote: `${MOCK_PRICE_LABEL} эсвэл University Prep эрх`,
+      scoreNote: "Зөв хариултын оноо; албан ЭЕШ-ийн оноо биш.",
+      totalSeconds,
+      breakSeconds,
+      deliveredQuestions: questions.length,
+    };
+  }
+
   const readingListening = uniqueQuestionCount(exam.stages, ["listening", "questions"]);
   const writingTasks = exam.stages.filter(stage => stage.kind === "writing").reduce((sum, stage) => sum + stage.questions.length, 0);
   const speakingStages = exam.stages.filter(stage => stage.kind === "speaking").length;

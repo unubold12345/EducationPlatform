@@ -15,10 +15,10 @@ function publicMock(row:Row,state:ExamState,now:number,knownStage?:string):Publi
   const current=stageFor(state);
   const unchanged=Boolean(current&&knownStage===current.id);
   const stage=current&&!unchanged ? {
-    id:current.id,title:current.title,seconds:current.seconds,kind:current.kind,instructions:current.instructions,passages:current.passages,
-    questions:current.questions.map(({id,domain,prompt,passage,options,kind,maxWords,minWords})=>({id,domain,prompt,passage,options,kind,maxWords,minWords})),
+    id:current.id,title:current.title,seconds:current.seconds,kind:current.kind,instructions:current.instructions,passages:current.passages,groups:current.groups,
+    questions:current.questions.map(({id,number,domain,prompt,passage,options,kind,maxWords,minWords,figure,points,groupId,optionLabels,compactOptions,matcher,context})=>({id,number,domain,prompt,passage,options,kind,maxWords,minWords,points,groupId,optionLabels,compactOptions,matcher,context,...(figure?{figure}:{})})),
   } : null;
-  return {id:row.id,slug:row.slug,title:state.definition.title,program:state.definition.program,revision:row.revision,stageIndex:state.stageIndex,
+  return {id:row.id,slug:row.slug,title:state.definition.title,program:state.definition.program,subject:state.definition.subject,revision:row.revision,stageIndex:state.stageIndex,
     stage,serverNow:new Date(now).toISOString(),deadline:state.deadline,stageStartedAt:state.stageStartedAt,responses:state.responses,flags:state.flags,
     completed:state.completed,finishedAt:state.finishedAt,timeline:state.definition.stages.map(({title,seconds,kind})=>({title,seconds,kind})),
     report:state.finishedAt ? makeReport(state) : null,recordings:row.recordings,...(unchanged?{stageUnchanged:true}:{})};

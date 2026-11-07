@@ -12,15 +12,9 @@ const steps = [
 
 export default function ProgramsPage() {
   return <div className="container page-space programs-page">
-    <header className="programs-hero">
-      <div className="page-intro">
-        <p className="eyebrow">ХӨТӨЛБӨРҮҮД</p>
-        <h1>Аль шалгалтад<br /><span>бэлдэх вэ?</span></h1>
-        <p>Гурван замаас сонго. Бүтэн шалгалт, албан материал, workshop — нэг дор.</p>
-      </div>
-    </header>
+    <h1 className="sr-only">Хөтөлбөрүүд</h1>
 
-    <div className="programs-meta" aria-label="Хөтөлбөрийн товч"><div><strong>12</strong><span>Бүтэн mock шалгалт</span></div><div><strong>41</strong><span>ЭЕШ албан хувилбар</span></div><div><strong>04</strong><span>Writing & Speaking workshop</span></div></div>
+    <div className="programs-meta" aria-label="Хөтөлбөрийн товч"><div><strong>167</strong><span>Бүтэн mock шалгалт</span></div><div><strong>155</strong><span>ЭЕШ mock</span></div><div><strong>04</strong><span>Writing & Speaking workshop</span></div></div>
 
     <div className="program-grid program-picker">{programs.map((program, index) => <ProgramSpotlight key={program.slug} program={program} index={index} />)}</div>
 

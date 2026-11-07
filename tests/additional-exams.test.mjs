@@ -5,15 +5,16 @@ import { createHash } from "node:crypto";
 import { examDefinitions,findExam } from "../src/modules/exams/definitions.ts";
 import { additionalListening } from "../src/modules/exams/ielts-additional-listening.ts";
 import { additionalMath } from "../src/modules/exams/sat-additional.ts";
-import { listeningFile } from "../src/modules/exams/audio-files.ts";
+import { listeningFile,listeningParts } from "../src/modules/exams/audio-files.ts";
 import { createExamState,stageFor,expireStages,editExam,validateExamEdit,makeReport,isCorrect } from "../src/modules/exams/engine.ts";
 
 const papers=[2,3,4,5,6];
 const slug=(program,n)=>`${program==='sat'?'sat-full':'ielts-academic'}-${String(n).padStart(2,'0')}`;
 
 test("six distinct full mocks per program preserve existing slugs and timing",()=>{
-  assert.equal(examDefinitions.length,12);
-  assert.equal(new Set(examDefinitions.map(e=>e.slug)).size,12);
+  // The ten ЭЕШ mocks (program "entrance") are tested in entrance-mocks.test.mjs.
+  assert.equal(examDefinitions.filter(e=>e.program!=="entrance").length,12);
+  assert.equal(new Set(examDefinitions.map(e=>e.slug)).size,examDefinitions.length);
   for(const program of ['sat','ielts']){
     assert.equal(examDefinitions.filter(e=>e.program===program).length,6);
     const original=findExam(slug(program,1));
@@ -102,14 +103,15 @@ test("new IELTS forms have distinct full-length readings, evidence-based complet
   assert.equal(texts.size,15);assert.equal(writing.size,10);assert.equal(cues.size,5);
 });
 
-test("new Listening recordings match their own scripts, file hashes and 30-minute timeline",()=>{
+test("new Listening recordings match their own scripts, file hashes and fit the 30-minute stage",()=>{
   const hashes=new Set();
   for(const p of papers){
     const number=String(p).padStart(2,'0'),{questions,scripts}=additionalListening(p);
     const manifest=JSON.parse(readFileSync(new URL(`../assets/exams/manifest-${number}.json`,import.meta.url),'utf8').replace(/^\uFEFF/,''));
     assert.equal(manifest.scriptsSha256,createHash('sha256').update(JSON.stringify(scripts)).digest('hex'));assert.equal(manifest.parts.length,4);
+    const timeline=listeningParts(slug('ielts',p));assert.ok(timeline.reduce((a,b)=>a+b,0)<=findExam(slug('ielts',p)).stages[0].seconds);
     for(const [index,part] of manifest.parts.entries()){
-      assert.equal(part.part,index+1);assert.ok(Math.abs(part.seconds-450)<0.2);
+      assert.equal(part.part,index+1);assert.ok(Math.abs(part.seconds-timeline[index])<0.01);
       const file=new URL(`../assets/exams/${listeningFile(slug('ielts',p),part.part)}`,import.meta.url),bytes=readFileSync(file);
       assert.equal(statSync(file).size,part.bytes);assert.equal(createHash('sha256').update(bytes).digest('hex'),part.sha256);
       assert.ok(!hashes.has(part.sha256));hashes.add(part.sha256);

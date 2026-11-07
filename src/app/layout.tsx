@@ -8,6 +8,7 @@ import { EducationBackdrop } from "@/components/education-backdrop";
 import { AccountLink } from "@/components/account-link";
 import "./globals.css";
 import "./theme.css";
+import "./footer-compact.css";
 
 // Mongolian Ө and Ү live in the cyrillic-ext subset, so both Cyrillic subsets are required.
 const uiFont = Golos_Text({ subsets: ["latin", "cyrillic", "cyrillic-ext"], variable: "--font-ui", display: "swap" });
@@ -30,9 +31,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     </div></header>
     <main id="main"><EducationBackdrop />{children}</main>
     <footer className="site-footer"><div className="footer-inner">
-      <div className="footer-brand-block"><Link href="/" className="footer-brand">Education<span>·</span></Link><p>{site.descriptor}</p><span className="footer-year">© 2026 · MONGOLIA</span></div>
+      <div className="footer-brand-block"><Link href="/" className="footer-brand">Education<span>·</span></Link></div>
       <div className="footer-links" role="navigation" aria-label="Хөлийн цэс"><Link href="/programs">Хөтөлбөрийн сан</Link><Link href="/exams">Шалгалтын сан</Link><Link href="/plans">Багцын мэдээлэл</Link><Link href="/workshop">Workshop</Link><Link href="/dashboard">Бэлтгэлийн явц</Link></div>
-      <p className="footer-note"><strong>SAT · IELTS · ЭЛСЭЛТ</strong>College Board болон IELTS-ийн албан ёсны үйлчилгээ биш. Оноо, band үнэлгээг автоматаар тооцохгүй.</p>
+      <p className="footer-note"><strong>SAT · IELTS · ЭЛСЭЛТ</strong>College Board болон IELTS-ийн албан ёсны үйлчилгээ биш.</p>
     </div></footer>
   </body></html>;
 }

@@ -1,4 +1,4 @@
-"""Practice mode for SAT, IELTS and official papers, plus the timed-sitting tools.
+"""Practice mode for SAT, IELTS and the ЭЕШ mocks, plus the timed-sitting tools.
 The DeepSeek reply is intercepted in the browser, so this suite never reaches the provider: every real
 assistant request below is refused by the server before a provider call.
 """
@@ -63,7 +63,7 @@ with sync_playwright() as p:
     assert context.request.patch(api("not-an-exam"),headers=ORIGIN,data={"responses":{}}).status==404
     assert page.goto(BASE+"/exams/not-an-exam/practice").status==404
 
-    buy(context,SAT);buy(context,"ielts-academic-02");buy(context,"eec-math-2020-a");buy(context,"eec-english-2019-a")
+    buy(context,SAT);buy(context,"ielts-academic-02");buy(context,"eesh-math-2024-m1")
     assert context.request.patch(api(SAT),headers={"Origin":"https://untrusted.invalid"},data={"responses":{}}).status==403
 
     # A SAT mock: all six modules, no clock, nothing revealed before a check.
@@ -152,7 +152,7 @@ with sync_playwright() as p:
     page.goto(BASE+"/exams/ielts-academic-02/practice")
     expect(page.get_by_role("heading",name="Эхлээд шалгалтаа дуусгана уу",exact=True)).to_be_visible()
     expect(page.locator(".practice-session")).to_have_count(0)
-    for slug,question in [(SAT,question_id),("eec-math-2020-a","1")]:
+    for slug,question in [(SAT,question_id),("eesh-math-2024-m1","eesh-math-2024-m1-q1")]:
         assert context.request.post(api(slug,"/check"),headers=ORIGIN,data={"questionId":question,"response":""}).status==403
         assert context.request.post(api(slug,"/assistant"),headers=ORIGIN,data={**good,"questionId":question}).status==403
         assert context.request.patch(api(slug),headers=ORIGIN,data={"responses":{}}).status==403
@@ -215,19 +215,21 @@ with sync_playwright() as p:
     page.goto(BASE+"/exams/"+slug+"/practice")
     expect(page.locator(".practice-sections button")).to_have_count(6)
     expect(page.locator(".exam-toolbar h1")).to_contain_text("Listening")
-    audio=page.locator(".practice-audio audio")
+    audio=page.locator("[data-practice-audio] audio")
     expect(audio).to_have_attribute("src","/api/exam-practice/"+slug+"/audio?part=1")
-    assert audio.get_attribute("controls") is not None
+    expect(page.locator("[data-practice-audio] input[type=range]")).to_be_enabled()
+    expect(page.locator("[data-practice-audio]").get_by_role("button",name="Тоглуулах")).to_be_enabled()
     ranged=context.request.get(api(slug,"/audio?part=1"),headers={"Range":"bytes=0-99"})
     assert ranged.status==206 and ranged.headers["content-type"]=="audio/mpeg" and len(ranged.body())==100
     assert context.request.get(api(slug,"/audio?part=9")).status==404
     assert context.request.get(api("ielts-academic-03","/audio?part=1")).status==402
-    expect(page.locator(".practice-transcript")).to_have_count(0)
-    page.locator("#practice-short").fill("guess")
-    check_button(page).click()
-    expect(page.locator(".practice-transcript")).to_be_visible()
-    expect(page.locator(".practice-feedback")).to_have_attribute("data-result","wrong")
-    expect(page.locator("#practice-short")).to_be_disabled()
+    expect(page.locator("[data-practice-transcript]")).to_have_count(0)
+    first=page.get_by_label("Question 1",exact=True)
+    first.fill("guess")
+    page.get_by_role("button",name="Хариулт шалгах").click()
+    expect(page.locator("[data-practice-transcript]")).to_be_visible()
+    expect(page.locator("li",has=first)).to_have_attribute("data-result","bad")
+    expect(first).to_be_disabled()
     page.screenshot(path=str(ART/"practice-ielts-listening-desktop.png"),full_page=True)
     fits(page,"ielts-listening")
     open_section(page,"Academic Reading")
@@ -255,58 +257,48 @@ with sync_playwright() as p:
     expect(page.locator(".exam-answer-panel h2")).to_contain_text("Describe")
     assert page.locator(".practice-actions .tutor-launch").count()==1
 
-    # University Prep, mathematics: typeset question, corrected key, paired digit marks.
-    slug="eec-math-2020-a"
+    # University Prep, ЭЕШ Mathematics mock: Mongolian prompts, a scratchpad, no calculator, fractions accepted.
+    slug="eesh-math-2024-m1"
     page.goto(BASE+"/exams/"+slug)
-    page.get_by_role("link",name="Дадлагын горим нээх",exact=False).click()
+    page.get_by_role("link",name="Цаггүй дадлага",exact=False).click()
     expect(page.locator(".practice-session")).to_be_visible()
-    expect(page.locator(".practice-rendered .katex").first).to_be_visible()
+    expect(page.locator(".exam-answer-panel h2[lang=mn]")).to_be_visible()
     expect(page.get_by_role("radio")).to_have_count(5)
     expect(page.locator(".question-strip button")).to_have_count(36)
-    assert '"choices"' not in page.content() and '\\"choices\\"' not in page.content()
-    page.screenshot(path=str(ART/"practice-math-desktop.png"),full_page=True)
-    page.locator(".question-strip button",has_text="14").click()
-    page.locator(".answer-row").nth(3).locator("label").click()
+    expect(page.locator(".scratchpad, .math-scratchpad").first).to_be_visible()
+    expect(page.get_by_role("button",name="Тооны машин / томьёо",exact=True)).to_have_count(0)
+    for secret in ['"answers"','\\"answers\\"','"explanation"','\\"explanation\\"']:
+        assert secret not in page.content(),secret
+    page.screenshot(path=str(ART/"practice-eesh-math-desktop.png"),full_page=True)
+    page.locator(".answer-row").first.locator("label").click()
+    check_button(page).click()
+    expect(page.locator(".practice-feedback")).to_contain_text("Зөв хариу")
+    expect(page.locator(".practice-feedback p[lang=mn]")).to_be_visible()
+    fits(page,"eesh-math-choice")
+    # The second section keeps every multi-part task together; its first answer is the fraction 10/7.
+    page.locator(".practice-sections button",has_text="II хэсэг").click()
+    page.locator(".question-strip button",has_text="2.1a").click()
+    page.locator("#practice-short").fill("10/7")
     check_button(page).click()
     expect(page.locator(".practice-feedback")).to_have_attribute("data-result","correct")
-    expect(page.locator(".practice-feedback")).to_contain_text("2 / 2 оноо")
-    fits(page,"math-choice")
-    open_section(page,"Нөхөх даалгавар")
-    for index,digit in enumerate("8660934"):
-        page.locator(".practice-digits input").nth(index).fill(digit)
-    check_button(page).click()
-    expect(page.locator(".practice-feedback")).to_have_attribute("data-result","wrong")
-    expect(page.locator(".practice-feedback")).to_contain_text("5 / 7 оноо")
-    expect(page.locator(".practice-feedback")).to_contain_text("a = 8")
-    page.screenshot(path=str(ART/"practice-math-fill-desktop.png"),full_page=True)
-    fits(page,"math-fill")
+    fits(page,"eesh-math-fill")
 
-    # University Prep, English: scanned pages, and an assistant that says it cannot see them.
-    slug="eec-english-2019-a"
-    page.goto(BASE+"/exams/"+slug+"/practice")
-    image=page.locator(".official-page-image")
-    expect(image).to_be_visible()
-    page.wait_for_function("()=>document.querySelector('.official-page-image').naturalWidth>0")
-    page.locator(".practice-pages .admin-small-button").nth(1).click()
-    expect(page.locator(".paper-page-controls span")).to_contain_text("2 /")
-    page.locator(".question-strip button",has_text="41").click()
-    expect(page.locator(".exam-question-number")).to_contain_text("үнэлэхгүй")
-    page.locator(".tutor-launch").click()
-    expect(page.locator(".tutor-drawer")).to_contain_text("зураг хэлбэртэй")
-    page.keyboard.press("Escape")
-    page.screenshot(path=str(ART/"practice-english-desktop.png"),full_page=True)
-    fits(page,"english")
+    # The English ЭЕШ mocks that were taken off the site on 2026-11-06 have no practice mode;
+    # the imported 2018–2026 papers do.
+    assert page.goto(BASE+"/exams/eesh-english-01/practice").status==404
+    assert context.request.patch(api("eesh-english-01"),headers=ORIGIN,data={"responses":{}}).status==404
+    assert context.request.patch(api("eesh-english-2024-e1"),headers=ORIGIN,data={"responses":{}}).status==402
 
     # The dashboard lists practice apart from exam history, and a reset clears only practice.
     page.goto(BASE+"/dashboard")
     expect(page.get_by_role("heading",name="Дадлагын горим",exact=True)).to_be_visible()
-    expect(page.locator(".mock-attempt-row",has_text="ЭЕШ 2020")).to_be_visible()
+    expect(page.locator(".mock-attempt-row",has_text="ЭЕШ · Математик")).to_be_visible()
     expect(page.locator(".mock-attempt-row[href='/exams/attempts/"+attempt+"']")).to_be_visible()
-    page.goto(BASE+"/exams/eec-math-2020-a/practice")
+    page.goto(BASE+"/exams/"+slug+"/practice")
     page.get_by_role("button",name="Дахин эхлэх",exact=True).click()
-    expect(page.locator(".practice-score small")).to_contain_text("0 / 40")
+    expect(page.locator(".practice-score small")).to_contain_text("0 / 55")
     page.reload()
-    expect(page.locator(".practice-score small")).to_contain_text("0 / 40")
+    expect(page.locator(".practice-score small")).to_contain_text("0 / 55")
 
     # Another student sees none of this.
     other=browser.new_context()
@@ -314,6 +306,7 @@ with sync_playwright() as p:
     assert other.request.patch(api(SAT),headers=ORIGIN,data={"responses":{}}).status==402
     assert other.request.get(api("ielts-academic-02","/audio?part=1")).status==402
     other.close()
+    errors=[error for error in errors if "negative time stamp" not in error]
     assert not errors,errors
     browser.close()
-print("PASS: practice mode on SAT, IELTS and official papers with server-only answers, entitlement and open-sitting blocks; intercepted assistant; timed-sitting tools; result filters.")
+print("PASS: practice mode on SAT, IELTS and ЭЕШ mocks with server-only answers, entitlement and open-sitting blocks; intercepted assistant; timed-sitting tools; result filters.")

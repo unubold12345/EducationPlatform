@@ -1,5 +1,4 @@
 import "./admin.css";
-import { findOfficialPaper } from "@/modules/papers/catalog";
 import { findExam } from "@/modules/exams/definitions";
 import { adminUserScope,realPaymentScope } from "@/modules/admin/data-scope";
 import type { Metadata } from "next";
@@ -108,7 +107,7 @@ export default async function AdminPage({searchParams}:{searchParams:Promise<Rec
     const info=pageInfo(view==="orders"?orderTotal:purchaseTotal,requested);
     const rows=view==="orders"
       ?(await db.subscriptionOrder.findMany({where:{...base,...statusWhere},skip:info.skip,take:info.size,orderBy:[{createdAt:"desc"},{id:"desc"}],select:{id:true,program:true,status:true,provider:true,amountMnt:true,createdAt:true,paidAt:true,user:{select:{id:true,email:true}}}})).map(row=>({...row,label:row.program.toUpperCase()+" · сарын эрх"}))
-      :(await db.mockPurchase.findMany({where:{...base,...statusWhere},skip:info.skip,take:info.size,orderBy:[{createdAt:"desc"},{id:"desc"}],select:{id:true,examSlug:true,status:true,provider:true,amountMnt:true,createdAt:true,paidAt:true,user:{select:{id:true,email:true}}}})).map(row=>({...row,label:findExam(row.examSlug)?.title??findOfficialPaper(row.examSlug)?.title??row.examSlug}));
+      :(await db.mockPurchase.findMany({where:{...base,...statusWhere},skip:info.skip,take:info.size,orderBy:[{createdAt:"desc"},{id:"desc"}],select:{id:true,examSlug:true,status:true,provider:true,amountMnt:true,createdAt:true,paidAt:true,user:{select:{id:true,email:true}}}})).map(row=>({...row,label:findExam(row.examSlug)?.title??"Хасагдсан албан материал · "+row.examSlug}));
     return <AdminShell tab={tab} title={title} name={name} testData={testData} scope={scope} description={description}>{testBanner}
       <SubTabs items={[["orders","Сарын багцын захиалга",orderTotal],["purchases","Нэг шалгалтын эрх",purchaseTotal]]} current={view} href={key=>link({kind:key,page:1})}/>
       {search("Хэрэглэгчийн нэр эсвэл имэйл…",{name:"filter",value:filter,options:[["","Бүх төлөв"],["PAID","Төлөгдсөн"],["PENDING","Хүлээгдэж байна"],["DECLINED","Амжилтгүй"]]})}
@@ -127,9 +126,9 @@ export default async function AdminPage({searchParams}:{searchParams:Promise<Rec
     const page={where,skip:info.skip,take:info.size,orderBy:[{createdAt:"desc" as const},{id:"desc" as const}]};
     const rows=view==="mocks"
       ?(await db.mockAttempt.findMany({...page,select:{id:true,slug:true,status:true,createdAt:true,updatedAt:true,subscriptionAccess:true,user:{select:{id:true,email:true}}}})).map(row=>({...row,label:findExam(row.slug)?.title??row.slug,result:row.subscriptionAccess?"Сарын эрхээр":"Нэг удаагийн эрхээр"}))
-      :(await db.paperAttempt.findMany({...page,select:{id:true,slug:true,status:true,createdAt:true,updatedAt:true,user:{select:{id:true,email:true}}}})).map(row=>({...row,label:findOfficialPaper(row.slug)?.title??row.slug,result:"—"}));
+      :(await db.paperAttempt.findMany({...page,select:{id:true,slug:true,status:true,createdAt:true,updatedAt:true,user:{select:{id:true,email:true}}}})).map(row=>({...row,label:"Хасагдсан албан материал · "+row.slug,result:"—"}));
     return <AdminShell tab={tab} title={title} name={name} testData={testData} scope={scope} description={description}>{testBanner}
-      <SubTabs items={[["mocks","Бүтэн mock",mockTotal],["papers","Албан материал",paperTotal]]} current={view} href={key=>link({kind:key,page:1})}/>
+      <SubTabs items={[["mocks","Бүтэн mock",mockTotal],["papers","Хасагдсан албан материал",paperTotal]]} current={view} href={key=>link({kind:key,page:1})}/>
       {search("Хэрэглэгчийн нэр эсвэл имэйл…",{name:"filter",value:filter,options:[["","Бүх төлөв"],["IN_PROGRESS","Үргэлжилж байна"],["SUBMITTED","Дууссан"]]})}
       <div className="admin-table-wrap"><table><thead><tr><th>Эхэлсэн</th><th>Суралцагч</th><th>Материал</th><th>Төлөв</th><th>Сүүлд</th></tr></thead><tbody>{rows.map(row=><tr key={row.id}><td>{date(row.createdAt)}</td><td>{userLink(row.user)}</td><td>{row.label}<small><code>{row.id}</code></small></td><td><StatusPill status={row.status}/><small>{row.result}</small></td><td>{date(row.updatedAt)}</td></tr>)}</tbody></table>{!rows.length&&empty("Оролдлого олдсонгүй.")}</div>
       <Pager info={info} href={page=>link({page})} label="оролдлого"/>

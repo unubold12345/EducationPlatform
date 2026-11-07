@@ -1,4 +1,3 @@
-import { findOfficialPaper } from "@/modules/papers/catalog";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { requireUser } from "@/lib/session";
@@ -54,7 +53,7 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
     <section className="ws-card profile-access">
       <h2>Шалгалтын эрх</h2>
       {purchases.length ? <div className="profile-rows">{purchases.map(purchase => <div className="purchase-row profile-row" key={purchase.id}>
-        <div><Link href={"/exams/"+purchase.examSlug}>{findOfficialPaper(purchase.examSlug)?.title??findExam(purchase.examSlug)?.title??purchase.examSlug}</Link><p>{purchase.provider==="LEGACY"?"Өмнөх шалгалтын эрх":"Туршилтын төлбөр · ₮"+purchase.amountMnt.toLocaleString("en-US")}</p></div>
+        <div>{findExam(purchase.examSlug)?<Link href={"/exams/"+purchase.examSlug}>{findExam(purchase.examSlug)!.title}</Link>:<span>Хасагдсан албан материал · {purchase.examSlug}</span>}<p>{purchase.provider==="LEGACY"?"Өмнөх шалгалтын эрх":"Туршилтын төлбөр · ₮"+purchase.amountMnt.toLocaleString("en-US")}</p></div>
         <Link className="text-link" href={"/checkout/"+purchase.examSlug}>Баримт</Link>
       </div>)}</div> : <div className="profile-empty">
         <p>Шалгалтын эрх хараахан аваагүй.</p>

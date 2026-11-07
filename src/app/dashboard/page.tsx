@@ -1,5 +1,4 @@
 import "./dashboard.css";
-import { findOfficialPaper } from "@/modules/papers/catalog";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import Link from "next/link";
@@ -25,17 +24,15 @@ export default async function DashboardPage() {
     getDb().mockAttempt.findFirst({ where: { userId: user.id, status: "IN_PROGRESS" }, orderBy: { updatedAt: "desc" }, select: { id: true, slug: true, updatedAt: true } }),
     getDb().subscription.findMany({ where: { userId: user.id, startsAt: { lte: now }, endsAt: { gt: now } }, orderBy: { endsAt: "asc" }, select: { id: true, program: true, endsAt: true } }),
   ]);
-  const papers=await getDb().paperAttempt.findMany({where:{userId:user.id},orderBy:{createdAt:"desc"},take:20,select:{id:true,slug:true,status:true,createdAt:true}});
-  const [paperComplete,paperOpen,recentPaper]=await Promise.all([getDb().paperAttempt.count({where:{userId:user.id,status:"SUBMITTED"}}),getDb().paperAttempt.count({where:{userId:user.id,status:"IN_PROGRESS"}}),getDb().paperAttempt.findFirst({where:{userId:user.id,status:"IN_PROGRESS"},orderBy:{updatedAt:"desc"},select:{id:true,slug:true,updatedAt:true}})]);
   const practice=await practiceSummaries(user.id);
   const date = new Intl.DateTimeFormat("mn-MN", { timeZone: "Asia/Ulaanbaatar", dateStyle: "medium" });
   const mockResume = recentMock ? { href: "/exams/attempts/" + recentMock.id, title: findExam(recentMock.slug)?.title ?? recentMock.slug, kind: "Бүтэн шалгалт" } : null;
-  const resume=recentPaper&&(!recentMock||recentPaper.updatedAt>recentMock.updatedAt)?{href:"/papers/attempts/"+recentPaper.id,title:findOfficialPaper(recentPaper.slug)?.title??recentPaper.slug,kind:"ЭЕШ"}:mockResume;
-  const empty = !mocks.length && !papers.length;
+  const resume=mockResume;
+  const empty = !mocks.length;
   const dayMs = 864e5;
   return <div className="container page-space ws db-page">
     <header className="db-head">
-      <div><h1>Сайн уу, {user.name}.</h1><p>{date.format(now)}</p></div>
+      <h1 className="sr-only">Сайн уу, {user.name}.</h1>
       <SignOut />
     </header>
 
@@ -45,13 +42,12 @@ export default async function DashboardPage() {
         {empty && !resume && <section className="db-next"><div><p>Түүх хоосон байна</p><h2>Эхний бэлтгэлээ эхлүүл.</h2></div><div className="db-next-actions"><Link className="button" href="/exams">Бүтэн шалгалт үзэх →</Link></div></section>}
 
         <div className="learning-stats db-stats">
-          <div><strong>{completedMocks+paperComplete}</strong><p>Дууссан шалгалт</p></div>
-          <div><strong>{openMocks + paperOpen}</strong><p>Дуусаагүй</p></div>
+          <div><strong>{completedMocks}</strong><p>Дууссан шалгалт</p></div>
+          <div><strong>{openMocks}</strong><p>Дуусаагүй</p></div>
         </div>
 
         {practice.length>0&&<section className="ws-card"><h2>Дадлагын горим</h2><div className="db-list"><Fold rows={practice.map(item=><Link key={item.slug} className="mock-attempt-row db-row" href={"/exams/"+item.slug+"/practice"}><div><h3>{item.title}</h3><p>{item.checked} / {item.total} шалгасан · {item.correct} / {item.graded} зөв</p></div><span className="ws-pill info">Үргэлжлүүлэх →</span></Link>)}/></div></section>}
         {mocks.length>0&&<section className="ws-card"><h2>Миний бүтэн шалгалтууд</h2><div className="db-list"><Fold rows={mocks.map(mock=><Link key={mock.id} className="mock-attempt-row db-row" href={"/exams/attempts/"+mock.id}><div><h3>{findExam(mock.slug)?.title??mock.slug}</h3><p>{date.format(mock.createdAt)}</p></div><span className={"ws-pill "+(mock.status==="SUBMITTED"?"":"info")}>{mock.status==="SUBMITTED"?"Үр дүн":"Үргэлжлүүлэх →"}</span></Link>)}/></div></section>}
-        {papers.length>0&&<section className="ws-card"><h2>Миний албан материалын шалгалтууд</h2><div className="db-list"><Fold rows={papers.map(paper=><Link key={paper.id} className="mock-attempt-row db-row" href={"/papers/attempts/"+paper.id}><div><h3>{findOfficialPaper(paper.slug)?.title??paper.slug}</h3><p>{date.format(paper.createdAt)}</p></div><span className={"ws-pill "+(paper.status==="SUBMITTED"?"":"info")}>{paper.status==="SUBMITTED"?"Үр дүн":"Үргэлжлүүлэх →"}</span></Link>)}/></div></section>}
       </div>
 
       <aside className="db-rail">
@@ -59,7 +55,7 @@ export default async function DashboardPage() {
           <nav className="db-links" aria-label="Шинээр эхлэх">
             <Link href="/programs">Хөтөлбөрүүд<span aria-hidden="true">→</span></Link>
             <Link href="/exams">Бүтэн шалгалт<span aria-hidden="true">→</span></Link>
-            <Link href="/exams/eec-math-2020">ЭЕШ 2020 математик<span aria-hidden="true">→</span></Link>
+            <Link href="/programs/entrance">ЭЕШ mock шалгалт<span aria-hidden="true">→</span></Link>
           </nav>
         </section>
         <section className="ws-card"><div className="ws-card-head"><h2>Миний багц</h2><Link className="text-link" href="/plans">Бүх багц</Link></div>

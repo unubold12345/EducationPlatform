@@ -14,8 +14,8 @@ with sync_playwright() as p:
     page=context.new_page();errors=[]
     page.on("pageerror",lambda error:errors.append(str(error)))
     page.goto(BASE+"/plans");page.wait_for_load_state("networkidle")
-    expect(page.locator(".plan-card")).to_have_count(3)
-    expect(page.locator(".plan-price strong")).to_have_text(["₮40,000","₮60,000","₮60,000"])
+    expect(page.locator(".pricing-card")).to_have_count(3)
+    expect(page.locator(".pricing-price strong")).to_have_text(["₮40,000","₮60,000","₮60,000"])
     page.screenshot(path=str(ART/"plans-desktop-dark.png"),full_page=True)
     assert context.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"ielts-academic-01"}).status==401
     page.goto(BASE+"/workshops/ielts-writing-data")
@@ -47,7 +47,7 @@ with sync_playwright() as p:
     page.goto(BASE+"/workshops/ielts-writing-data")
     expect(page.locator(".workshop-response")).to_be_visible()
     page.screenshot(path=str(ART/"subscription-ielts-workshop.png"),full_page=True)
-    assert context.request.post(BASE+"/api/paper-attempts",headers=ORIGIN,data={"slug":"eec-math-2020-a"}).status==402
+    assert context.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"eesh-math-2024-m1"}).status==402
     assert context.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"sat-full-01"}).status==402
     mock=context.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"ielts-academic-01"})
     assert mock.status==200
@@ -73,7 +73,7 @@ with sync_playwright() as p:
         assert order["amountMnt"]==amount
         paid=context.request.post(BASE+"/api/subscriptions/orders/"+order["id"]+"/confirm",headers=ORIGIN,data={"decision":"success"})
         assert paid.status==200 and paid.json()["status"]=="PAID"
-    assert context.request.post(BASE+"/api/paper-attempts",headers=ORIGIN,data={"slug":"eec-math-2020-a"}).status==200
+    assert context.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"eesh-math-2024-m1"}).ok
     page.goto(BASE+"/checkout/sat-full-01")
     expect(page.get_by_role("heading",name="Сарын багцад багтсан.")).to_be_visible()
     page.goto(BASE+"/profile")

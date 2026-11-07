@@ -20,7 +20,7 @@ with sync_playwright() as p:
     assert "golos" in page.evaluate("getComputedStyle(document.body).fontFamily").lower()
     expect(page.locator('.launch-panel a[href="/exams/sat"]')).to_be_visible()
     expect(page.locator('.launch-panel a[href="/exams/ielts"]')).to_be_visible()
-    expect(page.locator('.launch-panel a[href="/exams/eec-math-2020"]')).to_be_visible()
+    expect(page.locator('.launch-panel a[href="/exams/eesh"]')).to_be_visible()
     page.screenshot(path=str(ARTIFACTS / "theme-home-dark.png"), full_page=True)
     page.set_viewport_size({"width": 320, "height": 844})
     assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")

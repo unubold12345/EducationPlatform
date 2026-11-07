@@ -1,8 +1,4 @@
 import "../../admin.css";
-import { findOfficialPaper } from "@/modules/papers/catalog";
-import { keyForPaper } from "@/modules/papers/key";
-import { mathPaperContent } from "@/modules/papers/math-2020/index";
-import { PaperQuestions } from "@/modules/papers/question-view";
 import Link from "next/link";
 import { notFound,redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
@@ -20,16 +16,6 @@ export default async function ContentPreview({params}:{params:Promise<{key:strin
   if(!await isAdmin(session.user.id))notFound();
   const {key}=await params;
   const back=<Link href="/admin?tab=content" className="text-link">← Бүх контент</Link>;
-  const officialPaper=findOfficialPaper(key);
-  const officialKey=officialPaper?keyForPaper(officialPaper):null;
-  const paperContent=mathPaperContent(key);
-  if(officialPaper&&officialKey)return <AdminShell tab="content" title={officialPaper.title} name={session.user.name} actions={back}>
-    <p className="admin-help">БҮТ-ийн албан эх материал · зөвхөн унших. Асуулт, түлхүүрийг албан эх хуудастай тулгаж хянана; платформоос өөрчлөхгүй.</p>
-    <AdminAction target={key} content/>
-    {paperContent&&<details className="admin-panel"><summary>Сайтын асуултууд · {paperContent.choices.length+paperContent.fills.length}</summary><PaperQuestions content={paperContent}/></details>}
-    <section className="admin-panel"><h3>Эх хуудсууд · {officialPaper.seconds/60} минут</h3>{officialPaper.pageUrls.map((url,i)=><p key={url}><a href={url} target="_blank" rel="noreferrer">БҮТ · {i+1}-р хуудас ↗</a></p>)}</section>
-    <section className="admin-panel"><h3>Түлхүүр · {officialPaper.totalMarks} оноо</h3><p>{officialKey.choices.map((answer,i)=>`${i+1}: ${answer} (${officialKey.choiceMarks[i]})`).join(" · ")}</p>{officialKey.corrections?.map(item=><p key={item.id}>Засвар · {item.id}: хэвлэгдсэн {item.printed} → {item.answer}</p>)}{officialKey.fills.map(q=><p key={q.id}>{q.id}: {q.digits} · {q.groups.reduce((sum,g)=>sum+g.marks,0)} оноо</p>)}{officialKey.sourceUrls.map((url,i)=><p key={url}><a href={url} target="_blank" rel="noreferrer">Албан түлхүүрийн {i+1}-р хуудас ↗</a></p>)}</section>
-  </AdminShell>;
   const [exam,task]=await Promise.all([getExam(key),getWorkshop(key)]);
   if(!exam&&!task)notFound();
   const db=getDb();

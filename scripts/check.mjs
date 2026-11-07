@@ -1,6 +1,6 @@
 // One entry point for local checks. Stops at the first failure and prints timings.
 //   npm run check                  lint, typecheck, unit tests
-//   npm run check -- admin papers  the above, then those browser groups
+//   npm run check -- admin entrance  the above, then those browser groups
 //   npm run check:push             the above, a production build and the core group
 //   npm run check:all              the above and every local browser group
 // Browser suites run on a private server on CHECK_PORT, so a running preview is left alone.
@@ -10,7 +10,7 @@ import { join } from "node:path";
 
 const groups = {
   core: ["browser", "accounts", "exams"],
-  papers: ["official_paper", "english_archive"],
+  entrance: ["entrance_mocks"],
   mocks: ["additional_exams"],
   practice: ["exam_practice"],
   admin: ["admin", "publishing"],
@@ -75,7 +75,8 @@ if (await health()) {
   finish(1);
 }
 
-const env = { ...process.env, TEST_BASE_URL: base, BETTER_AUTH_URL: base, PYTHONIOENCODING: "utf-8" };
+// Suites test the real open-sitting block, so the development override is always off here.
+const env = { ...process.env, TEST_BASE_URL: base, BETTER_AUTH_URL: base, PYTHONIOENCODING: "utf-8", DEV_PRACTICE_DURING_MOCK: "false" };
 const server = spawn(process.execPath, ["node_modules/next/dist/bin/next", "start", "-p", port], { env, stdio: "ignore" });
 function stopServer() {
   if (process.platform === "win32") spawnSync("taskkill", ["/pid", String(server.pid), "/T", "/F"], { stdio: "ignore" });

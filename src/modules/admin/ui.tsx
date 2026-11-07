@@ -44,23 +44,31 @@ export function StatusPill({ status, label }: { status: string; label?: string }
   return <span className={"ws-pill " + (statusTone[status] ?? "")}>{label ?? statusLabel(status)}</span>;
 }
 
-// One frame for every admin screen: grouped navigation on the left, the current section on the right.
+// Small glyph shown in a square beside each sidebar link; decorative only.
+const tabIcon: Record<AdminTab, string> = { overview: "⌂", users: "◉", attempts: "✎", subscriptions: "↻", payments: "$", pricing: "₮", content: "≡", audit: "◷", settings: "⚙" };
+
+// One frame for every admin screen: an app-style sidebar (brand, grouped links, account card) and the current section.
 export function AdminShell({ tab, title, name, testData = false, actions, scope, description, children }: { tab: AdminTab; title: string; name: string; testData?: boolean; actions?: ReactNode; scope?: ReactNode; description?: string; children: ReactNode }) {
-  const link = (key: AdminTab) => <Link key={key} href={"/admin?tab=" + key + (testData ? "&data=test" : "")} aria-current={tab === key ? "page" : undefined}>{tabLabel(key)}</Link>;
-  return <div className="container page-space ws admin-page">
+  const link = (key: AdminTab) => <Link key={key} href={"/admin?tab=" + key + (testData ? "&data=test" : "")} aria-current={tab === key ? "page" : undefined}><i aria-hidden="true">{tabIcon[key]}</i>{tabLabel(key)}</Link>;
+  return <div className="container ws admin-page">
     <div className="admin-shell">
       <aside className="admin-sidebar">
-        <div className="admin-brand"><h1>Удирдлагын төв</h1><Link href="/profile">{name}</Link></div>
+        <div className="admin-brand"><span className="admin-logo" aria-hidden="true">E</span><div><h1>Удирдлагын төв</h1><p>EducationPlatform</p></div></div>
         <nav aria-label="Админ цэс">
           <div className="admin-nav-group">{link("overview")}</div>
           {adminGroups.map(group => <div className="admin-nav-group" key={group.label}><p>{group.label}</p>{group.tabs.map(link)}</div>)}
         </nav>
+        <div className="admin-sidebar-foot">
+          <Link className="admin-site-link" href="/">↗ Нүүр хуудас</Link>
+          <Link className="admin-account" href="/profile"><span aria-hidden="true">{(name.trim()[0] ?? "A").toUpperCase()}</span><strong>{name}</strong></Link>
+        </div>
       </aside>
       <div className="admin-main">
         <header className="admin-section-heading admin-head">
-          <div><h2>{title}</h2>{description && <p>{description}</p>}</div>
-          {actions}{scope}
+          <div className="admin-title"><h2>{title}</h2>{scope && <span className={"admin-live " + (testData ? "test" : "")}>{testData ? "Туршилтын өгөгдөл" : "Бодит өгөгдөл"}</span>}</div>
+          <div className="admin-head-actions">{actions}{scope}</div>
         </header>
+        {description && <p className="admin-notice">{description}</p>}
         {children}
       </div>
     </div>

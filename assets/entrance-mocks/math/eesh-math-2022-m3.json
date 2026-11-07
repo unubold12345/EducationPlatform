@@ -1,0 +1,1370 @@
+{
+  "slug": "eesh-math-2022-m3",
+  "subject": "math",
+  "year": 2022,
+  "form": "M3",
+  "title": "ЭЕШ · Математик · 2022 · M3",
+  "description": "2022 оны ЭЕШ-ийн математикийн бүтэцтэй, энэ сайтад зориулж зохиосон дадлагын шалгалт. 36 сонгох, 4 бодолт; тооцоолуур хэрэглэхгүй.",
+  "durationMinutes": 100,
+  "points": 100,
+  "calculator": false,
+  "language": "mn",
+  "instructions": [
+    "Нэгдүгээр хэсэгт 36 даалгаврын A–E сонголтоос нэгийг сонгоно.",
+    "Хоёрдугаар хэсгийн 4 бодолтын дэд асуултад хариугаа бичнэ. Бүхэл тоо, бутархай, интервал эсвэл илэрхийлэл бичиж болно.",
+    "Тооцоолуур хэрэглэхгүй. Ноорог самбар нээлттэй."
+  ],
+  "groups": [
+    {
+      "id": "part-1",
+      "title": "Нэгдүгээр хэсэг · Сонгох даалгавар",
+      "section": "I хэсэг",
+      "instructions": "Даалгавар бүрт нэг зөв хариултыг сонго."
+    },
+    {
+      "id": "task-1",
+      "title": "2.1",
+      "section": "II хэсэг",
+      "pageMode": "group",
+      "instructions": "f(x)=x²−2tx+t²−t+6. Параметрийг t гэе."
+    },
+    {
+      "id": "task-2",
+      "title": "2.2",
+      "section": "II хэсэг",
+      "pageMode": "group",
+      "instructions": "Тэгш өнцөгт хайрцгийн 12 ирмэгийн уртын нийлбэр 144. Урт нь өргөнөөс хоёр дахин их. Өргөн x."
+    },
+    {
+      "id": "task-3",
+      "title": "2.3",
+      "section": "II хэсэг",
+      "pageMode": "group",
+      "instructions": "Пирамидын суурь 20,48,52 талтай гурвалжин. Хажуу талс бүр суурьтай 60° өнцөг үүсгэнэ.",
+      "figure": {
+        "kind": "image",
+        "src": "/exam-assets/eesh/math/eesh-math-2022-m3/t2-3.svg",
+        "alt": "Суурьтай ижил хоёр талт өнцөгтэй пирамид",
+        "width": 420,
+        "height": 350
+      }
+    },
+    {
+      "id": "task-4",
+      "title": "2.4",
+      "section": "II хэсэг",
+      "pageMode": "group",
+      "instructions": "Цэг O-оос эхэлнэ. Шударга шооны 4 буюу түүнээс бага нүд буувал зүүн 4 нэгж, бусад үед баруун 4 нэгж шилжинэ."
+    }
+  ],
+  "questions": [
+    {
+      "id": "eesh-math-2022-m3-q1",
+      "number": "1",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 1,
+      "domain": "Тоо, илэрхийлэл",
+      "prompt": "6^(−2)-ын утгыг ол.",
+      "options": [
+        "1/35",
+        "1/37",
+        "1/18",
+        "1/36",
+        "1/12"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "1/36"
+      ],
+      "answerDisplay": "1/36",
+      "explanation": "a^(−2)=1/a²."
+    },
+    {
+      "id": "eesh-math-2022-m3-q2",
+      "number": "2",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 1,
+      "domain": "Магадлал, статистик",
+      "prompt": "Есөн сурагчийн гүйцэтгэсэн даалгаврын тоо [6, 5, 7, 9, 5, 6, 8, 5, 7]. Медианыг ол.",
+      "options": [
+        "7",
+        "4",
+        "5",
+        "8",
+        "6"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "6"
+      ],
+      "answerDisplay": "6",
+      "explanation": "Эрэмбэлсний дараах тав дахь утга медиан."
+    },
+    {
+      "id": "eesh-math-2022-m3-q3",
+      "number": "3",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 1,
+      "domain": "Функц, анализ",
+      "prompt": "f(x)=5x−1 бол f(5) хэд вэ?",
+      "options": [
+        "25",
+        "24",
+        "23",
+        "26",
+        "22"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "24"
+      ],
+      "answerDisplay": "24",
+      "explanation": "x-ийн оронд k-г орлуул."
+    },
+    {
+      "id": "eesh-math-2022-m3-q4",
+      "number": "4",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 1,
+      "domain": "Тоо, илэрхийлэл",
+      "prompt": "A={1,2,3,4,10}, B={3,10,12}. |A∪B|-г ол.",
+      "options": [
+        "7",
+        "8",
+        "6",
+        "5",
+        "4"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "6"
+      ],
+      "answerDisplay": "6",
+      "explanation": "Давхардсан элементүүдийг нэг удаа тоол."
+    },
+    {
+      "id": "eesh-math-2022-m3-q5",
+      "number": "5",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 1,
+      "domain": "Алгебр",
+      "prompt": "A=[5,1] ба B=[[2,3],[−3,−8]]. AB үржвэрийн хэмжээс хэд вэ?",
+      "options": [
+        "2×2",
+        "1×2",
+        "1×1",
+        "2×1",
+        "Үржүүлэх боломжгүй"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "1×2"
+      ],
+      "answerDisplay": "1×2",
+      "explanation": "(1×2)(2×2) үржвэр 1×2 хэмжээтэй."
+    },
+    {
+      "id": "eesh-math-2022-m3-q6",
+      "number": "6",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 1,
+      "domain": "Магадлал, статистик",
+      "prompt": "a=(1,−5), b=(5,3). 2a+b-г ол.",
+      "options": [
+        "(7; -7)",
+        "(-7; 7)",
+        "(11; 1)",
+        "(7; 13)",
+        "(6; -2)"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "(7; -7)"
+      ],
+      "answerDisplay": "(7; -7)",
+      "explanation": "Координат бүрийг үржүүлж нэм."
+    },
+    {
+      "id": "eesh-math-2022-m3-q7",
+      "number": "7",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 1,
+      "domain": "Геометр",
+      "prompt": "Гурвалжны оройнууд [(-4, -1), (-2, 2), (-1, 0)], дүрсийн оройнууд харгалзан [(1, -5), (3, -2), (4, -4)]. Параллель зөөлтийн векторыг ол.",
+      "options": [
+        "(5; 4)",
+        "(6; -4)",
+        "(-5; -4)",
+        "(-5; 4)",
+        "(5; -4)"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "(5; -4)"
+      ],
+      "answerDisplay": "(5; -4)",
+      "explanation": "Дүрсийн координатаас эх дүрсний координатыг хас.",
+      "figure": {
+        "kind": "image",
+        "src": "/exam-assets/eesh/math/eesh-math-2022-m3/q7.svg",
+        "alt": "Координатын дүрс",
+        "width": 420,
+        "height": 416
+      }
+    },
+    {
+      "id": "eesh-math-2022-m3-q8",
+      "number": "8",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 1,
+      "domain": "Тригонометр",
+      "prompt": "y=sin(5x) функцийн уламжлалыг ол.",
+      "options": [
+        "5sin(5x)",
+        "5cos(5x)",
+        "−5sin(5x)",
+        "cos(5x)",
+        "cos(x)/5"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "5cos(5x)"
+      ],
+      "answerDisplay": "5cos(5x)",
+      "explanation": "Гадаад sin-ийн уламжлал cos, дотоодынх k."
+    },
+    {
+      "id": "eesh-math-2022-m3-q9",
+      "number": "9",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 2,
+      "domain": "Тоо, илэрхийлэл",
+      "prompt": "(5/30) ÷ (7/6−7/8)-ын утгыг ол.",
+      "options": [
+        "2/3",
+        "6/7",
+        "1/2",
+        "5/7",
+        "4/7"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "4/7"
+      ],
+      "answerDisplay": "4/7",
+      "explanation": "7/6−7/8=7/24. Ноогдвор k/30·24/7."
+    },
+    {
+      "id": "eesh-math-2022-m3-q10",
+      "number": "10",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 2,
+      "domain": "Тоо, илэрхийлэл",
+      "prompt": "a/5=b/6, a,b≠0. (3a−b)/(a+2b)-г ол.",
+      "options": [
+        "10/17",
+        "9/17",
+        "9/16",
+        "11/17",
+        "1/2"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "9/17"
+      ],
+      "answerDisplay": "9/17",
+      "explanation": "a=kt,b=(k+1)t гэж орлуулж t-г хураа."
+    },
+    {
+      "id": "eesh-math-2022-m3-q11",
+      "number": "11",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 2,
+      "domain": "Алгебр",
+      "prompt": "(5x+15)√(x−5)=0-г бод.",
+      "options": [
+        "3",
+        "4",
+        "5",
+        "7",
+        "6"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "5"
+      ],
+      "answerDisplay": "5",
+      "explanation": "x≥k тул шугаман үржигдэхүүний x=−3 язгуур тохирохгүй. Язгуурт үржигдэхүүнээс x=k."
+    },
+    {
+      "id": "eesh-math-2022-m3-q12",
+      "number": "12",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 2,
+      "domain": "Магадлал, статистик",
+      "prompt": "A(2,−2),B(3,−2),C(4,10) гурвалжны B оройн медианы уртыг ол.",
+      "options": [
+        "4",
+        "8",
+        "7",
+        "6",
+        "5"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "6"
+      ],
+      "answerDisplay": "6",
+      "explanation": "AC-ийн дундаж (k−2,k−1). B-ээс координатын зөрөө (k−5,k+1)."
+    },
+    {
+      "id": "eesh-math-2022-m3-q13",
+      "number": "13",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 2,
+      "domain": "Магадлал, статистик",
+      "prompt": "1-ээс 105 хүртэлх натурал тооноос нэгийг сонгов. 3 эсвэл 5-д хуваагдах магадлалыг ол.",
+      "options": [
+        "7/16",
+        "8/15",
+        "1/2",
+        "3/5",
+        "7/15"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "7/15"
+      ],
+      "answerDisplay": "7/15",
+      "explanation": "3 ба 5-ын үржвэрүүдийг нэмж, 15-ын үржвэрийг нэг удаа хас."
+    },
+    {
+      "id": "eesh-math-2022-m3-q14",
+      "number": "14",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 2,
+      "domain": "Тоо, илэрхийлэл",
+      "prompt": "Цилиндрийн суурийн талбай 25π. Тэнхлэг огтлол квадрат бол өндрийг ол.",
+      "options": [
+        "9",
+        "12",
+        "11",
+        "8",
+        "10"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "10"
+      ],
+      "answerDisplay": "10",
+      "explanation": "Суурийн радиус k; квадрат огтлолын өндөр диаметртэй тэнцүү."
+    },
+    {
+      "id": "eesh-math-2022-m3-q15",
+      "number": "15",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 2,
+      "domain": "Тригонометр",
+      "prompt": "f(x)=ln(x+2). x=6 дээрх шүргэгчийн налалтыг ол.",
+      "options": [
+        "1/9",
+        "1/8",
+        "1/7",
+        "3/8",
+        "1/4"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "1/8"
+      ],
+      "answerDisplay": "1/8",
+      "explanation": "f′(x)=1/(x+2)."
+    },
+    {
+      "id": "eesh-math-2022-m3-q16",
+      "number": "16",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 2,
+      "domain": "Тригонометр",
+      "prompt": "ABC гурвалжны ∠A=30°,∠C=105°, AC=10. BC-г ол.",
+      "options": [
+        "5√3",
+        "5",
+        "5√2",
+        "5√6",
+        "10√2"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "5√2"
+      ],
+      "answerDisplay": "5√2",
+      "explanation": "∠B=45°; BC=AC sin30°/sin45°."
+    },
+    {
+      "id": "eesh-math-2022-m3-q17",
+      "number": "17",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 2,
+      "domain": "Алгебр",
+      "prompt": "(5+i)/(2−i)-г a+bi хэлбэрт бич.",
+      "options": [
+        "−9/5+(7/5)i",
+        "9/5−(7/5)i",
+        "9/5+(12/5)i",
+        "9/5+(7/5)i",
+        "10+i"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "9/5+(7/5)i"
+      ],
+      "answerDisplay": "9/5+(7/5)i",
+      "explanation": "Хүртвэр, хуваарийг 2+i хосмогоор үржүүл. Хуваарь 5."
+    },
+    {
+      "id": "eesh-math-2022-m3-q18",
+      "number": "18",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 2,
+      "domain": "Тоо, илэрхийлэл",
+      "prompt": "X нь 5,6,7 утгуудтай; магадлалууд 1/8,a,3/4. E(X)-г ол.",
+      "options": [
+        "53/7",
+        "53/8",
+        "53/9",
+        "27/4",
+        "55/8"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "53/8"
+      ],
+      "answerDisplay": "53/8",
+      "explanation": "Магадлалын нийлбэрээс a=1/8. E=Σxp."
+    },
+    {
+      "id": "eesh-math-2022-m3-q19",
+      "number": "19",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 2,
+      "domain": "Тоо, илэрхийлэл",
+      "prompt": "a=(3,−2,t), b=(t+1,4,2), a·b=20. t-г ол.",
+      "options": [
+        "4",
+        "6",
+        "5",
+        "3",
+        "7"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "5"
+      ],
+      "answerDisplay": "5",
+      "explanation": "3(t+1)−8+2t=5t−5."
+    },
+    {
+      "id": "eesh-math-2022-m3-q20",
+      "number": "20",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 2,
+      "domain": "Функц, анализ",
+      "prompt": "f′(x)=4x−5, f(0)=−3. f(x)-г ол.",
+      "options": [
+        "2x²−5x+3",
+        "2x²−5x−3",
+        "2x²+5x−3",
+        "4x−5",
+        "4x²−5x−3"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "2x²−5x−3"
+      ],
+      "answerDisplay": "2x²−5x−3",
+      "explanation": "Гишүүн бүрийг интегралчилж, f(0)-оос тогтмолыг ол."
+    },
+    {
+      "id": "eesh-math-2022-m3-q21",
+      "number": "21",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 2,
+      "domain": "Тоо, илэрхийлэл",
+      "prompt": "a=225,b=175 үед ((a−b)/(a+b))√((a²+ab)/(a²−2ab+b²))-г ол.",
+      "options": [
+        "3/4",
+        "3/5",
+        "5/4",
+        "1",
+        "1/2"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "3/4"
+      ],
+      "answerDisplay": "3/4",
+      "explanation": "a>b>0 тул √((a−b)²)=a−b. Нийт √(a/(a+b))=3/4."
+    },
+    {
+      "id": "eesh-math-2022-m3-q22",
+      "number": "22",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 2,
+      "domain": "Тоо, илэрхийлэл",
+      "prompt": "Эерэг геометр прогрессийн b₃=10, b₉=80. b₆-г ол.",
+      "options": [
+        "40√2",
+        "40",
+        "10√2",
+        "20√2",
+        "20"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "20√2"
+      ],
+      "answerDisplay": "20√2",
+      "explanation": "b₆²=b₃b₉=32k²; эерэг язгуурыг ав."
+    },
+    {
+      "id": "eesh-math-2022-m3-q23",
+      "number": "23",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 2,
+      "domain": "Алгебр",
+      "prompt": "log₂(x−3)=log₂(y+2), 2y²−(x−3)²=17 системийн шийдийг ол.",
+      "options": [
+        "(10; 9)",
+        "(5; 0)",
+        "(2; -3)",
+        "(12; 7)",
+        "(12; -7)"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "(12; 7)"
+      ],
+      "answerDisplay": "(12; 7)",
+      "explanation": "u=x−v=y+2>0. 2y²−(y+2)²=17 →y=7 эсвэл −3; зөвхөн 7 домэйнд орно."
+    },
+    {
+      "id": "eesh-math-2022-m3-q24",
+      "number": "24",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 2,
+      "domain": "Алгебр",
+      "prompt": "P(x)=x²+2x+c-ийн нэг язгуур −5. Үржигдэхүүнд задал.",
+      "options": [
+        "(x+5)(x−3)",
+        "(x−5)(x+3)",
+        "(x+5)(x+3)",
+        "(x−5)(x−3)",
+        "(x+5)²"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "(x+5)(x−3)"
+      ],
+      "answerDisplay": "(x+5)(x−3)",
+      "explanation": "Язгууруудын нийлбэр −2 тул хоёр дахь нь k−2."
+    },
+    {
+      "id": "eesh-math-2022-m3-q25",
+      "number": "25",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 2,
+      "domain": "Функц, анализ",
+      "prompt": "f(x)=x−5, g(x)=x²+3. g(f(x))=x−5+3 тэгшитгэлийг бод.",
+      "options": [
+        "{4; 5}",
+        "{6}",
+        "{−5; 6}",
+        "{5; 7}",
+        "{5; 6}"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "{5; 6}"
+      ],
+      "answerDisplay": "{5; 6}",
+      "explanation": "u=x−k гэвэл u²+3=u+3; u=0,1."
+    },
+    {
+      "id": "eesh-math-2022-m3-q26",
+      "number": "26",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 2,
+      "domain": "Тоо, илэрхийлэл",
+      "prompt": "tan α=5. (cosα/(1+sinα)+(1+sinα)/cosα)²-г ол.",
+      "options": [
+        "106",
+        "105",
+        "103",
+        "102",
+        "104"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "104"
+      ],
+      "answerDisplay": "104",
+      "explanation": "Хаалт дотор 2/cosα; квадрат нь 4sec²α=4(1+tan²α)."
+    },
+    {
+      "id": "eesh-math-2022-m3-q27",
+      "number": "27",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 2,
+      "domain": "Тригонометр",
+      "prompt": "Радиус 10 тойргийг багтаасан тэгш өнцөгт трапецийн сууриудын зөрүү 15. Периметрийг ол.",
+      "options": [
+        "90",
+        "92",
+        "89",
+        "88",
+        "91"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "90"
+      ],
+      "answerDisplay": "90",
+      "explanation": "Өндөр 4k, налуу хажуу 5k. Багтсан тойрогтой тул сууриудын нийлбэр хажуу талуудын нийлбэр 9k.",
+      "figure": {
+        "kind": "image",
+        "src": "/exam-assets/eesh/math/eesh-math-2022-m3/q27.svg",
+        "alt": "Трапец",
+        "width": 420,
+        "height": 304
+      }
+    },
+    {
+      "id": "eesh-math-2022-m3-q28",
+      "number": "28",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 2,
+      "domain": "Функц, анализ",
+      "prompt": "∫[0→1](e^x−5)/e^x dx-г ол.",
+      "options": [
+        "-4+5/e",
+        "5−1/e",
+        "-4−5/e",
+        "6−5/e",
+        "1−5/e"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "-4+5/e"
+      ],
+      "answerDisplay": "-4+5/e",
+      "explanation": "Интегралын эх функц x+k e^(−x)."
+    },
+    {
+      "id": "eesh-math-2022-m3-q29",
+      "number": "29",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 3,
+      "domain": "Тригонометр",
+      "prompt": "A(5,4)-г төв O, коэффициент −2 гомотетоор B, харин Oy тэнхлэгээр тольдоход C цэг үүсэв. ABC талбайг ол.",
+      "options": [
+        "59",
+        "60",
+        "62",
+        "58",
+        "61"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "60"
+      ],
+      "answerDisplay": "60",
+      "explanation": "B=(−2a,−2b), C=(−a,b). AC=2a, түүнд буусан өндөр 3b."
+    },
+    {
+      "id": "eesh-math-2022-m3-q30",
+      "number": "30",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 3,
+      "domain": "Тоо, илэрхийлэл",
+      "prompt": "Хоёр баг тус бүр 5 тоглогчтой. Эхний багийн Σx=35,Σx²=255; нөгөөгийн Σy=35,Σy²=265. Арван тоглогчийн стандарт хазайлтыг ол.",
+      "options": [
+        "-1 + sqrt(3)",
+        "1 + sqrt(3)",
+        "-2 + sqrt(3)",
+        "sqrt(3)",
+        "sqrt(3) + 2"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "sqrt(3)"
+      ],
+      "answerDisplay": "sqrt(3)",
+      "explanation": "Нийлбэр ба квадратуудын нийлбэрийг нэгтгэ. σ²=Σz²/10−(Σz/10)²."
+    },
+    {
+      "id": "eesh-math-2022-m3-q31",
+      "number": "31",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 3,
+      "domain": "Геометр",
+      "prompt": "y=−(x−3+1)²+8, y=(x−3−1)²−2 параболуудын хоорондох талбайг ол.",
+      "options": [
+        "65/3",
+        "16",
+        "22",
+        "64/3",
+        "32"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "64/3"
+      ],
+      "answerDisplay": "64/3",
+      "explanation": "u=x−v. Дээд−доод=8−2u²; огтлол u=±2. Интеграл 64/3.",
+      "figure": {
+        "kind": "image",
+        "src": "/exam-assets/eesh/math/eesh-math-2022-m3/q31.svg",
+        "alt": "Функцийн график",
+        "width": 420,
+        "height": 458
+      }
+    },
+    {
+      "id": "eesh-math-2022-m3-q32",
+      "number": "32",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 3,
+      "domain": "Тоо, илэрхийлэл",
+      "prompt": "a>0. (x−3)²−(a−1)(x−3)−a<0 яг гурван бүхэл шийдтэй байх a мужийг ол.",
+      "options": [
+        "[2; 3)",
+        "(3; 4]",
+        "(1; 2]",
+        "(2; 3]",
+        "[2; 3]"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "(2; 3]"
+      ],
+      "answerDisplay": "(2; 3]",
+      "explanation": "u=x−v: (u+1)(u−a)<0 →−1<u<a. Бүхэл u=0,1,2 л байхын тулд 2<a≤3."
+    },
+    {
+      "id": "eesh-math-2022-m3-q33",
+      "number": "33",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 3,
+      "domain": "Тригонометр",
+      "prompt": "Төв O(0,0), 2x+√5y−10√5=0 шулууныг шүргэх тойргийн тэгшитгэлийг ол.",
+      "options": [
+        "x²+y²=500",
+        "x²+y²=250/9",
+        "x²+y²=500/9",
+        "x²+y²=500/3",
+        "x²+y²=100/9"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "x²+y²=500/9"
+      ],
+      "answerDisplay": "x²+y²=500/9",
+      "explanation": "Төвөөс шулуунд хүртэлх зай 2k√5/3 радиустай."
+    },
+    {
+      "id": "eesh-math-2022-m3-q34",
+      "number": "34",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 3,
+      "domain": "Тоо, илэрхийлэл",
+      "prompt": "Уутанд 5 улаан,6 цагаан бөмбөг байна. Буцаахгүйгээр хоёрыг сонгоход цагаан бөмбөгийн тоог X гэв. Var(X)-г ол.",
+      "options": [
+        "5/11",
+        "27/61",
+        "54/121",
+        "56/121",
+        "9/20"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "54/121"
+      ],
+      "answerDisplay": "54/121",
+      "explanation": "P(X=j)-г C(white,j)C(red,2−j)/C(N,2)-оор олж E(X²)−E(X)²-г тооц."
+    },
+    {
+      "id": "eesh-math-2022-m3-q35",
+      "number": "35",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 3,
+      "domain": "Геометр",
+      "prompt": "OABC параллелограммын BC тал дээр BE:EC=5:6. AC ба OE нь M дээр огтолно. OA=a,OC=c. OM-г илэрхийл.",
+      "options": [
+        "(11a+6c)/17",
+        "(6a+11c)/11",
+        "(6a+11c)/17",
+        "(6a+5c)/11",
+        "(5a+11c)/16"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "(6a+11c)/17"
+      ],
+      "answerDisplay": "(6a+11c)/17",
+      "explanation": "O эх, B=a+c. E=c+s a/(r+s). AC дээрх коэффициентүүдийн нийлбэр 1 байхыг ашигла.",
+      "figure": {
+        "kind": "image",
+        "src": "/exam-assets/eesh/math/eesh-math-2022-m3/q35.svg",
+        "alt": "Координатын дүрс",
+        "width": 420,
+        "height": 236
+      }
+    },
+    {
+      "id": "eesh-math-2022-m3-q36",
+      "number": "36",
+      "groupId": "part-1",
+      "kind": "choice",
+      "points": 3,
+      "domain": "Алгебр",
+      "prompt": "P(x)-ийг x+1-д хуваахад 3, x²−x+1-д хуваахад 4*x + 4 үлдэнэ. Үржвэр (x+1)(x²−x+1)-д хуваах үлдэгдлийг ол.",
+      "options": [
+        "x^2 + 3*x + 5",
+        "x^2 + 3*x + 4",
+        "x^2 + 3*x + 7",
+        "x^2 + 3*x + 6",
+        "x^2 + 3*x + 3"
+      ],
+      "optionLabels": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ],
+      "answers": [
+        "x^2 + 3*x + 5"
+      ],
+      "answerDisplay": "x^2 + 3*x + 5",
+      "explanation": "R=A(x²−x+1)+(өгсөн шугаман үлдэгдэл) гэж тавь. R(−1)-ээр A-г ол."
+    },
+    {
+      "id": "eesh-math-2022-m3-task-1-a",
+      "number": "2.1a",
+      "groupId": "task-1",
+      "kind": "short",
+      "matcher": "math",
+      "points": 2,
+      "domain": "Тоо, илэрхийлэл",
+      "prompt": "t=-4 үеийн орой",
+      "answers": [
+        "(-4; 10)"
+      ],
+      "answerDisplay": "(-4; 10)",
+      "explanation": "f=(x−t)²+C−t. Тэнхлэг шүргэхэд C−t=0. Сүүлийн нөхцөлд шинэ оройн x=t−3=center, y=C−t+1=−1."
+    },
+    {
+      "id": "eesh-math-2022-m3-task-1-b",
+      "number": "2.1b",
+      "groupId": "task-1",
+      "kind": "short",
+      "matcher": "math",
+      "points": 2,
+      "domain": "Тоо, илэрхийлэл",
+      "prompt": "t=-4 үед [-6;-3] дээрх хамгийн бага,их утга",
+      "answers": [
+        "(10; 14)"
+      ],
+      "answerDisplay": "(10; 14)",
+      "explanation": "f=(x−t)²+C−t. Тэнхлэг шүргэхэд C−t=0. Сүүлийн нөхцөлд шинэ оройн x=t−3=center, y=C−t+1=−1."
+    },
+    {
+      "id": "eesh-math-2022-m3-task-1-c",
+      "number": "2.1c",
+      "groupId": "task-1",
+      "kind": "number",
+      "matcher": "numeric",
+      "points": 2,
+      "domain": "Тоо, илэрхийлэл",
+      "prompt": "Ox тэнхлэгийг шүргэх t",
+      "answers": [
+        "6"
+      ],
+      "answerDisplay": "6",
+      "explanation": "f=(x−t)²+C−t. Тэнхлэг шүргэхэд C−t=0. Сүүлийн нөхцөлд шинэ оройн x=t−3=center, y=C−t+1=−1."
+    },
+    {
+      "id": "eesh-math-2022-m3-task-1-d",
+      "number": "2.1d",
+      "groupId": "task-1",
+      "kind": "number",
+      "matcher": "numeric",
+      "points": 1,
+      "domain": "Тоо, илэрхийлэл",
+      "prompt": "Графикийг 3 нэгж зүүн, 1 нэгж дээш зөөхөд y=(x−5)²−1 болох t",
+      "answers": [
+        "8"
+      ],
+      "answerDisplay": "8",
+      "explanation": "f=(x−t)²+C−t. Тэнхлэг шүргэхэд C−t=0. Сүүлийн нөхцөлд шинэ оройн x=t−3=center, y=C−t+1=−1."
+    },
+    {
+      "id": "eesh-math-2022-m3-task-2-a",
+      "number": "2.2a",
+      "groupId": "task-2",
+      "kind": "number",
+      "matcher": "numeric",
+      "points": 2,
+      "domain": "Геометр",
+      "prompt": "Урт+өргөн+өндөр",
+      "answers": [
+        "36"
+      ],
+      "answerDisplay": "36",
+      "explanation": "Өндөр L−3x. V=2x²(L−3x). V′=4Lx−18x²; x=2L/9. Хилийн эзлэхүүн 0."
+    },
+    {
+      "id": "eesh-math-2022-m3-task-2-b",
+      "number": "2.2b",
+      "groupId": "task-2",
+      "kind": "short",
+      "matcher": "math",
+      "points": 2,
+      "domain": "Геометр",
+      "prompt": "Эзлэхүүний функц",
+      "answers": [
+        "72x²−6x³"
+      ],
+      "answerDisplay": "72x²−6x³",
+      "explanation": "Өндөр L−3x. V=2x²(L−3x). V′=4Lx−18x²; x=2L/9. Хилийн эзлэхүүн 0."
+    },
+    {
+      "id": "eesh-math-2022-m3-task-2-c",
+      "number": "2.2c",
+      "groupId": "task-2",
+      "kind": "short",
+      "matcher": "math",
+      "points": 1,
+      "domain": "Геометр",
+      "prompt": "x-ийн муж",
+      "answers": [
+        "(0;12)"
+      ],
+      "answerDisplay": "(0;12)",
+      "explanation": "Өндөр L−3x. V=2x²(L−3x). V′=4Lx−18x²; x=2L/9. Хилийн эзлэхүүн 0."
+    },
+    {
+      "id": "eesh-math-2022-m3-task-2-d",
+      "number": "2.2d",
+      "groupId": "task-2",
+      "kind": "number",
+      "matcher": "numeric",
+      "points": 1,
+      "domain": "Геометр",
+      "prompt": "Эзлэхүүн ихсэх үеийн x",
+      "answers": [
+        "8"
+      ],
+      "answerDisplay": "8",
+      "explanation": "Өндөр L−3x. V=2x²(L−3x). V′=4Lx−18x²; x=2L/9. Хилийн эзлэхүүн 0."
+    },
+    {
+      "id": "eesh-math-2022-m3-task-2-e",
+      "number": "2.2e",
+      "groupId": "task-2",
+      "kind": "number",
+      "matcher": "numeric",
+      "points": 1,
+      "domain": "Геометр",
+      "prompt": "Хамгийн их эзлэхүүн",
+      "answers": [
+        "1536"
+      ],
+      "answerDisplay": "1536",
+      "explanation": "Өндөр L−3x. V=2x²(L−3x). V′=4Lx−18x²; x=2L/9. Хилийн эзлэхүүн 0."
+    },
+    {
+      "id": "eesh-math-2022-m3-task-3-a",
+      "number": "2.3a",
+      "groupId": "task-3",
+      "kind": "number",
+      "matcher": "numeric",
+      "points": 2,
+      "domain": "Тригонометр",
+      "prompt": "Суурийн талбай",
+      "answers": [
+        "480"
+      ],
+      "answerDisplay": "480",
+      "explanation": "Суурь тэгш өнцөгт, S=30s²; r=S/p=2s. Өндөр r tan60°=2s√3. Хажуу талбай S/cos60°=2S; эзлэхүүн Sh/3."
+    },
+    {
+      "id": "eesh-math-2022-m3-task-3-b",
+      "number": "2.3b",
+      "groupId": "task-3",
+      "kind": "number",
+      "matcher": "numeric",
+      "points": 2,
+      "domain": "Тригонометр",
+      "prompt": "Багтсан тойргийн радиус",
+      "answers": [
+        "8"
+      ],
+      "answerDisplay": "8",
+      "explanation": "Суурь тэгш өнцөгт, S=30s²; r=S/p=2s. Өндөр r tan60°=2s√3. Хажуу талбай S/cos60°=2S; эзлэхүүн Sh/3."
+    },
+    {
+      "id": "eesh-math-2022-m3-task-3-c",
+      "number": "2.3c",
+      "groupId": "task-3",
+      "kind": "number",
+      "matcher": "numeric",
+      "points": 2,
+      "domain": "Тригонометр",
+      "prompt": "Бүтэн гадаргуугийн талбай",
+      "answers": [
+        "1440"
+      ],
+      "answerDisplay": "1440",
+      "explanation": "Суурь тэгш өнцөгт, S=30s²; r=S/p=2s. Өндөр r tan60°=2s√3. Хажуу талбай S/cos60°=2S; эзлэхүүн Sh/3."
+    },
+    {
+      "id": "eesh-math-2022-m3-task-3-d",
+      "number": "2.3d",
+      "groupId": "task-3",
+      "kind": "short",
+      "matcher": "math",
+      "points": 1,
+      "domain": "Тригонометр",
+      "prompt": "Эзлэхүүн",
+      "answers": [
+        "1280√3"
+      ],
+      "answerDisplay": "1280√3",
+      "explanation": "Суурь тэгш өнцөгт, S=30s²; r=S/p=2s. Өндөр r tan60°=2s√3. Хажуу талбай S/cos60°=2S; эзлэхүүн Sh/3."
+    },
+    {
+      "id": "eesh-math-2022-m3-task-4-a",
+      "number": "2.4a",
+      "groupId": "task-4",
+      "kind": "number",
+      "matcher": "numeric",
+      "points": 2,
+      "domain": "Магадлал, статистик",
+      "prompt": "Нэг алхмын дараа зүүн талд байх магадлал",
+      "answers": [
+        "2/3"
+      ],
+      "answerDisplay": "2/3",
+      "explanation": "Зүүн алхмын тоо J нь Bin(3,p). Байрлал (3−2J)·step, P(J=j)=C(3,j)p^j(1−p)^(3−j)."
+    },
+    {
+      "id": "eesh-math-2022-m3-task-4-b",
+      "number": "2.4b",
+      "groupId": "task-4",
+      "kind": "number",
+      "matcher": "numeric",
+      "points": 2,
+      "domain": "Магадлал, статистик",
+      "prompt": "Хоёр алхмын дараа O-д ирэх магадлал",
+      "answers": [
+        "4/9"
+      ],
+      "answerDisplay": "4/9",
+      "explanation": "Зүүн алхмын тоо J нь Bin(3,p). Байрлал (3−2J)·step, P(J=j)=C(3,j)p^j(1−p)^(3−j)."
+    },
+    {
+      "id": "eesh-math-2022-m3-task-4-c",
+      "number": "2.4c",
+      "groupId": "task-4",
+      "kind": "number",
+      "matcher": "numeric",
+      "points": 1,
+      "domain": "Магадлал, статистик",
+      "prompt": "Гурван алхмын дараах байрлалын тоо",
+      "answers": [
+        "4"
+      ],
+      "answerDisplay": "4",
+      "explanation": "Зүүн алхмын тоо J нь Bin(3,p). Байрлал (3−2J)·step, P(J=j)=C(3,j)p^j(1−p)^(3−j)."
+    },
+    {
+      "id": "eesh-math-2022-m3-task-4-d",
+      "number": "2.4d",
+      "groupId": "task-4",
+      "kind": "number",
+      "matcher": "numeric",
+      "points": 1,
+      "domain": "Магадлал, статистик",
+      "prompt": "Хамгийн магадлалтай эцсийн координат",
+      "answers": [
+        "-4"
+      ],
+      "answerDisplay": "-4",
+      "explanation": "Зүүн алхмын тоо J нь Bin(3,p). Байрлал (3−2J)·step, P(J=j)=C(3,j)p^j(1−p)^(3−j)."
+    },
+    {
+      "id": "eesh-math-2022-m3-task-4-e",
+      "number": "2.4e",
+      "groupId": "task-4",
+      "kind": "number",
+      "matcher": "numeric",
+      "points": 1,
+      "domain": "Магадлал, статистик",
+      "prompt": "Тэр байрлалын магадлал",
+      "answers": [
+        "4/9"
+      ],
+      "answerDisplay": "4/9",
+      "explanation": "Зүүн алхмын тоо J нь Bin(3,p). Байрлал (3−2J)·step, P(J=j)=C(3,j)p^j(1−p)^(3−j)."
+    }
+  ],
+  "passages": [],
+  "sourceNote": "2022–2026 оны жишиг эх нь MathX-ийн нийтэлсэн транскрипц; албан БҮТ эх биш."
+}

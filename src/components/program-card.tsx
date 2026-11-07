@@ -9,4 +9,3 @@ export function ProgramCard({ program }: { program: Program }) {
     <span className="card-link">Хөтөлбөртэй танилцах <span aria-hidden="true">↗</span></span>
   </Link>;
 }
-

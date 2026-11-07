@@ -6,7 +6,7 @@ import { notFound } from "next/navigation";
 import { programs, findProgram } from "@/modules/programs/catalog";
 import { getWorkshop } from "@/modules/content/published";
 import { examDefinitions } from "@/modules/exams/definitions";
-import { allOfficialPapers } from "@/modules/papers/catalog";
+import { entranceCounts, entranceSubjectHrefs, entranceSubjectLabels, entranceTotal } from "@/modules/exams/entrance/catalog";
 import { SpeakingInvitation } from "@/components/speaking-invitation";
 import { guidedTasks } from "@/modules/workshops/guided";
 
@@ -21,7 +21,7 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
   const program = findProgram(slug);
   if (!program) notFound();
   const workshops = await Promise.all(guidedTasks.map(task => getWorkshop(task.slug).then(value => value!)));
-  const mockCount = examDefinitions.filter(exam => exam.program === slug).length;
+  const mockCount = slug === "entrance" ? entranceTotal : examDefinitions.filter(exam => exam.program === slug).length;
   const plan = (await pricedPlan(slug))!;
   const mock = slug === "sat" ? {
     eyebrow: "БҮТЭН ШАЛГАЛТ · DIGITAL SAT",
@@ -58,11 +58,11 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
       <aside className="program-facts" aria-label="Хөтөлбөрийн товч мэдээлэл">
         <div className="program-facts-head"><span className="eyebrow">НЭГ ХАРААСАЙ</span><span className="status">{program.status}</span></div>
         <dl>
-          {slug === "entrance" ? <div><dt>Албан хувилбар</dt><dd>{allOfficialPapers.length}</dd></div> : <div><dt>Бүтэн mock</dt><dd>{mockCount}</dd></div>}
+          <div><dt>Бүтэн mock</dt><dd>{mockCount}</dd></div>
           {slug === "ielts" ? <div><dt>Workshop</dt><dd>{workshops.length}</dd></div> : null}
           <div><dt>Сарын эрх</dt><dd>₮{plan.amountMnt.toLocaleString("en-US")}</dd></div>
         </dl>
-        <Link className="button" href={mock?.href ?? "/exams/eec-math-2020"}>Шалгалт эхлэх <span aria-hidden="true">→</span></Link>
+        <Link className="button" href={mock?.href ?? "/exams/eesh"}>Шалгалт эхлэх <span aria-hidden="true">→</span></Link>
       </aside>
     </section>
 
@@ -94,23 +94,18 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
 
     {slug === "entrance" ? <section className="program-official" aria-labelledby="program-official-heading">
       <div className="library-heading">
-        <div><p className="eyebrow">АЛБАН ЁСНЫ МАТЕРИАЛ</p><h2 id="program-official-heading">Бодит шалгалтууд</h2></div>
-        <p>2 архив</p>
+        <div><p className="eyebrow">ЭЕШ-ИЙН БҮТЭЦТЭЙ MOCK</p><h2 id="program-official-heading">Бүтэн дадлагын шалгалтууд</h2></div>
+        <p>{mockCount} mock</p>
       </div>
       <div className="program-official-grid">
-        <Link className="program-official-card" href="/exams/eec-math-2020">
-          <span className="eyebrow">ЭЕШ 2020 · МАТЕМАТИК</span>
-          <strong>A, B, C, D хувилбар</strong>
-          <span>36 сонгох + 4 бичих даалгавар · 100 минут. Сарын багцад багтсан.</span>
-          <span className="text-link">Албан шалгалт нээх <span aria-hidden="true">→</span></span>
-        </Link>
-        <Link className="program-official-card" href="/exams/eec-english">
-          <span className="eyebrow">ЭЕШ · АНГЛИ ХЭЛ</span>
-          <strong>37 хувилбар · 10 жил</strong>
-          <span>Баталгаажсан эх материал, таарсан хариуны түлхүүр. Хугацаатай бүтэн шалгалт.</span>
-          <span className="text-link">Англи хэлний шалгалтууд <span aria-hidden="true">→</span></span>
-        </Link>
+        {(["math", "physics", "english"] as const).map(subject => <Link key={subject} className="program-official-card" href={entranceSubjectHrefs[subject]}>
+          <span className="eyebrow">{entranceSubjectLabels[subject].toUpperCase()}</span>
+          <strong>{entranceCounts()[subject]} mock · 2015–2026 оны жишиг бүтэц</strong>
+          <span>{subject === "english" ? "Part I сонголт, Part II холболт, нөхөлт. 80 минут." : "A–E сонголт, бичих бодолт. 100 минут."} Цагтай шалгалт, оноотой үр дүн, AI туслахтай дадлагын горим.</span>
+          <span className="text-link">Шалгалтууд үзэх <span aria-hidden="true">→</span></span>
+        </Link>)}
       </div>
+      <p className="fine-print source-note">Бүх даалгаврыг энэ сайтад зориулж зохиосон; БҮТ-ийн албан материал биш.</p>
     </section> : null}
 
     {slug === "sat" ? <p className="fine-print source-note">Сэдвийн ангилал: <a href="https://satsuite.collegeboard.org/sat/whats-on-the-test/math/overview" target="_blank" rel="noopener noreferrer">College Board — Math overview ↗</a>.</p> : null}

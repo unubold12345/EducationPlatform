@@ -1,0 +1,168 @@
+/* Listening Lab: drill list, audio player, questions and a marked transcript. Uses the theme.css tokens. */
+
+.root { --good: #1f9a6b; --bad: #c94a5a; --hl: #f3c74b; --soft: color-mix(in srgb, var(--ink) 5%, transparent); max-width: 1240px; }
+:root[data-theme="dark"] .root { --good: #5fd3a2; --bad: #ff8d9b; --hl: #c99a1e; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .root { --good: #5fd3a2; --bad: #ff8d9b; --hl: #c99a1e; } }
+
+.top { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px 28px; flex-wrap: wrap; margin-bottom: 22px; }
+.kicker { margin: 0 0 10px; color: var(--muted); font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+.kicker a { color: inherit; text-decoration: none; }
+.kicker a:hover { color: var(--ink); }
+.top h1 { margin: 0; font-size: clamp(28px, 4vw, 42px); letter-spacing: -.02em; line-height: 1.05; }
+.lede { max-width: 620px; margin: 10px 0 0; color: var(--muted); font-size: 15px; line-height: 1.55; }
+
+.modes { display: inline-flex; gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+.modes button { display: grid; gap: 1px; padding: 8px 14px; border: 0; border-radius: 10px; background: transparent; color: var(--muted); font: inherit; font-size: 14px; font-weight: 600; text-align: left; cursor: pointer; transition: background .18s, color .18s; }
+.modes button small { font-size: 11px; font-weight: 500; opacity: .8; }
+.modes button:hover { color: var(--ink); }
+.modes button[aria-selected="true"] { background: var(--btn-bg); color: var(--btn-ink); }
+
+.layout { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 18px; align-items: start; }
+
+.drills { position: sticky; top: 88px; display: grid; gap: 6px; }
+.drills button { display: grid; gap: 3px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); color: var(--ink); font: inherit; text-align: left; cursor: pointer; transition: border-color .18s, background .18s; }
+.drills button:hover { border-color: color-mix(in srgb, var(--blue) 45%, var(--line)); }
+.drills button[aria-current="true"] { border-color: var(--blue); background: color-mix(in srgb, var(--blue) 8%, var(--surface)); }
+.drills strong { font-size: 14px; line-height: 1.3; }
+.drills small { display: flex; align-items: center; justify-content: space-between; gap: 8px; color: var(--muted); font-size: 12px; }
+.drills em { padding: 1px 7px; border-radius: 999px; background: var(--soft); color: var(--ink); font-size: 11px; font-style: normal; font-weight: 700; }
+.drills em[data-full] { background: color-mix(in srgb, var(--good) 16%, transparent); color: var(--good); }
+.part { margin: 0; color: var(--blue); font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+
+.work { display: grid; gap: 14px; min-width: 0; }
+.brief, .questions, .transcript { padding: 20px 22px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.brief h2 { margin: 6px 0 6px; font-size: 22px; letter-spacing: -.01em; }
+.brief p:last-child { margin: 0; color: var(--muted); line-height: 1.55; }
+
+.player { position: sticky; top: 76px; z-index: 3; display: flex; align-items: center; gap: 14px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 18px; background: var(--surface); box-shadow: var(--shadow-lift); }
+.player[data-exam] { border-color: color-mix(in srgb, var(--blue) 40%, var(--line)); }
+.play { display: grid; flex: none; place-items: center; width: 46px; height: 46px; border: 0; border-radius: 50%; background: var(--btn-bg); color: var(--btn-ink); cursor: pointer; transition: transform .15s, opacity .15s; }
+.play svg { width: 20px; height: 20px; fill: currentColor; }
+.play:hover:not(:disabled) { transform: scale(1.05); }
+.play:disabled { opacity: .35; cursor: not-allowed; }
+.track { display: flex; flex: 1; align-items: center; gap: 12px; min-width: 0; }
+.track input { flex: 1; min-width: 0; height: 6px; border-radius: 999px; background: linear-gradient(to right, var(--blue) var(--progress), var(--soft) var(--progress)); appearance: none; cursor: pointer; }
+.track input::-webkit-slider-thumb { width: 14px; height: 14px; border-radius: 50%; background: var(--blue); appearance: none; }
+.track input::-moz-range-thumb { width: 14px; height: 14px; border: 0; border-radius: 50%; background: var(--blue); }
+.track input:disabled { cursor: default; }
+.track input:disabled::-webkit-slider-thumb { opacity: 0; }
+.track input:disabled::-moz-range-thumb { opacity: 0; }
+.time { flex: none; color: var(--muted); font-family: var(--font-mono); font-size: 13px; font-variant-numeric: tabular-nums; }
+.tools { display: flex; flex: none; gap: 6px; }
+.tools button, .tools select { padding: 7px 10px; border: 1px solid var(--line); border-radius: 10px; background: transparent; color: var(--ink); font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; }
+.tools button:hover { background: var(--soft); }
+.note { margin: -4px 4px 0; color: var(--muted); font-size: 13px; }
+
+.qhead { display: flex; align-items: baseline; justify-content: space-between; gap: 6px 14px; flex-wrap: wrap; margin-bottom: 12px; }
+.qhead h3 { margin: 0; font-size: 16px; }
+.qhead p { margin: 0; color: var(--muted); font-size: 13px; font-style: italic; }
+.questions ol { display: grid; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.questions li { display: flex; align-items: flex-start; gap: 12px; padding: 10px 10px; border-radius: 12px; }
+.questions li[data-result="good"] { background: color-mix(in srgb, var(--good) 8%, transparent); }
+.questions li[data-result="bad"] { background: color-mix(in srgb, var(--bad) 8%, transparent); }
+.num { display: grid; flex: none; place-items: center; width: 26px; height: 26px; margin-top: 2px; border-radius: 8px; background: var(--soft); font-size: 13px; font-weight: 700; }
+li[data-result="good"] .num { background: var(--good); color: #fff; }
+li[data-result="bad"] .num { background: var(--bad); color: #fff; }
+.gap { flex: 1; line-height: 2.1; }
+.gap input { width: 150px; max-width: 100%; margin: 0 6px; padding: 4px 10px; border: 1px solid var(--line); border-radius: 9px; background: transparent; color: var(--ink); font: inherit; font-weight: 600; }
+.gap input:focus { outline: 2px solid color-mix(in srgb, var(--blue) 60%, transparent); outline-offset: 1px; }
+li[data-result="good"] .gap input { border-color: var(--good); }
+li[data-result="bad"] .gap input { border-color: var(--bad); text-decoration: line-through; }
+.fix { display: block; color: var(--muted); font-size: 13px; line-height: 1.4; }
+.fix b { color: var(--good); }
+.choice { flex: 1; display: grid; gap: 4px; margin: 0; padding: 0; border: 0; min-width: 0; }
+.choice legend { margin-bottom: 6px; padding: 3px 0 0; line-height: 1.45; }
+.choice label { display: flex; align-items: center; gap: 10px; padding: 7px 10px; border: 1px solid transparent; border-radius: 10px; cursor: pointer; }
+.choice label:hover { background: var(--soft); }
+.choice input { position: absolute; opacity: 0; pointer-events: none; }
+.letter { display: grid; flex: none; place-items: center; width: 24px; height: 24px; border: 1px solid var(--line); border-radius: 50%; font-size: 12px; font-weight: 700; }
+.choice label[data-chosen] { border-color: var(--line); background: var(--soft); }
+.choice label[data-chosen] .letter { border-color: var(--blue); background: var(--blue); color: #fff; }
+.choice input:focus-visible + .letter { outline: 2px solid var(--blue); outline-offset: 2px; }
+li[data-result] .choice label { cursor: default; }
+li[data-result] .choice label[data-chosen] .letter { border-color: var(--bad); background: var(--bad); }
+li[data-result] .choice label[data-correct] { border-color: color-mix(in srgb, var(--good) 50%, transparent); }
+li[data-result] .choice label[data-correct] .letter { border-color: var(--good); background: var(--good); color: #fff; }
+
+.actions { display: flex; align-items: center; justify-content: flex-end; gap: 14px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); }
+.actions p { margin: 0 auto 0 0; }
+.score strong { font-size: 22px; }
+.score span { color: var(--muted); font-size: 13px; }
+.muted { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+.link { padding: 0; border: 0; background: none; color: var(--blue); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+
+.lines { display: grid; gap: 2px; margin: 10px 0 0; padding: 0; list-style: none; }
+.lines button { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 12px; width: 100%; padding: 8px 10px; border: 0; border-radius: 10px; background: transparent; color: var(--ink); font: inherit; font-size: 15px; line-height: 1.6; text-align: left; cursor: pointer; }
+.lines button:hover:not(:disabled) { background: var(--soft); }
+.lines button:disabled { cursor: default; }
+.lines li[data-active] button { background: color-mix(in srgb, var(--blue) 10%, transparent); }
+.speaker { color: var(--muted); font-size: 12px; font-weight: 700; letter-spacing: .02em; padding-top: 3px; }
+.lines mark { padding: 1px 3px; border-radius: 4px; background: color-mix(in srgb, var(--hl) 38%, transparent); color: inherit; }
+.lines sup { margin-right: 3px; color: var(--blue); font-size: 10px; font-weight: 800; }
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+  .drills { position: static; display: flex; gap: 8px; margin: 0 -16px; padding: 0 16px 4px; overflow-x: auto; scroll-snap-type: x mandatory; }
+  .drills button { flex: 0 0 200px; scroll-snap-align: start; }
+}
+
+@media (max-width: 560px) {
+  .modes { width: 100%; }
+  .modes button { flex: 1; }
+  .brief, .questions, .transcript { padding: 16px; }
+  .player { position: static; flex-wrap: wrap; gap: 10px; }
+  .track { flex-basis: calc(100% - 60px); }
+  .tools { width: 100%; justify-content: flex-end; }
+  .questions li { padding: 8px 4px; gap: 10px; }
+  .gap input { width: 120px; }
+  .lines button { grid-template-columns: 1fr; gap: 0; }
+  .actions { flex-wrap: wrap; }
+}
+
+/* IELTS-style question groups (2026-11-07): test labels, group headings, option box, matching and partial marks. */
+.testLabel { margin: 10px 2px 2px; color: var(--muted); font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.testLabel:first-child { margin-top: 0; }
+.group + .group { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--line); }
+.group .qhead { display: grid; gap: 4px; margin-bottom: 10px; }
+.group .qhead p { font-style: normal; line-height: 1.5; }
+.group .qhead b { color: var(--ink); font-weight: 700; }
+.heading { margin: 0 0 8px; padding: 8px 12px; border-radius: 10px; background: var(--soft); font-weight: 700; text-align: center; }
+.box { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 6px 14px; margin: 0 0 10px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; list-style: none; font-size: 14px; }
+.box li { display: flex; align-items: center; gap: 8px; }
+.match { flex: 1; display: flex; align-items: center; flex-wrap: wrap; gap: 8px 14px; min-height: 30px; }
+.match > span:first-child { min-width: 170px; }
+.match select { padding: 5px 10px; border: 1px solid var(--line); border-radius: 9px; background: transparent; color: var(--ink); font: inherit; font-weight: 700; cursor: pointer; }
+.match .fix { display: inline; }
+li[data-result="good"] .match select { border-color: var(--good); }
+li[data-result="bad"] .match select { border-color: var(--bad); }
+.questions li[data-result="part"] { background: color-mix(in srgb, #c27a1a 9%, transparent); }
+li[data-result="part"] .num { background: #c27a1a; color: #fff; }
+.num { width: auto; min-width: 26px; padding: 0 6px; }
+.lines li[data-narrator] .speaker, .lines li[data-narrator] button > span:last-child { color: var(--muted); font-style: italic; }
+@media (max-width: 900px) { .testLabel { display: none; } }
+
+/* IELTS mock Listening stages reuse this layout (src/modules/exams/listening-section.tsx). */
+.mock { max-width: none; }
+.mock .drills { top: 120px; }
+.mock .player { top: 112px; }
+.mock .actions { justify-content: space-between; }
+.mock .questions li { align-items: flex-start; }
+.mock .questions li[data-flagged] { box-shadow: inset 3px 0 0 #c27a1a; }
+.livePart { flex: none; color: var(--ink); font-size: 13px; font-weight: 700; }
+.play[data-live] { animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--blue) 25%, transparent); } }
+@media (prefers-reduced-motion: reduce) { .play[data-live] { animation: none; } }
+.flag { flex: none; width: 30px; height: 30px; margin-left: auto; border: 1px solid transparent; border-radius: 8px; background: transparent; color: var(--muted); font-size: 14px; cursor: pointer; opacity: .55; }
+.flag:hover { opacity: 1; background: var(--soft); }
+.flag[aria-pressed="true"] { opacity: 1; border-color: color-mix(in srgb, #c27a1a 50%, transparent); color: #c27a1a; }
+@media (max-width: 900px) { .mock .drills { margin: 0; padding: 0 0 4px; } .mock .drills button { flex-basis: 170px; } }
+@media (max-width: 560px) { .livePart { display: none; } }
+
+/* Practice-mode Listening (src/modules/exam-practice/listening-view.tsx). */
+.qbody { flex: 1; display: grid; gap: 8px; min-width: 0; }
+.reveal { display: grid; gap: 4px; }
+.reveal p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+.rowTools { display: flex; gap: 8px; }
+.mock .questions li[data-active] { outline: 1px solid color-mix(in srgb, var(--blue) 35%, transparent); }
+.paragraphs { display: grid; gap: 10px; margin-top: 8px; font-size: 15px; line-height: 1.65; }
+.paragraphs p { margin: 0; }

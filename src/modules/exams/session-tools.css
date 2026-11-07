@@ -45,3 +45,6 @@
   .review-domain { grid-template-columns: minmax(0, 1fr) 56px; }
   .review-domain i { grid-column: 1 / -1; grid-row: 2; }
 }
+
+/* Prompts may put an instruction and its sentence on separate lines. */
+.exam-answer-panel>h2{white-space:pre-line}

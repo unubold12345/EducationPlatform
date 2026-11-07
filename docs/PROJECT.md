@@ -8,7 +8,7 @@ current delivery state, checks, credentials and next actions.
 
 EducationPlatform is an independent Mongolian exam-preparation web application. It started with SAT
 Mathematics and now covers SAT, IELTS Academic and university entrance exams. Practice exercises were
-removed on 2026-11-05; students prepare through full mocks, official papers and workshops. It is not
+removed on 2026-11-05 and the official ЭЕШ papers on 2026-11-06; students prepare through full mocks and workshops. It is not
 affiliated with the College Board, IELTS, or the Mongolian ЕШ; all practice content is original unless
 an official source is explicitly labelled. LawTest/Lexlab is a separate service: this project only
 links to <https://lexlab.site/plan> and must never read LawTest code or data.
@@ -23,21 +23,22 @@ authentication require provider configuration; see the actual hosted checkpoint 
 | --- | --- |
 | IELTS workshops | Four focused workshops with saved work and grading |
 | Full mocks | Six Digital SAT and six IELTS Academic mocks (01–06), with server-authoritative timers |
-| Official papers | 2020 Math A–D and 37 historical English variations |
-| Practice mode | Untimed practice on every mock and official paper, with instant checks and a DeepSeek assistant |
+| ЭЕШ mocks | 155 imported practice papers: 55 Mathematics, 60 Physics and 40 English (2015–2026), on the site as University Prep |
+| Practice mode | Untimed practice on every mock, with instant checks and a DeepSeek assistant |
 | Accounts | Better Auth email/password, profile, Google OAuth, verification and password recovery |
 | Plans and payments | Three monthly plans plus per-mock and per-paper simulated purchases |
 | Admin | Protected overview, members, subscriptions, payments, monitoring, content and audits |
 | AI tutor | DeepSeek math hints, explanations and mistake review |
 | Speaking Lab | Isolated IELTS speaking studio at `/labs/ielts-speaking` |
 | Essay Studio | Workshop writing practice with AI corrections at `/labs/ielts-writing` |
+| Listening Lab | Two original IELTS Listening practice tests (Parts 1–4, mock-style recordings) at `/labs/ielts-listening` |
 | Study tools | Light/dark theme and a browser-only mathematics scratchpad |
 
 Workshops require the IELTS plan. Full mocks accept a matching plan or a prior per-exam purchase. Subscription-backed
 sittings keep continuation and review access after expiry, but new starts remain gated. Existing
 purchases and LEGACY grants are preserved.
 
-The mathematics tutor is offered when reviewing a submitted SAT Math mock. Every mock and official paper also has
+The mathematics tutor is offered when reviewing a submitted SAT Math mock. Every mock also has
 practice mode at `/exams/<slug>/practice`, with its own assistant (section 7).
 
 ### Removed: practice exercises
@@ -46,19 +47,24 @@ The owner removed practice sets, the free `/practice` sample and saved exercise 
 routes (`/exercises`, `/practice`, `/learn/attempts`, `/api/exercises`, `/api/practice`, `/api/attempts`), modules,
 catalog data and `prisma/seed.ts` are deleted, and deploys no longer seed. `tests/exercises-removal.test.mjs` guards
 against their return. Workshops, the Speaking Lab and the Essay Studio stay, in `src/modules/workshops`. Practice mode
-(2026-11-06) is a different feature: it opens the existing mocks and papers without a clock and adds no question bank.
+(2026-11-06) is a different feature: it opens the existing mocks without a clock and adds no question bank.
 
 The tables (`Attempt`, `AttemptItem`, `Exam`, `ExamItem`, `Question`, `QuestionVersion`, `Topic`, `Subject`, `Program`)
 remain in the schema, unused, because a dropping migration would delete hosted data during the Vercel build.
 `scripts/purge-exercises.mjs` previews, and with `--apply` permanently deletes, their rows and old exercise content
-versions; hosted databases also need `--confirm-host=<hostname>`. Mocks, papers, workshops, purchases, plans, accounts
+versions; hosted databases also need `--confirm-host=<hostname>`. Mocks, workshops, purchases, plans, accounts
 and audit history are not touched. A later migration can drop the empty tables.
 
-The `/exams` library has four category items: SAT, IELTS, EEC Mathematics and EEC English.
-`/exams/sat` and `/exams/ielts` collect each program's six mocks in a selection grid, like the
-official English collection. Homepage and program links open these collections; individual mock
-briefings link back to their collection. Existing mock URLs, purchases, saved attempts and access
-rules are unchanged. Collection URLs themselves cannot be purchased or started as exams.
+The `/exams` library has three category items: SAT, IELTS and ЭЕШ. `/exams/sat` and `/exams/ielts` collect
+their six mocks. `/exams/eesh` is the ЭЕШ hub: subject tabs (`?subject=math|physics|english`) and dense
+year rows with five variants per year. The retired `/exams/eesh-math` route and the first four Mathematics
+mocks (`eesh-math-01`–`04`) return 404; their files are kept unserved in `reference/retired-site-mocks/eesh-math/`.
+Homepage and program links open the hub; individual mock briefings link back to their subject tab. Existing
+saved attempts and purchases remain readable. The library itself is three programme rows with a compact
+index (counts, timings, included parts and direct entry); the ЭЕШ row links to the three subject tabs.
+`/plans` is a comparison-first pricing page: three plan cards, a feature table, the per-mock option and
+month terms. Both pages use scoped CSS (`src/app/exams/library.css`, `src/app/plans/plans.css`).
+Collection URLs cannot be purchased or started as exams.
 
 ## 3. Assessments
 
@@ -91,68 +97,68 @@ rules are unchanged. Collection URLs themselves cannot be purchased or started a
 - No IELTS band score is calculated.
 - Authenticated audio serving resolves the exact mock slug to its own allowlisted recording files.
   All 24 recordings are included in the production function trace. New audio provenance, script
-  hashes, file hashes and durations live in `assets/exams/manifest-02.json` through `manifest-06.json`;
-  `scripts/generate-additional-exam-audio.ps1 -Paper 2` (2–6) regenerates a form with Windows
-  System.Speech and FFmpeg. Each part occupies a 450-second slot, including reading/checking pauses.
+  hashes, file hashes and durations live in `assets/exams/manifest.json` and `manifest-02.json` through
+  `manifest-06.json`. `scripts/generate-ielts-audio.py` (setup in its header) regenerates them with local
+  Kokoro-82M neural voices (Apache-2.0) at one natural pace, with 20/15/15 s reading/checking pauses.
+  Parts play back to back from their recorded lengths (`listeningSeconds` in `audio-files.ts`, which
+  must be updated after regenerating); the 30-minute stage leaves checking time after the last part.
 
-### Official 2020 EEC Mathematics · A–D
+### ЭЕШ mocks (University Prep)
 
-- `/exams/eec-math-2020` groups only 2020 Mathematics, with A, B, C and D variation links.
-- Each variation shows its 40 questions, the formula sheet and all diagrams from site data
-  (`src/modules/papers/math-2020`, typeset with KaTeX on the server, figures redrawn as SVG in
-  `question-figures.tsx`), beside its own official key and a private saved 100-minute answer sheet.
-  Page images are no longer shown in the sitting. Attempts, immutable snapshots, timers and history
-  retain the variation. Question text is resolved by slug at render time and is not snapshotted, so
-  attempts saved before this change open with the same paper, unchanged, and grading never reads it.
-- Existing `/exams/eec-math-2020-a` purchases and saved attempts remain valid. B/C/D use their own
-  per-paper purchases; University Prep includes all four. The category itself is not a purchasable paper.
-- Exact official weighting: 36 multiple-choice and 4 fill-in questions, 72 + 28 = 100 points.
-- Digit scoring follows the printed key: question 2.1 groups d/e and 2.3 groups d/e and f/g in all
-  four variants. Raw /100 only, with no 200–800 conversion.
-- Official material transcribed as site data, not editable authored mock content: there is no admin
-  editor for it, and text is kept as printed, including source oddities. Figures are redrawn, not to scale,
-  as the paper itself states. `tests/math-2020-content.test.mjs` ties the data to the key's marks and order.
-- The key follows the print except for two owner-approved corrections in Variant A: 14 (printed B, now D) and
-  22 (printed C, now A), version `eec-2020-A-key-v2`. All 160 questions were solved independently; no others
-  disagree. Results disclose the corrections after submission. B/D are at key v2 for the 2.1 d/e pairing.
-  Attempts started earlier keep v1 in their snapshots.
-- The 32 JPEGs in `public/exam-assets/eec-math-2020/` stay as the source record, byte-identical to the
-  reviewed originals; the sitting only links to them. `assets/papers/eec-math-2020.json` records provenance,
-  dimensions and SHA-256 hashes. Original source URLs remain in snapshots and admin links.
-- New starts require the University Prep plan or an existing 10,000 MNT per-paper simulated purchase.
-  Saved work and review remain available after subscription expiry.
+- 155 imported papers live on the site, all with program `entrance`:
+  - `eesh-math-<year>-m1`–`m5`: 55 Mathematics forms for 2015–2026 (2020 excluded).
+  - `eesh-physics-<year>-p1`–`p5`: 60 Physics forms for 2015–2026.
+  - `eesh-english-<year>-e1`–`e5`: 40 English forms for 2018–2020 and 2022–2026.
+- Source and build: the offline authoring packs stay in `MockExmps/` (never served or deployed).
+  `node scripts/build-entrance-mocks.mjs` converts them into `assets/entrance-mocks/<subject>/<slug>.json`
+  (server-side content with answers) and `public/exam-assets/eesh/<subject>/<slug>/*.svg` (2825 diagrams).
+  It also writes the client-safe catalogue in `src/modules/exams/entrance/catalog.json` and
+  `catalog-data.ts`. `next.config.ts` traces the content JSON for every server route. Rebuilding is
+  deterministic; rerun it after editing `MockExmps`.
+- `src/modules/exams/entrance/content.ts` loads a paper on demand (one `readFileSync`, cached).
+  `findExam()` resolves it lazily; SAT/IELTS definitions stay in memory. `getExam()` still applies
+  published content versions and admin edits.
+- Format: Mathematics has 36 A–E questions plus four multi-part constructed tasks; Physics has 46 A–E
+  questions plus four constructed tasks; English has Part I (grammar, vocabulary, communication,
+  reading) plus Part II matching/cloze tasks. Each paper is 100 points. Mathematics and Physics are
+  100 minutes and have no calculator; English follows the 80-minute house timing (the 2022–2026 papers
+  print no duration). Physics uses g = 10 m/s².
+- Marks: each question carries its printed points. Mathematics task points (7 each) are split over
+  their parts with integer largest-remainder weights. Typed Mathematics answers accept Unicode or
+  ASCII signs, comma or semicolon intervals, equivalent fractions/decimals and scientific notation;
+  symbolic expressions are compared after normalisation. Physics constructed answers are numeric
+  where possible, with a text matcher for the one direction answer.
+- Presentation: the ЭЕШ sitting is the compact `entrance/session.tsx` workspace, not the retired paper
+  booklet. It has one page per multiple-choice item, one page per constructed task or Part II task,
+  a slide-over answer sheet grouped by printed section, a per-question flag, a collapsible scratchpad
+  for Mathematics and Physics, and a side passage pane for English reading. Stored SVG diagrams render
+  as images, so their internal styles never leak into the page. KaTeX typesets short pure formulas and
+  all Mathematics options; longer Mongolian prose stays as text.
+- English listening: the 2018 and 2019 writing packs include a script but no recording. Those papers
+  show the script as a labelled text panel (“бичлэг оруулаагүй”). No fabricated audio is served.
+- Results: 100-point total, per-domain points and correct counts, a wrong/blank/correct filter and a
+  review that repeats the shared task text, figure, reading or listening material. Review answers and
+  explanations come from the paper snapshot, never from current definitions.
+- Access is ₮10,000 per paper or the University Prep plan; the server checks it on start, read, save,
+  check, audio and AI paths. Practice mode, the admin question fixer and versioned publishing work.
+- `tests/entrance-mocks.test.mjs` checks all 155 papers: 5 forms per year, unique IDs, five options,
+  answer membership, answer spread, 100-point totals, diagram files, typed-answer equivalence and a
+  full 100-mark report. `tests/entrance_mocks_smoke.py` covers the hub, access, a bought Mathematics
+  paper, University Prep, the reading/Part II layouts and mobile widths.
+- Provenance: 2015–2021 Mathematics/Physics references are official or clearly labelled annotated
+  editions; 2022–2026 Mathematics and English references are third-party copies/transcriptions,
+  not official БҮТ files. Every paper says it is practice content, and explanations are the site's own.
+  Teacher review and student-based difficulty calibration remain pending.
 
-### Official English exams
+### Withdrawn: official ЭЕШ papers
 
-- `/exams/eec-english` groups every verified, retrievable paper/key pair by year and variation.
-  Published coverage is 37 variations across nine years: 2006 A–E; 2007 A–C; 2008 B–F;
-  2009 B/D/H/I; 2010–2011 A–D; 2018–2020 A–D.
-- Each variation uses the same timed sitting flow as Mathematics, but still shows source page images, beside a variation-specific
-  answer sheet, server deadlines, autosave/resume, final submission, immutable graded results and
-  dashboard history. New starts require the matching per-paper purchase or University Prep plan.
-  `/exams/eec-english/[slug]` opens its briefing; canonical `/exams/[slug]` also works.
-- English practice lasts 80 minutes. Official 2011 and 2020 timing rules are linked; the original
-  2006–2010 duration is not independently verified and is labelled as an 80-minute practice setting.
-- 2006–2011 reports count correct choices/cells (one point each), explicitly distinct from historical
-  official weighted scores. 2018 and 2020 use printed key weights. In 2020 D the ambiguous printed
-  2.3e entry `e17` is ungraded, giving a verified maximum of 99. The 2019 listening recording is
-  unavailable: questions 41–46 are retained but ungraded; the written-paper maximum is 88. These
-  limits appear before starting, during the sitting and in the result; no scaled score is calculated.
-- `english-structure.json` holds public answer layouts only; `english-keys.json` is loaded exclusively
-  by server grading/admin code. Keys are snapshotted on start and released only after submission.
-  Old Mathematics snapshots keep their 36-choice/four-seven-digit layout and original grading.
-- The 2006–2011 БҮТ booklets are mirrored by `highschool.num.edu.mn`; original PDFs are retained in
-  `assets/papers/english-originals`. Pages are rendered at 2× and clipped only at printed variation
-  headings when a PDF page contains the end of one variation and the beginning of the next.
-- The 2018–2020 JPEGs come directly from `help.eec.mn` and retain their original bytes.
-  `assets/papers/english-archive.json` records every published pairing, source page/clip, image and
-  original-file hashes, and exclusions. There are 218 served images under
-  `public/exam-assets/eec-english/`; readers make no external image requests.
-- No listing is published just because an exam title exists. Historical 2012–2017 source/key links
-  are unavailable; 2021's accessible mirror key does not match the official paper option order;
-  current 2022–2026 national-paper links/bank entries did not yield a complete verified pairing. The 2019 E key
-  exists but its source paper returns 404, so E is excluded. These are availability/verification
-  limits, not a claim that no such exams or answers exist anywhere.
+The owner withdrew the 2020 Mathematics A–D and the 37 English papers on 2026-11-06. The 2018 and 2019 pages print a БҮТ
+notice prohibiting copying and distribution, and no permission is on record. Their routes (`/exams/eec-*`, `/papers/attempts`,
+`/api/paper-attempts`), the `src/modules/papers` module and the served images are gone, and
+`tests/official-papers-removal.test.mjs` guards against their return. Page images, PDFs, keys, layouts, provenance and the 2020
+Mathematics transcription are kept in `reference/official-papers/` only as a format guide (see its README). They are never
+served, compiled or deployed (`.vercelignore`) and must never be copied into mocks. `PaperAttempt` rows and per-paper
+purchases stay in the database untouched; students no longer see them, and admin lists them as withdrawn.
 
 ### Removed: 2026 Dornod regional practice exams
 
@@ -165,11 +171,10 @@ guards against their return. Local attempts, purchases and content rows were del
 
 | Item | Price | Access rule |
 | --- | --- | --- |
-| University Prep | 40,000 MNT/month | New official-paper starts |
+| University Prep | 40,000 MNT/month | All 155 ЭЕШ Mathematics, Physics and English papers |
 | IELTS | 60,000 MNT/month | IELTS mocks and workshops |
 | SAT | 60,000 MNT/month | SAT mocks |
-| Full SAT or IELTS mock | 10,000 MNT each | Per-exam purchase, including retakes, or a matching plan |
-| Official EEC paper | 10,000 MNT | Per-paper purchase or University Prep |
+| Full SAT, IELTS or ЭЕШ mock | 10,000 MNT each | Per-exam purchase, including retakes, or a matching plan |
 
 Monthly plan prices above are the defaults; admins can change them in `/admin?tab=pricing`.
 
@@ -241,7 +246,7 @@ gated by `AUTH_HOSTED_DEMO_ACCOUNTS=true`.
 ## 6. Content, admin and reporting
 
 - `/admin` is protected and offers an overview (with an attention row and section directory), users,
-  attempts (mocks / official papers), subscriptions, payments (plan orders / single-exam
+  attempts (mocks / withdrawn official papers), subscriptions, payments (plan orders / single-exam
   purchases), prices, content, audit history, CSV exports and a system status page (`tab=settings`,
   labelled "Систем"). Its sidebar groups these by purpose and each section states what it is for. Every
   list has search, filters and numbered pagination with totals (20 rows per page).
@@ -261,7 +266,7 @@ gated by `AUTH_HOSTED_DEMO_ACCOUNTS=true`.
   list; prompt, passage, options, answer key, explanation). Each fix is validated with the same shape
   and answer-key rules and published immediately as a new version by one admin (owner decision
   2026-10-30); it is blocked while an unpublished draft exists. Earlier attempts keep their version.
-  Official EEC papers stay read-only.
+  The ЭЕШ mocks are fixed the same way; withdrawn official papers have no admin page.
 - Existing catalog items are edited through `ContentDraft` → optional review → immutable `PublishedContent`.
   Runtime definitions must be read through `src/modules/content/published.ts`; never bypass version
   resolution in grading or new attempts.
@@ -277,12 +282,13 @@ gated by `AUTH_HOSTED_DEMO_ACCOUNTS=true`.
 
 ### Practice mode and its assistant
 
-- `/exams/<slug>/practice` opens any of the 12 mocks or 41 official papers without a clock. Access is the same as the timed
+- `/exams/<slug>/practice` opens any of the 167 mocks without a clock. Access is the same as the timed
   exam (matching plan or per-exam purchase), checked on every read, save, check, audio and AI request. The owner asked for this
-  on 2026-11-06, including AI on official papers.
+  on 2026-11-06.
 - SAT practice covers all 147 authored items, both Module 2 routes included. IELTS has replayable audio, the part's transcript
-  after a check, both Writing tasks and all Speaking prompts; recordings are not stored here. Math papers show typeset questions;
-  English papers show their scanned pages beside an A–E or digit answer.
+  after a check, both Writing tasks and all Speaking prompts; recordings are not stored here. ЭЕШ Mathematics and Physics
+  have Mongolian prompts, the scratchpad and the imported paper's section structure; ЭЕШ English shows its conversation,
+  word bank or reading passage beside the question and keeps the printed Part II choices.
 - One `PracticeSession` per student and exam (`responses`, `flags`, `results`), created on the first save. It is not an attempt:
   it never appears in exam history, reports or admin scores. **Дахин эхлэх** deletes only that row.
 - Answers, explanations, keys and transcripts stay on the server (`exam-practice/form.ts`) until the student checks that question.
@@ -292,14 +298,17 @@ gated by `AUTH_HOSTED_DEMO_ACCOUNTS=true`.
 - Assistant: `POST /api/exam-practice/<slug>/assistant`, 60 requests per student per Ulaanbaatar day with one in flight, sharing the
   tutor's provider code. The page sends only the question id and the student's words; the server adds the question, the saved
   answer and, only after a check, the key, explanation and transcript. Before a check the prompt forbids stating or confirming the answer.
-- Limits: official Math has a key but no worked solution, so the model derives the steps and must say when it disagrees. English
-  papers are images the model cannot read, so it asks the student to type the question. It gives no IELTS bands.
+- Limits: ЭЕШ answers and explanations are this site's own, not an official key, and the prompt says so; for Mathematics the
+  model works without a calculator, for Physics it keeps units and g = 10 m/s², and it must say when it disagrees. It gives no IELTS bands.
 
 ### Timed sitting tools
 
-Timers, locks and grading are unchanged. The sitting also has an always-visible question strip, keyboard shortcuts (arrows, A–E or
-1–5, F), option elimination and passage text size (both browser-only), and time notices for screen readers. Polls and saves send
-`?have=<stageId>` so the server omits stage text the page already holds. Results add per-skill totals, review filters and a link to practice.
+SAT and IELTS keep the always-visible question strip, keyboard shortcuts (arrows, A–E or 1–5, F), option elimination,
+passage text size and time notices. The ЭЕШ workspace is intentionally leaner: a stacked header with timer and
+answer-sheet count, a slide-over sheet grouped by printed section, keyboard next/previous and A–E, a flag per item,
+and a shared task page for constructed or Part II tasks. The booklet, bubble sheet and separate answer-sheet buttons
+of the retired Mathematics design are gone. Polls and saves send `?have=<stageId>` so the server omits stage text the
+page already holds. Results add per-skill totals, review filters and a link to practice.
 
 ### DeepSeek mathematics tutor
 
@@ -317,10 +326,10 @@ Timers, locks and grading are unchanged. The sitting also has an always-visible 
   history is sent.
 - 30 attempts per student per Ulaanbaatar day, a 90-second reservation lease, a 60-second provider
   timeout and a 3-second cooldown. Failed provider attempts count.
-- Requests are denied while the same user has an active mock or official-paper sitting. Timers,
+- Requests are denied while the same user has an active mock sitting. Timers,
   grading, answers and immutable results are untouched.
 - Conversations are temporary page state and are not saved to the account. Answers are learning
-  feedback, never official grading. Official EEC papers are outside this tutor; practice mode's assistant covers them.
+  feedback, never official grading. ЭЕШ and IELTS mocks are outside this tutor; practice mode's assistant covers them.
 
 ### IELTS Speaking Lab
 
@@ -360,6 +369,9 @@ rounding), vocabulary upgrades, strengths, next steps and one rewritten passage.
 - The homepage has additional education sketches through the page, a dedicated Speaking invitation,
   and one-time scroll reveals. Motion uses a small client component around server-rendered content,
   respects reduced-motion settings (including live changes), and leaves content readable without JS.
+  The owner chose the Classic concept on 2026-11-07; `src/app/page.tsx` renders `HomeClassic`
+  directly, and the earlier simple/index/practice experiments and their `/designs` preview routes
+  were removed.
 
 - The header theme switch defaults to the browser preference and saves an explicit choice in
   `education-theme` localStorage. Dark mode uses a deep indigo palette and self-hosted Golos Text (`next/font/google`, fetched at build) with
@@ -369,10 +381,17 @@ rounding), vocabulary upgrades, strengths, next steps and one rewritten passage.
   glow) while keeping a designed light theme. It restyles the sticky glass header/footer,
   homepage hero, cards, auth, dashboard, exam surfaces, admin and mobile navigation without
   changing route semantics, server checks or test hooks.
+- Plans and Workshop keep the compact 2026 treatment: `src/app/plans/plans.css` and
+  `src/app/workshop/workshop.css` scope their smaller titles, cards and spacing to those routes only.
+  The rest of the site uses the full display scale and copy. `src/app/footer-compact.css` keeps the
+  shared footer to one link row and one disclaimer line; delete its import in `layout.tsx` to restore
+  the taller footer.
 - `/dashboard`, `/profile` and `/admin` share `src/app/workspace.css` (card surface, status pill and
   tokens) through their own stylesheets, with readable type and no monospace Cyrillic labels.
-- Mathematics tests expose a collapsible scratchpad with graph paper, mouse/pen/touch drawing,
+- Mathematics and Physics tests expose a collapsible scratchpad with graph paper, mouse/pen/touch drawing,
   last-stroke undo, confirmed clear and keyboard-accessible typed notes.
+- The imported ЭЕШ surfaces live in `src/modules/exams/entrance/entrance.css` (hub, briefing, sitting,
+  answer sheet and results), scoped under `.eesh-*` so SAT and IELTS keep their existing CSS.
 - Scratch work is stored only in this browser under `education-scratchpad-v1:<attemptId>`, capped at
   8,000 characters, 200 strokes / 12,000 points and 1,500 points per stroke. It never enters graded
   responses, server scoring or deadlines. SAT Math modules in one sitting share the pad; different
@@ -387,9 +406,16 @@ rounding), vocabulary upgrades, strengths, next steps and one rewritten passage.
 | `src/lib` | Auth, session, API, config, email and shared helpers |
 | `src/modules/content` | Catalog, drafts, review and published content resolution |
 | `src/modules/workshops` | IELTS writing and speaking workshop tasks |
-| `src/modules/exams` | SAT/IELTS sitting lifecycle, timers and scoring |
-| `src/modules/exam-practice` | Untimed practice on mocks and papers: forms, checks, progress and the assistant |
-| `src/modules/papers` | EEC paper access, answer sheet, paired-digit scoring and 2020 Mathematics question data |
+| `src/modules/listening-lab` | Listening Lab drills, timings, browser progress and player (its CSS also styles the IELTS mock Listening stages via `src/modules/exams/listening-section.tsx`); audio in `public/listening-lab` |
+| `src/modules/exams` | SAT/IELTS sitting lifecycle, timers and the shared scoring engine |
+| `src/modules/exam-practice` | Untimed practice on mocks: forms, checks, progress and the assistant |
+| `src/modules/exams/entrance` | ЭЕШ catalogue, lazy content loader, hub, compact briefing, sitting and results |
+| `assets/entrance-mocks` | Generated, server-side ЭЕШ content JSON with answers; traced into the server routes |
+| `public/exam-assets/eesh` | Generated SVG diagrams for the imported papers; answer-free |
+| `MockExmps` | Offline authoring packs and validation tools; never served, built or deployed |
+| `scripts/build-entrance-mocks.mjs` | Deterministic converter from `MockExmps` to site content, diagrams and catalogue |
+| `reference/official-papers` | Withdrawn official papers, kept as a format guide only; never served, built or deployed |
+| `reference/retired-site-mocks` | Retired site mocks (the first four Mathematics forms and the old English set); never built |
 | `src/modules/subscriptions` | Plans, purchases, entitlements and legacy grants |
 | `src/modules/admin` | Admin services, reporting, exports and audit |
 | `src/modules/tutor` | DeepSeek prompt contracts, quotas and provider calls |
@@ -439,6 +465,10 @@ npm run db:generate
 npm run dev
 ```
 
+The imported ЭЕШ content is already generated in `assets/entrance-mocks` and `public/exam-assets/eesh`.
+After editing the offline packs in `MockExmps`, run `node scripts/build-entrance-mocks.mjs` and commit the
+regenerated JSON, SVG and catalogue. The script validates 155 forms, 100-point totals and diagram files.
+
 Open <http://localhost:3001>. Local services:
 
 | Service | Address / port | Notes |
@@ -487,12 +517,16 @@ deadlines; they must never add a runtime bypass, shorten a public exam or change
   inbox. A completed real Google login, consent and token exchange still require an owner-controlled
   browser session. See `OPERATIONS.md` for exact deployment/check evidence.
 - There is no verified-email production onboarding, no live billing and no real payment provider.
-- Scores are raw; SAT scaled scores and IELTS bands are not calculated. The Speaking Lab's and Essay
-  Studio's bands are AI estimates only.
-- Official EEC papers have no independently reviewed worked solutions, so AI explanations of them are unverified. Only 2020
-  Mathematics has structured question text; English papers remain page images the assistant cannot read.
+- Scores are raw; SAT scaled scores and IELTS bands are not calculated. ЭЕШ papers report a 100-point
+  practice total from printed item marks, not the official weighted ЭЕШ score. The Speaking Lab's and
+  Essay Studio's bands are AI estimates only.
+- All 155 imported ЭЕШ papers await teacher review, so their answers, explanations and the AI's answers
+  about them are unverified. The 2022–2026 Mathematics and English references are third-party copies,
+  not official БҮТ files.
+- The 2018 and 2019 English listening sections have a script but no recording; they are labelled as
+  transcript practice. No audio was synthesized for them.
 - Creating new catalog items and replacing content media are unfinished.
-- Content and official-page accuracy depend on manual review. Original archive and answer-key links are external and can be unavailable; exam page images are bundled.
+- Content accuracy depends on manual review.
 - Local PGlite works with single-connection settings; broad production concurrency and scale are
   unverified.
 - AI and speech features depend on third-party models and local model caches; quality, latency and

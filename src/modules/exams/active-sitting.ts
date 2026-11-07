@@ -9,8 +9,6 @@ import { MockAccessRequired } from "./payments";
 // closed, so an abandoned sitting does not block the student forever.
 export async function activeTimedSitting(userId: string): Promise<{ href: string } | null> {
   const db = getDb();
-  const paper = await db.paperAttempt.findFirst({ where: { userId, status: "IN_PROGRESS", deadline: { gt: new Date() } }, select: { id: true } });
-  if (paper) return { href: "/papers/attempts/" + paper.id };
   const mocks = await db.mockAttempt.findMany({ where: { userId, status: "IN_PROGRESS" }, select: { id: true } });
   for (const { id } of mocks) {
     const href = "/exams/attempts/" + id;

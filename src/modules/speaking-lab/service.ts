@@ -12,8 +12,8 @@ const DAILY_LIMIT={chat:80,voice:200,transcribe:150} as const;
 export async function requireSpeakingLab(userId:string) {
  if(!speakingLabEnabled())throw new ApiError(404,"Туршилтын хуудас идэвхгүй байна.");
  const db=getDb();
- const [mock,paper]=await Promise.all([db.mockAttempt.findFirst({where:{userId,status:"IN_PROGRESS"},select:{id:true}}),db.paperAttempt.findFirst({where:{userId,status:"IN_PROGRESS",deadline:{gt:new Date()}},select:{id:true}})]);
- if(mock||paper)throw new ApiError(403,"Хугацаатай шалгалтаа дуусгасны дараа Speaking Lab ашиглана уу.");
+ const mock=await db.mockAttempt.findFirst({where:{userId,status:"IN_PROGRESS"},select:{id:true}});
+ if(mock)throw new ApiError(403,"Хугацаатай шалгалтаа дуусгасны дараа Speaking Lab ашиглана уу.");
 }
 
 // Chat requests hold an exclusive lease (one in flight per student). Local voice/transcription

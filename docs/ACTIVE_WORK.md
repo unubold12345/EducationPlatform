@@ -32,3 +32,4 @@ repository at the same time. The permanent record stays in [OPERATIONS.md](./OPE
 
 | Agent | Started (UB) | Task | Files / areas | Shared resources | Status |
 | --- | --- | --- | --- | --- | --- |
+| Codex (GPT-6) | 2026-11-08 UB | Six offline JLPT N5/N4 mocks | MockExmps/JLPT/; docs/OPERATIONS.md outcome | None | In progress |

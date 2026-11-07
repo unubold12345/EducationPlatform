@@ -87,13 +87,14 @@ export function PassagePane({title,text,caption,controls,scale}:{title:string;te
 
 export type OptionItem = { value: string; content: ReactNode };
 // `compact` is for letter-only answers whose text is printed on a scanned page.
-export function AnswerOptions({name,options,selected,disabled,onSelect,struck,onStrike,correctValue,lang="en",compact=false}:{name:string;options:OptionItem[];selected:string|undefined;disabled?:boolean;onSelect:(value:string)=>void;struck?:string[];onStrike?:(value:string)=>void;correctValue?:string;lang?:string;compact?:boolean}) {
+export function AnswerOptions({name,options,selected,disabled,onSelect,struck,onStrike,correctValue,lang="en",compact=false,labels}:{name:string;options:OptionItem[];selected:string|undefined;disabled?:boolean;onSelect:(value:string)=>void;struck?:string[];onStrike?:(value:string)=>void;correctValue?:string;lang?:string;compact?:boolean;labels?:string[]}) {
   return <fieldset className="answer-options" data-compact={compact?"":undefined} disabled={disabled}><legend className="sr-only">Select one answer</legend>{options.map((option, i) => {
     const out = struck?.includes(option.value);
     const outcome = correctValue === undefined ? undefined : option.value === correctValue ? "correct" : option.value === selected ? "wrong" : undefined;
+    const label = labels?.[i] ?? String.fromCharCode(65 + i);
     return <div className="answer-row" key={option.value} data-out={out ? "" : undefined} data-outcome={outcome}>
-      <label className={"answer-option " + (selected === option.value ? "selected" : "")}><input type="radio" name={name} checked={selected === option.value} onChange={() => onSelect(option.value)}/><span className="option-letter">{String.fromCharCode(65 + i)}</span><span lang={lang}>{option.content}</span></label>
-      {onStrike ? <button type="button" className="answer-strike" aria-pressed={Boolean(out)} aria-label={String.fromCharCode(65 + i) + " хувилбарыг " + (out ? "сэргээх" : "хасах")} title={out ? "Сэргээх" : "Хасах"} onClick={() => onStrike(option.value)}>{out ? "↺" : "✕"}</button> : null}
+      <label className={"answer-option " + (selected === option.value ? "selected" : "")}><input type="radio" name={name} checked={selected === option.value} onChange={() => onSelect(option.value)}/><span className="option-letter">{label}</span><span lang={lang}>{option.content}</span></label>
+      {onStrike ? <button type="button" className="answer-strike" aria-pressed={Boolean(out)} aria-label={label + " хувилбарыг " + (out ? "сэргээх" : "хасах")} title={out ? "Сэргээх" : "Хасах"} onClick={() => onStrike(option.value)}>{out ? "↺" : "✕"}</button> : null}
     </div>;
   })}</fieldset>;
 }

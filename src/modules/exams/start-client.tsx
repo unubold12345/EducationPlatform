@@ -3,7 +3,8 @@ import { useRef,useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { MOCK_PRICE_LABEL } from "./pricing";
-export function ExamStart({slug,program,hasAccess,loggedIn}:{slug:string;program:"sat"|"ielts";hasAccess:boolean;loggedIn:boolean}) {
+import type { ExamProgram } from "./types";
+export function ExamStart({slug,program,hasAccess,loggedIn}:{slug:string;program:ExamProgram;hasAccess:boolean;loggedIn:boolean}) {
   const router=useRouter();const busy=useRef(false);
   const [pending,setPending]=useState(false),[error,setError]=useState("");
   const [audioReady,setAudioReady]=useState(false),[micReady,setMicReady]=useState(false),[micBusy,setMicBusy]=useState(false),[agreed,setAgreed]=useState(false);

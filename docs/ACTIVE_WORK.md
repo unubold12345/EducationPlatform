@@ -32,4 +32,3 @@ repository at the same time. The permanent record stays in [OPERATIONS.md](./OPE
 
 | Agent | Started (UB) | Task | Files / areas | Shared resources | Status |
 | --- | --- | --- | --- | --- | --- |
-| DeepSeek Flash (DeepSeek Harness) | 2026-11-08 21:50 | Owner-authorized commit, push and production deploy of the accumulated tree | git, build, 3001 preview, docs/OPERATIONS.md, docs/ACTIVE_WORK.md | `build + 3001`, `git` (push deploys) | in progress |

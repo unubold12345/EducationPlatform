@@ -37,7 +37,7 @@ export function HomeSwitcher({ programs, labs }: { programs: HomeProgram[]; labs
     <div role="tabpanel" id={"home-panel-" + segment} aria-labelledby={"home-tab-" + segment} className="wsp-hero-panel">
       {segment === "ai" ? <>
         <Composer state={state} onChange={setState} onSubmit={submit} />
-        <p className="wsp-fine">Илгээхэд таны мессеж DeepSeek руу очно. Чат зөвхөн энэ хөтөчид хадгалагдана.</p>
+        <p className="wsp-fine">Илгээхэд таны мессеж AI руу очно. Чат зөвхөн энэ хөтөчид хадгалагдана.</p>
       </> : segment === "exams" ? <div className="wsp-pick-grid">
         {programs.map(program => <Link key={program.href} href={program.href} className={"wsp-pick " + program.tone}><strong>{program.label}</strong><span>{program.detail}</span><Icon name="arrow" size={18} /></Link>)}
       </div> : <div className="wsp-pick-grid is-three">

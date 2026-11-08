@@ -72,7 +72,7 @@ with sync_playwright() as p:
  page.get_by_text('More settings').click();page.get_by_text('Partner speaks aloud').click()
  page.get_by_role('radio',name='Practise one part').click()
  expect(page.get_by_role('button',name='Start practice →')).to_be_disabled()
- page.get_by_text('My answers (as text) are sent to DeepSeek').click()
+ page.get_by_text('My answers (as text) are sent to an AI service').click()
  with page.expect_response(lambda r:r.url.endswith('/api/labs/ielts-speaking'),timeout=90000) as reply:
   page.get_by_role('button',name='Start practice →').click()
  assert reply.value.status==200,(reply.value.status,reply.value.text())
@@ -113,7 +113,7 @@ with sync_playwright() as p:
  page.route('**/api/labs/ielts-speaking',lambda route:route.fulfill(status=200,content_type='application/json',body=json.dumps({'reply':'What do you like to read?','tip':None,'cue':None,'hint':None,'report':None})))
  page.route('**/api/labs/ielts-speaking/transcribe',lambda route:route.fulfill(status=200,content_type='application/json',body=json.dumps({'text':'I like reading books in English.'})))
  page.get_by_text('More settings').click();page.get_by_text('Partner speaks aloud').click()
- page.get_by_text('My answers (as text) are sent to DeepSeek').click();page.get_by_text('Use my microphone').click()
+ page.get_by_text('My answers (as text) are sent to an AI service').click();page.get_by_text('Use my microphone').click()
  page.get_by_role('button',name='Start mock test →').click()
  expect(page.locator('.sl-msg.user')).to_have_count(1,timeout=30000)
  expect(page.locator('.sl-msg.user').first).to_contain_text('I like reading books in English.')

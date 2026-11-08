@@ -12,6 +12,8 @@ import type { ShellAccount } from "./data";
 const tabs: { id: WorkspaceTab; href: string; label: string; icon: IconName }[] = [
   { id: "home", href: "/workspace", label: "Нүүр", icon: "home" },
   { id: "chat", href: "/workspace/chat", label: "AI туслах", icon: "spark" },
+  { id: "flashcards", href: "/workspace/flashcards", label: "Флашкарт", icon: "cards" },
+  { id: "myexams", href: "/workspace/my-exams", label: "Файлаас шалгалт", icon: "fileExam" },
   { id: "exams", href: "/exams", label: "Шалгалтууд", icon: "exam" },
   { id: "review", href: "/workspace/review", label: "Миний үр дүн", icon: "review" },
   { id: "workshop", href: "/workspace/workshop", label: "Workshop", icon: "workshop" },
@@ -51,7 +53,7 @@ export function WorkspaceShell({ account, fontClass, children }: { account: Shel
 
   // These pages redirect guests on the server. Do not stream parent chrome while that
   // child redirect resolves, including the first render before browser hydration.
-  const guestRedirect = !account && (active === "home" || active === "chat" || active === "review" || active === "profile");
+  const guestRedirect = !account && (active === "home" || active === "chat" || active === "flashcards" || active === "myexams" || active === "review" || active === "profile");
   if (!shown || guestRedirect) return <>{children}</>;
   const title = active === "profile" ? PROFILE_LABEL : tabs.find(tab => tab.id === active)?.label ?? "Workspace";
   const onProfile = active === "profile" ? "page" as const : undefined;
@@ -63,7 +65,7 @@ export function WorkspaceShell({ account, fontClass, children }: { account: Shel
         <button type="button" className="wsp-icon-button wsp-drawer-close" onClick={() => { setOpen(false); menuButton.current?.focus(); }} aria-label="Цэс хаах"><Icon name="close" /></button>
       </div>
       <nav className="wsp-nav" aria-label="Workspace цэс">
-        {tabs.map(tab => <Link key={tab.id} href={tab.href} className="wsp-nav-item" aria-current={active === tab.id ? "page" : undefined} title={tab.label}>
+        {tabs.map(tab => <Link key={tab.id} href={tab.href} className="wsp-nav-item" aria-current={active === tab.id ? "page" : undefined} title={tab.label} onClick={() => setOpen(false)}>
           <Icon name={tab.icon} /><span>{tab.label}</span>{tab.id === "chat" ? <em className="wsp-nav-badge">AI</em> : null}
         </Link>)}
       </nav>

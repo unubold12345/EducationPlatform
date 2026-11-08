@@ -180,7 +180,7 @@ export function PracticeWorkspace({initial,speakingLab,initialSection}:{initial:
     url:url+"/assistant",payload:{questionId:question.id},plain:true,beforeSend:flush,
     label:section.title+" · "+(person?"Даалгавар ":"Асуулт ")+question.label,
     greeting:person?"Сайн уу! Санаа, бүтэц эсвэл бичсэн зүйлийнхээ талаар асуугаарай.":reveal?"Энэ асуултыг хамт ойлгоё. Юу нь эргэлзээтэй байна?":"Сайн уу! Хариуг шууд хэлэхгүй, харин өөрөө олоход тань тусална.",
-    note:"Илгээхэд энэ даалгавар, таны хадгалсан хариу DeepSeek руу очно. Албан ёсны үнэлгээ биш.",
+    note:"Илгээхэд энэ даалгавар, таны хадгалсан хариу AI руу очно. Албан ёсны үнэлгээ биш.",
     suggestions:person?[["hint","Санаа, бүтэц"],["review","Бичсэнд минь санал өг"],["followup","Төстэй даалгавар"]]:reveal?[["review","Алдаагаа ойлгох"],["explain","Алхам алхмаар"],["followup","Төстэй асуулт"]]:[["hint","Санаа өгөх"],["explain","Арга заах"],["followup","Төстэй асуулт"]],
   };
 

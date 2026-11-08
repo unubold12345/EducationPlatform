@@ -320,8 +320,9 @@ main:has(> .wsp) { isolation: auto; }
 /* ---------- Building blocks ---------- */
 
 .wsp-section { margin-top: 40px; }
-.wsp-section-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 14px; }
+.wsp-section-head { display: flex; align-items: center; flex-wrap: wrap; justify-content: space-between; gap: 10px 16px; margin-bottom: 14px; }
 .wsp-section-head h2 { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 21px; font-weight: 700; line-height: 1.25; }
+.wsp-section-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 14px; }
 .wsp-link { display: inline-flex; align-items: center; gap: 4px; color: var(--wsp-accent); font-size: 13.5px; font-weight: 600; white-space: nowrap; }
 .wsp-link:hover { text-decoration: underline; text-underline-offset: 3px; }
 .wsp-muted { color: var(--wsp-muted); font-size: 13px; }

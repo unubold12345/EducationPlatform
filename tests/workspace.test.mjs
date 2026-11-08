@@ -70,9 +70,11 @@ test("AI replies split into paragraphs, headings and lists", () => {
 });
 
 test("the Workspace frame wraps the complete mock and workshop flows", () => {
-  for (const path of ["/workspace", "/workspace/chat", "/workspace/review/abc", "/workspace/profile", "/workspace/plans", "/subscribe/ielts", "/exams", "/exams/sat", "/exams/eesh", "/exams/sat-full-01", "/checkout/sat-full-01", "/exams/attempts/abc", "/exams/sat-full-01/practice", "/workshops/ielts-writing-data", "/labs/ielts-writing", "/labs/ielts-speaking", "/labs/ielts-listening"]) assert.equal(inWorkspace(path), true, path);
+  for (const path of ["/workspace", "/workspace/chat", "/workspace/flashcards", "/workspace/my-exams", "/workspace/review/abc", "/workspace/profile", "/workspace/plans", "/subscribe/ielts", "/exams", "/exams/sat", "/exams/eesh", "/exams/sat-full-01", "/checkout/sat-full-01", "/exams/attempts/abc", "/exams/sat-full-01/practice", "/workshops/ielts-writing-data", "/labs/ielts-writing", "/labs/ielts-speaking", "/labs/ielts-listening"]) assert.equal(inWorkspace(path), true, path);
   for (const path of ["/", "/programs", "/plans", "/profile", "/subscribex", "/examsx", "/workspacex", "/workshopsx", "/labs/unknown"]) assert.equal(inWorkspace(path), false, path);
   assert.equal(workspaceTab("/workspace"), "home");
+  assert.equal(workspaceTab("/workspace/flashcards"), "flashcards");
+  assert.equal(workspaceTab("/workspace/my-exams"), "myexams");
   assert.equal(workspaceTab("/workspace/review/abc"), "review");
   assert.equal(workspaceTab("/exams/jlpt"), "exams");
   assert.equal(workspaceTab("/exams/attempts/abc"), "exams");
@@ -117,6 +119,7 @@ test("profile and plans live in the Workspace; the site header links to neither"
   assert.match(text("src/app/profile/page.tsx"), /"\/workspace\/profile\?error=" \+ encodeURIComponent\(error\)/);
   assert.match(text("src/app/workspace/profile/page.tsx"), /requireUser\("\/workspace\/profile"\)/);
   const returnPath = text("src/lib/return-path.ts");
+  assert.match(returnPath, /"\/workspace\/chat", "\/workspace\/flashcards", "\/workspace\/my-exams", "\/workspace\/review"/);
   assert.match(returnPath, /"\/workspace\/profile", "\/workspace\/plans"\]/);
   assert.doesNotMatch(returnPath, /"\/(profile|plans)"/);
   const nav = text("src/components/main-navigation.tsx");

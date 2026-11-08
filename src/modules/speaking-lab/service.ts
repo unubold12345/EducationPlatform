@@ -51,15 +51,15 @@ export async function serialized<T>(name:string,waitMs:number,work:()=>Promise<T
 export async function speakingReply(userId:string,body:unknown) {
  if(!validSpeakingInput(body))throw new ApiError(400,"Ярианы хүсэлтийн бүтэц буруу байна.");
  await requireSpeakingLab(userId);
- const key=process.env.DEEPSEEK_API_KEY?.trim();if(!key)throw new ApiError(503,"DeepSeek холбогдоогүй байна.");
+ const key=process.env.DEEPSEEK_API_KEY?.trim();if(!key)throw new ApiError(503,"AI одоогоор холбогдоогүй байна.");
  const release=await reserveSpeakingRequest(userId,"chat");
  try {
   const maxTokens=body.action==="report"?(body.language==="mn"?3200:2400):900;
   for(let attempt=0;attempt<2;attempt++){
    let response:Response;
    try{response=await fetch("https://api.deepseek.com/chat/completions",{method:"POST",cache:"no-store",redirect:"error",headers:{"Content-Type":"application/json",Authorization:`Bearer ${key}`},body:JSON.stringify({model:process.env.DEEPSEEK_MODEL||"deepseek-flash",messages:speakingMessages(body),thinking:{type:"disabled"},max_tokens:maxTokens,temperature:body.action==="report"?0.3:0.8,response_format:{type:"json_object"},stream:false}),signal:AbortSignal.timeout(body.action==="report"?80000:45000)});}
-   catch{throw new ApiError(503,"DeepSeek-тэй холбогдож чадсангүй. Хариу тань хэвээр байна.");}
-   if(!response.ok)throw new ApiError(503,"DeepSeek түр ажиллахгүй байна. Дахин оролдоно уу.");
+   catch{throw new ApiError(503,"AI-тай холбогдож чадсангүй. Хариу тань хэвээр байна.");}
+   if(!response.ok)throw new ApiError(503,"AI түр ажиллахгүй байна. Дахин оролдоно уу.");
    let reply=null;
    try{const data=await response.json();const choice=data.choices?.[0];if(choice?.finish_reason==="stop"&&typeof choice.message?.content==="string"&&choice.message.content.length<=16000)reply=normalizeSpeakingReply(JSON.parse(choice.message.content),body.action);}
    catch{reply=null;}

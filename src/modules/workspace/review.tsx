@@ -210,7 +210,7 @@ function ReviewCoach({ attemptId, review, number, kind, open, onClose, turns, se
             onChange={event => setText(event.target.value)} onKeyDown={event => { if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) { event.preventDefault(); if (text.trim()) void ask("ask", text); } }} />
           <button type="submit" className="wsp-send is-round" disabled={pending || !text.trim()} aria-label="Илгээх"><Icon name="send" size={18} /></button>
         </form>
-        <p className="wsp-fine">Энэ асуулт, таны хариу DeepSeek руу очно · Албан ёсны үнэлгээ биш</p>
+        <p className="wsp-fine">Энэ асуулт, таны хариу AI руу очно · Албан ёсны үнэлгээ биш</p>
       </> : <div className="wsp-coach-empty"><Icon name="spark" size={28} /><p>Асуултын доорх <strong>AI-аас асуух</strong> товчийг дарж, алдаагаа задлаарай.</p></div>}
     </aside>
   </>;

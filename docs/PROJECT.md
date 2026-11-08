@@ -33,7 +33,9 @@ authentication require provider configuration; see the actual hosted checkpoint 
 | Speaking Lab | Isolated IELTS speaking studio at `/labs/ielts-speaking` |
 | Essay Studio | Workshop writing practice with AI corrections at `/labs/ielts-writing` |
 | Listening Lab | Two original IELTS Listening practice tests (Parts 1–4, mock-style recordings) at `/labs/ielts-listening` |
-| Workspace | `/workspace`: the signed-in study app, separate from the marketing site, with left tabs for Home, AI chat, Exams, Review, Workshop and Plans, plus the profile (section 7) |
+| Workspace | `/workspace`: the signed-in study app, separate from the marketing site, with left tabs for Home, AI chat, Flashcards, Exams, Review, Workshop and Plans, plus the profile (section 7) |
+| Flashcards | Upload a PDF, Word, PowerPoint or text file and get AI study cards at `/workspace/flashcards`; decks stay in the browser |
+| Exam from file | Upload a PDF, Word, PowerPoint or text file and get an AI multiple-choice exam at `/workspace/my-exams`; sittings, drafts and scores stay in the browser |
 | Study tools | Light/dark theme and a browser-only mathematics scratchpad |
 
 Workshops require the IELTS plan. Full mocks accept a matching plan or a prior per-exam purchase. Subscription-backed
@@ -353,7 +355,8 @@ page already holds. Results add per-skill totals, review filters and a link to p
   review of finished mocks), modelled on solvely.ai's layout: a 260px light-grey tab rail (collapsible to icons, saved in
   `education-workspace-rail`), a white canvas, one blue accent and Inter. Phones get a top bar and a slide-in menu.
 - Routes: `/workspace` (home: composer, resume, stats, programmes, recent results, practice), `/workspace/chat`,
-  `/workspace/review` and `/workspace/review/[id]`, `/workspace/workshop`, plus the exam library pages above. `/dashboard`
+  `/workspace/flashcards`, `/workspace/my-exams`, `/workspace/review` and `/workspace/review/[id]`, `/workspace/workshop`, plus the exam
+  library pages above. `/dashboard`
   and `/workshop` redirect here; sign-in returns to `/workspace` by default. `/workspace/profile` and `/workspace/plans`
   (2026-11-08) replace `/profile` and `/plans`, which redirect (`/profile?error=` keeps its Google link error). The owner
   asked that the site header link only to Programmes and the Workspace: no Exams, Plans or profile button for members;
@@ -376,6 +379,22 @@ page already holds. Results add per-skill totals, review filters and a link to p
   key, explanation, printed choices, figures and transcripts, weakest skills, and an AI coach beside it (explain, my mistake,
   similar question, free questions). The server builds the coach's context from the student's own SUBMITTED snapshot via
   `ownMock`; the page sends only the attempt and question ids. Replies render as a small Markdown subset through React text.
+
+### Flashcards (2026-11-08)
+
+- `/workspace/flashcards` turns an uploaded PDF, DOCX, PPTX, TXT, MD or CSV into 10, 20 or 30 study cards. It is a Workspace rail tab; guests are sent to sign-in with the page as the return path.
+- The browser posts the file as multipart (4 MB maximum) to `POST /api/workspace/flashcards`. The server checks same origin, a verified session, the exact form shape, card count and language, the file signature and a 100-page/8 MB-part bound before spending the daily AI budget. PDF text comes from `unpdf`'s serverless PDF.js build; Word and PowerPoint text is read from their XML with `fflate` and bounded decompression. Scanned/image-only documents are refused because there is no OCR.
+- DeepSeek receives only the extracted text (first 45,000 characters), the chosen language/count and the fixed card rules; the document is data, never instructions. JSON mode returns a title and cards; malformed output gets one silent retry. The provider call is refused while any timed sitting is open, checked before and after.
+- 20 generations per student per Ulaanbaatar day, one in flight, using the shared `RateLimit` compare-and-set pattern. The upload and deck are not stored on the server. Decks and per-card mastery live only in this browser, per account (`education-flashcards-v1:<userId>`), like Workspace chats and Essay Studio drafts.
+- Study flips a card with a click, Space or Up Arrow, marks it known/again with 1/2 or Left/Right Arrow, and persists the known set. Decks show a known count and can be deleted. Cards are AI drafts, not teacher-reviewed material.
+
+### Exams from a file (2026-11-09)
+
+- `/workspace/my-exams` is a Workspace rail tab, linked from the home "Шалгалтууд" heading. A student uploads a PDF, DOCX, PPTX, TXT, MD or CSV (4 MB maximum, first 45,000 characters) and chooses 10 or 20 questions in Mongolian or English. DeepSeek writes a title, four-option prompts, one key, an explanation and an optional topic per question; malformed or too-short output gets one silent retry. The JSON reader, prompt limits and malformed-question handling live in `src/modules/my-exams/contracts.ts`.
+- The server reuses the flashcards' bounded document pipeline (`src/modules/flashcards/extract.ts`): signature check, 100 PDF pages, Office ZIP bounds and text decoding. The route checks same origin, a verified session, the exact multipart shape and the no-open-sitting rule before and after the provider call. A 15-per-Ulaanbaatar-day quota with one request in flight uses the shared `RateLimit` compare-and-set; the file and the exam are never stored on the server.
+- The answer key is sealed in an AES-256-GCM token derived from `BETTER_AUTH_SECRET`, bound to the student's id as additional authenticated data, and valid for 30 days. The browser receives only the questions and the opaque token; `POST /api/workspace/my-exams/grade` opens the token server-side, grades the submitted option indexes and returns the key, explanations and score. The timer (suggested 15 or 30 minutes) is a browser study aid that auto-submits at zero; this is personal practice, not a `MockAttempt` and not a server-enforced deadline.
+- Exams live only in this browser, per account (`education-my-exams-v1:<userId>`, 20 exams). A draft keeps answers, the current question, flags and the start time, so a reload resumes the same sitting. The last result (with key and explanations), best percentage and attempt count are kept for review; deleting the exam removes all of it. `/workspace/review` lists graded mocks only, not these browser-local exams.
+- The runner has one question per page, an always-visible answer grid, flags, keyboard answers (1–4, arrows, F, Esc), a confirm step, corrective review filters and the source's math through `MathText`/KaTeX. Generated exams and explanations are AI drafts, are not teacher-reviewed, and scans are not OCR'd.
 
 ### IELTS Speaking Lab
 
@@ -474,6 +493,8 @@ rounding), vocabulary upgrades, strengths, next steps and one rewritten passage.
 | `reference/official-papers` | Withdrawn official papers, kept as a format guide only; never served, built or deployed |
 | `reference/retired-site-mocks` | Retired site mocks (the first four Mathematics forms and the old English set); never built |
 | `src/modules/workspace` | Workspace shell, home, AI chat (contract, service, browser-stored threads), review and styles |
+| `src/modules/flashcards` | Document extraction, AI card contract, browser-stored decks and the study UI |
+| `src/modules/my-exams` | Upload-to-exam contract, sealed answer token, server generation/grading, browser-stored exams and the runner |
 | `src/modules/subscriptions` | Plans, purchases, entitlements and legacy grants |
 | `src/modules/admin` | Admin services, reporting, exports and audit |
 | `src/modules/tutor` | DeepSeek prompt contracts, quotas and provider calls |
@@ -589,6 +610,11 @@ deadlines; they must never add a runtime bypass, shorten a public exam or change
   unverified.
 - AI and speech features depend on third-party models and local model caches; quality, latency and
   cost are not production-benchmarked. Provider retention is governed by the provider's terms.
+- Flashcards are generated from the uploaded text only: they can be incomplete or wrong, are not
+  teacher-reviewed, and scans or photos are not OCR'd.
+- Exams from a file are generated from the uploaded text only and are also unreviewed AI drafts. Their
+  timer, results and history are browser-local, the score is practice feedback rather than an official
+  result, and scanned documents are refused because there is no OCR.
 - Personal-data retention, account deletion policy, email deliverability and accessibility audits
   remain to be completed.
 - This is a hosted test pilot, not a production education service.

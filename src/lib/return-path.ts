@@ -3,7 +3,7 @@ import { findExam } from "@/modules/exams/definitions";
 import { findSubscriptionPlan } from "@/modules/subscriptions/plans";
 
 // Only exact known app paths survive sign-in; anything else returns to the Workspace home.
-const workspacePaths = ["/workspace", "/workspace/chat", "/workspace/review", "/workspace/workshop", "/workspace/profile", "/workspace/plans"];
+const workspacePaths = ["/workspace", "/workspace/chat", "/workspace/flashcards", "/workspace/my-exams", "/workspace/review", "/workspace/workshop", "/workspace/profile", "/workspace/plans"];
 export function safeReturnPath(value: unknown) {
   if (typeof value !== "string") return "/workspace";
   if (workspacePaths.includes(value)) return value;

@@ -95,7 +95,7 @@ export function WorkspaceChat({ userKey, firstName }: { userKey: string; firstNa
     <header className="wsp-hero"><p className="wsp-hello"><Icon name="spark" size={18} />AI туслах</p><h1>{firstName}, юуг хамт ойлгох вэ?</h1></header>
     <Composer state={composer} onChange={setComposer} onSubmit={submit} pending={pending} autoFocus />
     {error ? <p className="wsp-error" role="alert">{error}</p> : null}
-    <p className="wsp-fine">Таны мессеж DeepSeek руу илгээгдэнэ. Нэр, утас зэрэг хувийн мэдээлэл бүү бичээрэй. Чат зөвхөн энэ хөтөчид хадгалагдана. Хугацаатай шалгалтын үеэр AI хаалттай.</p>
+    <p className="wsp-fine">Таны мессеж AI руу илгээгдэнэ. Нэр, утас зэрэг хувийн мэдээлэл бүү бичээрэй. Чат зөвхөн энэ хөтөчид хадгалагдана. Хугацаатай шалгалтын үеэр AI хаалттай.</p>
     <section className="wsp-section" aria-labelledby="chat-ideas"><div className="wsp-section-head"><h2 id="chat-ideas">Эхлэх санаа</h2></div>
       <div className="wsp-suggestions">{suggestions.map(item => <button key={item.title} type="button" className="wsp-suggestion" disabled={pending} onClick={() => void send(item.text, { mode: item.mode, subject: item.subject, language: composer.language })}>
         <span className="wsp-tag tone-blue">{subjectLabels[item.subject]}</span><strong>{item.title}</strong><span>{item.text}</span>
@@ -119,7 +119,7 @@ export function WorkspaceChat({ userKey, firstName }: { userKey: string; firstNa
     </div>
     <div className="wsp-dock">
       <Composer state={composer} onChange={setComposer} onSubmit={submit} pending={pending} docked autoFocus />
-      <p className="wsp-fine">DeepSeek-ээр хариулна · Зөвхөн энэ хөтөчид хадгалагдана · Албан ёсны оноо биш</p>
+      <p className="wsp-fine">Зөвхөн энэ хөтөчид хадгалагдана · Албан ёсны оноо биш</p>
     </div>
   </div>;
 }

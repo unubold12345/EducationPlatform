@@ -23,7 +23,7 @@ export function AiAssistant({target,review=false,label}:{target:TutorTarget;revi
   return <AssistantButton turns={turns} setTurns={setTurns} config={{
     url:"/api/math-tutor",payload:{target},label,
     greeting:review?"Энэ бодлогын хариугаа хамт ойлгоё. Юу нь эргэлзээтэй байна?":"Сайн уу! Энэ бодлогоор хаана гацаж байна?",
-    note:"Илгээхэд энэ бодлого, таны хариу DeepSeek руу очно.",
+    note:"Илгээхэд энэ бодлого, таны хариу AI руу очно.",
     suggestions:[[review?"review":"hint",review?"Алдаагаа тайлбарлуулах":"Санаа өгөх"],["explain","Алхам алхмаар"],["followup","Бататгах асуулт"]],
   }}/>;
 }

@@ -63,7 +63,7 @@ export default async function WorkspaceHome() {
     </section>
 
     <section className="wsp-section" aria-labelledby="home-exams">
-      <div className="wsp-section-head"><h2 id="home-exams">Шалгалтууд</h2><Link className="wsp-link" href="/exams">Бүгдийг харах</Link></div>
+      <div className="wsp-section-head"><h2 id="home-exams">Шалгалтууд</h2><span className="wsp-section-actions"><Link className="wsp-link" href="/workspace/my-exams"><Icon name="fileExam" size={15} />Файлаас шалгалт</Link><Link className="wsp-link" href="/exams">Бүгдийг харах</Link></span></div>
       <div className="wsp-cards">{programs.map(item => <Link key={item.program} href={item.href} className="wsp-card">
         <span className={"wsp-card-art " + item.tone}><ProgramArt program={item.program} /></span>
         <strong>{item.label}</strong>

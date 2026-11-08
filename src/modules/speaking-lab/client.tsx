@@ -482,7 +482,7 @@ export function SpeakingLab({signedIn}:{signedIn:boolean}) {
     </div>
    </details>
    <div className="sl-consents">
-    <label><input type="checkbox" checked={consent} onChange={event=>setConsent(event.target.checked)}/>My answers (as text) are sent to DeepSeek to generate replies and feedback. I won’t share personal details.</label>
+    <label><input type="checkbox" checked={consent} onChange={event=>setConsent(event.target.checked)}/>My answers (as text) are sent to an AI service to generate replies and feedback. I won’t share personal details.</label>
     <label><input type="checkbox" checked={micConsent} disabled={!micSupported} onChange={event=>toggleMicConsent(event.target.checked)}/>Use my microphone. Recordings are sent to the application server for transcription and never saved.</label>
     {!micSupported&&<small>Microphone recording isn’t available in this browser — try Chrome or Edge, or type your answers.</small>}
    </div>

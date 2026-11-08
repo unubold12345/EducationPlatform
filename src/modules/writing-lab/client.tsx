@@ -211,7 +211,7 @@ export function WritingStudio({signedIn}:{signedIn:boolean}) {
       </div>}
      </>}
     </div>
-    <p className={styles.note}>Илгээхэд даалгавар, бичвэр тань DeepSeek руу очно. Band нь албан ёсны IELTS үнэлгээ биш, дадлагын тооцоо.</p>
+    <p className={styles.note}>Илгээхэд даалгавар, бичвэр тань AI руу очно. Band нь албан ёсны IELTS үнэлгээ биш, дадлагын тооцоо.</p>
    </aside>
   </div>
 

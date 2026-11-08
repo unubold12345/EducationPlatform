@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 type DemoAccount = { name: string; email: string; password: string };
-export function AuthForm({ register, nextPath = "/dashboard", demoAccounts = [], hostedDemo = false, googleEnabled = false, verificationRequired = false }: { register: boolean; nextPath?: string; demoAccounts?: DemoAccount[]; hostedDemo?: boolean; googleEnabled?: boolean; verificationRequired?: boolean }) {
+export function AuthForm({ register, nextPath = "/workspace", demoAccounts = [], hostedDemo = false, googleEnabled = false, verificationRequired = false }: { register: boolean; nextPath?: string; demoAccounts?: DemoAccount[]; hostedDemo?: boolean; googleEnabled?: boolean; verificationRequired?: boolean }) {
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
   const router = useRouter();
@@ -67,7 +67,7 @@ export function AuthForm({ register, nextPath = "/dashboard", demoAccounts = [],
     </fieldset>
     {error ? <p role="alert" className="error-message">{error}</p> : null}
     {!register && <p className="auth-switch"><Link href="/forgot-password">Нууц үгээ мартсан уу?</Link></p>}
-    <p className="auth-switch">{register ? "Бүртгэлтэй юу? " : "Шинээр эхлэх үү? "}<Link href={(register ? "/login" : "/register") + (nextPath === "/dashboard" ? "" : "?next=" + encodeURIComponent(nextPath))}>{register ? "Нэвтрэх" : "Бүртгүүлэх"}</Link></p>
+    <p className="auth-switch">{register ? "Бүртгэлтэй юу? " : "Шинээр эхлэх үү? "}<Link href={(register ? "/login" : "/register") + (nextPath === "/workspace" ? "" : "?next=" + encodeURIComponent(nextPath))}>{register ? "Нэвтрэх" : "Бүртгүүлэх"}</Link></p>
   </form>;
 }
 

@@ -18,7 +18,7 @@ with sync_playwright() as p:
     expect(page.locator(".account-entry")).to_have_attribute("href","/login")
     assert context.request.post(BASE+"/api/mock-payments",headers=ORIGIN,data={"slug":"sat-full-01"}).status==401
     page.goto(BASE+"/exams")
-    expect(page.locator(".library-list .exam-price strong")).to_have_text(["₮10,000"] * 3)
+    expect(page.locator(".library-list .exam-price strong")).to_have_text(["₮10,000"] * 4)
     page.goto(BASE+"/checkout/sat-full-01")
     expect(page).to_have_url(BASE+"/login?next=%2Fcheckout%2Fsat-full-01")
     page.get_by_role("link",name="Бүртгүүлэх",exact=True).click()
@@ -30,8 +30,8 @@ with sync_playwright() as p:
     page.get_by_label("Нууц үг",exact=True).fill(password)
     page.get_by_role("button",name="Бүртгүүлэх",exact=True).click()
     expect(page).to_have_url(BASE+"/checkout/sat-full-01",timeout=20000)
-    expect(page.locator(".account-entry")).to_have_text("Миний профайл")
-    expect(page.locator(".account-entry")).to_have_attribute("href","/profile")
+    # Signed in, the site header shows no profile button; the profile is in the Workspace.
+    expect(page.locator(".account-entry")).to_have_count(0)
     expect(page.locator(".mock-payment-notice")).to_contain_text("Бодит мөнгө суутгахгүй")
     assert page.locator(".checkout-panel input").count()==0
     assert context.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"sat-full-01"}).status==402
@@ -67,7 +67,9 @@ with sync_playwright() as p:
     expect(page.locator(".checkout-success")).to_contain_text("Бодит мөнгө суутгаагүй")
     page.screenshot(path=str(ART/"mock-checkout-paid.png"),full_page=True)
     page.goto(BASE+"/dashboard")
-    expect(page.locator(".learning-stats strong")).to_have_text(["0","0"])
+    expect(page).to_have_url(BASE+"/workspace")
+    expect(page.locator('[data-stat="completed"] strong')).to_have_text("0")
+    expect(page.locator('[data-stat="open"] strong')).to_have_text("0")
     assert context.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"ielts-academic-01"}).status==402
     sat=context.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"sat-full-01"})
     assert sat.status==200
@@ -77,7 +79,7 @@ with sync_playwright() as p:
     page.goto(BASE+"/checkout/ielts-academic-01")
     page.get_by_role("button",name="Туршилтаар төлөх",exact=False).click()
     expect(page.locator(".checkout-success")).to_be_visible()
-    page.goto(BASE+"/profile")
+    page.goto(BASE+"/workspace/profile")
     page.get_by_role("tab",name="Багц ба эрх",exact=True).click()
     expect(page.locator(".purchase-row")).to_have_count(2)
     page.screenshot(path=str(ART/"profile-exam-access.png"),full_page=True)

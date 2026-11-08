@@ -29,7 +29,7 @@ with sync_playwright() as p:
     errors=[]
     page.on("pageerror",lambda e:errors.append(str(e)))
     page.goto(BASE+"/exams")
-    expect(page.locator(".library-list .exam-card")).to_have_count(3)
+    expect(page.locator(".library-list .exam-card")).to_have_count(4)
     for program,prefix in [("sat","sat-full"),("ielts","ielts-academic")]:
         page.goto(BASE+"/exams/"+program)
         expect(page.locator(".mock-variant")).to_have_count(6)

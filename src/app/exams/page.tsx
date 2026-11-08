@@ -8,8 +8,8 @@ import "./library.css";
 export const metadata:Metadata={title:"Бүтэн шалгалтууд"};
 
 type Programme = {
-  id: "sat" | "ielts" | "eesh";
-  tone: "sat" | "ielts" | "entrance";
+  id: "sat" | "ielts" | "eesh" | "jlpt";
+  tone: "sat" | "ielts" | "entrance" | "jlpt";
   kicker: string;
   title: string;
   copy: string;
@@ -53,10 +53,13 @@ export default async function ExamsPage(){
       ],
       count:entranceTotal,href:"/exams/eesh",cta:"Бүх 155 mock",plan:"University Prep",
     },
+    {id:"jlpt",tone:"jlpt",kicker:"日本語能力試験",title:"JLPT N5・N4",
+      copy:"Түвшин бүрт 3 mock. Үгийн сан, хэлзүй, унших ба япон аудиотой сонсох хэсэг. Алдсан чадвараа цаггүй давтаарай.",
+      facts:[{label:"Агуулга",value:"N5 · 67 / N4 · 85 асуулт"},{label:"Хугацаа",value:"N5 · 90м / N4 · 115м"}],
+      chips:["語彙","文法・読解","聴解"],count:6,href:"/exams/jlpt",cta:"Түвшин сонгох",plan:"Нэг mock-ийн эрх"},
   ];
   return <div className="container page-space library-page">
-    <div className="library-topline"><span className="eyebrow">ШАЛГАЛТЫН САН · 2026</span><Link className="text-link" href="/dashboard">Миний бэлтгэл ↗</Link></div>
-    <h1 className="sr-only">Бүтэн шалгалтууд</h1>
+    <header className="wsp-page-head library-head"><div><h1>Шалгалтууд</h1><p>SAT, IELTS, ЭЕШ, JLPT-ийн бүтэн mock. Цагтай шалгалтаар өөрийгөө шалгах эсвэл цаггүй, AI туслахтай дадлагаар бэлдээрэй.</p></div><Link className="wsp-link" href="/workspace/review">Миний үр дүн →</Link></header>
 
     <section className="exam-grid library-list" aria-label="Шалгалтын хөтөлбөрүүд">
       {programmes.map(item => <article className={"exam-card "+item.tone} id={item.id} key={item.id} aria-labelledby={item.id+"-title"}>
@@ -72,8 +75,8 @@ export default async function ExamsPage(){
     </section>
 
     <footer className="library-note">
-      <p>Бүх даалгаврыг энэ сайтад зориулж зохиосон; College Board, IELTS, БҮТ-ийн албан материал биш. SAT, IELTS-ийн албан оноо, band тооцохгүй.</p>
-      <div><Link className="text-link" href="/plans">Сарын багцууд →</Link><Link className="text-link" href="/programs">Хөтөлбөрүүд →</Link></div>
+      <p>Бүх даалгаврыг энэ сайтад зориулж зохиосон; College Board, IELTS, JLPT, БҮТ-ийн албан материал биш. SAT, IELTS-ийн албан оноо, band тооцохгүй.</p>
+      <div><Link className="text-link" href="/workspace/plans">Сарын багцууд →</Link><Link className="text-link" href="/programs">Хөтөлбөрүүд →</Link></div>
     </footer>
   </div>;
 }

@@ -20,7 +20,7 @@ type Props = {
   onChange: (id: string, value: string) => void; onFlag: (id: string) => void;
 };
 
-function Player({ attemptId, slug, elapsed }: { attemptId: string; slug: string; elapsed: number | null }) {
+export function LockedListeningPlayer({ attemptId, slug, elapsed }: { attemptId: string; slug: string; elapsed: number | null }) {
   const lengths = listeningParts(slug);
   const { part, offset, ended } = elapsed === null ? { part: lengths.length, offset: lengths[lengths.length - 1], ended: true } : listeningPosition(slug, elapsed);
   const audio = useRef<HTMLAudioElement>(null), position = useRef(offset);
@@ -81,7 +81,7 @@ export function ListeningSection({ attemptId, slug, stage, elapsed, answers, fla
       </nav>
 
       <section className={styles.work} aria-labelledby="listening-part-title">
-        <Player attemptId={attemptId} slug={slug} elapsed={elapsed} />
+        <LockedListeningPlayer attemptId={attemptId} slug={slug} elapsed={elapsed} />
         <p className={styles.note} role="status">{elapsed === null ? "Бичлэг дууссан. Хугацаа дуустал хариултаа шалгаж засна уу." : "Нэг удаагийн бичлэг · Зогсоох, буцаах боломжгүй · Refresh хийвэл өнгөрсөн хугацаанаас үргэлжилнэ."}</p>
 
         <div className={styles.questions}>

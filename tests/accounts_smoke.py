@@ -17,22 +17,40 @@ with sync_playwright() as p:
     page = context.new_page()
     errors = []
     page.on("pageerror", lambda error: errors.append(str(error)))
+    page.add_init_script("""window.sawGuestRail = false;
+      new MutationObserver(records => {
+        for (const record of records) for (const node of record.addedNodes) {
+          if (node.nodeType === 1 && (node.matches('.wsp-side') || node.querySelector('.wsp-side'))) window.sawGuestRail = true;
+        }
+      }).observe(document, {childList:true, subtree:true});""")
+    # Client navigation and direct loads must never insert a guest sidebar before redirecting.
+    page.goto(BASE)
+    page.locator('.site-header a[href="/workspace"]').click()
+    expect(page).to_have_url(BASE + "/login?next=%2Fworkspace")
+    assert not page.evaluate('window.sawGuestRail'), 'Guest Workspace rail flashed during navigation'
+    for protected in ['/workspace', '/workspace/chat', '/workspace/review', '/workspace/profile']:
+        page.goto(BASE + protected)
+        page.wait_for_url('**/login?next=**')
+        assert not page.evaluate('window.sawGuestRail'), ('Guest Workspace rail flashed', protected)
     assert context.request.post(BASE + "/api/mock-attempts", headers=ORIGIN, data={"slug": "sat-full-01"}).status == 401
     assert context.request.post(BASE + "/api/mock-attempts", headers={"Origin": "https://untrusted.invalid"}, data={"slug": "sat-full-01"}).status == 403
+    # The old dashboard address now opens the Workspace, which asks a guest to sign in first.
     page.goto(BASE + "/dashboard")
-    expect(page).to_have_url(BASE + "/login")
+    expect(page).to_have_url(BASE + "/login?next=%2Fworkspace")
     page.get_by_role("link", name="Бүртгүүлэх", exact=True).click()
     page.mouse.move(0, 0)
     page.get_by_label("Нэр", exact=True).fill("Туршилтын сурагч")
     page.get_by_label("Имэйл", exact=True).fill(email)
     page.get_by_label("Нууц үг", exact=True).fill(password)
     page.get_by_role("button", name="Бүртгүүлэх", exact=True).click()
-    expect(page).to_have_url(BASE + "/dashboard", timeout=20000)
-    expect(page.get_by_role("heading", name="Сайн уу, Туршилтын сурагч.")).to_be_visible()
+    expect(page).to_have_url(BASE + "/workspace", timeout=20000)
+    expect(page.get_by_role("heading", name="Өнөөдөр юу сурах вэ?")).to_be_visible()
+    expect(page.locator(".wsp-hello")).to_have_text("Сайн уу, Туршилтын сурагч")
     # A new account has an empty history that points at the exams, and no paid access.
-    expect(page.locator(".db-next")).to_contain_text("Түүх хоосон байна")
-    expect(page.locator('.db-next a[href="/exams"]')).to_be_visible()
-    expect(page.locator(".learning-stats strong")).to_have_text(["0", "0"])
+    expect(page.locator('[data-empty="history"]')).to_contain_text("Түүх хоосон байна")
+    expect(page.locator('[data-empty="history"] a[href="/exams"]')).to_be_visible()
+    expect(page.locator('[data-stat="completed"] strong')).to_have_text("0")
+    expect(page.locator('[data-stat="open"] strong')).to_have_text("0")
     assert context.request.post(BASE + "/api/mock-attempts", headers=ORIGIN, data={"slug": "sat-full-01"}).status == 402
     page.screenshot(path=str(artifacts / "dashboard-desktop.png"), full_page=True)
     session = context.request.get(BASE + "/api/auth/get-session")
@@ -47,16 +65,16 @@ with sync_playwright() as p:
     expect(page.locator('.error-message[role="alert"]')).to_be_visible()
     page.get_by_label("Нууц үг", exact=True).fill(password)
     page.get_by_role("button", name="Нэвтрэх", exact=True).click()
-    expect(page).to_have_url(BASE + "/dashboard")
-    expect(page.get_by_role("heading", name="Сайн уу, Туршилтын сурагч.")).to_be_visible()
+    expect(page).to_have_url(BASE + "/workspace")
+    expect(page.locator(".wsp-hello")).to_have_text("Сайн уу, Туршилтын сурагч")
     for width in [390, 320]:
         page.set_viewport_size({"width": width, "height": 844})
-        for path in ["/", "/dashboard", "/profile"]:
+        for path in ["/", "/workspace", "/workspace/profile"]:
             page.goto(BASE + path)
             page.wait_for_load_state("networkidle")
             assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth"), (width,path)
         if width == 390:
-            page.goto(BASE + "/dashboard")
+            page.goto(BASE + "/workspace")
             page.screenshot(path=str(artifacts / "dashboard-mobile.png"), full_page=True)
     # Fresh logged-out form screenshots and layout checks.
     mobile = browser.new_context(viewport={"width":320,"height":844}, reduced_motion="reduce")

@@ -3,7 +3,7 @@ import type { ExamFigure } from "../exams/types";
 export type PracticeKind = "choice" | "number" | "short" | "essay" | "speaking";
 export type PracticeSectionKind = "questions" | "listening" | "writing" | "speaking";
 /** ЭЕШ Mathematics, Physics and English are the imported set; SAT and IELTS are the international papers. */
-export type PracticeSubject = "sat" | "ielts" | "eesh-math" | "eesh-physics" | "eesh-english";
+export type PracticeSubject = "sat" | "ielts" | "jlpt" | "eesh-math" | "eesh-physics" | "eesh-english";
 
 export type PracticeQuestion = {
   id: string; section: string; label: string; domain: string; kind: PracticeKind;
@@ -27,7 +27,7 @@ export type PracticeForm = {
 };
 /** Stored per question at its first check. `correct` is null for work a person has to review. */
 export type PracticeResult = { correct: boolean | null };
-export type PracticeReveal = PracticeResult & { answer: string; explanation: string; transcript?: string; points?: number };
+export type PracticeReveal = PracticeResult & { answer: string; answerValue?: string; explanation: string; transcript?: string; points?: number };
 export type PracticeProgress = { responses: Record<string, string>; flags: string[]; results: Record<string, PracticeResult> };
 export type PracticeView = { form: PracticeForm; responses: Record<string, string>; flags: string[]; reveals: Record<string, PracticeReveal> };
 export type PracticeEdit = { responses?: Record<string, string>; flags?: string[]; retry?: string[] };

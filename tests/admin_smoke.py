@@ -31,7 +31,7 @@ with sync_playwright() as p:
     admin=browser.new_context(viewport={"width":1440,"height":1000},color_scheme="light")
     assert admin.request.post(BASE+"/api/auth/sign-in/email",headers=ORIGIN,data={"email":demos[0]["email"],"password":demos[0]["password"]}).ok
     page=admin.new_page();errors=[];page.on("pageerror",lambda error:errors.append(str(error)))
-    page.goto(BASE+"/profile");page.get_by_role("link",name="Удирдлагын төв",exact=True).click()
+    page.goto(BASE+"/workspace/profile");page.get_by_role("link",name="Удирдлагын төв",exact=True).click()
     expect(page.get_by_role("heading",name="Удирдлагын төв",exact=False)).to_be_visible()
     page.screenshot(path=str(ART/"admin-overview-light.png"),full_page=True)
     for tab in ["users","subscriptions","payments","attempts","content","pricing","audit","settings"]:
@@ -114,16 +114,16 @@ with sync_playwright() as p:
     assert student.request.post(BASE+"/api/auth/sign-in/email",headers=ORIGIN,data={"email":email,"password":password}).ok
     page.goto(BASE+"/admin/users/"+target+"?view=activity");expect(page.locator(".admin-table-wrap tbody")).to_contain_text("Нэвтэрсэн")
     page.goto(BASE+"/admin/users/"+target+"?view=admin");expect(page.locator(".admin-table-wrap tbody")).to_contain_text("unsuspend")
-    # Prices: validated, audited, shown on /plans and used for new orders; restored afterwards.
+    # Prices: validated, audited, shown on /workspace/plans and used for new orders; restored afterwards.
     for bad in [{"amount":999},{"amount":45050},{"amount":"45000"},{"amount":45000,"target":"all"}]:
         assert admin.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":"set-price","target":"sat","reason":"Invalid price check",**bad}).status==400,bad
     def price(value,reason):
         r=admin.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":"set-price","target":"sat","amount":value,"reason":reason});assert r.ok,(r.status,r.text())
     price(45500,"Local price change verification")
-    page.goto(BASE+"/plans");expect(page.locator("main")).to_contain_text("45,500")
+    page.goto(BASE+"/workspace/plans");expect(page.locator("main")).to_contain_text("45,500")
     page.goto(BASE+"/admin?tab=pricing");expect(page.locator(".admin-table-wrap tbody tr").first).to_contain_text("₮45,500")
     price(60000,"Local price restored after verification")
-    page.goto(BASE+"/plans");expect(page.locator("main")).to_contain_text("60,000")
+    page.goto(BASE+"/workspace/plans");expect(page.locator("main")).to_contain_text("60,000")
     # Single-question fix publishes a new version through validation; invalid fixes are refused.
     detail=admin.request.get(BASE+"/api/admin/content/sat-full-01").json()
     revision=(detail["draft"] or {}).get("revision",0)

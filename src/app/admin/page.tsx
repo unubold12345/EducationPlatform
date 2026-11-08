@@ -20,7 +20,7 @@ const StatusLabelText=({status}:{status:string})=>statusLabel(status);
 
 export default async function AdminPage({searchParams}:{searchParams:Promise<Record<string,string|string[]|undefined>>}) {
   const session=await getSession();if(!session)redirect("/login?next=%2Fadmin");
-  if(!await isAdmin(session.user.id))return <div className="container page-space"><p className="eyebrow">403 · ХАНДАЛТ ХЯЗГААРЛАГДСАН</p><h1>Админ эрх шаардлагатай.</h1><p>Энэ бүртгэл удирдлагын эрхгүй байна.</p><Link className="button primary" href="/dashboard">Миний бэлтгэл рүү</Link></div>;
+  if(!await isAdmin(session.user.id))return <div className="container page-space"><p className="eyebrow">403 · ХАНДАЛТ ХЯЗГААРЛАГДСАН</p><h1>Админ эрх шаардлагатай.</h1><p>Энэ бүртгэл удирдлагын эрхгүй байна.</p><Link className="button primary" href="/workspace">Workspace руу</Link></div>;
   const params=await searchParams;
   const tab:AdminTab=adminTabs.some(([key])=>key===params.tab)?params.tab as AdminTab:"overview";
   const q=one(params.q).trim().slice(0,100);

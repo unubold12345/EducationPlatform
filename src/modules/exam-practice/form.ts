@@ -92,7 +92,19 @@ export function mockPractice(definition: ExamDefinition): PracticeSource {
     });
   }
   const entrance = definition.program === "entrance";
-  if (entrance) {
+  if (definition.program === "jlpt") {
+    for (const stage of definition.stages) for (const group of stage.groups ?? []) {
+      const list = stage.questions.filter(question=>question.groupId===group.id);
+      sections.push({id:group.id,title:group.title,kind:stage.kind==="listening"?"listening":"questions",math:false,
+        hint:stage.kind==="listening"?"Япон бичлэгийг дахин сонсож болно. Шалгасны дараа текст нээгдэнэ.":"1–4 сонгох · Enter шалгах · Алдсан асуултаа шүүж дахин ажиллаарай."});
+      for (const question of list) {
+        authored.set(question.id,question);
+        const {id,number,domain,prompt,passage,options,kind,optionLabels}=question;
+        questions.push({id,section:group.id,label:number!,domain,prompt,passage,options,kind,optionLabels,points:1,
+          instructions:group.instructions,...(question.listening?{audioPart:question.listening.part}:{})});
+      }
+    }
+  } else if (entrance) {
     const stage = definition.stages[0];
     const built = entranceSections(stage, definition.subject === "english");
     sections.push(...built.sections);
@@ -117,6 +129,7 @@ export function mockPractice(definition: ExamDefinition): PracticeSource {
   };
   const partOf = (id: string) => questions.find(question => question.id === id)?.audioPart;
   const transcriptFor = (id: string) => {
+    if (definition.program === "jlpt") return authored.get(id)?.listening?.script;
     const part = partOf(id);
     return part ? transcripts[part - 1] : undefined;
   };
@@ -126,7 +139,7 @@ export function mockPractice(definition: ExamDefinition): PracticeSource {
     reveal(id, result) {
       const question = questionFor(id);
       const transcript = transcriptFor(id);
-      return { ...result, answer: question.answerDisplay ?? question.answers.join(" / "), explanation: question.explanation, points: pointsOf(question), ...(transcript ? { transcript } : {}) };
+      return { ...result, answer: question.answerDisplay ?? question.answers.join(" / "), ...(definition.program==="jlpt"?{answerValue:question.answers[0]}:{}), explanation: question.explanation, points: pointsOf(question), ...(transcript ? { transcript } : {}) };
     },
     material(id) {
       const question = questionFor(id);

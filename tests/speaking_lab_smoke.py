@@ -47,8 +47,8 @@ with sync_playwright() as p:
  page.wait_for_selector('.speaking-avatar[data-ready="true"]',timeout=30000)
  expect(page.locator('.speaking-avatar svg')).to_be_visible()
  # Partner picker: choosing a partner changes the drawing, name and voice preview.
- page.get_by_role('radio',name='George, British').click();expect(page.locator('.sl-stage-top strong')).to_have_text('George')
- expect(page.get_by_role('button',name='▶ Hear George')).to_be_visible()
+ page.get_by_role('radio',name='Michael, American').click();expect(page.locator('.sl-stage-top strong')).to_have_text('Michael')
+ expect(page.get_by_role('button',name='▶ Hear Michael')).to_be_visible()
  page.get_by_role('radio',name='Ava, American').click();expect(page.locator('.sl-stage-top strong')).to_have_text('Ava')
  # Guards before any provider use.
  assert context.request.post(BASE+'/api/labs/ielts-speaking',headers={'Origin':'https://untrusted.invalid'},data=START).status==403

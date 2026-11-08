@@ -50,6 +50,7 @@ export function EntranceResults({ attempt }: { attempt: PublicExamAttempt }) {
 
     <div className="eesh-result-actions">
       <Link className="button" href={`/exams/${attempt.slug}/practice`}>Цаггүй дадлага →</Link>
+      <Link className="eesh-result-link" href={`/workspace/review/${attempt.id}`}>AI-тай задлах →</Link>
       <Link className="eesh-result-link" href={`/exams/eesh?subject=${subject}`}>Бусад ЭЕШ mock →</Link>
     </div>
 

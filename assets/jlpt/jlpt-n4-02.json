@@ -1,0 +1,2471 @@
+{
+  "slug": "jlpt-n4-02",
+  "version": 1,
+  "program": "jlpt",
+  "title": "JLPT N4 · Mock 02",
+  "description": "Travel, part-time work and shared facilities",
+  "points": 85,
+  "notes": [
+    "Албан бус, эх зохиомжтой дадлагын mock. Япон хэлний багшийн хяналт хүлээгдэж байна.",
+    "Listening нь хиймэл япон дуу хоолойтой. Зургийн оронд нөхцөлийн текст ашигласан.",
+    "Raw зөв хариултын тоо; JLPT-ийн 180 оноо, тэнцсэн эсэхийг тооцохгүй."
+  ],
+  "sources": [
+    {
+      "label": "JLPT · албан бүтэц",
+      "url": "https://www.jlpt.jp/e/guideline/testsections.html"
+    },
+    {
+      "label": "JLPT · шинэчилсэн бүтэц",
+      "url": "https://www.jlpt.jp/e/topics/202009091599642827.html"
+    }
+  ],
+  "stages": [
+    {
+      "id": "jlpt-v",
+      "title": "文字・語彙 · Үгийн сан",
+      "kind": "questions",
+      "seconds": 1500,
+      "instructions": "Нэг зөв хариу сонгоно. ★ нь гурав дахь хоосон зай. Одоогийн хэсэг дотор чөлөөтэй шилжинэ. Цаг дуусахад дараагийн хэсэг автоматаар эхэлнэ.",
+      "groups": [
+        {
+          "id": "jlpt-v-1",
+          "title": "漢字の読み · Ханзын уншлага",
+          "section": "漢字の読み · Ханзын уншлага",
+          "instructions": "【　】の ことばは どう よみますか。",
+          "pageMode": "single"
+        },
+        {
+          "id": "jlpt-v-2",
+          "title": "表記 · Зөв бичлэг",
+          "section": "表記 · Зөв бичлэг",
+          "instructions": "【　】の ことばは どう かきますか。",
+          "pageMode": "single"
+        },
+        {
+          "id": "jlpt-v-3",
+          "title": "文脈 · Үг сонгох",
+          "section": "文脈 · Үг сонгох",
+          "instructions": "（　）に 入る いちばん いい ことばを えらんでください。",
+          "pageMode": "single"
+        },
+        {
+          "id": "jlpt-v-4",
+          "title": "言い換え · Ижил утга",
+          "section": "言い換え · Ижил утга",
+          "instructions": "【　】の 文と だいたい 同じ いみの 文を えらんでください。",
+          "pageMode": "single"
+        },
+        {
+          "id": "jlpt-v-5",
+          "title": "用法 · Үгийн хэрэглээ",
+          "section": "用法 · Үгийн хэрэглээ",
+          "instructions": "ことばの 使い方が 正しい 文を えらんでください。",
+          "pageMode": "single"
+        }
+      ],
+      "questions": [
+        {
+          "id": "N4-02-V01",
+          "number": "V01",
+          "domain": "漢字の読み · Ханзын уншлага",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-1",
+          "prompt": "【空港】まで バスで 行きます。",
+          "options": [
+            "くこう",
+            "くうごう",
+            "くうこう",
+            "そらこう"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "くうこう"
+          ],
+          "answerDisplay": "3. くうこう",
+          "explanation": "空港 is read くうこう."
+        },
+        {
+          "id": "N4-02-V02",
+          "number": "V02",
+          "domain": "漢字の読み · Ханзын уншлага",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-1",
+          "prompt": "【住所】を 書いてください。",
+          "options": [
+            "じょうしょ",
+            "じゅうじょ",
+            "じゅうしょ",
+            "じゅしょ"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "じゅうしょ"
+          ],
+          "answerDisplay": "3. じゅうしょ",
+          "explanation": "住所 is read じゅうしょ."
+        },
+        {
+          "id": "N4-02-V03",
+          "number": "V03",
+          "domain": "漢字の読み · Ханзын уншлага",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-1",
+          "prompt": "この 店は 【有名】です。",
+          "options": [
+            "うめい",
+            "ゆうめい",
+            "ゆめい",
+            "ゆうみょう"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "ゆうめい"
+          ],
+          "answerDisplay": "2. ゆうめい",
+          "explanation": "有名 is read ゆうめい."
+        },
+        {
+          "id": "N4-02-V04",
+          "number": "V04",
+          "domain": "漢字の読み · Ханзын уншлага",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-1",
+          "prompt": "【台風】が 近づいています。",
+          "options": [
+            "だいふ",
+            "だいふう",
+            "たいふう",
+            "たいふ"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "たいふう"
+          ],
+          "answerDisplay": "3. たいふう",
+          "explanation": "台風 is read たいふう."
+        },
+        {
+          "id": "N4-02-V05",
+          "number": "V05",
+          "domain": "漢字の読み · Ханзын уншлага",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-1",
+          "prompt": "【工場】を 見学しました。",
+          "options": [
+            "こうしょう",
+            "こうばあ",
+            "こじょう",
+            "こうじょう"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "こうじょう"
+          ],
+          "answerDisplay": "4. こうじょう",
+          "explanation": "In this compound 工場 is read こうじょう."
+        },
+        {
+          "id": "N4-02-V06",
+          "number": "V06",
+          "domain": "漢字の読み · Ханзын уншлага",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-1",
+          "prompt": "荷物を 【運びます】。",
+          "options": [
+            "ならびます",
+            "えらびます",
+            "ころびます",
+            "はこびます"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "はこびます"
+          ],
+          "answerDisplay": "4. はこびます",
+          "explanation": "運ぶ is read はこぶ."
+        },
+        {
+          "id": "N4-02-V07",
+          "number": "V07",
+          "domain": "漢字の読み · Ханзын уншлага",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-1",
+          "prompt": "【夕方】には 帰ります。",
+          "options": [
+            "ゆうかた",
+            "ゆがた",
+            "ゆうがた",
+            "ゆうほう"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "ゆうがた"
+          ],
+          "answerDisplay": "3. ゆうがた",
+          "explanation": "夕方 is read ゆうがた."
+        },
+        {
+          "id": "N4-02-V08",
+          "number": "V08",
+          "domain": "表記 · Зөв бичлэг",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-2",
+          "prompt": "【じゅんび】は 終わりました。",
+          "options": [
+            "準備",
+            "準部",
+            "純備",
+            "順備"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "準備"
+          ],
+          "answerDisplay": "1. 準備",
+          "explanation": "じゅんび is 準備."
+        },
+        {
+          "id": "N4-02-V09",
+          "number": "V09",
+          "domain": "表記 · Зөв бичлэг",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-2",
+          "prompt": "バスが 【とうちゃく】しました。",
+          "options": [
+            "倒着",
+            "到着",
+            "登着",
+            "当着"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "到着"
+          ],
+          "answerDisplay": "2. 到着",
+          "explanation": "とうちゃく is 到着."
+        },
+        {
+          "id": "N4-02-V10",
+          "number": "V10",
+          "domain": "表記 · Зөв бичлэг",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-2",
+          "prompt": "それは 大切な 【けいけん】です。",
+          "options": [
+            "経験",
+            "軽験",
+            "経険",
+            "径験"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "経験"
+          ],
+          "answerDisplay": "1. 経験",
+          "explanation": "けいけん is 経験."
+        },
+        {
+          "id": "N4-02-V11",
+          "number": "V11",
+          "domain": "表記 · Зөв бичлэг",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-2",
+          "prompt": "この 道は 【きけん】です。",
+          "options": [
+            "危検",
+            "危険",
+            "気険",
+            "期験"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "危険"
+          ],
+          "answerDisplay": "2. 危険",
+          "explanation": "きけん is 危険."
+        },
+        {
+          "id": "N4-02-V12",
+          "number": "V12",
+          "domain": "表記 · Зөв бичлэг",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-2",
+          "prompt": "駅の 【ちかく】に 住んでいます。",
+          "options": [
+            "若く",
+            "近く",
+            "遠く",
+            "低く"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "近く"
+          ],
+          "answerDisplay": "2. 近く",
+          "explanation": "ちかく is 近く."
+        },
+        {
+          "id": "N4-02-V13",
+          "number": "V13",
+          "domain": "文脈 · Үг сонгох",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-3",
+          "prompt": "バスが 来るまで、ここで （　）いましょう。",
+          "options": [
+            "落として",
+            "送って",
+            "止めて",
+            "待って"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "待って"
+          ],
+          "answerDisplay": "4. 待って",
+          "explanation": "Wait until the bus arrives."
+        },
+        {
+          "id": "N4-02-V14",
+          "number": "V14",
+          "domain": "文脈 · Үг сонгох",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-3",
+          "prompt": "この シャツは 私には 大きいので、妹に （　）。",
+          "options": [
+            "あげます",
+            "いただきます",
+            "くれます",
+            "もらいます"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "あげます"
+          ],
+          "answerDisplay": "1. あげます",
+          "explanation": "The speaker gives an item to someone else: あげる."
+        },
+        {
+          "id": "N4-02-V15",
+          "number": "V15",
+          "domain": "文脈 · Үг сонгох",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-3",
+          "prompt": "部長は 会議中です。しばらくしてから （　）電話してください。",
+          "options": [
+            "ほとんど",
+            "ぜんぜん",
+            "決して",
+            "もう一度"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "もう一度"
+          ],
+          "answerDisplay": "4. もう一度",
+          "explanation": "Call once more after some time."
+        },
+        {
+          "id": "N4-02-V16",
+          "number": "V16",
+          "domain": "文脈 · Үг сонгох",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-3",
+          "prompt": "冷蔵庫が （　）ので、修理を お願いしました。",
+          "options": [
+            "こわれた",
+            "われた",
+            "つかれた",
+            "ぬれた"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "こわれた"
+          ],
+          "answerDisplay": "1. こわれた",
+          "explanation": "An appliance breaks: こわれる."
+        },
+        {
+          "id": "N4-02-V17",
+          "number": "V17",
+          "domain": "文脈 · Үг сонгох",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-3",
+          "prompt": "この 仕事は （　）が なくても 応募できます。",
+          "options": [
+            "けいけん",
+            "けしき",
+            "きおん",
+            "きせつ"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "けいけん"
+          ],
+          "answerDisplay": "1. けいけん",
+          "explanation": "A job may accept applicants without experience."
+        },
+        {
+          "id": "N4-02-V18",
+          "number": "V18",
+          "domain": "文脈 · Үг сонгох",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-3",
+          "prompt": "お金を はらったら、（　）を もらってください。",
+          "options": [
+            "りょうしゅうしょ",
+            "てんきよほう",
+            "しょうたいじょう",
+            "じかんわり"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "りょうしゅうしょ"
+          ],
+          "answerDisplay": "1. りょうしゅうしょ",
+          "explanation": "A receipt is issued after payment."
+        },
+        {
+          "id": "N4-02-V19",
+          "number": "V19",
+          "domain": "文脈 · Үг сонгох",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-3",
+          "prompt": "駅の 前で 人が 長い （　）を 作っていました。",
+          "options": [
+            "れつ",
+            "あじ",
+            "こえ",
+            "ねつ"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "れつ"
+          ],
+          "answerDisplay": "1. れつ",
+          "explanation": "People form a queue, れつ."
+        },
+        {
+          "id": "N4-02-V20",
+          "number": "V20",
+          "domain": "文脈 · Үг сонгох",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-3",
+          "prompt": "この きかいの 使い方を （　）ください。",
+          "options": [
+            "にげて",
+            "おしえて",
+            "さわって",
+            "ひろって"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "おしえて"
+          ],
+          "answerDisplay": "2. おしえて",
+          "explanation": "Ask someone to explain how to use a machine."
+        },
+        {
+          "id": "N4-02-V21",
+          "number": "V21",
+          "domain": "言い換え · Ижил утга",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-4",
+          "prompt": "切符は 【往復】で 買いました。",
+          "options": [
+            "行きと 帰りの 切符を 買いました。",
+            "二人分の 切符を 買いました。",
+            "帰りの 切符だけ 買いました。",
+            "行きの 切符だけ 買いました。"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "行きと 帰りの 切符を 買いました。"
+          ],
+          "answerDisplay": "1. 行きと 帰りの 切符を 買いました。",
+          "explanation": "往復 means a round trip."
+        },
+        {
+          "id": "N4-02-V22",
+          "number": "V22",
+          "domain": "言い換え · Ижил утга",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-4",
+          "prompt": "その 話は 【本当です】。",
+          "options": [
+            "まだ 決まっていません。",
+            "少し 変わっています。",
+            "うそでは ありません。",
+            "よく わかりません。"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "うそでは ありません。"
+          ],
+          "answerDisplay": "3. うそでは ありません。",
+          "explanation": "本当 means true."
+        },
+        {
+          "id": "N4-02-V23",
+          "number": "V23",
+          "domain": "言い換え · Ижил утга",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-4",
+          "prompt": "今日は 【具合が 悪いです】。",
+          "options": [
+            "今日は 体の 調子が よく ありません。",
+            "今日は 予定が ありません。",
+            "今日は 天気が よく ありません。",
+            "今日は 機械が 動きません。"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "今日は 体の 調子が よく ありません。"
+          ],
+          "answerDisplay": "1. 今日は 体の 調子が よく ありません。",
+          "explanation": "For a person, 具合が悪い means feeling unwell."
+        },
+        {
+          "id": "N4-02-V24",
+          "number": "V24",
+          "domain": "言い換え · Ижил утга",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-4",
+          "prompt": "この 道具は 【役に 立ちます】。",
+          "options": [
+            "この 道具は 便利です。",
+            "この 道具は 重いです。",
+            "この 道具は 新しいです。",
+            "この 道具は 高いです。"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "この 道具は 便利です。"
+          ],
+          "answerDisplay": "1. この 道具は 便利です。",
+          "explanation": "役に立つ means useful."
+        },
+        {
+          "id": "N4-02-V25",
+          "number": "V25",
+          "domain": "用法 · Үгийн хэрэглээ",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-5",
+          "prompt": "【間に合う】の つかいかたが 正しい 文を えらんでください。",
+          "options": [
+            "駅と 店の 間に合いました。",
+            "友だちと 話を 間に合いました。",
+            "服の 大きさが 間に合いました。",
+            "走ったので、電車に 間に合いました。"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "走ったので、電車に 間に合いました。"
+          ],
+          "answerDisplay": "4. 走ったので、電車に 間に合いました。",
+          "explanation": "間に合う means arrive in time for a train or deadline."
+        },
+        {
+          "id": "N4-02-V26",
+          "number": "V26",
+          "domain": "用法 · Үгийн хэрэглээ",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-5",
+          "prompt": "【招待】の つかいかたが 正しい 文を えらんでください。",
+          "options": [
+            "友だちを 結婚式に 招待しました。",
+            "電気を 招待して 寝ました。",
+            "雨が 招待してきました。",
+            "道で 財布を 招待しました。"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "友だちを 結婚式に 招待しました。"
+          ],
+          "answerDisplay": "1. 友だちを 結婚式に 招待しました。",
+          "explanation": "招待 means invite a person to an event."
+        },
+        {
+          "id": "N4-02-V27",
+          "number": "V27",
+          "domain": "用法 · Үгийн хэрэглээ",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-5",
+          "prompt": "【直す】の つかいかたが 正しい 文を えらんでください。",
+          "options": [
+            "ジュースを コップに 直しました。",
+            "電車を 駅で 直しました。",
+            "靴を 玄関に 直しました。",
+            "自転車の パンクを 直しました。"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "自転車の パンクを 直しました。"
+          ],
+          "answerDisplay": "4. 自転車の パンクを 直しました。",
+          "explanation": "直す means repair; the other sentences misuse it for pouring, boarding, or placing."
+        },
+        {
+          "id": "N4-02-V28",
+          "number": "V28",
+          "domain": "用法 · Үгийн хэрэглээ",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-5",
+          "prompt": "【続ける】の つかいかたが 正しい 文を えらんでください。",
+          "options": [
+            "駅を 続けて 家へ 帰りました。",
+            "毎朝の 運動を 三年間 続けています。",
+            "机の 上に 本を 続けました。",
+            "かぜを 続けて 会社を 休みました。"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "毎朝の 運動を 三年間 続けています。"
+          ],
+          "answerDisplay": "2. 毎朝の 運動を 三年間 続けています。",
+          "explanation": "続ける means continue an activity."
+        }
+      ]
+    },
+    {
+      "id": "jlpt-g",
+      "title": "文法・読解 · Хэлзүй, унших",
+      "kind": "questions",
+      "seconds": 3300,
+      "instructions": "Нэг зөв хариу сонгоно. ★ нь гурав дахь хоосон зай. Одоогийн хэсэг дотор чөлөөтэй шилжинэ. Цаг дуусахад дараагийн хэсэг автоматаар эхэлнэ.",
+      "groups": [
+        {
+          "id": "jlpt-g-1",
+          "title": "文法 · Хэлзүй",
+          "section": "文法 · Хэлзүй",
+          "instructions": "（　）に 入る いちばん いい ものを えらんでください。",
+          "pageMode": "single"
+        },
+        {
+          "id": "jlpt-g-2",
+          "title": "文の組み立て · Өгүүлбэр бүтээх",
+          "section": "文の組み立て · Өгүүлбэр бүтээх",
+          "instructions": "四つの ことばを ならべて 文を 作ります。★に 入る ことばを えらんでください。",
+          "pageMode": "single"
+        },
+        {
+          "id": "jlpt-g-3",
+          "title": "文章の文法 · Эхийн хэлзүй",
+          "section": "文章の文法 · Эхийн хэлзүй",
+          "instructions": "文を 読んで、【1】〜【4】に 入る ものを えらんでください。",
+          "pageMode": "single"
+        },
+        {
+          "id": "jlpt-g-4",
+          "title": "短文 · Богино эх",
+          "section": "短文 · Богино эх",
+          "instructions": "文を 読んで、しつもんに こたえてください。",
+          "pageMode": "single"
+        },
+        {
+          "id": "jlpt-g-5",
+          "title": "中文 · Дунд эх",
+          "section": "中文 · Дунд эх",
+          "instructions": "文を 読んで、しつもんに こたえてください。",
+          "pageMode": "single"
+        },
+        {
+          "id": "jlpt-g-6",
+          "title": "情報検索 · Мэдээлэл олох",
+          "section": "情報検索 · Мэдээлэл олох",
+          "instructions": "お知らせを 見て、しつもんに こたえてください。",
+          "pageMode": "single"
+        }
+      ],
+      "questions": [
+        {
+          "id": "N4-02-G01",
+          "number": "G01",
+          "domain": "文法 · Хэлзүй",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-1",
+          "prompt": "宿題を して（　）、遊びに 行きます。",
+          "options": [
+            "まで",
+            "から",
+            "より",
+            "ほど"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "から"
+          ],
+          "answerDisplay": "2. から",
+          "explanation": "てから establishes the sequence."
+        },
+        {
+          "id": "N4-02-G02",
+          "number": "G02",
+          "domain": "文法 · Хэлзүй",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-1",
+          "prompt": "弟は 今、寝ている（　）です。静かにしてください。",
+          "options": [
+            "まえ",
+            "ところ",
+            "ため",
+            "こと"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "ところ"
+          ],
+          "answerDisplay": "2. ところ",
+          "explanation": "ているところ describes an action currently in progress."
+        },
+        {
+          "id": "N4-02-G03",
+          "number": "G03",
+          "domain": "文法 · Хэлзүй",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-1",
+          "prompt": "ここに 車を とめ（　）いけません。",
+          "options": [
+            "たら",
+            "たり",
+            "ても",
+            "ては"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "ては"
+          ],
+          "answerDisplay": "4. ては",
+          "explanation": "てはいけない expresses prohibition."
+        },
+        {
+          "id": "N4-02-G04",
+          "number": "G04",
+          "domain": "文法 · Хэлзүй",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-1",
+          "prompt": "この 漢字は どう（　）んですか。",
+          "options": [
+            "読んで",
+            "読み",
+            "読め",
+            "読む"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "読む"
+          ],
+          "answerDisplay": "4. 読む",
+          "explanation": "A plain verb precedes explanatory んですか."
+        },
+        {
+          "id": "N4-02-G05",
+          "number": "G05",
+          "domain": "文法 · Хэлзүй",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-1",
+          "prompt": "あしたは 早く 起きる（　）が ありません。休みですから。",
+          "options": [
+            "つもりを",
+            "ことに",
+            "必要（ひつよう）",
+            "予定（よてい）で"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "必要（ひつよう）"
+          ],
+          "answerDisplay": "3. 必要（ひつよう）",
+          "explanation": "必要がない means no need to do something."
+        },
+        {
+          "id": "N4-02-G06",
+          "number": "G06",
+          "domain": "文法 · Хэлзүй",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-1",
+          "prompt": "この 薬を のむと、ねむく（　）ことが あります。",
+          "options": [
+            "する",
+            "ある",
+            "いる",
+            "なる"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "なる"
+          ],
+          "answerDisplay": "4. なる",
+          "explanation": "なる expresses becoming sleepy."
+        },
+        {
+          "id": "N4-02-G07",
+          "number": "G07",
+          "domain": "文法 · Хэлзүй",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-1",
+          "prompt": "先生は もう （　）か。",
+          "options": [
+            "お帰りに なりました",
+            "お帰り しました",
+            "帰ってあげました",
+            "帰らせました"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "お帰りに なりました"
+          ],
+          "answerDisplay": "1. お帰りに なりました",
+          "explanation": "お帰りになる is respectful language for a teacher's return."
+        },
+        {
+          "id": "N4-02-G08",
+          "number": "G08",
+          "domain": "文法 · Хэлзүй",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-1",
+          "prompt": "あそこに 名前が 書いて（　）。",
+          "options": [
+            "みます",
+            "あります",
+            "います",
+            "おきます"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "あります"
+          ],
+          "answerDisplay": "2. あります",
+          "explanation": "てある describes the result of intentional writing."
+        },
+        {
+          "id": "N4-02-G09",
+          "number": "G09",
+          "domain": "文法 · Хэлзүй",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-1",
+          "prompt": "きのう、友だちに 写真を 見せて（　）。うれしかったです。",
+          "options": [
+            "あげませんでした",
+            "くれました",
+            "やりました",
+            "もらいました"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "もらいました"
+          ],
+          "answerDisplay": "4. もらいました",
+          "explanation": "The speaker received the favour of being shown photos."
+        },
+        {
+          "id": "N4-02-G10",
+          "number": "G10",
+          "domain": "文法 · Хэлзүй",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-1",
+          "prompt": "この 店は 安い（　）、駅からも 近いです。",
+          "options": [
+            "ようを",
+            "ならばに",
+            "し",
+            "のに"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "し"
+          ],
+          "answerDisplay": "3. し",
+          "explanation": "し adds another favourable reason."
+        },
+        {
+          "id": "N4-02-G11",
+          "number": "G11",
+          "domain": "文法 · Хэлзүй",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-1",
+          "prompt": "雨が ふったら、試合は 中止（ちゅうし）に（　）。",
+          "options": [
+            "なります",
+            "します",
+            "います",
+            "あります"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "なります"
+          ],
+          "answerDisplay": "1. なります",
+          "explanation": "中止になる means be cancelled."
+        },
+        {
+          "id": "N4-02-G12",
+          "number": "G12",
+          "domain": "文法 · Хэлзүй",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-1",
+          "prompt": "まだ 子ども（　）、一人で 行かせないでください。",
+          "options": [
+            "なのに",
+            "そうに",
+            "なので",
+            "ように"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "なので"
+          ],
+          "answerDisplay": "3. なので",
+          "explanation": "なので gives the reason: because the person is still a child."
+        },
+        {
+          "id": "N4-02-G13",
+          "number": "G13",
+          "domain": "文法 · Хэлзүй",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-1",
+          "prompt": "この ボタンを （　）ば、ドアが 開きます。",
+          "options": [
+            "押し",
+            "押す",
+            "押せ",
+            "押した"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "押せ"
+          ],
+          "answerDisplay": "3. 押せ",
+          "explanation": "押す becomes 押せば in the conditional."
+        },
+        {
+          "id": "N4-02-G14",
+          "number": "G14",
+          "domain": "文の組み立て · Өгүүлбэр бүтээх",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-2",
+          "prompt": "わたしは ____  ____  ★  ____ を 案内しました。",
+          "options": [
+            "日本へ",
+            "学生",
+            "来た",
+            "ばかりの"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "ばかりの"
+          ],
+          "answerDisplay": "4. ばかりの",
+          "explanation": "日本へ来たばかりの modifies 学生.\nわたしは日本へ 来た ばかりの 学生を 案内しました。"
+        },
+        {
+          "id": "N4-02-G15",
+          "number": "G15",
+          "domain": "文の組み立て · Өгүүлбэр бүтээх",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-2",
+          "prompt": "これは ____  ____  ★  ____ 買った かばんです。",
+          "options": [
+            "母が",
+            "使う",
+            "旅行で",
+            "ために"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "使う"
+          ],
+          "answerDisplay": "2. 使う",
+          "explanation": "母が旅行で使うために describes the purpose of buying.\nこれは母が 旅行で 使う ために買った かばんです。"
+        },
+        {
+          "id": "N4-02-G16",
+          "number": "G16",
+          "domain": "文の組み立て · Өгүүлбэр бүтээх",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-2",
+          "prompt": "この 機械は ____  ____  ★  ____ ので 便利です。",
+          "options": [
+            "動く",
+            "押す",
+            "ボタンを",
+            "だけで"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "だけで"
+          ],
+          "answerDisplay": "4. だけで",
+          "explanation": "ボタンを押すだけで means simply by pressing a button.\nこの 機械はボタンを 押す だけで 動くので 便利です。"
+        },
+        {
+          "id": "N4-02-G17",
+          "number": "G17",
+          "domain": "文の組み立て · Өгүүлбэр бүтээх",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-2",
+          "prompt": "駅で ____  ____  ★  ____ のを 忘れていました。",
+          "options": [
+            "友だちに",
+            "した",
+            "約束（やくそく）を",
+            "会う"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "約束（やくそく）を"
+          ],
+          "answerDisplay": "3. 約束（やくそく）を",
+          "explanation": "友だちに会う modifies 約束; 約束をした is made a promise.\n駅で友だちに 会う 約束（やくそく）を したのを 忘れていました。"
+        },
+        {
+          "id": "N4-02-G18",
+          "number": "G18",
+          "domain": "文章の文法 · Эхийн хэлзүй",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-3",
+          "prompt": "【1】",
+          "options": [
+            "まちがえる",
+            "まちがえ",
+            "まちがえて",
+            "まちがえたら"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "まちがえる"
+          ],
+          "answerDisplay": "1. まちがえる",
+          "explanation": "Dictionary verb + ことがある expresses an occurrence; 最初は makes it habitual in the past.",
+          "passage": "先月から 喫茶店で アルバイトを しています。最初（さいしょ）は 注文（ちゅうもん）を 【1】ことが よく ありました。でも、先輩（せんぱい）が やさしく 【2】ので、今は 一人でも できます。来週から 新しい 人が 入ります。今度は わたしが 教えて 【3】と 思います。教える 前に、自分でも 仕事の やり方を 【4】つもりです。"
+        },
+        {
+          "id": "N4-02-G19",
+          "number": "G19",
+          "domain": "文章の文法 · Эхийн хэлзүй",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-3",
+          "prompt": "【2】",
+          "options": [
+            "教えてくれた",
+            "教えてあげた",
+            "教えておいたか",
+            "教えさせた"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "教えてくれた"
+          ],
+          "answerDisplay": "1. 教えてくれた",
+          "explanation": "The senior kindly taught the speaker: くれた.",
+          "passage": "先月から 喫茶店で アルバイトを しています。最初（さいしょ）は 注文（ちゅうもん）を 【1】ことが よく ありました。でも、先輩（せんぱい）が やさしく 【2】ので、今は 一人でも できます。来週から 新しい 人が 入ります。今度は わたしが 教えて 【3】と 思います。教える 前に、自分でも 仕事の やり方を 【4】つもりです。"
+        },
+        {
+          "id": "N4-02-G20",
+          "number": "G20",
+          "domain": "文章の文法 · Эхийн хэлзүй",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-3",
+          "prompt": "【3】",
+          "options": [
+            "いただこう",
+            "もらおう",
+            "あげよう",
+            "くれよう"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "あげよう"
+          ],
+          "answerDisplay": "3. あげよう",
+          "explanation": "The speaker intends to give help to the newcomer.",
+          "passage": "先月から 喫茶店で アルバイトを しています。最初（さいしょ）は 注文（ちゅうもん）を 【1】ことが よく ありました。でも、先輩（せんぱい）が やさしく 【2】ので、今は 一人でも できます。来週から 新しい 人が 入ります。今度は わたしが 教えて 【3】と 思います。教える 前に、自分でも 仕事の やり方を 【4】つもりです。"
+        },
+        {
+          "id": "N4-02-G21",
+          "number": "G21",
+          "domain": "文章の文法 · Эхийн хэлзүй",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-3",
+          "prompt": "【4】",
+          "options": [
+            "確認（かくにん）して",
+            "確認（かくにん）したら",
+            "確認（かくにん）する",
+            "確認（かくにん）し"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "確認（かくにん）する"
+          ],
+          "answerDisplay": "3. 確認（かくにん）する",
+          "explanation": "Dictionary form precedes つもり.",
+          "passage": "先月から 喫茶店で アルバイトを しています。最初（さいしょ）は 注文（ちゅうもん）を 【1】ことが よく ありました。でも、先輩（せんぱい）が やさしく 【2】ので、今は 一人でも できます。来週から 新しい 人が 入ります。今度は わたしが 教えて 【3】と 思います。教える 前に、自分でも 仕事の やり方を 【4】つもりです。"
+        },
+        {
+          "id": "N4-02-G22",
+          "number": "G22",
+          "domain": "短文 · Богино эх",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-4",
+          "prompt": "火曜日の 11時には どう しなければ なりませんか。",
+          "options": [
+            "エレベーターを 使います。",
+            "荷物（にもつ）を 運びます。",
+            "必ず 家に います。",
+            "階段（かいだん）を 使います。"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "階段（かいだん）を 使います。"
+          ],
+          "answerDisplay": "4. 階段（かいだん）を 使います。",
+          "explanation": "The lift is unavailable during the inspection; stairs must be used.",
+          "passage": "マンションの 皆さまへ。エレベーターの 点検（てんけん）を 火曜日の 10時から 12時まで 行います。その 間は 階段（かいだん）を ご利用（りよう）ください。大きな 荷物（にもつ）を 運ぶ 予定（よてい）の 方は、この 時間を 避けて（さけて）ください。"
+        },
+        {
+          "id": "N4-02-G23",
+          "number": "G23",
+          "domain": "短文 · Богино эх",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-4",
+          "prompt": "ホテルについて 正しいのは どれですか。",
+          "options": [
+            "海は 見えません。",
+            "朝ご飯は 自分たちで 用意します。",
+            "駅の すぐ となりです。",
+            "前日（ぜんじつ）でも 無料（むりょう）で キャンセルできます。"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "朝ご飯は 自分たちで 用意します。"
+          ],
+          "answerDisplay": "2. 朝ご飯は 自分たちで 用意します。",
+          "explanation": "Breakfast is not included, so they plan to eat at a nearby shop.",
+          "passage": "ミラさん、旅行の ホテルを 予約（よやく）しました。駅から 少し 遠いですが、海が 見えます。朝ご飯は ついていないので、近くの 店で 食べましょう。キャンセルは 三日前まで 無料（むりょう）です。ケン"
+        },
+        {
+          "id": "N4-02-G24",
+          "number": "G24",
+          "domain": "短文 · Богино эх",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-4",
+          "prompt": "面接（めんせつ）を 受ける 人は どうすれば いいですか。",
+          "options": [
+            "２時45分に 履歴書（りれきしょ）だけを 持って 行く",
+            "３時15分に 履歴書（りれきしょ）を 持って 行く",
+            "３時に 何も 持たずに 行く",
+            "２時45分までに 身分証明書（みぶんしょうめいしょ）を 持って 受付（うけつけ）へ 行く"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "２時45分までに 身分証明書（みぶんしょうめいしょ）を 持って 受付（うけつけ）へ 行く"
+          ],
+          "answerDisplay": "4. ２時45分までに 身分証明書（みぶんしょうめいしょ）を 持って 受付（うけつけ）へ 行く",
+          "explanation": "Arrive by 2:45 with identification; the CV has already been received.",
+          "passage": "明日の 面接（めんせつ）は ３時からです。受付（うけつけ）には 15分前までに お越しください。履歴書（りれきしょ）は すでに 受け取って（うけとって）いますので、持参（じさん）する 必要（ひつよう）は ありません。身分証明書（みぶんしょうめいしょ）を お持ちください。"
+        },
+        {
+          "id": "N4-02-G25",
+          "number": "G25",
+          "domain": "中文 · Дунд эх",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-5",
+          "prompt": "去年までの 旅行は どのような ものでしたか。",
+          "options": [
+            "一つの 店で 一日 過ごしました。",
+            "予定（よてい）を 全く 決めませんでした。",
+            "写真を とりませんでした。",
+            "たくさんの 場所を 急いで 見ていました。"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "たくさんの 場所を 急いで 見ていました。"
+          ],
+          "answerDisplay": "4. たくさんの 場所を 急いで 見ていました。",
+          "explanation": "The narrator packed the schedule with famous sites and rushed.",
+          "passage": "わたしは 去年まで、旅行の ときは 有名（ゆうめい）な 場所を たくさん 見ることが 大切（たいせつ）だと 思っていました。朝から 夜まで 予定（よてい）を 入れて、いつも 急いでいました。写真は たくさん とれましたが、帰ると とても 疲れて（つかれて）いました。今年は 友だちと 小さな 町へ 二泊の 旅行を しました。見学（けんがく）する 場所は 一日に 一つだけに して、ほかの 時間は 自由（じゆう）に しました。二日目の 午後、雨が ふってきたので、近くの 喫茶店に 入りました。そこで 店の 人に 町の 昔（むかし）の 話を 聞きました。予定（よてい）には なかった 時間でしたが、今回の 旅行で いちばん 心に 残っています。もちろん 有名（ゆうめい）な 場所を 見るのも 楽しいです。でも、次の 旅行でも 予定（よてい）を 入れすぎないように したいです。ゆっくりする 時間が あると、その 場所を もっと よく 知ることが できると 思うからです。"
+        },
+        {
+          "id": "N4-02-G26",
+          "number": "G26",
+          "domain": "中文 · Дунд эх",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-5",
+          "prompt": "今回 いちばん 心に 残ったのは 何ですか。",
+          "options": [
+            "喫茶店で 町の 話を 聞いたこと",
+            "雨の 中を 一日 歩いたこと",
+            "有名（ゆうめい）な 建物の 写真を とったこと",
+            "友だちと 予定（よてい）を 作ったこと"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "喫茶店で 町の 話を 聞いたこと"
+          ],
+          "answerDisplay": "1. 喫茶店で 町の 話を 聞いたこと",
+          "explanation": "The unplanned conversation in the cafe was the most memorable.",
+          "passage": "わたしは 去年まで、旅行の ときは 有名（ゆうめい）な 場所を たくさん 見ることが 大切（たいせつ）だと 思っていました。朝から 夜まで 予定（よてい）を 入れて、いつも 急いでいました。写真は たくさん とれましたが、帰ると とても 疲れて（つかれて）いました。今年は 友だちと 小さな 町へ 二泊の 旅行を しました。見学（けんがく）する 場所は 一日に 一つだけに して、ほかの 時間は 自由（じゆう）に しました。二日目の 午後、雨が ふってきたので、近くの 喫茶店に 入りました。そこで 店の 人に 町の 昔（むかし）の 話を 聞きました。予定（よてい）には なかった 時間でしたが、今回の 旅行で いちばん 心に 残っています。もちろん 有名（ゆうめい）な 場所を 見るのも 楽しいです。でも、次の 旅行でも 予定（よてい）を 入れすぎないように したいです。ゆっくりする 時間が あると、その 場所を もっと よく 知ることが できると 思うからです。"
+        },
+        {
+          "id": "N4-02-G27",
+          "number": "G27",
+          "domain": "中文 · Дунд эх",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-5",
+          "prompt": "次の 旅行では どうしたいですか。",
+          "options": [
+            "有名（ゆうめい）な 場所を 全部 やめたいです。",
+            "朝から 夜まで 予定（よてい）を 入れたいです。",
+            "雨の日は 必ず 帰りたいです。",
+            "自由（じゆう）な 時間を 残しておきたいです。"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "自由（じゆう）な 時間を 残しておきたいです。"
+          ],
+          "answerDisplay": "4. 自由（じゆう）な 時間を 残しておきたいです。",
+          "explanation": "The narrator wants an unhurried schedule with free time.",
+          "passage": "わたしは 去年まで、旅行の ときは 有名（ゆうめい）な 場所を たくさん 見ることが 大切（たいせつ）だと 思っていました。朝から 夜まで 予定（よてい）を 入れて、いつも 急いでいました。写真は たくさん とれましたが、帰ると とても 疲れて（つかれて）いました。今年は 友だちと 小さな 町へ 二泊の 旅行を しました。見学（けんがく）する 場所は 一日に 一つだけに して、ほかの 時間は 自由（じゆう）に しました。二日目の 午後、雨が ふってきたので、近くの 喫茶店に 入りました。そこで 店の 人に 町の 昔（むかし）の 話を 聞きました。予定（よてい）には なかった 時間でしたが、今回の 旅行で いちばん 心に 残っています。もちろん 有名（ゆうめい）な 場所を 見るのも 楽しいです。でも、次の 旅行でも 予定（よてい）を 入れすぎないように したいです。ゆっくりする 時間が あると、その 場所を もっと よく 知ることが できると 思うからです。"
+        },
+        {
+          "id": "N4-02-G28",
+          "number": "G28",
+          "domain": "情報検索 · Мэдээлэл олох",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-6",
+          "prompt": "普通（ふつう）自転車を ９時から 12時まで 借りると いくらですか。",
+          "options": [
+            "400円",
+            "800円",
+            "900円",
+            "1,400円"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "900円"
+          ],
+          "answerDisplay": "3. 900円",
+          "explanation": "Three hours exceeds the two-hour tariff, so the daily 900-yen rate applies.",
+          "passage": "駅前レンタサイクル\n普通（ふつう）自転車：２時間 400円／一日 900円\n電動（でんどう）自転車：２時間 700円／一日 1,400円\n２時間を こえる 場合（ばあい）は 一日料金（りょうきん）。営業時間（えいぎょうじかん） 8:00〜18:00。必ず 当日（とうじつ）の 18:00までに 返すこと。\n中学生以上（いじょう）が 利用（りよう）できます。身分証明書（みぶんしょうめいしょ）が 必要（ひつよう）です。ヘルメットは 無料（むりょう）。電話予約（よやく）可。"
+        },
+        {
+          "id": "N4-02-G29",
+          "number": "G29",
+          "domain": "情報検索 · Мэдээлэл олох",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-6",
+          "prompt": "借りるときに 必ず 必要（ひつよう）な ものは 何ですか。",
+          "options": [
+            "学生証と 写真２枚",
+            "電話予約（よやく）の 番号",
+            "身分証明書（みぶんしょうめいしょ）",
+            "自分の ヘルメット"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "身分証明書（みぶんしょうめいしょ）"
+          ],
+          "answerDisplay": "3. 身分証明書（みぶんしょうめいしょ）",
+          "explanation": "Identification is required; helmets are supplied and reservations are optional.",
+          "passage": "駅前レンタサイクル\n普通（ふつう）自転車：２時間 400円／一日 900円\n電動（でんどう）自転車：２時間 700円／一日 1,400円\n２時間を こえる 場合（ばあい）は 一日料金（りょうきん）。営業時間（えいぎょうじかん） 8:00〜18:00。必ず 当日（とうじつ）の 18:00までに 返すこと。\n中学生以上（いじょう）が 利用（りよう）できます。身分証明書（みぶんしょうめいしょ）が 必要（ひつよう）です。ヘルメットは 無料（むりょう）。電話予約（よやく）可。"
+        }
+      ]
+    },
+    {
+      "id": "jlpt-l",
+      "title": "聴解 · Сонсох",
+      "kind": "listening",
+      "seconds": 2100,
+      "instructions": "Бичлэг нэг удаа, серверийн цагтай зэрэг тоглоно. 1–2-р бүлгийн сонголт бичгээр; 3–4-р бүлгийн сонголт зөвхөн дуугаар. Дууссан хэсэг рүү буцахгүй.",
+      "groups": [
+        {
+          "id": "jlpt-l-1",
+          "title": "課題理解 · Үйлдэл сонгох",
+          "section": "課題理解 · Үйлдэл сонгох",
+          "instructions": "話を 聞いて、さいごの しつもんに こたえてください。",
+          "pageMode": "single"
+        },
+        {
+          "id": "jlpt-l-2",
+          "title": "ポイント理解 · Гол мэдээлэл",
+          "section": "ポイント理解 · Гол мэдээлэл",
+          "instructions": "しつもんを 聞いてから、話を 聞きます。大切な ことを えらんでください。",
+          "pageMode": "single"
+        },
+        {
+          "id": "jlpt-l-3",
+          "title": "発話表現 · Юу хэлэх вэ",
+          "section": "発話表現 · Юу хэлэх вэ",
+          "instructions": "場面を 見て、三つの ことばを 聞きます。何と 言うか えらんでください。",
+          "pageMode": "single"
+        },
+        {
+          "id": "jlpt-l-4",
+          "title": "即時応答 · Шуурхай хариу",
+          "section": "即時応答 · Шуурхай хариу",
+          "instructions": "短い ことばと 三つの 返事を 聞いて、いちばん いい 返事を えらんでください。",
+          "pageMode": "single"
+        }
+      ],
+      "questions": [
+        {
+          "id": "N4-02-L01",
+          "number": "L01",
+          "domain": "課題理解 · Үйлдэл сонгох",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-1",
+          "prompt": "音声の質問に答えてください。",
+          "options": [
+            "日付を 直す",
+            "20枚 コピーする",
+            "しりょうを 配る",
+            "最後（さいご）の ページを 捨てる"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "日付を 直す"
+          ],
+          "answerDisplay": "1. 日付を 直す",
+          "explanation": "The correction must happen before copying.",
+          "listening": {
+            "part": 1,
+            "script": "話を 聞いてください。\n女：コピーを 20枚 お願いします。男：この しりょうですね。女：あ、その前に、最後の ページの 日付を 直してください。\n男の人は 最初（さいしょ）に 何を しますか。"
+          }
+        },
+        {
+          "id": "N4-02-L02",
+          "number": "L02",
+          "domain": "課題理解 · Үйлдэл сонгох",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-1",
+          "prompt": "音声の質問に答えてください。",
+          "options": [
+            "３時",
+            "２時",
+            "３時半",
+            "２時半"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "３時半"
+          ],
+          "answerDisplay": "3. ３時半",
+          "explanation": "The agreed visit is 3:30, after the man's return.",
+          "listening": {
+            "part": 1,
+            "script": "話を 聞いてください。\n女：２時に 行けば いいですか。男：その 時間は 配達で いません。３時には 戻りますが、３時半に 来てもらえますか。女：わかりました。\n女の人は 何時に 店へ 行きますか。"
+          }
+        },
+        {
+          "id": "N4-02-L03",
+          "number": "L03",
+          "domain": "課題理解 · Үйлдэл сонгох",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-1",
+          "prompt": "音声の質問に答えてください。",
+          "options": [
+            "読んでいない 一冊",
+            "何も 返さない",
+            "読み終わった 二冊",
+            "三冊 全部"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "読み終わった 二冊"
+          ],
+          "answerDisplay": "3. 読み終わった 二冊",
+          "explanation": "She permits him to keep the unfinished book and return the other two.",
+          "listening": {
+            "part": 1,
+            "script": "話を 聞いてください。\n女：借りていた 本、全部 返してください。男：一冊だけ、まだ 読み終わっていなくて。女：では、読み終わった 二冊を 先に お願いします。\n男の人は 何を 返しますか。"
+          }
+        },
+        {
+          "id": "N4-02-L04",
+          "number": "L04",
+          "domain": "課題理解 · Үйлдэл сонгох",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-1",
+          "prompt": "音声の質問に答えてください。",
+          "options": [
+            "自分の 車",
+            "タクシー",
+            "電車",
+            "バス"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "バス"
+          ],
+          "answerDisplay": "4. バス",
+          "explanation": "Airport buses still run despite the train suspension.",
+          "listening": {
+            "part": 1,
+            "script": "話を 聞いてください。\n男：電車は 台風で とまっています。女：バスは？ 男：空港行きは 動いていますよ。女：じゃ、それに します。\n女の人は どうやって 空港へ 行きますか。"
+          }
+        },
+        {
+          "id": "N4-02-L05",
+          "number": "L05",
+          "domain": "課題理解 · Үйлдэл сонгох",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-1",
+          "prompt": "音声の質問に答えてください。",
+          "options": [
+            "海の 写真",
+            "山の 前の 写真",
+            "町の 写真",
+            "ミカさんだけの 写真"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "山の 前の 写真"
+          ],
+          "answerDisplay": "2. 山の 前の 写真",
+          "explanation": "The mountain photo includes everyone.",
+          "listening": {
+            "part": 1,
+            "script": "話を 聞いてください。\n女：全員が 写っている 写真を 送って。男：海の 写真？ 女：あれは ミカさんが いないよ。山の 前の 写真なら 全員 いる。男：わかった。\n男の人は どの 写真を 送りますか。"
+          }
+        },
+        {
+          "id": "N4-02-L06",
+          "number": "L06",
+          "domain": "課題理解 · Үйлдэл сонгох",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-1",
+          "prompt": "音声の質問に答えてください。",
+          "options": [
+            "申込書（もうしこみしょ）を 箱に 入れる",
+            "申込書（もうしこみしょ）を 書き始める",
+            "当日（とうじつ）まで 持ち帰る",
+            "お金を はらう"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "申込書（もうしこみしょ）を 箱に 入れる"
+          ],
+          "answerDisplay": "1. 申込書（もうしこみしょ）を 箱に 入れる",
+          "explanation": "Today's required action is submitting the completed form.",
+          "listening": {
+            "part": 1,
+            "script": "話を 聞いてください。\n男：申込書は 書けましたか。女：はい。お金も 今 はらいますか。男：お金は 当日です。今日は この 箱に 申込書を 入れてください。\n女の人は つぎに 何を しますか。"
+          }
+        },
+        {
+          "id": "N4-02-L07",
+          "number": "L07",
+          "domain": "課題理解 · Үйлдэл сонгох",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-1",
+          "prompt": "音声の質問に答えてください。",
+          "options": [
+            "となりの 駐車場（ちゅうしゃじょう）の １番",
+            "入口（いりぐち）の 前",
+            "道の 反対側",
+            "となりの 駐車場（ちゅうしゃじょう）の ２番"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "となりの 駐車場（ちゅうしゃじょう）の ２番"
+          ],
+          "answerDisplay": "4. となりの 駐車場（ちゅうしゃじょう）の ２番",
+          "explanation": "Space 2 is assigned; space 1 and the entrance are unavailable.",
+          "listening": {
+            "part": 1,
+            "script": "話を 聞いてください。\n女：入口の 前は 配達用です。男：となりの 駐車場で いいですか。女：ええ、ただ、１番は 使えません。２番に お願いします。\n男の人は どこに 車を とめますか。"
+          }
+        },
+        {
+          "id": "N4-02-L08",
+          "number": "L08",
+          "domain": "課題理解 · Үйлдэл сонгох",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-1",
+          "prompt": "音声の質問に答えてください。",
+          "options": [
+            "だれにも しない",
+            "山田さんと 佐藤さん",
+            "山田さんだけ",
+            "佐藤さんだけ"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "山田さんだけ"
+          ],
+          "answerDisplay": "3. 山田さんだけ",
+          "explanation": "Sato is already informed; only Yamada needs a call.",
+          "listening": {
+            "part": 1,
+            "script": "話を 聞いてください。\n男：山田さんが 休みだから、会議の 変更を 伝えて。女：佐藤さんにも？ 男：佐藤さんには もう メールしたよ。山田さんだけ お願い。\n女の人は だれに 電話しますか。"
+          }
+        },
+        {
+          "id": "N4-02-L09",
+          "number": "L09",
+          "domain": "ポイント理解 · Гол мэдээлэл",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-2",
+          "prompt": "音声の質問に答えてください。",
+          "options": [
+            "仕事が 難しいから",
+            "店が 遠いから",
+            "時給が 低いから",
+            "仕事が 夜 遅くまで あるから"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "仕事が 夜 遅くまで あるから"
+          ],
+          "answerDisplay": "4. 仕事が 夜 遅くまで あるから",
+          "explanation": "Late work interferes with morning classes.",
+          "listening": {
+            "part": 2,
+            "script": "女の人は なぜ アルバイトを 変えたいですか。\n男：今の 店は 時給が 低いんですか。女：いいえ、でも 夜 遅くまでなので、朝の 授業で 眠くなるんです。\n女の人は なぜ アルバイトを 変えたいですか。"
+          }
+        },
+        {
+          "id": "N4-02-L10",
+          "number": "L10",
+          "domain": "ポイント理解 · Гол мэдээлэл",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-2",
+          "prompt": "音声の質問に答えてください。",
+          "options": [
+            "土曜と 月曜",
+            "月曜だけ",
+            "日曜と 月曜",
+            "土曜と 日曜"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "日曜と 月曜"
+          ],
+          "answerDisplay": "3. 日曜と 月曜",
+          "explanation": "This week Saturday is worked, while Sunday and Monday are off.",
+          "listening": {
+            "part": 2,
+            "script": "男の人は 何曜日に 休みますか。\n女：休みは 土日ですか。男：普通は そうですが、今週は 土曜に 働いて、月曜に 休みます。日曜も 休みです。\n男の人は 何曜日に 休みますか。"
+          }
+        },
+        {
+          "id": "N4-02-L11",
+          "number": "L11",
+          "domain": "ポイント理解 · Гол мэдээлэл",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-2",
+          "prompt": "音声の質問に答えてください。",
+          "options": [
+            "今日の 午後",
+            "あしたの 午後",
+            "あさっての 午後",
+            "あしたの 午前"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "あしたの 午後"
+          ],
+          "answerDisplay": "2. あしたの 午後",
+          "explanation": "The one-day delay shifts delivery to tomorrow afternoon.",
+          "listening": {
+            "part": 2,
+            "script": "荷物（にもつ）は いつ 届きますか。\n女：荷物は 今日 来ますか。男：雪で 一日 遅れるそうです。あしたの 午後に なります。\n荷物（にもつ）は いつ 届きますか。"
+          }
+        },
+        {
+          "id": "N4-02-L12",
+          "number": "L12",
+          "domain": "ポイント理解 · Гол мэдээлэл",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-2",
+          "prompt": "音声の質問に答えてください。",
+          "options": [
+            "温泉",
+            "夕ご飯",
+            "ホテルまでの 道",
+            "へやの 広さ"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "夕ご飯"
+          ],
+          "answerDisplay": "2. 夕ご飯",
+          "explanation": "She praises dinner, not the small room or unused hot spring.",
+          "listening": {
+            "part": 2,
+            "script": "女の人は 旅行で 何が よかったと 言っていますか。\n男：ホテルは どうでしたか。女：へやは 少し 狭かったけど、夕ご飯が とても おいしかったです。温泉は 入る 時間が なくて。\n女の人は 旅行で 何が よかったと 言っていますか。"
+          }
+        },
+        {
+          "id": "N4-02-L13",
+          "number": "L13",
+          "domain": "ポイント理解 · Гол мэдээлэл",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-2",
+          "prompt": "音声の質問に答えてください。",
+          "options": [
+            "90分",
+            "15分",
+            "60分",
+            "30分"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "30分"
+          ],
+          "answerDisplay": "4. 30分",
+          "explanation": "Ninety minutes minus the planned sixty equals thirty extra minutes.",
+          "listening": {
+            "part": 2,
+            "script": "会議は 何分 長く なりましたか。\n女：会議は 一時間の 予定でしたよね。男：ええ、でも 質問が 多くて、一時間半 かかりました。\n会議は 何分 長く なりましたか。"
+          }
+        },
+        {
+          "id": "N4-02-L14",
+          "number": "L14",
+          "domain": "ポイント理解 · Гол мэдээлэл",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-2",
+          "prompt": "音声の質問に答えてください。",
+          "options": [
+            "値段が 安いから",
+            "絵だけが 多いから",
+            "先生が 書いたから",
+            "説明が わかりやすいから"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "説明が わかりやすいから"
+          ],
+          "answerDisplay": "4. 説明が わかりやすいから",
+          "explanation": "The stated reason is concise, clear explanations.",
+          "listening": {
+            "part": 2,
+            "script": "男の人が 本を えらんだ 理由は 何ですか。\n女：この 本、絵が きれいですね。男：ええ。でも 買ったのは、説明が 短くて わかりやすかったからです。\n男の人が 本を えらんだ 理由は 何ですか。"
+          }
+        },
+        {
+          "id": "N4-02-L15",
+          "number": "L15",
+          "domain": "ポイント理解 · Гол мэдээлэл",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-2",
+          "prompt": "音声の質問に答えてください。",
+          "options": [
+            "カードだけ",
+            "現金だけ",
+            "現金と カード",
+            "スマートフォンだけ"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "現金だけ"
+          ],
+          "answerDisplay": "2. 現金だけ",
+          "explanation": "Only cash is accepted.",
+          "listening": {
+            "part": 2,
+            "script": "この 店で 使えるのは 何ですか。\n女：カードで はらえますか。男：すみません、現金だけなんです。スマートフォンの 支払いも 使えません。\nこの 店で 使えるのは 何ですか。"
+          }
+        },
+        {
+          "id": "N4-02-L16",
+          "number": "L16",
+          "domain": "発話表現 · Юу хэлэх вэ",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-3",
+          "prompt": "病院へ 予約（よやく）時間を 変える 電話を します。何と 言いますか。",
+          "options": [
+            "1",
+            "2",
+            "3"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3"
+          ],
+          "answers": [
+            "3"
+          ],
+          "answerDisplay": "3. 予約（よやく）を 来週に 変更（へんこう）していただけますか。",
+          "explanation": "Ask directly for rescheduling to next week.",
+          "listening": {
+            "part": 3,
+            "script": "ナレーター：あしたの 予約を 来週に 変えたいです。\n1。予約（よやく）は 来週に 変わっていませんか。\n2。来週の 予約（よやく）を 昨日に してください。\n3。予約（よやく）を 来週に 変更（へんこう）していただけますか。"
+          }
+        },
+        {
+          "id": "N4-02-L17",
+          "number": "L17",
+          "domain": "発話表現 · Юу хэлэх вэ",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-3",
+          "prompt": "友だちに 借りた 本を 返すのが 遅れました。何と 言いますか。",
+          "options": [
+            "1",
+            "2",
+            "3"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3"
+          ],
+          "answers": [
+            "3"
+          ],
+          "answerDisplay": "3. 返すのが 遅くなって ごめん。",
+          "explanation": "Apologize for your late return of the book.",
+          "listening": {
+            "part": 3,
+            "script": "ナレーター：返す 約束の 日を 過ぎてしまいました。\n1。借りてあげて よかったね。\n2。返してくれて ありがとう。\n3。返すのが 遅くなって ごめん。"
+          }
+        },
+        {
+          "id": "N4-02-L18",
+          "number": "L18",
+          "domain": "発話表現 · Юу хэлэх вэ",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-3",
+          "prompt": "客が 来ました。中へ 案内します。何と 言いますか。",
+          "options": [
+            "1",
+            "2",
+            "3"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3"
+          ],
+          "answers": [
+            "1"
+          ],
+          "answerDisplay": "1. どうぞ こちらへ お入りください。",
+          "explanation": "Politely invite the guest inside.",
+          "listening": {
+            "part": 3,
+            "script": "ナレーター：会社に 来た お客さんを へやへ 案内します。\n1。どうぞ こちらへ お入りください。\n2。どうぞ 私が お入りください。\n3。どうぞ こちらへ 出ていってください。"
+          }
+        },
+        {
+          "id": "N4-02-L19",
+          "number": "L19",
+          "domain": "発話表現 · Юу хэлэх вэ",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-3",
+          "prompt": "友だちの 発表（はっぴょう）を ほめます。何と 言いますか。",
+          "options": [
+            "1",
+            "2",
+            "3"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3"
+          ],
+          "answers": [
+            "1"
+          ],
+          "answerDisplay": "1. とても わかりやすかったよ。",
+          "explanation": "Praise the clarity of the completed presentation.",
+          "listening": {
+            "part": 3,
+            "script": "ナレーター：友だちは 練習して、わかりやすい 発表を しました。\n1。とても わかりやすかったよ。\n2。まだ 発表（はっぴょう）していないね。\n3。全然 聞こえなかったよ。"
+          }
+        },
+        {
+          "id": "N4-02-L20",
+          "number": "L20",
+          "domain": "発話表現 · Юу хэлэх вэ",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-3",
+          "prompt": "職場で 一日 休みたいです。何と 言いますか。",
+          "options": [
+            "1",
+            "2",
+            "3"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3"
+          ],
+          "answers": [
+            "1"
+          ],
+          "answerDisplay": "1. 金曜日に お休みを いただけませんか。",
+          "explanation": "Ask to receive permission for your own leave.",
+          "listening": {
+            "part": 3,
+            "script": "ナレーター：用事が あるので 上司に 休みを お願いします。\n1。金曜日に お休みを いただけませんか。\n2。金曜日に お休みを あげませんか。\n3。金曜日に 休んでいただけませんか。"
+          }
+        },
+        {
+          "id": "N4-02-L21",
+          "number": "L21",
+          "domain": "即時応答 · Шуурхай хариу",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-4",
+          "prompt": "音声を聞いて、返事を選んでください。",
+          "options": [
+            "1",
+            "2",
+            "3"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3"
+          ],
+          "answers": [
+            "2"
+          ],
+          "answerDisplay": "2. いいえ、どういたしまして。",
+          "explanation": "Respond modestly to thanks for giving a ride.",
+          "listening": {
+            "part": 4,
+            "script": "女：駅まで 送ってくださって、ありがとうございました。\n1。いいえ、送ってください。\n2。いいえ、どういたしまして。\n3。いいえ、駅からですか。"
+          }
+        },
+        {
+          "id": "N4-02-L22",
+          "number": "L22",
+          "domain": "即時応答 · Шуурхай хариу",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-4",
+          "prompt": "音声を聞いて、返事を選んでください。",
+          "options": [
+            "1",
+            "2",
+            "3"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3"
+          ],
+          "answers": [
+            "1"
+          ],
+          "answerDisplay": "1. そうですか。明日 また 来ます。",
+          "explanation": "Plan another visit after learning Tanaka has left.",
+          "listening": {
+            "part": 4,
+            "script": "男：田中さんは もう 帰ったそうですよ。\n1。そうですか。明日 また 来ます。\n2。そうですか。昨日 帰りません。\n3。そうですか。今 田中さんが 来てください。"
+          }
+        },
+        {
+          "id": "N4-02-L23",
+          "number": "L23",
+          "domain": "即時応答 · Шуурхай хариу",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-4",
+          "prompt": "音声を聞いて、返事を選んでください。",
+          "options": [
+            "1",
+            "2",
+            "3"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3"
+          ],
+          "answers": [
+            "3"
+          ],
+          "answerDisplay": "3. ありがとう。じゃ、一つ いただくね。",
+          "explanation": "Politely accept the offered food.",
+          "listening": {
+            "part": 4,
+            "script": "女：よかったら、これ 食べてみて。\n1。ありがとう。一つ 食べてくれるね。\n2。ありがとう。食べてあげないで。\n3。ありがとう。じゃ、一つ いただくね。"
+          }
+        },
+        {
+          "id": "N4-02-L24",
+          "number": "L24",
+          "domain": "即時応答 · Шуурхай хариу",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-4",
+          "prompt": "音声を聞いて、返事を選んでください。",
+          "options": [
+            "1",
+            "2",
+            "3"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3"
+          ],
+          "answers": [
+            "3"
+          ],
+          "answerDisplay": "3. そうですね。暖房を つけましょうか。",
+          "explanation": "Offer heating in response to a cold room.",
+          "listening": {
+            "part": 4,
+            "script": "男：この へや、ちょっと 寒くないですか。\n1。そうですね。窓を 全部 あけましょうか。\n2。そうですね。冷房を 強くしましょうか。\n3。そうですね。暖房を つけましょうか。"
+          }
+        },
+        {
+          "id": "N4-02-L25",
+          "number": "L25",
+          "domain": "即時応答 · Шуурхай хариу",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-4",
+          "prompt": "音声を聞いて、返事を選んでください。",
+          "options": [
+            "1",
+            "2",
+            "3"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3"
+          ],
+          "answers": [
+            "1"
+          ],
+          "answerDisplay": "1. はい、あと 少しですから。",
+          "explanation": "Being nearly finished supports the yes response about tomorrow's deadline.",
+          "listening": {
+            "part": 4,
+            "script": "女：あしたまでに 終わりそうですか。\n1。はい、あと 少しですから。\n2。はい、まだ 始められませんから。\n3。はい、来週まで 無理（むり）ですから。"
+          }
+        },
+        {
+          "id": "N4-02-L26",
+          "number": "L26",
+          "domain": "即時応答 · Шуурхай хариу",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-4",
+          "prompt": "音声を聞いて、返事を選んでください。",
+          "options": [
+            "1",
+            "2",
+            "3"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3"
+          ],
+          "answers": [
+            "2"
+          ],
+          "answerDisplay": "2. あ、気がつきませんでした。ありがとうございます。",
+          "explanation": "Acknowledge the unnoticed dropped glove and thank the speaker.",
+          "listening": {
+            "part": 4,
+            "script": "男：手ぶくろが 落ちましたよ。\n1。あ、落としてあげます。ありがとうございます。\n2。あ、気がつきませんでした。ありがとうございます。\n3。あ、落ちないでください。ありがとうございます。"
+          }
+        },
+        {
+          "id": "N4-02-L27",
+          "number": "L27",
+          "domain": "即時応答 · Шуурхай хариу",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-4",
+          "prompt": "音声を聞いて、返事を選んでください。",
+          "options": [
+            "1",
+            "2",
+            "3"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3"
+          ],
+          "answers": [
+            "2"
+          ],
+          "answerDisplay": "2. 銀行に 勤めています。",
+          "explanation": "The honorific question asks about the listener's job.",
+          "listening": {
+            "part": 4,
+            "script": "女：お仕事は 何を なさっていますか。\n1。銀行を なさってください。\n2。銀行に 勤めています。\n3。銀行に なりますか。"
+          }
+        },
+        {
+          "id": "N4-02-L28",
+          "number": "L28",
+          "domain": "即時応答 · Шуурхай хариу",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-4",
+          "prompt": "音声を聞いて、返事を選んでください。",
+          "options": [
+            "1",
+            "2",
+            "3"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3"
+          ],
+          "answers": [
+            "2"
+          ],
+          "answerDisplay": "2. ええ、早めに 休むことに します。",
+          "explanation": "Accept the advice by deciding to rest early.",
+          "listening": {
+            "part": 4,
+            "script": "男：今日は 無理を しないほうが いいですよ。\n1。ええ、もっと 無理（むり）を します。\n2。ええ、早めに 休むことに します。\n3。ええ、休んでは いけません。"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -34,6 +34,8 @@ def fits(page, label):
     for width in [390, 320]:
         page.set_viewport_size({"width": width, "height": 844})
         assert page.evaluate("document.documentElement.scrollWidth<=innerWidth"), (label, width)
+        if label == "sit-english-reading":
+            assert page.locator(".eesh-passage").bounding_box()["height"] <= 844 * .35, (label, width, "passage should leave room for the question")
         page.screenshot(path=str(ART / ("eesh-" + label + "-" + str(width) + ".png")), full_page=True)
     page.set_viewport_size(previous)
 
@@ -48,7 +50,7 @@ with sync_playwright() as p:
 
     # The library and the ЭЕШ hub: three programmes, dense year cards, subject tabs.
     page.goto(BASE + "/exams")
-    expect(page.locator(".library-list .exam-card")).to_have_count(3)
+    expect(page.locator(".library-list .exam-card")).to_have_count(4)
     expect(page.locator(".library-list .exam-card.entrance")).to_contain_text("155")
     page.screenshot(path=str(ART / "eesh-library-desktop.png"), full_page=True)
     page.goto(BASE + "/exams/eesh")
@@ -147,9 +149,9 @@ with sync_playwright() as p:
     page.screenshot(path=str(ART / "eesh-sit-english-part2-desktop.png"), full_page=True)
     fits(page, "sit-english-part2")
 
-    # The dashboard link and program page use the new hub.
-    page.goto(BASE + "/dashboard")
-    expect(page.locator('.db-links a[href="/programs/entrance"]')).to_be_visible()
+    # The Workspace home and the program page use the new hub.
+    page.goto(BASE + "/workspace")
+    expect(page.locator('.wsp-card[href="/exams/eesh"]')).to_be_visible()
     page.goto(BASE + "/programs/entrance")
     expect(page.locator(".program-official-card")).to_have_count(3)
     # A Next dev-only performance measure can report a negative timestamp; it is not an app error.

@@ -3,13 +3,13 @@ const nextConfig: NextConfig = {
  poweredByHeader: false,
  serverExternalPackages: ["kokoro-js", "@huggingface/transformers", "onnxruntime-node", "phonemizer", "nodemailer"],
  outputFileTracingIncludes:{
-  "/*":["./assets/entrance-mocks/**/*.json"],
+  "/*":["./assets/entrance-mocks/**/*.json","./assets/jlpt/*.json"],
   "/api/labs/ielts-speaking/*":[
    "./node_modules/kokoro-js/voices/{af_heart,af_bella,am_michael,bf_emma,bm_george,bm_lewis}.bin",
    `./node_modules/onnxruntime-node/bin/napi-v3/${process.platform}/${process.arch}/*`,
   ],
-  "/api/mock-attempts/*/audio":["./assets/exams/ielts-*-part-*.mp3"],
-  "/api/exam-practice/*/audio":["./assets/exams/ielts-*-part-*.mp3"],
+  "/api/mock-attempts/*/audio":["./assets/exams/ielts-*-part-*.mp3","./assets/exams/jlpt-*-part-*.mp3"],
+  "/api/exam-practice/*/audio":["./assets/exams/ielts-*-part-*.mp3","./assets/exams/jlpt-*-part-*.mp3"],
   "/api/exams/audio-check":["./assets/exams/audio-check.mp3"],
  },
 };

@@ -8,7 +8,7 @@ export function VerifyEmailButton({ email }: { email: string }) {
     if (pending) return;
     setPending(true); setMessage("");
     try {
-      const result = await authClient.sendVerificationEmail({ email, callbackURL: "/profile" });
+      const result = await authClient.sendVerificationEmail({ email, callbackURL: "/workspace/profile" });
       setMessage(result.error ? "Илгээж чадсангүй. Түр хүлээгээд дахин оролдоно уу." : "Ирсэн имэйл болон spam хавтсаа шалгаарай.");
     } catch { setMessage("Холболт тасарлаа. Дахин оролдоно уу."); }
     finally { setPending(false); }

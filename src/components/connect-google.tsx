@@ -10,7 +10,7 @@ export function ConnectGoogle({ linked }: { linked: boolean }) {
     if (pending) return;
     setPending(true); setError("");
     try {
-      const result = await authClient.linkSocial({ provider: "google", callbackURL: "/profile", errorCallbackURL: "/profile" });
+      const result = await authClient.linkSocial({ provider: "google", callbackURL: "/workspace/profile", errorCallbackURL: "/workspace/profile" });
       if (!result.error) return;
       setError("Google холбож чадсангүй. Дахин оролдоно уу.");
     } catch { setError("Холболт тасарлаа. Дахин оролдоно уу."); }

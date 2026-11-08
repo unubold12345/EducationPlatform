@@ -32,4 +32,4 @@ repository at the same time. The permanent record stays in [OPERATIONS.md](./OPE
 
 | Agent | Started (UB) | Task | Files / areas | Shared resources | Status |
 | --- | --- | --- | --- | --- | --- |
-| Codex (GPT-6) | 2026-11-08 UB | Six offline JLPT N5/N4 mocks | MockExmps/JLPT/; docs/OPERATIONS.md outcome | None | In progress |
+| DeepSeek Flash (DeepSeek Harness) | 2026-11-08 21:50 | Owner-authorized commit, push and production deploy of the accumulated tree | git, build, 3001 preview, docs/OPERATIONS.md, docs/ACTIVE_WORK.md | `build + 3001`, `git` (push deploys) | in progress |

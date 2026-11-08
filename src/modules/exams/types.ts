@@ -1,5 +1,5 @@
 /** University Prep covers the "entrance" mocks: original ЭЕШ-style Mathematics, Physics and English. */
-export type ExamProgram = "sat" | "ielts" | "entrance";
+export type ExamProgram = "sat" | "ielts" | "entrance" | "jlpt";
 export type EntranceSubject = "math" | "physics" | "english";
 /** A site-drawn diagram (legacy mock content) or a stored, self-contained SVG diagram. */
 export type ExamFigure =
@@ -35,6 +35,8 @@ export type ExamQuestion = {
   answerDisplay?: string;
   /** Per-question context when it is not shared through the group. */
   context?: string;
+  /** Private listening material. Never included in a PublicQuestion or practice form. */
+  listening?: { part: number; script: string };
 };
 export type ExamStage = {
   id: string; title: string; seconds: number; kind: "questions" | "break" | "listening" | "writing" | "speaking" | "preparation";
@@ -57,13 +59,13 @@ export type ExamState = {
   responses: Record<string, string>; flags: string[]; routes: Record<string, "lower" | "higher">;
   completed: string[]; finishedAt: string | null;
 };
-export type PublicQuestion = Omit<ExamQuestion, "answers" | "explanation" | "pretest">;
+export type PublicQuestion = Omit<ExamQuestion, "answers" | "explanation" | "pretest" | "listening" | "answerDisplay">;
 export type PublicStage = Omit<ExamStage, "questions" | "variants"> & { questions: PublicQuestion[] };
 export type ExamReport = {
   sections: { title: string; correct: number; total: number; pending: number; points: number; earned: number }[];
-  reviews: { id: string; number?: string; domain: string; prompt: string; passage?: string; selected: string; answer: string; explanation: string; correct: boolean | null; pretest: boolean; figure?: ExamFigure; points: number; earned: number | null;
+  reviews: { id: string; groupId?: string; number?: string; domain: string; prompt: string; passage?: string; selected: string; answer: string; explanation: string; correct: boolean | null; pretest: boolean; figure?: ExamFigure; points: number; earned: number | null;
     /** The shared task text, figure and reading/listening material for a grouped page. */
-    instructions?: string; context?: string; contextTitle?: string }[];
+    instructions?: string; context?: string; contextTitle?: string; transcript?: string }[];
   points: { total: number; earned: number };
 };
 export type PublicExamAttempt = {

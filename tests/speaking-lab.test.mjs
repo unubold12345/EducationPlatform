@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {validSpeakingInput,normalizeSpeakingReply,validVoiceInput,speakingMessages,speechChunks,encodeVoiceFrame,VoiceFrameReader,overallBand,countWords} from "../src/modules/speaking-lab/contracts.ts";
+import {stressPronounI,validSpeakingInput,normalizeSpeakingReply,validVoiceInput,speakingMessages,speechChunks,encodeVoiceFrame,VoiceFrameReader,overallBand,countWords} from "../src/modules/speaking-lab/contracts.ts";
 import {encodeSpeechWav,decodeSpeechWav} from "../src/modules/speaking-lab/pcm.ts";
 
 const start={part:1,topic:"everyday",target:6.5,language:"en",action:"start",message:"",history:[],stats:null,timing:[]};
@@ -59,8 +59,9 @@ test("overall band follows IELTS half-band rounding",()=>{
 
 test("voice requests allow only stock voices and bounded speeds/text",()=>{
  assert.ok(validVoiceInput({text:"Hello, I'm Milo.",voice:"af_heart",speed:1}));
- assert.ok(validVoiceInput({text:"Hello.",voice:"bm_george",speed:.85}));
- for(const input of [{text:"Hello",voice:"clone-a-person",speed:1},{text:"Hello",voice:"bm_george",speed:2},{text:"x".repeat(701),voice:"bm_george",speed:1},{text:"Hello",voice:"bm_george",speed:"1"},{text:"Hello",voice:"bm_george",speed:1,url:"http://other"},{text:" ",voice:"bf_emma",speed:1}])assert.equal(validVoiceInput(input),false);
+ assert.ok(validVoiceInput({text:"Hello.",voice:"am_michael",speed:.85}));
+ assert.ok(validVoiceInput({text:"Hello.",voice:"bm_george",speed:1}));
+ for(const input of [{text:"Hello",voice:"clone-a-person",speed:1},{text:"Hello",voice:"am_michael",speed:2},{text:"x".repeat(701),voice:"am_michael",speed:1},{text:"Hello",voice:"am_michael",speed:"1"},{text:"Hello",voice:"am_michael",speed:1,url:"http://other"},{text:" ",voice:"af_heart",speed:1}])assert.equal(validVoiceInput(input),false);
 });
 
 test("speech is split into short sentence chunks with a quick first chunk",()=>{
@@ -100,4 +101,11 @@ test("local transcription accepts only bounded mono 16kHz PCM and preserves samp
  assert.equal(decodeSpeechWav(encodeSpeechWav(new Float32Array(100))),null);
  assert.equal(decodeSpeechWav(encodeSpeechWav(new Float32Array(1920001))),null);
  for(const [offset,value] of [[20,3],[22,2],[24,24000],[34,32]]){const copy=wav.slice(0),view=new DataView(copy);view.setUint16(offset,value,true);assert.equal(decodeSpeechWav(copy),null);}
+});
+
+test("the pronoun I keeps its vowel: espeak's unstressed aɪ forms get secondary stress",()=>{
+ assert.equal(stressPronounI("hˈaɪ, aɪm ˈɑːvə"),"hˈaɪ, ˌaɪm ˈɑːvə");
+ assert.equal(stressPronounI("aɪ wɪl ɡˈoʊ, aɪl ɡˈoʊ. aɪv bˈɪn! aɪd sˈeɪ"),"ˌaɪ wɪl ɡˈoʊ, ˌaɪl ɡˈoʊ. ˌaɪv bˈɪn! ˌaɪd sˈeɪ");
+ assert.equal(stressPronounI("nˈaɪs tə mˈiːt juː, aɪɐm fˈaɪn"),"nˈaɪs tə mˈiːt juː, ˌaɪ æm fˈaɪn");
+ assert.equal(stressPronounI("maɪ ˈaɪz ænd ˈaɪs wˌaɪ"),"maɪ ˈaɪz ænd ˈaɪs wˌaɪ");
 });

@@ -16,11 +16,11 @@ function Blocked({ href }: { href: string }): ReactNode {
     <p className="eyebrow">Дадлагын горим</p>
     <h1>Эхлээд шалгалтаа дуусгана уу</h1>
     <p>Танд хугацаатай шалгалт нээлттэй байна. Шалгалтын үеэр хариу, тайлбар болон AI туслах хаалттай байдаг. Шалгалт дуусмагц дадлагын горим нээгдэнэ.</p>
-    <div className="result-actions"><Link className="button" href={href}>Шалгалт руу буцах →</Link><Link className="text-link" href="/dashboard">Миний бэлтгэл</Link></div>
+    <div className="result-actions"><Link className="button" href={href}>Шалгалт руу буцах →</Link><Link className="text-link" href="/workspace">Workspace</Link></div>
   </div>;
 }
 
-export default async function PracticePage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function PracticePage({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{section?:string}> }) {
   const { slug } = await params;
   const user = await requireUser(`/exams/${slug}/practice`);
   let view;
@@ -31,5 +31,5 @@ export default async function PracticePage({ params }: { params: Promise<{ slug:
     if (error instanceof ApiError && error.status === 404) notFound();
     throw error;
   }
-  return <PracticeWorkspace initial={view} speakingLab={speakingLabEnabled()} />;
+  return <PracticeWorkspace initial={view} speakingLab={speakingLabEnabled()} initialSection={(await searchParams).section} />;
 }

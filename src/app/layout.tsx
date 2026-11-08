@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Golos_Text } from "next/font/google";
+import { Inter } from "next/font/google";
 import { site } from "@/lib/site";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { MainNavigation } from "@/components/main-navigation";
@@ -11,13 +11,13 @@ import "./theme.css";
 import "./footer-compact.css";
 
 // Mongolian Ө and Ү live in the cyrillic-ext subset, so both Cyrillic subsets are required.
-const uiFont = Golos_Text({ subsets: ["latin", "cyrillic", "cyrillic-ext"], variable: "--font-ui", display: "swap" });
+const uiFont = Inter({ subsets: ["latin", "cyrillic", "cyrillic-ext"], variable: "--font-ui", display: "swap" });
 
-const themeScript = `(function(){var t;try{t=localStorage.getItem('education-theme')}catch{}document.documentElement.dataset.theme=t==='dark'||t==='light'?t:matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';var a;try{a=localStorage.getItem('education-account')}catch{}document.documentElement.dataset.account=a==='member'?'member':'guest'})()`;
+const themeScript = `(function(){var t;try{t=localStorage.getItem('education-theme')}catch{}document.documentElement.dataset.theme=t==='dark'||t==='light'?t:matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';var a;try{a=localStorage.getItem('education-account')}catch{}document.documentElement.dataset.account=a==='member'?'member':'guest';var r;try{r=localStorage.getItem('education-workspace-rail')}catch{}if(r==='collapsed')document.documentElement.dataset.wsRail='collapsed'})()`;
 
 export const metadata: Metadata = {
   title: { default: "Education — Суралцах дараагийн алхам", template: "%s | Education" },
-  description: "SAT, IELTS, элсэлтийн бэлтгэлийн 80 асуулт, бичих болон ярих 4 даалгавар.",
+  description: "SAT, IELTS, ЭЕШ, JLPT mock шалгалт, цаггүй дадлага, AI туслах, ярих, бичих, сонсох Workshop — нэг Workspace-д.",
   robots: { index: false, follow: false },
 };
 
@@ -32,7 +32,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <main id="main"><EducationBackdrop />{children}</main>
     <footer className="site-footer"><div className="footer-inner">
       <div className="footer-brand-block"><Link href="/" className="footer-brand">Education<span>·</span></Link></div>
-      <div className="footer-links" role="navigation" aria-label="Хөлийн цэс"><Link href="/programs">Хөтөлбөрийн сан</Link><Link href="/exams">Шалгалтын сан</Link><Link href="/plans">Багцын мэдээлэл</Link><Link href="/workshop">Workshop</Link><Link href="/dashboard">Бэлтгэлийн явц</Link></div>
+      <div className="footer-links" role="navigation" aria-label="Хөлийн цэс"><Link href="/#programs">Хөтөлбөрийн сан</Link><Link href="/exams">Шалгалтын сан</Link><Link href="/workspace/workshop">Workshop</Link><Link href="/workspace">Workspace</Link></div>
       <p className="footer-note"><strong>SAT · IELTS · ЭЛСЭЛТ</strong>College Board болон IELTS-ийн албан ёсны үйлчилгээ биш.</p>
     </div></footer>
   </body></html>;

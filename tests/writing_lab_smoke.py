@@ -26,9 +26,11 @@ with sync_playwright() as p:
  browser=p.chromium.launch(headless=True)
  context=browser.new_context(viewport={'width':1440,'height':1000},color_scheme='dark')
  page=context.new_page();errors=[];page.on('pageerror',lambda e:errors.append(str(e)))
- page.goto(BASE+'/workshop');page.wait_for_load_state('networkidle')
+ page.goto(BASE+'/workshop');page.wait_for_load_state('networkidle');expect(page).to_have_url(BASE+'/workspace/workshop')
  tile=page.locator('a.workshop-tile[href="/labs/ielts-writing"]');expect(tile).to_be_visible();expect(tile.locator('svg.workshop-paper')).to_be_visible()
  tile.click();page.wait_for_url('**/labs/ielts-writing');page.wait_for_load_state('networkidle')
+ expect(page.locator('.wsp-nav a[href="/workspace/workshop"]')).to_have_attribute('aria-current','page')
+ expect(page.locator('.site-header')).to_be_hidden()
  assert 'noindex' in page.locator('meta[name="robots"]').get_attribute('content')
  # Signed out: writing works locally, AI asks for sign-in, API refuses.
  expect(page.get_by_role('link',name='Нэвтэрч AI-аар шалгуулах →')).to_be_visible()

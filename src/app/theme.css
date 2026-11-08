@@ -1,49 +1,49 @@
-/* EducationPlatform — 2026 dark-first interface layer.
+/* EducationPlatform — Workspace palette and type across the public site.
    Loaded after globals.css. Keeps the validated semantic markup and test hooks,
    and replaces the surface, type scale, rhythm and component language. */
 
 :root {
   --font-mono: var(--font-ui), Arial, sans-serif;
-  --ink: #111118;
-  --muted: #5f5f72;
-  --blue: #5145d8;
-  --blue-dark: #372caf;
-  --sky: #efedfb;
-  --line: #e5e4ee;
-  --white: #fbfbfd;
-  --paper: #f5f4fa;
-  --purple: #f1ecff;
-  --green: #e8f4ee;
+  --ink: #111111;
+  --muted: #6b7280;
+  --blue: #007aff;
+  --blue-dark: #0062d6;
+  --sky: #eaf3ff;
+  --line: #e7e9ee;
+  --white: #ffffff;
+  --paper: #f6f8fa;
+  --purple: #f0ecff;
+  --green: #e3f6ee;
   --radius: 20px;
   --surface: #ffffff;
-  --surface-hover: #f7f6fc;
-  --btn-bg: #111118;
+  --surface-hover: #eef1f5;
+  --btn-bg: #007aff;
   --btn-ink: #ffffff;
-  --btn-hover: #292936;
+  --btn-hover: #0062d6;
   --ring: 0 0 0 1px color-mix(in srgb, var(--ink) 8%, transparent);
-  --shadow-lift: 0 26px 70px -42px color-mix(in srgb, var(--ink) 45%, transparent);
+  --shadow-lift: 0 14px 40px -18px rgba(17, 24, 39, .18), 0 2px 6px rgba(17, 24, 39, .04);
   --glow: color-mix(in srgb, var(--blue) 24%, transparent);
 }
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --ink: #f5f4fb;
-  --muted: #9b9ab0;
-  --blue: #a99dff;
-  --blue-dark: #c9c2ff;
-  --sky: #121220;
-  --line: #212130;
-  --white: #07070d;
-  --paper: #0a0a12;
-  --purple: #17122a;
-  --green: #0c1f19;
-  --surface: #0d0d17;
-  --surface-hover: #11111c;
-  --btn-bg: #f4f2ff;
-  --btn-ink: #08080f;
-  --btn-hover: #ffffff;
+  --ink: #f1f3f7;
+  --muted: #9aa3b2;
+  --blue: #3d95ff;
+  --blue-dark: #6aadff;
+  --sky: #10233d;
+  --line: #242931;
+  --white: #0b0d11;
+  --paper: #111318;
+  --purple: #1d1836;
+  --green: #0f2a20;
+  --surface: #14171d;
+  --surface-hover: #1b1f26;
+  --btn-bg: #3d95ff;
+  --btn-ink: #ffffff;
+  --btn-hover: #6aadff;
   --ring: 0 0 0 1px #ffffff0f;
-  --shadow-lift: 0 30px 90px -50px #000000;
+  --shadow-lift: 0 18px 50px -24px rgba(0, 0, 0, .7), 0 0 0 1px rgba(255, 255, 255, .02);
   --glow: color-mix(in srgb, var(--blue) 30%, transparent);
 }
 
@@ -73,7 +73,7 @@ body::before {
   pointer-events: none;
   background:
     radial-gradient(900px 520px at 8% -8%, color-mix(in srgb, var(--blue) 16%, transparent), transparent 68%),
-    radial-gradient(760px 460px at 96% 2%, color-mix(in srgb, #7a5cff 11%, transparent), transparent 70%),
+    radial-gradient(760px 460px at 96% 2%, color-mix(in srgb, var(--blue) 8%, transparent), transparent 70%),
     radial-gradient(620px 480px at 50% 110%, color-mix(in srgb, var(--blue) 8%, transparent), transparent 72%);
   opacity: .9;
 }
@@ -123,7 +123,7 @@ main, .site-footer { position: relative; z-index: 1; }
   display: block;
   margin-top: 3px;
   font-family: var(--font-mono);
-  font-size: 8.5px;
+  font-size: 10px;
   font-weight: 500;
   letter-spacing: .2em;
   color: var(--muted);
@@ -132,26 +132,26 @@ main, .site-footer { position: relative; z-index: 1; }
   width: 38px;
   height: 38px;
   border-radius: 12px;
-  background: linear-gradient(145deg, #9d8cff 0%, #5b48dd 58%, #3a2bb0 100%);
+  background: linear-gradient(135deg, #2f80ff, #6a4cf5);
   color: #fff;
   font-size: 30px;
   padding-bottom: 4px;
-  box-shadow: 0 10px 26px -10px #6c5ce7cc, inset 0 1px 0 #ffffff4d;
+  box-shadow: 0 6px 14px -6px rgba(47, 128, 255, .7);
 }
 :root[data-theme="dark"] .brand-mark {
-  background: linear-gradient(145deg, #c3b8ff 0%, #7b66ff 42%, #5140c9 100%);
-  color: #0a0814;
-  box-shadow: 0 10px 30px -10px #7b66ffcc, inset 0 1px 0 #fff6;
+  background: linear-gradient(135deg, #2f80ff, #6a4cf5);
+  color: #fff;
+  box-shadow: 0 6px 14px -6px rgba(47, 128, 255, .7);
 }
-.brand-mark span { right: 4px; bottom: 3px; font-size: 20px; color: #e6ddff; }
-:root[data-theme="dark"] .brand-mark span { color: #2a1a70; }
+.brand-mark span { right: 4px; bottom: 3px; font-size: 20px; color: #ffd23f; }
+:root[data-theme="dark"] .brand-mark span { color: #ffd23f; }
 
 .header-inner nav {
   gap: 2px;
   margin-left: auto;
   margin-right: auto;
   padding: 5px;
-  font-size: 12px;
+  font-size: 14px;
   background: color-mix(in srgb, var(--surface) 70%, transparent);
   border: 1px solid var(--line);
   border-radius: 999px;
@@ -165,7 +165,7 @@ main, .site-footer { position: relative; z-index: 1; }
   transition: color .16s, background .16s;
 }
 .header-inner nav a:hover { color: var(--ink); background: color-mix(in srgb, var(--ink) 6%, transparent); }
-.header-inner nav a[aria-current="page"] { background: var(--ink); color: var(--white); }
+.header-inner nav a[aria-current="page"] { background: var(--surface-hover); color: var(--ink); }
 
 .header-actions { gap: 8px; }
 .theme-toggle {
@@ -377,13 +377,13 @@ a:focus-visible, button:focus-visible, input:focus-visible, summary:focus-visibl
 }
 .hero h1 > span {
   color: var(--blue);
-  background: linear-gradient(102deg, var(--blue) 8%, #9b7bff 62%, color-mix(in srgb, var(--blue) 62%, var(--muted)) 100%);
+  background: linear-gradient(102deg, var(--blue), var(--blue-dark));
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 :root[data-theme="dark"] .hero h1 > span {
-  background: linear-gradient(102deg, #b4a6ff 4%, #8b71ff 52%, #d6ccff 102%);
+  background: linear-gradient(102deg, var(--blue), var(--blue-dark));
   -webkit-background-clip: text;
   background-clip: text;
 }

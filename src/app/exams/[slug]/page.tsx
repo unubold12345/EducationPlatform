@@ -11,6 +11,7 @@ import { getDb } from "@/lib/db";
 import { hasSubscription } from "@/modules/subscriptions/access";
 import { mockBriefingSummary } from "@/modules/exams/briefing-summary";
 import { PracticeEntry } from "@/modules/exam-practice/entry";
+import { JlptBriefing } from "@/modules/exams/jlpt/briefing";
 import { EntranceBriefing } from "@/modules/exams/entrance/briefing";
 
 export async function generateMetadata({params}:{params:Promise<{slug:string}>}):Promise<Metadata>{return{title:(await getExam((await params).slug))?.title??"Шалгалт олдсонгүй"};}
@@ -32,6 +33,7 @@ export default async function ExamPage({params}:{params:Promise<{slug:string}>})
   const subscriptionSitting=session?await getDb().mockAttempt.findFirst({where:{userId:session.user.id,slug:exam.slug,status:"IN_PROGRESS",subscriptionAccess:true},select:{id:true}}):null;
   const activeAttempt=session?await getDb().mockAttempt.findFirst({where:{userId:session.user.id,slug:exam.slug,status:"IN_PROGRESS"},select:{id:true}}):null;
   const hasAccess=Boolean(access)||subscribed||Boolean(subscriptionSitting);
+  if(exam.program==="jlpt")return <JlptBriefing exam={exam} hasAccess={hasAccess} loggedIn={Boolean(session)} activeAttemptId={activeAttempt?.id}/>;
   if(exam.program==="entrance")return <EntranceBriefing exam={exam} hasAccess={hasAccess} loggedIn={Boolean(session)} activeAttemptId={activeAttempt?.id}/>;
   const summary=mockBriefingSummary(exam);
   const sat=exam.program==="sat";

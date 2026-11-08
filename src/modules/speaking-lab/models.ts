@@ -2,6 +2,7 @@ import "server-only";
 import path from "node:path";
 import os from "node:os";
 import {createRequire} from "node:module";
+import {stressPronounI} from "./contracts";
 import type {KokoroTTS} from "kokoro-js";
 import type {AutomaticSpeechRecognitionPipeline} from "@huggingface/transformers";
 
@@ -22,7 +23,12 @@ export function voiceModel() {
   const {env}=require("@huggingface/transformers") as typeof import("@huggingface/transformers");
   const {KokoroTTS}=require("kokoro-js") as typeof import("kokoro-js");
   env.cacheDir=cacheDir();
-  return KokoroTTS.from_pretrained("onnx-community/Kokoro-82M-v1.0-ONNX",{dtype:"q8",device:"cpu"});
+  // fp32 is the same full-precision Kokoro model that voiced the IELTS mock recordings; on CPU it was also ~3x faster per sentence than q8.
+  const tts=await KokoroTTS.from_pretrained("onnx-community/Kokoro-82M-v1.0-ONNX",{dtype:"fp32",device:"cpu"});
+  // kokoro-js passes its phoneme string straight to the tokenizer; fix the pronoun "I" there.
+  const tokenizer=tts.tokenizer;
+  tts.tokenizer=((text:string,options?:object)=>tokenizer(stressPronounI(text),options)) as unknown as typeof tokenizer;
+  return tts;
  })().catch(error=>{state.educationLabVoice=undefined;throw error;});
  return state.educationLabVoice;
 }

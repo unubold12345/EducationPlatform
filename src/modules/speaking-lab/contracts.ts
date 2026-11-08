@@ -25,6 +25,13 @@ export const speakingVoices={
  bm_lewis:{label:"Lewis",accent:"British",gender:"Male",note:"Deep"},
 } as const;
 export type SpeakingVoice=keyof typeof speakingVoices;
+// espeak leaves the pronoun "I" unstressed (aɪm, aɪl, aɪɐm), and Kokoro then reduces it toward "em".
+// Give it secondary stress and split espeak's merged "I am" before tokenising.
+const PHONEME_EDGE=String.raw`\s;:,.!?—…"«»“”()`;
+const PRONOUN_I=new RegExp(`(^|[${PHONEME_EDGE}])aɪ(ɐm|m|l|v|d)?(?=$|[${PHONEME_EDGE}])`,"g");
+export function stressPronounI(phonemes:string):string {
+ return phonemes.replace(PRONOUN_I,(_,edge:string,rest:string|undefined)=>`${edge}ˌaɪ${rest==="ɐm"?" æm":rest??""}`);
+}
 export const speakingSpeeds=[0.85,0.95,1] as const;
 export type SpeakingSpeed=typeof speakingSpeeds[number];
 export const speakingTargets=[5,5.5,6,6.5,7,7.5,8] as const;

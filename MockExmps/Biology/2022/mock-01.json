@@ -1,0 +1,1597 @@
+{
+  "schemaVersion": 1,
+  "subject": "biology",
+  "language": "mn",
+  "referenceYear": 2022,
+  "mockVariant": "B1",
+  "title": "Биологи · 2022 оны загвар · B1",
+  "official": false,
+  "author": "Codex (GPT-6)",
+  "referenceVariant": "A",
+  "reference": {
+    "kind": "archived-official-pdf",
+    "url": "https://eec.mn/post/2191",
+    "pdfUrl": "https://eec.mn/wp-content/uploads/2022/08/for-print-A.pdf",
+    "archiveUrl": "https://web.archive.org/web/20240716083129/https://eec.mn/wp-content/uploads/2022/08/for-print-A.pdf",
+    "localReference": "reference/official-A.pdf",
+    "fullPaperRecovered": true,
+    "gaps": [
+      "Source PDF has broken/missing font streams; retain original bytes and use bank text plus decoded extraction for reading",
+      "Some source table text is clipped"
+    ],
+    "pdfSha256": "939ac786cfcc37eb77f09a70be86c3e7123152aabbbc2d777d1f10afa4a3f69e"
+  },
+  "durationMinutes": 80,
+  "totalPoints": 100,
+  "difficulty": {
+    "target": "Same level as reference; change contexts, not intended difficulty",
+    "verified": false,
+    "note": "Teacher review and student-based equating have not been performed."
+  },
+  "completionStatus": "draft-requires-reference-and-fidelity-review",
+  "limitations": [
+    "Source PDF has broken/missing font streams; retain original bytes and use bank text plus decoded extraction for reading",
+    "Some source table text is clipped",
+    "Some MCQ slots are topic-level adaptations, not exact parallel items.",
+    "Part II response packaging may differ from official digit grouping."
+  ],
+  "answerProvenance": "Answers and explanations authored by Codex (GPT-6); unofficial. No reference-site answer CSS used.",
+  "instructions": [
+    "80 минут. Нийт 100 оноо.",
+    "I хэсгийн даалгавар бүрт A–E-ээс нэг хариу сонго.",
+    "II хэсэгт хариуг өгөгдсөн нэгж, нарийвчлалаар бич.",
+    "Зураг нь бодит хэмжээсээр биш.",
+    "Энэ бол хянан магадлаагүй бэлтгэлийн хувилбар."
+  ],
+  "sections": [
+    {
+      "id": "I",
+      "title": "Сонгох даалгавар",
+      "points": 76,
+      "questions": [
+        {
+          "prompt": "Борооны хорхой-ийн хүрээ, биеийн хөндийн шинжийг зөв сонго.",
+          "explanation": "Гархит хорхой жинхэнэ целомтой.",
+          "id": "1",
+          "type": "multiple-choice",
+          "points": 1,
+          "skill": "worms",
+          "referenceItem": "1",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "Гархит хорхой; жинхэнэ хөндий",
+            "B": "Гархит хорхой; хуурамч хөндий",
+            "C": "Хавтгай хорхой; хөндийгүй",
+            "D": "Дугариг хорхой; хуурамч хөндий",
+            "E": "Хавтгай хорхой; жинхэнэ хөндий"
+          },
+          "answer": "A",
+          "answerText": "Гархит хорхой; жинхэнэ хөндий"
+        },
+        {
+          "prompt": "Талхны хөгц-ийн эсийн хана, нөөц нүүрс усыг зөв сонго.",
+          "explanation": "Мөөгөнцрийн хана хитинтэй, нөөц бодис гликоген.",
+          "id": "2",
+          "type": "multiple-choice",
+          "points": 2,
+          "skill": "fungi",
+          "referenceItem": "2",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "Муреин; гликоген",
+            "B": "Ханагүй; гликоген",
+            "C": "Хитин; цардуул",
+            "D": "Хитин; гликоген",
+            "E": "Целлюлоз; цардуул"
+          },
+          "answer": "D",
+          "answerText": "Хитин; гликоген",
+          "figureRole": "original task diagram or data table",
+          "figure": {
+            "path": "images/mock-01/q-02.svg",
+            "alt": "Даалгаврын зохиомол бүдүүвч / өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          }
+        },
+        {
+          "prompt": "Судалгааны цуглуулгын амьтдыг ангитай нь тохируул.\n1. Эрвээхэй\n2. Хилэнцэт хорхой\n3. Сам хорхой\na. Шавж\nb. Аалз хэлбэртэн\nc. Хавч хэлбэртэн",
+          "explanation": "Эрвээхэй: Шавж; Хилэнцэт хорхой: Аалз хэлбэртэн; Сам хорхой: Хавч хэлбэртэн.",
+          "id": "3",
+          "type": "multiple-choice",
+          "points": 1,
+          "skill": "classes",
+          "referenceItem": "3",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "1a, 2c, 3b",
+            "B": "1b, 2a, 3c",
+            "C": "1c, 2a, 3b",
+            "D": "1b, 2c, 3a",
+            "E": "1a, 2b, 3c"
+          },
+          "answer": "E",
+          "answerText": "1a, 2b, 3c",
+          "figureRole": "original task diagram or data table",
+          "figure": {
+            "path": "images/mock-01/q-03.svg",
+            "alt": "Даалгаврын зохиомол бүдүүвч / өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          }
+        },
+        {
+          "prompt": "Шош-тай харьцуулсан ургамлын цуглуулгад дараах төлөөлөгчдийг ялгах үндсэн шинжийг тохируул.\n1. Хөвд\n2. Ойм\n3. Нарс\na. Жинхэнэ дамжуулах багцгүй\nb. Судастай, спороор үржинэ\nc. Үр нь боргоцойн хайрсан дээр",
+          "explanation": "Хөвд: Жинхэнэ дамжуулах багцгүй; Ойм: Судастай, спороор үржинэ; Нарс: Үр нь боргоцойн хайрсан дээр.",
+          "id": "4",
+          "type": "multiple-choice",
+          "points": 2,
+          "skill": "plantkey",
+          "referenceItem": "4",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "1b, 2a, 3c",
+            "B": "1a, 2b, 3c",
+            "C": "1a, 2c, 3b",
+            "D": "1b, 2c, 3a",
+            "E": "1c, 2a, 3b"
+          },
+          "answer": "B",
+          "answerText": "1a, 2b, 3c",
+          "figureRole": "original task diagram or data table",
+          "figure": {
+            "path": "images/mock-01/q-04.svg",
+            "alt": "Даалгаврын зохиомол бүдүүвч / өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          }
+        },
+        {
+          "prompt": "Амьтныг түүний ангийн онцлогтой тохируул.\n1. Гүрвэл\n2. Тагтаа\n3. Хулгана\na. Хуурай хайрстай арьс\nb. Өд сөд\nc. Сүүний булчирхай",
+          "explanation": "Гүрвэл: Хуурай хайрстай арьс; Тагтаа: Өд сөд; Хулгана: Сүүний булчирхай.",
+          "id": "5",
+          "type": "multiple-choice",
+          "points": 1,
+          "skill": "vertebrate",
+          "referenceItem": "5",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "1a, 2c, 3b",
+            "B": "1a, 2b, 3c",
+            "C": "1b, 2a, 3c",
+            "D": "1c, 2a, 3b",
+            "E": "1b, 2c, 3a"
+          },
+          "answer": "B",
+          "answerText": "1a, 2b, 3c",
+          "figureRole": "original task diagram or data table",
+          "figure": {
+            "path": "images/mock-01/q-05.svg",
+            "alt": "Даалгаврын зохиомол бүдүүвч / өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          }
+        },
+        {
+          "prompt": "Нойр булчирхай-н энзим их ялгаруулдаг эсэд аль эрхтэнцэр хосоороо их хөгжсөн байх вэ?",
+          "explanation": "Ялгаруулах уураг барзгар ЭПТ-д нийлэгжиж Гольджид боловсруулагдан савлагдана.",
+          "id": "6",
+          "type": "multiple-choice",
+          "points": 1,
+          "skill": "organelles",
+          "referenceItem": "6",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "Центромер ба хроматид",
+            "B": "Хлоропласт ба төв вакуоль",
+            "C": "Эсийн хана ба кутикула",
+            "D": "Ксилем ба флоэм",
+            "E": "Барзгар ЭПТ ба Гольджийн аппарат"
+          },
+          "answer": "E",
+          "answerText": "Барзгар ЭПТ ба Гольджийн аппарат",
+          "figureRole": "original task diagram or data table",
+          "figure": {
+            "path": "images/mock-01/q-06.svg",
+            "alt": "Даалгаврын зохиомол бүдүүвч / өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          }
+        },
+        {
+          "prompt": "Энзимт урвалын графикаас 3 минутын дараах бүтээгдэхүүний хэмжээг (мл) унш.",
+          "explanation": "3 мин-д муруйн ординат 24 мл.",
+          "calculation": {
+            "operation": "graph_lookup",
+            "x": 3,
+            "result": 24
+          },
+          "id": "7",
+          "type": "multiple-choice",
+          "points": 2,
+          "skill": "enzymegraph",
+          "referenceItem": "7",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "23",
+            "B": "25",
+            "C": "24",
+            "D": "12",
+            "E": "48"
+          },
+          "answer": "C",
+          "answerText": "24",
+          "figureRole": "original task diagram or data table",
+          "figure": {
+            "path": "images/mock-01/q-07.svg",
+            "alt": "Даалгаврын зохиомол бүдүүвч / өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          }
+        },
+        {
+          "prompt": "Шош-ийн эсийн зохиомол бүдүүвчид 2 дугаартай бүтцийг нэрлэ.",
+          "explanation": "2 нь бөөм, 3 нь дотоод нугалаастай митохондри, 4 нь тилакоидын багцтай хлоропласт.",
+          "id": "8",
+          "type": "multiple-choice",
+          "points": 2,
+          "skill": "cellimage",
+          "referenceItem": "8",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "Бөөм",
+            "B": "Эсийн хана",
+            "C": "Вакуоль",
+            "D": "Хлоропласт",
+            "E": "Митохондри"
+          },
+          "answer": "A",
+          "answerText": "Бөөм",
+          "figureRole": "original task diagram or data table",
+          "figure": {
+            "path": "images/mock-01/q-08.svg",
+            "alt": "Даалгаврын зохиомол бүдүүвч / өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          }
+        },
+        {
+          "prompt": "Эсийн эрхтэнцрийг үүрэгтэй нь зөв тохируул.\n1. Митохондри\n2. Хлоропласт\n3. Рибосом\na. Аэроб амьсгалын АТФ үүсэлт\nb. Гэрлийн энергийг хувиргах\nc. Полипептид нийлэгжүүлэх",
+          "explanation": "Митохондри: Аэроб амьсгалын АТФ үүсэлт; Хлоропласт: Гэрлийн энергийг хувиргах; Рибосом: Полипептид нийлэгжүүлэх.",
+          "id": "9",
+          "type": "multiple-choice",
+          "points": 2,
+          "skill": "organelles",
+          "referenceItem": "9",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "1b, 2c, 3a",
+            "B": "1a, 2b, 3c",
+            "C": "1b, 2a, 3c",
+            "D": "1a, 2c, 3b",
+            "E": "1c, 2a, 3b"
+          },
+          "answer": "B",
+          "answerText": "1a, 2b, 3c",
+          "figureRole": "original task diagram or data table",
+          "figure": {
+            "path": "images/mock-01/q-09.svg",
+            "alt": "Даалгаврын зохиомол бүдүүвч / өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          }
+        },
+        {
+          "prompt": "Нэг хоногт орсон ус 2500 мл, шээснээс бусад замаар алдсан ус 1100 мл. Усны тэнцвэр хэвийн бол шээсээр хэдэн мл ус гарсан бэ?",
+          "explanation": "2500 − 1100 = 1400 мл.",
+          "calculation": {
+            "operation": "subtract",
+            "operands": [
+              2500,
+              1100
+            ],
+            "result": 1400
+          },
+          "id": "10",
+          "type": "multiple-choice",
+          "points": 1,
+          "skill": "waterbalance",
+          "referenceItem": "10",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "700",
+            "B": "1400",
+            "C": "1401",
+            "D": "2800",
+            "E": "1399"
+          },
+          "answer": "B",
+          "answerText": "1400",
+          "figureRole": "original task diagram or data table",
+          "figure": {
+            "path": "images/mock-01/q-10.svg",
+            "alt": "Даалгаврын зохиомол бүдүүвч / өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          }
+        },
+        {
+          "prompt": "Шошны шүүс-нд NaOH ба CuSO₄ нэмэхэд нил ягаан болов. Юу илэрсэн бэ?",
+          "explanation": "Биуретийн урвал пептидийн холбоог илрүүлнэ.",
+          "id": "11",
+          "type": "multiple-choice",
+          "points": 2,
+          "skill": "biuret",
+          "referenceItem": "11",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "ДНХ",
+            "B": "Өөх тос",
+            "C": "Глюкоз",
+            "D": "Цардуул",
+            "E": "Уураг"
+          },
+          "answer": "E",
+          "answerText": "Уураг",
+          "figureRole": "original task diagram or data table",
+          "figure": {
+            "path": "images/mock-01/q-11.svg",
+            "alt": "Даалгаврын зохиомол бүдүүвч / өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          }
+        },
+        {
+          "prompt": "Шош-ийг гэрэлд байлгахад фотосинтезийн эх бодисууд аль вэ?",
+          "explanation": "Нүүрсхүчлийн хий, уснаас гэрлийн энерги ашиглан нүүрс ус үүсгэнэ.",
+          "id": "12",
+          "type": "multiple-choice",
+          "points": 1,
+          "skill": "photosynthesis",
+          "referenceItem": "12",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "CO₂ ба H₂O",
+            "B": "АТФ ба гликоген",
+            "C": "CO₂ ба O₂",
+            "D": "Уураг ба H₂O",
+            "E": "Глюкоз ба O₂"
+          },
+          "answer": "A",
+          "answerText": "CO₂ ба H₂O",
+          "figureRole": "original task diagram or data table",
+          "figure": {
+            "path": "images/mock-01/q-12.svg",
+            "alt": "Даалгаврын зохиомол бүдүүвч / өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          }
+        },
+        {
+          "prompt": "Дутагдлын шинжийг шаардлагатай бодистой тохируул.\n1. Ургамлын хуучин навч шарлах, хлорофилл багасах\n2. Хүний цус багадалт, гемоглобин бага\n3. Ясны эрдэсжилт багасах\na. Магни\nb. Төмөр\nc. Кальци",
+          "explanation": "Ургамлын хуучин навч шарлах, хлорофилл багасах: Магни; Хүний цус багадалт, гемоглобин бага: Төмөр; Ясны эрдэсжилт багасах: Кальци.",
+          "id": "13",
+          "type": "multiple-choice",
+          "points": 1,
+          "skill": "mineral",
+          "referenceItem": "13",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "1c, 2a, 3b",
+            "B": "1b, 2a, 3c",
+            "C": "1b, 2c, 3a",
+            "D": "1a, 2b, 3c",
+            "E": "1a, 2c, 3b"
+          },
+          "answer": "D",
+          "answerText": "1a, 2b, 3c",
+          "figureRole": "original task diagram or data table",
+          "figure": {
+            "path": "images/mock-01/q-13.svg",
+            "alt": "Даалгаврын зохиомол бүдүүвч / өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          }
+        },
+        {
+          "prompt": "Шош-ийн потометрийн хийн бөмбөлгийн шилжилтийг нэг минутанд хэмжив. Хамгийн их транспирацтай нөхцөлийг сонго.",
+          "explanation": "Салхи усны уурын хилийн давхаргыг зайлуулж, хуурай агаар градиентийг ихэсгэнэ.",
+          "id": "14",
+          "type": "multiple-choice",
+          "points": 2,
+          "skill": "transpiration",
+          "referenceItem": "14",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "Хуурай, салхитай",
+            "B": "Харанхуй, чийгтэй",
+            "C": "Өндөр чийгтэй",
+            "D": "Навчийг тослосон",
+            "E": "Салхигүй, сэрүүн"
+          },
+          "answer": "A",
+          "answerText": "Хуурай, салхитай",
+          "figureRole": "original task diagram or data table",
+          "figure": {
+            "path": "images/mock-01/q-14.svg",
+            "alt": "Даалгаврын зохиомол бүдүүвч / өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          }
+        },
+        {
+          "prompt": "Туулай-ны цусны их эргэлтийн дарааллыг сонго.",
+          "explanation": "Их эргэлт зүүн ховдлоос эхэлж биеийн эдээр дамжин баруун тосгуурт төгсөнө.",
+          "id": "15",
+          "type": "multiple-choice",
+          "points": 2,
+          "skill": "circulation",
+          "referenceItem": "15",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "Баруун ховдол → аорт → эд → зүүн тосгуур",
+            "B": "Зүүн ховдол → аорт → эд → хөндийн вен → баруун тосгуур",
+            "C": "Зүүн ховдол → уушги → баруун тосгуур",
+            "D": "Баруун тосгуур → уушги → аорт",
+            "E": "Зүүн тосгуур → уушги → баруун ховдол"
+          },
+          "answer": "B",
+          "answerText": "Зүүн ховдол → аорт → эд → хөндийн вен → баруун тосгуур",
+          "figureRole": "original task diagram or data table",
+          "figure": {
+            "path": "images/mock-01/q-15.svg",
+            "alt": "Даалгаврын зохиомол бүдүүвч / өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          }
+        },
+        {
+          "prompt": "Зүрх, судасны бүтцийг физиологийн онцлогтой тохируул.\n1. Артери\n2. Вен\n3. Хялгасан судас\na. Өндөр даралт; зузаан уян хана\nb. Бага даралт; хавхлага\nc. Нэг эсийн зузаан хана",
+          "explanation": "Артери: Өндөр даралт; зузаан уян хана; Вен: Бага даралт; хавхлага; Хялгасан судас: Нэг эсийн зузаан хана.",
+          "id": "16",
+          "type": "multiple-choice",
+          "points": 2,
+          "skill": "heart",
+          "referenceItem": "16",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "1a, 2c, 3b",
+            "B": "1a, 2b, 3c",
+            "C": "1b, 2c, 3a",
+            "D": "1c, 2a, 3b",
+            "E": "1b, 2a, 3c"
+          },
+          "answer": "B",
+          "answerText": "1a, 2b, 3c",
+          "figureRole": "original task diagram or data table",
+          "figure": {
+            "path": "images/mock-01/q-16.svg",
+            "alt": "Даалгаврын зохиомол бүдүүвч / өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          }
+        },
+        {
+          "prompt": "Хүчилтөрөгч цусанд голчлон ямар хэлбэрээр зөөгдөх вэ?",
+          "explanation": "O₂ гемоглобинтой эргэх холбоо үүсгэнэ.",
+          "id": "17",
+          "type": "multiple-choice",
+          "points": 2,
+          "skill": "gastransport",
+          "referenceItem": "17",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "Чөлөөт азот",
+            "B": "Оксигемоглобин",
+            "C": "Гидрокарбонатын ион",
+            "D": "Гликоген",
+            "E": "Карбоксигемоглобин"
+          },
+          "answer": "B",
+          "answerText": "Оксигемоглобин",
+          "figureRole": "original task diagram or data table",
+          "figure": {
+            "path": "images/mock-01/q-17.svg",
+            "alt": "Даалгаврын зохиомол бүдүүвч / өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          }
+        },
+        {
+          "prompt": "Хүн-ны цулцан хийн солилцоонд ямар бүтцээр зохицсон бэ?",
+          "explanation": "Богино диффузийн зам ба өргөн гадаргуу хийн солилцоог нэмэгдүүлнэ.",
+          "id": "18",
+          "type": "multiple-choice",
+          "points": 1,
+          "skill": "airway",
+          "referenceItem": "18",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "Зөвхөн өөхөн эд",
+            "B": "Зузаан мөгөөрсөн хана",
+            "C": "Хундган эсийн тасралтгүй зузаан салс",
+            "D": "Олон давхар эвэршсэн хучуур",
+            "E": "Нимгэн хавтгай хучуур; өргөн гадаргуу"
+          },
+          "answer": "E",
+          "answerText": "Нимгэн хавтгай хучуур; өргөн гадаргуу",
+          "figureRole": "original task diagram or data table",
+          "figure": {
+            "path": "images/mock-01/q-18.svg",
+            "alt": "Даалгаврын зохиомол бүдүүвч / өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          }
+        },
+        {
+          "prompt": "Утааны Нүүрстөрөгчийн дутуу исэл-ийн гол нөлөөг сонго.",
+          "explanation": "CO гемоглобинтой хүчтэй холбогдоно.",
+          "id": "19",
+          "type": "multiple-choice",
+          "points": 1,
+          "skill": "smoking",
+          "referenceItem": "19",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "Хамаарал үүсгэж симпатик идэвх нэмнэ",
+            "B": "ДНХ гэмтээж хавдрын эрсдэл нэмнэ",
+            "C": "Уушгины гадаргууг нэмэгдүүлнэ",
+            "D": "Гемоглобины O₂ зөөх чадварыг бууруулна",
+            "E": "Гемоглобины хэмжээг шууд хоёр дахин болгоно"
+          },
+          "answer": "D",
+          "answerText": "Гемоглобины O₂ зөөх чадварыг бууруулна"
+        },
+        {
+          "prompt": "Булчингийн эс-ийн хүчилтөрөгчгүй нөхцөлд үүсэх үндсэн органик бүтээгдэхүүн аль вэ?",
+          "explanation": "Булчингийн анаэроб гликолизын дараа пируват лактат болно.",
+          "id": "20",
+          "type": "multiple-choice",
+          "points": 2,
+          "skill": "anaerobic",
+          "referenceItem": "20",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "Лактат",
+            "B": "Этанол",
+            "C": "Гликоген",
+            "D": "Ацетилхолин",
+            "E": "Глюкоз"
+          },
+          "answer": "A",
+          "answerText": "Лактат",
+          "figureRole": "original task diagram or data table",
+          "figure": {
+            "path": "images/mock-01/q-20.svg",
+            "alt": "Даалгаврын зохиомол бүдүүвч / өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          }
+        },
+        {
+          "prompt": "Амьсгалын замын бүтцийг түүний үүрэгтэй тохируул.\n1. Цулцан\n2. Сормууст хучуур\n3. Хундган эс\na. Хий цусны хооронд диффузлэх\nb. Салсыг залгиур тийш хөдөлгөх\nc. Салс ялгаруулах",
+          "explanation": "Цулцан: Хий цусны хооронд диффузлэх; Сормууст хучуур: Салсыг залгиур тийш хөдөлгөх; Хундган эс: Салс ялгаруулах.",
+          "id": "21",
+          "type": "multiple-choice",
+          "points": 2,
+          "skill": "airway",
+          "referenceItem": "21",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "1a, 2b, 3c",
+            "B": "1b, 2a, 3c",
+            "C": "1c, 2a, 3b",
+            "D": "1b, 2c, 3a",
+            "E": "1a, 2c, 3b"
+          },
+          "answer": "A",
+          "answerText": "1a, 2b, 3c",
+          "figureRole": "original task diagram or data table",
+          "figure": {
+            "path": "images/mock-01/q-21.svg",
+            "alt": "Даалгаврын зохиомол бүдүүвч / өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          }
+        },
+        {
+          "prompt": "Нефроны зурагт 1 дугаартай хэсгийн гол үйл явцыг сонго.",
+          "explanation": "1 нь түүдгэнцэр, Боуманы капсулын хэсэг.",
+          "id": "22",
+          "type": "multiple-choice",
+          "points": 1,
+          "skill": "nephron",
+          "referenceItem": "22",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "Глюкозын эргэн шимэгдэлт",
+            "B": "Цусны эсийг шүүх",
+            "C": "АДГ-ээс хамаарах усны эргэн шимэгдэлт",
+            "D": "Хэт шүүлт",
+            "E": "Шээг нийлэгжүүлэх"
+          },
+          "answer": "D",
+          "answerText": "Хэт шүүлт",
+          "figureRole": "original task diagram or data table",
+          "figure": {
+            "path": "images/mock-01/q-22.svg",
+            "alt": "Даалгаврын зохиомол бүдүүвч / өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          }
+        },
+        {
+          "prompt": "Диализын шингэнд глюкоз, давс цусны хэвийн түвшинд, шээг байхгүй байв. Гол үр дүн аль вэ?",
+          "explanation": "Шээгийн концентрацийн зөрүү диффуз үүсгэх бөгөөд том молекулууд үлдэнэ.",
+          "id": "23",
+          "type": "multiple-choice",
+          "points": 2,
+          "skill": "dialysis",
+          "referenceItem": "23",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "Бүх уураг цуснаас гарна",
+            "B": "Глюкоз заавал бүрэн гарна",
+            "C": "Эсүүд мембранаар нэвтэрнэ",
+            "D": "Шээг цусанд идэвхтэй орно",
+            "E": "Шээг цуснаас диализын шингэн рүү диффузлэнэ"
+          },
+          "answer": "E",
+          "answerText": "Шээг цуснаас диализын шингэн рүү диффузлэнэ",
+          "figureRole": "original task diagram or data table",
+          "figure": {
+            "path": "images/mock-01/q-23.svg",
+            "alt": "Даалгаврын зохиомол бүдүүвч / өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          }
+        },
+        {
+          "prompt": "Нейроны зурагт 1 дугаартай хэсгийн нэр, үүргийг сонго.",
+          "explanation": "Дендритүүд эсийн биед сэрэл дамжуулна.",
+          "id": "24",
+          "type": "multiple-choice",
+          "points": 1,
+          "skill": "neuron",
+          "referenceItem": "24",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "Бөөм; импульсийг миелинд хадгалах",
+            "B": "Аксон; сэрэл эсийн биеэс хол дамжих",
+            "C": "Аксон төгсгөл; медиатор ялгаруулах",
+            "D": "Дендрит; сэрэл хүлээн авах",
+            "E": "Миелин; медиатор нийлэгжүүлэх"
+          },
+          "answer": "D",
+          "answerText": "Дендрит; сэрэл хүлээн авах",
+          "figureRole": "original task diagram or data table",
+          "figure": {
+            "path": "images/mock-01/q-24.svg",
+            "alt": "Даалгаврын зохиомол бүдүүвч / өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          }
+        },
+        {
+          "prompt": "Дааврыг үндсэн үүрэгтэй тохируул.\n1. Инсулин\n2. АДГ\n3. Лютеинжүүлэгч даавар\na. Цусны глюкозыг бууруулна\nb. Бөөрөнд усны эргэн шимэгдэлтийг нэмнэ\nc. Овуляцийг өдөөдөг",
+          "explanation": "Инсулин: Цусны глюкозыг бууруулна; АДГ: Бөөрөнд усны эргэн шимэгдэлтийг нэмнэ; Лютеинжүүлэгч даавар: Овуляцийг өдөөдөг.",
+          "id": "25",
+          "type": "multiple-choice",
+          "points": 1,
+          "skill": "hormones",
+          "referenceItem": "25",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "1a, 2c, 3b",
+            "B": "1a, 2b, 3c",
+            "C": "1c, 2a, 3b",
+            "D": "1b, 2c, 3a",
+            "E": "1b, 2a, 3c"
+          },
+          "answer": "B",
+          "answerText": "1a, 2b, 3c",
+          "figureRole": "original task diagram or data table",
+          "figure": {
+            "path": "images/mock-01/q-25.svg",
+            "alt": "Даалгаврын зохиомол бүдүүвч / өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          }
+        },
+        {
+          "prompt": "Халдварын үүсгэгчийг дамжих замтай тохируул.\n1. Томуугийн вирус\n2. Хумхаагийн плазмоди\n3. Холерын вибрион\na. Амьсгалын замаар\nb. Шумуул вектороор\nc. Бохирдсон ус, хүнсээр",
+          "explanation": "Томуугийн вирус: Амьсгалын замаар; Хумхаагийн плазмоди: Шумуул вектороор; Холерын вибрион: Бохирдсон ус, хүнсээр.",
+          "id": "26",
+          "type": "multiple-choice",
+          "points": 1,
+          "skill": "infection",
+          "referenceItem": "26",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "1b, 2c, 3a",
+            "B": "1a, 2c, 3b",
+            "C": "1c, 2a, 3b",
+            "D": "1b, 2a, 3c",
+            "E": "1a, 2b, 3c"
+          },
+          "answer": "E",
+          "answerText": "1a, 2b, 3c",
+          "figureRole": "original task diagram or data table",
+          "figure": {
+            "path": "images/mock-01/q-26.svg",
+            "alt": "Даалгаврын зохиомол бүдүүвч / өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          }
+        },
+        {
+          "prompt": "Дархлааны эсийг үйл ажиллагаатай нь тохируул.\n1. В лимфоцит\n2. Т туслагч\n3. Т киллер\na. Плазм эс болон эсрэг бие үүсгэнэ\nb. Бусад дархлааны эсийг идэвхжүүлнэ\nc. Халдварласан эсийг устгана",
+          "explanation": "В лимфоцит: Плазм эс болон эсрэг бие үүсгэнэ; Т туслагч: Бусад дархлааны эсийг идэвхжүүлнэ; Т киллер: Халдварласан эсийг устгана.",
+          "id": "27",
+          "type": "multiple-choice",
+          "points": 2,
+          "skill": "lymphocyte",
+          "referenceItem": "27",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "1a, 2b, 3c",
+            "B": "1c, 2a, 3b",
+            "C": "1b, 2a, 3c",
+            "D": "1a, 2c, 3b",
+            "E": "1b, 2c, 3a"
+          },
+          "answer": "A",
+          "answerText": "1a, 2b, 3c",
+          "figureRole": "original task diagram or data table",
+          "figure": {
+            "path": "images/mock-01/q-27.svg",
+            "alt": "Даалгаврын зохиомол бүдүүвч / өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          }
+        },
+        {
+          "prompt": "Вакцин хийлгэснээр үүсэх дархлааны хэлбэрийг сонго.",
+          "explanation": "Антигений эсрэг өөрийн лимфоцитууд идэвхжинэ.",
+          "id": "28",
+          "type": "multiple-choice",
+          "points": 2,
+          "skill": "immunity",
+          "referenceItem": "28",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "Өвөрмөц бус механик хамгаалалт",
+            "B": "Зохиомол идэвхгүй",
+            "C": "Байгалийн идэвхгүй",
+            "D": "Байгалийн идэвхтэй",
+            "E": "Зохиомол идэвхтэй"
+          },
+          "answer": "E",
+          "answerText": "Зохиомол идэвхтэй",
+          "figureRole": "original task diagram or data table",
+          "figure": {
+            "path": "images/mock-01/q-28.svg",
+            "alt": "Даалгаврын зохиомол бүдүүвч / өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          }
+        },
+        {
+          "prompt": "2n = 12 ургамлын эс мейоз I-ийг дуусгав. Төл эс бүрийн хромосомын тоо ба хроматидын төлөв аль вэ?",
+          "explanation": "Мейоз I-д гомолог хромосомууд салж, эгч хроматидууд хамт үлдэнэ.",
+          "id": "29",
+          "type": "multiple-choice",
+          "points": 1,
+          "skill": "meiosis",
+          "referenceItem": "29",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "n = 6; нэг хроматидтай",
+            "B": "4n = 24; хоёр хроматидтай",
+            "C": "2n = 12; нэг хроматидтай",
+            "D": "Хромосом бүрэн алга болно",
+            "E": "n = 6; хромосом бүр хоёр хроматидтай"
+          },
+          "answer": "E",
+          "answerText": "n = 6; хромосом бүр хоёр хроматидтай",
+          "figureRole": "original task diagram or data table",
+          "figure": {
+            "path": "images/mock-01/q-29.svg",
+            "alt": "Даалгаврын зохиомол бүдүүвч / өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          }
+        },
+        {
+          "prompt": "Метафазын эсэд 8 центромер, тус бүр хоёр эгч хроматид байв. Хромосомын тоо хэд вэ?",
+          "explanation": "Хромосомыг центромерийн тоогоор тоолно: 8.",
+          "calculation": {
+            "operation": "identity",
+            "result": 8
+          },
+          "id": "30",
+          "type": "multiple-choice",
+          "points": 1,
+          "skill": "chromosomes",
+          "referenceItem": "30",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "4",
+            "B": "9",
+            "C": "8",
+            "D": "7",
+            "E": "16"
+          },
+          "answer": "C",
+          "answerText": "8",
+          "figureRole": "original task diagram or data table",
+          "figure": {
+            "path": "images/mock-01/q-30.svg",
+            "alt": "Даалгаврын зохиомол бүдүүвч / өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          }
+        },
+        {
+          "prompt": "Эсийн мөчлөгийн хэсгийг үйл явцтай тохируул.\n1. G₁\n2. S\n3. G₂\na. Эс өсөж эрхтэнцэр олширно\nb. ДНХ репликаци\nc. Хуваагдалд бэлтгэнэ",
+          "explanation": "G₁: Эс өсөж эрхтэнцэр олширно; S: ДНХ репликаци; G₂: Хуваагдалд бэлтгэнэ.",
+          "id": "31",
+          "type": "multiple-choice",
+          "points": 2,
+          "skill": "cellcycle",
+          "referenceItem": "31",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "1b, 2c, 3a",
+            "B": "1b, 2a, 3c",
+            "C": "1c, 2a, 3b",
+            "D": "1a, 2c, 3b",
+            "E": "1a, 2b, 3c"
+          },
+          "answer": "E",
+          "answerText": "1a, 2b, 3c",
+          "figureRole": "original task diagram or data table",
+          "figure": {
+            "path": "images/mock-01/q-31.svg",
+            "alt": "Даалгаврын зохиомол бүдүүвч / өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          }
+        },
+        {
+          "prompt": "Булчин-д АТФ гидролизоор АДФ болоход ямар бүтээгдэхүүн, өөрчлөлт үүсэх вэ?",
+          "explanation": "АТФ + H₂O → АДФ + Pi; эсийн ажилд ашиглах энерги чөлөөлөгдөнө.",
+          "id": "32",
+          "type": "multiple-choice",
+          "points": 1,
+          "skill": "atp",
+          "referenceItem": "32",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "Тимин; хүчилтөрөгч ялгарна",
+            "B": "Органик бус фосфат; энерги чөлөөлөгдөнө",
+            "C": "Аминхүчил; энерги шингэнэ",
+            "D": "Гликоген; ус ялгарна",
+            "E": "Глюкоз; энерги шингэнэ"
+          },
+          "answer": "B",
+          "answerText": "Органик бус фосфат; энерги чөлөөлөгдөнө",
+          "figureRole": "original task diagram or data table",
+          "figure": {
+            "path": "images/mock-01/q-32.svg",
+            "alt": "Даалгаврын зохиомол бүдүүвч / өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          }
+        },
+        {
+          "prompt": "Элэгний эсийн мРНХ-г ДНХ-ээс ялгах онцлог аль вэ?",
+          "explanation": "РНХ рибоз, A/U/G/C сууриудаас тогтоно.",
+          "id": "33",
+          "type": "multiple-choice",
+          "points": 1,
+          "skill": "rna",
+          "referenceItem": "33",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "Зөвхөн фосфаттай",
+            "B": "Аминхүчлийн полимер",
+            "C": "Дезоксирибоз ба тиминтэй",
+            "D": "Рибоз ба урацилтай; ихэвчлэн дан гинж",
+            "E": "Заавал хоёр гинжит"
+          },
+          "answer": "D",
+          "answerText": "Рибоз ба урацилтай; ихэвчлэн дан гинж",
+          "figureRole": "original task diagram or data table",
+          "figure": {
+            "path": "images/mock-01/q-33.svg",
+            "alt": "Даалгаврын зохиомол бүдүүвч / өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          }
+        },
+        {
+          "prompt": "ДНХ-ийн нэг гинж 5′-ATGCCA-3′. Энэ хэсэгт нөгөө гинжтэй нийт хэдэн устөрөгчийн холбоо үүсэх вэ?",
+          "explanation": "3 A–T хос ×2 + 3 G–C хос ×3 = 15.",
+          "calculation": {
+            "operation": "weighted_sum",
+            "counts": [
+              3,
+              3
+            ],
+            "weights": [
+              2,
+              3
+            ],
+            "result": 15
+          },
+          "id": "34",
+          "type": "multiple-choice",
+          "points": 2,
+          "skill": "hydrogen",
+          "referenceItem": "34",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "15",
+            "B": "14",
+            "C": "7.5",
+            "D": "30",
+            "E": "16"
+          },
+          "answer": "A",
+          "answerText": "15",
+          "figureRole": "original task diagram or data table",
+          "figure": {
+            "path": "images/mock-01/q-34.svg",
+            "alt": "Даалгаврын зохиомол бүдүүвч / өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          }
+        },
+        {
+          "prompt": "мРНХ: 5′-AUG UUU GGU-3′. Кодоны хүснэгтийг ашиглан пептидийн дарааллыг ол.",
+          "explanation": "Кодоныг 5′→3′ чиглэлд гурваар уншина: Мет–Фен–Гли.",
+          "id": "35",
+          "type": "multiple-choice",
+          "points": 2,
+          "skill": "translation",
+          "referenceItem": "35",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "Лиз–Мет–Фен",
+            "B": "Мет–Фен–Гли",
+            "C": "Фен–Мет–Гли",
+            "D": "Про–Гли–Лиз",
+            "E": "Ала–Тир–Мет"
+          },
+          "answer": "B",
+          "answerText": "Мет–Фен–Гли",
+          "figureRole": "original task diagram or data table",
+          "figure": {
+            "path": "images/mock-01/q-35.svg",
+            "alt": "Даалгаврын зохиомол бүдүүвч / өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          }
+        },
+        {
+          "prompt": "Генетикийн тэмдэглэгээг нэртэй тохируул.\n1. AA\n2. Aa\n3. aa\na. Доминант гомозигот\nb. Гетерозигот\nc. Рецессив гомозигот",
+          "explanation": "AA: Доминант гомозигот; Aa: Гетерозигот; aa: Рецессив гомозигот.",
+          "id": "36",
+          "type": "multiple-choice",
+          "points": 1,
+          "skill": "genotype",
+          "referenceItem": "36",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "1a, 2c, 3b",
+            "B": "1b, 2c, 3a",
+            "C": "1c, 2a, 3b",
+            "D": "1a, 2b, 3c",
+            "E": "1b, 2a, 3c"
+          },
+          "answer": "D",
+          "answerText": "1a, 2b, 3c",
+          "figureRole": "original task diagram or data table",
+          "figure": {
+            "path": "images/mock-01/q-36.svg",
+            "alt": "Даалгаврын зохиомол бүдүүвч / өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          }
+        },
+        {
+          "prompt": "Сааль ихтэй үнээг үржүүлэгт сонгох ямар шалгаралд хамаарах вэ?",
+          "explanation": "Сонголтыг хүний хэрэгцээ тодорхойлно.",
+          "id": "37",
+          "type": "multiple-choice",
+          "points": 2,
+          "skill": "selection",
+          "referenceItem": "37",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "Осмос",
+            "B": "Гидролиз",
+            "C": "Байгалийн шалгарал",
+            "D": "Генийн холбоо",
+            "E": "Зориудын шалгарал"
+          },
+          "answer": "E",
+          "answerText": "Зориудын шалгарал"
+        },
+        {
+          "prompt": "Шалгарлын жишээг түүний чиглүүлэгч хүчин зүйлтэй холбож тохируул.\n1. Ноос ихтэй хонийг үржүүлэх\n2. Харанхуй хөрсөнд бараан шавж илүү үлдэх\n3. Тэсвэртэй нян орчиндоо олшрох\na. Махчны хараанаас далдлагдах\nb. Антибиотиктой орчны дарамт\nc. Хүний сонголт",
+          "explanation": "Ноос ихтэй хонийг үржүүлэх: Хүний сонголт; Харанхуй хөрсөнд бараан шавж илүү үлдэх: Махчны хараанаас далдлагдах; Тэсвэртэй нян орчиндоо олшрох: Антибиотиктой орчны дарамт.",
+          "id": "38",
+          "type": "multiple-choice",
+          "points": 2,
+          "skill": "selection",
+          "referenceItem": "38",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "1b, 2c, 3a",
+            "B": "1a, 2c, 3b",
+            "C": "1b, 2a, 3c",
+            "D": "1c, 2a, 3b",
+            "E": "1a, 2b, 3c"
+          },
+          "answer": "D",
+          "answerText": "1c, 2a, 3b",
+          "figureRole": "original task diagram or data table",
+          "figure": {
+            "path": "images/mock-01/q-38.svg",
+            "alt": "Даалгаврын зохиомол бүдүүвч / өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          }
+        },
+        {
+          "prompt": "Хүүхдүүд нь I, II, III, IV дөрвөн бүлэг-тэй төрөх боломжтой эцэг эхийн хослол аль вэ?",
+          "explanation": "IAi × IBi хослолын гаметуудыг нэгтгэхэд I, II, III, IV дөрвөн бүлэг үүснэ.",
+          "id": "39",
+          "type": "multiple-choice",
+          "points": 1,
+          "skill": "abo",
+          "referenceItem": "39",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "ii × ii",
+            "B": "IAIA × IBi",
+            "C": "IBIB × IAi",
+            "D": "IAIA × ii",
+            "E": "IAi × IBi"
+          },
+          "answer": "E",
+          "answerText": "IAi × IBi"
+        },
+        {
+          "prompt": "Шош-ийн A нь давамгай. Aa × aa хослолоос рецессив фенотиптэй үр төл төрөх магадлал хэдэн хувь вэ?",
+          "explanation": "Aa × aa үед aa-ийн магадлал 50%.",
+          "calculation": {
+            "operation": "genetic_probability",
+            "cross": "Aa × aa",
+            "target": "aa",
+            "result": 50
+          },
+          "id": "40",
+          "type": "multiple-choice",
+          "points": 2,
+          "skill": "monohybrid",
+          "referenceItem": "40",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "100",
+            "B": "51",
+            "C": "50",
+            "D": "25",
+            "E": "49"
+          },
+          "answer": "C",
+          "answerText": "50",
+          "figureRole": "original task diagram or data table",
+          "figure": {
+            "path": "images/mock-01/q-40.svg",
+            "alt": "Даалгаврын зохиомол бүдүүвч / өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          }
+        },
+        {
+          "prompt": "Туулайн T нь давамгай, t рецессив. Tt × Tt эвцэлдүүлгийн онолын 3:1 харьцаа яг биелж, 72 цагаан төл гарсан бол бараан төл хэд вэ?",
+          "explanation": "Давамгай:рецессив=3:1; 72×3=216.",
+          "calculation": {
+            "operation": "multiply",
+            "operands": [
+              72,
+              3
+            ],
+            "result": 216
+          },
+          "id": "41",
+          "type": "multiple-choice",
+          "points": 2,
+          "skill": "monohybrid",
+          "referenceItem": "41",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "216",
+            "B": "432",
+            "C": "108",
+            "D": "215",
+            "E": "217"
+          },
+          "answer": "A",
+          "answerText": "216"
+        },
+        {
+          "prompt": "Бичил биетнийг үйлдвэрлэлийн хэрэглээтэй тохируул.\n1. Хөрөнгө мөөг\n2. Сүүн хүчлийн бактер\n3. Penicillium\na. Этанол ба талхны хөөлт\nb. Тараг исгэх\nc. Антибиотик үйлдвэрлэх",
+          "explanation": "Хөрөнгө мөөг: Этанол ба талхны хөөлт; Сүүн хүчлийн бактер: Тараг исгэх; Penicillium: Антибиотик үйлдвэрлэх.",
+          "id": "42",
+          "type": "multiple-choice",
+          "points": 1,
+          "skill": "biotechnology",
+          "referenceItem": "42",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "1a, 2c, 3b",
+            "B": "1c, 2a, 3b",
+            "C": "1b, 2c, 3a",
+            "D": "1b, 2a, 3c",
+            "E": "1a, 2b, 3c"
+          },
+          "answer": "E",
+          "answerText": "1a, 2b, 3c",
+          "figureRole": "original task diagram or data table",
+          "figure": {
+            "path": "images/mock-01/q-42.svg",
+            "alt": "Даалгаврын зохиомол бүдүүвч / өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          }
+        },
+        {
+          "prompt": "Маркерт хэсгүүдийн уртыг хүснэгтэд өгөв. Лабораторийн үл мэдэгдэх дээжтэй бүрэн тохирох сорьцыг сонго.",
+          "explanation": "Q-ийн гурван хэсэг дээжтэй бүгд ижил.",
+          "id": "43",
+          "type": "multiple-choice",
+          "points": 2,
+          "skill": "dnafingerprint",
+          "referenceItem": "43",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "P",
+            "B": "Аль нь ч биш",
+            "C": "S",
+            "D": "R",
+            "E": "Q"
+          },
+          "answer": "E",
+          "answerText": "Q",
+          "figureRole": "original task diagram or data table",
+          "figure": {
+            "path": "images/mock-01/q-43.svg",
+            "alt": "Даалгаврын зохиомол бүдүүвч / өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          }
+        },
+        {
+          "prompt": "Усны эргэлтийн шилжилтийг нэртэй тохируул.\n1. Навчнаас усны уур гарах\n2. Нуурын гадаргуугаас ус дэгдэх\n3. Уур шингэн дусал болох\na. Транспирац\nb. Ууршилт\nc. Конденсац",
+          "explanation": "Навчнаас усны уур гарах: Транспирац; Нуурын гадаргуугаас ус дэгдэх: Ууршилт; Уур шингэн дусал болох: Конденсац.",
+          "id": "44",
+          "type": "multiple-choice",
+          "points": 1,
+          "skill": "watercycle",
+          "referenceItem": "44",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "1b, 2a, 3c",
+            "B": "1a, 2b, 3c",
+            "C": "1a, 2c, 3b",
+            "D": "1b, 2c, 3a",
+            "E": "1c, 2a, 3b"
+          },
+          "answer": "B",
+          "answerText": "1a, 2b, 3c",
+          "figureRole": "original task diagram or data table",
+          "figure": {
+            "path": "images/mock-01/q-44.svg",
+            "alt": "Даалгаврын зохиомол бүдүүвч / өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          }
+        },
+        {
+          "prompt": "Бохирдуулагчийг гол үр дагавартай тохируул.\n1. CO\n2. SO₂\n3. Нитрат, фосфатын илүүдэл\na. Гемоглобины O₂ зөөвөрлөлт буурна\nb. Хүчиллэг хур тунадас\nc. Эвтрофикаци",
+          "explanation": "CO: Гемоглобины O₂ зөөвөрлөлт буурна; SO₂: Хүчиллэг хур тунадас; Нитрат, фосфатын илүүдэл: Эвтрофикаци.",
+          "id": "45",
+          "type": "multiple-choice",
+          "points": 1,
+          "skill": "pollution",
+          "referenceItem": "45",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "1a, 2b, 3c",
+            "B": "1a, 2c, 3b",
+            "C": "1b, 2a, 3c",
+            "D": "1c, 2a, 3b",
+            "E": "1b, 2c, 3a"
+          },
+          "answer": "A",
+          "answerText": "1a, 2b, 3c",
+          "figureRole": "original task diagram or data table",
+          "figure": {
+            "path": "images/mock-01/q-45.svg",
+            "alt": "Даалгаврын зохиомол бүдүүвч / өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          }
+        },
+        {
+          "prompt": "Нүүрстөрөгч шилжих замыг үйл явцтай тохируул.\n1. Агаарын CO₂ → навчны нүүрс ус\n2. Глюкоз → агаарын CO₂\n3. Чулуун нүүрс → агаарын CO₂\na. Фотосинтез\nb. Амьсгал\nc. Шаталт",
+          "explanation": "Агаарын CO₂ → навчны нүүрс ус: Фотосинтез; Глюкоз → агаарын CO₂: Амьсгал; Чулуун нүүрс → агаарын CO₂: Шаталт.",
+          "id": "46",
+          "type": "multiple-choice",
+          "points": 2,
+          "skill": "carboncycle",
+          "referenceItem": "46",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "1b, 2c, 3a",
+            "B": "1a, 2c, 3b",
+            "C": "1c, 2a, 3b",
+            "D": "1a, 2b, 3c",
+            "E": "1b, 2a, 3c"
+          },
+          "answer": "D",
+          "answerText": "1a, 2b, 3c",
+          "figureRole": "original task diagram or data table",
+          "figure": {
+            "path": "images/mock-01/q-46.svg",
+            "alt": "Даалгаврын зохиомол бүдүүвч / өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          }
+        },
+        {
+          "prompt": "Судалгааны 3 га талбайд 180 ширхэг шош тоологдов. Нягтшил хэдэн бодгаль/га вэ?",
+          "explanation": "Нягтшил = N/S = 180/3 = 60.",
+          "calculation": {
+            "operation": "divide",
+            "operands": [
+              180,
+              3
+            ],
+            "result": 60.0
+          },
+          "id": "47",
+          "type": "multiple-choice",
+          "points": 1,
+          "skill": "population",
+          "referenceItem": "47",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "120",
+            "B": "60",
+            "C": "30",
+            "D": "59",
+            "E": "61"
+          },
+          "answer": "B",
+          "answerText": "60",
+          "figureRole": "original task diagram or data table",
+          "figure": {
+            "path": "images/mock-01/q-47.svg",
+            "alt": "Даалгаврын зохиомол бүдүүвч / өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          }
+        },
+        {
+          "prompt": "Туулай-ны популяцид үржлийн өмнөх насныхан 60%, үржлийн насныхан 30%, үржлийн дараах 10% байна. Тогтвортой нөхцөлд ямар чиг хандлага хүлээгдэх вэ?",
+          "explanation": "Үржлийн өмнөх олон бодгаль дараа нь үржлийн насанд хүрэх тул өсөх чадамжтай.",
+          "id": "48",
+          "type": "multiple-choice",
+          "points": 2,
+          "skill": "agestructure",
+          "referenceItem": "48",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "Өсөх боломж их",
+            "B": "Шинэ төрөлт огт байхгүй",
+            "C": "Заавал тэр даруй устах",
+            "D": "Насны бүтэц тоонд нөлөөлөхгүй",
+            "E": "Бүх бодгаль үржихээ болино"
+          },
+          "answer": "A",
+          "answerText": "Өсөх боломж их",
+          "figureRole": "original task diagram or data table",
+          "figure": {
+            "path": "images/mock-01/q-48.svg",
+            "alt": "Даалгаврын зохиомол бүдүүвч / өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          }
+        },
+        {
+          "prompt": "Экосистемийн төрлүүдээс хуурай газрын тайга-г илэрхийлэх жишээг сонго.",
+          "explanation": "Тайга, хээр, цөл нь хуурай газрын экосистемд хамаарна.",
+          "id": "49",
+          "type": "multiple-choice",
+          "points": 1,
+          "skill": "ecosystem",
+          "referenceItem": "49",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "Голын адаг",
+            "B": "Тайга",
+            "C": "Шүрэн хад",
+            "D": "Далай",
+            "E": "Цэнгэг нуур"
+          },
+          "answer": "B",
+          "answerText": "Тайга",
+          "figureRole": "original task diagram or data table",
+          "figure": {
+            "path": "images/mock-01/q-49.svg",
+            "alt": "Даалгаврын зохиомол бүдүүвч / өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          }
+        },
+        {
+          "prompt": "Экосистемийн бүрэлдэхүүнийг үүрэгтэй тохируул.\n1. Ногоон ургамал\n2. Өвсөн тэжээлтэн\n3. Сапротроф мөөг\na. Бүтээгч\nb. Анхдагч хэрэглэгч\nc. Задлагч",
+          "explanation": "Ногоон ургамал: Бүтээгч; Өвсөн тэжээлтэн: Анхдагч хэрэглэгч; Сапротроф мөөг: Задлагч.",
+          "id": "50",
+          "type": "multiple-choice",
+          "points": 2,
+          "skill": "ecosystem",
+          "referenceItem": "50",
+          "referenceMatch": "topic-level adaptation; exact cognitive equivalence not certified",
+          "options": {
+            "A": "1c, 2a, 3b",
+            "B": "1a, 2c, 3b",
+            "C": "1a, 2b, 3c",
+            "D": "1b, 2c, 3a",
+            "E": "1b, 2a, 3c"
+          },
+          "answer": "C",
+          "answerText": "1a, 2b, 3c",
+          "figureRole": "original task diagram or data table",
+          "figure": {
+            "path": "images/mock-01/q-50.svg",
+            "alt": "Даалгаврын зохиомол бүдүүвч / өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          }
+        }
+      ]
+    },
+    {
+      "id": "II",
+      "title": "Задгай / харгалзуулах даалгавар",
+      "points": 24,
+      "tasks": [
+        {
+          "id": "2.1",
+          "type": "matching",
+          "points": 6,
+          "topic": "Мэдрэл, дааврын зохицуулга",
+          "prompt": "Мэдрэл, дааврын зохицуулга\n(a–f)-ийг 1–8 сонголттой зөв тохируул. Сонголт бүрийг нэг удаа хэрэглэнэ.",
+          "choices": {
+            "1": "Хөдөлгөөнийг зохицуулах",
+            "2": "Хоногийн хэмнэлийн мелатонин",
+            "3": "Бөөрний дээд булчирхайн холтослогт үйлчлэх",
+            "4": "Умайн салстыг хадгалах",
+            "5": "Ухамсарт үйл ажиллагаа",
+            "6": "Өнчин тархины урд хэсгийг удирдах",
+            "7": "АДГ цусанд ялгаруулах",
+            "8": "Өсөлтийн даавар ялгаруулах"
+          },
+          "parts": [
+            {
+              "id": "a",
+              "prompt": "Боргоцой булчирхай",
+              "answer": "2",
+              "points": 1,
+              "explanation": "Боргоцой булчирхай → Хоногийн хэмнэлийн мелатонин."
+            },
+            {
+              "id": "b",
+              "prompt": "Гипоталамус",
+              "answer": "6",
+              "points": 1,
+              "explanation": "Гипоталамус → Өнчин тархины урд хэсгийг удирдах."
+            },
+            {
+              "id": "c",
+              "prompt": "Их тархины гадар",
+              "answer": "5",
+              "points": 1,
+              "explanation": "Их тархины гадар → Ухамсарт үйл ажиллагаа."
+            },
+            {
+              "id": "d",
+              "prompt": "Өнчин тархины урд хэсэг",
+              "answer": "8",
+              "points": 1,
+              "explanation": "Өнчин тархины урд хэсэг → Өсөлтийн даавар ялгаруулах."
+            },
+            {
+              "id": "e",
+              "prompt": "Өнчин тархины арын хэсэг",
+              "answer": "7",
+              "points": 1,
+              "explanation": "Өнчин тархины арын хэсэг → АДГ цусанд ялгаруулах."
+            },
+            {
+              "id": "f",
+              "prompt": "Бага тархи",
+              "answer": "1",
+              "points": 1,
+              "explanation": "Бага тархи → Хөдөлгөөнийг зохицуулах."
+            }
+          ],
+          "figure": {
+            "path": "images/mock-01/task-2-1.svg",
+            "alt": "Мэдрэл, дааврын зохицуулга — өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          },
+          "referenceItem": "2.1"
+        },
+        {
+          "id": "2.2",
+          "type": "matching",
+          "points": 6,
+          "topic": "Генетикийн нэр томьёо",
+          "prompt": "Генетикийн нэр томьёо\n(a–f)-ийг 1–8 сонголттой зөв тохируул. Сонголт бүрийг нэг удаа хэрэглэнэ.",
+          "choices": {
+            "1": "Пеннетийн тор",
+            "2": "Локус",
+            "3": "Гетерозигот",
+            "4": "Олон аллельт",
+            "5": "1:2:1",
+            "6": "Фенотип",
+            "7": "3:1",
+            "8": "Гомозигот"
+          },
+          "parts": [
+            {
+              "id": "a",
+              "prompt": "Эр, эм гаметуудын боломжит хослолын хүснэгт",
+              "answer": "1",
+              "points": 1,
+              "explanation": "Эр, эм гаметуудын боломжит хослолын хүснэгт → Пеннетийн тор."
+            },
+            {
+              "id": "b",
+              "prompt": "Aa генотипийн нэр",
+              "answer": "3",
+              "points": 1,
+              "explanation": "Aa генотипийн нэр → Гетерозигот."
+            },
+            {
+              "id": "c",
+              "prompt": "Нэг ген хоёроос олон аллельтэй байх",
+              "answer": "4",
+              "points": 1,
+              "explanation": "Нэг ген хоёроос олон аллельтэй байх → Олон аллельт."
+            },
+            {
+              "id": "d",
+              "prompt": "Aa × Aa-ийн генотипийн харьцаа",
+              "answer": "5",
+              "points": 1,
+              "explanation": "Aa × Aa-ийн генотипийн харьцаа → 1:2:1."
+            },
+            {
+              "id": "e",
+              "prompt": "Хромосом дээрх генийн байрлал",
+              "answer": "2",
+              "points": 1,
+              "explanation": "Хромосом дээрх генийн байрлал → Локус."
+            },
+            {
+              "id": "f",
+              "prompt": "AA эсвэл aa генотипийн нэр",
+              "answer": "8",
+              "points": 1,
+              "explanation": "AA эсвэл aa генотипийн нэр → Гомозигот."
+            }
+          ],
+          "figure": {
+            "path": "images/mock-01/task-2-2.svg",
+            "alt": "Генетикийн нэр томьёо — өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          },
+          "referenceItem": "2.2"
+        },
+        {
+          "id": "2.3",
+          "type": "matching",
+          "points": 6,
+          "topic": "Бохирдол ба үр дагавар",
+          "prompt": "Бохирдол ба үр дагавар\n(a–f)-ийг 1–6 сонголттой зөв тохируул. Сонголт бүрийг нэг удаа хэрэглэнэ.",
+          "choices": {
+            "1": "O₂ зөөх чадварыг бууруулна",
+            "2": "Сонсголын гэмтэл",
+            "3": "Хүчиллэг хур тунадас",
+            "4": "Эвтрофикаци",
+            "5": "ДНХ гэмтэх эрсдэл",
+            "6": "Мэдрэлийн тогтолцооны хор"
+          },
+          "parts": [
+            {
+              "id": "a",
+              "prompt": "SO₂",
+              "answer": "3",
+              "points": 1,
+              "explanation": "SO₂ → Хүчиллэг хур тунадас."
+            },
+            {
+              "id": "b",
+              "prompt": "Нүүрстөрөгчийн дутуу исэл",
+              "answer": "1",
+              "points": 1,
+              "explanation": "Нүүрстөрөгчийн дутуу исэл → O₂ зөөх чадварыг бууруулна."
+            },
+            {
+              "id": "c",
+              "prompt": "Нитрат, фосфат",
+              "answer": "4",
+              "points": 1,
+              "explanation": "Нитрат, фосфат → Эвтрофикаци."
+            },
+            {
+              "id": "d",
+              "prompt": "Чанга дуу",
+              "answer": "2",
+              "points": 1,
+              "explanation": "Чанга дуу → Сонсголын гэмтэл."
+            },
+            {
+              "id": "e",
+              "prompt": "Ионжуулагч цацраг",
+              "answer": "5",
+              "points": 1,
+              "explanation": "Ионжуулагч цацраг → ДНХ гэмтэх эрсдэл."
+            },
+            {
+              "id": "f",
+              "prompt": "Мөнгөн ус",
+              "answer": "6",
+              "points": 1,
+              "explanation": "Мөнгөн ус → Мэдрэлийн тогтолцооны хор."
+            }
+          ],
+          "figure": {
+            "path": "images/mock-01/task-2-3.svg",
+            "alt": "Бохирдол ба үр дагавар — өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          },
+          "referenceItem": "2.3"
+        },
+        {
+          "id": "2.4",
+          "type": "matching",
+          "points": 6,
+          "topic": "Хоол боловсруулах эрхтэн",
+          "prompt": "Хоол боловсруулах эрхтэн\n(a–f)-ийг 1–6 сонголттой зөв тохируул. Сонголт бүрийг нэг удаа хэрэглэнэ.",
+          "choices": {
+            "1": "Хоол боловсруулах энзим ялгаруулна",
+            "2": "Шүлсний амилаза цардуулыг задална",
+            "3": "Пепсинээр уураг задална",
+            "4": "Цөс үүсгэнэ",
+            "5": "Перистальтикаар хоол дамжуулна",
+            "6": "Ус эргэн шимэгдэнэ"
+          },
+          "parts": [
+            {
+              "id": "a",
+              "prompt": "Нойр булчирхай",
+              "answer": "1",
+              "points": 1,
+              "explanation": "Нойр булчирхай → Хоол боловсруулах энзим ялгаруулна."
+            },
+            {
+              "id": "b",
+              "prompt": "Элэг",
+              "answer": "4",
+              "points": 1,
+              "explanation": "Элэг → Цөс үүсгэнэ."
+            },
+            {
+              "id": "c",
+              "prompt": "Улаан хоолой",
+              "answer": "5",
+              "points": 1,
+              "explanation": "Улаан хоолой → Перистальтикаар хоол дамжуулна."
+            },
+            {
+              "id": "d",
+              "prompt": "Бүдүүн гэдэс",
+              "answer": "6",
+              "points": 1,
+              "explanation": "Бүдүүн гэдэс → Ус эргэн шимэгдэнэ."
+            },
+            {
+              "id": "e",
+              "prompt": "Амны хөндий",
+              "answer": "2",
+              "points": 1,
+              "explanation": "Амны хөндий → Шүлсний амилаза цардуулыг задална."
+            },
+            {
+              "id": "f",
+              "prompt": "Ходоод",
+              "answer": "3",
+              "points": 1,
+              "explanation": "Ходоод → Пепсинээр уураг задална."
+            }
+          ],
+          "figure": {
+            "path": "images/mock-01/task-2-4.svg",
+            "alt": "Хоол боловсруулах эрхтэн — өгөгдлийн зураг",
+            "origin": "Original SVG authored by Codex."
+          },
+          "referenceItem": "2.4"
+        }
+      ]
+    }
+  ]
+}

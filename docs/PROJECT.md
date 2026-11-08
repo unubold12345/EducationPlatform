@@ -7,7 +7,7 @@ current delivery state, checks, credentials and next actions.
 ## 1. What this is
 
 EducationPlatform is an independent Mongolian exam-preparation web application. It started with SAT
-Mathematics and now covers SAT, IELTS Academic and university entrance exams. Practice exercises were
+Mathematics and now covers SAT, IELTS Academic, JLPT N5/N4 and university entrance exams. Practice exercises were
 removed on 2026-11-05 and the official ЭЕШ papers on 2026-11-06; students prepare through full mocks and workshops. It is not
 affiliated with the College Board, IELTS, or the Mongolian ЕШ; all practice content is original unless
 an official source is explicitly labelled. LawTest/Lexlab is a separate service: this project only
@@ -23,6 +23,7 @@ authentication require provider configuration; see the actual hosted checkpoint 
 | --- | --- |
 | IELTS workshops | Four focused workshops with saved work and grading |
 | Full mocks | Six Digital SAT and six IELTS Academic mocks (01–06), with server-authoritative timers |
+| JLPT | Three N5 and three N4 mocks, 456 original items, Japanese synthetic listening, timed sections and focused practice |
 | ЭЕШ mocks | 155 imported practice papers: 55 Mathematics, 60 Physics and 40 English (2015–2026), on the site as University Prep |
 | Practice mode | Untimed practice on every mock, with instant checks and a DeepSeek assistant |
 | Accounts | Better Auth email/password, profile, Google OAuth, verification and password recovery |
@@ -32,6 +33,7 @@ authentication require provider configuration; see the actual hosted checkpoint 
 | Speaking Lab | Isolated IELTS speaking studio at `/labs/ielts-speaking` |
 | Essay Studio | Workshop writing practice with AI corrections at `/labs/ielts-writing` |
 | Listening Lab | Two original IELTS Listening practice tests (Parts 1–4, mock-style recordings) at `/labs/ielts-listening` |
+| Workspace | `/workspace`: the signed-in study app, separate from the marketing site, with left tabs for Home, AI chat, Exams, Review, Workshop and Plans, plus the profile (section 7) |
 | Study tools | Light/dark theme and a browser-only mathematics scratchpad |
 
 Workshops require the IELTS plan. Full mocks accept a matching plan or a prior per-exam purchase. Subscription-backed
@@ -55,16 +57,19 @@ remain in the schema, unused, because a dropping migration would delete hosted d
 versions; hosted databases also need `--confirm-host=<hostname>`. Mocks, workshops, purchases, plans, accounts
 and audit history are not touched. A later migration can drop the empty tables.
 
-The `/exams` library has three category items: SAT, IELTS and ЭЕШ. `/exams/sat` and `/exams/ielts` collect
+The `/exams` library has four categories: SAT, IELTS, ЭЕШ and JLPT. `/exams/sat` and `/exams/ielts` collect
 their six mocks. `/exams/eesh` is the ЭЕШ hub: subject tabs (`?subject=math|physics|english`) and dense
 year rows with five variants per year. The retired `/exams/eesh-math` route and the first four Mathematics
 mocks (`eesh-math-01`–`04`) return 404; their files are kept unserved in `reference/retired-site-mocks/eesh-math/`.
 Homepage and program links open the hub; individual mock briefings link back to their subject tab. Existing
-saved attempts and purchases remain readable. The library itself is three programme rows with a compact
+saved attempts and purchases remain readable. The library itself uses four programme cards with a compact
 index (counts, timings, included parts and direct entry); the ЭЕШ row links to the three subject tabs.
-`/plans` is a comparison-first pricing page: three plan cards, a feature table, the per-mock option and
-month terms. Both pages use scoped CSS (`src/app/exams/library.css`, `src/app/plans/plans.css`).
-Collection URLs cannot be purchased or started as exams.
+`/workspace/plans` (moved from `/plans`, which redirects) is a comparison-first pricing page inside the Workspace that guests
+can read: three plan cards, a feature table, the per-mock option and month terms. Both pages use scoped CSS
+(`src/app/exams/library.css`, `src/app/workspace/plans/plans.css`).
+Collection URLs cannot be purchased or started as exams. The library, collections, hubs, briefings, timed sittings
+(`/exams/attempts/*`), results and practice (`/exams/*/practice`) all render inside the Workspace shell
+(`src/app/exams/layout.tsx`); the exam clock stays below the Workspace toolbar on phones.
 
 ## 3. Assessments
 
@@ -102,6 +107,17 @@ Collection URLs cannot be purchased or started as exams.
   Kokoro-82M neural voices (Apache-2.0) at one natural pace, with 20/15/15 s reading/checking pauses.
   Parts play back to back from their recorded lengths (`listeningSeconds` in `audio-files.ts`, which
   must be updated after regenerating); the 30-minute stage leaves checking time after the last part.
+
+### JLPT N5 and N4
+
+- `/exams/jlpt?level=N5|N4` lists three forms per level, purchased access, saved practice progress and open attempts.
+- `jlpt-n5-01`–`03`: 21 vocabulary / 20 min, 22 grammar-reading / 40 min, 24 listening / 30 min.
+  `jlpt-n4-01`–`03`: 28 / 25 min, 29 / 55 min, 28 / 35 min. Server deadlines and attempt snapshots use the existing exam engine.
+- `scripts/build-jlpt-mocks.mjs` converts offline `MockExmps/JLPT` source into six private `assets/jlpt` definitions and an answer-free catalogue. Authoring packs and official format reference images stay excluded from deployment.
+- `scripts/generate-jlpt-audio.py` uses local Kokoro-82M Japanese voices (Apache-2.0) and Misaki Japanese G2P. The 24 MP3s in `assets/exams/jlpt-*-part-*.mp3` have script/file hashes, measured durations and per-item timings; protected mock/practice audio routes apply the existing access and active-sitting checks.
+- Timed listening follows the server clock, with no pause/replay; practice can replay one item and reveals its transcript only after checking. Written questions keep shared passages together, use numbered options and support optional authored furigana. Result skill links open focused practice.
+- Per-mock access uses the existing simulated ₮10,000 purchase. No JLPT monthly plan or cross-program access is added. Raw scores only; no 180-point conversion or pass/fail claim.
+- All questions are original drafts awaiting Japanese-teacher review. Situational text replaces illustrations. Synthetic tracks are shorter than the official listening window; remaining time is answer checking. Native-speaker listening review and learner calibration remain pending.
 
 ### ЭЕШ mocks (University Prep)
 
@@ -331,6 +347,36 @@ page already holds. Results add per-skill totals, review filters and a link to p
 - Conversations are temporary page state and are not saved to the account. Answers are learning
   feedback, never official grading. ЭЕШ and IELTS mocks are outside this tutor; practice mode's assistant covers them.
 
+### Workspace (2026-11-08)
+
+- The owner asked for the dashboard, Workshop and exams to become one Workspace with its own look (left tabs, AI chat,
+  review of finished mocks), modelled on solvely.ai's layout: a 260px light-grey tab rail (collapsible to icons, saved in
+  `education-workspace-rail`), a white canvas, one blue accent and Inter. Phones get a top bar and a slide-in menu.
+- Routes: `/workspace` (home: composer, resume, stats, programmes, recent results, practice), `/workspace/chat`,
+  `/workspace/review` and `/workspace/review/[id]`, `/workspace/workshop`, plus the exam library pages above. `/dashboard`
+  and `/workshop` redirect here; sign-in returns to `/workspace` by default. `/workspace/profile` and `/workspace/plans`
+  (2026-11-08) replace `/profile` and `/plans`, which redirect (`/profile?error=` keeps its Google link error). The owner
+  asked that the site header link only to Programmes and the Workspace: no Exams, Plans or profile button for members;
+  guests still see Нэвтрэх. The rail's account row and the phone top-bar avatar open the profile; Plans is a rail tab.
+  Monthly plan purchase and renewal keep their `/subscribe/<program>` address but render inside the Workspace under the
+  Plans tab (`src/app/subscribe/layout.tsx`, readable-scale tweaks in `subscribe.css`). Single-mock `/checkout/<slug>`
+  uses the Workspace's Exams tab. Guided `/workshops/<slug>` tasks and all three `/labs/ielts-*` studios use the Workshop
+  tab; their existing URLs, pilot switches and server access checks stay in place.
+- The shell is `src/modules/workspace/shell.tsx` (client) behind `frame.tsx` (server: name, email, active plans). The
+  shell omits guest chrome on Home, AI chat, Review and Profile while their server-side sign-in redirect resolves,
+  so no sidebar is streamed before login. Guest-readable library, plans and Workshop pages keep their shell.
+  The site header, footer and backdrop are hidden by CSS only while the shell is on the page (`body:has(.wsp)`), so 404s keep the
+  site chrome. Embedded exam pages inherit the Workspace palette through the site tokens redefined on `.wsp`.
+- AI chat: `POST /api/workspace/chat` (same origin, verified session, 48 KB body). Modes ask, solve, explain, quiz, writing
+  and vocab; subjects general, SAT, IELTS, ЭЕШ Math/Physics/English and JLPT; Mongolian or English. Six prior turns of at most
+  2,500 characters are sent. 50 requests per student per Ulaanbaatar day with one in flight (`education-workspace-ai:*`).
+  Refused before and after the provider call while any timed sitting is open; the local practice override does not apply.
+  Threads live only in this browser (`education-workspace-chats-v1:<userId>`, 30 threads); nothing is stored on the server.
+- Review: finished mocks with scores (12 per page, programme filter), then per-question review with the snapshot's answer,
+  key, explanation, printed choices, figures and transcripts, weakest skills, and an AI coach beside it (explain, my mistake,
+  similar question, free questions). The server builds the coach's context from the student's own SUBMITTED snapshot via
+  `ownMock`; the page sends only the attempt and question ids. Replies render as a small Markdown subset through React text.
+
 ### IELTS Speaking Lab
 
 `/labs/ielts-speaking` is an experimental, `noindex` studio. The homepage and IELTS program show a
@@ -344,7 +390,7 @@ scores; pronunciation is not assessed. Raw microphone recordings are not persist
 
 ### Workshop Essay Studio
 
-`/labs/ielts-writing` is an experimental, `noindex` writing studio linked from `/workshop`. It shares
+`/labs/ielts-writing` is an experimental, `noindex` writing studio linked from `/workspace/workshop`. It shares
 the Speaking Lab pilot switch (local pilot, or hosted pilot with `SPEAKING_LAB_ENABLED=true`).
 Students pick an IELTS Task 2 essay, a General Task 1 letter (18 original bank prompts) or free
 writing, write with a live word target and optional soft timer, then ask DeepSeek for ideas, a quick
@@ -372,22 +418,32 @@ rounding), vocabulary upgrades, strengths, next steps and one rewritten passage.
   The owner chose the Classic concept on 2026-11-07; `src/app/page.tsx` renders `HomeClassic`
   directly, and the earlier simple/index/practice experiments and their `/designs` preview routes
   were removed.
+  Since 2026-11-08 it uses generated editorial images, concise programme cards with expandable formats,
+  three silent autoplaying product loops (exam/practice, Workspace/review and Workshop), current server-read
+  prices and FAQs. `home-details.tsx` and `home-overview.css` keep this presentation scoped to the homepage;
+  glyphs, sketches, ticker, atmosphere and a compact Lexlab link remain. Programme navigation opens `/#programs`.
+  Media and prompts: `docs/HOMEPAGE_MEDIA.md`; optimised images/videos: `public/home/`.
+  `scripts/record-homepage-demos.py` records local disposable QA accounts only; no live AI calls.
+  Artwork is selected by `HOME_ART_STYLE` in `src/components/home-art.ts`; the owner restored `editorial`.
+  The `handdrawn` ink/watercolour alternative and both complete image sets remain available. Loops have no player controls;
+  they stop offscreen, in hidden tabs and for reduced-motion preferences.
 
 - The header theme switch defaults to the browser preference and saves an explicit choice in
-  `education-theme` localStorage. Dark mode uses a deep indigo palette and self-hosted Golos Text (`next/font/google`, fetched at build) with
+  `education-theme` localStorage. The public site now shares the Workspace's blue/neutral palette and self-hosted Inter (`next/font/google`, fetched at build) with
   Mongolian Cyrillic coverage. English passages keep a reading serif.
 - The 2026 interface layer lives in `src/app/theme.css`, loaded after `globals.css`. It is
-  dark-first (near-black indigo surfaces, indigo/violet accents, hairline borders and restrained
-  glow) while keeping a designed light theme. It restyles the sticky glass header/footer,
+  built on white/light-grey surfaces and a blue accent, with matching charcoal surfaces in dark mode. It keeps
+  the existing glyphs and decorative features, and styles the sticky glass header/footer,
   homepage hero, cards, auth, dashboard, exam surfaces, admin and mobile navigation without
   changing route semantics, server checks or test hooks.
-- Plans and Workshop keep the compact 2026 treatment: `src/app/plans/plans.css` and
-  `src/app/workshop/workshop.css` scope their smaller titles, cards and spacing to those routes only.
+- Plans (own CSS in `src/app/workspace/plans/plans.css`) and Workshop live in the Workspace; the shell's styles
+  are in `src/modules/workspace/workspace.css` (scoped under `.wsp`).
   The rest of the site uses the full display scale and copy. `src/app/footer-compact.css` keeps the
   shared footer to one link row and one disclaimer line; delete its import in `layout.tsx` to restore
   the taller footer.
-- `/dashboard`, `/profile` and `/admin` share `src/app/workspace.css` (card surface, status pill and
-  tokens) through their own stylesheets, with readable type and no monospace Cyrillic labels.
+- `/workspace/profile` and `/admin` share `src/app/workspace.css` (card surface, status pill and tokens) through their own
+  stylesheets, with readable type and no monospace Cyrillic labels. Despite its name, that file is not the Workspace's
+  stylesheet (`src/modules/workspace/workspace.css`).
 - Mathematics and Physics tests expose a collapsible scratchpad with graph paper, mouse/pen/touch drawing,
   last-stroke undo, confirmed clear and keyboard-accessible typed notes.
 - The imported ЭЕШ surfaces live in `src/modules/exams/entrance/entrance.css` (hub, briefing, sitting,
@@ -411,11 +467,13 @@ rounding), vocabulary upgrades, strengths, next steps and one rewritten passage.
 | `src/modules/exam-practice` | Untimed practice on mocks: forms, checks, progress and the assistant |
 | `src/modules/exams/entrance` | ЭЕШ catalogue, lazy content loader, hub, compact briefing, sitting and results |
 | `assets/entrance-mocks` | Generated, server-side ЭЕШ content JSON with answers; traced into the server routes |
+| `assets/jlpt` | Private JLPT definitions and audio provenance; answers/scripts stripped before client delivery |
 | `public/exam-assets/eesh` | Generated SVG diagrams for the imported papers; answer-free |
 | `MockExmps` | Offline authoring packs and validation tools; never served, built or deployed |
 | `scripts/build-entrance-mocks.mjs` | Deterministic converter from `MockExmps` to site content, diagrams and catalogue |
 | `reference/official-papers` | Withdrawn official papers, kept as a format guide only; never served, built or deployed |
 | `reference/retired-site-mocks` | Retired site mocks (the first four Mathematics forms and the old English set); never built |
+| `src/modules/workspace` | Workspace shell, home, AI chat (contract, service, browser-stored threads), review and styles |
 | `src/modules/subscriptions` | Plans, purchases, entitlements and legacy grants |
 | `src/modules/admin` | Admin services, reporting, exports and audit |
 | `src/modules/tutor` | DeepSeek prompt contracts, quotas and provider calls |

@@ -1,0 +1,1462 @@
+{
+  "id": "jlpt-n4-01",
+  "level": "N4",
+  "title": "Original JLPT N4 Mock 01",
+  "theme": "Community events and study plans",
+  "version": 1,
+  "authoredDate": "2026-11-08",
+  "status": "draft-awaiting-Japanese-teacher-review",
+  "author": "Codex (GPT-6)",
+  "official": false,
+  "offlineOnly": true,
+  "referenceUrls": [
+    "https://www.jlpt.jp/e/guideline/testsections.html",
+    "https://www.jlpt.jp/e/topics/202009091599642827.html",
+    "https://www.jlpt.jp/e/samples/forlearners.html",
+    "https://www.jlpt.jp/e/samples/n5/index.html",
+    "https://www.jlpt.jp/e/samples/n4/index.html"
+  ],
+  "scoring": "One raw practice mark per item; no scaled score or official pass prediction.",
+  "listeningDelivery": "Human reader script only; no audio recording. Written situation cues replace illustrations in verbal-expression items.",
+  "sections": [
+    {
+      "id": "V",
+      "minutes": 25,
+      "title": "Vocabulary",
+      "groups": [
+        {
+          "number": 1,
+          "type": "kanji-reading",
+          "instructions": "【　】の ことばは どう よみますか。",
+          "questions": [
+            {
+              "prompt": "ここは 【特別】な へやです。",
+              "choices": [
+                "どくべつ",
+                "とっべつ",
+                "とくへつ",
+                "とくべつ"
+              ],
+              "explanation": "特別 is read とくべつ.",
+              "id": "N4-01-V01",
+              "number": 1,
+              "rawMarks": 1,
+              "answer": 4
+            },
+            {
+              "prompt": "【急行】に のりましょう。",
+              "choices": [
+                "きょうこう",
+                "きゅうこう",
+                "きゅうごう",
+                "きゅこう"
+              ],
+              "explanation": "急行 is read きゅうこう.",
+              "id": "N4-01-V02",
+              "number": 2,
+              "rawMarks": 1,
+              "answer": 2
+            },
+            {
+              "prompt": "あしたの 【予定】を おしえてください。",
+              "choices": [
+                "ようてい",
+                "よてい",
+                "よってい",
+                "よでい"
+              ],
+              "explanation": "予定 is read よてい.",
+              "id": "N4-01-V03",
+              "number": 3,
+              "rawMarks": 1,
+              "answer": 2
+            },
+            {
+              "prompt": "この まちの 【人口】は へっています。",
+              "choices": [
+                "じんこう",
+                "じんぐち",
+                "ひとくち",
+                "にんこう"
+              ],
+              "explanation": "人口 is read じんこう.",
+              "id": "N4-01-V04",
+              "number": 4,
+              "rawMarks": 1,
+              "answer": 1
+            },
+            {
+              "prompt": "【運転】には 気をつけてください。",
+              "choices": [
+                "うんてん",
+                "うんでん",
+                "うてん",
+                "うんてい"
+              ],
+              "explanation": "運転 is read うんてん.",
+              "id": "N4-01-V05",
+              "number": 5,
+              "rawMarks": 1,
+              "answer": 1
+            },
+            {
+              "prompt": "しりょうを 【集めて】います。",
+              "choices": [
+                "つとめて",
+                "あつめて",
+                "すすめて",
+                "あたためて"
+              ],
+              "explanation": "集める is read あつめる.",
+              "id": "N4-01-V06",
+              "number": 6,
+              "rawMarks": 1,
+              "answer": 2
+            },
+            {
+              "prompt": "【最近】、いそがしいです。",
+              "choices": [
+                "さいきん",
+                "さいぎん",
+                "ざいきん",
+                "さいこん"
+              ],
+              "explanation": "最近 is read さいきん.",
+              "id": "N4-01-V07",
+              "number": 7,
+              "rawMarks": 1,
+              "answer": 1
+            }
+          ]
+        },
+        {
+          "number": 2,
+          "type": "orthography",
+          "instructions": "【　】の ことばは どう かきますか。",
+          "questions": [
+            {
+              "prompt": "えきで 【おりました】。",
+              "choices": [
+                "乗りました",
+                "帰りました",
+                "降りました",
+                "通りました"
+              ],
+              "explanation": "おりる from a train is 降りる.",
+              "id": "N4-01-V08",
+              "number": 8,
+              "rawMarks": 1,
+              "answer": 3
+            },
+            {
+              "prompt": "この へやは 【あんぜん】です。",
+              "choices": [
+                "安金",
+                "案全",
+                "安前",
+                "安全"
+              ],
+              "explanation": "あんぜん is 安全.",
+              "id": "N4-01-V09",
+              "number": 9,
+              "rawMarks": 1,
+              "answer": 4
+            },
+            {
+              "prompt": "【かぞく】に そうだんします。",
+              "choices": [
+                "家属",
+                "家旅",
+                "家族",
+                "家続"
+              ],
+              "explanation": "かぞく is 家族.",
+              "id": "N4-01-V10",
+              "number": 10,
+              "rawMarks": 1,
+              "answer": 3
+            },
+            {
+              "prompt": "【せつめい】を よく きいてください。",
+              "choices": [
+                "説名",
+                "説明",
+                "設明",
+                "設名"
+              ],
+              "explanation": "せつめい is 説明.",
+              "id": "N4-01-V11",
+              "number": 11,
+              "rawMarks": 1,
+              "answer": 2
+            },
+            {
+              "prompt": "この まちの 【ぶんか】を しりたいです。",
+              "choices": [
+                "分化",
+                "文花",
+                "分科",
+                "文化"
+              ],
+              "explanation": "ぶんか meaning culture is 文化.",
+              "id": "N4-01-V12",
+              "number": 12,
+              "rawMarks": 1,
+              "answer": 4
+            }
+          ]
+        },
+        {
+          "number": 3,
+          "type": "context",
+          "instructions": "（　）に 入る いちばん いい ことばを えらんでください。",
+          "questions": [
+            {
+              "prompt": "やくそくの 時間に （　）ように、早く 出ました。",
+              "choices": [
+                "なくならない",
+                "おくれない",
+                "よごれない",
+                "こわれない"
+              ],
+              "explanation": "Leave early to avoid being late.",
+              "id": "N4-01-V13",
+              "number": 13,
+              "rawMarks": 1,
+              "answer": 2
+            },
+            {
+              "prompt": "あしたまでに この しごとを （　）ください。",
+              "choices": [
+                "すぎて",
+                "そだてて",
+                "すませて",
+                "こわして"
+              ],
+              "explanation": "すませる means to finish a task.",
+              "id": "N4-01-V14",
+              "number": 14,
+              "rawMarks": 1,
+              "answer": 3
+            },
+            {
+              "prompt": "かぜが 強くて、ぼうしが （　）しまいました。",
+              "choices": [
+                "とんで",
+                "さいて",
+                "ひえて",
+                "おれて"
+              ],
+              "explanation": "A hat can be blown away in strong wind.",
+              "id": "N4-01-V15",
+              "number": 15,
+              "rawMarks": 1,
+              "answer": 1
+            },
+            {
+              "prompt": "テストの 前に、もう一度 ノートを （　）しました。",
+              "choices": [
+                "うんてん",
+                "しょうたい",
+                "ふくしゅう",
+                "にゅういん"
+              ],
+              "explanation": "Review notes before a test: ふくしゅう.",
+              "id": "N4-01-V16",
+              "number": 16,
+              "rawMarks": 1,
+              "answer": 3
+            },
+            {
+              "prompt": "電車が とまったので、バスを （　）ことに しました。",
+              "choices": [
+                "そつぎょうする",
+                "りようする",
+                "はんたいする",
+                "しっぱいする"
+              ],
+              "explanation": "Use the bus as alternative transport.",
+              "id": "N4-01-V17",
+              "number": 17,
+              "rawMarks": 1,
+              "answer": 2
+            },
+            {
+              "prompt": "この 店は サービスが よく、店員も （　）です。",
+              "choices": [
+                "しんせつ",
+                "ざんねん",
+                "きけん",
+                "ふべん"
+              ],
+              "explanation": "Helpful staff are しんせつ.",
+              "id": "N4-01-V18",
+              "number": 18,
+              "rawMarks": 1,
+              "answer": 1
+            },
+            {
+              "prompt": "この へやは （　）が よくて、昼は 電気が いりません。",
+              "choices": [
+                "かみなり",
+                "ひあたり",
+                "おみまい",
+                "うけつけ"
+              ],
+              "explanation": "Good sunlight makes electric lighting unnecessary.",
+              "id": "N4-01-V19",
+              "number": 19,
+              "rawMarks": 1,
+              "answer": 2
+            },
+            {
+              "prompt": "さとうさんから パーティーの （　）が とどきました。",
+              "choices": [
+                "しょうたいじょう",
+                "しんぶん",
+                "きょうかしょ",
+                "りょうしゅうしょ"
+              ],
+              "explanation": "An invitation arrives for a party.",
+              "id": "N4-01-V20",
+              "number": 20,
+              "rawMarks": 1,
+              "answer": 1
+            }
+          ]
+        },
+        {
+          "number": 4,
+          "type": "paraphrase",
+          "instructions": "【　】の 文と だいたい 同じ いみの 文を えらんでください。",
+          "questions": [
+            {
+              "prompt": "この もんだいは 【かんたんです】。",
+              "choices": [
+                "答えが ありません。",
+                "だれにも わかりません。",
+                "時間が かかります。",
+                "むずかしく ありません。"
+              ],
+              "explanation": "かんたん means easy.",
+              "id": "N4-01-V21",
+              "number": 21,
+              "rawMarks": 1,
+              "answer": 4
+            },
+            {
+              "prompt": "会議の 時間が 【かわりました】。",
+              "choices": [
+                "会議は 前と ちがう 時間に なりました。",
+                "会議は 長く なりました。",
+                "会議は なくなりました。",
+                "会議は おわりました。"
+              ],
+              "explanation": "A changed time is different from the earlier time.",
+              "id": "N4-01-V22",
+              "number": 22,
+              "rawMarks": 1,
+              "answer": 1
+            },
+            {
+              "prompt": "あの 人は 【いつも】 ここに 来ます。",
+              "choices": [
+                "あの 人は ここに 来ません。",
+                "あの 人は まいにちのように ここに 来ます。",
+                "あの 人は 一度だけ ここに 来ました。",
+                "あの 人は あした はじめて 来ます。"
+              ],
+              "explanation": "いつも means regularly/always.",
+              "id": "N4-01-V23",
+              "number": 23,
+              "rawMarks": 1,
+              "answer": 2
+            },
+            {
+              "prompt": "駅まで 【むかえに 行きます】。",
+              "choices": [
+                "駅で あなたに 会って、いっしょに 帰ります。",
+                "駅で あなたを 見送ります。",
+                "駅で 一人で 電車に のります。",
+                "駅までの 道を おしえます。"
+              ],
+              "explanation": "むかえに行く means go to meet/pick someone up.",
+              "id": "N4-01-V24",
+              "number": 24,
+              "rawMarks": 1,
+              "answer": 1
+            }
+          ]
+        },
+        {
+          "number": 5,
+          "type": "usage",
+          "instructions": "ことばの 使い方が 正しい 文を えらんでください。",
+          "questions": [
+            {
+              "prompt": "【予約】の つかいかたが 正しい 文を えらんでください。",
+              "choices": [
+                "旅行の 前に ホテルを 予約しました。",
+                "日本語を ３年間 予約しました。",
+                "あしたの 天気を 予約しました。",
+                "なくした かぎを 予約しました。"
+              ],
+              "explanation": "予約 is used for booking a hotel or service.",
+              "id": "N4-01-V25",
+              "number": 25,
+              "rawMarks": 1,
+              "answer": 1
+            },
+            {
+              "prompt": "【準備】の つかいかたが 正しい 文を えらんでください。",
+              "choices": [
+                "バスが 駅を 準備しました。",
+                "先生に 準備を 返しました。",
+                "この りんごは 準備な 味です。",
+                "出かける 準備が できました。"
+              ],
+              "explanation": "準備 means preparation.",
+              "id": "N4-01-V26",
+              "number": 26,
+              "rawMarks": 1,
+              "answer": 4
+            },
+            {
+              "prompt": "【残念】の つかいかたが 正しい 文を えらんでください。",
+              "choices": [
+                "道を 残念に 曲がります。",
+                "パンを 残念で 切ります。",
+                "この かばんは 残念に 入ります。",
+                "友だちに 会えなくて 残念です。"
+              ],
+              "explanation": "残念 expresses regret at an undesired outcome.",
+              "id": "N4-01-V27",
+              "number": 27,
+              "rawMarks": 1,
+              "answer": 4
+            },
+            {
+              "prompt": "【比べる】の つかいかたが 正しい 文を えらんでください。",
+              "choices": [
+                "かぜを 比べて 休みました。",
+                "電車を 比べて 学校へ 行きました。",
+                "二つの 店の ねだんを 比べました。",
+                "ドアを 比べて 外に 出ました。"
+              ],
+              "explanation": "比べる means compare two prices or other comparable things.",
+              "id": "N4-01-V28",
+              "number": 28,
+              "rawMarks": 1,
+              "answer": 3
+            }
+          ]
+        }
+      ],
+      "itemCount": 28
+    },
+    {
+      "id": "G",
+      "minutes": 55,
+      "title": "Grammar and reading",
+      "groups": [
+        {
+          "number": 1,
+          "type": "grammar-form",
+          "instructions": "（　）に 入る いちばん いい ものを えらんでください。",
+          "questions": [
+            {
+              "prompt": "雨が ふっている（　）、試合は あります。",
+              "choices": [
+                "ようで",
+                "ためで",
+                "ことに",
+                "のに"
+              ],
+              "explanation": "のに expresses the unexpected contrast.",
+              "id": "N4-01-G01",
+              "number": 1,
+              "rawMarks": 1,
+              "answer": 4
+            },
+            {
+              "prompt": "日本へ 行った（　）が あります。",
+              "choices": [
+                "ところ",
+                "もの",
+                "ほう",
+                "こと"
+              ],
+              "explanation": "たことがある expresses experience.",
+              "id": "N4-01-G02",
+              "number": 2,
+              "rawMarks": 1,
+              "answer": 4
+            },
+            {
+              "prompt": "この 本は 子ども（　） 読めます。",
+              "choices": [
+                "ずつ",
+                "でも",
+                "しか",
+                "ほど"
+              ],
+              "explanation": "でも expresses even children can read it.",
+              "id": "N4-01-G03",
+              "number": 3,
+              "rawMarks": 1,
+              "answer": 2
+            },
+            {
+              "prompt": "毎日 少しずつ 漢字を おぼえる（　）しています。",
+              "choices": [
+                "ことが",
+                "そうで",
+                "ためで",
+                "ように"
+              ],
+              "explanation": "ようにしている expresses an ongoing deliberate effort.",
+              "id": "N4-01-G04",
+              "number": 4,
+              "rawMarks": 1,
+              "answer": 4
+            },
+            {
+              "prompt": "先生に 作文を （　）。",
+              "choices": [
+                "ほめておきました",
+                "ほめられました",
+                "ほめさせました",
+                "ほめてあげました"
+              ],
+              "explanation": "The student was praised by the teacher: passive.",
+              "id": "N4-01-G05",
+              "number": 5,
+              "rawMarks": 1,
+              "answer": 2
+            },
+            {
+              "prompt": "もうすぐ 雨が （　）そうです。空が 暗いです。",
+              "choices": [
+                "ふり",
+                "ふる",
+                "ふった",
+                "ふって"
+              ],
+              "explanation": "Appearance そう attaches to the verb stem.",
+              "id": "N4-01-G06",
+              "number": 6,
+              "rawMarks": 1,
+              "answer": 1
+            },
+            {
+              "prompt": "食事（しょくじ）を （　）あとで、薬を のんでください。",
+              "choices": [
+                "する",
+                "し",
+                "して",
+                "した"
+              ],
+              "explanation": "た-form + あとで marks after finishing.",
+              "id": "N4-01-G07",
+              "number": 7,
+              "rawMarks": 1,
+              "answer": 4
+            },
+            {
+              "prompt": "ここでは くつを ぬが（　）なりません。",
+              "choices": [
+                "ないで",
+                "ないか",
+                "なくても",
+                "なければ"
+              ],
+              "explanation": "なければならない expresses obligation.",
+              "id": "N4-01-G08",
+              "number": 8,
+              "rawMarks": 1,
+              "answer": 4
+            },
+            {
+              "prompt": "電気を つけた（　） ねてしまいました。",
+              "choices": [
+                "だけに",
+                "ほど",
+                "まま",
+                "ため"
+              ],
+              "explanation": "たまま means leaving a state unchanged.",
+              "id": "N4-01-G09",
+              "number": 9,
+              "rawMarks": 1,
+              "answer": 3
+            },
+            {
+              "prompt": "この 料理は 作り（　）です。",
+              "choices": [
+                "やすくて",
+                "やすい",
+                "やすく",
+                "やすさ"
+              ],
+              "explanation": "Verb stem + やすい means easy to do.",
+              "id": "N4-01-G10",
+              "number": 10,
+              "rawMarks": 1,
+              "answer": 2
+            },
+            {
+              "prompt": "駅に （　）ところです。今、改札の 前に います。",
+              "choices": [
+                "着いて",
+                "着くの",
+                "着いた",
+                "着き"
+              ],
+              "explanation": "たところです expresses having just arrived; the speaker is now at the ticket gate.",
+              "id": "N4-01-G11",
+              "number": 11,
+              "rawMarks": 1,
+              "answer": 3
+            },
+            {
+              "prompt": "仕事が おわったら、電話して（　）か。",
+              "choices": [
+                "やりません",
+                "いたしません",
+                "さしあげません",
+                "いただけません"
+              ],
+              "explanation": "ていただけませんか politely requests an action.",
+              "id": "N4-01-G12",
+              "number": 12,
+              "rawMarks": 1,
+              "answer": 4
+            },
+            {
+              "prompt": "今日は 三人（　） 来ませんでした。",
+              "choices": [
+                "だけを",
+                "でもが",
+                "しか",
+                "までを"
+              ],
+              "explanation": "しか with a negative means only three came.",
+              "id": "N4-01-G13",
+              "number": 13,
+              "rawMarks": 1,
+              "answer": 3
+            }
+          ]
+        },
+        {
+          "number": 2,
+          "type": "sentence-order",
+          "instructions": "四つの ことばを ならべて 文を 作ります。★に 入る ことばを えらんでください。",
+          "questions": [
+            {
+              "prefix": "これは",
+              "orderedChunks": [
+                "友だちに",
+                "かりた",
+                "本を",
+                "入れる"
+              ],
+              "suffix": "かばんです。",
+              "explanation": "友だちにかりた modifies 本; 本を入れる modifies かばん.",
+              "id": "N4-01-G14",
+              "number": 14,
+              "rawMarks": 1,
+              "choices": [
+                "入れる",
+                "本を",
+                "友だちに",
+                "かりた"
+              ],
+              "prompt": "これは ____  ____  ★  ____ かばんです。",
+              "solutionSentence": "これは友だちに かりた 本を 入れるかばんです。",
+              "answer": 2
+            },
+            {
+              "prefix": "駅へ",
+              "orderedChunks": [
+                "行く",
+                "バスに",
+                "乗る",
+                "ために"
+              ],
+              "suffix": "ここで 待ちます。",
+              "explanation": "駅へ行く modifies バス; バスに乗るために states the purpose.",
+              "id": "N4-01-G15",
+              "number": 15,
+              "rawMarks": 1,
+              "choices": [
+                "ために",
+                "行く",
+                "乗る",
+                "バスに"
+              ],
+              "prompt": "駅へ ____  ____  ★  ____ ここで 待ちます。",
+              "solutionSentence": "駅へ行く バスに 乗る ためにここで 待ちます。",
+              "answer": 3
+            },
+            {
+              "prefix": "この 漢字の",
+              "orderedChunks": [
+                "読み方を",
+                "知っている",
+                "人に",
+                "聞いて"
+              ],
+              "suffix": "ください。",
+              "explanation": "読み方を知っている modifies 人; 人に聞く is ask a person.",
+              "id": "N4-01-G16",
+              "number": 16,
+              "rawMarks": 1,
+              "choices": [
+                "読み方を",
+                "聞いて",
+                "知っている",
+                "人に"
+              ],
+              "prompt": "この 漢字の ____  ____  ★  ____ ください。",
+              "solutionSentence": "この 漢字の読み方を 知っている 人に 聞いてください。",
+              "answer": 4
+            },
+            {
+              "prefix": "きのう",
+              "orderedChunks": [
+                "買った",
+                "ばかりの",
+                "くつを",
+                "はいて"
+              ],
+              "suffix": "出かけました。",
+              "explanation": "買ったばかりの modifies くつ; くつをはいて precedes leaving.",
+              "id": "N4-01-G17",
+              "number": 17,
+              "rawMarks": 1,
+              "choices": [
+                "ばかりの",
+                "買った",
+                "はいて",
+                "くつを"
+              ],
+              "prompt": "きのう ____  ____  ★  ____ 出かけました。",
+              "solutionSentence": "きのう買った ばかりの くつを はいて出かけました。",
+              "answer": 4
+            }
+          ]
+        },
+        {
+          "number": 3,
+          "type": "text-grammar",
+          "instructions": "文を 読んで、【1】〜【4】に 入る ものを えらんでください。",
+          "questions": [
+            {
+              "prompt": "【1】",
+              "choices": [
+                "予定（よてい）でしたか",
+                "予定（よてい）をします",
+                "予定（よてい）でください",
+                "予定（よてい）です"
+              ],
+              "explanation": "予定です states a scheduled future activity.",
+              "passage": "来月、町の ホールで 写真展（しゃしんてん）が あります。わたしの クラブも 参加（さんか）する 【1】。一人 二枚ずつ 写真を 出します。わたしは 去年 山で 【2】 写真を えらびました。まだ 題名（だいめい）を 【3】ので、今夜 考えます。たくさんの 人に 見て 【4】です。",
+              "id": "N4-01-G18",
+              "number": 18,
+              "rawMarks": 1,
+              "answer": 4
+            },
+            {
+              "prompt": "【2】",
+              "choices": [
+                "とり",
+                "とる",
+                "とって",
+                "とった"
+              ],
+              "explanation": "A photo taken last year needs the past relative clause.",
+              "passage": "来月、町の ホールで 写真展（しゃしんてん）が あります。わたしの クラブも 参加（さんか）する 【1】。一人 二枚ずつ 写真を 出します。わたしは 去年 山で 【2】 写真を えらびました。まだ 題名（だいめい）を 【3】ので、今夜 考えます。たくさんの 人に 見て 【4】です。",
+              "id": "N4-01-G19",
+              "number": 19,
+              "rawMarks": 1,
+              "answer": 4
+            },
+            {
+              "prompt": "【3】",
+              "choices": [
+                "決めていない",
+                "決めてしまった",
+                "決めてある",
+                "決めておいた"
+              ],
+              "explanation": "まだ and the plan to think tonight show it is undecided.",
+              "passage": "来月、町の ホールで 写真展（しゃしんてん）が あります。わたしの クラブも 参加（さんか）する 【1】。一人 二枚ずつ 写真を 出します。わたしは 去年 山で 【2】 写真を えらびました。まだ 題名（だいめい）を 【3】ので、今夜 考えます。たくさんの 人に 見て 【4】です。",
+              "id": "N4-01-G20",
+              "number": 20,
+              "rawMarks": 1,
+              "answer": 1
+            },
+            {
+              "prompt": "【4】",
+              "choices": [
+                "もらいたい",
+                "いただきました",
+                "くれたい",
+                "あげたい"
+              ],
+              "explanation": "見てもらいたい expresses wanting others to see the photos.",
+              "passage": "来月、町の ホールで 写真展（しゃしんてん）が あります。わたしの クラブも 参加（さんか）する 【1】。一人 二枚ずつ 写真を 出します。わたしは 去年 山で 【2】 写真を えらびました。まだ 題名（だいめい）を 【3】ので、今夜 考えます。たくさんの 人に 見て 【4】です。",
+              "id": "N4-01-G21",
+              "number": 21,
+              "rawMarks": 1,
+              "answer": 1
+            }
+          ]
+        },
+        {
+          "number": 4,
+          "type": "short-reading",
+          "instructions": "文を 読んで、しつもんに こたえてください。",
+          "questions": [
+            {
+              "prompt": "勉強会について 正しいのは どれですか。",
+              "choices": [
+                "場所だけが 変わりました。",
+                "場所も 時間も 変わりました。",
+                "中止（ちゅうし）に なりました。",
+                "時間だけが 変わりました。"
+              ],
+              "explanation": "The location changes while the two o'clock time remains.",
+              "passage": "サラさん、あしたの 勉強会は いつもの 喫茶店ではなく、市民（しみん）センターで します。喫茶店は 工事（こうじ）で 休みです。時間は ２時の ままです。センターの へやが わからなかったら、着いてから 電話してください。ユウ",
+              "id": "N4-01-G22",
+              "number": 22,
+              "rawMarks": 1,
+              "answer": 1
+            },
+            {
+              "prompt": "返す日が 休館日（きゅうかんび）なら、いつ 返せば いいですか。",
+              "choices": [
+                "一か月後",
+                "必ず その 前の日",
+                "次に 図書館が あく日",
+                "休館日（きゅうかんび）の 朝だけ"
+              ],
+              "explanation": "The notice explicitly allows the next open day.",
+              "passage": "図書館からの お知らせ。今週 借りた 本は、来週の 金曜日までに 返してください。返す日が 休館日（きゅうかんび）の 場合（ばあい）は、その 次の 開館日（かいかんび）で かまいません。入口（いりぐち）の 箱には CDを 入れないでください。",
+              "id": "N4-01-G23",
+              "number": 23,
+              "rawMarks": 1,
+              "answer": 3
+            },
+            {
+              "prompt": "この 人は 夕方（ゆうがた）には どう なりましたか。",
+              "choices": [
+                "熱が 下がりました。",
+                "初めて（はじめて） 熱が 出ました。",
+                "何も 食べられなく なりました。",
+                "会社へ 行きました。"
+              ],
+              "explanation": "The fever subsided by evening; no return to work is stated.",
+              "passage": "昨日から 熱が あったので、今日は 会社を 休みました。朝は 食欲（しょくよく）が ありませんでしたが、昼には おかゆを 食べられました。夕方（ゆうがた）には 熱も 下がりました。明日も 無理（むり）を しないようにと 医者（いしゃ）に 言われました。",
+              "id": "N4-01-G24",
+              "number": 24,
+              "rawMarks": 1,
+              "answer": 1
+            }
+          ]
+        },
+        {
+          "number": 5,
+          "type": "medium-reading",
+          "instructions": "文を 読んで、しつもんに こたえてください。",
+          "questions": [
+            {
+              "prompt": "この 会では どうやって 物を 手に 入れますか。",
+              "choices": [
+                "必ず 自分の 物と 交換します。",
+                "いちばん 高い 金額を 言います。",
+                "お金を はらわずに もらいます。",
+                "会費を はらって 買います。"
+              ],
+              "explanation": "Items are given free; bringing an item is not compulsory.",
+              "passage": "わたしたちの 町では、毎月（まいつき） 一度、使わなくなった 物を 持ちよる 会が あります。お金で 売るのではなく、ほしい 人に 無料（むりょう）で あげます。わたしは 先月、小さくなった 子どもの 服を 持っていきました。まだ きれいだったので、すぐに もらう 人が 決まりました。わたしは 大きな なべを もらいました。家の なべでは、家族 全員（ぜんいん）の カレーを 一度に 作れなかったからです。持ち帰る 物は 一人 三つまでで、持っていく 物が なくても 参加（さんか）できます。ただし、こわれた 物や 食べ物は 受けつけ（うけつけ）ていません。来月は 母と 行く つもりです。母は 使っていない お皿を 持っていきたいと 言っています。この 会で 近所（きんじょ）の 人とも 話せるので、物を 大切（たいせつ）に するだけでなく、友だちも できそうです。",
+              "id": "N4-01-G25",
+              "number": 25,
+              "rawMarks": 1,
+              "answer": 3
+            },
+            {
+              "prompt": "わたしは なぜ なべを もらいましたか。",
+              "choices": [
+                "母に 売りたかったから",
+                "家の なべが こわれたから",
+                "家族の 料理を 一度に 作りたかったから",
+                "料理教室を 開くから"
+              ],
+              "explanation": "The existing pot was too small for the whole family's curry.",
+              "passage": "わたしたちの 町では、毎月（まいつき） 一度、使わなくなった 物を 持ちよる 会が あります。お金で 売るのではなく、ほしい 人に 無料（むりょう）で あげます。わたしは 先月、小さくなった 子どもの 服を 持っていきました。まだ きれいだったので、すぐに もらう 人が 決まりました。わたしは 大きな なべを もらいました。家の なべでは、家族 全員（ぜんいん）の カレーを 一度に 作れなかったからです。持ち帰る 物は 一人 三つまでで、持っていく 物が なくても 参加（さんか）できます。ただし、こわれた 物や 食べ物は 受けつけ（うけつけ）ていません。来月は 母と 行く つもりです。母は 使っていない お皿を 持っていきたいと 言っています。この 会で 近所（きんじょ）の 人とも 話せるので、物を 大切（たいせつ）に するだけでなく、友だちも できそうです。",
+              "id": "N4-01-G26",
+              "number": 26,
+              "rawMarks": 1,
+              "answer": 3
+            },
+            {
+              "prompt": "来月の 参加（さんか）について 正しいのは どれですか。",
+              "choices": [
+                "物が ない 人は 参加（さんか）できません。",
+                "母は お皿を 持っていく つもりです。",
+                "わたしは 四つ 持ち帰ります。",
+                "母は 食べ物を 持っていきます。"
+              ],
+              "explanation": "The mother plans to bring unused plates; food and four takeaways are disallowed.",
+              "passage": "わたしたちの 町では、毎月（まいつき） 一度、使わなくなった 物を 持ちよる 会が あります。お金で 売るのではなく、ほしい 人に 無料（むりょう）で あげます。わたしは 先月、小さくなった 子どもの 服を 持っていきました。まだ きれいだったので、すぐに もらう 人が 決まりました。わたしは 大きな なべを もらいました。家の なべでは、家族 全員（ぜんいん）の カレーを 一度に 作れなかったからです。持ち帰る 物は 一人 三つまでで、持っていく 物が なくても 参加（さんか）できます。ただし、こわれた 物や 食べ物は 受けつけ（うけつけ）ていません。来月は 母と 行く つもりです。母は 使っていない お皿を 持っていきたいと 言っています。この 会で 近所（きんじょ）の 人とも 話せるので、物を 大切（たいせつ）に するだけでなく、友だちも できそうです。",
+              "id": "N4-01-G27",
+              "number": 27,
+              "rawMarks": 1,
+              "answer": 2
+            }
+          ]
+        },
+        {
+          "number": 6,
+          "type": "information-retrieval",
+          "instructions": "お知らせを 見て、しつもんに こたえてください。",
+          "questions": [
+            {
+              "prompt": "ミナさんは 午後だけ 時間が あります。道具（どうぐ）を 持っていません。絵を かきたいなら どれに 申し込みますか。",
+              "choices": [
+                "C",
+                "A",
+                "B",
+                "D"
+              ],
+              "explanation": "The afternoon art class provides its equipment.",
+              "passage": "市民（しみん）センター・日曜日の 教室\nA 写真：9:00〜10:30／800円／カメラ持参（じさん）\nB 料理：10:00〜12:00／1,500円／エプロン持参（じさん）\nC 絵：13:00〜15:00／1,000円／道具（どうぐ）つき\nD 体操（たいそう）：15:30〜16:30／500円／タオル持参（じさん）\nどの 教室も 前日（ぜんじつ）までに 電話で 予約（よやく）。二つ 以上（いじょう） 申し込むと 合計（ごうけい）から 200円引き。",
+              "id": "N4-01-G28",
+              "number": 28,
+              "rawMarks": 1,
+              "answer": 1
+            },
+            {
+              "prompt": "写真と 体操（たいそう）を 両方 申し込むと、合計（ごうけい） いくらですか。",
+              "choices": [
+                "1,300円",
+                "900円",
+                "1,100円",
+                "1,500円"
+              ],
+              "explanation": "800 + 500 minus the two-class discount of 200 = 1,100 yen.",
+              "passage": "市民（しみん）センター・日曜日の 教室\nA 写真：9:00〜10:30／800円／カメラ持参（じさん）\nB 料理：10:00〜12:00／1,500円／エプロン持参（じさん）\nC 絵：13:00〜15:00／1,000円／道具（どうぐ）つき\nD 体操（たいそう）：15:30〜16:30／500円／タオル持参（じさん）\nどの 教室も 前日（ぜんじつ）までに 電話で 予約（よやく）。二つ 以上（いじょう） 申し込むと 合計（ごうけい）から 200円引き。",
+              "id": "N4-01-G29",
+              "number": 29,
+              "rawMarks": 1,
+              "answer": 3
+            }
+          ]
+        }
+      ],
+      "itemCount": 29
+    },
+    {
+      "id": "L",
+      "minutes": 35,
+      "title": "Listening",
+      "groups": [
+        {
+          "number": 1,
+          "type": "task-comprehension",
+          "instructions": "話を 聞いて、さいごの しつもんに こたえてください。",
+          "questions": [
+            {
+              "prompt": "女の人は 最初（さいしょ）に 何を しますか。",
+              "script": "男：会場へ 行く前に、受付で 名札を もらってください。女：荷物は？ 男：名札を もらった後、となりの へやに 置けます。",
+              "choices": [
+                "会場に 入る",
+                "となりの へやで 待つ",
+                "受付（うけつけ）で 名札を もらう",
+                "荷物（にもつ）を 置く"
+              ],
+              "explanation": "Name tag collection precedes luggage storage and entering the venue.",
+              "id": "N4-01-L01",
+              "number": 1,
+              "rawMarks": 1,
+              "answer": 3,
+              "delivery": "printed-options",
+              "examinerReadout": "話を 聞いてください。\n男：会場へ 行く前に、受付で 名札を もらってください。女：荷物は？ 男：名札を もらった後、となりの へやに 置けます。\n女の人は 最初（さいしょ）に 何を しますか。"
+            },
+            {
+              "prompt": "男の人は 何を 買いますか。",
+              "script": "女：サンドイッチ用の パンと チーズを 買ってきて。男：ハムも？ 女：ハムは あるの。あ、パンも あった。チーズだけ お願い。",
+              "choices": [
+                "チーズだけ",
+                "パンと チーズ",
+                "ハムと チーズ",
+                "パンだけ"
+              ],
+              "explanation": "The final correction removes bread; only cheese remains.",
+              "id": "N4-01-L02",
+              "number": 2,
+              "rawMarks": 1,
+              "answer": 1,
+              "delivery": "printed-options",
+              "examinerReadout": "話を 聞いてください。\n女：サンドイッチ用の パンと チーズを 買ってきて。男：ハムも？ 女：ハムは あるの。あ、パンも あった。チーズだけ お願い。\n男の人は 何を 買いますか。"
+            },
+            {
+              "prompt": "女の人は どの 電車に 乗りますか。",
+              "script": "女：３時の 急行で 間に 合いますか。男：急行は 目的の 駅に とまりません。２時50分の 普通に 乗ってください。",
+              "choices": [
+                "３時50分の 普通（ふつう）",
+                "２時の 急行（きゅうこう）",
+                "２時50分の 普通（ふつう）",
+                "３時の 急行（きゅうこう）"
+              ],
+              "explanation": "The ordinary train at 2:50 stops at the required station.",
+              "id": "N4-01-L03",
+              "number": 3,
+              "rawMarks": 1,
+              "answer": 3,
+              "delivery": "printed-options",
+              "examinerReadout": "話を 聞いてください。\n女：３時の 急行で 間に 合いますか。男：急行は 目的の 駅に とまりません。２時50分の 普通に 乗ってください。\n女の人は どの 電車に 乗りますか。"
+            },
+            {
+              "prompt": "男の人は あした 何を 持っていきますか。",
+              "script": "女：申込書と 写真を お願いします。男：申込書は メールで 送りました。女：届いています。では 写真だけ 持ってきてください。",
+              "choices": [
+                "何も 持っていかない",
+                "申込書（もうしこみしょ）と 写真",
+                "写真だけ",
+                "申込書（もうしこみしょ）だけ"
+              ],
+              "explanation": "The form has arrived electronically; the photo is still needed.",
+              "id": "N4-01-L04",
+              "number": 4,
+              "rawMarks": 1,
+              "answer": 3,
+              "delivery": "printed-options",
+              "examinerReadout": "話を 聞いてください。\n女：申込書と 写真を お願いします。男：申込書は メールで 送りました。女：届いています。では 写真だけ 持ってきてください。\n男の人は あした 何を 持っていきますか。"
+            },
+            {
+              "prompt": "二人は どこで 会いますか。",
+              "script": "男：いつもの 店で 会おうか。女：今日は 休みよ。駅の 北口は？ 男：工事中だよ。女：じゃ、南口の 時計の 下で。男：うん。",
+              "choices": [
+                "いつもの 店",
+                "北口（きたぐち）の 時計の 下",
+                "南口（みなみぐち）の 時計の 下",
+                "工事（こうじ）の 入口（いりぐち）"
+              ],
+              "explanation": "The final agreed meeting point is under the south-exit clock.",
+              "id": "N4-01-L05",
+              "number": 5,
+              "rawMarks": 1,
+              "answer": 3,
+              "delivery": "printed-options",
+              "examinerReadout": "話を 聞いてください。\n男：いつもの 店で 会おうか。女：今日は 休みよ。駅の 北口は？ 男：工事中だよ。女：じゃ、南口の 時計の 下で。男：うん。\n二人は どこで 会いますか。"
+            },
+            {
+              "prompt": "女の人は どうやって 予約（よやく）を 変えますか。",
+              "script": "女：サイトで 予約したんですが、時間を 変えたいです。男：変更は 電話だけです。女：窓口では？ 男：窓口は 新しい 予約だけです。",
+              "choices": [
+                "窓口（まどぐち）へ 行く",
+                "メールを 送る",
+                "電話する",
+                "サイトで 変える"
+              ],
+              "explanation": "Changes are accepted by telephone only.",
+              "id": "N4-01-L06",
+              "number": 6,
+              "rawMarks": 1,
+              "answer": 3,
+              "delivery": "printed-options",
+              "examinerReadout": "話を 聞いてください。\n女：サイトで 予約したんですが、時間を 変えたいです。男：変更は 電話だけです。女：窓口では？ 男：窓口は 新しい 予約だけです。\n女の人は どうやって 予約（よやく）を 変えますか。"
+            },
+            {
+              "prompt": "男の人は どの へやを 使いますか。",
+              "script": "女：３階の 大きい へやは 30人からです。男：今日は 12人です。女：それなら ２階の 小さい へやが いいですね。男：お願いします。",
+              "choices": [
+                "２階の 小さい へや",
+                "３階の 小さい へや",
+                "２階の 大きい へや",
+                "３階の 大きい へや"
+              ],
+              "explanation": "The group of twelve is assigned the small second-floor room.",
+              "id": "N4-01-L07",
+              "number": 7,
+              "rawMarks": 1,
+              "answer": 1,
+              "delivery": "printed-options",
+              "examinerReadout": "話を 聞いてください。\n女：３階の 大きい へやは 30人からです。男：今日は 12人です。女：それなら ２階の 小さい へやが いいですね。男：お願いします。\n男の人は どの へやを 使いますか。"
+            },
+            {
+              "prompt": "女の人は 帰る前に 何を しますか。",
+              "script": "男：そうじは おわりましたか。女：はい。もう 帰っても？ 男：机の 上の しりょうを 棚に 入れてから お願いします。",
+              "choices": [
+                "机を ふく",
+                "電気を つける",
+                "しりょうを 棚（たな）に 入れる",
+                "そうじを 始める"
+              ],
+              "explanation": "She must put the documents on the shelf before leaving.",
+              "id": "N4-01-L08",
+              "number": 8,
+              "rawMarks": 1,
+              "answer": 3,
+              "delivery": "printed-options",
+              "examinerReadout": "話を 聞いてください。\n男：そうじは おわりましたか。女：はい。もう 帰っても？ 男：机の 上の しりょうを 棚に 入れてから お願いします。\n女の人は 帰る前に 何を しますか。"
+            }
+          ]
+        },
+        {
+          "number": 2,
+          "type": "key-points",
+          "instructions": "しつもんを 聞いてから、話を 聞きます。大切な ことを えらんでください。",
+          "questions": [
+            {
+              "prompt": "男の人は なぜ 引っこしますか。",
+              "script": "女：今の アパートは 家賃が 高いんですか。男：値段は いいんですが、夜も 車の 音が うるさくて。もっと 静かな 所を さがしています。",
+              "choices": [
+                "会社から 遠いから",
+                "家賃が 高いから",
+                "車の 音が うるさいから",
+                "へやが せまいから"
+              ],
+              "explanation": "Noise, rather than rent, is the reason.",
+              "id": "N4-01-L09",
+              "number": 9,
+              "rawMarks": 1,
+              "answer": 3,
+              "delivery": "printed-options",
+              "examinerReadout": "男の人は なぜ 引っこしますか。\n女：今の アパートは 家賃が 高いんですか。男：値段は いいんですが、夜も 車の 音が うるさくて。もっと 静かな 所を さがしています。\n男の人は なぜ 引っこしますか。"
+            },
+            {
+              "prompt": "女の人は いつ レポートを 出しますか。",
+              "script": "男：レポートは 金曜日までですね。女：旅行に 行くので、水曜日に 出します。木曜日は 準備を したいんです。",
+              "choices": [
+                "水曜日",
+                "土曜日",
+                "金曜日",
+                "木曜日"
+              ],
+              "explanation": "She plans to submit Wednesday, earlier than the deadline.",
+              "id": "N4-01-L10",
+              "number": 10,
+              "rawMarks": 1,
+              "answer": 1,
+              "delivery": "printed-options",
+              "examinerReadout": "女の人は いつ レポートを 出しますか。\n男：レポートは 金曜日までですね。女：旅行に 行くので、水曜日に 出します。木曜日は 準備を したいんです。\n女の人は いつ レポートを 出しますか。"
+            },
+            {
+              "prompt": "店の 新しい 開店時間は 何時ですか。",
+              "script": "ナレーター：来月から 開店時間が ９時半に なります。今月は これまでどおり 10時です。閉店時間は ８時で 変わりません。",
+              "choices": [
+                "９時半",
+                "９時",
+                "10時",
+                "８時"
+              ],
+              "explanation": "The new opening time next month is 9:30.",
+              "id": "N4-01-L11",
+              "number": 11,
+              "rawMarks": 1,
+              "answer": 1,
+              "delivery": "printed-options",
+              "examinerReadout": "店の 新しい 開店時間は 何時ですか。\nナレーター：来月から 開店時間が ９時半に なります。今月は これまでどおり 10時です。閉店時間は ８時で 変わりません。\n店の 新しい 開店時間は 何時ですか。"
+            },
+            {
+              "prompt": "男の人は 何を するのが 好きですか。",
+              "script": "女：写真を とるのが 趣味ですか。男：前は そうでした。今は とった 写真を 見ながら 絵を かくのが 楽しいです。",
+              "choices": [
+                "旅行の 本を 読むこと",
+                "写真展（しゃしんてん）を 開くこと",
+                "新しい カメラを 買うこと",
+                "写真を 見て 絵を かくこと"
+              ],
+              "explanation": "His current enjoyment is painting from photographs.",
+              "id": "N4-01-L12",
+              "number": 12,
+              "rawMarks": 1,
+              "answer": 4,
+              "delivery": "printed-options",
+              "examinerReadout": "男の人は 何を するのが 好きですか。\n女：写真を とるのが 趣味ですか。男：前は そうでした。今は とった 写真を 見ながら 絵を かくのが 楽しいです。\n男の人は 何を するのが 好きですか。"
+            },
+            {
+              "prompt": "女の人は 何が 心配（しんぱい）ですか。",
+              "script": "男：発表の 内容は できましたか。女：はい。でも、人の 前だと 声が 小さく なってしまうんです。内容より それが 心配で。",
+              "choices": [
+                "時間に 間に合うか",
+                "しりょうが 足りるか",
+                "内容が 正しいか",
+                "大きな 声で 話せるか"
+              ],
+              "explanation": "She worries about voice volume in public, not content.",
+              "id": "N4-01-L13",
+              "number": 13,
+              "rawMarks": 1,
+              "answer": 4,
+              "delivery": "printed-options",
+              "examinerReadout": "女の人は 何が 心配（しんぱい）ですか。\n男：発表の 内容は できましたか。女：はい。でも、人の 前だと 声が 小さく なってしまうんです。内容より それが 心配で。\n女の人は 何が 心配（しんぱい）ですか。"
+            },
+            {
+              "prompt": "会費に 含まれ（ふくまれ）ていないものは 何ですか。",
+              "script": "男：会費は 千円で、お茶と お菓子が つきます。昼ご飯は 各自で 用意してください。道具は 無料で かします。",
+              "choices": [
+                "お茶",
+                "道具（どうぐ）の 使用",
+                "お菓子",
+                "昼ご飯"
+              ],
+              "explanation": "Participants must provide their own lunch.",
+              "id": "N4-01-L14",
+              "number": 14,
+              "rawMarks": 1,
+              "answer": 4,
+              "delivery": "printed-options",
+              "examinerReadout": "会費に 含まれ（ふくまれ）ていないものは 何ですか。\n男：会費は 千円で、お茶と お菓子が つきます。昼ご飯は 各自で 用意してください。道具は 無料で かします。\n会費に 含まれ（ふくまれ）ていないものは 何ですか。"
+            },
+            {
+              "prompt": "女の人は どのくらい 日本に 住んでいますか。",
+              "script": "男：日本は もう ３年ですか。女：いえ、学生として ２年、卒業してから １年半です。",
+              "choices": [
+                "３年",
+                "３年半",
+                "１年半",
+                "２年半"
+              ],
+              "explanation": "Two years plus one and a half years equals three and a half.",
+              "id": "N4-01-L15",
+              "number": 15,
+              "rawMarks": 1,
+              "answer": 2,
+              "delivery": "printed-options",
+              "examinerReadout": "女の人は どのくらい 日本に 住んでいますか。\n男：日本は もう ３年ですか。女：いえ、学生として ２年、卒業してから １年半です。\n女の人は どのくらい 日本に 住んでいますか。"
+            }
+          ]
+        },
+        {
+          "number": 3,
+          "type": "verbal-expressions",
+          "instructions": "場面を 見て、三つの ことばを 聞きます。何と 言うか えらんでください。",
+          "questions": [
+            {
+              "prompt": "友だちが 重い 箱を 運んでいます。手伝いたいです。何と 言いますか。",
+              "script": "ナレーター：友だちが 重い 箱を 運んでいます。手伝いたいです。",
+              "choices": [
+                "半分 持ちましょうか。",
+                "もっと 重くしてください。",
+                "自分で 持ってください。"
+              ],
+              "explanation": "ましょうか offers help.",
+              "id": "N4-01-L16",
+              "number": 16,
+              "rawMarks": 1,
+              "answer": 1,
+              "delivery": "spoken-options",
+              "examinerReadout": "ナレーター：友だちが 重い 箱を 運んでいます。手伝いたいです。\n1。半分 持ちましょうか。\n2。もっと 重くしてください。\n3。自分で 持ってください。"
+            },
+            {
+              "prompt": "先生に もう一度 説明を お願いします。何と 言いますか。",
+              "script": "ナレーター：先生の 説明が よく わかりませんでした。",
+              "choices": [
+                "もう一度 説明してあげませんか。",
+                "もう一度 説明していただけませんか。",
+                "もう一度 説明してやりますか。"
+              ],
+              "explanation": "ていただけませんか politely requests the teacher's action.",
+              "id": "N4-01-L17",
+              "number": 17,
+              "rawMarks": 1,
+              "answer": 2,
+              "delivery": "spoken-options",
+              "examinerReadout": "ナレーター：先生の 説明が よく わかりませんでした。\n1。もう一度 説明してあげませんか。\n2。もう一度 説明していただけませんか。\n3。もう一度 説明してやりますか。"
+            },
+            {
+              "prompt": "友だちとの 約束（やくそく）に 遅れました。何と 言いますか。",
+              "script": "ナレーター：約束の 時間より 20分 遅れて 着きました。",
+              "choices": [
+                "待たせて ごめんね。",
+                "待たせて おめでとう。",
+                "待ってくれて ごめんね。"
+              ],
+              "explanation": "待たせてごめん apologizes for making someone wait.",
+              "id": "N4-01-L18",
+              "number": 18,
+              "rawMarks": 1,
+              "answer": 1,
+              "delivery": "spoken-options",
+              "examinerReadout": "ナレーター：約束の 時間より 20分 遅れて 着きました。\n1。待たせて ごめんね。\n2。待たせて おめでとう。\n3。待ってくれて ごめんね。"
+            },
+            {
+              "prompt": "図書館で 電話している 人に 注意します。何と 言いますか。",
+              "script": "ナレーター：図書館では 電話が 禁止されています。",
+              "choices": [
+                "電話を かけてあげましょうか。",
+                "ここで 電話していただけますか。",
+                "ここでの 電話は やめていただけますか。"
+              ],
+              "explanation": "Politely ask the person to stop a prohibited call.",
+              "id": "N4-01-L19",
+              "number": 19,
+              "rawMarks": 1,
+              "answer": 3,
+              "delivery": "spoken-options",
+              "examinerReadout": "ナレーター：図書館では 電話が 禁止されています。\n1。電話を かけてあげましょうか。\n2。ここで 電話していただけますか。\n3。ここでの 電話は やめていただけますか。"
+            },
+            {
+              "prompt": "店で 買った 服の サイズを 変えたいです。何と 言いますか。",
+              "script": "ナレーター：買った 服が 小さすぎました。店員に 話します。",
+              "choices": [
+                "もう少し 大きいものに かえていただけますか。",
+                "もう少し 小さいものを 着ていますか。",
+                "同じ 大きさを 着てください。"
+              ],
+              "explanation": "Request exchanging for a larger size.",
+              "id": "N4-01-L20",
+              "number": 20,
+              "rawMarks": 1,
+              "answer": 1,
+              "delivery": "spoken-options",
+              "examinerReadout": "ナレーター：買った 服が 小さすぎました。店員に 話します。\n1。もう少し 大きいものに かえていただけますか。\n2。もう少し 小さいものを 着ていますか。\n3。同じ 大きさを 着てください。"
+            }
+          ]
+        },
+        {
+          "number": 4,
+          "type": "quick-response",
+          "instructions": "短い ことばと 三つの 返事を 聞いて、いちばん いい 返事を えらんでください。",
+          "questions": [
+            {
+              "prompt": "（返事を えらんでください。）",
+              "script": "女：窓を 閉めても かまいませんか。",
+              "choices": [
+                "ええ、窓に なります。",
+                "ええ、お願いします。",
+                "ええ、閉めましたか。"
+              ],
+              "explanation": "Agree to her request to close the window.",
+              "id": "N4-01-L21",
+              "number": 21,
+              "rawMarks": 1,
+              "answer": 2,
+              "delivery": "spoken-options",
+              "examinerReadout": "女：窓を 閉めても かまいませんか。\n1。ええ、窓に なります。\n2。ええ、お願いします。\n3。ええ、閉めましたか。"
+            },
+            {
+              "prompt": "（返事を えらんでください。）",
+              "script": "男：お待たせして すみません。",
+              "choices": [
+                "いいえ、まだ 来ません。",
+                "いいえ、今 来たところです。",
+                "いいえ、待たせてください。"
+              ],
+              "explanation": "Reassure the late arrival that you have just arrived.",
+              "id": "N4-01-L22",
+              "number": 22,
+              "rawMarks": 1,
+              "answer": 2,
+              "delivery": "spoken-options",
+              "examinerReadout": "男：お待たせして すみません。\n1。いいえ、まだ 来ません。\n2。いいえ、今 来たところです。\n3。いいえ、待たせてください。"
+            },
+            {
+              "prompt": "（返事を えらんでください。）",
+              "script": "女：この 書類、見ていただけますか。",
+              "choices": [
+                "ええ、見ないでください。",
+                "ええ、見ていただきました。",
+                "ええ、ちょっと 貸してください。"
+              ],
+              "explanation": "Accept the request and ask for the document.",
+              "id": "N4-01-L23",
+              "number": 23,
+              "rawMarks": 1,
+              "answer": 3,
+              "delivery": "spoken-options",
+              "examinerReadout": "女：この 書類、見ていただけますか。\n1。ええ、見ないでください。\n2。ええ、見ていただきました。\n3。ええ、ちょっと 貸してください。"
+            },
+            {
+              "prompt": "（返事を えらんでください。）",
+              "script": "男：明日の 試合、楽しみですね。",
+              "choices": [
+                "ええ、昨日 行きましょう。",
+                "ええ、楽しみでは いけません。",
+                "ええ、晴れると いいですね。"
+              ],
+              "explanation": "A hope for fine weather responds naturally to anticipation.",
+              "id": "N4-01-L24",
+              "number": 24,
+              "rawMarks": 1,
+              "answer": 3,
+              "delivery": "spoken-options",
+              "examinerReadout": "男：明日の 試合、楽しみですね。\n1。ええ、昨日 行きましょう。\n2。ええ、楽しみでは いけません。\n3。ええ、晴れると いいですね。"
+            },
+            {
+              "prompt": "（返事を えらんでください。）",
+              "script": "女：この バス、市役所に とまりますか。",
+              "choices": [
+                "いいえ、次の バスですよ。",
+                "いいえ、とめてあります。",
+                "いいえ、市役所でした。"
+              ],
+              "explanation": "Direct the passenger to the correct bus.",
+              "id": "N4-01-L25",
+              "number": 25,
+              "rawMarks": 1,
+              "answer": 1,
+              "delivery": "spoken-options",
+              "examinerReadout": "女：この バス、市役所に とまりますか。\n1。いいえ、次の バスですよ。\n2。いいえ、とめてあります。\n3。いいえ、市役所でした。"
+            },
+            {
+              "prompt": "（返事を えらんでください。）",
+              "script": "男：コーヒー、もう なくなったんですか。",
+              "choices": [
+                "ええ、まだ たくさん あります。",
+                "ええ、明日 飲みました。",
+                "ええ、さっき 全部 飲んでしまいました。"
+              ],
+              "explanation": "Explain that the coffee has all been consumed.",
+              "id": "N4-01-L26",
+              "number": 26,
+              "rawMarks": 1,
+              "answer": 3,
+              "delivery": "spoken-options",
+              "examinerReadout": "男：コーヒー、もう なくなったんですか。\n1。ええ、まだ たくさん あります。\n2。ええ、明日 飲みました。\n3。ええ、さっき 全部 飲んでしまいました。"
+            },
+            {
+              "prompt": "（返事を えらんでください。）",
+              "script": "女：お手伝いしましょうか。",
+              "choices": [
+                "ありがとうございます。助かります。",
+                "ありがとうございます。手伝ってあげます。",
+                "ありがとうございます。手伝いませんでしたか。"
+              ],
+              "explanation": "Accept the offered help with appreciation.",
+              "id": "N4-01-L27",
+              "number": 27,
+              "rawMarks": 1,
+              "answer": 1,
+              "delivery": "spoken-options",
+              "examinerReadout": "女：お手伝いしましょうか。\n1。ありがとうございます。助かります。\n2。ありがとうございます。手伝ってあげます。\n3。ありがとうございます。手伝いませんでしたか。"
+            },
+            {
+              "prompt": "（返事を えらんでください。）",
+              "script": "男：この ペン、使っても いいですか。",
+              "choices": [
+                "どうぞ。そちらの 黒いのを。",
+                "どうぞ。使っても いいですか。",
+                "どうぞ。ペンに 使います。"
+              ],
+              "explanation": "Grant permission and identify the pen.",
+              "id": "N4-01-L28",
+              "number": 28,
+              "rawMarks": 1,
+              "answer": 1,
+              "delivery": "spoken-options",
+              "examinerReadout": "男：この ペン、使っても いいですか。\n1。どうぞ。そちらの 黒いのを。\n2。どうぞ。使っても いいですか。\n3。どうぞ。ペンに 使います。"
+            }
+          ]
+        }
+      ],
+      "itemCount": 28
+    }
+  ],
+  "itemCount": 85
+}

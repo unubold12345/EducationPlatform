@@ -71,6 +71,8 @@ with sync_playwright() as p:
     page.get_by_role("link",name="Дадлагын горим нээх",exact=False).click()
     expect(page).to_have_url(BASE+"/exams/"+SAT+"/practice")
     expect(page.locator(".practice-session")).to_be_visible()
+    expect(page.locator('.wsp-nav a[href="/exams"]')).to_have_attribute("aria-current","page")
+    expect(page.locator(".site-header")).to_be_hidden()
     expect(page.locator(".exam-clock")).to_have_count(0)
     expect(page.locator(".practice-sections button")).to_have_count(6)
     expect(page.locator(".question-strip button")).to_have_count(27)
@@ -158,6 +160,8 @@ with sync_playwright() as p:
         assert context.request.patch(api(slug),headers=ORIGIN,data={"responses":{}}).status==403
         assert context.request.delete(api(slug),headers=ORIGIN).status==403
     assert context.request.get(api("ielts-academic-02","/audio?part=1")).status==403
+    # The Workspace AI chat is closed too, before any provider call.
+    assert context.request.post(BASE+"/api/workspace/chat",headers=ORIGIN,data={"mode":"ask","subject":"general","language":"mn","message":"Тусална уу","history":[]}).status==403
 
     # The timed sitting's new tools: visible strip, keyboard, elimination, text size, lighter polling.
     page.goto(BASE+"/exams/attempts/"+attempt)
@@ -289,11 +293,12 @@ with sync_playwright() as p:
     assert context.request.patch(api("eesh-english-01"),headers=ORIGIN,data={"responses":{}}).status==404
     assert context.request.patch(api("eesh-english-2024-e1"),headers=ORIGIN,data={"responses":{}}).status==402
 
-    # The dashboard lists practice apart from exam history, and a reset clears only practice.
-    page.goto(BASE+"/dashboard")
+    # The Workspace lists practice apart from exam history, and a reset clears only practice.
+    page.goto(BASE+"/workspace")
     expect(page.get_by_role("heading",name="Дадлагын горим",exact=True)).to_be_visible()
-    expect(page.locator(".mock-attempt-row",has_text="ЭЕШ · Математик")).to_be_visible()
-    expect(page.locator(".mock-attempt-row[href='/exams/attempts/"+attempt+"']")).to_be_visible()
+    expect(page.locator(".wsp-row[href='/exams/"+slug+"/practice']",has_text="ЭЕШ · Математик")).to_be_visible()
+    page.goto(BASE+"/workspace/review")
+    expect(page.locator(".wsp-row[href='/exams/attempts/"+attempt+"'], .wsp-row[href='/workspace/review/"+attempt+"']")).to_be_visible()
     page.goto(BASE+"/exams/"+slug+"/practice")
     page.get_by_role("button",name="Дахин эхлэх",exact=True).click()
     expect(page.locator(".practice-score small")).to_contain_text("0 / 55")

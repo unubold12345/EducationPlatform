@@ -1,3 +1,6 @@
+import jlptData from './jlpt/audio-catalog.json' with { type: 'json' };
+const jlptAudio = jlptData as Record<string,{seconds:number[];questions:Record<string,{start:number;end:number;part:number}>}>;
+export function jlptQuestionAudio(slug:string,id:string) { return Object.hasOwn(jlptAudio,slug)?jlptAudio[slug].questions[id]:undefined; }
 const listeningFiles:Record<string,string>={
   "ielts-academic-01":"ielts-01",
   "ielts-academic-02":"ielts-02",
@@ -19,10 +22,12 @@ const listeningSeconds:Record<string,readonly number[]>={
 const prefixOf=(slug:string)=>Object.hasOwn(listeningFiles,slug)?listeningFiles[slug]:undefined;
 // Exact allowlist keeps user input out of filesystem paths. Existing snapshots retain Mock 01 audio.
 export function listeningFile(slug:string,part:number):string|undefined {
+  if(Object.hasOwn(jlptAudio,slug))return Number.isInteger(part)&&part>=1&&part<=4?`${slug}-part-${part}.mp3`:undefined;
   const prefix=prefixOf(slug);
   return prefix&&Number.isInteger(part)&&part>=1&&part<=4?`${prefix}-part-${part}.mp3`:undefined;
 }
 export function listeningParts(slug:string):readonly number[] {
+  if(Object.hasOwn(jlptAudio,slug))return jlptAudio[slug].seconds;
   const prefix=prefixOf(slug);
   return prefix?listeningSeconds[prefix]:[450,450,450,450];
 }

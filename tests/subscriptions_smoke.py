@@ -13,13 +13,19 @@ with sync_playwright() as p:
     context=browser.new_context(color_scheme="dark",viewport={"width":1440,"height":1000})
     page=context.new_page();errors=[]
     page.on("pageerror",lambda error:errors.append(str(error)))
+    # The old address leads to the plans page inside the Workspace, which guests can still read.
     page.goto(BASE+"/plans");page.wait_for_load_state("networkidle")
+    expect(page).to_have_url(BASE+"/workspace/plans")
+    expect(page.locator('.wsp-nav a[href="/workspace/plans"]')).to_have_attribute("aria-current","page")
     expect(page.locator(".pricing-card")).to_have_count(3)
     expect(page.locator(".pricing-price strong")).to_have_text(["₮40,000","₮60,000","₮60,000"])
     page.screenshot(path=str(ART/"plans-desktop-dark.png"),full_page=True)
     assert context.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"ielts-academic-01"}).status==401
     page.goto(BASE+"/workshops/ielts-writing-data")
     expect(page.locator(".program-gate")).to_be_visible()
+    expect(page.locator('.program-gate > a')).to_have_attribute("href","/workspace/workshop")
+    expect(page.locator('.wsp-nav a[href="/workspace/workshop"]')).to_have_attribute("aria-current","page")
+    expect(page.locator(".site-header")).to_be_hidden()
     assert "Commuting in a fictional town" not in page.content()
     page.get_by_role("link",name="Сарын эрх нээх",exact=False).click()
     expect(page).to_have_url(BASE+"/login?next=%2Fsubscribe%2Fielts")
@@ -31,6 +37,9 @@ with sync_playwright() as p:
     page.get_by_label("Нууц үг",exact=True).fill("Local-Test-"+uuid4().hex)
     page.get_by_role("button",name="Бүртгүүлэх",exact=True).click()
     expect(page).to_have_url(BASE+"/subscribe/ielts",timeout=20000)
+    # Plan purchase opens inside the Workspace, under its Plans tab, without the site header.
+    expect(page.locator('.wsp-nav a[href="/workspace/plans"]')).to_have_attribute("aria-current","page")
+    expect(page.locator(".site-header")).to_be_hidden()
     user_id=context.request.get(BASE+"/api/auth/get-session").json()["user"]["id"]
     page.get_by_role("button",name="Амжилтгүй төлбөр турших",exact=True).click()
     expect(page.locator(".subscription-payment .error-message")).to_contain_text("амжилтгүй")
@@ -46,6 +55,10 @@ with sync_playwright() as p:
     page.screenshot(path=str(ART/"subscription-paid.png"),full_page=True)
     page.goto(BASE+"/workshops/ielts-writing-data")
     expect(page.locator(".workshop-response")).to_be_visible()
+    expect(page.locator('.wsp-nav a[href="/workspace/workshop"]')).to_have_attribute("aria-current","page")
+    page.get_by_label("Өөрийн хариуг бичээрэй").fill("A workshop response written inside the Workspace.")
+    page.get_by_role("button",name="Өөрийгөө шалгах",exact=False).click()
+    expect(page.locator(".self-review")).to_be_visible()
     page.screenshot(path=str(ART/"subscription-ielts-workshop.png"),full_page=True)
     assert context.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"eesh-math-2024-m1"}).status==402
     assert context.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"sat-full-01"}).status==402
@@ -76,7 +89,7 @@ with sync_playwright() as p:
     assert context.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"eesh-math-2024-m1"}).ok
     page.goto(BASE+"/checkout/sat-full-01")
     expect(page.get_by_role("heading",name="Сарын багцад багтсан.")).to_be_visible()
-    page.goto(BASE+"/profile")
+    page.goto(BASE+"/workspace/profile")
     page.get_by_role("tab",name="Багц ба эрх",exact=True).click()
     expect(page.locator(".subscription-row")).to_have_count(3)
     page.screenshot(path=str(ART/"profile-subscriptions.png"),full_page=True)
@@ -95,12 +108,12 @@ with sync_playwright() as p:
     expect(page.locator(".subscription-receipt")).to_be_visible()
     page.goto(BASE+"/workshops/ielts-writing-data")
     expect(page.locator(".workshop-response")).to_be_visible()
-    for route in ["/plans","/subscribe/entrance","/subscribe/ielts","/profile","/dashboard"]:
+    for route in ["/workspace/plans","/subscribe/entrance","/subscribe/ielts","/workspace/profile","/workspace"]:
         for width in [1440,390,320]:
             page.set_viewport_size({"width":width,"height":844});page.goto(BASE+route);page.wait_for_load_state("networkidle")
             assert page.evaluate("document.documentElement.scrollWidth<=innerWidth"),(route,width)
-            if width==390 and route=="/plans":page.screenshot(path=str(ART/"plans-mobile-dark.png"),full_page=True)
-    page.emulate_media(color_scheme="light");page.goto(BASE+"/plans");page.wait_for_load_state("networkidle")
+            if width==390 and route=="/workspace/plans":page.screenshot(path=str(ART/"plans-mobile-dark.png"),full_page=True)
+    page.emulate_media(color_scheme="light");page.goto(BASE+"/workspace/plans");page.wait_for_load_state("networkidle")
     page.screenshot(path=str(ART/"plans-mobile-light.png"),full_page=True)
     assert not errors,errors
     browser.close()

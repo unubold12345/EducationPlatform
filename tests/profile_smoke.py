@@ -21,8 +21,9 @@ with sync_playwright() as p:
     page.locator(".profile-link").click()
     expect(page).to_have_url(BASE + "/login")
     expect(page.locator(".account-entry")).to_have_text("Нэвтрэх")
+    # The old address leads into the Workspace profile, which asks a guest to sign in first.
     page.goto(BASE+"/profile")
-    expect(page).to_have_url(BASE + "/login?next=%2Fprofile")
+    expect(page).to_have_url(BASE + "/login?next=%2Fworkspace%2Fprofile")
     page.get_by_role("link",name="Бүртгүүлэх",exact=True).click()
     page.mouse.move(0, 0)
     email = "qa-profile-" + uuid4().hex[:12] + "@example.invalid"
@@ -31,8 +32,14 @@ with sync_playwright() as p:
     page.get_by_label("Имэйл",exact=True).fill(email)
     page.get_by_label("Нууц үг",exact=True).fill(password)
     page.get_by_role("button",name="Бүртгүүлэх",exact=True).click()
-    expect(page).to_have_url(BASE + "/profile",timeout=20000)
+    expect(page).to_have_url(BASE + "/workspace/profile",timeout=20000)
     expect(page.locator(".profile-counts dd")).to_have_text(["0"])
+    expect(page.locator(".wsp-account")).to_have_attribute("aria-current","page")
+    # Signed in, the site header has no profile button: the profile lives in the Workspace.
+    page.goto(BASE)
+    expect(page.locator(".site-header nav a")).to_have_text(["Хөтөлбөрүүд","Workspace"])
+    expect(page.locator(".account-entry")).to_have_count(0)
+    page.goto(BASE+"/workspace/profile")
     page.get_by_label("Харагдах нэр").fill("Өүлэн Суралцагч")
     page.get_by_role("button",name="Өөрчлөлт хадгалах").click()
     expect(page.get_by_role("status")).to_have_text("Профайл хадгалагдлаа.")
@@ -63,29 +70,32 @@ with sync_playwright() as p:
     assert context.request.post(BASE+"/api/mock-payments/"+order["id"]+"/confirm",headers=ORIGIN,data={"decision":"success"}).ok
     attempt = context.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"sat-full-01"}).json()
     assert "id" in attempt
-    page.goto(BASE+"/dashboard")
-    expect(page.locator(".learning-stats strong")).to_have_text(["0","1"])
-    expect(page.locator(".resume-card a")).to_have_attribute("href","/exams/attempts/"+attempt["id"])
+    page.goto(BASE+"/workspace")
+    expect(page.locator('[data-stat="completed"] strong')).to_have_text("0")
+    expect(page.locator('[data-stat="open"] strong')).to_have_text("1")
+    expect(page.locator(".wsp-resume a")).to_have_attribute("href","/exams/attempts/"+attempt["id"])
     page.screenshot(path=str(ART / "dashboard-polished-dark.png"),full_page=True)
     for scheme in ["dark","light"]:
         page.emulate_media(color_scheme=scheme)
-        for route in ["/profile","/dashboard"]:
+        for route in ["/workspace/profile","/workspace"]:
             page.goto(BASE+route);page.wait_for_load_state("networkidle")
             for width in [1440,390,320]:
                 page.set_viewport_size({"width":width,"height":844})
                 assert page.evaluate("document.documentElement.scrollWidth <= innerWidth"),(route,scheme,width)
-                expect(page.locator(".profile-link")).to_be_visible()
+                # The Workspace has its own account link: in the rail on desktop, in the top bar on phones.
+                expect(page.locator(".wsp-account" if width>960 else ".wsp-top-account")).to_be_visible()
                 if width == 390:
-                    page.screenshot(path=str(ART / (route.strip("/")+"-"+scheme+"-mobile.png")),full_page=True)
-    page.goto(BASE+"/profile")
-    page.get_by_role("button",name="Гарах",exact=True).click()
+                    page.screenshot(path=str(ART / (route.strip("/").replace("/","-")+"-"+scheme+"-mobile.png")),full_page=True)
+    page.goto(BASE+"/workspace/profile")
+    page.locator(".profile-heading").get_by_role("button",name="Гарах",exact=True).click()
     expect(page).to_have_url(BASE+"/login")
     page.get_by_label("Имэйл",exact=True).fill(email)
     page.get_by_label("Нууц үг",exact=True).fill(new_password)
     page.get_by_role("button",name="Нэвтрэх",exact=True).click()
-    expect(page).to_have_url(BASE+"/dashboard",timeout=20000)
-    expect(page.locator(".profile-link")).to_have_attribute("href","/profile")
-    page.locator(".profile-link").click()
+    expect(page).to_have_url(BASE+"/workspace",timeout=20000)
+    # The viewport is still 320px wide here, so the account link is the Workspace top bar's.
+    expect(page.locator(".wsp-top-account")).to_have_attribute("href","/workspace/profile")
+    page.locator(".wsp-top-account").click()
     expect(page.locator(".identity-body h2")).to_have_text("Өүлэн Суралцагч")
     assert not errors,errors
     browser.close()

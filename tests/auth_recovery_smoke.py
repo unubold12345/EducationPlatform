@@ -34,12 +34,12 @@ with sync_playwright() as p:
     browser=p.chromium.launch(headless=True)
     context=browser.new_context(viewport={'width':1440,'height':1000},color_scheme='dark')
     origin={'Origin':BASE}
-    assert context.request.post(BASE+'/api/auth/link-social',headers=origin,data={'provider':'google','callbackURL':'/profile'}).status==401
+    assert context.request.post(BASE+'/api/auth/link-social',headers=origin,data={'provider':'google','callbackURL':'/workspace/profile'}).status==401
     # Existing unverified sessions from before verification activation cannot read protected pages/APIs.
     created=context.request.post(NORMAL+'/api/auth/sign-up/email',headers={'Origin':NORMAL},data={'name':'Recovery QA','email':EMAIL,'password':PASSWORD})
     assert created.status==200
     assert context.request.post(BASE+'/api/mock-attempts',headers=origin,data={}).status==403
-    page=context.new_page();page.goto(BASE+'/profile');expect(page).to_have_url(BASE+'/login?next=%2Fprofile')
+    page=context.new_page();page.goto(BASE+'/profile');expect(page).to_have_url(BASE+'/login?next=%2Fworkspace%2Fprofile')
     context.clear_cookies()
     blocked=context.request.post(BASE+'/api/auth/sign-in/email',headers=origin,data={'email':EMAIL,'password':PASSWORD})
     assert blocked.status==403 and blocked.json()['code']=='EMAIL_NOT_VERIFIED'
@@ -52,8 +52,8 @@ with sync_playwright() as p:
     assert unsigned.status==200 and unsigned.json() is None, {'status':unsigned.status,'hasSession':bool(unsigned.json().get('user')) if isinstance(unsigned.json(),dict) else False}
     wait_letter(second,'verify')
     # UI resend is explicit; malformed origins/callbacks never dispatch mail.
-    assert context.request.post(BASE+'/api/auth/send-verification-email',headers={'Origin':'https://untrusted.invalid'},data={'email':EMAIL,'callbackURL':'/profile'}).status==403
-    assert context.request.post(BASE+'/api/auth/send-verification-email',headers=origin,data={'email':EMAIL,'callbackURL':'/profile','padding':'x'*33000}).status==413
+    assert context.request.post(BASE+'/api/auth/send-verification-email',headers={'Origin':'https://untrusted.invalid'},data={'email':EMAIL,'callbackURL':'/workspace/profile'}).status==403
+    assert context.request.post(BASE+'/api/auth/send-verification-email',headers=origin,data={'email':EMAIL,'callbackURL':'/workspace/profile','padding':'x'*33000}).status==413
     page.goto(BASE+'/verify-email');page.get_by_label('Имэйл',exact=True).fill(EMAIL);page.get_by_role('button',name='Холбоос авах',exact=True).click()
     expect(page.locator('.form-success')).to_be_visible()
     verification=link(wait_letter(EMAIL,'verify'))
@@ -61,10 +61,10 @@ with sync_playwright() as p:
     rejected=context.request.get(invalid,max_redirects=0);assert rejected.status in [302,400,401,403]
     page.goto(verification);expect(page).to_have_url(BASE+'/verify-email?verified=1')
     page.goto(BASE+'/login');page.get_by_label('Имэйл',exact=True).fill(EMAIL);page.get_by_label('Нууц үг',exact=True).fill(PASSWORD);page.get_by_role('button',name='Нэвтрэх',exact=True).click()
-    expect(page).to_have_url(BASE+'/dashboard')
+    expect(page).to_have_url(BASE+'/workspace')
     session=context.request.get(BASE+'/api/auth/get-session').json();assert session['user']['emailVerified'] is True
-    assert context.request.post(BASE+'/api/auth/link-social',headers={'Origin':'https://untrusted.invalid'},data={'provider':'google','callbackURL':'/profile'}).status==403
-    linked=context.request.post(BASE+'/api/auth/link-social',headers=origin,data={'provider':'google','callbackURL':'/profile','errorCallbackURL':'/profile'})
+    assert context.request.post(BASE+'/api/auth/link-social',headers={'Origin':'https://untrusted.invalid'},data={'provider':'google','callbackURL':'/workspace/profile'}).status==403
+    linked=context.request.post(BASE+'/api/auth/link-social',headers=origin,data={'provider':'google','callbackURL':'/workspace/profile','errorCallbackURL':'/workspace/profile'})
     assert linked.status==200 and urlparse(linked.json()['url']).hostname=='accounts.google.com'
     # Unknown and known reset requests have the same generic response.
     unknown=context.request.post(BASE+'/api/auth/request-password-reset',headers=origin,data={'email':'missing-'+uuid4().hex+'@example.invalid','redirectTo':'/reset-password'})
@@ -96,7 +96,7 @@ with sync_playwright() as p:
     assert context.request.post(BASE+'/api/auth/reset-password',headers=origin,data={'token':expired_token,'newPassword':PASSWORD}).status==400
     # OAuth authorization shape/state/PKCE are real; credentials are synthetic and no Google token exchange occurs.
     context.clear_cookies()
-    social=context.request.post(BASE+'/api/auth/sign-in/social',headers=origin,data={'provider':'google','callbackURL':'/dashboard','disableRedirect':True})
+    social=context.request.post(BASE+'/api/auth/sign-in/social',headers=origin,data={'provider':'google','callbackURL':'/workspace','disableRedirect':True})
     assert social.status==200
     authorization=urlparse(social.json()['url']);query=parse_qs(authorization.query)
     assert authorization.hostname=='accounts.google.com' and query['redirect_uri']==[BASE+'/api/auth/callback/google']

@@ -15,9 +15,9 @@ with sync_playwright() as p:
     page.goto(BASE)
     page.wait_for_load_state("networkidle")
     expect(page.locator("html")).to_have_attribute("data-theme", "dark")
-    assert page.evaluate("getComputedStyle(document.body).backgroundColor") == "rgb(7, 7, 13)"
+    assert page.evaluate("getComputedStyle(document.body).backgroundColor") == "rgb(11, 13, 17)"
     page.evaluate("document.fonts.ready")
-    assert "golos" in page.evaluate("getComputedStyle(document.body).fontFamily").lower()
+    assert "inter" in page.evaluate("getComputedStyle(document.body).fontFamily").lower()
     expect(page.locator('.launch-panel a[href="/exams/sat"]')).to_be_visible()
     expect(page.locator('.launch-panel a[href="/exams/ielts"]')).to_be_visible()
     expect(page.locator('.launch-panel a[href="/exams/eesh"]')).to_be_visible()
@@ -38,7 +38,9 @@ with sync_playwright() as p:
         page.wait_for_load_state("networkidle")
         expect(page.locator("html")).to_have_attribute("data-theme", "dark")
         if route.startswith("/exams"):
-            expect(page.locator('nav a[href="/exams"]')).to_have_attribute("aria-current", "page")
+            # Exam pages open inside the Workspace, whose tab rail marks Exams as the current tab.
+            expect(page.locator('.wsp-nav a[href="/exams"]')).to_have_attribute("aria-current", "page")
+            expect(page.locator(".site-header")).to_be_hidden()
         for width in [1440, 320]:
             page.set_viewport_size({"width": width, "height": 1000})
             assert page.evaluate("document.documentElement.scrollWidth <= innerWidth"), (route, width)
@@ -53,4 +55,4 @@ with sync_playwright() as p:
     light.close()
     assert not errors, errors
     browser.close()
-print("Theme: indigo, Manrope, system default, saved overrides, keyboard toggle, routes and mobile passed")
+print("Theme: Workspace palette, Inter, system default, saved overrides, keyboard toggle, routes and mobile passed")

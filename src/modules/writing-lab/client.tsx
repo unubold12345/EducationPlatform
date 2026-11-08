@@ -98,7 +98,7 @@ export function WritingStudio({signedIn}:{signedIn:boolean}) {
 
  return <div className={`container page-space ${styles.root}`}>
   <header className={styles.top}>
-   <div><p className={styles.kicker}><Link href="/workshop">Workshop</Link> · Essay Studio</p><h1>Бич. <span>Дараа нь сайжруул.</span></h1></div>
+   <div><p className={styles.kicker}><Link href="/workspace/workshop">Workshop</Link> · Essay Studio</p><h1>Бич. <span>Дараа нь сайжруул.</span></h1></div>
    <div className={styles.tasks} role="tablist" aria-label="Бичгийн төрөл">
     {(Object.keys(writingTasks) as WritingTask[]).map(key=><button key={key} type="button" role="tab" aria-selected={task===key} disabled={!!busy} onClick={()=>switchTask(key)}>{writingTasks[key].label}<small>{writingTasks[key].note}</small></button>)}
    </div>

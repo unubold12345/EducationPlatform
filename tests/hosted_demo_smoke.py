@@ -11,7 +11,7 @@ with sync_playwright() as p:
  browser=p.chromium.launch(headless=True)
  for index,account in enumerate(accounts):
   context=browser.new_context(viewport={'width':1440,'height':1000},color_scheme='dark')
-  page=context.new_page();page.goto(BASE+'/login?next=%2Fprofile');page.wait_for_load_state('networkidle')
+  page=context.new_page();page.goto(BASE+'/login?next=%2Fworkspace%2Fprofile');page.wait_for_load_state('networkidle')
   expect(page.locator('.demo-account-button')).to_have_count(5)
   expect(page.locator('.demo-accounts .status')).to_have_text('SHARED DEMO')
   page.locator('.demo-account-button').nth(index).click()
@@ -22,7 +22,7 @@ with sync_playwright() as p:
    page.set_viewport_size({'width':320,'height':844})
    assert page.evaluate('document.documentElement.scrollWidth<=innerWidth')
    page.screenshot(path=str(ROOT/'artifacts/hosted-demo-320.png'),full_page=True)
-  page.get_by_role('button',name='Нэвтрэх',exact=True).click();expect(page).to_have_url(BASE+'/profile')
+  page.get_by_role('button',name='Нэвтрэх',exact=True).click();expect(page).to_have_url(BASE+'/workspace/profile')
   expect(page.locator('.identity-body h2')).to_have_text(account['name'])
   expect(page.locator('.identity-badge')).to_have_text('Education суралцагч')
   expect(page.locator('.profile-email')).to_contain_text('бодит имэйл хүлээн авахгүй')

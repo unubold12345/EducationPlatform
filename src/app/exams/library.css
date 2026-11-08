@@ -4,6 +4,8 @@
 .library-list { display: grid; margin-top: 26px; }
 .library-list .exam-price { margin-top: auto; }
 .library-list .exam-card > .button { margin-top: 0; }
+.library-list .exam-card.jlpt { --accent: #c9879a; }
+@media (min-width: 1000px) { .library-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .library-subjects { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-bottom: 20px; }
 .library-subjects a { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; gap: 2px 8px; padding: 9px 11px; border: 1px solid var(--line); border-radius: 10px; background: color-mix(in srgb, var(--paper) 32%, transparent); }
 .library-subjects a:hover { border-color: #42a97c; background: color-mix(in srgb, #42a97c 7%, transparent); }

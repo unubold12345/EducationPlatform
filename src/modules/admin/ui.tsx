@@ -1,6 +1,11 @@
 import Link from "next/link";
+import { Inter } from "next/font/google";
 import type { ReactNode } from "react";
 import { pageWindow, type pageInfo } from "./paging";
+import { AdminWorkspaceShell } from "./shell";
+
+// Same face as the Workspace; the root layout's variable is already taken by the marketing shell.
+const adminFont = Inter({ subsets: ["latin", "cyrillic", "cyrillic-ext"], variable: "--font-wsp", display: "swap" });
 
 export const adminTabs = [
   ["overview", "Тойм"], ["users", "Хэрэглэгчид"], ["attempts", "Оролдлого"], ["subscriptions", "Сарын эрх"], ["payments", "Төлбөр"],
@@ -26,8 +31,6 @@ export const adminTabInfo: Record<AdminTab, string> = {
   audit: "Админууд юу хийсэн, ямар шалтгаанаар.",
   settings: "Серверийн ачаалал, өгөгдлийн сангийн төлөв.",
 };
-const tabLabel = (key: AdminTab) => adminTabs.find(([tab]) => tab === key)![1];
-
 export const adminDate = (value: Date) => new Intl.DateTimeFormat("mn-MN", { timeZone: "Asia/Ulaanbaatar", dateStyle: "short", timeStyle: "short" }).format(value);
 export const money = (value: number) => "₮" + value.toLocaleString("en-US");
 export const statusLabel = (value: string) => ({ PAID: "Төлөгдсөн", PENDING: "Хүлээгдэж байна", DECLINED: "Амжилтгүй", IN_PROGRESS: "Үргэлжилж байна", SUBMITTED: "Дууссан", IN_REVIEW: "Хянаж байна", REVIEWED: "Хянасан", CHANGES_NEEDED: "Засвар шаардлагатай", DRAFT: "Ноорог", PUBLISHED: "Нийтлэгдсэн" }[value] ?? value);
@@ -44,35 +47,13 @@ export function StatusPill({ status, label }: { status: string; label?: string }
   return <span className={"ws-pill " + (statusTone[status] ?? "")}>{label ?? statusLabel(status)}</span>;
 }
 
-// Small glyph shown in a square beside each sidebar link; decorative only.
-const tabIcon: Record<AdminTab, string> = { overview: "⌂", users: "◉", attempts: "✎", subscriptions: "↻", payments: "$", pricing: "₮", content: "≡", audit: "◷", settings: "⚙" };
-
-// One frame for every admin screen: an app-style sidebar (brand, grouped links, account card) and the current section.
+// One frame for every admin screen: the same Workspace rail, drawer and top bar, with admin sections.
 export function AdminShell({ tab, title, name, testData = false, actions, scope, description, children }: { tab: AdminTab; title: string; name: string; testData?: boolean; actions?: ReactNode; scope?: ReactNode; description?: string; children: ReactNode }) {
-  const link = (key: AdminTab) => <Link key={key} href={"/admin?tab=" + key + (testData ? "&data=test" : "")} aria-current={tab === key ? "page" : undefined}><i aria-hidden="true">{tabIcon[key]}</i>{tabLabel(key)}</Link>;
-  return <div className="container ws admin-page">
-    <div className="admin-shell">
-      <aside className="admin-sidebar">
-        <div className="admin-brand"><span className="admin-logo" aria-hidden="true">E</span><div><h1>Удирдлагын төв</h1><p>EducationPlatform</p></div></div>
-        <nav aria-label="Админ цэс">
-          <div className="admin-nav-group">{link("overview")}</div>
-          {adminGroups.map(group => <div className="admin-nav-group" key={group.label}><p>{group.label}</p>{group.tabs.map(link)}</div>)}
-        </nav>
-        <div className="admin-sidebar-foot">
-          <Link className="admin-site-link" href="/">↗ Нүүр хуудас</Link>
-          <Link className="admin-account" href="/profile"><span aria-hidden="true">{(name.trim()[0] ?? "A").toUpperCase()}</span><strong>{name}</strong></Link>
-        </div>
-      </aside>
-      <div className="admin-main">
-        <header className="admin-section-heading admin-head">
-          <div className="admin-title"><h2>{title}</h2>{scope && <span className={"admin-live " + (testData ? "test" : "")}>{testData ? "Туршилтын өгөгдөл" : "Бодит өгөгдөл"}</span>}</div>
-          <div className="admin-head-actions">{actions}{scope}</div>
-        </header>
-        {description && <p className="admin-notice">{description}</p>}
-        {children}
-      </div>
-    </div>
-  </div>;
+  const groups: { label: string; tabs: readonly AdminTab[] }[] = [
+    { label: "", tabs: ["overview"] as readonly AdminTab[] },
+    ...adminGroups.map(group => ({ label: group.label, tabs: group.tabs })),
+  ];
+  return <AdminWorkspaceShell tab={tab} title={title} name={name} fontClass={adminFont.variable} testData={testData} tabs={adminTabs} groups={groups} actions={actions} scope={scope} description={description}>{children}</AdminWorkspaceShell>;
 }
 
 // Numbered pager with totals; `href` builds the link for a page number.

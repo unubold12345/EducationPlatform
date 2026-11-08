@@ -102,7 +102,7 @@ export function ListeningLab() {
  return <div className={`container page-space ${styles.root}`}>
   <header className={styles.top}>
    <div>
-    <p className={styles.kicker}><Link href="/workshop">Workshop</Link> · Listening</p>
+    <p className={styles.kicker}><Link href="/workspace/workshop">Workshop</Link> · Listening</p>
     <h1>Сонсгол лаб</h1>
     <p className={styles.lede}>IELTS Listening-ийн бүрэн хэсгүүд: хоёр тест, тус бүр Part 1–4, 40 асуулт. Бичлэг нь жинхэнэ шалгалтын адил танилцуулга, асуулт унших болон шалгах хугацаатай. Дадлагын горимд дахин сонсож хурдыг өөрчилнө; шалгалтын горимд бичлэг нэг л удаа тоглоно.</p>
    </div>

@@ -17,6 +17,19 @@ type Turn={id:number;role:"user"|"assistant";content:string;part:SpeakingPart;ti
 type Status="idle"|"thinking"|"voicing"|"speaking"|"listening"|"transcribing"|"reporting";
 type Settings={mode:"mock"|"practice";part:SpeakingPart;topic:SpeakingTopic;target:number;language:"en"|"mn";voice:SpeakingVoice;speed:SpeakingSpeed;voiceOn:boolean;engine:"neural"|"device";handsFree:boolean};
 
+// Device voices expose no gender, so match common name hints; each partner takes a different voice of its gender.
+const FEMALE_VOICE=/female|woman|zira|aria|jenny|michelle|ana|emma|ava|samantha|allison|susan|hazel|libby|sonia|victoria|karen|moira|tessa|fiona|serena/i;
+const MALE_VOICE=/male|man|david|mark|guy|eric|christopher|roger|steffan|andrew|brian|daniel|george|ryan|thomas|alex|fred|tom|aaron|arthur|oliver/i;
+function deviceVoice(voices:SpeechSynthesisVoice[],partner:SpeakingVoice):SpeechSynthesisVoice|null {
+ const {accent,gender}=speakingVoices[partner],locale=accent==="British"?"en-gb":"en-us";
+ const english=voices.filter(v=>v.lang.toLowerCase().startsWith("en"));
+ const local=english.filter(v=>v.lang.toLowerCase().replace("_","-")===locale),pool=local.length?local:english;
+ const wanted=gender==="Male"?MALE_VOICE:FEMALE_VOICE;
+ const matches=pool.filter(v=>wanted.test(v.name)&&!(gender==="Male"&&/female/i.test(v.name)));
+ const peers=(Object.keys(speakingVoices) as SpeakingVoice[]).filter(id=>speakingVoices[id].gender===gender&&speakingVoices[id].accent===accent);
+ const choices=matches.length?matches:pool;
+ return choices[peers.indexOf(partner)%Math.max(choices.length,1)]??english[0]??null;
+}
 const CHAT_URL="/api/labs/ielts-speaking",VOICE_URL="/api/labs/ielts-speaking/voice",TRANSCRIBE_URL="/api/labs/ielts-speaking/transcribe";
 // Answers per part in a full mock before moving on (Part 2 = long turn + one rounding-off question).
 const PLAN:Record<SpeakingPart,number>={1:4,2:2,3:4};
@@ -121,7 +134,7 @@ export function SpeakingLab({signedIn}:{signedIn:boolean}) {
   return new Promise<boolean>(resolve=>{
    const synth=window.speechSynthesis;if(!synth){resolve(true);return;}
    const utterance=new SpeechSynthesisUtterance(text);utterance.lang=speakingVoices[voice].accent==="British"?"en-GB":"en-US";utterance.rate=cfg().speed;
-   const voices=synth.getVoices();utterance.voice=voices.find(v=>v.lang===utterance.lang)??voices.find(v=>v.lang.startsWith("en"))??null;
+   utterance.voice=deviceVoice(synth.getVoices(),voice);
    let frame=0,settled=false;
    const finish=(value:boolean)=>{if(settled)return;settled=true;cancelAnimationFrame(frame);energy.current=0;resolve(value);};
    utterance.onstart=()=>{if(run!==speechRun.current)return;changeStatus("speaking");setCaption(text);const tick=()=>{energy.current=.06+Math.random()*.14;frame=requestAnimationFrame(tick);};tick();};

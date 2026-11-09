@@ -8,6 +8,8 @@ import { activeTimedSitting } from "@/modules/exams/active-sitting";
 import { practiceDuringMockAllowed } from "@/lib/local-pilot";
 import { hasSubscription } from "@/modules/subscriptions/access";
 import { deepseekChat } from "@/modules/tutor/provider";
+import { chargeCredits } from "@/modules/credits/service";
+import { AI_ACTIONS } from "@/modules/credits/pricing";
 import { tutorDay } from "@/modules/tutor/contracts";
 import { PRACTICE_AI_DAILY_LIMIT, practiceMessages, validAssistantInput } from "./assistant-contract";
 import { applyPracticeCheck, applyPracticeEdit, mockPractice, practiceStats, validPracticeCheck, validPracticeEdit, type PracticeSource } from "./form";
@@ -89,7 +91,7 @@ export async function resetPractice(userId: string, slug: string) {
 }
 /** Throws unless this student may hear this exam's practice audio right now. */
 export async function authorizePracticeAudio(userId: string, slug: string) {
-  await requirePractice(userId, slug);
+  return (await requirePractice(userId, slug)).audioRevision??1;
 }
 export async function practiceSummaries(userId: string) {
   const rows = await getDb().practiceSession.findMany({ where: { userId }, orderBy: { updatedAt: "desc" }, take: 20, select: { slug: true, results: true, updatedAt: true } });
@@ -119,17 +121,20 @@ export async function practiceAssistantReply(userId: string, slug: string, body:
     material: { ...material, ...(reveal?.transcript ? { transcript: reveal.transcript } : {}) },
   };
   const key = `education-practice-ai:${userId}:${tutorDay(now)}`;
-  await db.rateLimit.upsert({ where: { key }, create: { id: randomUUID(), key, count: 0, lastRequest: BigInt(0) }, update: {} });
-  // Database compare-and-set: a daily budget and one request in flight, across every server instance.
-  const reserved = await db.rateLimit.updateMany({ where: { key, count: { lt: PRACTICE_AI_DAILY_LIMIT }, lastRequest: { lte: BigInt(now) } }, data: { count: { increment: 1 }, lastRequest: BigInt(now + ASSISTANT_LEASE_MS) } });
-  if (!reserved.count) throw new ApiError(429, `AI хүсэлт боловсруулж байна эсвэл өдрийн ${PRACTICE_AI_DAILY_LIMIT} хүсэлтийн хязгаарт хүрсэн. Түр хүлээгээд дахин оролдоно уу.`);
-  try {
-    const message = await deepseekChat(practiceMessages(body, context), 2000);
-    // Another tab may have started a timed exam while the provider was answering.
-    const sitting = practiceDuringMockAllowed() ? null : await activeTimedSitting(userId);
-    if (sitting) throw new TimedSittingOpen(sitting.href);
-    return { message, provider: "DeepSeek" };
-  } finally {
-    await db.rateLimit.update({ where: { key }, data: { lastRequest: BigInt(Date.now() + 3000) } });
-  }
+  // Credits are held first and refunded if the daily budget, the provider or the sitting check fails.
+  return chargeCredits(userId, "practice-assistant", async meter => {
+    await db.rateLimit.upsert({ where: { key }, create: { id: randomUUID(), key, count: 0, lastRequest: BigInt(0) }, update: {} });
+    // Database compare-and-set: a daily budget and one request in flight, across every server instance.
+    const reserved = await db.rateLimit.updateMany({ where: { key, count: { lt: PRACTICE_AI_DAILY_LIMIT }, lastRequest: { lte: BigInt(now) } }, data: { count: { increment: 1 }, lastRequest: BigInt(now + ASSISTANT_LEASE_MS) } });
+    if (!reserved.count) throw new ApiError(429, `AI хүсэлт боловсруулж байна эсвэл өдрийн ${PRACTICE_AI_DAILY_LIMIT} хүсэлтийн хязгаарт хүрсэн. Түр хүлээгээд дахин оролдоно уу.`);
+    try {
+      const message = await deepseekChat(practiceMessages(body, context), AI_ACTIONS["practice-assistant"].outputTokens, meter);
+      // Another tab may have started a timed exam while the provider was answering.
+      const sitting = practiceDuringMockAllowed() ? null : await activeTimedSitting(userId);
+      if (sitting) throw new TimedSittingOpen(sitting.href);
+      return { message, provider: "DeepSeek" };
+    } finally {
+      await db.rateLimit.update({ where: { key }, data: { lastRequest: BigInt(Date.now() + 3000) } });
+    }
+  });
 }

@@ -19,7 +19,7 @@ test("six distinct full mocks per program preserve existing slugs and timing",()
     assert.equal(examDefinitions.filter(e=>e.program===program).length,6);
     const original=findExam(slug(program,1));
     for(const n of papers){
-      const exam=findExam(slug(program,n));assert.ok(exam);assert.equal(exam.version,1);
+      const exam=findExam(slug(program,n));assert.ok(exam);assert.equal(exam.version,program==='ielts'?2:1);
       assert.deepEqual(exam.stages.map(s=>[s.id,s.seconds,s.kind]),original.stages.map(s=>[s.id,s.seconds,s.kind]));
       assert.notEqual(exam.stages[0].questions[0].id,original.stages[0].questions[0].id);
       assert.notEqual(exam.stages[0].questions[0].prompt+exam.stages[0].questions[0].passage,original.stages[0].questions[0].prompt+original.stages[0].questions[0].passage);
@@ -107,7 +107,7 @@ test("new Listening recordings match their own scripts, file hashes and fit the 
   const hashes=new Set();
   for(const p of papers){
     const number=String(p).padStart(2,'0'),{questions,scripts}=additionalListening(p);
-    const manifest=JSON.parse(readFileSync(new URL(`../assets/exams/manifest-${number}.json`,import.meta.url),'utf8').replace(/^\uFEFF/,''));
+    const manifest=JSON.parse(readFileSync(new URL(`../assets/exams/manifest-v2-${number}.json`,import.meta.url),'utf8').replace(/^\uFEFF/,''));
     assert.equal(manifest.scriptsSha256,createHash('sha256').update(JSON.stringify(scripts)).digest('hex'));assert.equal(manifest.parts.length,4);
     const timeline=listeningParts(slug('ielts',p));assert.ok(timeline.reduce((a,b)=>a+b,0)<=findExam(slug('ielts',p)).stages[0].seconds);
     for(const [index,part] of manifest.parts.entries()){
@@ -116,7 +116,7 @@ test("new Listening recordings match their own scripts, file hashes and fit the 
       assert.equal(statSync(file).size,part.bytes);assert.equal(createHash('sha256').update(bytes).digest('hex'),part.sha256);
       assert.ok(!hashes.has(part.sha256));hashes.add(part.sha256);
       const text=scripts[index].halves.flat().map(t=>t.text).join(' ').toLowerCase();
-      for(const q of questions.slice(index*10,index*10+10))assert.ok(text.includes(q.answers[0].toLowerCase()),q.id);
+      for(const q of questions.slice(index*10,index*10+10).filter(q=>q.kind==='short'))assert.ok(q.answers.some(a=>text.includes(a.toLowerCase())),q.id);
     }
   }
   assert.equal(hashes.size,20);

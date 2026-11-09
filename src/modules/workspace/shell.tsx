@@ -8,11 +8,13 @@ import { Icon, type IconName } from "./icons";
 import { inWorkspace, workspaceTab, type WorkspaceTab } from "./paths";
 import { useThreads } from "./chat-store";
 import type { ShellAccount } from "./data";
+import { CreditsProvider, useCredits } from "@/modules/credits/client";
+import { formatCredits } from "@/modules/credits/pricing";
 
 const tabs: { id: WorkspaceTab; href: string; label: string; icon: IconName }[] = [
   { id: "home", href: "/workspace", label: "Нүүр", icon: "home" },
   { id: "chat", href: "/workspace/chat", label: "AI туслах", icon: "spark" },
-  { id: "flashcards", href: "/workspace/flashcards", label: "Флашкарт", icon: "cards" },
+  { id: "vocabulary", href: "/workspace/vocabulary", label: "Үгсийн сан", icon: "book" },
   { id: "myexams", href: "/workspace/my-exams", label: "Файлаас шалгалт", icon: "fileExam" },
   { id: "exams", href: "/exams", label: "Шалгалтууд", icon: "exam" },
   { id: "review", href: "/workspace/review", label: "Миний үр дүн", icon: "review" },
@@ -53,11 +55,12 @@ export function WorkspaceShell({ account, fontClass, children }: { account: Shel
 
   // These pages redirect guests on the server. Do not stream parent chrome while that
   // child redirect resolves, including the first render before browser hydration.
-  const guestRedirect = !account && (active === "home" || active === "chat" || active === "flashcards" || active === "myexams" || active === "review" || active === "profile");
-  if (!shown || guestRedirect) return <>{children}</>;
+  const guestRedirect = !account && (active === "home" || active === "chat" || active === "vocabulary" || active === "myexams" || active === "review" || active === "profile");
+  const credits = account?.credits ?? null;
+  if (!shown || guestRedirect) return <CreditsProvider initial={credits}>{children}</CreditsProvider>;
   const title = active === "profile" ? PROFILE_LABEL : tabs.find(tab => tab.id === active)?.label ?? "Workspace";
   const onProfile = active === "profile" ? "page" as const : undefined;
-  return <div className={"wsp " + fontClass} data-open={open ? "" : undefined}>
+  return <CreditsProvider initial={credits}><div className={"wsp " + fontClass} data-open={open ? "" : undefined}>
     <aside ref={side} className="wsp-side" id="wsp-side" aria-label="Workspace">
       <div className="wsp-side-head">
         <Link href="/workspace" className="wsp-logo" aria-label="Workspace нүүр"><span className="wsp-logo-mark" aria-hidden="true">e<span>·</span></span><span className="wsp-logo-word">Education<small>Workspace</small></span></Link>
@@ -71,6 +74,7 @@ export function WorkspaceShell({ account, fontClass, children }: { account: Shel
       </nav>
       {account ? <RecentChats userKey={account.userKey} /> : null}
       <div className="wsp-side-foot">
+        {account ? <CreditMeter /> : null}
         {account ? account.plans.length ? <div className="wsp-plan-card"><span>Идэвхтэй багц</span>{account.plans.map(plan => <p key={plan.title}><strong>{plan.title}</strong><em className={plan.daysLeft <= 5 ? "is-warn" : undefined}>{plan.daysLeft} хоног</em></p>)}</div>
           : <Link className="wsp-cta" href="/workspace/plans"><Icon name="bolt" />Багц сонгох</Link>
           : <Link className="wsp-cta" href="/login?next=%2Fworkspace"><Icon name="profile" />Нэвтрэх</Link>}
@@ -96,7 +100,19 @@ export function WorkspaceShell({ account, fontClass, children }: { account: Shel
       </header>
       <div className="wsp-content">{children}</div>
     </div>
-  </div>;
+  </div></CreditsProvider>;
+}
+
+// This month's AI credits; the figure follows each AI reply's receipt. Hidden when it could not be read.
+function CreditMeter() {
+  const { balance } = useCredits();
+  if (!balance) return null;
+  const share = balance.allowance ? Math.min(1, balance.balance / balance.allowance) : 0;
+  return <Link className="wsp-credits" href="/workspace/plans#credits" title={`AI кредит: ${formatCredits(balance.balance)} / ${formatCredits(balance.allowance)}`} data-low={share < 0.15 ? "" : undefined}>
+    <Icon name="bolt" size={18} />
+    <span className="wsp-credits-text"><span>AI кредит</span><strong>{formatCredits(balance.balance)}<small> / {formatCredits(balance.allowance)}</small></strong></span>
+    <i className="wsp-credits-bar" aria-hidden="true"><b style={{ transform: `scaleX(${share})` }} /></i>
+  </Link>;
 }
 
 // Desktop only: collapse the tab rail to icons. The layout's head script applies the saved choice before paint.

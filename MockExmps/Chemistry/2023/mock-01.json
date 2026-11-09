@@ -1,0 +1,1161 @@
+{
+  "schemaVersion": 1,
+  "subject": "chemistry",
+  "language": "mn",
+  "referenceYear": 2023,
+  "mockVariant": "M1",
+  "title": "Хими · Элсэлтийн шалгалт 2023 оны загвар · Хувилбар M1",
+  "official": false,
+  "author": "Claude Code (Claude Opus 5.5)",
+  "referenceVariant": "A",
+  "reference": {
+    "kind": "official-question-bank-part-I",
+    "variant": "A",
+    "url": "http://eyeshitems.eec.mn/?itemLid=9&itemVariant=A",
+    "yearSelection": "GET /resource/setYear/2023, then reload",
+    "post": "https://eec.mn/post/4728 (archived; lists 2023/10/Хими-A-хувилбар.pdf, not captured)",
+    "localReference": "reference/bank-A.html",
+    "fullPaperRecovered": false,
+    "gaps": [
+      "Part II not exposed by the bank and not recovered",
+      "45 bank image links (stat.eec.mn) unavailable"
+    ]
+  },
+  "durationMinutes": 100,
+  "totalPoints": 100,
+  "difficulty": {
+    "target": "Same level and item format as the reference; only contexts, substances and numbers change.",
+    "verified": false,
+    "note": "No teacher review or student-based equating has been performed."
+  },
+  "completionStatus": "draft-part-I-parallel-to-official-bank; part-II-provisional",
+  "limitations": [
+    "Part II tasks are provisional (confirmed format, blueprint topics), not the unrecovered 2023 Part II.",
+    "Items whose official images are lost were rebuilt from the item text; their figure content is inferred."
+  ],
+  "answerProvenance": "Answers and explanations authored by Claude Code (Claude Opus 5.5); unofficial. No official key was used.",
+  "instructions": [
+    "100 минут. Нийт 100 оноо.",
+    "Нэгдүгээр хэсэг: 40 сонгох даалгавар, 68 оноо. 1–22: 1 оноо; 23–30: 2 оноо; 31–40: 3 оноо.",
+    "Хоёрдугаар хэсэг: 4 бүтээх даалгавар, нийт 32 оноо; a–h нүд бүр 1 оноо.",
+    "Бутархай гарвал таслалын арын тоо 5 ба түүнээс их бол өмнөх тоог нэгээр нэмэгдүүлнэ.",
+    "Энэ бол албан бус бэлтгэлийн хувилбар."
+  ],
+  "sections": [
+    {
+      "id": "I",
+      "title": "Нэгдүгээр хэсэг. Сонгох даалгавар",
+      "points": 68,
+      "questions": [
+        {
+          "id": "1",
+          "type": "multiple-choice",
+          "points": 1,
+          "skill": "mole-ratio",
+          "referenceItem": "1",
+          "prompt": "Контактын процессоор хүхрийн триоксид гарган авдаг: 2SO₂(х) + O₂(х) → 2SO₃(х). 2 моль хүхрийн диоксид хэдэн моль хүчилтөрөгчтэй урвалд орох вэ?",
+          "options": {
+            "A": "1 моль",
+            "B": "2 моль",
+            "C": "3 моль",
+            "D": "0.5 моль",
+            "E": "4 моль"
+          },
+          "answer": "A",
+          "answerText": "1 моль",
+          "explanation": "Коэффициентын харьцаа 2 : 1.",
+          "figure": {
+            "path": "images/mock-01/q01.svg",
+            "alt": "1-р даалгаврын зураг",
+            "origin": "Original SVG authored by Claude Code (Claude Opus 5.5)."
+          }
+        },
+        {
+          "id": "2",
+          "type": "multiple-choice",
+          "points": 1,
+          "skill": "nuclide-notation",
+          "referenceItem": "2",
+          "prompt": "Өгөгдсөн тэмдэглэгээг ашиглан хлорын атомын нейтроны тоог тодорхойлно уу.",
+          "options": {
+            "A": "35",
+            "B": "52",
+            "C": "1",
+            "D": "17",
+            "E": "18"
+          },
+          "answer": "E",
+          "answerText": "18",
+          "explanation": "35 − 17 = 18.",
+          "figure": {
+            "path": "images/mock-01/q02.svg",
+            "alt": "2-р даалгаврын зураг",
+            "origin": "Original SVG authored by Claude Code (Claude Opus 5.5)."
+          }
+        },
+        {
+          "id": "3",
+          "type": "multiple-choice",
+          "points": 1,
+          "skill": "states-of-matter",
+          "referenceItem": "3",
+          "prompt": "Бодисын төлөвийн шилжилтийн схемээс сублимацийн (хатуугаас шууд хий болох) үзэгдлийг сонгоно уу.",
+          "options": {
+            "A": "II",
+            "B": "IV",
+            "C": "V",
+            "D": "VI",
+            "E": "I"
+          },
+          "answer": "C",
+          "answerText": "V",
+          "explanation": "хатуу → хий: V.",
+          "figure": {
+            "path": "images/mock-01/q03.svg",
+            "alt": "3-р даалгаврын зураг",
+            "origin": "Original SVG authored by Claude Code (Claude Opus 5.5)."
+          }
+        },
+        {
+          "id": "4",
+          "type": "multiple-choice",
+          "points": 1,
+          "skill": "conductivity",
+          "referenceItem": "4",
+          "prompt": "Сурагч цахилгаан дамжуулах хэлхээг зурагт үзүүлсний дагуу угсарчээ. Аль материалыг X хэсэгт байршуулбал чийдэн асахгүй вэ?",
+          "options": {
+            "A": "давсны уусмал",
+            "B": "зэс утас",
+            "C": "хөнгөнцагаан утас",
+            "D": "резин",
+            "E": "бал чулуун савх"
+          },
+          "answer": "D",
+          "answerText": "резин",
+          "explanation": "Резин тусгаарлагч.",
+          "figure": {
+            "path": "images/mock-01/q04.svg",
+            "alt": "4-р даалгаврын зураг",
+            "origin": "Original SVG authored by Claude Code (Claude Opus 5.5)."
+          }
+        },
+        {
+          "id": "5",
+          "type": "multiple-choice",
+          "points": 1,
+          "skill": "oxidation-states",
+          "referenceItem": "5",
+          "prompt": "Дараах нэгдлүүдээс хүхрийн исэлдэхүйн хэм хамгийн их байх нэгдлийг сонгоно уу.",
+          "options": {
+            "A": "Na₂SO₃",
+            "B": "H₂S",
+            "C": "S",
+            "D": "SO₂",
+            "E": "H₂SO₄"
+          },
+          "answer": "E",
+          "answerText": "H₂SO₄",
+          "explanation": "+6."
+        },
+        {
+          "id": "6",
+          "type": "multiple-choice",
+          "points": 1,
+          "skill": "pH",
+          "referenceItem": "6",
+          "prompt": "Цэвэр усанд устөрөгчийн хлоридын хий нэвтрүүлж уусгахад усны pH хэрхэн өөрчлөгдөх вэ?",
+          "options": {
+            "A": "7 → 1",
+            "B": "1 → 2",
+            "C": "13 → 7",
+            "D": "7 → 12",
+            "E": "өөрчлөгдөхгүй"
+          },
+          "answer": "A",
+          "answerText": "7 → 1",
+          "explanation": "Хүчиллэг уусмал үүснэ."
+        },
+        {
+          "id": "7",
+          "type": "multiple-choice",
+          "points": 1,
+          "skill": "periodic-table",
+          "referenceItem": "7",
+          "prompt": "Үелэх хүснэгтэд үзүүлсэн элементүүдээс шүлтийн металлыг сонгоно уу.",
+          "options": {
+            "A": "Q",
+            "B": "Z",
+            "C": "X",
+            "D": "Y",
+            "E": "W"
+          },
+          "answer": "C",
+          "answerText": "X",
+          "explanation": "1-р бүлэг: X.",
+          "figure": {
+            "path": "images/mock-01/q07.svg",
+            "alt": "7-р даалгаврын зураг",
+            "origin": "Original SVG authored by Claude Code (Claude Opus 5.5)."
+          }
+        },
+        {
+          "id": "8",
+          "type": "multiple-choice",
+          "points": 1,
+          "skill": "nomenclature",
+          "referenceItem": "8",
+          "prompt": "Зурагт үзүүлсэн органик нэгдлийг нэрлэнэ үү.",
+          "options": {
+            "A": "этен",
+            "B": "этанол",
+            "C": "этанон",
+            "D": "этаналь",
+            "E": "этаны хүчил"
+          },
+          "answer": "D",
+          "answerText": "этаналь",
+          "explanation": "CH₃–CHO.",
+          "figure": {
+            "path": "images/mock-01/q08.svg",
+            "alt": "8-р даалгаврын зураг",
+            "origin": "Original SVG authored by Claude Code (Claude Opus 5.5)."
+          }
+        },
+        {
+          "id": "9",
+          "type": "multiple-choice",
+          "points": 1,
+          "skill": "polymers-everyday",
+          "referenceItem": "9",
+          "prompt": "Дараах бүтээгдэхүүнүүдээс аль нь синтетик полимероос тогтох вэ?",
+          "options": {
+            "A": "хөвөн цамц",
+            "B": "гялгар уут",
+            "C": "савхин гутал",
+            "D": "ноосон оймс",
+            "E": "торгон ороолт"
+          },
+          "answer": "B",
+          "answerText": "гялгар уут",
+          "explanation": "Полиэтилен – синтетик."
+        },
+        {
+          "id": "10",
+          "type": "multiple-choice",
+          "points": 1,
+          "skill": "boiling-points",
+          "referenceItem": "10",
+          "prompt": "Карбон хүчлүүдийн молийн массыг харьцуулсан хүснэгт өгөгджээ. Аль карбон хүчил нь хамгийн бага температурт буцлах вэ?",
+          "options": {
+            "A": "V",
+            "B": "III",
+            "C": "II",
+            "D": "IV",
+            "E": "I"
+          },
+          "answer": "E",
+          "answerText": "I",
+          "explanation": "Молийн масс бага – молекул хоорондын хүч сул.",
+          "figure": {
+            "path": "images/mock-01/q10.svg",
+            "alt": "10-р даалгаврын зураг",
+            "origin": "Original SVG authored by Claude Code (Claude Opus 5.5)."
+          }
+        },
+        {
+          "id": "11",
+          "type": "multiple-choice",
+          "points": 1,
+          "skill": "gas-density",
+          "referenceItem": "11",
+          "prompt": "Аль хийн бөмбөлөг нь агаарт хөөрөх вэ? (агаарын дундаж молийн масс 29 г·моль⁻¹)",
+          "options": {
+            "A": "P ба R",
+            "B": "Q ба R",
+            "C": "R",
+            "D": "Q",
+            "E": "P"
+          },
+          "answer": "A",
+          "answerText": "P ба R",
+          "explanation": "He (4) ба CH₄ (16) агаараас хөнгөн.",
+          "figure": {
+            "path": "images/mock-01/q11.svg",
+            "alt": "11-р даалгаврын зураг",
+            "origin": "Original SVG authored by Claude Code (Claude Opus 5.5)."
+          }
+        },
+        {
+          "id": "12",
+          "type": "multiple-choice",
+          "points": 1,
+          "skill": "separation",
+          "referenceItem": "12",
+          "prompt": "Өгөгдсөн зурагт харгалзах холимгоос уусдаггүй хатуу бодисыг ялгах аргыг тодорхойлно уу.",
+          "options": {
+            "A": "нэрэх",
+            "B": "талсжуулах",
+            "C": "шүүх",
+            "D": "ялгах юүлүүрээр ялгах",
+            "E": "цаасан хроматограф"
+          },
+          "answer": "C",
+          "answerText": "шүүх",
+          "explanation": "Элсийг шүүлтүүрээр ялгана.",
+          "figure": {
+            "path": "images/mock-01/q12.svg",
+            "alt": "12-р даалгаврын зураг",
+            "origin": "Original SVG authored by Claude Code (Claude Opus 5.5)."
+          }
+        },
+        {
+          "id": "13",
+          "type": "multiple-choice",
+          "points": 1,
+          "skill": "bonding",
+          "referenceItem": "13",
+          "prompt": "Зурагт Q ба P элементүүдийн электронт байгууламжийг харуулжээ (зүүн – Q, баруун – P). Q ба P элементүүд нэгдэж үүсэх нэгдлийн холбооны төрөл болон томьёог олно уу.",
+          "optionColumns": [
+            "Холбооны төрөл",
+            "Молекулын томьёо"
+          ],
+          "options": {
+            "A": "ионы | MgF",
+            "B": "ионы | Mg₂F",
+            "C": "металлын | MgF₂",
+            "D": "ионы | MgF₂",
+            "E": "ковалент | MgF₂"
+          },
+          "answer": "D",
+          "answerText": "ионы | MgF₂",
+          "explanation": "Mg 2e⁻ алдаж, хоёр F тус бүр 1e⁻ авна.",
+          "figure": {
+            "path": "images/mock-01/q13.svg",
+            "alt": "13-р даалгаврын зураг",
+            "origin": "Original SVG authored by Claude Code (Claude Opus 5.5)."
+          }
+        },
+        {
+          "id": "14",
+          "type": "multiple-choice",
+          "points": 1,
+          "skill": "ideal-gas",
+          "referenceItem": "14",
+          "prompt": "300 K температурт байгаа 0.5 м³ эзлэхүүнтэй 2 моль идеал хийн даралтыг тооцоолно уу. (R = 8.31 Ж·моль⁻¹·К⁻¹)",
+          "options": {
+            "A": "9.97 Па",
+            "B": "9.97 кПа",
+            "C": "99.7 кПа",
+            "D": "997 Па",
+            "E": "4.99 кПа"
+          },
+          "answer": "B",
+          "answerText": "9.97 кПа",
+          "explanation": "p = 2 × 8.31 × 300 / 0.5 = 9972 Па."
+        },
+        {
+          "id": "15",
+          "type": "multiple-choice",
+          "points": 1,
+          "skill": "redox-roles",
+          "referenceItem": "15",
+          "prompt": "Эх бодис болох устөрөгч (H₂) нь ангижруулагчийн үүргийг гүйцэтгэж байгаа урвалын тэгшитгэлийг сонгоно уу.",
+          "options": {
+            "A": "H₂O + CO₂ → H₂CO₃",
+            "B": "Zn + 2HCl → ZnCl₂ + H₂",
+            "C": "CaH₂ + 2H₂O → Ca(OH)₂ + 2H₂",
+            "D": "2Na + H₂ → 2NaH",
+            "E": "CuO + H₂ → Cu + H₂O"
+          },
+          "answer": "E",
+          "answerText": "CuO + H₂ → Cu + H₂O",
+          "explanation": "H 0 → +1 исэлдэнэ."
+        },
+        {
+          "id": "16",
+          "type": "multiple-choice",
+          "points": 1,
+          "skill": "equilibrium-statements",
+          "referenceItem": "16",
+          "prompt": "Дараах эргэх урвал өгөгджээ. 2SO₂(х) + O₂(х) ⇌ 2SO₃(х), ∆H = −197 кЖ. Тэнцвэр тогтсоны дараах холимгийн талаар аль мэдээлэл нь зөв бэ?",
+          "options": {
+            "A": "Системийн даралтыг ихэсгэвэл SO₃-ын хэмжээ ихэснэ.",
+            "B": "SO₃ үүсэх урвал эндотерм.",
+            "C": "Температурыг ихэсгэвэл SO₃-ын хэмжээ ихэснэ.",
+            "D": "Шулуун ба буцах урвалын хурд тэнцүү биш байна.",
+            "E": "Катализатор нэмбэл SO₃-ын хэмжээ ихэснэ."
+          },
+          "answer": "A",
+          "answerText": "Системийн даралтыг ихэсгэвэл SO₃-ын хэмжээ ихэснэ.",
+          "explanation": "Хийн моль 3 → 2."
+        },
+        {
+          "id": "17",
+          "type": "multiple-choice",
+          "points": 1,
+          "skill": "reaction-rate",
+          "referenceItem": "17",
+          "prompt": "Ижил масстай магни ижил эзлэхүүн, ижил концентрацтай давсны хүчилтэй урвалд оржээ. Аль тохиолдолд урвал хамгийн удаан явагдах вэ?",
+          "options": {
+            "A": "40 °С, нунтаг",
+            "B": "30 °С, нунтаг",
+            "C": "20 °С, тууз",
+            "D": "40 °С, тууз",
+            "E": "20 °С, нунтаг"
+          },
+          "answer": "C",
+          "answerText": "20 °С, тууз",
+          "explanation": "Бага температур ба бага гадаргуу."
+        },
+        {
+          "id": "18",
+          "type": "multiple-choice",
+          "points": 1,
+          "skill": "transition-metals",
+          "referenceItem": "18",
+          "prompt": "Шилжилтийн металлын физик, химийн шинж чанарын талаар буруу мэдээллийг сонгоно уу.",
+          "options": {
+            "A": "Олон шилжилтийн металл ба нэгдэл катализатор болдог.",
+            "B": "Шилжилтийн металлууд комплекс ион үүсгэдэг.",
+            "C": "Шилжилтийн металлын нягт ба хайлах цэг өндөр.",
+            "D": "Шилжилтийн металлууд ихэвчлэн өнгөгүй нэгдэл үүсгэдэг.",
+            "E": "Шилжилтийн металлууд хувьсах исэлдлийн хэмтэй."
+          },
+          "answer": "D",
+          "answerText": "Шилжилтийн металлууд ихэвчлэн өнгөгүй нэгдэл үүсгэдэг.",
+          "explanation": "Ихэнх нэгдэл өнгөтэй."
+        },
+        {
+          "id": "19",
+          "type": "multiple-choice",
+          "points": 1,
+          "skill": "thermal-decomposition",
+          "referenceItem": "19",
+          "prompt": "Магнийн карбонатыг халаахад үүсэх бүтээгдэхүүнүүдийг сонгоно уу.",
+          "options": {
+            "A": "магни ба нүүрстөрөгчийн диоксид",
+            "B": "магнийн оксид ба нүүрстөрөгчийн диоксид",
+            "C": "магнийн оксид ба нүүрстөрөгч",
+            "D": "магни ба карбонат ион",
+            "E": "магни ба нүүрстөрөгч"
+          },
+          "answer": "B",
+          "answerText": "магнийн оксид ба нүүрстөрөгчийн диоксид",
+          "explanation": "MgCO₃ → MgO + CO₂."
+        },
+        {
+          "id": "20",
+          "type": "multiple-choice",
+          "points": 1,
+          "skill": "combustion",
+          "referenceItem": "20",
+          "prompt": "Нүүрсийг шатаахад явагдах процессын талаар зөв мэдээллийг сонгоно уу.",
+          "options": {
+            "A": "Шаталт эндотерм процесс.",
+            "B": "Шаталтын үед хүчилтөрөгч ангижруулагч болно.",
+            "C": "Нүүрс шатахад зөвхөн ус үүснэ.",
+            "D": "Хүчилтөрөгч хангалттай үед CO үүснэ.",
+            "E": "Хүчилтөрөгч дутмаг үед нүүрстөрөгчийн дутуу исэл (CO) үүснэ."
+          },
+          "answer": "E",
+          "answerText": "Хүчилтөрөгч дутмаг үед нүүрстөрөгчийн дутуу исэл (CO) үүснэ.",
+          "explanation": "Бүрэн бус шаталтад CO."
+        },
+        {
+          "id": "21",
+          "type": "multiple-choice",
+          "points": 1,
+          "skill": "organic-reactions",
+          "referenceItem": "21",
+          "prompt": "Өгөгдсөн урвалын дүнд үүсэх үндсэн бүтээгдэхүүн X нэгдлийг нэрлэнэ үү.",
+          "options": {
+            "A": "пропаналь",
+            "B": "пропан-1-ол",
+            "C": "пропаны хүчил",
+            "D": "пропан-1,2-диол",
+            "E": "пропан-2-ол"
+          },
+          "answer": "A",
+          "answerText": "пропаналь",
+          "explanation": "Анхдагч спиртийг нэрж зайлуулахад альдегид.",
+          "figure": {
+            "path": "images/mock-01/q21.svg",
+            "alt": "21-р даалгаврын зураг",
+            "origin": "Original SVG authored by Claude Code (Claude Opus 5.5)."
+          }
+        },
+        {
+          "id": "22",
+          "type": "multiple-choice",
+          "points": 1,
+          "skill": "esters",
+          "referenceItem": "22",
+          "prompt": "Дараах нийлмэл эфир ямар карбон хүчил болон спиртийн эфиржих урвалаар үүссэн бэ?",
+          "optionColumns": [
+            "карбон хүчил",
+            "спирт"
+          ],
+          "options": {
+            "A": "бутаны хүчил | этанол",
+            "B": "этаны хүчил | этанол",
+            "C": "пропаны хүчил | этанол",
+            "D": "этаны хүчил | пропан-1-ол",
+            "E": "пропаны хүчил | метанол"
+          },
+          "answer": "C",
+          "answerText": "пропаны хүчил | этанол",
+          "explanation": "C₂H₅CO– хэсэг хүчлээс, –OC₂H₅ спиртээс.",
+          "figure": {
+            "path": "images/mock-01/q22.svg",
+            "alt": "22-р даалгаврын зураг",
+            "origin": "Original SVG authored by Claude Code (Claude Opus 5.5)."
+          }
+        },
+        {
+          "id": "23",
+          "type": "multiple-choice",
+          "points": 2,
+          "skill": "gas-volume",
+          "referenceItem": "23",
+          "prompt": "150 см³ эзлэхүүнтэй 2.0 моль/дм³ концентрацтай давсны хүчилд магнийг илүүдэл хэмжээгээр уусгахад (100 кПа ба 298 K)-д хэчнээн эзлэхүүн хий ялгарах вэ?",
+          "options": {
+            "A": "3.36 дм³",
+            "B": "1.86 дм³",
+            "C": "0.372 дм³",
+            "D": "3.72 дм³",
+            "E": "7.44 дм³"
+          },
+          "answer": "D",
+          "answerText": "3.72 дм³",
+          "explanation": "HCl 0.30 моль → H₂ 0.15 моль × 24.8 = 3.72 дм³."
+        },
+        {
+          "id": "24",
+          "type": "multiple-choice",
+          "points": 2,
+          "skill": "precipitation",
+          "referenceItem": "24",
+          "prompt": "Дараах туршилтуудаас аль тохиолдолд барийн сульфатын тунадас үүсэхгүй вэ?",
+          "options": {
+            "A": "Ba(NO₃)₂(уус) + H₂SO₄(уус)",
+            "B": "BaCl₂(уус) + NaNO₃(уус)",
+            "C": "Ba(OH)₂(уус) + K₂SO₄(уус)",
+            "D": "BaCl₂(уус) + MgSO₄(уус)",
+            "E": "BaCl₂(уус) + Na₂SO₄(уус)"
+          },
+          "answer": "B",
+          "answerText": "BaCl₂(уус) + NaNO₃(уус)",
+          "explanation": "Сульфат ион байхгүй."
+        },
+        {
+          "id": "25",
+          "type": "multiple-choice",
+          "points": 2,
+          "skill": "polarity",
+          "referenceItem": "25",
+          "prompt": "Байнгын дипольгүй молекулыг сонгоно уу.",
+          "options": {
+            "A": "HCl",
+            "B": "CH₃Cl",
+            "C": "H₂O",
+            "D": "NH₃",
+            "E": "CO₂"
+          },
+          "answer": "E",
+          "answerText": "CO₂",
+          "explanation": "Шугаман тэгш хэмтэй."
+        },
+        {
+          "id": "26",
+          "type": "multiple-choice",
+          "points": 2,
+          "skill": "stoichiometry",
+          "referenceItem": "26",
+          "prompt": "30 грамм пирит (FeS₂)-ийг бүрэн шатаахад хэвийн нөхцөл (101.325 кПа ба 273 K)-д хэдэн литр хүхрийн диоксид ялгарах вэ? 4FeS₂ + 11O₂ → 2Fe₂O₃ + 8SO₂",
+          "options": {
+            "A": "11.2 л",
+            "B": "12.4 л",
+            "C": "5.6 л",
+            "D": "22.4 л",
+            "E": "1.12 л"
+          },
+          "answer": "A",
+          "answerText": "11.2 л",
+          "explanation": "0.25 моль FeS₂ → 0.5 моль SO₂ × 22.4."
+        },
+        {
+          "id": "27",
+          "type": "multiple-choice",
+          "points": 2,
+          "skill": "petroleum-fractions",
+          "referenceItem": "27",
+          "prompt": "Дараах зурагт газрын тосны хэсэгчилсэн нэрлэгийн фракцыг харуулжээ. Дизель түлшний фракцыг сонгоно уу. (Дээрээс доош: хий, бензин, керосин, дизель, мазут)",
+          "options": {
+            "A": "A",
+            "B": "B",
+            "C": "C",
+            "D": "D",
+            "E": "E"
+          },
+          "answer": "B",
+          "answerText": "B",
+          "explanation": "Дээрээс 4 дэх гарц.",
+          "figure": {
+            "path": "images/mock-01/q27.svg",
+            "alt": "27-р даалгаврын зураг",
+            "origin": "Original SVG authored by Claude Code (Claude Opus 5.5)."
+          }
+        },
+        {
+          "id": "28",
+          "type": "multiple-choice",
+          "points": 2,
+          "skill": "organic-properties",
+          "referenceItem": "28",
+          "prompt": "Этанолын химийн шинж чанарын талаар зөв мэдээллийг сонгоно уу.\nI. Натритай урвалд орж устөрөгч ялгаруулна.\nII. Натрийн гидроксидын уусмалтай урвалд орж давс үүсгэнэ.\nIII. Хүчиллэг калийн дихроматаар исэлдэнэ.",
+          "options": {
+            "A": "зөвхөн I",
+            "B": "I, II ба III",
+            "C": "I ба III",
+            "D": "II ба III",
+            "E": "I ба II"
+          },
+          "answer": "C",
+          "answerText": "I ба III",
+          "explanation": "Этанол шүлттэй давс үүсгэдэггүй."
+        },
+        {
+          "id": "29",
+          "type": "multiple-choice",
+          "points": 2,
+          "skill": "anion-tests",
+          "referenceItem": "29",
+          "prompt": "Доорх хүснэгтэд уусмал Z-д явуулсан туршилтын үр дүнг харуулав. Уусмал Z-д ямар анион агуулагдаж байсан вэ?",
+          "options": {
+            "A": "нитрат",
+            "B": "силикат",
+            "C": "фторид",
+            "D": "сульфат",
+            "E": "фосфат"
+          },
+          "answer": "D",
+          "answerText": "сульфат",
+          "explanation": "HCl-тэй BaCl₂-оор цагаан тунадас – сульфат.",
+          "figure": {
+            "path": "images/mock-01/q29.svg",
+            "alt": "29-р даалгаврын зураг",
+            "origin": "Original SVG authored by Claude Code (Claude Opus 5.5)."
+          }
+        },
+        {
+          "id": "30",
+          "type": "multiple-choice",
+          "points": 2,
+          "skill": "oxidative-cleavage",
+          "referenceItem": "30",
+          "prompt": "Пент-2-ен (CH₃CH=CHCH₂CH₃)-ийг илүүдэл, хүчиллэгжүүлсэн, халуун KMnO₄-ын уусмалаар үйлчлэхэд ямар нэгдлүүд үүсэх вэ?",
+          "options": {
+            "A": "CH₃CHO болон CH₃CH₂CHO",
+            "B": "CH₃CH(OH)CH(OH)CH₂CH₃",
+            "C": "HCOOH болон CH₃CH₂CH₂COOH",
+            "D": "CH₃COCH₃ болон CH₃COOH",
+            "E": "CH₃COOH болон CH₃CH₂COOH"
+          },
+          "answer": "E",
+          "answerText": "CH₃COOH болон CH₃CH₂COOH",
+          "explanation": "Давхар холбоо тасарч хоёр хүчил."
+        },
+        {
+          "id": "31",
+          "type": "multiple-choice",
+          "points": 3,
+          "skill": "displacement-mass",
+          "referenceItem": "31",
+          "prompt": "50 грамм жинтэй төмөр ялтсыг зэс(II) сульфатын уусмалд хэсэг хугацаагаар дүрэхэд ялтсын жин 51.6 грамм болж нэмэгджээ. Хэдэн грамм төмөр уусмалд шилжсэн бэ?",
+          "options": {
+            "A": "11.2",
+            "B": "1.6",
+            "C": "22.4",
+            "D": "5.6",
+            "E": "12.8"
+          },
+          "answer": "A",
+          "answerText": "11.2",
+          "explanation": "Моль тутамд +8 г → 0.2 моль Fe = 11.2 г."
+        },
+        {
+          "id": "32",
+          "type": "multiple-choice",
+          "points": 3,
+          "skill": "hess",
+          "referenceItem": "32",
+          "prompt": "S(хат) + O₂(х) → SO₂(х); ∆H° = −297 кЖ·моль⁻¹\n2SO₂(х) + O₂(х) → 2SO₃(х); ∆H° = −198 кЖ\nӨгөгдлийг ашиглан хүхрийн триоксидын үүсэхийн стандарт энтальпийг олно уу.",
+          "options": {
+            "A": "−99 кЖ·моль⁻¹",
+            "B": "−396 кЖ·моль⁻¹",
+            "C": "−495 кЖ·моль⁻¹",
+            "D": "−198 кЖ·моль⁻¹",
+            "E": "+396 кЖ·моль⁻¹"
+          },
+          "answer": "B",
+          "answerText": "−396 кЖ·моль⁻¹",
+          "explanation": "−297 + (−198/2) = −396."
+        },
+        {
+          "id": "33",
+          "type": "multiple-choice",
+          "points": 3,
+          "skill": "redox-balancing",
+          "referenceItem": "33",
+          "prompt": "Дараах исэлдэх-ангижрах урвалыг хамгийн бага бүхэл тоогоор тэнцүүлж коэффициентүүдийн нийлбэрийг олно уу.\n…Cu + …HNO₃(конц) → …Cu(NO₃)₂ + …NO₂ + …H₂O",
+          "options": {
+            "A": "8",
+            "B": "9",
+            "C": "10",
+            "D": "11",
+            "E": "12"
+          },
+          "answer": "C",
+          "answerText": "10",
+          "explanation": "1 + 4 + 1 + 2 + 2 = 10."
+        },
+        {
+          "id": "34",
+          "type": "multiple-choice",
+          "points": 3,
+          "skill": "atomic-structure",
+          "referenceItem": "34",
+          "prompt": "Аль катион нь электроноосоо гурваар илүү нейтронтой вэ?",
+          "options": {
+            "A": "²⁴Mg²⁺",
+            "B": "²⁷Al³⁺",
+            "C": "³⁹K⁺",
+            "D": "⁹Be²⁺",
+            "E": "⁷Li⁺"
+          },
+          "answer": "D",
+          "answerText": "⁹Be²⁺",
+          "explanation": "⁹Be²⁺: n = 5, e = 2."
+        },
+        {
+          "id": "35",
+          "type": "multiple-choice",
+          "points": 3,
+          "skill": "chirality",
+          "referenceItem": "35",
+          "prompt": "Ибупрофен ((CH₃)₂CH–CH₂–C₆H₄–CH(CH₃)–COOH) өвдөлт намдаах эм. Молекул нь хэдэн нүүрстөрөгчийн хираль атом агуулж байна вэ?",
+          "options": {
+            "A": "2",
+            "B": "3",
+            "C": "4",
+            "D": "0",
+            "E": "1"
+          },
+          "answer": "E",
+          "answerText": "1",
+          "explanation": "Зөвхөн CH(CH₃)COOH нүүрстөрөгч.",
+          "figure": {
+            "path": "images/mock-01/q35.svg",
+            "alt": "35-р даалгаврын зураг",
+            "origin": "Original SVG authored by Claude Code (Claude Opus 5.5)."
+          }
+        },
+        {
+          "id": "36",
+          "type": "multiple-choice",
+          "points": 3,
+          "skill": "dehydration-isomerism",
+          "referenceItem": "36",
+          "prompt": "Al₂O₃ катализаторын оролцоотойгоор халаахад усгүйжих урвалд орж цис-транс изомер бүхий алкен үүсгэх боломжтой спиртийг сонгоно уу.",
+          "options": {
+            "A": "A",
+            "B": "B",
+            "C": "C",
+            "D": "D",
+            "E": "E"
+          },
+          "answer": "B",
+          "answerText": "B",
+          "explanation": "Бутан-2-олоос бут-2-ен (цис/транс).",
+          "figure": {
+            "path": "images/mock-01/q36.svg",
+            "alt": "36-р даалгаврын зураг",
+            "origin": "Original SVG authored by Claude Code (Claude Opus 5.5)."
+          }
+        },
+        {
+          "id": "37",
+          "type": "multiple-choice",
+          "points": 3,
+          "skill": "chromatography",
+          "referenceItem": "37",
+          "prompt": "Өнгөгүй X хольц болон P, Q, R гэсэн цэвэр бодисууд дээр цаасан хроматографийн туршилт явуулжээ. Хроматограммыг ажиглаад зөв мэдээллийг сонгоно уу.",
+          "options": {
+            "A": "R бодис уусгагчид хамгийн сайн уусна.",
+            "B": "Q бодис X хольц дотор агуулагдана.",
+            "C": "P ба R бодис X хольц дотор агуулагдана.",
+            "D": "P бодисын Rf утга R бодисынхоос бага.",
+            "E": "X хольц гурван бодисоос тогтоно."
+          },
+          "answer": "C",
+          "answerText": "P ба R бодис X хольц дотор агуулагдана.",
+          "explanation": "X-ийн 0.7 ба 0.3 толбо P ба R-тэй давхцана.",
+          "figure": {
+            "path": "images/mock-01/q37.svg",
+            "alt": "37-р даалгаврын зураг",
+            "origin": "Original SVG authored by Claude Code (Claude Opus 5.5)."
+          }
+        },
+        {
+          "id": "38",
+          "type": "multiple-choice",
+          "points": 3,
+          "skill": "collision-theory",
+          "referenceItem": "38",
+          "prompt": "Устөрөгчийн пероксидын задрал MnO₂ катализатортой үед хурдан явагддаг шалтгаануудаас зөвийг сонгоно уу.\n1. Урвалын идэвхжилийн энерги буурна.\n2. Молекулын кинетик энерги өснө.\n3. Идэвхжилийн энергиэс их энергитэй молекулын хувь өснө.",
+          "options": {
+            "A": "1 ба 3",
+            "B": "1 ба 2",
+            "C": "2 ба 3",
+            "D": "зөвхөн 1",
+            "E": "зөвхөн 2"
+          },
+          "answer": "A",
+          "answerText": "1 ба 3",
+          "explanation": "Катализатор температурыг өөрчлөхгүй."
+        },
+        {
+          "id": "39",
+          "type": "multiple-choice",
+          "points": 3,
+          "skill": "equilibrium-Kc",
+          "referenceItem": "39",
+          "prompt": "1 литр эзлэхүүнтэй битүү саванд хий байдалтай 3 моль H₂ болон 2 моль I₂-ыг авч холиход урвал явагдаж тэнцвэр тогтжээ. Тэнцвэрийн үед 3 моль HI үүссэн бол тэнцвэрийн тогтмол Kc-г тооцоолно уу.",
+          "options": {
+            "A": "6",
+            "B": "36",
+            "C": "0.083",
+            "D": "12",
+            "E": "4"
+          },
+          "answer": "D",
+          "answerText": "12",
+          "explanation": "H₂ 1.5, I₂ 0.5, HI 3: Kc = 9 / 0.75 = 12."
+        },
+        {
+          "id": "40",
+          "type": "multiple-choice",
+          "points": 3,
+          "skill": "rate-law",
+          "referenceItem": "40",
+          "prompt": "2NO(х) + O₂(х) → 2NO₂(х) урвалын хурдыг тодорхойлох зорилгоор 3 туршилт явуулж дараах үр дүнг гарган авчээ. Урвалын хурдны тэгшитгэлийг сонгоно уу.",
+          "options": {
+            "A": "υ = k[NO][O₂]",
+            "B": "υ = k[NO]²[O₂]",
+            "C": "υ = k[NO]²",
+            "D": "υ = k[NO][O₂]²",
+            "E": "υ = k[NO]²[O₂]²"
+          },
+          "answer": "B",
+          "answerText": "υ = k[NO]²[O₂]",
+          "explanation": "[NO] 2 дахин → хурд 4 дахин; [O₂] 2 дахин → 2 дахин.",
+          "figure": {
+            "path": "images/mock-01/q40.svg",
+            "alt": "40-р даалгаврын зураг",
+            "origin": "Original SVG authored by Claude Code (Claude Opus 5.5)."
+          }
+        }
+      ]
+    },
+    {
+      "id": "II",
+      "title": "Хоёрдугаар хэсэг. Бүтээх даалгавар",
+      "points": 32,
+      "tasks": [
+        {
+          "id": "2.1",
+          "type": "constructed",
+          "topic": "Ион ба хийг таних арга",
+          "points": 8,
+          "referenceItem": "2.1",
+          "prompt": "1–5 дугаартай хуруу шилэнд үл мэдэгдэх нэгдлийн уусмал өгөгджээ. Уусмал бүрээс хэсэг авч азотын хүчлээр хүчиллэгжүүлсэн мөнгөний нитрат, өөр хэсэгт натрийн гидроксидын уусмал нэмэв. Туршилтын үр дүнг хүснэгтэд үзүүлэв ((↓) тунадас, (–) өөрчлөлтгүй).\nХариултын хүснэгт: (0) Fe²⁺; (1) Cu²⁺; (2) Al³⁺; (3) Mg²⁺; (4) Zn²⁺; (5) BaCl₂(уус) + HCl; (6) HCl(уус); (7) NaOH, Al, халаалт; (8) NH₃(уус) илүүдэл; (9) NaOH(уус) илүүдэл\nДаалгавар:\n1. (1)–(4) дугаартай хуруу шилэнд ямар бодисын уусмал байгааг тодорхойлж, хуруу шилний дугаарыг бичнэ үү: CuCl₂(a), FeCl₃(b), KI(c), MgBr₂(d)\n(5) дугаартай хуруу шилэнд нэг давс байв. NaOH болон аммиакийн цагаан тунадас хоёулаа илүүдэлд уусдаг. Уусмалд HCl-тэй BaCl₂ нэмэхэд цагаан тунадас үүссэн.\n2. (5) уусмал дахь катион (e) -г сонгоно уу.\n3. (5) уусмал дахь анионыг таних урвалж (f) -г сонгоно уу.\n4. Хэрэв анион нь нитрат байсан бол таних урвалж (g) -г сонгоно уу.\n5. (5)-ын катионыг Al³⁺-аас ялгах урвалж (h) -г сонгоно уу.",
+          "parts": [
+            {
+              "id": "a",
+              "prompt": "CuCl₂",
+              "answer": "4",
+              "points": 1,
+              "explanation": "AgCl цагаан; Cu(OH)₂ цэнхэр → (4)."
+            },
+            {
+              "id": "b",
+              "prompt": "FeCl₃",
+              "answer": "2",
+              "points": 1,
+              "explanation": "AgCl цагаан; Fe(OH)₃ улаан хүрэн → (2)."
+            },
+            {
+              "id": "c",
+              "prompt": "KI",
+              "answer": "1",
+              "points": 1,
+              "explanation": "AgI шар; тунадасгүй → (1)."
+            },
+            {
+              "id": "d",
+              "prompt": "MgBr₂",
+              "answer": "3",
+              "points": 1,
+              "explanation": "AgBr шаргал; Mg(OH)₂ цагаан → (3)."
+            },
+            {
+              "id": "e",
+              "prompt": "(5) уусмал дахь катион (e)",
+              "answer": "4",
+              "points": 1,
+              "explanation": "Zn²⁺."
+            },
+            {
+              "id": "f",
+              "prompt": "(5) уусмал дахь анионыг таних урвалж (f)",
+              "answer": "5",
+              "points": 1,
+              "explanation": "Сульфат."
+            },
+            {
+              "id": "g",
+              "prompt": "Хэрэв анион нь нитрат байсан бол таних урвалж (g)",
+              "answer": "7",
+              "points": 1,
+              "explanation": "Нитратын урвал."
+            },
+            {
+              "id": "h",
+              "prompt": "(5)-ын катионыг Al³⁺-аас ялгах урвалж (h)",
+              "answer": "8",
+              "points": 1,
+              "explanation": "Илүүдэл NH₃-д зөвхөн Zn(OH)₂ уусна."
+            }
+          ],
+          "provisional": true,
+          "figure": {
+            "path": "images/mock-01/task-2-1.svg",
+            "alt": "Ион ба хийг таних арга",
+            "origin": "Original SVG authored by Claude Code (Claude Opus 5.5)."
+          }
+        },
+        {
+          "id": "2.2",
+          "type": "constructed",
+          "topic": "Химийн тэнцвэр",
+          "points": 8,
+          "referenceItem": "2.2",
+          "prompt": "Дараах тэнцвэрийг судалжээ.\nH₂CO₃(уус) ⇌ H⁺(уус) + HCO₃⁻(уус)   ∆H°урв = +9 кЖ моль⁻¹\n1 – Тэнцвэр баруун тийш шилжинэ. 2 – Тэнцвэр зүүн тийш шилжинэ. 3 – Тэнцвэр шилжихгүй.\nДаалгавар:\n1. Дараах 4 нөхцөл тус бүрт тэнцвэр шилжих чиглэлийг сонгоно уу.\nНатрийн гидроксид нэмэхэд – (a)\nНатрийн гидрокарбонат нэмэхэд – (b)\nУрвалын хольцийг халаахад – (c)\nКатализатор нэмэхэд – (d)\n0.05 моль дм⁻³ концентрацтай H₂CO₃(уус)-ийн 0.2% нь ионжсон.\n2. H⁺ ионы концентрац (e × 10⁻⁴ моль дм⁻³)-ыг тооцоолно уу.\n3. Тэнцвэрийн тогтмол Kc (f × 10⁻ᵍ)-г тооцоолно уу.\n4. Уусмалын pH (h)-ийг бүхэл тоогоор тооцоолно уу.",
+          "parts": [
+            {
+              "id": "a",
+              "prompt": "Натрийн гидроксид нэмэхэд",
+              "answer": "1",
+              "points": 1,
+              "explanation": "H⁺ ион саармагжиж тэнцвэр баруун тийш."
+            },
+            {
+              "id": "b",
+              "prompt": "Натрийн гидрокарбонат нэмэхэд",
+              "answer": "2",
+              "points": 1,
+              "explanation": "Ижил ион нэмэгдэж тэнцвэр зүүн тийш."
+            },
+            {
+              "id": "c",
+              "prompt": "Урвалын хольцийг халаахад",
+              "answer": "1",
+              "points": 1,
+              "explanation": "Эндотерм урвал; халаахад тэнцвэр баруун тийш."
+            },
+            {
+              "id": "d",
+              "prompt": "Катализатор нэмэхэд",
+              "answer": "3",
+              "points": 1,
+              "explanation": "Катализатор тэнцвэрийг шилжүүлэхгүй."
+            },
+            {
+              "id": "e",
+              "prompt": "[H⁺] = e × 10⁻⁴",
+              "answer": "1",
+              "points": 1,
+              "explanation": "0.05 × 0.002 = 1.00e-04."
+            },
+            {
+              "id": "f",
+              "prompt": "Kc = f × 10⁻ᵍ: f",
+              "answer": "2",
+              "points": 1,
+              "explanation": "Kc = (1.00e-04)²/(0.05 − 1.00e-04) = 2e-07."
+            },
+            {
+              "id": "g",
+              "prompt": "Kc = f × 10⁻ᵍ: g",
+              "answer": "7",
+              "points": 1,
+              "explanation": "2 × 10⁻7."
+            },
+            {
+              "id": "h",
+              "prompt": "pH",
+              "answer": "4",
+              "points": 1,
+              "explanation": "pH = 4.00 → бүхэлчилнэ."
+            }
+          ],
+          "provisional": true
+        },
+        {
+          "id": "2.3",
+          "type": "constructed",
+          "topic": "Үелэх хүснэгт, үелэх хандлага",
+          "points": 8,
+          "referenceItem": "2.3",
+          "prompt": "Хүснэгт дэх үгийн дугаарыг ашиглан даалгаврыг гүйцэтгэнэ үү. (тот – талст оронт тор)\nДараах хүснэгтэд үелэх хүснэгтийн 3-р үеийн элементүүдийн оксидын шинж чанарыг харуулжээ. Хоосон нүд (a)–(h)-д тохирох үгийн дугаарыг сонгоно уу.",
+          "parts": [
+            {
+              "id": "a",
+              "prompt": "Na₂O – бодисын төлөв",
+              "answer": "5",
+              "points": 1,
+              "explanation": "Na₂O: хатуу."
+            },
+            {
+              "id": "b",
+              "prompt": "Al₂O₃ – бодисын төлөв",
+              "answer": "5",
+              "points": 1,
+              "explanation": "Al₂O₃: хатуу."
+            },
+            {
+              "id": "c",
+              "prompt": "Na₂O – бүтэц байгуулалт",
+              "answer": "2",
+              "points": 1,
+              "explanation": "Na₂O: Ионы тот."
+            },
+            {
+              "id": "d",
+              "prompt": "MgO – бүтэц байгуулалт",
+              "answer": "2",
+              "points": 1,
+              "explanation": "MgO: Ионы тот."
+            },
+            {
+              "id": "e",
+              "prompt": "P₄O₁₀ – бүтэц байгуулалт",
+              "answer": "3",
+              "points": 1,
+              "explanation": "P₄O₁₀: Молекулын тот."
+            },
+            {
+              "id": "f",
+              "prompt": "MgO – хайлмал байдалдаа цахилгаан дамжуулах эсэх",
+              "answer": "1",
+              "points": 1,
+              "explanation": "MgO: тийм."
+            },
+            {
+              "id": "g",
+              "prompt": "P₄O₁₀ – хайлмал байдалдаа цахилгаан дамжуулах эсэх",
+              "answer": "9",
+              "points": 1,
+              "explanation": "P₄O₁₀: үгүй."
+            },
+            {
+              "id": "h",
+              "prompt": "Na₂O – хүчил-суурийн шинж",
+              "answer": "8",
+              "points": 1,
+              "explanation": "Na₂O: суурь."
+            }
+          ],
+          "provisional": true,
+          "figure": {
+            "path": "images/mock-01/task-2-3.svg",
+            "alt": "Үелэх хүснэгт, үелэх хандлага",
+            "origin": "Original SVG authored by Claude Code (Claude Opus 5.5)."
+          }
+        },
+        {
+          "id": "2.4",
+          "type": "constructed",
+          "topic": "Органик хими",
+          "points": 8,
+          "referenceItem": "2.4",
+          "prompt": "Сурагч доорх органик схемийг судалжээ. Уг урвалын схемд харгалзах бодис ба урвалж, нөхцөл бүхий хариултын хүснэгтийг доор харуулав.\nДаалгавар:\n1. 1–6 дугаартай урвалыг явуулахад шаардлагатай урвалж, нөхцлийн дугаарыг a, b, c, d, e, f үсэгт тааруулан сонгоно уу.\n2. Схем дэх бодис (g)-ын дугаарыг хариултын хүснэгтээс сонгоорой.\n3. Схем дэх нийт 8 урвал дундаас исэлдэх урвалын тоо (h)-ийг тоолно уу.",
+          "parts": [
+            {
+              "id": "a",
+              "prompt": "Урвал 1",
+              "answer": "4",
+              "points": 1,
+              "explanation": "Радикал халалцах (гэрэл)."
+            },
+            {
+              "id": "b",
+              "prompt": "Урвал 2",
+              "answer": "3",
+              "points": 1,
+              "explanation": "Спиртийн шүлтэд HX салж алкен үүснэ (элиминаци)."
+            },
+            {
+              "id": "c",
+              "prompt": "Урвал 3",
+              "answer": "9",
+              "points": 1,
+              "explanation": "Усан шүлтэд нуклеофиль орлох – спирт."
+            },
+            {
+              "id": "d",
+              "prompt": "Урвал 4",
+              "answer": "1",
+              "points": 1,
+              "explanation": "Конц H₂SO₄-аар ус салгана (элиминаци)."
+            },
+            {
+              "id": "e",
+              "prompt": "Урвал 5",
+              "answer": "7",
+              "points": 1,
+              "explanation": "Алкенд HX нэгдэнэ."
+            },
+            {
+              "id": "f",
+              "prompt": "Урвал 6",
+              "answer": "0",
+              "points": 1,
+              "explanation": "Хоёрдогч спирт кетон болно."
+            },
+            {
+              "id": "g",
+              "prompt": "бодис (g)",
+              "answer": "8",
+              "points": 1,
+              "explanation": "g = C₆H₁₀O (циклогексанон)."
+            },
+            {
+              "id": "h",
+              "prompt": "исэлдэх урвалын тоо",
+              "answer": "1",
+              "points": 1,
+              "explanation": "Зөвхөн урвал 6."
+            }
+          ],
+          "provisional": true,
+          "figure": {
+            "path": "images/mock-01/task-2-4.svg",
+            "alt": "Органик хими",
+            "origin": "Original SVG authored by Claude Code (Claude Opus 5.5)."
+          }
+        }
+      ]
+    }
+  ]
+}

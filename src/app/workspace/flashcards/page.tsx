@@ -1,10 +1,6 @@
-import type { Metadata } from "next";
-import { requireUser } from "@/lib/session";
-import { Flashcards } from "@/modules/flashcards/client";
+import { redirect } from "next/navigation";
 
-export const metadata: Metadata = { title: "Флашкарт" };
-
-export default async function FlashcardsPage() {
-  const user = await requireUser("/workspace/flashcards");
-  return <Flashcards userKey={user.id} />;
+// Flashcards became the saved vocabulary bank on 2026-11-09. Keep old links working.
+export default function FlashcardRedirect() {
+  redirect("/workspace/vocabulary");
 }

@@ -7,6 +7,8 @@ import { activeTimedSitting } from "@/modules/exams/active-sitting";
 import { makeReport } from "@/modules/exams/engine";
 import type { ExamQuestion, ExamState } from "@/modules/exams/types";
 import { deepseekChat } from "@/modules/tutor/provider";
+import { chargeCredits } from "@/modules/credits/service";
+import { AI_ACTIONS } from "@/modules/credits/pricing";
 import { tutorDay } from "@/modules/tutor/contracts";
 import { chatMessages, validChatInput, WORKSPACE_AI_DAILY_LIMIT, type ChatSubject, type ChatTarget, type ReviewContext } from "./chat-contract";
 
@@ -57,16 +59,20 @@ export async function workspaceChatReply(userId: string, body: unknown) {
   if (!process.env.DEEPSEEK_API_KEY?.trim()) throw new ApiError(503, "AI туслах одоогоор холбогдоогүй байна.");
   const db = getDb(), now = Date.now();
   const key = `education-workspace-ai:${userId}:${tutorDay(now)}`;
-  await db.rateLimit.upsert({ where: { key }, create: { id: randomUUID(), key, count: 0, lastRequest: BigInt(0) }, update: {} });
-  // Database compare-and-set: a daily budget and one request in flight, across every server instance.
-  const reserved = await db.rateLimit.updateMany({ where: { key, count: { lt: WORKSPACE_AI_DAILY_LIMIT }, lastRequest: { lte: BigInt(now) } }, data: { count: { increment: 1 }, lastRequest: BigInt(now + LEASE_MS) } });
-  if (!reserved.count) throw new ApiError(429, `AI хүсэлт боловсруулж байна эсвэл өдрийн ${WORKSPACE_AI_DAILY_LIMIT} хүсэлтийн хязгаарт хүрсэн. Түр хүлээгээд дахин оролдоно уу.`);
-  try {
-    const message = await deepseekChat(chatMessages(body, review), 2000);
-    // Another tab may have started a timed exam while the provider was answering.
-    await ensureNoTimedExam(userId);
-    return { message, provider: "DeepSeek" };
-  } finally {
-    await db.rateLimit.update({ where: { key }, data: { lastRequest: BigInt(Date.now() + 3000) } });
-  }
+  const action = review ? "review-coach" : "chat";
+  // Credits are held first and refunded if the daily budget, the provider or the exam check fails.
+  return chargeCredits(userId, action, async meter => {
+    await db.rateLimit.upsert({ where: { key }, create: { id: randomUUID(), key, count: 0, lastRequest: BigInt(0) }, update: {} });
+    // Database compare-and-set: a daily budget and one request in flight, across every server instance.
+    const reserved = await db.rateLimit.updateMany({ where: { key, count: { lt: WORKSPACE_AI_DAILY_LIMIT }, lastRequest: { lte: BigInt(now) } }, data: { count: { increment: 1 }, lastRequest: BigInt(now + LEASE_MS) } });
+    if (!reserved.count) throw new ApiError(429, `AI хүсэлт боловсруулж байна эсвэл өдрийн ${WORKSPACE_AI_DAILY_LIMIT} хүсэлтийн хязгаарт хүрсэн. Түр хүлээгээд дахин оролдоно уу.`);
+    try {
+      const message = await deepseekChat(chatMessages(body, review), AI_ACTIONS[action].outputTokens, meter);
+      // Another tab may have started a timed exam while the provider was answering.
+      await ensureNoTimedExam(userId);
+      return { message, provider: "DeepSeek" };
+    } finally {
+      await db.rateLimit.update({ where: { key }, data: { lastRequest: BigInt(Date.now() + 3000) } });
+    }
+  });
 }

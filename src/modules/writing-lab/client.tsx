@@ -5,6 +5,7 @@ import {countParagraphs,countWords,findWritingPrompt,MIN_WORDS,writingPrompts,wr
 import {SpellEditor} from "./spell-editor";
 import {blankDraft,getServerStudio,getStudio,subscribeStudio,updateStudio,type Draft} from "./progress";
 import styles from "./writing.module.css";
+import {CreditCost,useCredits} from "@/modules/credits/client";
 
 const KIND_LABEL:Record<WritingKind,string>={grammar:"Дүрэм",spelling:"Үсэг",punctuation:"Цэг тэмдэг",vocabulary:"Үг",style:"Найруулга"};
 const BUSY_LABEL:Record<WritingAction,string>={ideas:"Санаа боловсруулж байна",grammar:"Дүрэм шалгаж байна",feedback:"Бүрэн үнэлгээ хийж байна · ~20 сек"};
@@ -40,6 +41,7 @@ export function WritingStudio({signedIn}:{signedIn:boolean}) {
  const task=studio.task,info=writingTasks[task],draft=studio.drafts[task]??blankDraft(task);
  const prompt=draft.promptId?findWritingPrompt(draft.promptId):undefined;
  const [busy,setBusy]=useState<WritingAction|null>(null);
+ const {apply:applyCredits}=useCredits();
  const [error,setError]=useState("");
  const [view,setView]=useState<"write"|"marks">("write");
  const [tab,setTab]=useState<"fixes"|"words"|"summary">("fixes");
@@ -80,6 +82,7 @@ export function WritingStudio({signedIn}:{signedIn:boolean}) {
    const response=await fetch("/api/labs/ielts-writing",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({task,promptId:draft.promptId,topic:task==="free"?draft.topic:"",essay,action,language:studio.language})});
    const data=await response.json().catch(()=>({}));
    if(!response.ok){setError(typeof data.error==="string"?data.error:"Түр алдаа гарлаа. Дахин оролдоно уу.");return;}
+   applyCredits(data);
    const result:WritingReply={fixes:data.fixes??[],words:data.words??[],report:data.report??null,ideas:data.ideas??null};
    updateStudio(s=>{
     const current=s.drafts[task]??blankDraft(task);
@@ -148,8 +151,8 @@ export function WritingStudio({signedIn}:{signedIn:boolean}) {
      </div>
      <div className={styles.actions}>
       {signedIn?<>
-       <button type="button" className={styles.secondary} disabled={!!busy} onClick={()=>void run("grammar")}>Дүрэм шалгах</button>
-       <button type="button" className={styles.primary} disabled={!!busy} onClick={()=>void run("feedback")} title="Ctrl + Enter">{busy==="feedback"?"Үнэлж байна…":"Бүрэн үнэлгээ"}<kbd>⌃↵</kbd></button>
+       <button type="button" className={styles.secondary} disabled={!!busy} onClick={()=>void run("grammar")}>Дүрэм шалгах <CreditCost action="writing-grammar" compact/></button>
+       <button type="button" className={styles.primary} disabled={!!busy} onClick={()=>void run("feedback")} title="Ctrl + Enter">{busy==="feedback"?"Үнэлж байна…":"Бүрэн үнэлгээ"} <CreditCost action="writing-feedback" compact/><kbd>⌃↵</kbd></button>
       </>:<Link className={styles.primary} href="/login?next=%2Flabs%2Fielts-writing">Нэвтэрч AI-аар шалгуулах →</Link>}
      </div>
     </footer>
@@ -170,7 +173,7 @@ export function WritingStudio({signedIn}:{signedIn:boolean}) {
        <li><b>02</b><span><strong>Бич</strong>Цаг тавиад, зорилтот үгийн тоонд хүр.</span></li>
        <li><b>03</b><span><strong>Шалгуул</strong>Алдаа бүрийг нэг товшилтоор засна.</span></li>
       </ol>
-      {signedIn&&<button type="button" className={styles.secondary} onClick={()=>void run("ideas")}>✦ Санаа авах</button>}
+      {signedIn&&<button type="button" className={styles.secondary} onClick={()=>void run("ideas")}>✦ Санаа авах <CreditCost action="writing-ideas" compact/></button>}
      </div>
      :draft.action==="ideas"&&reply.ideas?<div className={styles.ideas}>
       <p className={styles.angle}>{reply.ideas.angle}</p>

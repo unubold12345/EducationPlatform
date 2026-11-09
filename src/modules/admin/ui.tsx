@@ -9,14 +9,14 @@ const adminFont = Inter({ subsets: ["latin", "cyrillic", "cyrillic-ext"], variab
 
 export const adminTabs = [
   ["overview", "Тойм"], ["users", "Хэрэглэгчид"], ["attempts", "Оролдлого"], ["subscriptions", "Сарын эрх"], ["payments", "Төлбөр"],
-  ["pricing", "Үнэ"], ["content", "Контент"], ["audit", "Үйлдлийн түүх"], ["settings", "Систем"],
+  ["pricing", "Үнэ"], ["credits", "AI кредит"], ["content", "Контент"], ["audit", "Үйлдлийн түүх"], ["settings", "Систем"],
 ] as const;
 export type AdminTab = typeof adminTabs[number][0];
 
 // The sidebar groups, plus one plain line saying what each section is for.
 export const adminGroups: readonly { label: string; tabs: readonly AdminTab[] }[] = [
   { label: "Хүмүүс", tabs: ["users", "attempts"] },
-  { label: "Орлого", tabs: ["subscriptions", "payments", "pricing"] },
+  { label: "Орлого", tabs: ["subscriptions", "payments", "pricing", "credits"] },
   { label: "Агуулга", tabs: ["content"] },
   { label: "Хяналт", tabs: ["audit", "settings"] },
 ];
@@ -26,7 +26,8 @@ export const adminTabInfo: Record<AdminTab, string> = {
   attempts: "Суралцагчдын эхлүүлсэн шалгалт. Зөвхөн харна.",
   subscriptions: "Хэн аль багцыг хэдий хүртэл эзэмшиж байгаа.",
   payments: "Багц болон нэг шалгалтын төлбөрийн гүйлгээ.",
-  pricing: "Сарын багцын үнийг өөрчилнө.",
+  pricing: "Сарын багцын үнэ, AI кредитийн сарын хэмжээг өөрчилнө.",
+  credits: "AI-ийн зарцуулалт: кредит, бодит DeepSeek зардал, үйлдэл ба хэрэглэгчээр.",
   content: "Шалгалт, workshop-ын асуулт, хариуг засна.",
   audit: "Админууд юу хийсэн, ямар шалтгаанаар.",
   settings: "Серверийн ачаалал, өгөгдлийн сангийн төлөв.",
@@ -37,7 +38,7 @@ export const statusLabel = (value: string) => ({ PAID: "Төлөгдсөн", PEN
 export const eventLabel = (value: string) => ({ "sign-in": "Нэвтэрсэн", "sign-up": "Бүртгүүлсэн", "password-change": "Нууц үг сольсон" }[value] ?? value);
 export const auditActions: readonly (readonly [string, string])[] = [
   ["grant-month", "Сарын эрх олгосон"], ["expire-plan", "Сарын эрх дуусгасан"], ["revoke-sessions", "Төхөөрөмжөөс гаргасан"],
-  ["suspend", "Бүртгэл хаасан"], ["unsuspend", "Хаалт цуцалсан"], ["add-note", "Тэмдэглэл нэмсэн"], ["set-price", "Үнэ өөрчилсөн"],
+  ["suspend", "Бүртгэл хаасан"], ["unsuspend", "Хаалт цуцалсан"], ["add-note", "Тэмдэглэл нэмсэн"], ["set-price", "Үнэ өөрчилсөн"], ["grant-credits", "AI кредит олгосон"], ["set-credits", "AI кредитийн хэмжээ өөрчилсөн"],
   ["content-fix", "Асуулт зассан"], ["content-save", "Ноорог хадгалсан"], ["content-review", "Ноорог хянасан"], ["content-publish", "Контент нийтэлсэн"], ["review-content", "Хяналтын төлөв өөрчилсөн"],
 ];
 export const auditLabel = (action: string) => auditActions.find(([key]) => key === action)?.[1] ?? action;

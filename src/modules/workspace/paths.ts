@@ -9,11 +9,11 @@ export function inWorkspace(pathname: string) {
   return false;
 }
 
-export type WorkspaceTab = "home" | "chat" | "flashcards" | "myexams" | "exams" | "review" | "workshop" | "plans" | "profile";
+export type WorkspaceTab = "home" | "chat" | "vocabulary" | "myexams" | "exams" | "review" | "workshop" | "plans" | "profile";
 export function workspaceTab(pathname: string): WorkspaceTab | null {
   if (pathname === "/workspace") return "home";
   if (pathname.startsWith("/workspace/chat")) return "chat";
-  if (pathname.startsWith("/workspace/flashcards")) return "flashcards";
+  if (pathname.startsWith("/workspace/vocabulary") || pathname.startsWith("/workspace/flashcards")) return "vocabulary";
   if (pathname.startsWith("/workspace/my-exams")) return "myexams";
   if (pathname.startsWith("/workspace/review")) return "review";
   if (pathname.startsWith("/workspace/workshop")) return "workshop";

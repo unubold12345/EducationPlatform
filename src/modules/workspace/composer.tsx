@@ -2,6 +2,7 @@
 import { useEffect, useId, useRef } from "react";
 import { Icon, type IconName } from "./icons";
 import { CHAT_LIMITS, CHAT_MODES, CHAT_SUBJECTS, modeLabels, subjectLabels, type ChatMode, type ChatSubject } from "./chat-contract";
+import { CreditCost } from "@/modules/credits/client";
 
 const modeIcons: Record<ChatMode, IconName> = { ask: "chat", solve: "bolt", explain: "spark", quiz: "check", writing: "pen", vocab: "exam" };
 
@@ -47,6 +48,7 @@ export function Composer({ state, onChange, onSubmit, pending = false, docked = 
         </select><Icon name="chevron" size={16} />
       </label>
       {state.text.length > CHAT_LIMITS.message - 300 ? <span className="wsp-count">{state.text.length} / {CHAT_LIMITS.message}</span> : null}
+      <CreditCost action="chat" />
       <button type="submit" className="wsp-send" disabled={!ready}><span>{pending ? "Бичиж байна…" : "Илгээх"}</span><Icon name="send" size={18} /></button>
     </div>
   </form>;

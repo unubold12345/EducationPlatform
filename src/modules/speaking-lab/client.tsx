@@ -12,6 +12,7 @@ import {
 } from "./contracts";
 import {getProgress,getServerProgress,removePhrase,savePhrase,subscribeProgress,updateProgress} from "./progress";
 import {SpeakingReportView,Trend,type SessionStats} from "./report";
+import {CreditCost,useCredits} from "@/modules/credits/client";
 
 type Turn={id:number;role:"user"|"assistant";content:string;part:SpeakingPart;tip?:SpeakingTip|null;cue?:SpeakingCue|null;stats?:AnswerStats|null};
 type Status="idle"|"thinking"|"voicing"|"speaking"|"listening"|"transcribing"|"reporting";
@@ -92,6 +93,7 @@ export function SpeakingLab({signedIn}:{signedIn:boolean}) {
  const energy=useRef(0),player=useRef<VoicePlayer|null>(null),recorder=useRef<RecorderHandle|null>(null);
  const turnsRef=useRef<Turn[]>([]),statusRef=useRef<Status>("idle"),busy=useRef(false),sessionRun=useRef(0),speechRun=useRef(0),ids=useRef(0),startPart=useRef<SpeakingPart>(1);
  const chatAbort=useRef<AbortController|null>(null),voiceAbort=useRef<AbortController|null>(null),transcribeAbort=useRef<AbortController|null>(null);
+ const {apply}=useCredits();
  const deviceStop=useRef<(()=>void)|null>(null),cancelStart=useRef(false),levelRing=useRef<HTMLDivElement>(null),transcript=useRef<HTMLDivElement>(null),answerBox=useRef<HTMLTextAreaElement>(null);
  const settingsRef=useRef<Settings>(DEFAULTS),phaseRef=useRef<"setup"|"session"|"report">("setup"),micConsentRef=useRef(false);
  const keys=useRef<{space:()=>void;escape:()=>void}>({space:()=>{},escape:()=>{}});
@@ -175,6 +177,7 @@ export function SpeakingLab({signedIn}:{signedIn:boolean}) {
   const response=await fetch(CHAT_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body),signal:AbortSignal.any([controller.signal,AbortSignal.timeout(action==="report"?175000:70000)])});
   const data=await response.json().catch(()=>({error:"Your partner couldn’t reply."}));
   if(!response.ok)throw new Error(data.error||"Your partner couldn’t reply.");
+  apply(data);
   return run===sessionRun.current?data as SpeakingReply:null;
  }
 
@@ -389,10 +392,10 @@ export function SpeakingLab({signedIn}:{signedIn:boolean}) {
     {phase==="setup"&&renderSetup()}
     {phase==="session"&&<div className="sl-session">
      <div className="sl-session-head">
-      <div><strong>{speakingTopics[settings.topic]}</strong><span>Target {settings.target}</span></div>
+      <div><strong>{speakingTopics[settings.topic]}</strong><span>Target {settings.target}</span><CreditCost action="speaking-turn" english suffix="per reply"/></div>
       <div>
        <button type="button" className="sl-icon" aria-pressed={!settings.voiceOn} aria-label={settings.voiceOn?`Mute ${name}`:`Unmute ${name}`} title={settings.voiceOn?"Mute":"Unmute"} onClick={()=>{if(settings.voiceOn)stopVoice();update({voiceOn:!settings.voiceOn});}}>{settings.voiceOn?<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Z"/></svg>:<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.6-.4-1.4 1.4 2 2-2 2 1.4 1.4 2-2 2 2 1.4-1.4-2-2 2-2-1.4-1.4-2 2-2-2Z"/></svg>}</button>
-       <button type="button" className="button secondary sl-small" disabled={working||lastUserIndex<0} onClick={()=>void finishSession()}>Finish & report</button>
+       <button type="button" className="button secondary sl-small" disabled={working||lastUserIndex<0} onClick={()=>void finishSession()}>Finish & report <CreditCost action="speaking-report" english compact/></button>
       </div>
      </div>
      <div className="sl-transcript" ref={transcript} role="log" aria-label="Conversation">
@@ -488,6 +491,7 @@ export function SpeakingLab({signedIn}:{signedIn:boolean}) {
    </div>
    {error&&<p className="error-message" role="alert">{error}</p>}
    <button type="button" className="button primary sl-start" disabled={!consent||status==="thinking"} onClick={()=>void startSession()}>{status==="thinking"?`Calling ${chosen.label}…`:settings.mode==="mock"?"Start mock test →":"Start practice →"}</button>
+   <p className="sl-credit-note" style={{display:"flex",flexWrap:"wrap",justifyContent:"center",gap:8,margin:"10px 0 0"}}><CreditCost action="speaking-turn" english suffix="per partner reply"/> <CreditCost action="speaking-report" english suffix="for the report"/></p>
    {(progress.entries.length>0||progress.phrases.length>0)&&<div className="sl-progress">
     {progress.entries.length>0&&<div><h3>Recent sessions</h3><Trend entries={progress.entries}/>{progress.entries.length===1&&<p className="sl-muted">First report: {progress.entries[0].overall} — come back tomorrow to see your trend.</p>}</div>}
     {progress.phrases.length>0&&<details><summary>Your phrasebook ({progress.phrases.length})</summary><ul>{progress.phrases.slice().reverse().map(p=><li key={p.id}><strong>{p.text}</strong><small>{p.note}</small><button type="button" className="sl-icon" aria-label={`Remove ${p.text}`} onClick={()=>removePhrase(p.id)}>×</button></li>)}</ul></details>}

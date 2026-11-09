@@ -168,7 +168,7 @@ with sync_playwright() as p:
         assert data["stage"]["id"]==stage_id,(stage_id,data["stage"]["id"])
         answers=fixture("answers",ielts_id)
         if stage_id=="ielts-writing":
-            answers["responses"]={"iw1":"This is a response for human review. "*30,"iw2":"This discussion needs a qualified human assessment. "*50}
+            answers["responses"]={list(answers["responses"])[0]:"This is a response for human review. "*30,list(answers["responses"])[1]:"This discussion needs a qualified human assessment. "*50}
         r=context.request.patch(endpoint,headers=ORIGIN,data={"revision":data["revision"],"stageId":stage_id,"responses":answers["responses"],"flags":[]})
         assert r.status==200,(stage_id,r.status)
         page.goto(BASE+"/exams/attempts/"+ielts_id)

@@ -201,7 +201,7 @@ body:has(.admin-page) .header-inner { max-width: none; }
 
 .admin-user-actions, .admin-price { display: grid; gap: 10px; }
 .admin-user-actions label, .admin-price label, .admin-fix-form label { display: grid; gap: 5px; color: var(--ink); font-size: 13.5px; font-weight: 500; }
-.admin-user-actions select, .admin-user-actions textarea, .admin-price input, .admin-fix-form textarea, .admin-fix-form input, .admin-fix-form select, .admin-fixer-bar input { width: 100%; min-width: 0; min-height: 40px; padding: 8px 12px; border: 1px solid var(--ws-line, var(--line)); border-radius: 10px; background: var(--ws-inset, var(--surface)); color: var(--ink); font: inherit; font-size: 14px; font-weight: 400; }
+.admin-user-actions select, .admin-user-actions textarea, .admin-user-actions input, .admin-price input, .admin-fix-form textarea, .admin-fix-form input, .admin-fix-form select, .admin-fixer-bar input { width: 100%; min-width: 0; min-height: 40px; padding: 8px 12px; border: 1px solid var(--ws-line, var(--line)); border-radius: 10px; background: var(--ws-inset, var(--surface)); color: var(--ink); font: inherit; font-size: 14px; font-weight: 400; }
 .admin-user-actions textarea, .admin-fix-form textarea { min-height: 76px; }
 .admin-fix-form input[type="radio"] { width: 16px; min-height: 0; }
 .admin-user-actions .button, .admin-price .button, .admin-fix-form .button { justify-self: start; }
@@ -212,6 +212,13 @@ body:has(.admin-page) .header-inner { max-width: none; }
 /* ---------- Prices ---------- */
 
 .admin-prices { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 0 0 8px; }
+.admin-credit-allowances { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+/* Overview: this month's AI spending as one link row under the metrics. */
+.admin-ai-strip { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 18px; margin: -6px 0 20px; padding: 14px 18px; border: 1px solid var(--ws-line); border-radius: 14px; background: var(--ws-card); color: var(--muted); font-size: 13.5px; }
+.admin-ai-strip > span:first-child { font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+.admin-ai-strip strong { color: var(--ink); font-size: 17px; font-variant-numeric: tabular-nums; }
+.admin-ai-strip em { margin-left: auto; color: var(--blue); font-style: normal; font-weight: 600; }
+.admin-ai-strip:hover { border-color: color-mix(in srgb, var(--blue) 40%, var(--ws-line)); }
 .admin-price { padding: 18px; border: 1px solid var(--ws-line); border-radius: 14px; background: var(--ws-card); }
 .admin-price > div strong { display: block; font-size: 15px; font-weight: 600; }
 .admin-price > div small { color: var(--muted); font-size: 13px; }

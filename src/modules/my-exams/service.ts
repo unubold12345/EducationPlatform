@@ -1,11 +1,13 @@
 import "server-only";
 import { randomUUID } from "node:crypto";
 import { getDb } from "@/lib/db";
+import { chargeCredits } from "@/modules/credits/service";
+import { AI_ACTIONS, examCreditAction, type UsageMeter } from "@/modules/credits/pricing";
 import { ApiError } from "@/lib/api";
 import { activeTimedSitting } from "@/modules/exams/active-sitting";
 import { tutorDay } from "@/modules/tutor/contracts";
-import { cleanSourceText, displayFileName } from "@/modules/flashcards/contracts";
-import { detectSource, extractDocument } from "@/modules/flashcards/extract";
+import { cleanSourceText, displayFileName } from "@/modules/documents/text";
+import { detectSource, extractDocument } from "@/modules/documents/extract";
 import {
   MY_EXAM_LIMITS, examMessages, gradeExam, isExamCount, isExamLanguage, parseGeneratedExam, publicExam, suggestedSeconds,
   type ExamCount, type ExamLanguage, type ExamGrade, type GeneratedExam, type PublicExam,
@@ -81,6 +83,8 @@ export async function createMyExam(userId: string, request: Request): Promise<Ex
   if (!process.env.BETTER_AUTH_SECRET?.trim()) throw new ApiError(503, "Шалгалт хамгаалах түлхүүр тохируулаагүй байна.");
 
   const db = getDb(), now = Date.now(), limitKey = `education-my-exams:${userId}:${tutorDay(now)}`, lease = BigInt(now + LEASE_MS);
+  // Credits are held first and refunded on any failure, including a file with too little text.
+  return chargeCredits(userId, examCreditAction(count), async meter => {
   await db.rateLimit.upsert({ where: { key: limitKey }, create: { id: randomUUID(), key: limitKey, count: 0, lastRequest: BigInt(0) }, update: {} });
   // Database CAS enforces a daily budget and one request in flight across every server instance.
   const reserved = await db.rateLimit.updateMany({
@@ -98,7 +102,7 @@ export async function createMyExam(userId: string, request: Request): Promise<Ex
     let exam: GeneratedExam | null = null;
     // One silent retry when the model returns a malformed or too-short exam; the daily count is charged once.
     for (let attempt = 0; attempt < 2 && !exam; attempt++) {
-      exam = parseGeneratedExam(await deepseekExam(messages, count), { count, fallbackTitle: titleFromFile(name) });
+      exam = parseGeneratedExam(await deepseekExam(messages, count, meter), { count, fallbackTitle: titleFromFile(name) });
     }
     if (!exam) throw new ApiError(503, "AI шалгалт үүсгэж чадсангүй. Дахин оролдоно уу.");
     // Another tab may start a timed exam while the provider is answering.
@@ -127,6 +131,7 @@ export async function createMyExam(userId: string, request: Request): Promise<Ex
     // Only release the lease this request holds; never shorten another request's lease.
     await db.rateLimit.updateMany({ where: { key: limitKey, lastRequest: lease }, data: { lastRequest: BigInt(Date.now() + 3000) } });
   }
+  });
 }
 
 /** Read the exact grade request shape; unknown fields are rejected before any decryption. */
@@ -169,8 +174,8 @@ export function gradeMyExam(userId: string, body: unknown): { title: string; gra
   return { title: exam.title, gradedAt: Date.now(), ...grade };
 }
 
-/** DeepSeek JSON mode, mirroring the flashcards provider rules but with the exam output budget. */
-async function deepseekExam(messages: ReturnType<typeof examMessages>, count: ExamCount) {
+/** DeepSeek JSON mode, mirroring the vocabulary import rules but with the exam output budget. */
+async function deepseekExam(messages: ReturnType<typeof examMessages>, count: ExamCount, meter: UsageMeter) {
   const key = process.env.DEEPSEEK_API_KEY?.trim();
   if (!key) throw new ApiError(503, "AI шалгалт үүсгэгч одоогоор холбогдоогүй байна.");
   let response: Response;
@@ -183,7 +188,7 @@ async function deepseekExam(messages: ReturnType<typeof examMessages>, count: Ex
         messages,
         thinking: { type: "disabled" },
         // 10 questions should not reserve the whole output budget; 20 need room for explanations.
-        max_tokens: Math.min(8000, 1600 + count * 320),
+        max_tokens: AI_ACTIONS[examCreditAction(count)].outputTokens,
         temperature: 0.35,
         response_format: { type: "json_object" },
         stream: false,
@@ -196,7 +201,8 @@ async function deepseekExam(messages: ReturnType<typeof examMessages>, count: Ex
   // Never echo provider error bodies: they can contain request or credential details.
   if (!response.ok) throw new ApiError(503, response.status === 429 ? "AI ачаалалтай байна. Түр хүлээгээд дахин оролдоно уу." : "AI холболт түр ажиллахгүй байна. Дахин оролдоно уу.");
   try {
-    const data = await response.json() as { choices?: { finish_reason?: string; message?: { content?: unknown } }[] };
+    const data = await response.json() as { choices?: { finish_reason?: string; message?: { content?: unknown } }[]; usage?: unknown };
+    meter.add(data.usage);
     const choice = data.choices?.[0];
     const content = choice?.message?.content;
     if (choice?.finish_reason !== "stop" || typeof content !== "string" || !content.trim() || content.length > 80_000) throw new Error("Invalid completion");

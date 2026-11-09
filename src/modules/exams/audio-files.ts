@@ -1,3 +1,5 @@
+import revisedData from "./ielts-audio-v2.json" with { type: "json" };
+const revisedAudio=revisedData as Record<string,{prefix:string;seconds:number[]}>;
 import jlptData from './jlpt/audio-catalog.json' with { type: 'json' };
 const jlptAudio = jlptData as Record<string,{seconds:number[];questions:Record<string,{start:number;end:number;part:number}>}>;
 export function jlptQuestionAudio(slug:string,id:string) { return Object.hasOwn(jlptAudio,slug)?jlptAudio[slug].questions[id]:undefined; }
@@ -20,20 +22,21 @@ const listeningSeconds:Record<string,readonly number[]>={
   "ielts-06":[275.42,299.85,356.66,295.35],
 };
 const prefixOf=(slug:string)=>Object.hasOwn(listeningFiles,slug)?listeningFiles[slug]:undefined;
-// Exact allowlist keeps user input out of filesystem paths. Existing snapshots retain Mock 01 audio.
-export function listeningFile(slug:string,part:number):string|undefined {
+// Exact allowlist keeps user input out of filesystem paths. A snapshot explicitly selects its original audio revision.
+export function listeningFile(slug:string,part:number,version=2):string|undefined {
   if(Object.hasOwn(jlptAudio,slug))return Number.isInteger(part)&&part>=1&&part<=4?`${slug}-part-${part}.mp3`:undefined;
-  const prefix=prefixOf(slug);
+  const prefix=version>=2&&Object.hasOwn(revisedAudio,slug)?revisedAudio[slug].prefix:prefixOf(slug);
   return prefix&&Number.isInteger(part)&&part>=1&&part<=4?`${prefix}-part-${part}.mp3`:undefined;
 }
-export function listeningParts(slug:string):readonly number[] {
+export function listeningParts(slug:string,version=2):readonly number[] {
   if(Object.hasOwn(jlptAudio,slug))return jlptAudio[slug].seconds;
+  if(version>=2&&Object.hasOwn(revisedAudio,slug))return revisedAudio[slug].seconds;
   const prefix=prefixOf(slug);
   return prefix?listeningSeconds[prefix]:[450,450,450,450];
 }
 // Which part is playing at `elapsed` stage seconds and where inside it; `ended` once the last part is over.
-export function listeningPosition(slug:string,elapsed:number):{part:number;offset:number;ended:boolean} {
-  const parts=listeningParts(slug);let start=0;
+export function listeningPosition(slug:string,elapsed:number,version=2):{part:number;offset:number;ended:boolean} {
+  const parts=listeningParts(slug,version);let start=0;
   for(let index=0;index<parts.length;index++){
     if(elapsed<start+parts[index])return {part:index+1,offset:Math.max(0,elapsed-start),ended:false};
     start+=parts[index];

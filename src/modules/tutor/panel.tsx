@@ -4,11 +4,15 @@ import { createPortal } from "react-dom";
 import Link from "next/link";
 import type { TutorInput, TutorTarget, TutorTurn } from "./contracts";
 import styles from "./tutor.module.css";
+import { CreditCost, useCredits } from "@/modules/credits/client";
+import type { AiAction } from "@/modules/credits/pricing";
 
 type Phase = "closed" | "open" | "closing";
 type Action = TutorInput["action"];
 export type AssistantConfig = {
   url: string; payload: Record<string, unknown>; label: string; greeting: string; note: string; placeholder?: string;
+  // The AI credit price list entry this assistant is charged at; shown beside the composer.
+  credits: AiAction;
   suggestions: [Action, string][];
   // Practice keeps the question readable beside the chat; review dims the page behind it.
   plain?: boolean;
@@ -21,7 +25,7 @@ type TurnUpdate = (update: (current: TutorTurn[]) => TutorTurn[]) => void;
 export function AiAssistant({target,review=false,label}:{target:TutorTarget;review?:boolean;label:string}) {
   const [turns,setTurns]=useState<TutorTurn[]>([]);
   return <AssistantButton turns={turns} setTurns={setTurns} config={{
-    url:"/api/math-tutor",payload:{target},label,
+    url:"/api/math-tutor",payload:{target},label,credits:"math-tutor",
     greeting:review?"Энэ бодлогын хариугаа хамт ойлгоё. Юу нь эргэлзээтэй байна?":"Сайн уу! Энэ бодлогоор хаана гацаж байна?",
     note:"Илгээхэд энэ бодлого, таны хариу AI руу очно.",
     suggestions:[[review?"review":"hint",review?"Алдаагаа тайлбарлуулах":"Санаа өгөх"],["explain","Алхам алхмаар"],["followup","Бататгах асуулт"]],
@@ -50,6 +54,7 @@ function Drawer({phase,config,turns,setTurns,onClose}:{phase:Phase;config:Assist
   const titleId=useId(),input=useRef<HTMLTextAreaElement>(null),log=useRef<HTMLDivElement>(null),busy=useRef(false);
   const [language,setLanguage]=useState<"mn"|"en">("mn"),[text,setText]=useState(""),[pending,setPending]=useState(false),[error,setError]=useState(""),[login,setLogin]=useState(false);
   const closeRef=useRef(onClose);
+  const {apply}=useCredits();
   useEffect(()=>{closeRef.current=onClose;});
   useEffect(()=>{
     input.current?.focus();
@@ -69,6 +74,7 @@ function Drawer({phase,config,turns,setTurns,onClose}:{phase:Phase;config:Assist
       const data=await response.json();
       if(response.status===401)setLogin(true);
       if(!response.ok)throw Error(data.error||"AI хариу ирсэнгүй.");
+      apply(data);
       setTurns(current=>[...current.slice(-10),{role:"user",content:message},{role:"assistant",content:data.message}]);setText("");
     }catch(reason){setError(reason instanceof Error&&reason.name!=="TimeoutError"?reason.message:"Хариу удаж байна. Түр хүлээгээд дахин оролдоно уу.");}
     finally{busy.current=false;setPending(false);}
@@ -94,7 +100,7 @@ function Drawer({phase,config,turns,setTurns,onClose}:{phase:Phase;config:Assist
           <textarea ref={input} aria-label="Таны асуулт" rows={1} maxLength={1000} value={text} onChange={event=>setText(event.target.value)} onKeyDown={event=>{if(event.key==="Enter"&&!event.shiftKey){event.preventDefault();if(text.trim())void ask("ask");}}} placeholder={config.placeholder??"Асуултаа бичих…"} disabled={pending}/>
           <button type="submit" aria-label="Илгээх" disabled={pending||!text.trim()}>↑</button>
         </form>
-        <p className={styles.note}>{config.note}</p>
+        <p className={styles.note}>{config.note} <CreditCost action={config.credits}/></p>
       </footer>
     </div>
   </div>;

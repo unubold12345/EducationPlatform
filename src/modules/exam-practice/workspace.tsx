@@ -177,7 +177,7 @@ export function PracticeWorkspace({initial,speakingLab,initialSection}:{initial:
   const optionContent=(option:string)=>jlpt?<JapaneseText text={option} readings={readings}/>:mathPaper?<MathFormula text={option}/>:form.subject==="eesh-english"?<RichText text={option}/>:option;
 
   const assistant:AssistantConfig={
-    url:url+"/assistant",payload:{questionId:question.id},plain:true,beforeSend:flush,
+    url:url+"/assistant",payload:{questionId:question.id},plain:true,beforeSend:flush,credits:"practice-assistant",
     label:section.title+" · "+(person?"Даалгавар ":"Асуулт ")+question.label,
     greeting:person?"Сайн уу! Санаа, бүтэц эсвэл бичсэн зүйлийнхээ талаар асуугаарай.":reveal?"Энэ асуултыг хамт ойлгоё. Юу нь эргэлзээтэй байна?":"Сайн уу! Хариуг шууд хэлэхгүй, харин өөрөө олоход тань тусална.",
     note:"Илгээхэд энэ даалгавар, таны хадгалсан хариу AI руу очно. Албан ёсны үнэлгээ биш.",

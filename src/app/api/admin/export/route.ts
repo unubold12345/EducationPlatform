@@ -12,6 +12,7 @@ export async function GET(request:Request) {
     if(kind==="users")rows=await db.user.findMany({where:scope,take,orderBy:{createdAt:"desc"},select:{id:true,name:true,email:true,createdAt:true}});
     else if(kind==="subscriptions")rows=await db.subscription.findMany({where:{user:scope},take,orderBy:{createdAt:"desc"},select:{id:true,userId:true,program:true,startsAt:true,endsAt:true}});
     else if(kind==="payments")rows=await db.subscriptionOrder.findMany({where:{...(testData?{provider:"MOCK"}:{user:scope,...realPaymentScope})},take,orderBy:{createdAt:"desc"},select:{id:true,userId:true,program:true,amountMnt:true,currency:true,provider:true,status:true,createdAt:true}});
+    else if(kind==="credits")rows=(await db.creditCharge.findMany({where:{user:scope},take,orderBy:{createdAt:"desc"},select:{id:true,userId:true,period:true,action:true,credits:true,status:true,promptTokens:true,cachedTokens:true,completionTokens:true,costMicroUsd:true,createdAt:true,settledAt:true}}));
     else if(kind==="audit")rows=await db.adminAudit.findMany({take,orderBy:{createdAt:"desc"},select:{id:true,actorId:true,action:true,target:true,reason:true,createdAt:true}});
     else return privateJson({error:"Экспортын төрөл буруу."},400);
     const keys=rows.length?Object.keys(rows[0]):["No records"];

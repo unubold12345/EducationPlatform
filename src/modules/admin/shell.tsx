@@ -17,6 +17,7 @@ const adminIcon: Record<AdminTab, IconName> = {
   subscriptions: "repeat",
   payments: "card",
   pricing: "tag",
+  credits: "bolt",
   content: "pen",
   audit: "clock",
   settings: "settings",

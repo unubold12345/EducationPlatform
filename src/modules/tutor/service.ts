@@ -8,6 +8,7 @@ import { makeReport } from "@/modules/exams/engine";
 import type { ExamState } from "@/modules/exams/types";
 import { validTutorInput, tutorDay, type TutorInput, type TutorContext } from "./contracts";
 import { deepseekTutor } from "./provider";
+import { chargeCredits } from "@/modules/credits/service";
 
 async function ensureNoTimedExam(userId:string) {
   if(await activeTimedSitting(userId))throw new ApiError(403,"Хугацаатай шалгалт нээлттэй байна. Шалгалтаа дуусгасны дараа AI багшийг ашиглана уу.");
@@ -30,16 +31,19 @@ export async function tutorReply(userId:string,body:unknown) {
   if(body.action==="hint"){delete context.answer;delete context.explanation;}
   if(!process.env.DEEPSEEK_API_KEY?.trim())throw new ApiError(503,"AI багш одоогоор холбогдоогүй байна.");
   const key=`education-tutor:${userId}:${tutorDay(now)}`;
-  await db.rateLimit.upsert({where:{key},create:{id:randomUUID(),key,count:0,lastRequest:BigInt(0)},update:{}});
-  // Database CAS enforces a daily budget and one in-flight request across workers.
-  const reserved=await db.rateLimit.updateMany({where:{key,count:{lt:30},lastRequest:{lte:BigInt(now)}},data:{count:{increment:1},lastRequest:BigInt(now+90000)}});
-  if(!reserved.count)throw new ApiError(429,"AI хүсэлт боловсруулж байна эсвэл өдрийн 30 хүсэлтийн хязгаарт хүрсэн. Түр хүлээгээд дахин оролдоно уу.");
-  try {
-    const message=await deepseekTutor(body,context);
-    // Another tab may start an exam while a provider response is in flight.
-    await ensureNoTimedExam(userId);
-    return {message,provider:"DeepSeek"};
-  }
-  finally {await db.rateLimit.update({where:{key},data:{lastRequest:BigInt(Date.now()+3000)}});}
+  // Credits are held first and refunded if the daily budget, the provider or the exam check fails.
+  return chargeCredits(userId,"math-tutor",async meter=>{
+    await db.rateLimit.upsert({where:{key},create:{id:randomUUID(),key,count:0,lastRequest:BigInt(0)},update:{}});
+    // Database CAS enforces a daily budget and one in-flight request across workers.
+    const reserved=await db.rateLimit.updateMany({where:{key,count:{lt:30},lastRequest:{lte:BigInt(now)}},data:{count:{increment:1},lastRequest:BigInt(now+90000)}});
+    if(!reserved.count)throw new ApiError(429,"AI хүсэлт боловсруулж байна эсвэл өдрийн 30 хүсэлтийн хязгаарт хүрсэн. Түр хүлээгээд дахин оролдоно уу.");
+    try {
+      const message=await deepseekTutor(body,context,meter);
+      // Another tab may start an exam while a provider response is in flight.
+      await ensureNoTimedExam(userId);
+      return {message,provider:"DeepSeek"};
+    }
+    finally {await db.rateLimit.update({where:{key},data:{lastRequest:BigInt(Date.now()+3000)}});}
+  });
 }
 

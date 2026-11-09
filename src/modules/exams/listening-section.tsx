@@ -16,13 +16,14 @@ type Props = {
   attemptId: string; slug: string; stage: PublicStage;
   /** Seconds into the Listening stage, or null in the answer-check stage after the audio has ended. */
   elapsed: number | null;
+  version?: number;
   answers: Record<string, string>; flags: string[]; disabled: boolean;
   onChange: (id: string, value: string) => void; onFlag: (id: string) => void;
 };
 
-export function LockedListeningPlayer({ attemptId, slug, elapsed }: { attemptId: string; slug: string; elapsed: number | null }) {
-  const lengths = listeningParts(slug);
-  const { part, offset, ended } = elapsed === null ? { part: lengths.length, offset: lengths[lengths.length - 1], ended: true } : listeningPosition(slug, elapsed);
+export function LockedListeningPlayer({ attemptId, slug, elapsed, version=1 }: { attemptId: string; slug: string; elapsed: number | null; version?:number }) {
+  const lengths = listeningParts(slug,version);
+  const { part, offset, ended } = elapsed === null ? { part: lengths.length, offset: lengths[lengths.length - 1], ended: true } : listeningPosition(slug, elapsed,version);
   const audio = useRef<HTMLAudioElement>(null), position = useRef(offset);
   const [blocked, setBlocked] = useState(false), [playing, setPlaying] = useState(false), [shown, setShown] = useState(offset);
   useEffect(() => { position.current = offset; }, [offset]);
@@ -56,9 +57,9 @@ export function LockedListeningPlayer({ attemptId, slug, elapsed }: { attemptId:
   </div>;
 }
 
-export function ListeningSection({ attemptId, slug, stage, elapsed, answers, flags, disabled, onChange, onFlag }: Props) {
+export function ListeningSection({ attemptId, slug, stage, elapsed, version=1, answers, flags, disabled, onChange, onFlag }: Props) {
   const parts = Math.ceil(stage.questions.length / PER_PART);
-  const playing = elapsed === null ? null : listeningPosition(slug, elapsed);
+  const playing = elapsed === null ? null : listeningPosition(slug, elapsed,version);
   const livePart = playing && !playing.ended ? playing.part : null;
   const [selected, setSelected] = useState(livePart ?? 1);
   // Follow the recording into each new part, as the paper does; the student can still look back.
@@ -81,7 +82,7 @@ export function ListeningSection({ attemptId, slug, stage, elapsed, answers, fla
       </nav>
 
       <section className={styles.work} aria-labelledby="listening-part-title">
-        <LockedListeningPlayer attemptId={attemptId} slug={slug} elapsed={elapsed} />
+        <LockedListeningPlayer attemptId={attemptId} slug={slug} elapsed={elapsed} version={version} />
         <p className={styles.note} role="status">{elapsed === null ? "Бичлэг дууссан. Хугацаа дуустал хариултаа шалгаж засна уу." : "Нэг удаагийн бичлэг · Зогсоох, буцаах боломжгүй · Refresh хийвэл өнгөрсөн хугацаанаас үргэлжилнэ."}</p>
 
         <div className={styles.questions}>

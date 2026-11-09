@@ -12,6 +12,7 @@ import { ScoreRing } from "./score";
 import { Markdown } from "./markdown";
 import { CHAT_LIMITS, reviewModeLabels, type ChatTurn, type ReviewMode } from "./chat-contract";
 import { programLabels } from "./programs";
+import { CreditCost, useCredits } from "@/modules/credits/client";
 
 type Review = NonNullable<PublicExamAttempt["report"]>["reviews"][number];
 type Status = "correct" | "wrong" | "blank" | "pending";
@@ -154,6 +155,7 @@ function ReviewCoach({ attemptId, review, number, kind, open, onClose, turns, se
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
   const busy = useRef(false);
+  const { apply } = useCredits();
   const log = useRef<HTMLDivElement>(null);
   const panel = useRef<HTMLElement>(null);
   useEffect(() => { log.current?.scrollTo({ top: log.current.scrollHeight, behavior: "smooth" }); }, [turns.length, pending]);
@@ -177,6 +179,7 @@ function ReviewCoach({ attemptId, review, number, kind, open, onClose, turns, se
       const response = await fetch("/api/workspace/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ mode, target: { attemptId, questionId: review.id }, language, message, history: prior }), signal: AbortSignal.timeout(80000) });
       const data = await response.json().catch(() => ({})) as { message?: string; error?: string };
       if (!response.ok || !data.message) throw new Error(data.error || "AI хариу ирсэнгүй. Дахин оролдоно уу.");
+      apply(data);
       setTurns(current => [...current, { role: "user", content: message }, { role: "assistant", content: data.message! }]);
       setText("");
     } catch (reason) {
@@ -210,7 +213,7 @@ function ReviewCoach({ attemptId, review, number, kind, open, onClose, turns, se
             onChange={event => setText(event.target.value)} onKeyDown={event => { if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) { event.preventDefault(); if (text.trim()) void ask("ask", text); } }} />
           <button type="submit" className="wsp-send is-round" disabled={pending || !text.trim()} aria-label="Илгээх"><Icon name="send" size={18} /></button>
         </form>
-        <p className="wsp-fine">Энэ асуулт, таны хариу AI руу очно · Албан ёсны үнэлгээ биш</p>
+        <p className="wsp-fine">Энэ асуулт, таны хариу AI руу очно · Албан ёсны үнэлгээ биш <CreditCost action="review-coach" /></p>
       </> : <div className="wsp-coach-empty"><Icon name="spark" size={28} /><p>Асуултын доорх <strong>AI-аас асуух</strong> товчийг дарж, алдаагаа задлаарай.</p></div>}
     </aside>
   </>;

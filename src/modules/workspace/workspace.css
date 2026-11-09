@@ -187,6 +187,21 @@ main:has(> .wsp) { isolation: auto; }
 .wsp-plan-card em { padding: 2px 8px; border-radius: 999px; background: var(--wsp-good-soft); color: var(--wsp-good); font-size: 12px; font-style: normal; font-weight: 600; }
 .wsp-plan-card em.is-warn { background: var(--wsp-warn-soft); color: var(--wsp-warn); }
 
+.wsp-credits {
+  position: relative; display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px 13px; border: 1px solid var(--wsp-line); border-radius: 12px;
+  background: var(--wsp-card); color: var(--wsp-accent);
+}
+.wsp-credits:hover { border-color: var(--wsp-line-strong); }
+.wsp-credits svg { flex-shrink: 0; fill: currentColor; stroke: none; }
+.wsp-credits-text { display: flex; flex: 1; align-items: baseline; justify-content: space-between; gap: 8px; min-width: 0; }
+.wsp-credits-text > span { color: var(--wsp-soft); font-size: 12px; font-weight: 600; }
+.wsp-credits-text strong { color: var(--wsp-ink); font-size: 14px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.wsp-credits-text small { color: var(--wsp-soft); font-size: 12px; font-weight: 500; }
+.wsp-credits-bar { position: absolute; right: 12px; bottom: 6px; left: 12px; height: 3px; overflow: hidden; border-radius: 999px; background: var(--wsp-chip); }
+.wsp-credits-bar b { display: block; height: 100%; background: currentColor; transform-origin: left; }
+.wsp-credits[data-low] { color: var(--wsp-warn); }
+
 .wsp-side-links { display: grid; gap: 1px; }
 .wsp-side-links a, .wsp-side-links button { display: flex; align-items: center; gap: 10px; width: 100%; padding: 7px 12px; border: 0; border-radius: 10px; background: transparent; color: var(--wsp-muted); font-size: 13.5px; font-weight: 500; text-align: left; white-space: nowrap; cursor: pointer; }
 .wsp-side-links a:hover, .wsp-side-links button:hover { background: var(--wsp-hover); color: var(--wsp-ink); }
@@ -218,6 +233,7 @@ main:has(> .wsp) { isolation: auto; }
 :root[data-ws-rail="collapsed"] .wsp-nav-badge,
 :root[data-ws-rail="collapsed"] .wsp-recent,
 :root[data-ws-rail="collapsed"] .wsp-plan-card,
+:root[data-ws-rail="collapsed"] .wsp-credits-text,
 :root[data-ws-rail="collapsed"] .wsp-account-text { display: none; }
 :root[data-ws-rail="collapsed"] .wsp-nav-item span,
 :root[data-ws-rail="collapsed"] .wsp-side-links span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
@@ -225,6 +241,8 @@ main:has(> .wsp) { isolation: auto; }
 :root[data-ws-rail="collapsed"] .wsp-side-links a,
 :root[data-ws-rail="collapsed"] .wsp-side-links button { justify-content: center; padding-inline: 0; }
 :root[data-ws-rail="collapsed"] .wsp-cta { font-size: 0; gap: 0; }
+:root[data-ws-rail="collapsed"] .wsp-credits { justify-content: center; padding-inline: 0; }
+:root[data-ws-rail="collapsed"] .wsp-credits-bar { right: 8px; left: 8px; }
 :root[data-ws-rail="collapsed"] .wsp-account-row { flex-direction: column; margin-inline: -12px; padding-inline: 12px; }
 
 /* ---------- Canvas ---------- */

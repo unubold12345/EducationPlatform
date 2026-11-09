@@ -9,6 +9,8 @@ import {
   type Draft, type GradeReply, type StoredExam, type StoredQuestion, type StoredResult, type StoredResultItem,
 } from "./store";
 import styles from "./my-exams.module.css";
+import { CreditCost, useCredits } from "@/modules/credits/client";
+import { examCreditAction } from "@/modules/credits/pricing";
 
 const ACCEPT = ".pdf,.docx,.pptx,.txt,.md,.csv";
 const ALLOWED = new Set(["pdf", "docx", "pptx", "txt", "md", "csv"]);
@@ -35,6 +37,7 @@ export function MyExams({ userKey }: { userKey: string }) {
   const [count, setCount] = useState<ExamCount>(10);
   const [language, setLanguage] = useState<ExamLanguage>("mn");
   const [pending, setPending] = useState(false);
+  const { apply } = useCredits();
   const [error, setError] = useState("");
   const [dragging, setDragging] = useState(false);
   const [fresh, setFresh] = useState<{ id: string; result: StoredResult } | null>(null);
@@ -68,6 +71,7 @@ export function MyExams({ userKey }: { userKey: string }) {
       const data = await jsonObject(response);
       if (response.status === 401) throw new Error("Нэвтрэх хугацаа дууссан. Дахин нэвтэрнэ үү.");
       if (!response.ok) throw new Error(typeof data.error === "string" ? data.error : "Шалгалт үүсгэж чадсангүй. Дахин оролдоно уу.");
+      apply(data);
       const exam = createdExam(data);
       if (!exam) throw new Error("AI шалгалт бүрэн ирсэнгүй. Дахин оролдоно уу.");
       saveExam(userKey, exam);
@@ -148,6 +152,7 @@ export function MyExams({ userKey }: { userKey: string }) {
         <button type="button" className={styles.generate} onClick={() => void generate()} disabled={!file || pending} aria-busy={pending}>
           {pending ? <><i className={styles.spinner} aria-hidden="true" />Шалгалт үүсгэж байна…</> : <><Icon name="spark" size={18} />Шалгалт үүсгэх</>}
         </button>
+        <p className={styles.cost}><CreditCost action={examCreditAction(count)} /></p>
         {pending ? <p className={styles.status} role="status">Файлыг уншиж, AI асуулт үүсгэж байна. 20–60 секунд орно.</p> : null}
         {error ? <p className={styles.error} role="alert">{error}</p> : null}
         <p className={styles.fine}>Файлын текст AI руу илгээгдэж, зөвхөн түүнээс асуулт үүсгэнэ. Урт файлын эхний 45,000 тэмдэгтийг ашиглана. Файл серверт хадгалагдахгүй; шалгалт, хариулт зөвхөн энэ хөтөчид үлдэнэ. Хариултын түлхүүр шалгалт дуустал шифрлэгдэнэ. Хугацаатай шалгалтын үеэр хаалттай.</p>

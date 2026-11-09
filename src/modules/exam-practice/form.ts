@@ -2,7 +2,7 @@
 // reads its answers. Server-side only: the client imports the types, never this file.
 import { isCorrect } from "../exams/engine.ts";
 import { listeningScripts } from "../exams/ielts-listening.ts";
-import { additionalListening } from "../exams/ielts-additional-listening.ts";
+import { additionalListeningScripts } from "../exams/ielts-additional-listening.ts";
 import { entranceSubjectOf } from "../exams/entrance/catalog.ts";
 import type { ExamDefinition, ExamGroup, ExamQuestion, ExamStage } from "../exams/types.ts";
 import type { PracticeEdit, PracticeForm, PracticeKind, PracticeProgress, PracticeQuestion, PracticeResult, PracticeReveal, PracticeSection, PracticeSubject } from "./types.ts";
@@ -11,6 +11,7 @@ import type { PracticeEdit, PracticeForm, PracticeKind, PracticeProgress, Practi
 export type PracticeMaterial = { section: string; domain: string; prompt: string; options?: string[]; passage?: string; transcript?: string; context?: string };
 export type PracticeSource = {
   form: PracticeForm;
+  audioRevision?:number;
   grade(id: string, response: string): PracticeResult;
   reveal(id: string, result: PracticeResult): PracticeReveal;
   material(id: string): PracticeMaterial;
@@ -29,10 +30,10 @@ const subjectOf = (definition: ExamDefinition): PracticeSubject => {
 };
 
 const listeningPartSize = 10;
-function transcriptsFor(slug: string) {
+function transcriptsFor(slug: string,revision:number) {
   const form = /^ielts-academic-0([1-6])$/.exec(slug)?.[1];
   if (!form) return [];
-  const scripts = form === "1" ? listeningScripts : additionalListening(Number(form)).scripts;
+  const scripts = form === "1" ? listeningScripts : additionalListeningScripts(Number(form),revision);
   return scripts.map(script => script.title + "\n\n" + script.halves.flat().map(turn => turn.text).join("\n\n"));
 }
 const pointsOf = (question: Pick<ExamQuestion, "points">) => question.points ?? 1;
@@ -77,7 +78,7 @@ export function mockPractice(definition: ExamDefinition): PracticeSource {
   const sections: PracticeSection[] = [];
   const questions: PracticeQuestion[] = [];
   const authored = new Map<string, ExamQuestion>();
-  const transcripts = transcriptsFor(definition.slug);
+  const transcripts = transcriptsFor(definition.slug,definition.audioRevision??1);
   const passages = definition.stages.flatMap(stage => stage.passages ?? []);
 
   function addSection(stage: ExamStage, id: string, title: string, list: ExamQuestion[]) {
@@ -134,6 +135,7 @@ export function mockPractice(definition: ExamDefinition): PracticeSource {
     return part ? transcripts[part - 1] : undefined;
   };
   return {
+    audioRevision:definition.audioRevision??1,
     form: { slug: definition.slug, title: definition.title, subject: subjectOf(definition), sections, questions, passages, briefingHref: "/exams/" + definition.slug, ...(definition.points ? { points: definition.points } : {}) },
     grade: (id, response) => ({ correct: isCorrect(questionFor(id), response) }),
     reveal(id, result) {

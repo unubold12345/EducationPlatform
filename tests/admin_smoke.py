@@ -22,6 +22,8 @@ with sync_playwright() as p:
     for action in ["grant-month","expire-plan","revoke-sessions","review-content","suspend","unsuspend","add-note"]:
         assert student.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":action,"target":target,"reason":"Unauthorized attempt","program":"sat"}).status==403
     assert student.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":"set-price","target":"sat","amount":100,"reason":"Unauthorized attempt"}).status==403
+    assert student.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":"grant-credits","target":target,"amount":500,"reason":"Unauthorized attempt"}).status==403
+    assert student.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":"set-credits","target":"free","amount":5000,"reason":"Unauthorized attempt"}).status==403
     assert student.request.post(BASE+"/api/admin/content/sat-full-01",headers=ORIGIN,data={"action":"fix","revision":0,"path":["stages",0,"questions",0],"patch":{"prompt":"x"},"reason":"Unauthorized attempt"}).status==403
     assert student.request.get(BASE+"/api/admin/export?kind=users").status==403
     member=student.new_page();member.goto(BASE+"/admin")
@@ -34,7 +36,7 @@ with sync_playwright() as p:
     page.goto(BASE+"/workspace/profile");page.get_by_role("link",name="Удирдлагын төв",exact=True).click()
     expect(page.get_by_role("heading",name="Удирдлагын төв",exact=False)).to_be_visible()
     page.screenshot(path=str(ART/"admin-overview-light.png"),full_page=True)
-    for tab in ["users","subscriptions","payments","attempts","content","pricing","audit","settings"]:
+    for tab in ["users","subscriptions","payments","attempts","content","pricing","credits","audit","settings"]:
         page.goto(BASE+"/admin?tab="+tab);page.wait_for_load_state("networkidle")
         assert page.locator(".admin-main").count()==1
     assert admin.request.get(BASE+"/api/admin/content/sat-algebra").status==404
@@ -82,9 +84,24 @@ with sync_playwright() as p:
     page.get_by_role("button",name="Тэмдэглэл нэмэх").click()
     expect(page.locator(".admin-user-actions [role=status]")).to_contain_text("Хадгаллаа")
     expect(page.locator(".admin-log")).to_contain_text("Local admin UI verification note")
+    # AI credits: a bonus for this month only, validated on the server and shown on the user record.
+    for bad in [{"amount":0},{"amount":10001},{"amount":"25"},{"amount":2.5},{}]:
+        assert admin.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":"grant-credits","target":target,"reason":"Invalid grant check",**bad}).status==400,bad
+    assert admin.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":"grant-credits","target":"missing-user","amount":5,"reason":"Missing user grant"}).status==404
+    page.locator(".admin-user-actions select[name=action]").select_option("grant-credits")
+    page.locator(".admin-user-actions input[name=amount]").fill("25")
+    page.locator(".admin-user-actions textarea").fill("Local credit grant verification")
+    page.get_by_role("button",name="AI кредит олгох (энэ сар)").click()
+    expect(page.locator(".admin-user-actions [role=status]")).to_contain_text("Хадгаллаа")
+    page.reload();expect(page.locator(".admin-facts")).to_contain_text("урамшуулал +25")
+    expect(page.locator(".admin-facts")).to_contain_text("125 / 125")
+    page.goto(BASE+"/admin/users/"+target+"?view=credits");expect(page.locator(".admin-empty")).to_contain_text("AI үйлдэл алга")
+    page.goto(BASE+"/admin/users/"+target+"?view=admin");expect(page.locator(".admin-table-wrap tbody")).to_contain_text("grant-credits")
+    page.goto(BASE+"/admin?tab=credits&data=test");expect(page.locator(".admin-metrics")).to_contain_text("Бодит DeepSeek зардал")
+    page.goto(BASE+"/admin?data=test");expect(page.locator(".admin-ai-strip")).to_contain_text("кредит")
     mutate("review-content",target="sat-full-01",status="IN_REVIEW")
     mutate("review-content",target="sat-full-01",status="PENDING",reason="Local smoke verification completed; independent editorial review remains pending")
-    for kind in ["users","subscriptions","payments","audit"]:
+    for kind in ["users","subscriptions","payments","credits","audit"]:
         exported=admin.request.get(BASE+"/api/admin/export?kind="+kind+"&data=test")
         assert exported.ok and "private, no-store" in exported.headers["cache-control"]
         assert not any(key in exported.text() for key in ["accessToken","refreshToken","password","sessionToken"])
@@ -123,6 +140,17 @@ with sync_playwright() as p:
     page.goto(BASE+"/workspace/plans");expect(page.locator("main")).to_contain_text("45,500")
     page.goto(BASE+"/admin?tab=pricing");expect(page.locator(".admin-table-wrap tbody tr").first).to_contain_text("₮45,500")
     price(60000,"Local price restored after verification")
+    # Monthly AI credit amounts: validated, audited, shown on /workspace/plans; restored afterwards.
+    for bad in [{"target":"jlpt","amount":100},{"target":"ielts","amount":-1},{"target":"ielts","amount":100001},{"target":"ielts","amount":"3500"}]:
+        assert admin.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":"set-credits","reason":"Invalid credit amount check",**bad}).status==400,bad
+    def credits(value,reason):
+        r=admin.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":"set-credits","target":"ielts","amount":value,"reason":reason});assert r.ok,(r.status,r.text())
+    credits(3500,"Local credit amount verification")
+    page.goto(BASE+"/workspace/plans");expect(page.locator('.pricing-card[data-program="ielts"] .pricing-credits')).to_contain_text("3,500")
+    page.goto(BASE+"/admin?tab=pricing");expect(page.locator('.admin-credit-allowances [data-credit-key="ielts"]')).to_contain_text("Одоо 3,500")
+    expect(page.locator(".admin-table-wrap tbody tr").first).to_contain_text("₮60,000")
+    credits(3000,"Local credit amount restored after verification")
+    page.goto(BASE+"/workspace/plans");expect(page.locator('.pricing-card[data-program="ielts"] .pricing-credits')).to_contain_text("3,000")
     page.goto(BASE+"/workspace/plans");expect(page.locator("main")).to_contain_text("60,000")
     # Single-question fix publishes a new version through validation; invalid fixes are refused.
     detail=admin.request.get(BASE+"/api/admin/content/sat-full-01").json()
@@ -152,4 +180,4 @@ with sync_playwright() as p:
     page.screenshot(path=str(ART/"background-vivid-light.png"),full_page=True)
     assert not errors,errors
     browser.close()
-print("Admin authorization, controls, user records, notes, suspension, sign-in activity, prices, question fixes, audit, exports, content pages, pagination and responsive themes passed.")
+print("Admin authorization, controls, user records, notes, AI credit grants and amounts, the AI credits tab, suspension, sign-in activity, prices, question fixes, audit, exports, content pages, pagination and responsive themes passed.")

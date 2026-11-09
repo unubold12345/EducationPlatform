@@ -6,6 +6,7 @@ import { Markdown } from "./markdown";
 import { Icon } from "./icons";
 import { deleteThread, newThreadId, saveThread, takePendingPrompt, useThreads, type ChatThread } from "./chat-store";
 import { CHAT_LIMITS, modeLabels, subjectLabels, threadTitle, type ChatMode, type ChatSubject, type ChatTurn } from "./chat-contract";
+import { useCredits } from "@/modules/credits/client";
 
 const suggestions: { mode: ChatMode; subject: ChatSubject; title: string; text: string }[] = [
   { mode: "solve", subject: "eesh-math", title: "Тэгшитгэл бодох", text: "x² − 5x + 6 = 0 тэгшитгэлийг бодоод, Виетийн теоремоор шалга." },
@@ -22,6 +23,7 @@ export function WorkspaceChat({ userKey, firstName }: { userKey: string; firstNa
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
   const busy = useRef(false);
+  const { apply } = useCredits();
   const end = useRef<HTMLDivElement>(null);
   const thread = threadId ? threads.find(item => item.id === threadId) ?? null : null;
 
@@ -60,6 +62,7 @@ export function WorkspaceChat({ userKey, firstName }: { userKey: string; firstNa
       const data = await response.json().catch(() => ({})) as { message?: string; error?: string };
       if (response.status === 401) throw new Error("Нэвтрэх хугацаа дууссан. Дахин нэвтэрнэ үү.");
       if (!response.ok || !data.message) throw new Error(data.error || "AI хариу ирсэнгүй. Дахин оролдоно уу.");
+      apply(data);
       saveThread(userKey, { ...next, updatedAt: Date.now(), turns: [...next.turns, { role: "assistant", content: data.message }] });
     } catch (reason) {
       setError(reason instanceof Error && reason.name !== "TimeoutError" ? reason.message : "Хариу удаж байна. Түр хүлээгээд дахин оролдоно уу.");

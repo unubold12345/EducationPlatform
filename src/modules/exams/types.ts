@@ -4,7 +4,7 @@ export type EntranceSubject = "math" | "physics" | "english";
 /** A site-drawn diagram (legacy mock content) or a stored, self-contained SVG diagram. */
 export type ExamFigure =
   | { kind: "piecewise" | "absolute-area" | "isosceles" | "tangents" | "cevians" | "parabola-rectangle" | "open-box" | "circle-line" | "box-net" | "cubic-area" | "triangle-circles"; scale: number }
-  | { kind: "image"; src: string; alt: string; width?: number; height?: number };
+  | { kind: "image"; src: string; alt: string; width?: number; height?: number; expandable?: boolean };
 /** A numbered part of one paper. Group pages keep a reading text or a multi-part task together. */
 export type ExamGroup = {
   id: string; title: string; section?: string; instructions?: string;
@@ -45,7 +45,9 @@ export type ExamStage = {
   groups?: ExamGroup[];
 };
 export type ExamDefinition = {
-  slug: string; version: number; program: ExamProgram; title: string; description: string;
+  slug: string; version: number;
+  /** Immutable recording set; independent of the publishing version. Missing means legacy audio. */
+  audioRevision?: number; program: ExamProgram; title: string; description: string;
   stages: ExamStage[]; sources: { label: string; url: string }[];
   /** Entrance papers only. */
   subject?: EntranceSubject;
@@ -69,7 +71,7 @@ export type ExamReport = {
   points: { total: number; earned: number };
 };
 export type PublicExamAttempt = {
-  id: string; slug: string; title: string; program: ExamProgram; revision: number; stageIndex: number;
+  id: string; slug: string; title: string; program: ExamProgram; audioRevision?: number; revision: number; stageIndex: number;
   stage: PublicStage | null; serverNow: string; deadline: string; stageStartedAt: string;
   responses: Record<string, string>; flags: string[]; completed: string[]; finishedAt: string | null;
   timeline: { title: string; seconds: number; kind: ExamStage["kind"] }[]; report: ExamReport | null;

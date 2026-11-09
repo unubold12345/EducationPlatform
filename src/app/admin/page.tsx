@@ -13,6 +13,10 @@ import { planPrices } from "@/modules/subscriptions/prices";
 import { pageInfo,parsePage } from "@/modules/admin/paging";
 import { AdminShell,Pager,StatusPill,SubTabs,adminGroups,adminTabInfo,adminTabs,auditActions,auditLabel,adminDate as date,money,statusLabel,type AdminTab } from "@/modules/admin/ui";
 import { AdminPriceForm } from "@/components/admin-price-form";
+import { AdminCreditForm } from "@/components/admin-credit-form";
+import { creditAllowances } from "@/modules/credits/service";
+import { creditMonths, creditUsage } from "@/modules/admin/credits";
+import { AI_ACTIONS, CREDIT_USD, DEEPSEEK_PRICE, creditPeriod, creditRangeLabel, defaultAllowances, formatCredits, formatUsd, isAiAction } from "@/modules/credits/pricing";
 
 export const metadata:Metadata={title:"Удирдлагын төв",robots:{index:false,follow:false}};
 const one=(value:string|string[]|undefined)=>typeof value==="string"?value:"";
@@ -31,14 +35,15 @@ export default async function AdminPage({searchParams}:{searchParams:Promise<Rec
   const searchFilter:Prisma.UserWhereInput=q?{OR:[{email:{contains:q,mode:"insensitive"}},{name:{contains:q,mode:"insensitive"}},{id:q}]}:{};
   const userFilter:Prisma.UserWhereInput={AND:[adminUserScope(testData),searchFilter]};
   const paymentScope=testData?{provider:{in:["MOCK","LEGACY"]}}:realPaymentScope;
-  const link=(patch:Record<string,string|number>={})=>"/admin?"+new URLSearchParams(Object.entries({tab,q,data:testData?"test":"",filter,kind,...patch}).filter(([,value])=>value!==""&&value!==undefined).map(([key,value])=>[key,String(value)]));
+  const actionFilter=tab==="credits"?one(params.action):"";
+  const link=(patch:Record<string,string|number>={})=>"/admin?"+new URLSearchParams(Object.entries({tab,q,data:testData?"test":"",filter,kind,action:actionFilter,...patch}).filter(([,value])=>value!==""&&value!==undefined).map(([key,value])=>[key,String(value)]));
   const name=session.user.name;
   const title=adminTabs.find(([key])=>key===tab)![1];
   const scope=<div className="admin-data-scope" role="group" aria-label="Өгөгдөл"><Link aria-current={!testData?"page":undefined} href={"/admin?tab="+tab}>Бодит</Link><Link aria-current={testData?"page":undefined} href={"/admin?tab="+tab+"&data=test"}>Туршилт</Link></div>;
   const testBanner=testData&&<p className="admin-test-banner">Туршилтын өгөгдөл: тест бүртгэл, дуурайлгасан төлбөр. Бодит орлого биш.</p>;
   const empty=(text:string)=><p className="admin-empty">{text}{!testData&&<> <Link href={"/admin?tab="+tab+"&data=test"}>Туршилтын өгөгдөл харах →</Link></>}</p>;
   const description=adminTabInfo[tab];
-  const search=(placeholder:string,filters?:{name:string;value:string;options:[string,string][]})=><form className="admin-search" action="/admin"><input type="hidden" name="tab" value={tab}/>{testData&&<input type="hidden" name="data" value="test"/>}{kind&&<input type="hidden" name="kind" value={kind}/>}<label className="sr-only" htmlFor="admin-search">Хайх</label><input id="admin-search" name="q" defaultValue={q} maxLength={100} placeholder={placeholder}/>{filters&&<select name={filters.name} aria-label="Шүүлтүүр" defaultValue={filters.value}>{filters.options.map(([value,label])=><option key={value} value={value}>{label}</option>)}</select>}<button className="button secondary">Хайх</button>{(q||filter)&&<Link className="text-link" href={"/admin?tab="+tab+(testData?"&data=test":"")+(kind?"&kind="+kind:"")}>Цэвэрлэх</Link>}</form>;
+  const search=(placeholder:string,filters?:{name:string;value:string;options:[string,string][]})=><form className="admin-search" action="/admin"><input type="hidden" name="tab" value={tab}/>{testData&&<input type="hidden" name="data" value="test"/>}{kind&&<input type="hidden" name="kind" value={kind}/>}{actionFilter&&<input type="hidden" name="action" value={actionFilter}/>}<label className="sr-only" htmlFor="admin-search">Хайх</label><input id="admin-search" name="q" defaultValue={q} maxLength={100} placeholder={placeholder}/>{filters&&<select name={filters.name} aria-label="Шүүлтүүр" defaultValue={filters.value}>{filters.options.map(([value,label])=><option key={value} value={value}>{label}</option>)}</select>}<button className="button secondary">Хайх</button>{(q||filter)&&<Link className="text-link" href={"/admin?tab="+tab+(testData?"&data=test":"")+(kind?"&kind="+kind:"")}>Цэвэрлэх</Link>}</form>;
   const exportLink=(what:string,label:string)=><a className="admin-export" title={"Сүүлийн 1,000 мөр: "+label} href={"/api/admin/export?kind="+what+(testData?"&data=test":"")}>CSV татах ↓</a>;
   const userLink=(user:{id:string;email:string;name?:string})=><Link href={"/admin/users/"+user.id}>{user.name?<><strong>{user.name}</strong><small>{user.email}</small></>:user.email}</Link>;
 
@@ -52,8 +57,10 @@ export default async function AdminPage({searchParams}:{searchParams:Promise<Rec
       db.adminAudit.findMany({orderBy:[{createdAt:"desc"},{id:"desc"}],take:6}),
       db.user.findMany({where:userFilter,orderBy:[{createdAt:"desc"},{id:"desc"}],take:6,select:{id:true,name:true,email:true,createdAt:true}}),
     ]);
+    const ai=await creditUsage(creditPeriod(now.getTime()),userFilter).catch(()=>null);
     return <AdminShell tab={tab} title={title} name={name} testData={testData} scope={scope} description={description}>{testBanner}
       <div className="admin-metrics">{([["Нийт хэрэглэгч",usersTotal,`+${newUsers} энэ 7 хоногт`],["Идэвхтэй сарын эрх",activePlans,""],["Шалгалт",mockTotal+paperCount,"оролдлого"],[testData?"Туршилтын төлбөр":"Бодит төлбөр",money((paidMocks._sum.amountMnt??0)+(paidPlans._sum.amountMnt??0)),testData?"Бодит орлого биш":"нийт"]] as const).map(([label,value,sub])=><article key={label}><p>{label}</p><strong>{value}</strong>{sub&&<small>{sub}</small>}</article>)}</div>
+      {ai&&<Link className="admin-ai-strip" href={"/admin?tab=credits"+(testData?"&data=test":"")}><span>AI · энэ сар</span><strong>{formatCredits(ai.spentCredits)} кредит</strong><span>{ai.spentCount} үйлдэл · {ai.users} хэрэглэгч</span><span>Бодит DeepSeek зардал {formatUsd(ai.costMicroUsd)}</span><em>Дэлгэрэнгүй →</em></Link>}
       <section className="admin-block"><h3>Анхаарах зүйл</h3><div className="admin-attention">
         {([["Түр хаасан бүртгэл",suspended,"/admin?tab=users&filter=suspended"+(testData?"&data=test":"")],["Хүлээгдэж буй захиалга",pending,"/admin?tab=payments&kind=orders&filter=PENDING"+(testData?"&data=test":"")],["Нийтлээгүй ноорог",drafts,"/admin?tab=content&filter=draft"]] as const).map(([label,count,href])=><Link key={label} className={count?"has-items":""} href={href}><strong>{count}</strong><span>{label}</span></Link>)}
       </div></section>
@@ -156,13 +163,48 @@ export default async function AdminPage({searchParams}:{searchParams:Promise<Rec
   }
 
   if(tab==="pricing") {
-    const [prices,history]=await Promise.all([planPrices(),db.adminAudit.findMany({where:{action:"set-price"},orderBy:[{createdAt:"desc"},{id:"desc"}],take:20})]);
+    const [prices,history,allowances,creditHistory]=await Promise.all([planPrices(),db.adminAudit.findMany({where:{action:"set-price"},orderBy:[{createdAt:"desc"},{id:"desc"}],take:20}),creditAllowances(),db.adminAudit.findMany({where:{action:"set-credits"},orderBy:[{createdAt:"desc"},{id:"desc"}],take:20})]);
+    const defaults=defaultAllowances();
     return <AdminShell tab={tab} title={title} name={name} description={description}>
       <p className="admin-help">Шинэ болон төлөгдөөгүй захиалгад шууд үйлчилнэ. Төлөгдсөн захиалга анхны дүнгээрээ үлдэнэ.</p>
       <div className="admin-prices">{subscriptionPlans.map(plan=><AdminPriceForm key={plan.program} program={plan.program} title={plan.title} amount={prices[plan.program]} fallback={plan.amountMnt}/>)}</div>
       <h3 className="admin-subhead">Үнийн өөрчлөлтийн түүх</h3>
       <div className="admin-table-wrap"><table><thead><tr><th>Огноо</th><th>Багц</th><th>Өмнө → дараа</th><th>Шалтгаан</th></tr></thead><tbody>{history.map(row=>{const d=row.details as {program?:string;before?:number;after?:number};return <tr key={row.id}><td>{date(row.createdAt)}</td><td>{d.program?.toUpperCase()}</td><td>{money(d.before??0)} → {money(d.after??0)}</td><td>{row.reason}<small><code>{row.actorId}</code></small></td></tr>;})}</tbody></table>{!history.length&&<p className="admin-empty">Үнэ өөрчлөгдөөгүй. Анхны үнэ үйлчилж байна.</p>}</div>
       <p className="fine-print">Нэг mock шалгалтын үнэ ₮10,000 хэвээр (кодонд тогтмол).</p>
+      <h3 className="admin-subhead" id="credit-allowances">AI кредит / сар</h3>
+      <p className="admin-help">Үнэгүй кредит бүх баталгаажсан бүртгэлд, багцын кредит идэвхтэй багц бүрт нэмэгдэнэ. Энэ сарын үлдэгдэлд шууд нөлөөлнө; зарцуулсан кредит буцахгүй. Үйлдэл бүрийн кредитийн үнэ DeepSeek-ийн токены үнээр кодонд тогтмол (<Link href="/admin?tab=credits">AI кредит</Link>).</p>
+      <div className="admin-prices admin-credit-allowances">{([["free","Үнэгүй (бүх бүртгэл)"],...subscriptionPlans.map(plan=>[plan.program,plan.title] as const)] as const).map(([key,label])=><AdminCreditForm key={key} allowanceKey={key} title={label} credits={allowances[key as keyof typeof allowances]} fallback={defaults[key as keyof typeof defaults]}/>)}</div>
+      <h3 className="admin-subhead">Кредитийн хэмжээний түүх</h3>
+      <div className="admin-table-wrap"><table><thead><tr><th>Огноо</th><th>Хэнд</th><th>Өмнө → дараа</th><th>Шалтгаан</th></tr></thead><tbody>{creditHistory.map(row=>{const d=row.details as {key?:string;before?:number;after?:number};return <tr key={row.id}><td>{date(row.createdAt)}</td><td>{d.key==="free"?"Үнэгүй":d.key?.toUpperCase()}</td><td>{formatCredits(d.before??0)} → {formatCredits(d.after??0)}</td><td>{row.reason}<small><code>{row.actorId}</code></small></td></tr>;})}</tbody></table>{!creditHistory.length&&<p className="admin-empty">Кредитийн хэмжээ өөрчлөгдөөгүй. Анхны хэмжээ үйлчилж байна.</p>}</div>
+    </AdminShell>;
+  }
+
+  if(tab==="credits") {
+    const months=await creditMonths();
+    const period=months.includes(kind)?kind:creditPeriod(now.getTime());
+    const usage=await creditUsage(period,userFilter);
+    const statusWhere=["SPENT","REFUNDED","HELD"].includes(filter)?{status:filter}:{};
+    const where:Prisma.CreditChargeWhereInput={period,user:userFilter,...statusWhere,...(isAiAction(params.action)?{action:params.action}:{})};
+    const info=pageInfo(await db.creditCharge.count({where}),requested);
+    const rows=await db.creditCharge.findMany({where,skip:info.skip,take:info.size,orderBy:[{createdAt:"desc"},{id:"desc"}],select:{id:true,action:true,credits:true,status:true,promptTokens:true,cachedTokens:true,completionTokens:true,costMicroUsd:true,createdAt:true,user:{select:{id:true,email:true,name:true}}}});
+    const cover=usage.costMicroUsd?usage.valueMicroUsd/usage.costMicroUsd:null;
+    const chargeStatus=(status:string)=>status==="SPENT"?<span className="ws-pill ok">Зарцуулсан</span>:status==="REFUNDED"?<span className="ws-pill">Буцаасан</span>:<span className="ws-pill info">Боловсруулж байна</span>;
+    return <AdminShell tab={tab} title={title} name={name} testData={testData} scope={scope} description={description}>{testBanner}
+      <SubTabs items={months.map(month=>[month,month] as const)} current={period} href={key=>link({kind:key,page:1})}/>
+      <div className="admin-metrics">{([
+        ["Зарцуулсан кредит",formatCredits(usage.spentCredits),`${usage.spentCount} үйлдэл · ${usage.users} хэрэглэгч`],
+        ["Бодит DeepSeek зардал",formatUsd(usage.costMicroUsd),"Оргил цагийн үнээр, амжилтгүй дуудлага орсон"],
+        ["Кредитийн үнэ цэнэ",formatUsd(usage.valueMicroUsd),cover===null?"Зардал бүртгэгдээгүй":`Бодит зардлын ${cover.toFixed(1)} дахин`],
+        ["Буцаасан",formatCredits(usage.refundedCredits),`${usage.refundedCount} амжилтгүй үйлдэл${usage.heldCount?` · ${usage.heldCount} боловсруулж байна`:""}`],
+      ] as const).map(([label,value,sub])=><article key={label}><p>{label}</p><strong>{value}</strong><small>{sub}</small></article>)}</div>
+      <p className="admin-help">1 кредит = ${CREDIT_USD} ({DEEPSEEK_PRICE.model}, оргил цагийн үнэ: оролт ${DEEPSEEK_PRICE.inputCacheMiss}, гаралт ${DEEPSEEK_PRICE.output} / 1M токен, {DEEPSEEK_PRICE.checkedOn}). Сарын хэмжээг <Link href="/admin?tab=pricing#credit-allowances">Үнэ</Link> хэсэгт, нэг хэрэглэгчид урамшууллыг түүний хуудаснаас олгоно.</p>
+      <section className="admin-block"><h3>Үйлдлээр</h3>{usage.byAction.length?<div className="admin-table-wrap"><table><thead><tr><th>Үйлдэл</th><th>Тоо</th><th>Кредит</th><th>Бодит зардал</th></tr></thead><tbody>{usage.byAction.map(row=><tr key={row.action}><td><Link href={link({action:row.action,page:1})}><strong>{AI_ACTIONS[row.action].label}</strong><small>{AI_ACTIONS[row.action].area} · {creditRangeLabel(row.action)} кредит</small></Link></td><td>{row.spent}{row.refunded?<small>{row.refunded} буцаасан</small>:null}</td><td>{formatCredits(row.credits)}</td><td>{formatUsd(row.costMicroUsd)}<small>{row.spent?"дунджаар "+formatUsd(Math.round(row.costMicroUsd/(row.spent+row.refunded)))+" / үйлдэл":""}</small></td></tr>)}</tbody></table></div>:<p className="admin-empty">Энэ сард AI үйлдэл алга.</p>}</section>
+      <section className="ws-card"><div className="ws-card-head"><h3>Хамгийн их зарцуулсан</h3></div>{usage.top.length?<ul className="admin-log">{usage.top.map(row=><li key={row.userId}>{userLink({id:row.userId,email:row.email,name:row.name})}<span>{formatCredits(row.credits)} кредит · {row.actions} үйлдэл</span><small>{formatUsd(row.costMicroUsd)}</small></li>)}</ul>:<p className="admin-empty">Хэрэглэгч алга.</p>}</section>
+      <h3 className="admin-subhead">Үйлдлүүд</h3>
+      {search("Хэрэглэгчийн нэр эсвэл имэйл…",{name:"filter",value:filter,options:[["","Бүх төлөв"],["SPENT","Зарцуулсан"],["REFUNDED","Буцаасан"],["HELD","Боловсруулж байна"]]})}
+      {exportLink("credits","AI кредитийн үйлдлүүд")}
+      <div className="admin-table-wrap"><table><thead><tr><th>Огноо</th><th>Хэрэглэгч</th><th>Үйлдэл</th><th>Кредит / төлөв</th><th>Токен / бодит зардал</th></tr></thead><tbody>{rows.map(row=><tr key={row.id}><td>{date(row.createdAt)}</td><td>{userLink(row.user)}</td><td>{isAiAction(row.action)?<>{AI_ACTIONS[row.action].label}<small>{AI_ACTIONS[row.action].area}</small></>:row.action}</td><td><strong>{row.status==="REFUNDED"?"0":"−"+row.credits}</strong> {chargeStatus(row.status)}</td><td>{formatCredits(row.promptTokens)} → {formatCredits(row.completionTokens)}<small>{row.cachedTokens?formatCredits(row.cachedTokens)+" кэш · ":""}{formatUsd(row.costMicroUsd)}</small></td></tr>)}</tbody></table>{!rows.length&&empty("AI үйлдэл олдсонгүй.")}</div>
+      <Pager info={info} href={page=>link({page})} label="үйлдэл"/>
     </AdminShell>;
   }
 

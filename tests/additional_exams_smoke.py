@@ -13,8 +13,8 @@ ORIGIN={"Origin":BASE}
 ART=ROOT/"artifacts/additional-exams"
 ART.mkdir(parents=True,exist_ok=True)
 
-def fixture(action,attempt_id):
-    return json.loads(subprocess.check_output(["node","tests/mock_fixture.mjs",action,attempt_id],cwd=ROOT,text=True,encoding="utf-8"))
+def fixture(action,attempt_id,*args):
+    return json.loads(subprocess.check_output(["node","tests/mock_fixture.mjs",action,attempt_id,*args],cwd=ROOT,text=True,encoding="utf-8"))
 
 def state(context,endpoint):
     r=context.request.get(endpoint)
@@ -87,7 +87,7 @@ with sync_playwright() as p:
             if program=="ielts":
                 recording=context.request.get(endpoint+"/audio?part=1")
                 assert recording.status==200
-                assert hashlib.sha256(recording.body()).digest()==hashlib.sha256((ROOT/f"assets/exams/ielts-{n:02}-part-1.mp3").read_bytes()).digest()
+                assert hashlib.sha256(recording.body()).digest()==hashlib.sha256((ROOT/f"assets/exams/ielts-{n:02}-v2-part-1.mp3").read_bytes()).digest()
                 partial=context.request.get(endpoint+"/audio?part=1",headers={"Range":"bytes=2048-4095"})
                 assert partial.status==206 and partial.body()==recording.body()[2048:4096]
                 assert context.request.get(endpoint+"/audio?part=2").status==403
@@ -97,17 +97,22 @@ with sync_playwright() as p:
                 answers=fixture("answers",attempt_id)
                 response=context.request.patch(endpoint,headers=ORIGIN,data={"revision":current["revision"],"stageId":stage["id"],"responses":answers["responses"],"flags":[]})
                 assert response.status==200,(slug,stage["id"],response.status,response.text())
-                if n==2 and stage["id"] in ["sat-math-1","ielts-reading","ielts-writing"]:
+                if (n==2 and stage["id"] in ["sat-math-1","ielts-reading","ielts-writing"]) or (program=="ielts" and n==5 and stage["id"]=="ielts-writing"):
                     page.goto(BASE+"/exams/attempts/"+attempt_id)
-                    if stage["id"]=="ielts-writing":
+                    if stage["id"]=="ielts-writing" and n==2:
                         expect(page.get_by_role("table")).to_contain_text("Facility")
                         expect(page.locator("caption")).to_have_text("Academic Writing · Task 1 data")
+                    if stage["id"]=="ielts-writing" and n==5:
+                        diagram=page.locator('img[src="/ielts-mocks/bottle-recycling.svg"]')
+                        expect(diagram).to_be_visible()
+                        expect(page.get_by_role("link",name="View full-size diagram")).to_have_attribute("target","_blank")
+                        assert diagram.evaluate("image=>image.complete && image.naturalWidth>0")
                     for theme in ["light","dark"]:
                         page.evaluate("theme=>document.documentElement.dataset.theme=theme",theme)
                         for width in [1440,390,320]:
                             page.set_viewport_size({"width":width,"height":1000})
                             assert page.evaluate("document.documentElement.scrollWidth<=innerWidth"),(slug,stage["id"],width,theme)
-                            page.screenshot(path=str(ART/f"{stage['id']}-{theme}-{width}.png"),full_page=True)
+                            page.screenshot(path=str(ART/f"{slug}-{stage['id']}-{theme}-{width}.png"),full_page=True)
                     page.set_viewport_size({"width":1440,"height":1000})
                 fixture("deadline",attempt_id)
                 current=state(context,endpoint)
@@ -119,7 +124,16 @@ with sync_playwright() as p:
                 for part in range(1,5):
                     audio=context.request.get(endpoint+f"/audio?part={part}")
                     assert audio.status==200
-                    assert hashlib.sha256(audio.body()).digest()==hashlib.sha256((ROOT/f"assets/exams/ielts-{n:02}-part-{part}.mp3").read_bytes()).digest()
+                    assert hashlib.sha256(audio.body()).digest()==hashlib.sha256((ROOT/f"assets/exams/ielts-{n:02}-v2-part-{part}.mp3").read_bytes()).digest()
+            if program=="ielts":
+                # Absence of a revision on an old snapshot must select legacy media,
+                # even if its publishing/content version counter happens to be 2.
+                fixture("audio-revision",attempt_id,"0")
+                legacy=context.request.get(endpoint+"/audio?part=1")
+                assert legacy.status==200
+                assert hashlib.sha256(legacy.body()).digest()==hashlib.sha256((ROOT/f"assets/exams/ielts-{n:02}-part-1.mp3").read_bytes()).digest()
+                fixture("audio-revision",attempt_id,"2")
+                current=state(context,endpoint)
             assert context.request.patch(endpoint,headers=ORIGIN,data={"revision":current["revision"],"stageId":initial["stage"]["id"],"responses":{},"flags":[]}).status==409
             page.goto(BASE+"/exams/attempts/"+attempt_id)
             expect(page.locator(".exam-results")).to_be_visible()

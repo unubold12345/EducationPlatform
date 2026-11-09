@@ -8,9 +8,11 @@ import { findExam } from "@/modules/exams/definitions";
 import { pageInfo, parsePage } from "@/modules/admin/paging";
 import { AdminShell, Pager, StatusPill, SubTabs, adminDate, auditLabel, eventLabel, money } from "@/modules/admin/ui";
 import { AdminUserActions } from "@/components/admin-user-actions";
+import { creditSummary } from "@/modules/credits/service";
+import { AI_ACTIONS, formatCredits, formatUsd, isAiAction } from "@/modules/credits/pricing";
 
 export const metadata = { title: "Хэрэглэгч", robots: { index: false, follow: false } };
-const views = [["activity", "Нэвтрэлт, үйлдэл"], ["payments", "Төлбөр"], ["attempts", "Оролдлого"], ["sessions", "Идэвхтэй сесс"], ["admin", "Админы түүх"]] as const;
+const views = [["activity", "Нэвтрэлт, үйлдэл"], ["payments", "Төлбөр"], ["attempts", "Оролдлого"], ["credits", "AI кредит"], ["sessions", "Идэвхтэй сесс"], ["admin", "Админы түүх"]] as const;
 type View = typeof views[number][0];
 const device = (agent: string | null) => {
   if (!agent) return "—";
@@ -30,10 +32,10 @@ export default async function AdminUserPage({ params, searchParams }: { params: 
     id: true, name: true, email: true, emailVerified: true, createdAt: true, updatedAt: true, suspendedAt: true, suspendedReason: true,
     adminMembership: { select: { createdAt: true } }, accounts: { select: { providerId: true, createdAt: true } },
     subscriptions: { orderBy: { endsAt: "desc" }, select: { program: true, startsAt: true, endsAt: true } },
-    _count: { select: { sessions: true, events: true, mockAttempts: true, paperAttempts: true, subscriptionOrders: true, mockPurchases: true } },
+    _count: { select: { sessions: true, events: true, mockAttempts: true, paperAttempts: true, subscriptionOrders: true, mockPurchases: true, creditCharges: true } },
   } });
   if (!user) notFound();
-  const [lastEvent, ipRows, paidOrders, paidPurchases, declined, notes, auditTotal] = await Promise.all([
+  const [lastEvent, ipRows, paidOrders, paidPurchases, declined, notes, auditTotal, credits] = await Promise.all([
     db.userEvent.findFirst({ where: { userId: id, type: "sign-in" }, orderBy: { createdAt: "desc" } }),
     db.userEvent.groupBy({ by: ["ipAddress"], where: { userId: id, ipAddress: { not: null } }, _count: true, orderBy: { _count: { ipAddress: "desc" } }, take: 5 }),
     db.subscriptionOrder.aggregate({ where: { userId: id, status: "PAID" }, _sum: { amountMnt: true }, _count: true }),
@@ -41,13 +43,14 @@ export default async function AdminUserPage({ params, searchParams }: { params: 
     db.subscriptionOrder.count({ where: { userId: id, status: "DECLINED" } }),
     db.adminNote.findMany({ where: { userId: id }, orderBy: { createdAt: "desc" }, take: 10 }),
     db.adminAudit.count({ where: { target: id } }),
+    creditSummary(id, now).catch(() => null),
   ]);
   // Other accounts that signed in from this user's IP addresses: a common sign of shared or farmed accounts.
   const sharedIps = ipRows.length ? await db.userEvent.groupBy({ by: ["userId"], where: { ipAddress: { in: ipRows.map(row => row.ipAddress!) }, userId: { not: id } }, _count: true, orderBy: { _count: { userId: "desc" } }, take: 6 }) : [];
   const sharedUsers = sharedIps.length ? await db.user.findMany({ where: { id: { in: sharedIps.map(row => row.userId) } }, select: { id: true, email: true, suspendedAt: true } }) : [];
 
   const href = (next: Partial<{ view: string; page: number }>) => `/admin/users/${id}?` + new URLSearchParams({ view: next.view ?? view, page: String(next.page ?? 1) });
-  const counts: Record<View, number> = { activity: user._count.events, payments: user._count.subscriptionOrders + user._count.mockPurchases, attempts: user._count.mockAttempts + user._count.paperAttempts, sessions: user._count.sessions, admin: auditTotal };
+  const counts: Record<View, number> = { activity: user._count.events, payments: user._count.subscriptionOrders + user._count.mockPurchases, attempts: user._count.mockAttempts + user._count.paperAttempts, credits: user._count.creditCharges, sessions: user._count.sessions, admin: auditTotal };
   const info = pageInfo(counts[view], requested);
   let body: React.ReactNode = null;
 
@@ -75,6 +78,9 @@ export default async function AdminUserPage({ params, searchParams }: { params: 
       ...papers.map(row => ({ id: row.id, at: row.createdAt, updated: row.updatedAt, label: "Хасагдсан албан материал · " + row.slug, status: row.status, result: "" }))]
       .sort((a, b) => b.at.getTime() - a.at.getTime()).slice(info.skip, info.skip + info.size);
     body = <Table head={["Эхэлсэн", "Материал", "Төлөв / оноо", "Сүүлд"]} empty="Оролдлого алга." rows={rows.map(row => cells(adminDate(row.at), <>{row.label}<small><code>{row.id}</code></small></>, <><StatusPill status={row.status}/><small>{row.result}</small></>, adminDate(row.updated)))}/>;
+  } else if (view === "credits") {
+    const rows = await db.creditCharge.findMany({ where: { userId: id }, orderBy: [{ createdAt: "desc" }, { id: "desc" }], skip: info.skip, take: info.size, select: { id: true, action: true, period: true, credits: true, status: true, promptTokens: true, cachedTokens: true, completionTokens: true, costMicroUsd: true, createdAt: true } });
+    body = <Table head={["Огноо", "Үйлдэл", "Кредит / төлөв", "Токен / бодит зардал"]} empty="AI үйлдэл алга." rows={rows.map(row => cells(<>{adminDate(row.createdAt)}<small>{row.period}</small></>, isAiAction(row.action) ? <>{AI_ACTIONS[row.action].label}<small>{AI_ACTIONS[row.action].area}</small></> : row.action, <><strong>{row.status === "REFUNDED" ? "0" : "−" + row.credits}</strong><small>{row.status === "SPENT" ? "Зарцуулсан" : row.status === "REFUNDED" ? "Буцаасан" : "Боловсруулж байна"}</small></>, <>{formatCredits(row.promptTokens)} → {formatCredits(row.completionTokens)}<small>{row.cachedTokens ? formatCredits(row.cachedTokens) + " кэш · " : ""}{formatUsd(row.costMicroUsd)}</small></>))}/>;
   } else if (view === "sessions") {
     const rows = await db.session.findMany({ where: { userId: id }, orderBy: [{ updatedAt: "desc" }, { id: "desc" }], skip: info.skip, take: info.size, select: { id: true, createdAt: true, updatedAt: true, expiresAt: true, ipAddress: true, userAgent: true } });
     body = <Table head={["Нэвтэрсэн", "Сүүлд идэвхтэй", "IP хаяг", "Төхөөрөмж"]} empty="Идэвхтэй сесс алга." rows={rows.map(row => cells(adminDate(row.createdAt), <>{adminDate(row.updatedAt)}<small>Дуусах: {adminDate(row.expiresAt)}</small></>, <code>{row.ipAddress ?? "—"}</code>, <span title={row.userAgent ?? ""}>{device(row.userAgent)}</span>))}/>;
@@ -101,6 +107,7 @@ export default async function AdminUserPage({ params, searchParams }: { params: 
           <div><dt>Сүүлд нэвтэрсэн</dt><dd>{lastEvent ? adminDate(lastEvent.createdAt) : "—"}</dd></div>
           <div><dt>Нэвтрэх арга</dt><dd>{providers.join(", ") || "—"}</dd></div>
           <div><dt>Төлсөн нийт</dt><dd>{money((paidOrders._sum.amountMnt ?? 0) + (paidPurchases._sum.amountMnt ?? 0))}<small>{paidOrders._count + paidPurchases._count} гүйлгээ{declined ? ` · ${declined} амжилтгүй` : ""}</small></dd></div>
+          <div><dt>AI кредит · энэ сар</dt><dd>{credits ? <>{formatCredits(credits.balance)} / {formatCredits(credits.allowance)} үлдсэн<small>{formatCredits(credits.used)} зарцуулсан · үнэгүй {formatCredits(credits.free)}{credits.plans.map(plan => ` · ${plan.title} +${formatCredits(plan.credits)}`).join("")}{credits.bonus ? ` · урамшуулал +${formatCredits(credits.bonus)}` : ""}</small></> : "—"}</dd></div>
           <div><dt>Идэвхтэй эрх</dt><dd>{active.length ? active.map(plan => `${plan.program.toUpperCase()} → ${adminDate(plan.endsAt)}`).join(", ") : "Алга"}</dd></div>
           <div><dt>ID</dt><dd><code>{user.id}</code></dd></div>
         </dl>

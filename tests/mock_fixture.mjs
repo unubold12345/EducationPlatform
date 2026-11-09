@@ -20,5 +20,10 @@ try{
   const end=Date.now()+milliseconds;
   state.deadline=new Date(end).toISOString();state.stageStartedAt=new Date(end-stageFor(state).seconds*1000).toISOString();
   await db.mockAttempt.update({where:{id},data:{state,revision:{increment:1}}});console.log(JSON.stringify({adjusted:true}));
+ }else if(action==="audio-revision"){
+  if(!state.finishedAt||state.definition.program!=="ielts")throw Error("Only completed disposable IELTS attempts");
+  const revision=Number(offset);if(![0,1,2].includes(revision))throw Error("Invalid audio revision");
+  if(revision===0)delete state.definition.audioRevision;else state.definition.audioRevision=revision;
+  await db.mockAttempt.update({where:{id},data:{state,revision:{increment:1}}});console.log(JSON.stringify({adjusted:true}));
  }else throw Error("Unknown fixture action");
 }finally{await db.$disconnect();}

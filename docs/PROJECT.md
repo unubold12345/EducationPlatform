@@ -33,8 +33,8 @@ authentication require provider configuration; see the actual hosted checkpoint 
 | Speaking Lab | Isolated IELTS speaking studio at `/labs/ielts-speaking` |
 | Essay Studio | Workshop writing practice with AI corrections at `/labs/ielts-writing` |
 | Listening Lab | Two original IELTS Listening practice tests (Parts 1–4, mock-style recordings) at `/labs/ielts-listening` |
-| Workspace | `/workspace`: the signed-in study app, separate from the marketing site, with left tabs for Home, AI chat, Flashcards, Exams, Review, Workshop and Plans, plus the profile (section 7) |
-| Flashcards | Upload a PDF, Word, PowerPoint or text file and get AI study cards at `/workspace/flashcards`; decks stay in the browser |
+| Workspace | `/workspace`: the signed-in study app, separate from the marketing site, with left tabs for Home, AI chat, Vocabulary, Exams, Review, Workshop and Plans, plus the profile (section 7) |
+| Vocabulary | Add words and translations, import a document for AI extraction, keep the bank on the account and take a quiz at `/workspace/vocabulary`; the old `/workspace/flashcards` address redirects |
 | Exam from file | Upload a PDF, Word, PowerPoint or text file and get an AI multiple-choice exam at `/workspace/my-exams`; sittings, drafts and scores stay in the browser |
 | Study tools | Light/dark theme and a browser-only mathematics scratchpad |
 
@@ -92,10 +92,11 @@ Collection URLs cannot be purchased or started as exams. The library, collection
 ### IELTS Academic
 
 - Mocks `ielts-academic-01` through `ielts-academic-06` are separately purchasable; an active
-  IELTS plan includes all six. Mocks 02–06 each have four matching synthetic recordings, three
-  original fictional case-study passages (about 2,200 words total), a distinct data table and essay,
-  and a distinct speaking interview, cue card and discussion. They share practice task patterns;
-  specialist content and pedagogical review remain pending.
+  IELTS plan includes all six. The 2026-11-09 revision strengthens all six forms: plausible Listening/Reading distractors,
+  passage-specific paragraph matching, richer Writing data and a process diagram in Mock 05. Mocks 02–06 use authored
+  connected scripts, with longer academic sections, rather than answer-announcing templates. Their three distinct Reading
+  passages total about 2,200 words per form; each has a distinct essay, cue card and linked discussion.
+  Full review and limits: [IELTS_MOCK_REVIEW.md](./IELTS_MOCK_REVIEW.md). Teacher review and learner calibration remain pending.
 - Listening: 40 questions in about 30 minutes, plus 2 minutes checking, using four bundled synthetic
   recordings.
 - Reading: 40 questions over three passages (2,265 words) in 60 minutes.
@@ -103,12 +104,14 @@ Collection URLs cannot be purchased or started as exams. The library, collection
 - Speaking: a 12-minute simulation.
 - No IELTS band score is calculated.
 - Authenticated audio serving resolves the exact mock slug to its own allowlisted recording files.
-  All 24 recordings are included in the production function trace. New audio provenance, script
-  hashes, file hashes and durations live in `assets/exams/manifest.json` and `manifest-02.json` through
-  `manifest-06.json`. `scripts/generate-ielts-audio.py` (setup in its header) regenerates them with local
-  Kokoro-82M neural voices (Apache-2.0) at one natural pace, with 20/15/15 s reading/checking pauses.
-  Parts play back to back from their recorded lengths (`listeningSeconds` in `audio-files.ts`, which
-  must be updated after regenerating); the 30-minute stage leaves checking time after the last part.
+  Original and revised recordings are included in the production function trace. New audio provenance, script
+  hashes, file hashes and durations live in `assets/exams/manifest.json`, `manifest-02.json` through
+  `manifest-06.json`, and `manifest-v2-02.json` through `manifest-v2-06.json`. `scripts/generate-ielts-audio.py` (setup in its header) regenerates the revised 02–06 set with local
+  Kokoro-82M neural voices (Apache-2.0) at one natural pace. Revised Parts 1–3 have 30-second reading/checking pauses;
+  Part 4 has a one-minute preview and a continuous lecture. The generator also updates the answer-free
+  `ielts-audio-v2.json` timing catalogue. `audioRevision` in each attempt snapshot selects the matching files and timing;
+  missing revision means legacy audio, independently of the publishing version. Never overwrite a released recording set.
+  Parts play back to back; the 30-minute stage leaves checking time after the last part.
 
 ### JLPT N5 and N4
 
@@ -194,7 +197,8 @@ guards against their return. Local attempts, purchases and content rows were del
 | SAT | 60,000 MNT/month | SAT mocks |
 | Full SAT, IELTS or ЭЕШ mock | 10,000 MNT each | Per-exam purchase, including retakes, or a matching plan |
 
-Monthly plan prices above are the defaults; admins can change them in `/admin?tab=pricing`.
+Monthly plan prices above are the defaults; admins can change them in `/admin?tab=pricing`. Each plan also adds monthly AI
+credits (University Prep 1,500, IELTS 3,000, SAT 2,000) on top of 100 free credits; see "AI credits" in section 7.
 
 Local checkout is explicitly simulated: no real money, card details or payment provider. Hosted
 payments are also simulated under `HOSTED_MOCK_PAYMENTS`. A matching active plan or a prior
@@ -271,7 +275,7 @@ gated by `AUTH_HOSTED_DEMO_ACCOUNTS=true`.
 - `/admin/users/[id]` is the user record: account facts, sign-in methods, totals paid, active plans,
   IP addresses and other accounts seen on the same IP, admin notes, and paginated activity
   (sign-ups, sign-ins with IP/device, password changes), payments, attempts, live sessions and admin
-  history. Actions: note, grant/extend or expire a month, sign out everywhere, suspend/unsuspend.
+  history. Actions: note, grant/extend or expire a month, grant AI credits for this month, sign out everywhere, suspend/unsuspend.
 - Suspension (`User.suspendedAt`) is admin-only (`input:false`), signs the user out, is refused at
   session creation (`ACCOUNT_SUSPENDED`) and by `getSession`/`apiUser`. Admins and the acting admin
   cannot be suspended. `UserEvent` keeps the durable activity record because sessions are deleted on
@@ -355,7 +359,7 @@ page already holds. Results add per-skill totals, review filters and a link to p
   review of finished mocks), modelled on solvely.ai's layout: a 260px light-grey tab rail (collapsible to icons, saved in
   `education-workspace-rail`), a white canvas, one blue accent and Inter. Phones get a top bar and a slide-in menu.
 - Routes: `/workspace` (home: composer, resume, stats, programmes, recent results, practice), `/workspace/chat`,
-  `/workspace/flashcards`, `/workspace/my-exams`, `/workspace/review` and `/workspace/review/[id]`, `/workspace/workshop`, plus the exam
+  `/workspace/vocabulary`, `/workspace/my-exams`, `/workspace/review` and `/workspace/review/[id]`, `/workspace/workshop`, plus the exam
   library pages above. `/dashboard`
   and `/workshop` redirect here; sign-in returns to `/workspace` by default. `/workspace/profile` and `/workspace/plans`
   (2026-11-08) replace `/profile` and `/plans`, which redirect (`/profile?error=` keeps its Google link error). The owner
@@ -380,21 +384,66 @@ page already holds. Results add per-skill totals, review filters and a link to p
   similar question, free questions). The server builds the coach's context from the student's own SUBMITTED snapshot via
   `ownMock`; the page sends only the attempt and question ids. Replies render as a small Markdown subset through React text.
 
-### Flashcards (2026-11-08)
+### Vocabulary (2026-11-09)
 
-- `/workspace/flashcards` turns an uploaded PDF, DOCX, PPTX, TXT, MD or CSV into 10, 20 or 30 study cards. It is a Workspace rail tab; guests are sent to sign-in with the page as the return path.
-- The browser posts the file as multipart (4 MB maximum) to `POST /api/workspace/flashcards`. The server checks same origin, a verified session, the exact form shape, card count and language, the file signature and a 100-page/8 MB-part bound before spending the daily AI budget. PDF text comes from `unpdf`'s serverless PDF.js build; Word and PowerPoint text is read from their XML with `fflate` and bounded decompression. Scanned/image-only documents are refused because there is no OCR.
-- DeepSeek receives only the extracted text (first 45,000 characters), the chosen language/count and the fixed card rules; the document is data, never instructions. JSON mode returns a title and cards; malformed output gets one silent retry. The provider call is refused while any timed sitting is open, checked before and after.
-- 20 generations per student per Ulaanbaatar day, one in flight, using the shared `RateLimit` compare-and-set pattern. The upload and deck are not stored on the server. Decks and per-card mastery live only in this browser, per account (`education-flashcards-v1:<userId>`), like Workspace chats and Essay Studio drafts.
-- Study flips a card with a click, Space or Up Arrow, marks it known/again with 1/2 or Left/Right Arrow, and persists the known set. Decks show a known count and can be deleted. Cards are AI drafts, not teacher-reviewed material.
+- `/workspace/vocabulary` replaces the 2026-11-08 flashcards page; `/workspace/flashcards` redirects there. It is a Workspace rail tab ("Үгсийн сан"); guests are sent to sign-in with the vocabulary page as the return path.
+- A student adds a word or phrase with its translation and an optional example by hand; saved words can be edited or deleted from the list. `VocabularyWord` is unique by a case/width-folded `termKey`, so a duplicate term is refused (409) rather than silently doubled.
+- Bank size (2026-11-09, owner rule): 100 words on a free account, 3,000 while an IELTS or SAT plan is active (`vocabularyWords` in `subscriptions/plans.ts`; the largest active plan wins, plans do not stack; University Prep keeps 100, owner-confirmed 2026-11-09). Adds and imports past the size get a 409 that names the IELTS/SAT upgrade; words kept above it after a plan ends stay listed, editable and deletable, but no new word fits until the bank is under its size.
+- A file is uploaded as multipart (4 MB maximum) to `POST /api/workspace/vocabulary/import`. It reuses the shared bounded document pipeline in `src/modules/documents` (signature check, 100 PDF pages, Office ZIP bounds, text decoding). DeepSeek receives only the extracted text (first 45,000 characters) and the chosen fallback language, with document text treated as data; it returns term/translation pairs, optionally with a copied example. If the document supplies a translation or meaning, that wording is kept, even when it is in another language; the selected language is only a fallback for terms the document lists without a meaning. Malformed output gets one silent retry, and the new pairs are saved to the account in one transaction. The student picks how many words to add (10, 20, 50 or all = 120; the `count` field, 1–120, defaults to 120 for older clients); the server lowers it to the room left in the bank, tells the model that maximum and cuts the list to it.
+- The import panel states that a document's own translation is used as-is, and warns that words without a translation are translated by AI and that fallback translation may be inaccurate. An optional selection request (at most 500 characters), such as "only academic verbs", is sent with the extracted text; it can narrow or focus the list, or ask for fewer words than the chosen count but never more, and is treated as untrusted data, so it cannot change the extraction rules, fallback language or JSON shape.
+- The import route checks same origin, a verified session, the exact multipart shape, the file signature and the no-open-timed-sitting rule before and after the provider call. It allows 20 imports per student per Ulaanbaatar day with one in flight, using the shared `RateLimit` compare-and-set. The file itself is never stored. Scanned/image-only documents are refused because there is no OCR.
+- Words are server-stored per account, not in this browser, so they persist across devices and browsers. Every edit and delete is scoped by `userId` on the server.
+- Quiz: the browser builds 10, 20 or 30 multiple-choice questions from the saved words, mixed or one-directional (word→translation / translation→word). Distractors come from the student's other words; a quiz needs at least four words. Answers receive immediate feedback, the result lists missed pairs, and a retake reshuffles. The score is self-study feedback and is not saved or sent to the server.
+- AI-generated translations and examples are drafts, not teacher-reviewed material. The browser-stored flashcard decks created by the 2026-11-08 page are not migrated into the vocabulary bank; the old local data is simply unused.
 
 ### Exams from a file (2026-11-09)
 
 - `/workspace/my-exams` is a Workspace rail tab, linked from the home "Шалгалтууд" heading. A student uploads a PDF, DOCX, PPTX, TXT, MD or CSV (4 MB maximum, first 45,000 characters) and chooses 10 or 20 questions in Mongolian or English. DeepSeek writes a title, four-option prompts, one key, an explanation and an optional topic per question; malformed or too-short output gets one silent retry. The JSON reader, prompt limits and malformed-question handling live in `src/modules/my-exams/contracts.ts`.
-- The server reuses the flashcards' bounded document pipeline (`src/modules/flashcards/extract.ts`): signature check, 100 PDF pages, Office ZIP bounds and text decoding. The route checks same origin, a verified session, the exact multipart shape and the no-open-sitting rule before and after the provider call. A 15-per-Ulaanbaatar-day quota with one request in flight uses the shared `RateLimit` compare-and-set; the file and the exam are never stored on the server.
+- The server reuses the shared bounded document pipeline (`src/modules/documents/extract.ts`): signature check, 100 PDF pages, Office ZIP bounds and text decoding. The route checks same origin, a verified session, the exact multipart shape and the no-open-sitting rule before and after the provider call. A 15-per-Ulaanbaatar-day quota with one request in flight uses the shared `RateLimit` compare-and-set; the file and the exam are never stored on the server.
 - The answer key is sealed in an AES-256-GCM token derived from `BETTER_AUTH_SECRET`, bound to the student's id as additional authenticated data, and valid for 30 days. The browser receives only the questions and the opaque token; `POST /api/workspace/my-exams/grade` opens the token server-side, grades the submitted option indexes and returns the key, explanations and score. The timer (suggested 15 or 30 minutes) is a browser study aid that auto-submits at zero; this is personal practice, not a `MockAttempt` and not a server-enforced deadline.
 - Exams live only in this browser, per account (`education-my-exams-v1:<userId>`, 20 exams). A draft keeps answers, the current question, flags and the start time, so a reload resumes the same sitting. The last result (with key and explanations), best percentage and attempt count are kept for review; deleting the exam removes all of it. `/workspace/review` lists graded mocks only, not these browser-local exams.
 - The runner has one question per page, an always-visible answer grid, flags, keyboard answers (1–4, arrows, F, Esc), a confirm step, corrective review filters and the source's math through `MathText`/KaTeX. Generated exams and explanations are AI drafts, are not teacher-reviewed, and scans are not OCR'd.
+
+### AI credits (2026-11-09)
+
+- The owner asked for every AI feature to spend credits priced from DeepSeek. `src/modules/credits/pricing.ts` is the one price
+  list: DeepSeek Flash peak list prices (USD 0.006 / 0.30 / 1.20 per million cache-hit input, cache-miss input and output tokens,
+  checked 2026-11-09 on the official pricing page) and 1 credit = USD 0.001. Each action has a token budget (output = the
+  provider `max_tokens` the service sends; input = a generous prompt estimate, all priced as cache misses); its fixed cost is
+  the budget's cost rounded up: chat 5, review coach 6, practice assistant 5, SAT math tutor 3, Essay Studio ideas 3 /
+  grammar 5 / feedback 6, Speaking Lab reply 3 / report 9, vocabulary import 1–17 (below), file-to-exam 13 (10 questions) or 17 (20).
+  Changing a price or budget there changes the charge, the badges and the plans page together.
+- Vocabulary import is priced by result (2026-11-09), so 10 words no longer cost the same as 100: `vocabularyImportCredits` =
+  1,500 prompt tokens + one token per two characters of the extracted text (input) + 66 output tokens per new word saved,
+  rounded up (10 words from a 2,000-character list = 2; 100 words from 20,000 characters = 12; a full 45,000-character file
+  with 120 new words = 17, the listed maximum). The maximum for the chosen count on a full-length file is held first (10 words 8,
+  20 → 9, 50 → 12, 120 → 17); once the words are saved the charge settles to the real text length and new-word count and the
+  rest returns in the same transaction. Duplicates and words that do not fit cost nothing; badges show "хамгийн ихдээ N" and
+  the price list shows 1–17.
+- Allowance per Ulaanbaatar calendar month: 100 free for every verified account plus `aiCredits` of each plan active at the
+  time of the charge (`subscriptions/plans.ts`; plans stack). Unused credits do not roll over. Per-mock purchases add none.
+- `chargeCredits` (`credits/service.ts`) wraps every DeepSeek call: after validation, access and provider-key checks it holds
+  the cost (or, with `settle`, the most it can cost; never above the listed price) with a compare-and-set on
+  `CreditPeriod.used`, then runs the existing daily quota and provider call. A `settle` result lowers `CreditCharge.credits`
+  to the final price and decrements `used` by the difference while marking the charge SPENT; a failing settle keeps the hold. Any failure
+  (402 not enough credits happens first; 429 busy/quota, provider errors, malformed output, too little file text, a timed
+  sitting opening meanwhile) refunds the hold; credits are kept only when the student receives the result. `CreditCharge`
+  records each action (HELD/SPENT/REFUNDED) with DeepSeek's reported prompt, cached and completion tokens and the list cost
+  in micro-dollars, so real cost can be compared with credits charged. Daily request quotas stay as abuse limits.
+- Every AI reply carries a `credits` receipt (spent, balance, allowance). `credits/client.tsx` keeps the balance in the
+  Workspace shell, shows it in the rail ("AI кредит", linking to `/workspace/plans#credits`) and renders `CreditCost`
+  badges beside each AI action with the remaining balance or a "хүрэлцэхгүй" warning. The plans page lists each plan's
+  credits, the full price list, the rules, the student's balance and the last eight charges.
+- Admin (2026-11-09): `/admin?tab=credits` shows a month's credits spent and refunded, the real DeepSeek list cost (failed calls
+  included) against the credits' value, usage by action, the top students and every charge (search, status/action filters,
+  CSV `kind=credits`); the overview has a one-line summary. On `/admin/users/[id]` the facts show this month's balance and an
+  "AI кредит" view lists the student's charges; "AI кредит олгох" adds 1–10,000 bonus credits to the current month only
+  (`CreditPeriod.bonus`, audited `grant-credits`). The Prices tab edits the free and per-plan monthly amounts (0–100,000,
+  `CreditAllowance`, audited `set-credits`); missing rows fall back to the code defaults, and charging, the plans page and the
+  user record read the same table. The hold's compare-and-set runs as one SQL statement that includes the bonus.
+- No credit top-up purchase exists yet. If the credit tables are missing (migration not applied), Workspace pages still render
+  without the meter, but AI actions fail. Vercel applies migrations on deploy; a running dev server must be restarted after
+  `prisma generate` before it sees new tables.
 
 ### IELTS Speaking Lab
 
@@ -493,9 +542,11 @@ rounding), vocabulary upgrades, strengths, next steps and one rewritten passage.
 | `reference/official-papers` | Withdrawn official papers, kept as a format guide only; never served, built or deployed |
 | `reference/retired-site-mocks` | Retired site mocks (the first four Mathematics forms and the old English set); never built |
 | `src/modules/workspace` | Workspace shell, home, AI chat (contract, service, browser-stored threads), review and styles |
-| `src/modules/flashcards` | Document extraction, AI card contract, browser-stored decks and the study UI |
+| `src/modules/documents` | Shared bounded document extraction (PDF, DOCX, PPTX, TXT, MD, CSV) and text helpers for vocabulary import and exams from a file |
+| `src/modules/vocabulary` | Vocabulary limits, AI import contract, server-stored word bank, quiz builder and UI |
 | `src/modules/my-exams` | Upload-to-exam contract, sealed answer token, server generation/grading, browser-stored exams and the runner |
 | `src/modules/subscriptions` | Plans, purchases, entitlements and legacy grants |
+| `src/modules/credits` | AI credit price list from DeepSeek prices, monthly allowances, hold/refund ledger and cost badges |
 | `src/modules/admin` | Admin services, reporting, exports and audit |
 | `src/modules/tutor` | DeepSeek prompt contracts, quotas and provider calls |
 | `prisma` | Schema and migrations |
@@ -610,8 +661,8 @@ deadlines; they must never add a runtime bypass, shorten a public exam or change
   unverified.
 - AI and speech features depend on third-party models and local model caches; quality, latency and
   cost are not production-benchmarked. Provider retention is governed by the provider's terms.
-- Flashcards are generated from the uploaded text only: they can be incomplete or wrong, are not
-  teacher-reviewed, and scans or photos are not OCR'd.
+- Vocabulary is generated from the uploaded text only: imported words can be incomplete or wrong, are not teacher-reviewed, and scans or photos are not OCR'd. A translation written in the document is kept; a fallback translation that the AI writes for a word with no meaning in the document may be inaccurate. The chosen word count is a strict maximum (the model may return fewer); the free-text selection request is only a preference.
+- Vocabulary quiz scores are self-study feedback in the browser; they are not saved, graded or official results.
 - Exams from a file are generated from the uploaded text only and are also unreviewed AI drafts. Their
   timer, results and history are browser-local, the score is practice feedback rather than an official
   result, and scanned documents are refused because there is no OCR.

@@ -84,7 +84,7 @@ test("four bundled Listening recordings fit the thirty-minute stage and match th
  const manifest=JSON.parse(readFileSync(new URL("../assets/exams/manifest.json",import.meta.url),"utf8").replace(/^\uFEFF/,""));
  const hash=createHash("sha256").update(readFileSync(new URL("../src/modules/exams/ielts-listening.ts",import.meta.url))).digest("hex");
  assert.equal(manifest.sourceSha256,hash);assert.equal(manifest.parts.length,4);
- const timeline=listeningParts("ielts-academic-01");
+ const timeline=listeningParts("ielts-academic-01",1);
  for(const part of manifest.parts){assert.ok(Math.abs(part.seconds-timeline[part.part-1])<0.01);assert.equal(statSync(new URL(`../assets/exams/ielts-01-part-${part.part}.mp3`,import.meta.url)).size,part.bytes);}
  assert.ok(timeline.reduce((a,b)=>a+b,0)<=findExam("ielts-academic-01").stages[0].seconds);
 });

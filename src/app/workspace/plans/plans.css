@@ -73,6 +73,37 @@
 .pricing-table tfoot th, .pricing-table tfoot td { border-top: 1px solid var(--line); background: color-mix(in srgb, var(--paper) 30%, transparent); font-size: 14px; }
 .pricing-table tfoot td { text-align: center; }
 
+/* AI credits: per-plan allowance on each card, then the balance, the price list and recent charges. */
+.pricing-credits { display: flex; align-items: center; gap: 6px; margin: -4px 0 14px; color: var(--muted); font-size: 13px; }
+.pricing-credits svg, .pricing-ai svg { width: 15px; height: 15px; flex-shrink: 0; fill: var(--blue); }
+.pricing-credits strong { color: var(--ink); font-variant-numeric: tabular-nums; }
+.pricing-ai { margin-top: 10px; scroll-margin-top: 80px; }
+.pricing-ai h3 { margin: 0 0 12px; font-size: 15px; letter-spacing: -.01em; }
+.pricing-ai-balance { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 24px; align-items: center; margin-bottom: 14px; padding: 20px 22px; border: 1px solid var(--line); border-radius: 18px; background: color-mix(in srgb, var(--surface) 70%, transparent); }
+.pricing-ai-balance > div > span { color: var(--muted); font-size: 12.5px; font-weight: 600; }
+.pricing-ai-balance > div > strong { display: block; margin: 4px 0 10px; font-size: 34px; line-height: 1; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.pricing-ai-balance > div > strong small { color: var(--muted); font-size: 16px; font-weight: 500; letter-spacing: 0; }
+.pricing-ai-bar { display: block; height: 6px; overflow: hidden; border-radius: 999px; background: color-mix(in srgb, var(--ink) 8%, transparent); }
+.pricing-ai-bar b { display: block; height: 100%; background: var(--blue); transform-origin: left; }
+.pricing-ai-balance[data-low] .pricing-ai-bar b { background: #c77700; }
+.pricing-ai-balance dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 18px; margin: 0; }
+.pricing-ai-balance dl div { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding: 6px 0; border-bottom: 1px solid color-mix(in srgb, var(--line) 70%, transparent); }
+.pricing-ai-balance dt { color: var(--muted); font-size: 12.5px; }
+.pricing-ai-balance dd { margin: 0; font-size: 13.5px; font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; }
+.pricing-ai-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 14px; }
+.pricing-ai-costs, .pricing-ai-rules, .pricing-ai-history { min-width: 0; padding: 18px 20px; border: 1px solid var(--line); border-radius: 18px; background: color-mix(in srgb, var(--surface) 58%, transparent); }
+.pricing-ai-costs ul, .pricing-ai-history ul { display: grid; margin: 0; padding: 0; list-style: none; }
+.pricing-ai-costs li, .pricing-ai-history li { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 0; border-top: 1px solid color-mix(in srgb, var(--line) 70%, transparent); font-size: 13.5px; }
+.pricing-ai-costs li:first-child, .pricing-ai-history li:first-child { border-top: 0; }
+.pricing-ai-costs li > span, .pricing-ai-history li > span { display: grid; min-width: 0; line-height: 1.35; }
+.pricing-ai-costs small, .pricing-ai-history small { color: var(--muted); font-size: 12px; }
+.pricing-ai-costs strong, .pricing-ai-history strong { flex-shrink: 0; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pricing-ai-rules ul { display: grid; gap: 10px; margin: 0; padding-left: 18px; color: var(--muted); font-size: 13px; line-height: 1.65; }
+.pricing-ai-rules strong { color: var(--ink); }
+.pricing-ai-history { margin-top: 14px; }
+.pricing-ai-history time { margin-left: auto; color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pricing-ai-history li[data-status="REFUNDED"] strong { color: var(--muted); font-weight: 500; }
+
 .pricing-single { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 28px; margin-top: 42px; padding: 26px 28px; border: 1px solid var(--line); border-radius: 22px; background: color-mix(in srgb, var(--surface) 64%, transparent); }
 .pricing-single h2 { margin: 6px 0 8px; font-size: 22px; letter-spacing: -.02em; }
 .pricing-single p:not(.eyebrow) { max-width: 56ch; margin: 0; font-size: 14px; line-height: 1.7; color: var(--muted); }
@@ -98,6 +129,7 @@
   .pricing-section-head > p { text-align: left; }
   .pricing-single { grid-template-columns: minmax(0, 1fr) auto; }
   .pricing-single .button { grid-column: 1 / -1; justify-content: space-between; }
+  .pricing-ai-balance, .pricing-ai-grid { grid-template-columns: minmax(0, 1fr); }
 }
 @media (max-width: 700px) {
   .pricing-compare { display: none; }
@@ -117,4 +149,8 @@
   .pricing-single { grid-template-columns: minmax(0, 1fr); padding: 22px 18px; gap: 18px; }
   .pricing-single-price { justify-items: start; padding: 16px 0 0; border-left: 0; border-top: 1px solid var(--line); }
   .pricing-terms { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .pricing-ai-balance, .pricing-ai-costs, .pricing-ai-rules, .pricing-ai-history { padding: 16px; }
+  .pricing-ai-balance dl { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .pricing-ai-history li { flex-wrap: wrap; gap: 2px 12px; }
+  .pricing-ai-history time { order: 3; flex-basis: 100%; margin-left: 0; }
 }

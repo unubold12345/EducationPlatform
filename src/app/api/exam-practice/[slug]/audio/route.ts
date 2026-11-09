@@ -6,8 +6,8 @@ export const runtime="nodejs";
 export async function GET(request:Request,{params}:{params:Promise<{slug:string}>}){
   try{
     const user=await apiUser(request);const {slug}=await params;
-    await authorizePracticeAudio(user.id,slug);
-    const filename=listeningFile(slug,Number(new URL(request.url).searchParams.get("part")));
+    const revision=await authorizePracticeAudio(user.id,slug);
+    const filename=listeningFile(slug,Number(new URL(request.url).searchParams.get("part")),revision);
     if(!filename)throw new ApiError(404,"Бичлэг олдсонгүй.");
     return await listeningAudioResponse(filename,request);
   }catch(error){return apiFailure(error);}

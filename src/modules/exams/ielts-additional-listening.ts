@@ -1,4 +1,6 @@
-import { choice, short } from "./builders.ts";
+import revised from "./ielts-listening-revised.json" with { type: "json" };
+import distractors from "./ielts-listening-distractors.json" with { type: "json" };
+import { short } from "./builders.ts";
 import type { AudioTurn } from "./ielts-listening.ts";
 import type { ExamQuestion } from "./types.ts";
 
@@ -113,7 +115,18 @@ const episodes: Episode[][] = [
   ],
 ];
 
-function episodeScripts(episode: Episode, part: number): AudioTurn[][] {
+function episodeScripts(paper:number, part:number): AudioTurn[][] {
+  const segments=revised[(paper-2)*4+part-1];
+  const turns=segments.map((text,segment):AudioTurn[] => text.split(" | ").map((raw,i) => {
+    const tutor=raw.startsWith("Tutor:"),student=raw.startsWith("Student:");
+    const staffStarts=([2,3,4].includes(paper)&&segment===0)||(paper===3&&segment===1);
+    const voice:AudioTurn["voice"]=part===3?(tutor?"tutor":"woman"):part===1?((i+(staffStarts?1:0))%2===0?"man":"woman"):part===2?"woman":"tutor";
+    return {voice,text:tutor||student?raw.replace(/^(Tutor|Student):\s*/,""):raw};
+  }));
+  return [turns.slice(0,5).flat(),turns.slice(5).flat()];
+}
+
+function legacyEpisodeScripts(episode: Episode, part: number): AudioTurn[][] {
   const dialogue = part === 1 || part === 3;
   return [0,1].map(half => episode.facts.slice(half*5,half*5+5).flatMap(([label,raw,alternative,reason],i):AudioTurn[] => {
     const answer=raw.trim();
@@ -125,18 +138,25 @@ function episodeScripts(episode: Episode, part: number): AudioTurn[][] {
   }));
 }
 
+export function additionalListeningScripts(paper:number,revision=2) {
+  return episodes[paper-2].map((episode,i)=>({title:episode.title,halves:revision===1?legacyEpisodeScripts(episode,i+1):episodeScripts(paper,i+1)}));
+}
+
 export function additionalListening(paper: number) {
-  const scripts=episodes[paper-2].map((episode,i)=>({title:episode.title,halves:episodeScripts(episode,i+1)}));
-  const questions=episodes[paper-2].flatMap((episode,part)=>episode.facts.map(([label,raw,alternative,reason],i)=>{
-    const answer=raw.trim(),id=`il-${paper}-${part*10+i+1}-v1`;
+  const scripts=additionalListeningScripts(paper);
+  const questions=episodes[paper-2].flatMap((episode,part)=>episode.facts.map(([label,raw,,reason],i)=>{
+    const answer=raw.trim(),id=`il-${paper}-${part*10+i+1}-v2`;
     const prompt=`Part ${part+1} · ${episode.title}\n${label}: ${part===2||part===1&&i>=5?"Choose ONE answer.":"Complete the notes. Write NO MORE THAN TWO WORDS AND/OR A NUMBER."}`;
-    const explanation=`The recording states “${answer}”, not “${alternative}”. ${reason}`;
+    const evidence=revised[(paper-2)*4+part][i].replaceAll(" | "," ");
+    const explanation=`${reason} Evidence: ${evidence}`;
     const q:ExamQuestion = part===2||part===1&&i>=5
-      ? choice(id,"Listening","",prompt,answer,[alternative,"This detail was not stated","Neither option was selected"],explanation)
+      ? {id,domain:"Listening",prompt,kind:"choice",options:(()=>{const items=[answer,...distractors[paper-2][part===1?i-5:i+5]]; const offset=(paper+i)%3;return items.slice(offset).concat(items.slice(0,offset));})(),answers:[answer],explanation}
       : short(id,"Listening",prompt,[answer],explanation,2);
     // Accept conventional digits as well as the spoken number in form completions.
     const numbers:Record<string,string>={eighty:"80",forty:"40",twenty:"20",seventy:"70",thirty:"30",six:"6",ten:"10",sixteen:"16",nine:"9",twelve:"12"};
     if(q.kind==="short"&&numbers[answer])q.answers.push(numbers[answer]);
+    if(q.kind==="short"&&answer==="fibre")q.answers.push("fiber");
+    if(q.kind==="short"&&answer==="crossdating")q.answers.push("cross-dating");
     return q;
   }));
   return {questions,scripts};

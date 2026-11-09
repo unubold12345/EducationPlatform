@@ -3,7 +3,7 @@ import { useSyncExternalStore } from "react";
 import { MY_EXAM_LIMITS, type ExamLanguage } from "./contracts";
 
 // Generated exams, in-progress answers and results live only in this browser, per account,
-// like Workspace chats and flashcard decks. The answer key stays in the sealed token.
+// like Workspace chats and vocabulary banks. The answer key stays in the sealed token.
 export type StoredQuestion = { id: string; prompt: string; options: string[]; topic?: string };
 export type Draft = {
   answers: Record<string, number>;

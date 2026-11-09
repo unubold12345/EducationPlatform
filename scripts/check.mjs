@@ -10,7 +10,7 @@ import { join } from "node:path";
 
 const groups = {
   core: ["browser", "accounts", "exams"],
-  flashcards: ["flashcards"],
+  vocabulary: ["vocabulary"],
   myexams: ["my_exams"],
   entrance: ["entrance_mocks"],
   mocks: ["additional_exams"],

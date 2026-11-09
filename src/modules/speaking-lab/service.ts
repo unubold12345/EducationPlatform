@@ -5,6 +5,8 @@ import {getDb} from "@/lib/db";
 import {speakingLabEnabled} from "@/lib/local-pilot";
 import {tutorDay} from "@/modules/tutor/contracts";
 import {normalizeSpeakingReply,speakingMessages,validSpeakingInput} from "./contracts";
+import {chargeCredits} from "@/modules/credits/service";
+import {AI_ACTIONS,speakingCreditAction} from "@/modules/credits/pricing";
 
 // Daily per-student limits. A full mock uses ~18 chat calls, one voice stream per reply and one transcription per answer.
 const DAILY_LIMIT={chat:80,voice:200,transcribe:150} as const;
@@ -52,20 +54,24 @@ export async function speakingReply(userId:string,body:unknown) {
  if(!validSpeakingInput(body))throw new ApiError(400,"Ярианы хүсэлтийн бүтэц буруу байна.");
  await requireSpeakingLab(userId);
  const key=process.env.DEEPSEEK_API_KEY?.trim();if(!key)throw new ApiError(503,"AI одоогоор холбогдоогүй байна.");
+ const action=speakingCreditAction(body.action);
+ // Credits are held first and refunded if the daily budget, the provider or the exam check fails.
+ return chargeCredits(userId,action,async meter=>{
  const release=await reserveSpeakingRequest(userId,"chat");
  try {
-  const maxTokens=body.action==="report"?(body.language==="mn"?3200:2400):900;
+  const maxTokens=body.action==="report"?(body.language==="mn"?AI_ACTIONS["speaking-report"].outputTokens:2400):AI_ACTIONS["speaking-turn"].outputTokens;
   for(let attempt=0;attempt<2;attempt++){
    let response:Response;
    try{response=await fetch("https://api.deepseek.com/chat/completions",{method:"POST",cache:"no-store",redirect:"error",headers:{"Content-Type":"application/json",Authorization:`Bearer ${key}`},body:JSON.stringify({model:process.env.DEEPSEEK_MODEL||"deepseek-flash",messages:speakingMessages(body),thinking:{type:"disabled"},max_tokens:maxTokens,temperature:body.action==="report"?0.3:0.8,response_format:{type:"json_object"},stream:false}),signal:AbortSignal.timeout(body.action==="report"?80000:45000)});}
    catch{throw new ApiError(503,"AI-тай холбогдож чадсангүй. Хариу тань хэвээр байна.");}
    if(!response.ok)throw new ApiError(503,"AI түр ажиллахгүй байна. Дахин оролдоно уу.");
    let reply=null;
-   try{const data=await response.json();const choice=data.choices?.[0];if(choice?.finish_reason==="stop"&&typeof choice.message?.content==="string"&&choice.message.content.length<=16000)reply=normalizeSpeakingReply(JSON.parse(choice.message.content),body.action);}
+   try{const data=await response.json();meter.add(data.usage);const choice=data.choices?.[0];if(choice?.finish_reason==="stop"&&typeof choice.message?.content==="string"&&choice.message.content.length<=16000)reply=normalizeSpeakingReply(JSON.parse(choice.message.content),body.action);}
    catch{reply=null;}
    // One silent retry on malformed model output keeps the conversation flowing.
    if(reply){await requireSpeakingLab(userId);return reply;}
   }
   throw new ApiError(503,"Ярианы хариу бүрэн ирсэнгүй. Дахин оролдоно уу.");
  }finally{await release();}
+ });
 }

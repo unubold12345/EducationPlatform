@@ -1,6 +1,7 @@
 import { additionalMath, additionalReading } from "./sat-additional.ts";
 import { readingCases } from "./ielts-additional-passages.ts";
 import { additionalListening } from "./ielts-additional-listening.ts";
+import readingReview from "./ielts-reading-review.json" with { type: "json" };
 import { choice, short } from "./builders.ts";
 import type { ExamDefinition, ExamQuestion } from "./types.ts";
 
@@ -41,18 +42,26 @@ function readingSection(paper:number) {
     const passage=passages[index].title;
     const mc=(prompt:string,answer:string,wrong:string[],explanation:string)=>questions.push(choice(`ir-${paper}-${questions.length+1}-v1`,"Academic Reading",passage,prompt,answer,wrong,explanation));
     c.completions.forEach(([prompt,answer])=>questions.push({...short(`ir-${paper}-${questions.length+1}-v1`,"Academic Reading",`Complete the summary using ONE WORD from the passage. ${prompt}`,[answer],`The passage explicitly uses “${answer}” in the described context.`,1),passage}));
-    for(const [statement,answer,explanation] of [
+    const statements = [
       [c.trueStatement,"TRUE","The statement agrees with the information given in the passage."],
       [c.falseStatement,"FALSE","The passage explicitly contradicts this statement; it describes the opposite policy, limitation or finding."],
       [c.absentStatement,"NOT GIVEN","The passage provides no information establishing or contradicting this specific claim."],
-    ])mc(`Do the following statements agree with the information in the passage? Choose TRUE, FALSE or NOT GIVEN.\n${statement}`,answer,["TRUE","FALSE","NOT GIVEN"].filter(v=>v!==answer),explanation);
-    mc("Which paragraph most directly discusses the following theme?\n"+c.heading,"G",["A","C","E"],"Paragraph G develops this theme; its evidence and examples support the heading.");
-    mc("Which statement best expresses the passage's central argument?",c.mainIdea,["Collecting a larger total always makes interpretation unnecessary.","The first version of a project should be retained without revision.","Practical constraints make careful evaluation impossible."],"The opening problem and final synthesis support this qualified account of the whole passage.");
-    mc("Which inference is best supported by the passage?",c.inference,["The account establishes a rule that applies without exception.","Every disagreement described in the passage results from dishonesty.","The author regards recording methods and conditions as unnecessary."],"This inference preserves the distinction between evidence, interpretation and the limits described in the text.");
-    mc("How does paragraph H relate to the earlier paragraphs?","It draws a broader lesson from the practical issues already examined.",["It replaces the discussion with an unrelated personal biography.","It denies that any of the earlier practical issues occurred.","It provides a numerical table that resolves every uncertainty."],"The final paragraph synthesises the case rather than introducing an unrelated case or removing all qualifications.");
-    mc("Which description best fits the writer's approach?","Examining benefits while explaining the conditions and limits of the evidence.",["Promoting the project by ignoring every difficulty.","Rejecting all measurement in favour of unsupported opinion.","Claiming that a single example proves a universal rule."],"The writer repeatedly considers what observations support and what they leave uncertain.");
-    mc("According to the overall argument, why is documenting methods useful?","It helps later readers assess what a result can reasonably show.",["It guarantees that every future result will be identical.","It removes the need to make any practical decisions.","It proves that all earlier observations were false."],"Across the case, records make consequential decisions and the limits of interpretation visible.");
-    if(index===2)mc("Which additional investigation would best test whether the account's lessons extend beyond the case described?","A comparable study in another setting that records relevant differences in conditions.",["A repetition of the conclusion without any new observations.","A collection containing only the most favourable comments.","A survey that excludes anyone with a different experience."],"A comparable case with documented contextual differences can examine transfer; selective confirmation cannot.");
+    ];
+    for(const [statement,answer,explanation] of statements.slice((paper+index)%3).concat(statements.slice(0,(paper+index)%3))) {
+      mc(`Do the following statements agree with the information in the passage? Choose TRUE, FALSE or NOT GIVEN.\n${statement}`,answer,["TRUE","FALSE","NOT GIVEN"].filter(v=>v!==answer),explanation);
+      questions[questions.length-1].options=["TRUE","FALSE","NOT GIVEN"];
+    }
+    const review=readingReview[(paper-2)*3+index];
+    for(const [letter,detail] of review.matches) {
+      // Fixed paragraph labels allow reuse, as in an IELTS matching-information task.
+      questions.push({id:`ir-${paper}-${questions.length+1}-v2`,domain:"Academic Reading",passage,kind:"choice",
+        prompt:`Which paragraph contains the following information? Choose A–H. You may use a letter more than once.\n${detail}`,
+        options:["A","B","C","D","E","F","G","H"],answers:[letter],explanation:`Paragraph ${letter}: ${c.paragraphs[letter.charCodeAt(0)-65]}`});
+    }
+    mc("Which statement best expresses the passage's central argument?",c.mainIdea,review.mainWrong,"Read the opening problem alongside the conclusion. "+c.mainIdea);
+    mc("Which conclusion can reasonably be drawn from the passage?",c.inference,review.inferenceWrong,"The evidence supports this conclusion within the limits stated: "+c.inference);
+    if(index===2&&review.extra)questions.push({id:`ir-${paper}-${questions.length+1}-v2`,domain:"Academic Reading",passage,kind:"choice",
+      prompt:`Which paragraph discusses this issue? Choose A–H.\n${review.extra[1]}`,options:["A","B","C","D","E","F","G","H"],answers:[review.extra[0]],explanation:`Paragraph ${review.extra[0]}: ${c.paragraphs[review.extra[0].charCodeAt(0)-65]}`});
   });
   return {questions,passages};
 }
@@ -68,7 +77,7 @@ export function createAdditionalExams(base: ExamDefinition[]):ExamDefinition[] {
     sat.stages[3].questions=additionalMath(paper,"first");
     sat.stages[4].variants={lower:additionalMath(paper,"lower"),higher:additionalMath(paper,"higher")};
     const ielts=structuredClone(base.find(e=>e.program==="ielts")!);
-    ielts.slug=`ielts-academic-${number}`;ielts.title=`IELTS Academic · Full Mock ${number}`;
+    ielts.version=2;ielts.slug=`ielts-academic-${number}`;ielts.title=`IELTS Academic · Full Mock ${number}`;
     const listening=additionalListening(paper),reading=readingSection(paper),w=writingSets[paper-2],s=speakingTopics[paper-2];
     ielts.description=`Original practice form ${number}: four new synthetic Listening recordings, three new Reading passages, a table about ${w.topic}, two Writing tasks and a Speaking simulation.`;
     ielts.stages[0].questions=listening.questions;ielts.stages[1].questions=listening.questions;

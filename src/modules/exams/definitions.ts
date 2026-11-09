@@ -1,3 +1,4 @@
+import { reviseIelts } from "./ielts-revisions.ts";
 import { readingModule } from "./sat-reading.ts";
 import { mathModule } from "./sat-math.ts";
 import { ieltsReading, readingPassages } from "./ielts-reading.ts";
@@ -45,7 +46,7 @@ const originalExamDefinitions: ExamDefinition[] = [
     ]},
   ]},
 ];
-export const examDefinitions: ExamDefinition[] = [...originalExamDefinitions,...createAdditionalExams(originalExamDefinitions)];
+export const examDefinitions: ExamDefinition[] = [...originalExamDefinitions,...createAdditionalExams(originalExamDefinitions)].map(reviseIelts);
 // SAT/IELTS live in memory; the 155 ЭЕШ mocks are read from assets/entrance-mocks on demand.
 export function findExam(slug:string) { return examDefinitions.find(exam=>exam.slug===slug) ?? entranceDefinition(slug) ?? jlptDefinition(slug); }
 export function allExamSlugs(): string[] { return [...examDefinitions.map(exam=>exam.slug), ...entranceSlugs(), ...jlptSlugs()]; }

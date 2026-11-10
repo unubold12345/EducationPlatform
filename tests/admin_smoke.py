@@ -93,7 +93,7 @@ with sync_playwright() as p:
     page.locator(".admin-user-actions textarea").fill("Local credit grant verification")
     page.get_by_role("button",name="AI кредит олгох (энэ сар)").click()
     expect(page.locator(".admin-user-actions [role=status]")).to_contain_text("Хадгаллаа")
-    page.reload();expect(page.locator(".admin-facts")).to_contain_text("урамшуулал +25")
+    page.reload();expect(page.locator(".admin-facts")).to_contain_text("урамшуулал 25")
     expect(page.locator(".admin-facts")).to_contain_text("125 / 125")
     page.goto(BASE+"/admin/users/"+target+"?view=credits");expect(page.locator(".admin-empty")).to_contain_text("AI үйлдэл алга")
     page.goto(BASE+"/admin/users/"+target+"?view=admin");expect(page.locator(".admin-table-wrap tbody")).to_contain_text("grant-credits")

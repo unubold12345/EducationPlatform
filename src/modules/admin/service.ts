@@ -8,7 +8,8 @@ import { guidedTasks } from "@/modules/workshops/guided";
 import { addCalendarMonth, findSubscriptionPlan, validPlanPrice } from "@/modules/subscriptions/plans";
 import { revalidatePath } from "next/cache";
 import { authFeatures, isDemoEmail } from "@/lib/auth-features";
-import { CREDIT_ALLOWANCE_LIMITS, CREDIT_GRANT_LIMITS, creditPeriod, defaultAllowances, isAllowanceKey, validAllowance, validGrant } from "@/modules/credits/pricing";
+import { CREDIT_ALLOWANCE_LIMITS, CREDIT_GRANT_LIMITS, CREDIT_PACK_LIMITS, creditPeriod, defaultAllowances, isAllowanceKey, validAllowance, validCreditPack, validGrant } from "@/modules/credits/pricing";
+import { CREDIT_PACK_KEY, creditPack } from "@/modules/credits/purchase";
 
 export async function isAdmin(userId: string) {
   const membership = await getDb().adminMembership.findUnique({where:{userId},select:{userId:true,user:{select:{email:true}}}});
@@ -28,13 +29,15 @@ export function contentCatalog() {
 export async function adminMutation(actorId:string, input:unknown) {
   if(!input || typeof input!=="object" || Array.isArray(input))throw new ApiError(400,"Хүсэлтийн бүтэц буруу.");
   const body=input as Record<string,unknown>;
-  const allowed=["action","target","reason","program","status","amount"];
+  const allowed=["action","target","reason","program","status","amount","credits"];
   if(Object.keys(body).some(key=>!allowed.includes(key)))throw new ApiError(400,"Танигдаагүй талбар.");
-  const {action,target,reason,program,status,amount}=body;
+  const {action,target,reason,program,status,amount,credits}=body;
   if(typeof action!=="string"||typeof target!=="string"||!target||target.length>150||typeof reason!=="string"||reason.trim().length<5||reason.length>1000)throw new ApiError(400,"Шалтгааныг 5–1000 тэмдэгтээр бичнэ үү.");
-  if(!["grant-month","expire-plan","revoke-sessions","review-content","suspend","unsuspend","add-note","set-price","grant-credits","set-credits"].includes(action))throw new ApiError(400,"Үйлдэл зөвшөөрөгдөөгүй.");
+  if(!["grant-month","expire-plan","revoke-sessions","review-content","suspend","unsuspend","add-note","set-price","grant-credits","set-credits","set-credit-pack"].includes(action))throw new ApiError(400,"Үйлдэл зөвшөөрөгдөөгүй.");
   if(action==="grant-credits"&&!validGrant(amount))throw new ApiError(400,`Кредит ${CREDIT_GRANT_LIMITS.min}–${CREDIT_GRANT_LIMITS.max.toLocaleString("en-US")} хооронд бүхэл тоо байна.`);
   if(action==="set-credits"&&(!isAllowanceKey(target)||!validAllowance(amount)))throw new ApiError(400,`Сарын кредит ${CREDIT_ALLOWANCE_LIMITS.min}–${CREDIT_ALLOWANCE_LIMITS.max.toLocaleString("en-US")} хооронд бүхэл тоо байна.`);
+  if(action==="set-credit-pack"&&(target!==CREDIT_PACK_KEY||!validCreditPack(credits,amount)))throw new ApiError(400,`Кредит ${CREDIT_PACK_LIMITS.credits.min}–${CREDIT_PACK_LIMITS.credits.max.toLocaleString("en-US")}, үнэ ₮${CREDIT_PACK_LIMITS.amountMnt.min.toLocaleString("en-US")}–₮${CREDIT_PACK_LIMITS.amountMnt.max.toLocaleString("en-US")} (100-д хуваагдах) бүхэл тоо байна.`);
+  if(action!=="set-credit-pack"&&credits!==undefined)throw new ApiError(400,"Танигдаагүй талбар.");
   if(action==="set-price"&&(!findSubscriptionPlan(target)||!validPlanPrice(amount)))throw new ApiError(400,"Үнэ ₮1,000–₮1,000,000 хооронд, 100-д хуваагдах бүхэл тоо байна.");
   if(action==="review-content" && (!contentCatalog().some(item=>item.key===target)||!["PENDING","IN_REVIEW","REVIEWED","CHANGES_NEEDED"].includes(String(status))))throw new ApiError(400,"Контент эсвэл төлөв буруу.");
   if(["grant-month","expire-plan"].includes(action)&&!findSubscriptionPlan(program))throw new ApiError(400,"Багц буруу.");
@@ -53,6 +56,11 @@ export async function adminMutation(actorId:string, input:unknown) {
       const before=await tx.creditAllowance.findUnique({where:{key}});
       await tx.creditAllowance.upsert({where:{key},create:{key,credits:Number(amount),updatedBy:actorId},update:{credits:Number(amount),updatedBy:actorId}});
       details={key,before:before?.credits??defaultAllowances()[key],after:amount};
+    } else if(action==="set-credit-pack") {
+      // Unpaid credit orders follow the new pack; paid orders keep the credits and amount they were bought at.
+      const before=await creditPack(tx);
+      await tx.creditPack.upsert({where:{key:CREDIT_PACK_KEY},create:{key:CREDIT_PACK_KEY,credits:Number(credits),amountMnt:Number(amount),updatedBy:actorId},update:{credits:Number(credits),amountMnt:Number(amount),updatedBy:actorId}});
+      details={before,after:{credits,amountMnt:amount},paidOrdersChanged:false};
     } else if(action==="review-content") {
       const before=await tx.contentReview.findUnique({where:{key:target}});
       await tx.contentReview.upsert({where:{key:target},create:{key:target,status:String(status),notes:reason.trim(),reviewerId:actorId},update:{status:String(status),notes:reason.trim(),reviewerId:actorId}});
@@ -96,7 +104,7 @@ export async function adminMutation(actorId:string, input:unknown) {
     return {ok:true};
   });
   if(action==="set-price"){revalidatePath("/workspace/plans");revalidatePath("/programs/[slug]","page");}
-  if(action==="set-credits")revalidatePath("/workspace/plans");
+  if(action==="set-credits"||action==="set-credit-pack")revalidatePath("/workspace/plans");
   return result;
 }
 // Round-trip time of a trivial query, shared by the health endpoint and the admin system panel.

@@ -61,6 +61,7 @@ export async function workspaceChatReply(userId: string, body: unknown) {
   const key = `education-workspace-ai:${userId}:${tutorDay(now)}`;
   const action = review ? "review-coach" : "chat";
   // Credits are held first and refunded if the daily budget, the provider or the exam check fails.
+  // Each attached image adds its DeepSeek input cost to this reply's price.
   return chargeCredits(userId, action, async meter => {
     await db.rateLimit.upsert({ where: { key }, create: { id: randomUUID(), key, count: 0, lastRequest: BigInt(0) }, update: {} });
     // Database compare-and-set: a daily budget and one request in flight, across every server instance.
@@ -74,5 +75,5 @@ export async function workspaceChatReply(userId: string, body: unknown) {
     } finally {
       await db.rateLimit.update({ where: { key }, data: { lastRequest: BigInt(Date.now() + 3000) } });
     }
-  });
+  }, { images: body.images?.length ?? 0 });
 }

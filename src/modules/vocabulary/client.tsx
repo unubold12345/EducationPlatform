@@ -10,8 +10,9 @@ import { Quiz } from "./quiz-view";
 import styles from "./vocabulary.module.css";
 import { CreditCost, useCredits } from "@/modules/credits/client";
 import { formatCredits, readReceipt, vocabularyImportCredits, vocabularyImportHold } from "@/modules/credits/pricing";
+import { MaterialImages, useMaterialPick } from "@/modules/ai-images/client";
 
-const ACCEPT = ".pdf,.docx,.pptx,.txt,.md,.csv";
+const ACCEPT = ".pdf,.docx,.pptx,.txt,.md,.csv,image/*";
 const ALLOWED = new Set(["pdf", "docx", "pptx", "txt", "md", "csv"]);
 const LANGUAGE_LABEL: Record<ImportLanguage, string> = { mn: "Монгол", en: "English" };
 const dayMonth = new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Ulaanbaatar", month: "numeric", day: "numeric" });
@@ -62,7 +63,9 @@ export function Vocabulary({ initialWords, limit }: { initialWords: VocabularyWo
   const termInput = useRef<HTMLInputElement>(null);
 
   // File import
-  const [file, setFile] = useState<File | null>(null);
+  const material = useMaterialPick({ extensions: ALLOWED, maxBytes: VOCABULARY_LIMITS.fileBytes, documentHint: "PDF, Word, PowerPoint, TXT, MD, CSV файл эсвэл хуудасны зураг сонгоно уу." });
+  const picked = material.pick;
+  const file = picked?.kind === "document" ? picked.file : null;
   const [language, setLanguage] = useState<ImportLanguage>("mn");
   const [count, setCount] = useState<number>(DEFAULT_IMPORT_COUNT);
   const [instruction, setInstruction] = useState("");
@@ -107,25 +110,21 @@ export function Vocabulary({ initialWords, limit }: { initialWords: VocabularyWo
     } finally { setAdding(false); }
   }
 
-  function pick(next: File | null | undefined) {
+  async function pick(next: ArrayLike<File> | null | undefined) {
     setImportError("");
-    if (!next) return;
-    const extension = next.name.toLowerCase().match(/\.([a-z0-9]+)$/)?.[1] ?? "";
-    if (!ALLOWED.has(extension)) { setImportError("PDF, Word, PowerPoint, TXT, MD эсвэл CSV файл сонгоно уу."); return; }
-    if (next.size > VOCABULARY_LIMITS.fileBytes) { setImportError(`Файл хэт том байна. ${VOCABULARY_LIMITS.fileBytes / 1024 / 1024} MB хүртэл файл оруулна уу.`); return; }
-    setFile(next);
+    setImportError(await material.choose(next));
   }
   function drop(event: DragEvent) {
     event.preventDefault();
     setDragging(false);
-    if (!pending) pick(event.dataTransfer.files?.[0]);
+    if (!pending) void pick(event.dataTransfer.files);
   }
   async function importFile() {
-    if (!file || pending) return;
+    if (!picked || pending || material.preparing) return;
     setPending(true); setImportError(""); setNotice(null);
     try {
       const form = new FormData();
-      form.append("file", file);
+      material.append(form);
       form.append("language", language);
       form.append("prompt", instruction.trim());
       form.append("count", String(importCount));
@@ -136,7 +135,7 @@ export function Vocabulary({ initialWords, limit }: { initialWords: VocabularyWo
         const ids = new Set(data.words.map(word => word.id));
         return [...data.words, ...current.filter(word => !ids.has(word.id))];
       });
-      setFile(null);
+      material.clear();
       const skipped = [data.duplicates ? `${data.duplicates} давхар үг алгасагдлаа.` : "", data.skipped ? `Сангийн хязгаарт ${data.skipped} үг багтсангүй.` : ""].filter(Boolean).join(" ");
       const paid = receipt ? ` ${receipt.spent} кредит зарцууллаа.` : "";
       notify({ tone: "ok", text: `${data.added} үг таны санд нэмэгдлээ.${paid}${skipped ? " " + skipped : ""}` });
@@ -223,22 +222,23 @@ export function Vocabulary({ initialWords, limit }: { initialWords: VocabularyWo
       <section className={`${styles.panel} ${styles.importPanel}`} aria-labelledby="voc-import-heading">
         <div className={styles.panelHead}>
           <span className={styles.panelIcon} aria-hidden="true"><Icon name="spark" size={19} /></span>
-          <div><h2 id="voc-import-heading">Файлаас нэмэх</h2><p>AI файлаас бүх үгийг орчуулгын хамт ялгаж авна.</p></div>
+          <div><h2 id="voc-import-heading">Файлаас нэмэх</h2><p>AI файл эсвэл хуудасны зургаас үгсийг орчуулгын хамт ялгаж авна.</p></div>
         </div>
         <div className={`${styles.drop} ${dragging ? styles.dropActive : ""}`}
           onDragEnter={event => { event.preventDefault(); if (!pending) setDragging(true); }}
           onDragOver={event => event.preventDefault()}
           onDragLeave={event => { if (event.currentTarget === event.target) setDragging(false); }}
           onDrop={drop}>
-          <input ref={fileInput} type="file" accept={ACCEPT} className="sr-only" onChange={event => { pick(event.target.files?.[0]); event.target.value = ""; }} disabled={pending} aria-label="Үг оруулах файл сонгох" />
-          {file ? <div className={styles.fileRow}>
+          <input ref={fileInput} type="file" accept={ACCEPT} multiple className="sr-only" onChange={event => { const files = Array.from(event.target.files ?? []); event.target.value = ""; void pick(files); }} disabled={pending} aria-label="Үг оруулах файл эсвэл зураг сонгох" />
+          {picked?.kind === "images" || (material.preparing && !file) ? <MaterialImages images={picked?.kind === "images" ? picked.images : []} max={material.max} onRemove={material.removeImage} onAdd={() => fileInput.current?.click()} busy={material.preparing} disabled={pending} />
+          : file ? <div className={styles.fileRow}>
             <span className={styles.fileIcon} aria-hidden="true">{file.name.split(".").pop()?.toUpperCase().slice(0, 4)}</span>
             <span className={styles.fileText}><strong>{file.name}</strong><small>{bytes(file.size)}</small></span>
-            <button type="button" className={styles.remove} onClick={() => { setFile(null); fileInput.current?.focus(); }} aria-label="Сонгосон файлыг арилгах" disabled={pending}><Icon name="close" size={18} /></button>
+            <button type="button" className={styles.remove} onClick={() => { material.clear(); fileInput.current?.focus(); }} aria-label="Сонгосон файлыг арилгах" disabled={pending}><Icon name="close" size={18} /></button>
           </div> : <>
-            <strong>{dragging ? "Файлаа тавина уу" : "Файлаа энд чирэх эсвэл сонгох"}</strong>
-            <span>{VOCABULARY_LIMITS.fileBytes / 1024 / 1024} MB хүртэл · PDF, DOCX, PPTX, TXT, MD, CSV</span>
-            <button type="button" className={styles.choose} onClick={() => fileInput.current?.click()} disabled={pending}>Файл сонгох</button>
+            <strong>{dragging ? "Файл эсвэл зургаа тавина уу" : "Файл эсвэл зургаа энд чирэх, сонгох"}</strong>
+            <span>{VOCABULARY_LIMITS.fileBytes / 1024 / 1024} MB хүртэл · PDF, DOCX, PPTX, TXT, MD, CSV эсвэл {material.max} хүртэл хуудасны зураг</span>
+            <button type="button" className={styles.choose} onClick={() => fileInput.current?.click()} disabled={pending}>Файл, зураг сонгох</button>
           </>}
         </div>
         <div className={`${styles.option} ${styles.countOption}`} role="group" aria-label="Нэг файлаас нэмэх үгийн тоо">
@@ -258,7 +258,7 @@ export function Vocabulary({ initialWords, limit }: { initialWords: VocabularyWo
           </div>
           <div className={styles.importAction}>
             {full ? null : <CreditCost action="vocabulary-import" cost={vocabularyImportHold(importCount)} upTo />}
-            <button type="button" className={styles.primary} onClick={() => void importFile()} disabled={!file || pending || full} aria-busy={pending}>
+            <button type="button" className={styles.primary} onClick={() => void importFile()} disabled={!picked || pending || material.preparing || full} aria-busy={pending}>
               {pending ? <><i className={styles.spinner} aria-hidden="true" />Уншиж байна…</> : <><Icon name="spark" size={17} />Үг оруулах</>}
             </button>
           </div>
@@ -267,7 +267,7 @@ export function Vocabulary({ initialWords, limit }: { initialWords: VocabularyWo
         {importError ? <p className={styles.error} role="alert">{importError}</p> : null}
         <p className={styles.hint}><Icon name="info" size={16} /><span>Файлд өөрийн орчуулга байвал түүнийг ашиглана. Орчуулга байхгүй үгсийг AI орчуулах бөгөөд AI-ийн орчуулга үргэлж зөв биш тул шалгаарай.</span></p>
         <p className={styles.fine}>Үнэ нь AI-ийн уншсан текстийн урт ба шинээр хадгалсан үгийн тооноос хамаарна: богино жагсаалтаас 10 үг ≈ {SHORT_LIST_PRICE} кредит, 45,000 тэмдэгттэй файлаас {VOCABULARY_LIMITS.importWords} үг = {FULL_FILE_PRICE} кредит. Сонгосон тооны дээд үнийг түр барьж, зарцуулаагүйг нь буцаана.</p>
-        <p className={styles.fine}>Файлын текст AI руу илгээгдэж, олдсон үгс таны санд хадгалагдана. Нэг файлаас хамгийн ихдээ {VOCABULARY_LIMITS.importWords} үг. Урт файлын эхний 45,000 тэмдэгтийг ашиглана. Хугацаатай шалгалтын үеэр хаалттай.</p>
+        <p className={styles.fine}>Файлын текст эсвэл хуудасны зураг AI руу илгээгдэж, олдсон үгс таны санд хадгалагдана. Нэг файлаас хамгийн ихдээ {VOCABULARY_LIMITS.importWords} үг. Урт файлын эхний 45,000 тэмдэгтийг ашиглана. Хугацаатай шалгалтын үеэр хаалттай.</p>
       </section>
     </div>
 

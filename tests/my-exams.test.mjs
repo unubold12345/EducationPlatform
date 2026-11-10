@@ -5,6 +5,7 @@ import {
   MY_EXAM_LIMITS, examMessages, gradeExam, parseGeneratedExam, publicExam, readExamJson, suggestedSeconds,
 } from "../src/modules/my-exams/contracts.ts";
 import { EXAM_TOKEN_TTL_MS, ExamTokenError, openExam, sealExam } from "../src/modules/my-exams/token.ts";
+import { DOCUMENT_LIMITS } from "../src/modules/documents/text.ts";
 
 const text = path => readFileSync(new URL("../" + path, import.meta.url), "utf8");
 const SECRET_ENV = "BETTER_AUTH_SECRET";
@@ -160,7 +161,11 @@ test("the exam route stays behind the server's checks", () => {
   assert.equal(service.match(/await ensureNoTimedExam\(userId\)/g)?.length, 2, "open sittings are checked before and after the provider call");
   assert.match(service, /count: \{ lt: DAILY_LIMIT \}/);
   assert.match(service, /lastRequest: \{ lte: BigInt\(now\) \}/);
-  assert.match(service, /file\.size > MY_EXAM_LIMITS\.fileBytes/);
+  // The size, count and kind of the upload are checked by the shared reader before credits are held.
+  assert.match(service, /readUploadedSource\(form, /);
+  assert.ok(service.indexOf("readUploadedSource(form, ") < service.indexOf("return chargeCredits("));
+  assert.match(text("src/modules/documents/upload.ts"), /total > DOCUMENT_LIMITS\.fileBytes/);
+  assert.equal(MY_EXAM_LIMITS.fileBytes, DOCUMENT_LIMITS.fileBytes);
   assert.match(service, /publicExam\(exam\)/);
   assert.match(service, /sealExam\(userId/);
   assert.match(service, /openExam\(input\.token, userId\)/);

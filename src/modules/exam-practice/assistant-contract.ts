@@ -1,17 +1,20 @@
 // Practice assistant request shape and prompt. Pure, so the rules can be tested without a provider.
 import type { PracticeSubject } from "./types.ts";
 import type { PracticeMaterial } from "./form.ts";
+import { imageRule, readImageUrls, withImages } from "../ai-images/contracts.ts";
 
 export const PRACTICE_AI_DAILY_LIMIT = 60;
 export type AssistantTurn = { role: "user" | "assistant"; content: string };
 export type AssistantAction = "hint" | "explain" | "review" | "followup" | "ask";
-export type AssistantInput = { questionId: string; action: AssistantAction; language: "mn" | "en"; message: string; history: AssistantTurn[] };
+/** `images` (base64 data URLs, such as a photo of the student's working) belong to the latest message only. */
+export type AssistantInput = { questionId: string; action: AssistantAction; language: "mn" | "en"; message: string; history: AssistantTurn[]; images?: string[] };
 /** `answer` and `explanation` exist only after the student has checked this question on the server. */
 export type AssistantContext = { title: string; subject: PracticeSubject; checked: boolean; selected: string; answer?: string; explanation?: string; material: PracticeMaterial };
 
 const record = (value: unknown): value is Record<string, unknown> => Boolean(value) && typeof value === "object" && !Array.isArray(value);
 export function validAssistantInput(value: unknown): value is AssistantInput {
-  if (!record(value) || Object.keys(value).some(key => !["questionId", "action", "language", "message", "history"].includes(key))) return false;
+  if (!record(value) || Object.keys(value).some(key => !["questionId", "action", "language", "message", "history", "images"].includes(key))) return false;
+  if (readImageUrls(value.images) === null) return false;
   if (typeof value.questionId !== "string" || !value.questionId || value.questionId.length > 150) return false;
   if (!["hint", "explain", "review", "followup", "ask"].includes(String(value.action)) || !["mn", "en"].includes(String(value.language))) return false;
   if (typeof value.message !== "string" || value.message.length > 1000 || !Array.isArray(value.history) || value.history.length > 4) return false;
@@ -45,7 +48,8 @@ Modes. hint: only the next useful step. explain: a clear worked explanation, sto
   return [
     { role: "system" as const, content: rules },
     { role: "system" as const, content: JSON.stringify({ exam: context.title, action: input.action, checked: context.checked, savedAnswer: context.selected.slice(0, 6000), ...(context.answer !== undefined ? { referenceAnswer: context.answer } : {}), ...(context.explanation ? { referenceExplanation: context.explanation } : {}), question: context.material }) },
+    ...(input.images?.length ? [{ role: "system" as const, content: imageRule(input.images.length) }] : []),
     ...input.history,
-    { role: "user" as const, content: input.message.trim() || fallback[input.action] },
+    { role: "user" as const, content: withImages(input.message.trim() || fallback[input.action], input.images) },
   ];
 }

@@ -5,7 +5,7 @@ export function inWorkspace(pathname: string) {
   if (pathname.startsWith("/subscribe/")) return true;
   if (pathname === "/exams" || pathname.startsWith("/exams/")) return true;
   if (pathname.startsWith("/checkout/") || pathname.startsWith("/workshops/")) return true;
-  if (["/labs/ielts-writing", "/labs/ielts-speaking", "/labs/ielts-listening"].includes(pathname)) return true;
+  if (["/labs/ielts-writing", "/labs/ielts-speaking", "/labs/ielts-listening", "/labs/ielts-reading"].includes(pathname)) return true;
   return false;
 }
 

@@ -13,11 +13,15 @@ import { Markdown } from "./markdown";
 import { CHAT_LIMITS, reviewModeLabels, type ChatTurn, type ReviewMode } from "./chat-contract";
 import { programLabels } from "./programs";
 import { CreditCost, useCredits } from "@/modules/credits/client";
+import { AttachButton, ImageStrip, SentImages, imageFiles, useImageAttachments } from "@/modules/ai-images/client";
+import { IMAGE_ONLY_REQUEST } from "@/modules/ai-images/contracts";
 
 type Review = NonNullable<PublicExamAttempt["report"]>["reviews"][number];
 type Status = "correct" | "wrong" | "blank" | "pending";
 type Filter = "all" | Status;
 type TextKind = "math" | "ja" | "en";
+/** A coach turn; a student's message may show previews of the photos it carried. */
+type CoachTurn = ChatTurn & { images?: string[] };
 const statusOf = (review: Review): Status => review.correct === null ? "pending" : review.correct ? "correct" : review.selected.trim() ? "wrong" : "blank";
 const statusLabels: Record<Status, string> = { correct: "Зөв", wrong: "Алдсан", blank: "Хоосон", pending: "Хяналт" };
 const filterLabels: [Filter, string][] = [["all", "Бүгд"], ["wrong", "Алдсан"], ["blank", "Хоосон"], ["correct", "Зөв"], ["pending", "Хяналт"]];
@@ -48,7 +52,7 @@ export function ReviewView({ attempt, options, finishedLabel }: { attempt: Publi
   const [filter, setFilter] = useState<Filter>(counts.wrong ? "wrong" : "all");
   const [active, setActive] = useState<string | null>(null);
   const [panelOpen, setPanelOpen] = useState(false);
-  const [conversations, setConversations] = useState<Record<string, ChatTurn[]>>({});
+  const [conversations, setConversations] = useState<Record<string, CoachTurn[]>>({});
   const visible = reviews.filter(review => filter === "all" || statusOf(review) === filter);
   const percent = report.points.total ? Math.round((report.points.earned / report.points.total) * 100) : null;
   const weakest = useMemo(() => {
@@ -148,9 +152,10 @@ export function ReviewView({ attempt, options, finishedLabel }: { attempt: Publi
 
 function ReviewCoach({ attemptId, review, number, kind, open, onClose, turns, setTurns }: {
   attemptId: string; review: Review | null; number: string; kind: TextKind; open: boolean; onClose: () => void;
-  turns: ChatTurn[]; setTurns: (update: (current: ChatTurn[]) => ChatTurn[]) => void;
+  turns: CoachTurn[]; setTurns: (update: (current: CoachTurn[]) => CoachTurn[]) => void;
 }) {
   const [text, setText] = useState("");
+  const attachments = useImageAttachments();
   const [language, setLanguage] = useState<"mn" | "en">("mn");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
@@ -171,17 +176,20 @@ function ReviewCoach({ attemptId, review, number, kind, open, onClose, turns, se
   }, [open]);
 
   async function ask(mode: ReviewMode, typed: string) {
-    if (busy.current || !review) return;
-    const message = typed.trim() || reviewModeLabels[mode];
+    if (busy.current || !review || attachments.busy) return;
+    // Attached photos (such as handwritten working) go with whichever request is sent next.
+    const images = attachments.images;
+    const message = typed.trim() || (images.length && mode === "ask" ? IMAGE_ONLY_REQUEST : reviewModeLabels[mode]);
     busy.current = true; setPending(true); setError("");
     const prior = turns.slice(-CHAT_LIMITS.history).map(turn => ({ role: turn.role, content: turn.content.slice(0, CHAT_LIMITS.turn) }));
     try {
-      const response = await fetch("/api/workspace/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ mode, target: { attemptId, questionId: review.id }, language, message, history: prior }), signal: AbortSignal.timeout(80000) });
+      const body = { mode, target: { attemptId, questionId: review.id }, language, message, history: prior, ...(images.length ? { images: images.map(image => image.url) } : {}) };
+      const response = await fetch("/api/workspace/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body), signal: AbortSignal.timeout(80000) });
       const data = await response.json().catch(() => ({})) as { message?: string; error?: string };
       if (!response.ok || !data.message) throw new Error(data.error || "AI хариу ирсэнгүй. Дахин оролдоно уу.");
       apply(data);
-      setTurns(current => [...current, { role: "user", content: message }, { role: "assistant", content: data.message! }]);
-      setText("");
+      setTurns(current => [...current, { role: "user", content: message, ...(images.length ? { images: images.map(image => image.thumb) } : {}) }, { role: "assistant", content: data.message! }]);
+      setText(""); attachments.clear();
     } catch (reason) {
       setError(reason instanceof Error && reason.name !== "TimeoutError" ? reason.message : "Хариу удаж байна. Түр хүлээгээд дахин оролдоно уу.");
     } finally { busy.current = false; setPending(false); }
@@ -202,18 +210,22 @@ function ReviewCoach({ attemptId, review, number, kind, open, onClose, turns, se
         <div ref={log} className="wsp-coach-log" role="log" aria-live="polite" aria-label="AI багштай ярилцсан түүх">
           {!turns.length ? <p className="wsp-coach-hint">{status === "correct" ? "Зөв хариулсан ч өөр арга, төстэй дасгал асууж болно." : status === "pending" ? "Энэ даалгаврын хариунд санал, сайжруулах зөвлөгөө аваарай." : "Яагаад буруу болсныг, зөв аргыг алхам алхмаар асуугаарай."}</p> : null}
           {turns.map((turn, index) => turn.role === "user"
-            ? <div key={index} className="wsp-msg user"><div className="wsp-bubble"><p>{turn.content}</p></div></div>
+            ? <div key={index} className={"wsp-msg user" + (turn.images?.length ? " has-images" : "")}><SentImages urls={turn.images} /><div className="wsp-bubble"><p>{turn.content}</p></div></div>
             : <div key={index} className="wsp-msg assistant"><div className="wsp-answer"><Markdown text={turn.content} /></div></div>)}
           {pending ? <div className="wsp-typing" role="status" aria-label="AI бичиж байна"><i /><i /><i /></div> : null}
           {error ? <p className="wsp-error" role="alert">{error}</p> : null}
         </div>
         <div className="wsp-coach-chips">{(["explain", "mistake", "similar"] as const).map(mode => <button key={mode} type="button" disabled={pending} onClick={() => void ask(mode, "")}>{reviewModeLabels[mode]}</button>)}</div>
-        <form className="wsp-coach-form" onSubmit={event => { event.preventDefault(); if (text.trim()) void ask("ask", text); }}>
-          <textarea aria-label="AI багшаас асуух" rows={1} maxLength={CHAT_LIMITS.message} value={text} placeholder="Энэ асуултын талаар асуух…" disabled={pending}
-            onChange={event => setText(event.target.value)} onKeyDown={event => { if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) { event.preventDefault(); if (text.trim()) void ask("ask", text); } }} />
-          <button type="submit" className="wsp-send is-round" disabled={pending || !text.trim()} aria-label="Илгээх"><Icon name="send" size={18} /></button>
+        <ImageStrip images={attachments.images} onRemove={attachments.remove} busy={attachments.busy} disabled={pending} error={attachments.error} className="wsp-coach-images" />
+        <form className="wsp-coach-form" onSubmit={event => { event.preventDefault(); if (text.trim() || attachments.images.length) void ask("ask", text); }}>
+          <AttachButton onFiles={files => void attachments.add(files)} count={attachments.images.length} disabled={pending || attachments.busy} className="wsp-coach-attach" />
+          <textarea aria-label="AI багшаас асуух" rows={1} maxLength={CHAT_LIMITS.message} value={text} placeholder="Асуух эсвэл бодолтынхоо зургийг хавсаргах…" disabled={pending}
+            onChange={event => setText(event.target.value)}
+            onPaste={event => { const files = imageFiles(event.clipboardData); if (files.length) { event.preventDefault(); void attachments.add(files); } }}
+            onKeyDown={event => { if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) { event.preventDefault(); if (text.trim() || attachments.images.length) void ask("ask", text); } }} />
+          <button type="submit" className="wsp-send is-round" disabled={pending || attachments.busy || (!text.trim() && !attachments.images.length)} aria-label="Илгээх"><Icon name="send" size={18} /></button>
         </form>
-        <p className="wsp-fine">Энэ асуулт, таны хариу AI руу очно · Албан ёсны үнэлгээ биш <CreditCost action="review-coach" /></p>
+        <p className="wsp-fine">Энэ асуулт, таны хариу, хавсаргасан зураг AI руу очно · Албан ёсны үнэлгээ биш <CreditCost action="review-coach" images={attachments.images.length} /></p>
       </> : <div className="wsp-coach-empty"><Icon name="spark" size={28} /><p>Асуултын доорх <strong>AI-аас асуух</strong> товчийг дарж, алдаагаа задлаарай.</p></div>}
     </aside>
   </>;

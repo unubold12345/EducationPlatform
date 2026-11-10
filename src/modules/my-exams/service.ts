@@ -7,7 +7,8 @@ import { ApiError } from "@/lib/api";
 import { activeTimedSitting } from "@/modules/exams/active-sitting";
 import { tutorDay } from "@/modules/tutor/contracts";
 import { cleanSourceText, displayFileName } from "@/modules/documents/text";
-import { detectSource, extractDocument } from "@/modules/documents/extract";
+import { extractDocument } from "@/modules/documents/extract";
+import { readUploadedSource } from "@/modules/documents/upload";
 import {
   MY_EXAM_LIMITS, examMessages, gradeExam, isExamCount, isExamLanguage, parseGeneratedExam, publicExam, suggestedSeconds,
   type ExamCount, type ExamLanguage, type ExamGrade, type GeneratedExam, type PublicExam,
@@ -20,7 +21,6 @@ const BODY_SLACK = 256 * 1024;
 const MAX_BODY = MY_EXAM_LIMITS.fileBytes + BODY_SLACK;
 const MIN_TEXT = 80;
 
-type Upload = { name: string; size: number; arrayBuffer: () => Promise<ArrayBuffer> };
 type ExamReply = PublicExam & {
   token: string;
   language: ExamLanguage;
@@ -28,10 +28,6 @@ type ExamReply = PublicExam & {
   source: { name: string; kind: string; pages: number | null; truncated: boolean };
   provider: "DeepSeek";
 };
-
-const isUpload = (value: unknown): value is Upload => Boolean(value) && typeof value === "object"
-  && typeof (value as Upload).name === "string" && typeof (value as Upload).size === "number"
-  && typeof (value as Upload).arrayBuffer === "function";
 
 const record = (value: unknown): value is Record<string, unknown> => Boolean(value) && typeof value === "object" && !Array.isArray(value);
 
@@ -62,21 +58,15 @@ export async function createMyExam(userId: string, request: Request): Promise<Ex
   try { form = await request.formData(); }
   catch { throw new ApiError(400, "Файлыг уншиж чадсангүй. Дахин оролдоно уу."); }
   for (const key of form.keys()) if (!["file", "count", "language"].includes(key)) throw new ApiError(400, "Хүсэлтийн бүтэц буруу байна.");
-  const file = form.get("file");
-  if (!isUpload(file) || !file.size) throw new ApiError(400, "Шалгалт үүсгэх файлаа сонгоно уу.");
-  if (file.size > MY_EXAM_LIMITS.fileBytes) throw new ApiError(413, `Файл хэт том байна. ${MY_EXAM_LIMITS.fileBytes / 1024 / 1024} MB хүртэл файл оруулна уу.`);
+  // One document, or up to four page photos; their size and real kind are proven before credits are held.
+  const upload = await readUploadedSource(form, "Шалгалт үүсгэх файл эсвэл зургаа сонгоно уу.");
   const countValue = Number(field(form, "count") ?? "10");
   const languageValue = field(form, "language") ?? "mn";
   if (!isExamCount(countValue)) throw new ApiError(400, "Асуултын тоо 10 эсвэл 20 байна.");
   if (!isExamLanguage(languageValue)) throw new ApiError(400, "Шалгалтын хэл буруу байна.");
   const count: ExamCount = countValue;
   const language: ExamLanguage = languageValue;
-  const name = displayFileName(file.name);
-  let bytes: Uint8Array;
-  try { bytes = new Uint8Array(await file.arrayBuffer()); }
-  catch { throw new ApiError(400, "Файлыг уншиж чадсангүй. Дахин оролдоно уу."); }
-  // Reject the wrong kind before the daily exam budget is charged.
-  detectSource(name, bytes);
+  const name = upload.name;
 
   await ensureNoTimedExam(userId);
   if (!process.env.DEEPSEEK_API_KEY?.trim()) throw new ApiError(503, "AI шалгалт үүсгэгч одоогоор холбогдоогүй байна.");
@@ -94,17 +84,26 @@ export async function createMyExam(userId: string, request: Request): Promise<Ex
   if (!reserved.count) throw new ApiError(429, `Шалгалт үүсгэж байна эсвэл өдрийн ${DAILY_LIMIT} хүсэлтийн хязгаарт хүрсэн. Түр хүлээгээд дахин оролдоно уу.`);
 
   try {
-    const extracted = await extractDocument(name, bytes);
-    const cleaned = cleanSourceText(extracted.text);
-    if (cleaned.text.length < MIN_TEXT) throw new ApiError(422, "Файлаас шалгалт үүсгэх хангалттай текст олдсонгүй. Илүү бүрэн файл оруулна уу.");
-
-    const messages = examMessages({ text: cleaned.text, count, language, truncated: cleaned.truncated });
+    let messages: ReturnType<typeof examMessages>;
+    let source: ExamReply["source"];
+    if (upload.kind === "images") {
+      // Photos of pages: the model reads them directly, so there is no text to measure first.
+      messages = examMessages({ images: upload.images, count, language, truncated: false });
+      source = { name, kind: "image", pages: upload.images.length, truncated: false };
+    } else {
+      const extracted = await extractDocument(name, upload.bytes);
+      const cleaned = cleanSourceText(extracted.text);
+      if (cleaned.text.length < MIN_TEXT) throw new ApiError(422, "Файлаас шалгалт үүсгэх хангалттай текст олдсонгүй. Илүү бүрэн файл оруулна уу.");
+      messages = examMessages({ text: cleaned.text, count, language, truncated: cleaned.truncated });
+      source = { name, kind: extracted.kind, pages: extracted.pages ?? null, truncated: cleaned.truncated };
+    }
+    const fallbackTitle = upload.kind === "images" ? "Зурагнаас үүсгэсэн шалгалт" : titleFromFile(name);
     let exam: GeneratedExam | null = null;
     // One silent retry when the model returns a malformed or too-short exam; the daily count is charged once.
     for (let attempt = 0; attempt < 2 && !exam; attempt++) {
-      exam = parseGeneratedExam(await deepseekExam(messages, count, meter), { count, fallbackTitle: titleFromFile(name) });
+      exam = parseGeneratedExam(await deepseekExam(messages, count, meter), { count, fallbackTitle });
     }
-    if (!exam) throw new ApiError(503, "AI шалгалт үүсгэж чадсангүй. Дахин оролдоно уу.");
+    if (!exam) throw new ApiError(503, upload.kind === "images" ? "Зурагнаас шалгалт үүсгэх хангалттай материал уншиж чадсангүй. Илүү тод, бүрэн хуудасны зураг оруулна уу." : "AI шалгалт үүсгэж чадсангүй. Дахин оролдоно уу.");
     // Another tab may start a timed exam while the provider is answering.
     await ensureNoTimedExam(userId);
     const sealed = {
@@ -112,7 +111,7 @@ export async function createMyExam(userId: string, request: Request): Promise<Ex
       questions: exam.questions,
       language,
       sourceName: name,
-      sourceKind: extracted.kind,
+      sourceKind: source.kind,
       createdAt: Date.now(),
     };
     const token = sealExam(userId, sealed);
@@ -121,7 +120,7 @@ export async function createMyExam(userId: string, request: Request): Promise<Ex
       token,
       language,
       suggestedSeconds: suggestedSeconds(exam.questions.length),
-      source: { name, kind: extracted.kind, pages: extracted.pages ?? null, truncated: cleaned.truncated },
+      source,
       provider: "DeepSeek",
     };
   } catch (error) {

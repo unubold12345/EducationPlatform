@@ -6,8 +6,9 @@ import { AI_ACTIONS, vocabularyImportCredits, vocabularyImportHold, type UsageMe
 import { ApiError } from "@/lib/api";
 import { activeTimedSitting } from "@/modules/exams/active-sitting";
 import { tutorDay } from "@/modules/tutor/contracts";
-import { cleanSourceText, displayFileName } from "@/modules/documents/text";
-import { detectSource, extractDocument } from "@/modules/documents/extract";
+import { cleanSourceText } from "@/modules/documents/text";
+import { extractDocument } from "@/modules/documents/extract";
+import { readUploadedSource } from "@/modules/documents/upload";
 import {
   bankFullMessage, cleanUserRequest, isImportLanguage, parseGeneratedWords, readImportCount, readWordFields, termKey,
   vocabularyCapacity, vocabularyMessages,
@@ -20,7 +21,6 @@ const BODY_SLACK = 256 * 1024;
 const MAX_BODY = VOCABULARY_LIMITS.fileBytes + BODY_SLACK;
 const MIN_TEXT = 40;
 
-type Upload = { name: string; size: number; arrayBuffer: () => Promise<ArrayBuffer> };
 type WordRow = {
   id: string; term: string; translation: string; example: string | null;
   sourceName: string | null; createdAt: Date;
@@ -38,10 +38,6 @@ export type ImportReply = {
   language: ImportLanguage;
   provider: "DeepSeek";
 };
-
-const isUpload = (value: unknown): value is Upload => Boolean(value) && typeof value === "object"
-  && typeof (value as Upload).name === "string" && typeof (value as Upload).size === "number"
-  && typeof (value as Upload).arrayBuffer === "function";
 
 const publicWord = (row: WordRow): VocabularyWord => ({
   id: row.id,
@@ -156,9 +152,8 @@ export async function importVocabulary(userId: string, request: Request): Promis
   try { form = await request.formData(); }
   catch { throw new ApiError(400, "Файлыг уншиж чадсангүй. Дахин оролдоно уу."); }
   for (const key of form.keys()) if (!["file", "language", "prompt", "count"].includes(key)) throw new ApiError(400, "Хүсэлтийн бүтэц буруу байна.");
-  const file = form.get("file");
-  if (!isUpload(file) || !file.size) throw new ApiError(400, "Үг оруулах файлаа сонгоно уу.");
-  if (file.size > VOCABULARY_LIMITS.fileBytes) throw new ApiError(413, `Файл хэт том байна. ${VOCABULARY_LIMITS.fileBytes / 1024 / 1024} MB хүртэл файл оруулна уу.`);
+  // One document, or up to four page photos; their size and real kind are proven before credits are held.
+  const upload = await readUploadedSource(form, "Үг оруулах файл эсвэл зургаа сонгоно уу.");
   const languageValue = field(form, "language") ?? "mn";
   if (!isImportLanguage(languageValue)) throw new ApiError(400, "Орчуулгын хэл буруу байна.");
   const rawRequest = field(form, "prompt") ?? "";
@@ -167,12 +162,7 @@ export async function importVocabulary(userId: string, request: Request): Promis
   const requested = readImportCount(field(form, "count"));
   if (requested === null) throw new ApiError(400, `Үгийн тоо 1–${VOCABULARY_LIMITS.importWords} байна.`);
   const language: ImportLanguage = languageValue;
-  const name = displayFileName(file.name);
-  let bytes: Uint8Array;
-  try { bytes = new Uint8Array(await file.arrayBuffer()); }
-  catch { throw new ApiError(400, "Файлыг уншиж чадсангүй. Дахин оролдоно уу."); }
-  // Reject the wrong kind before the daily AI budget is charged.
-  detectSource(name, bytes);
+  const name = upload.name;
 
   await ensureNoTimedExam(userId);
   if (!process.env.DEEPSEEK_API_KEY?.trim()) throw new ApiError(503, "AI үг оруулагч одоогоор холбогдоогүй байна.");
@@ -184,6 +174,8 @@ export async function importVocabulary(userId: string, request: Request): Promis
   const wanted = Math.min(requested, limit - stored);
   // The price depends on the text actually read; until extraction, assume the longest document.
   let readChars: number = VOCABULARY_LIMITS.textChars;
+  // Page photos are priced as DeepSeek bills them (at most 1,024 tokens each) instead of by text length.
+  const pictures = upload.kind === "images" ? upload.images.length : 0;
   // The most this import can cost is held first and refunded on any failure, including a file with no
   // usable words; on success the charge drops to the text read plus the new words saved.
   return chargeCredits(userId, "vocabulary-import", async meter => {
@@ -196,16 +188,24 @@ export async function importVocabulary(userId: string, request: Request): Promis
   if (!reserved.count) throw new ApiError(429, `Үг оруулж байна эсвэл өдрийн ${DAILY_LIMIT} хүсэлтийн хязгаарт хүрсэн. Түр хүлээгээд дахин оролдоно уу.`);
 
   try {
-    const extracted = await extractDocument(name, bytes);
-    const cleaned = cleanSourceText(extracted.text);
-    if (cleaned.text.length < MIN_TEXT) throw new ApiError(422, "Файлаас үг оруулах хангалттай текст олдсонгүй. Илүү бүрэн файл оруулна уу.");
-    readChars = cleaned.text.length;
-
-    const messages = vocabularyMessages({ text: cleaned.text, language, truncated: cleaned.truncated, request: selectionRequest, limit: wanted });
+    let messages: ChatMessage[];
+    let source: ImportReply["source"];
+    if (upload.kind === "images") {
+      readChars = 0;
+      messages = vocabularyMessages({ images: upload.images, language, truncated: false, request: selectionRequest, limit: wanted });
+      source = { name, kind: "image", pages: pictures, truncated: false };
+    } else {
+      const extracted = await extractDocument(name, upload.bytes);
+      const cleaned = cleanSourceText(extracted.text);
+      if (cleaned.text.length < MIN_TEXT) throw new ApiError(422, "Файлаас үг оруулах хангалттай текст олдсонгүй. Илүү бүрэн файл оруулна уу.");
+      readChars = cleaned.text.length;
+      messages = vocabularyMessages({ text: cleaned.text, language, truncated: cleaned.truncated, request: selectionRequest, limit: wanted });
+      source = { name, kind: extracted.kind, pages: extracted.pages ?? null, truncated: cleaned.truncated };
+    }
     let generated: GeneratedWord[] | null = null;
     // One silent retry when the model returns a malformed object; the daily count is charged once.
     for (let attempt = 0; attempt < 2 && !generated; attempt++) generated = parseGeneratedWords(await deepseekWords(messages, meter), wanted);
-    if (!generated) throw new ApiError(503, "AI үг олж чадсангүй. Дахин оролдоно уу.");
+    if (!generated) throw new ApiError(503, pictures ? "Зурагнаас үг уншиж чадсангүй. Илүү тод, ойроос авсан зураг оруулна уу." : "AI үг олж чадсангүй. Дахин оролдоно уу.");
     // Another tab may start a timed exam while the provider is answering.
     await ensureNoTimedExam(userId);
 
@@ -242,7 +242,7 @@ export async function importVocabulary(userId: string, request: Request): Promis
       total: total + rows.length,
       limit,
       requested: wanted,
-      source: { name, kind: extracted.kind, pages: extracted.pages ?? null, truncated: cleaned.truncated },
+      source,
       language,
       provider: "DeepSeek",
     };
@@ -250,7 +250,7 @@ export async function importVocabulary(userId: string, request: Request): Promis
     // Only release the lease this request holds; never shorten another request's lease.
     await db.rateLimit.updateMany({ where: { key: limitKey, lastRequest: lease }, data: { lastRequest: BigInt(Date.now() + 3000) } });
   }
-  }, { hold: vocabularyImportHold(wanted), settle: reply => vocabularyImportCredits(readChars, reply.added) });
+  }, { hold: vocabularyImportHold(wanted), settle: reply => vocabularyImportCredits(readChars, reply.added, pictures) });
 }
 
 /** DeepSeek JSON mode with a bounded vocabulary-list reply. */

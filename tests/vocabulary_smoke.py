@@ -289,8 +289,7 @@ with sync_playwright() as p:
     cap_page.screenshot(path=str(ART / "vocabulary-bank-full.png"), full_page=True)
     # Nothing was held or spent by the refused import.
     cap_page.goto(BASE + "/workspace/plans", wait_until="domcontentloaded")
-    expect(cap_page.locator(".pricing-ai-balance strong")).to_have_text(re.compile(r"^100\s*/\s*100$"))
-    expect(cap_page.locator(".pricing-ai-costs")).to_contain_text("1–17 кредит")
+    expect(cap_page.locator(".pricing-topup-balance strong")).to_have_text("100")
     cap.close()
 
     # Mobile: no sideways scroll, the drawer still opens on the vocabulary tab.

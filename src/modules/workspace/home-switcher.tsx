@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Composer, type ComposerState } from "./composer";
+import { Composer, emptyComposer, type ComposerState } from "./composer";
 import { Icon, type IconName } from "./icons";
 import { setPendingPrompt } from "./chat-store";
 
@@ -14,12 +14,17 @@ export type HomeLab = { href: string; label: string; detail: string; icon: IconN
 export function HomeSwitcher({ programs, labs }: { programs: HomeProgram[]; labs: HomeLab[] }) {
   const router = useRouter();
   const [segment, setSegment] = useState<Segment>("ai");
-  const [state, setState] = useState<ComposerState>({ mode: "ask", subject: "general", language: "mn", text: "" });
+  const [state, setState] = useState<ComposerState>(emptyComposer);
+  const [error, setError] = useState("");
   const segments: [Segment, string, IconName][] = [["ai", "AI туслах", "spark"], ["exams", "Шалгалт", "exam"], ["workshop", "Workshop", "workshop"]];
   function submit() {
-    const { text, ...options } = state;
-    if (!text.trim()) return;
-    setPendingPrompt({ text: text.trim(), ...options });
+    const { text, images, ...options } = state;
+    if (!text.trim() && !images.length) return;
+    // The chat page sends it; pictures travel with it through this tab's session storage.
+    if (!setPendingPrompt({ text: text.trim(), images, ...options })) {
+      setError(images.length ? "Зургийг AI чат руу дамжуулж чадсангүй. AI чат хуудсанд шууд хавсаргана уу." : "Мессежийг дамжуулж чадсангүй. Дахин оролдоно уу.");
+      return;
+    }
     router.push("/workspace/chat");
   }
   return <>
@@ -37,10 +42,11 @@ export function HomeSwitcher({ programs, labs }: { programs: HomeProgram[]; labs
     <div role="tabpanel" id={"home-panel-" + segment} aria-labelledby={"home-tab-" + segment} className="wsp-hero-panel">
       {segment === "ai" ? <>
         <Composer state={state} onChange={setState} onSubmit={submit} />
-        <p className="wsp-fine">Илгээхэд таны мессеж AI руу очно. Чат зөвхөн энэ хөтөчид хадгалагдана.</p>
+        {error ? <p className="wsp-error" role="alert">{error}</p> : null}
+        <p className="wsp-fine">Илгээхэд таны мессеж, зураг AI руу очно. Чат зөвхөн энэ хөтөчид хадгалагдана.</p>
       </> : segment === "exams" ? <div className="wsp-pick-grid">
         {programs.map(program => <Link key={program.href} href={program.href} className={"wsp-pick " + program.tone}><strong>{program.label}</strong><span>{program.detail}</span><Icon name="arrow" size={18} /></Link>)}
-      </div> : <div className="wsp-pick-grid is-three">
+      </div> : <div className={"wsp-pick-grid is-three" + (labs.length === 4 ? " is-four" : "")}>
         {labs.length ? labs.map(lab => <Link key={lab.href} href={lab.href} prefetch={false} className="wsp-pick"><Icon name={lab.icon} size={22} /><strong>{lab.label}</strong><span>{lab.detail}</span></Link>)
           : <p className="wsp-muted">Workshop одоогоор идэвхгүй байна.</p>}
       </div>}

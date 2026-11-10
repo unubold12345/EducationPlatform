@@ -32,14 +32,15 @@ export default async function AdminUserPage({ params, searchParams }: { params: 
     id: true, name: true, email: true, emailVerified: true, createdAt: true, updatedAt: true, suspendedAt: true, suspendedReason: true,
     adminMembership: { select: { createdAt: true } }, accounts: { select: { providerId: true, createdAt: true } },
     subscriptions: { orderBy: { endsAt: "desc" }, select: { program: true, startsAt: true, endsAt: true } },
-    _count: { select: { sessions: true, events: true, mockAttempts: true, paperAttempts: true, subscriptionOrders: true, mockPurchases: true, creditCharges: true } },
+    _count: { select: { sessions: true, events: true, mockAttempts: true, paperAttempts: true, subscriptionOrders: true, mockPurchases: true, creditOrders: true, creditCharges: true } },
   } });
   if (!user) notFound();
-  const [lastEvent, ipRows, paidOrders, paidPurchases, declined, notes, auditTotal, credits] = await Promise.all([
+  const [lastEvent, ipRows, paidOrders, paidPurchases, paidCredits, declined, notes, auditTotal, credits] = await Promise.all([
     db.userEvent.findFirst({ where: { userId: id, type: "sign-in" }, orderBy: { createdAt: "desc" } }),
     db.userEvent.groupBy({ by: ["ipAddress"], where: { userId: id, ipAddress: { not: null } }, _count: true, orderBy: { _count: { ipAddress: "desc" } }, take: 5 }),
     db.subscriptionOrder.aggregate({ where: { userId: id, status: "PAID" }, _sum: { amountMnt: true }, _count: true }),
     db.mockPurchase.aggregate({ where: { userId: id, status: "PAID" }, _sum: { amountMnt: true }, _count: true }),
+    db.creditOrder.aggregate({ where: { userId: id, status: "PAID" }, _sum: { amountMnt: true }, _count: true }).catch(() => ({ _sum: { amountMnt: 0 }, _count: 0 })),
     db.subscriptionOrder.count({ where: { userId: id, status: "DECLINED" } }),
     db.adminNote.findMany({ where: { userId: id }, orderBy: { createdAt: "desc" }, take: 10 }),
     db.adminAudit.count({ where: { target: id } }),
@@ -50,7 +51,7 @@ export default async function AdminUserPage({ params, searchParams }: { params: 
   const sharedUsers = sharedIps.length ? await db.user.findMany({ where: { id: { in: sharedIps.map(row => row.userId) } }, select: { id: true, email: true, suspendedAt: true } }) : [];
 
   const href = (next: Partial<{ view: string; page: number }>) => `/admin/users/${id}?` + new URLSearchParams({ view: next.view ?? view, page: String(next.page ?? 1) });
-  const counts: Record<View, number> = { activity: user._count.events, payments: user._count.subscriptionOrders + user._count.mockPurchases, attempts: user._count.mockAttempts + user._count.paperAttempts, credits: user._count.creditCharges, sessions: user._count.sessions, admin: auditTotal };
+  const counts: Record<View, number> = { activity: user._count.events, payments: user._count.subscriptionOrders + user._count.mockPurchases + user._count.creditOrders, attempts: user._count.mockAttempts + user._count.paperAttempts, credits: user._count.creditCharges, sessions: user._count.sessions, admin: auditTotal };
   const info = pageInfo(counts[view], requested);
   let body: React.ReactNode = null;
 
@@ -60,12 +61,14 @@ export default async function AdminUserPage({ params, searchParams }: { params: 
   } else if (view === "payments") {
     // Orders and single-exam purchases are merged by date; fetch enough of each to fill this page.
     const take = info.skip + info.size;
-    const [orders, purchases] = await Promise.all([
+    const [orders, purchases, creditOrders] = await Promise.all([
       db.subscriptionOrder.findMany({ where: { userId: id }, orderBy: [{ createdAt: "desc" }, { id: "desc" }], take }),
       db.mockPurchase.findMany({ where: { userId: id }, orderBy: [{ createdAt: "desc" }, { id: "desc" }], take }),
+      db.creditOrder.findMany({ where: { userId: id }, orderBy: [{ createdAt: "desc" }, { id: "desc" }], take }),
     ]);
     const rows = [...orders.map(row => ({ id: row.id, at: row.createdAt, label: `Сарын эрх · ${row.program.toUpperCase()}`, extra: row.periodEnd ? `${adminDate(row.periodStart!)} → ${adminDate(row.periodEnd)}` : "", amount: row.amountMnt, status: row.status, provider: row.provider, paidAt: row.paidAt })),
-      ...purchases.map(row => ({ id: row.id, at: row.createdAt, label: `Нэг шалгалт · ${findExam(row.examSlug)?.title ?? row.examSlug}`, extra: "", amount: row.amountMnt, status: row.status, provider: row.provider, paidAt: row.paidAt }))]
+      ...purchases.map(row => ({ id: row.id, at: row.createdAt, label: `Нэг шалгалт · ${findExam(row.examSlug)?.title ?? row.examSlug}`, extra: "", amount: row.amountMnt, status: row.status, provider: row.provider, paidAt: row.paidAt })),
+      ...creditOrders.map(row => ({ id: row.id, at: row.createdAt, label: `AI кредит · ${formatCredits(row.credits)}`, extra: "", amount: row.amountMnt, status: row.status, provider: row.provider, paidAt: row.paidAt }))]
       .sort((a, b) => b.at.getTime() - a.at.getTime()).slice(info.skip, info.skip + info.size);
     body = <Table head={["Огноо", "Бүтээгдэхүүн", "Дүн / төлөв", "Баримт"]} empty="Төлбөр алга." rows={rows.map(row => cells(adminDate(row.at), <>{row.label}<small>{row.extra}</small></>, <><strong>{money(row.amount)}</strong><small><StatusPill status={row.status}/>{row.paidAt ? " " + adminDate(row.paidAt) : ""}</small></>, <><code>{row.id}</code><small>{row.provider}</small></>))}/>;
   } else if (view === "attempts") {
@@ -106,8 +109,8 @@ export default async function AdminUserPage({ params, searchParams }: { params: 
           <div><dt>Бүртгүүлсэн</dt><dd>{adminDate(user.createdAt)}</dd></div>
           <div><dt>Сүүлд нэвтэрсэн</dt><dd>{lastEvent ? adminDate(lastEvent.createdAt) : "—"}</dd></div>
           <div><dt>Нэвтрэх арга</dt><dd>{providers.join(", ") || "—"}</dd></div>
-          <div><dt>Төлсөн нийт</dt><dd>{money((paidOrders._sum.amountMnt ?? 0) + (paidPurchases._sum.amountMnt ?? 0))}<small>{paidOrders._count + paidPurchases._count} гүйлгээ{declined ? ` · ${declined} амжилтгүй` : ""}</small></dd></div>
-          <div><dt>AI кредит · энэ сар</dt><dd>{credits ? <>{formatCredits(credits.balance)} / {formatCredits(credits.allowance)} үлдсэн<small>{formatCredits(credits.used)} зарцуулсан · үнэгүй {formatCredits(credits.free)}{credits.plans.map(plan => ` · ${plan.title} +${formatCredits(plan.credits)}`).join("")}{credits.bonus ? ` · урамшуулал +${formatCredits(credits.bonus)}` : ""}</small></> : "—"}</dd></div>
+          <div><dt>Төлсөн нийт</dt><dd>{money((paidOrders._sum.amountMnt ?? 0) + (paidPurchases._sum.amountMnt ?? 0) + (paidCredits._sum.amountMnt ?? 0))}<small>{paidOrders._count + paidPurchases._count + paidCredits._count} гүйлгээ{declined ? ` · ${declined} амжилтгүй` : ""}</small></dd></div>
+          <div><dt>AI кредит</dt><dd>{credits ? <>{formatCredits(credits.balance)} / {formatCredits(credits.allowance)} үлдсэн<small>энэ сар: үнэгүй {formatCredits(credits.free)}{credits.bonus ? ` + урамшуулал ${formatCredits(credits.bonus)}` : ""}, {formatCredits(credits.monthLeft)} үлдсэн{credits.plans.map(plan => ` · ${plan.title}: ${formatCredits(plan.left)} / ${formatCredits(plan.credits)} (${adminDate(new Date(plan.endsAt))} хүртэл)`).join("")}{credits.purchased ? ` · худалдаж авсан ${formatCredits(credits.purchased)}` : ""}</small></> : "—"}</dd></div>
           <div><dt>Идэвхтэй эрх</dt><dd>{active.length ? active.map(plan => `${plan.program.toUpperCase()} → ${adminDate(plan.endsAt)}`).join(", ") : "Алга"}</dd></div>
           <div><dt>ID</dt><dd><code>{user.id}</code></dd></div>
         </dl>

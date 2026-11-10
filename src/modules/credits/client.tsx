@@ -34,16 +34,18 @@ function Bolt() {
  * balance (or a warning when it is short); `compact` fits inside a button and inherits its colour.
  * An action priced by its result passes the most it can cost as `cost` with `upTo`.
  */
-export function CreditCost({ action, cost: most, upTo = false, english = false, compact = false, suffix, className }: {
-  action: AiAction; cost?: number; upTo?: boolean; english?: boolean; compact?: boolean; suffix?: string; className?: string;
+export function CreditCost({ action, cost: most, images = 0, upTo = false, english = false, compact = false, suffix, className }: {
+  action: AiAction; cost?: number; images?: number; upTo?: boolean; english?: boolean; compact?: boolean; suffix?: string; className?: string;
 }) {
   const { balance } = useCredits();
-  const cost = most ?? creditCost(action);
+  // Attached images raise a conversation reply's price; the badge follows as soon as one is added.
+  const cost = most ?? creditCost(action, images);
   const unit = english ? (cost === 1 ? "credit" : "credits") : "кредит";
   const prefix = upTo ? (english ? "up to " : "хамгийн ихдээ ") : "";
   const short = balance !== null && balance.balance < cost;
   const left = balance === null ? "" : short ? (english ? "not enough" : "хүрэлцэхгүй") : english ? `${formatCredits(balance.balance)} left` : `${formatCredits(balance.balance)} үлдсэн`;
-  const title = `${AI_ACTIONS[action].area} · ${AI_ACTIONS[action].label}: ${prefix}${cost} ${unit}`;
+  const pictures = images > 0 && most === undefined ? ` (${english ? "incl." : "үүнд"} ${images} ${english ? (images === 1 ? "image" : "images") : "зураг"})` : "";
+  const title = `${AI_ACTIONS[action].area} · ${AI_ACTIONS[action].label}: ${prefix}${cost} ${unit}${pictures}`;
   const classes = [styles.cost, compact ? styles.compact : "", short ? styles.short : "", className ?? ""].filter(Boolean).join(" ");
   if (compact) return <span className={classes} title={title} data-credit-cost={cost} data-credit-action={action}><Bolt />{upTo ? "≤" : ""}{cost}<span className={styles.hidden}> {unit}</span></span>;
   return <span className={classes} title={title} data-credit-cost={cost} data-credit-action={action}>

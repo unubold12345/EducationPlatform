@@ -11,8 +11,9 @@ import {
 import styles from "./my-exams.module.css";
 import { CreditCost, useCredits } from "@/modules/credits/client";
 import { examCreditAction } from "@/modules/credits/pricing";
+import { MaterialImages, useMaterialPick } from "@/modules/ai-images/client";
 
-const ACCEPT = ".pdf,.docx,.pptx,.txt,.md,.csv";
+const ACCEPT = ".pdf,.docx,.pptx,.txt,.md,.csv,image/*";
 const ALLOWED = new Set(["pdf", "docx", "pptx", "txt", "md", "csv"]);
 const LETTERS = "ABCDE";
 const dateLabel = new Intl.DateTimeFormat("mn-MN", { timeZone: "Asia/Ulaanbaatar", month: "short", day: "numeric" });
@@ -22,7 +23,7 @@ const clock = (seconds: number) => {
   const safe = Math.max(0, Math.floor(seconds));
   return String(Math.floor(safe / 60)).padStart(2, "0") + ":" + String(safe % 60).padStart(2, "0");
 };
-const kindLabel = (kind: string) => kind === "pdf" ? "PDF" : kind === "docx" ? "Word" : kind === "pptx" ? "PowerPoint" : "Текст";
+const kindLabel = (kind: string) => kind === "pdf" ? "PDF" : kind === "docx" ? "Word" : kind === "pptx" ? "PowerPoint" : kind === "image" ? "Зураг" : "Текст";
 
 type View =
   | { kind: "list" }
@@ -33,7 +34,9 @@ type View =
 export function MyExams({ userKey }: { userKey: string }) {
   const exams = useExams(userKey);
   const [view, setView] = useState<View>({ kind: "list" });
-  const [file, setFile] = useState<File | null>(null);
+  const material = useMaterialPick({ extensions: ALLOWED, maxBytes: MY_EXAM_LIMITS.fileBytes, documentHint: "PDF, Word, PowerPoint, TXT, MD, CSV файл эсвэл хуудасны зураг сонгоно уу." });
+  const picked = material.pick;
+  const file = picked?.kind === "document" ? picked.file : null;
   const [count, setCount] = useState<ExamCount>(10);
   const [language, setLanguage] = useState<ExamLanguage>("mn");
   const [pending, setPending] = useState(false);
@@ -46,25 +49,21 @@ export function MyExams({ userKey }: { userKey: string }) {
 
   useEffect(() => { window.scrollTo({ top: 0, behavior: "auto" }); }, [view]);
 
-  function pick(next: File | null | undefined) {
+  async function pick(next: ArrayLike<File> | null | undefined) {
     setError("");
-    if (!next) return;
-    const extension = next.name.toLowerCase().match(/\.([a-z0-9]+)$/)?.[1] ?? "";
-    if (!ALLOWED.has(extension)) { setError("PDF, Word, PowerPoint, TXT, MD эсвэл CSV файл сонгоно уу."); return; }
-    if (next.size > MY_EXAM_LIMITS.fileBytes) { setError(`Файл хэт том байна. ${MY_EXAM_LIMITS.fileBytes / 1024 / 1024} MB хүртэл файл оруулна уу.`); return; }
-    setFile(next);
+    setError(await material.choose(next));
   }
   function drop(event: DragEvent) {
     event.preventDefault();
     setDragging(false);
-    if (!pending) pick(event.dataTransfer.files?.[0]);
+    if (!pending) void pick(event.dataTransfer.files);
   }
   async function generate() {
-    if (!file || pending) return;
+    if (!picked || pending || material.preparing) return;
     setPending(true); setError("");
     try {
       const form = new FormData();
-      form.append("file", file);
+      material.append(form);
       form.append("count", String(count));
       form.append("language", language);
       const response = await fetch("/api/workspace/my-exams", { method: "POST", body: form, signal: AbortSignal.timeout(175_000) });
@@ -76,7 +75,7 @@ export function MyExams({ userKey }: { userKey: string }) {
       if (!exam) throw new Error("AI шалгалт бүрэн ирсэнгүй. Дахин оролдоно уу.");
       saveExam(userKey, exam);
       setView({ kind: "brief", id: exam.id });
-      setFile(null);
+      material.clear();
     } catch (reason) {
       setError(reason instanceof Error && reason.name !== "TimeoutError" ? reason.message : "Шалгалт үүсгэхэд хэт удлаа. Дахин оролдоно уу.");
     } finally { setPending(false); }
@@ -115,7 +114,7 @@ export function MyExams({ userKey }: { userKey: string }) {
     <header className={styles.head}>
       <p className={styles.kicker}><Icon name="fileExam" size={17} />Файлаас шалгалт</p>
       <h1>Файлаа оруул.<br /><span>Шалгалт болго.</span></h1>
-      <p className={styles.lead}>Хичээлийн PDF, Word эсвэл текстээс AI 10–20 асуулттай шалгалт үүсгэж, цагтай эсвэл цаггүй өгөөд дүнгээ харна.</p>
+      <p className={styles.lead}>Хичээлийн PDF, Word, текст эсвэл дэвтэр, номын хуудасны зургаас AI 10–20 асуулттай шалгалт үүсгэж, цагтай эсвэл цаггүй өгөөд дүнгээ харна.</p>
     </header>
 
     <section className={styles.uploadCard} aria-labelledby="mx-upload-heading">
@@ -125,16 +124,17 @@ export function MyExams({ userKey }: { userKey: string }) {
         onDragOver={event => event.preventDefault()}
         onDragLeave={event => { if (event.currentTarget === event.target) setDragging(false); }}
         onDrop={drop}>
-        <input ref={input} type="file" accept={ACCEPT} className="sr-only" onChange={event => { pick(event.target.files?.[0]); event.target.value = ""; }} disabled={pending} aria-label="Шалгалт үүсгэх файл сонгох" />
-        {file ? <div className={styles.fileRow}>
+        <input ref={input} type="file" accept={ACCEPT} multiple className="sr-only" onChange={event => { const files = Array.from(event.target.files ?? []); event.target.value = ""; void pick(files); }} disabled={pending} aria-label="Шалгалт үүсгэх файл эсвэл зураг сонгох" />
+        {picked?.kind === "images" || (material.preparing && !file) ? <MaterialImages images={picked?.kind === "images" ? picked.images : []} max={material.max} onRemove={material.removeImage} onAdd={() => input.current?.click()} busy={material.preparing} disabled={pending} />
+        : file ? <div className={styles.fileRow}>
           <span className={styles.fileIcon} aria-hidden="true">{file.name.split(".").pop()?.toUpperCase().slice(0, 4)}</span>
           <span className={styles.fileText}><strong>{file.name}</strong><small>{bytes(file.size)}</small></span>
-          <button type="button" className={styles.remove} onClick={() => { setFile(null); input.current?.focus(); }} aria-label="Сонгосон файлыг арилгах" disabled={pending}><Icon name="close" size={18} /></button>
+          <button type="button" className={styles.remove} onClick={() => { material.clear(); input.current?.focus(); }} aria-label="Сонгосон файлыг арилгах" disabled={pending}><Icon name="close" size={18} /></button>
         </div> : <>
           <span className={styles.dropIcon} aria-hidden="true"><Icon name="fileExam" size={27} /></span>
-          <strong>{dragging ? "Файлаа тавина уу" : "Файлаа энд чирэх эсвэл сонгох"}</strong>
-          <span>{MY_EXAM_LIMITS.fileBytes / 1024 / 1024} MB хүртэл · PDF, DOCX, PPTX, TXT, MD, CSV</span>
-          <button type="button" className={styles.choose} onClick={() => input.current?.click()} disabled={pending}>Файл сонгох</button>
+          <strong>{dragging ? "Файл эсвэл зургаа тавина уу" : "Файл эсвэл зургаа энд чирэх, сонгох"}</strong>
+          <span>{MY_EXAM_LIMITS.fileBytes / 1024 / 1024} MB хүртэл · PDF, DOCX, PPTX, TXT, MD, CSV эсвэл {material.max} хүртэл хуудасны зураг</span>
+          <button type="button" className={styles.choose} onClick={() => input.current?.click()} disabled={pending}>Файл, зураг сонгох</button>
         </>}
       </div>
 
@@ -149,13 +149,13 @@ export function MyExams({ userKey }: { userKey: string }) {
           <div className={styles.segmented}><button type="button" aria-pressed={language === "mn"} className={language === "mn" ? styles.segmentActive : undefined} onClick={() => setLanguage("mn")} disabled={pending}>Монгол</button><button type="button" aria-pressed={language === "en"} className={language === "en" ? styles.segmentActive : undefined} onClick={() => setLanguage("en")} disabled={pending}>English</button></div>
           <small className={styles.settingHint}>Асуулт, тайлбар энэ хэлээр.</small>
         </div>
-        <button type="button" className={styles.generate} onClick={() => void generate()} disabled={!file || pending} aria-busy={pending}>
+        <button type="button" className={styles.generate} onClick={() => void generate()} disabled={!picked || pending || material.preparing} aria-busy={pending}>
           {pending ? <><i className={styles.spinner} aria-hidden="true" />Шалгалт үүсгэж байна…</> : <><Icon name="spark" size={18} />Шалгалт үүсгэх</>}
         </button>
         <p className={styles.cost}><CreditCost action={examCreditAction(count)} /></p>
         {pending ? <p className={styles.status} role="status">Файлыг уншиж, AI асуулт үүсгэж байна. 20–60 секунд орно.</p> : null}
         {error ? <p className={styles.error} role="alert">{error}</p> : null}
-        <p className={styles.fine}>Файлын текст AI руу илгээгдэж, зөвхөн түүнээс асуулт үүсгэнэ. Урт файлын эхний 45,000 тэмдэгтийг ашиглана. Файл серверт хадгалагдахгүй; шалгалт, хариулт зөвхөн энэ хөтөчид үлдэнэ. Хариултын түлхүүр шалгалт дуустал шифрлэгдэнэ. Хугацаатай шалгалтын үеэр хаалттай.</p>
+        <p className={styles.fine}>Файлын текст эсвэл хуудасны зураг AI руу илгээгдэж, зөвхөн түүнээс асуулт үүсгэнэ. Урт файлын эхний 45,000 тэмдэгтийг ашиглана. Файл серверт хадгалагдахгүй; шалгалт, хариулт зөвхөн энэ хөтөчид үлдэнэ. Хариултын түлхүүр шалгалт дуустал шифрлэгдэнэ. Хугацаатай шалгалтын үеэр хаалттай.</p>
       </div>
     </section>
 

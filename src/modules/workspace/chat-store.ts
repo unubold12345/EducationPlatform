@@ -1,15 +1,19 @@
 "use client";
 import { useSyncExternalStore } from "react";
 import { CHAT_MODES, CHAT_SUBJECTS, type ChatMode, type ChatSubject, type ChatTurn } from "./chat-contract";
+import { AI_IMAGE_LIMITS } from "@/modules/ai-images/contracts";
+import type { AttachedImage } from "@/modules/ai-images/client";
 
 // Chats live only in this browser, per account, like Essay Studio drafts: nothing is stored on the server.
-export type ChatThread = { id: string; title: string; subject: ChatSubject; mode: ChatMode; language: "mn" | "en"; updatedAt: number; turns: ChatTurn[] };
-export type PendingPrompt = { text: string; subject: ChatSubject; mode: ChatMode; language: "mn" | "en" };
+// A message's images keep only small previews here; the full pictures were sent once and are not kept.
+export type StoredTurn = ChatTurn & { images?: string[] };
+export type ChatThread = { id: string; title: string; subject: ChatSubject; mode: ChatMode; language: "mn" | "en"; updatedAt: number; turns: StoredTurn[] };
+export type PendingPrompt = { text: string; subject: ChatSubject; mode: ChatMode; language: "mn" | "en"; images?: AttachedImage[] };
 
 const PREFIX = "education-workspace-chats-v1:";
 const PENDING = "education-workspace-pending";
 const EVENT = "education-workspace-chats";
-const MAX_THREADS = 30, MAX_TURNS = 60, MAX_CHARS = 12000;
+const MAX_THREADS = 30, MAX_TURNS = 60, MAX_CHARS = 12000, MAX_THUMB = 24_000;
 const EMPTY: ChatThread[] = [];
 
 const cached = { raw: null as string | null, key: "", value: EMPTY };
@@ -21,6 +25,9 @@ function validThread(value: unknown): value is ChatThread {
     && ["mn", "en"].includes(String(thread.language)) && Array.isArray(thread.turns)
     && thread.turns.every(turn => turn && typeof turn === "object" && ["user", "assistant"].includes(String((turn as ChatTurn).role)) && typeof (turn as ChatTurn).content === "string");
 }
+const thumbs = (images: unknown) => Array.isArray(images)
+  ? images.filter((url): url is string => typeof url === "string" && url.startsWith("data:image/") && url.length <= MAX_THUMB).slice(0, AI_IMAGE_LIMITS.perMessage)
+  : [];
 function read(userKey: string): ChatThread[] {
   let raw: string | null = null;
   try { raw = localStorage.getItem(PREFIX + userKey); } catch { /* Storage can be blocked; chats then last for this page only. */ }
@@ -41,7 +48,10 @@ export function useThreads(userKey: string | null) {
 }
 
 export function saveThread(userKey: string, thread: ChatThread) {
-  const trimmed = { ...thread, turns: thread.turns.slice(-MAX_TURNS).map(turn => ({ ...turn, content: turn.content.slice(0, MAX_CHARS) })) };
+  const trimmed = { ...thread, turns: thread.turns.slice(-MAX_TURNS).map(({ images, ...turn }) => {
+    const kept = thumbs(images);
+    return { ...turn, content: turn.content.slice(0, MAX_CHARS), ...(kept.length ? { images: kept } : {}) };
+  }) };
   const others = read(userKey).filter(item => item.id !== thread.id);
   write(userKey, [trimmed, ...others].sort((a, b) => b.updatedAt - a.updatedAt).slice(0, MAX_THREADS));
 }
@@ -66,9 +76,11 @@ export function takePendingPrompt(): PendingPrompt | null {
     const raw = sessionStorage.getItem(PENDING);
     sessionStorage.removeItem(PENDING);
     const value = raw ? JSON.parse(raw) as PendingPrompt : null;
-    if (!value || typeof value.text !== "string" || !value.text.trim()) return null;
+    if (!value || typeof value.text !== "string") return null;
     if (!(CHAT_SUBJECTS as readonly string[]).includes(value.subject) || !(CHAT_MODES as readonly string[]).includes(value.mode) || !["mn", "en"].includes(value.language)) return null;
-    return value;
+    const images = Array.isArray(value.images) ? value.images.filter(image => image && typeof image.url === "string" && typeof image.thumb === "string" && typeof image.id === "string").slice(0, AI_IMAGE_LIMITS.perMessage) : [];
+    if (!value.text.trim() && !images.length) return null;
+    return { ...value, images };
   } catch { return null; }
 }
 

@@ -21,6 +21,9 @@ model User {
   vocabularyWords VocabularyWord[]
   creditPeriods CreditPeriod[]
   creditCharges CreditCharge[]
+  creditPlanTerms CreditPlanTerm[]
+  creditWallet CreditWallet?
+  creditOrders CreditOrder[]
   mockPurchases MockPurchase[]
   subscriptions Subscription[]
   subscriptionOrders SubscriptionOrder[]
@@ -356,6 +359,8 @@ model CreditCharge {
   action String
   credits Int
   status String @default("HELD")
+  // Where the credits came from (month, plan term, purchased), so a refund returns them to the same place.
+  parts Json?
   promptTokens Int @default(0)
   cachedTokens Int @default(0)
   completionTokens Int @default(0)
@@ -364,6 +369,55 @@ model CreditCharge {
   settledAt DateTime?
   @@index([userId, createdAt])
   @@index([createdAt])
+}
+
+// Plan credits used in one continuous subscription term, keyed by Subscription.startsAt (which stays
+// fixed while a plan is renewed before it ends). A plan that lapses and is bought again starts a new
+// term with fresh credits; nothing here resets on the 1st of the month.
+model CreditPlanTerm {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  program String
+  termStart DateTime
+  used Int @default(0)
+  updatedAt DateTime @updatedAt
+  @@unique([userId, program, termStart])
+}
+
+// Purchased credits: they never expire and are spent after the monthly and plan credits.
+// The row is also the per-student lock that serializes credit holds.
+model CreditWallet {
+  userId String @id
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  purchased Int @default(0)
+  used Int @default(0)
+  updatedAt DateTime @updatedAt
+}
+
+// The one AI credit pack on sale (key "default"). A missing row falls back to the code default.
+model CreditPack {
+  key String @id
+  credits Int
+  amountMnt Int
+  updatedBy String
+  updatedAt DateTime @updatedAt
+}
+
+// A simulated purchase of the credit pack; paid orders keep the credits and amount they were bought at.
+model CreditOrder {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  credits Int
+  amountMnt Int
+  currency String @default("MNT")
+  provider String @default("MOCK")
+  status String @default("PENDING")
+  activeKey String? @unique
+  createdAt DateTime @default(now())
+  paidAt DateTime?
+  @@index([userId, createdAt])
 }
 
 model MockRecording {

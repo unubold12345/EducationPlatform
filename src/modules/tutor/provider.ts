@@ -3,8 +3,10 @@ import { ApiError } from "@/lib/api";
 import type { TutorContext, TutorInput } from "./contracts";
 import { tutorMessages } from "./contracts";
 import { AI_ACTIONS, type UsageMeter } from "@/modules/credits/pricing";
+import type { MessageContent } from "@/modules/ai-images/contracts";
 
-export async function deepseekChat(messages: { role: string; content: string }[], maxTokens = 1400, meter?: UsageMeter) {
+/** Text-only messages, or a user message with images (`withImages`); DeepSeek accepts images in user messages only. */
+export async function deepseekChat(messages: { role: string; content: MessageContent }[], maxTokens = 1400, meter?: UsageMeter) {
   const key=process.env.DEEPSEEK_API_KEY?.trim();
   if (!key) throw new ApiError(503,"AI багш одоогоор холбогдоогүй байна. Үндсэн тайлбараа ашиглана уу.");
   let response: Response;

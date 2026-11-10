@@ -4,7 +4,7 @@ import { requireUser } from "@/lib/session";
 import { getDb } from "@/lib/db";
 import { examDefinitions } from "@/modules/exams/definitions";
 import { entranceTotal } from "@/modules/exams/entrance/catalog";
-import { listeningLabEnabled, speakingLabEnabled, writingLabEnabled } from "@/lib/local-pilot";
+import { listeningLabEnabled, readingLabEnabled, speakingLabEnabled, writingLabEnabled } from "@/lib/local-pilot";
 import { practiceSummaries } from "@/modules/exam-practice/service";
 import { finishedAttempts, openAttempts } from "@/modules/workspace/data";
 import { programLabels } from "@/modules/workspace/programs";
@@ -41,6 +41,7 @@ export default async function WorkspaceHome() {
     ...(speakingLabEnabled() ? [{ href: "/labs/ielts-speaking", label: "Ярианы хамтрагч", detail: "AI-тай IELTS Speaking", icon: "mic" as const }] : []),
     ...(writingLabEnabled() ? [{ href: "/labs/ielts-writing", label: "Эссэ студи", detail: "AI засвар, band тооцоо", icon: "pen" as const }] : []),
     ...(listeningLabEnabled() ? [{ href: "/labs/ielts-listening", label: "Сонсгол лаб", detail: "Part 1–4, давтан сонсох", icon: "sound" as const }] : []),
+    ...(readingLabEnabled() ? [{ href: "/labs/ielts-reading", label: "Унших лаб", detail: "5 жишээ, өөрийн файлаас", icon: "book" as const }] : []),
   ];
   return <div className="wsp-page wsp-home">
     <header className="wsp-hero">

@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { CHAT_LIMITS, WORKSPACE_AI_DAILY_LIMIT, chatMessages, threadTitle, validChatInput } from "../src/modules/workspace/chat-contract.ts";
+import { CHAT_BODY_BYTES, CHAT_LIMITS, WORKSPACE_AI_DAILY_LIMIT, chatMessages, threadTitle, validChatInput } from "../src/modules/workspace/chat-contract.ts";
 import { inWorkspace, workspaceTab } from "../src/modules/workspace/paths.ts";
 import { markdownBlocks } from "../src/modules/workspace/markdown-blocks.ts";
 
@@ -70,7 +70,7 @@ test("AI replies split into paragraphs, headings and lists", () => {
 });
 
 test("the Workspace frame wraps the complete mock and workshop flows", () => {
-  for (const path of ["/workspace", "/workspace/chat", "/workspace/vocabulary", "/workspace/my-exams", "/workspace/review/abc", "/workspace/profile", "/workspace/plans", "/subscribe/ielts", "/exams", "/exams/sat", "/exams/eesh", "/exams/sat-full-01", "/checkout/sat-full-01", "/exams/attempts/abc", "/exams/sat-full-01/practice", "/workshops/ielts-writing-data", "/labs/ielts-writing", "/labs/ielts-speaking", "/labs/ielts-listening"]) assert.equal(inWorkspace(path), true, path);
+  for (const path of ["/workspace", "/workspace/chat", "/workspace/vocabulary", "/workspace/my-exams", "/workspace/review/abc", "/workspace/profile", "/workspace/plans", "/subscribe/ielts", "/exams", "/exams/sat", "/exams/eesh", "/exams/sat-full-01", "/checkout/sat-full-01", "/exams/attempts/abc", "/exams/sat-full-01/practice", "/workshops/ielts-writing-data", "/labs/ielts-writing", "/labs/ielts-speaking", "/labs/ielts-listening", "/labs/ielts-reading"]) assert.equal(inWorkspace(path), true, path);
   for (const path of ["/", "/programs", "/plans", "/profile", "/subscribex", "/examsx", "/workspacex", "/workshopsx", "/labs/unknown"]) assert.equal(inWorkspace(path), false, path);
   assert.equal(workspaceTab("/workspace"), "home");
   assert.equal(workspaceTab("/workspace/vocabulary"), "vocabulary");
@@ -85,6 +85,7 @@ test("the Workspace frame wraps the complete mock and workshop flows", () => {
   assert.equal(workspaceTab("/labs/ielts-writing"), "workshop");
   assert.equal(workspaceTab("/labs/ielts-speaking"), "workshop");
   assert.equal(workspaceTab("/labs/ielts-listening"), "workshop");
+  assert.equal(workspaceTab("/labs/ielts-reading"), "workshop");
   assert.equal(workspaceTab("/workspace/plans"), "plans");
   assert.equal(workspaceTab("/subscribe/entrance"), "plans");
   assert.equal(workspaceTab("/workspace/profile"), "profile");
@@ -95,7 +96,9 @@ test("workspace AI stays behind the server's checks", () => {
   const route = text("src/app/api/workspace/chat/route.ts");
   assert.match(route, /checkOrigin\(request\)/);
   assert.match(route, /apiUser\(request\)/);
-  assert.match(route, /readJson\(request, \d+\)/);
+  assert.match(route, /readJson\(request, CHAT_BODY_BYTES\)/);
+  // Room for three base64 images, still under Vercel's 4.5 MB request body limit.
+  assert.ok(CHAT_BODY_BYTES < 4_500_000 && CHAT_BODY_BYTES > 48_000 + 4_000_000);
   const service = text("src/modules/workspace/chat-service.ts");
   assert.equal(service.match(/await ensureNoTimedExam\(userId\)/g)?.length, 2, "open sittings are checked before and after the provider call");
   assert.match(service, /ownMock\(target\.attemptId, userId\)/);

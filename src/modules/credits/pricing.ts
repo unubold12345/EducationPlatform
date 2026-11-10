@@ -5,6 +5,8 @@
  */
 import { subscriptionPlans, type SubscriptionProgram } from "../subscriptions/plans.ts";
 import { VOCABULARY_LIMITS } from "../vocabulary/contracts.ts";
+import { AI_IMAGE_LIMITS } from "../ai-images/contracts.ts";
+import { READING_LIMITS } from "../reading-lab/contracts.ts";
 
 /**
  * DeepSeek list prices in USD per million tokens for the model every AI feature calls.
@@ -37,7 +39,7 @@ export type AiAction =
   | "chat" | "review-coach" | "practice-assistant" | "math-tutor"
   | "writing-ideas" | "writing-grammar" | "writing-feedback"
   | "speaking-turn" | "speaking-report"
-  | "vocabulary-import" | "exam-10" | "exam-20";
+  | "vocabulary-import" | "exam-10" | "exam-20" | "reading-practice";
 
 type ActionBudget = { label: string; area: string; inputTokens: number; outputTokens: number };
 
@@ -59,6 +61,8 @@ export const AI_ACTIONS: Record<AiAction, ActionBudget> = {
   "vocabulary-import": { label: "Файлаас үг оруулах", area: "Үгсийн сан", inputTokens: 24000, outputTokens: 8000 },
   "exam-10": { label: "10 асуулттай шалгалт", area: "Файлаас шалгалт", inputTokens: 24000, outputTokens: 4800 },
   "exam-20": { label: "20 асуулттай шалгалт", area: "Файлаас шалгалт", inputTokens: 24000, outputTokens: 8000 },
+  // Priced by length (`readingPracticeCredits` below); this budget is the most one practice can cost.
+  "reading-practice": { label: "Унших дасгал үүсгэх", area: "Reading Lab", inputTokens: 24000, outputTokens: 6000 },
 };
 export const AI_ACTION_IDS = Object.keys(AI_ACTIONS) as AiAction[];
 
@@ -74,7 +78,26 @@ export function creditsForTokens(promptTokens: number, completionTokens: number,
 export const CREDIT_COSTS = Object.fromEntries(
   AI_ACTION_IDS.map(action => [action, creditsForTokens(AI_ACTIONS[action].inputTokens, AI_ACTIONS[action].outputTokens)]),
 ) as Record<AiAction, number>;
-export function creditCost(action: AiAction) { return CREDIT_COSTS[action]; }
+/**
+ * An image attached to a conversation is billed by DeepSeek as at most 1,024 more input tokens, and the reply
+ * first restates what it read (the prompt asks for that), budgeted here as this many more output tokens.
+ * The owner asked on 2026-11-09 for a picture to raise a chat reply's price a little more than its bare
+ * input cost: 2 credits per image at the peak price.
+ */
+export const IMAGE_OUTPUT_TOKENS = 600;
+/**
+ * Whole credits each image adds to that reply. Photos given to an import or an exam replace the document text,
+ * which the action's budget already covers, so those prices do not change.
+ */
+export const IMAGE_CREDITS = creditsForTokens(AI_IMAGE_LIMITS.tokens, IMAGE_OUTPUT_TOKENS);
+export const IMAGE_ACTIONS: readonly AiAction[] = ["chat", "review-coach", "practice-assistant", "math-tutor"];
+const imageCount = (images: number) => Number.isFinite(images) ? Math.min(AI_IMAGE_LIMITS.perMessage, Math.max(0, Math.ceil(images))) : AI_IMAGE_LIMITS.perMessage;
+/** The listed price of one action, plus the image surcharge when a conversation message carries images. */
+export function creditCost(action: AiAction, images = 0) {
+  return CREDIT_COSTS[action] + (IMAGE_ACTIONS.includes(action) ? imageCount(images) * IMAGE_CREDITS : 0);
+}
+/** The most one request of this action can ever hold: its price with the most images a message may carry. */
+export function maxCreditCost(action: AiAction) { return creditCost(action, AI_IMAGE_LIMITS.perMessage); }
 export function isAiAction(value: unknown): value is AiAction {
   return typeof value === "string" && Object.hasOwn(AI_ACTIONS, value);
 }
@@ -98,12 +121,17 @@ export const VOCABULARY_IMPORT_RATE = {
 // Missing or malformed input prices as the maximum, so a bug can never undercharge.
 const bounded = (value: number, max: number) => Number.isFinite(value) ? Math.min(max, Math.max(0, Math.ceil(value))) : max;
 
-/** Credits for reading `textChars` of document text and saving `words` new words. */
-export function vocabularyImportCredits(textChars: number, words: number) {
+/**
+ * Credits for reading `textChars` of document text (or `images` page photos, each billed as at most 1,024
+ * tokens) and saving `words` new words. Four photos read fewer tokens than a full-length document, so the
+ * maximum held for a word count covers either kind of upload.
+ */
+export function vocabularyImportCredits(textChars: number, words: number, images = 0) {
   const chars = bounded(textChars, VOCABULARY_LIMITS.textChars);
   const count = bounded(words, VOCABULARY_LIMITS.importWords);
+  const pictures = bounded(images, AI_IMAGE_LIMITS.perUpload);
   return creditsForTokens(
-    VOCABULARY_IMPORT_RATE.promptTokens + Math.ceil(chars / VOCABULARY_IMPORT_RATE.charsPerToken),
+    VOCABULARY_IMPORT_RATE.promptTokens + Math.ceil(chars / VOCABULARY_IMPORT_RATE.charsPerToken) + pictures * AI_IMAGE_LIMITS.tokens,
     count * VOCABULARY_IMPORT_RATE.tokensPerWord,
   );
 }
@@ -112,10 +140,53 @@ export function vocabularyImportHold(words: number) {
   return vocabularyImportCredits(VOCABULARY_LIMITS.textChars, words);
 }
 
+/**
+ * A Reading Lab practice is priced by length (owner rule 2026-11-10), not one flat fee: the material DeepSeek reads
+ * (one token per two characters, or one image's tokens per page photo) plus the passage and questions it writes back.
+ * The first live call (2026-11-10) read 1,935 characters and returned a 351-word passage with 12 questions for
+ * 1,206 + 1,951 tokens ($0.0027); these rates price that at 6 credits, leaving room for longer Mongolian explanations.
+ * They fill the action's budget, so a full 45,000-character file with the longest passage and most questions costs
+ * exactly the listed (maximum) price.
+ */
+export const READING_PRACTICE_RATE = {
+  /** Instructions, the JSON shape and the explanation language. */
+  promptTokens: 1500,
+  charsPerToken: 2,
+  /** The passage as written back. */
+  tokensPerPassageWord: 2,
+  /** One question with its options, explanation and quoted evidence. */
+  tokensPerQuestion: 200,
+  /** The title and the JSON around the reply. */
+  replyTokens: 600,
+} as const;
+
+/** Credits for reading `textChars` of material (or `images` page photos) and returning a passage of `passageWords` with `questions` questions. */
+export function readingPracticeCredits(textChars: number, passageWords: number, questions: number, images = 0) {
+  const rate = READING_PRACTICE_RATE;
+  const chars = bounded(textChars, READING_LIMITS.textChars);
+  const words = bounded(passageWords, READING_LIMITS.passageWords.max);
+  const count = bounded(questions, READING_LIMITS.questions.max);
+  const pictures = bounded(images, AI_IMAGE_LIMITS.perUpload);
+  return creditsForTokens(
+    // A practice reads pasted text, a document or page photos, never two of them, so the larger one is priced.
+    rate.promptTokens + Math.max(Math.ceil(chars / rate.charsPerToken), pictures * AI_IMAGE_LIMITS.tokens),
+    rate.replyTokens + words * rate.tokensPerPassageWord + count * rate.tokensPerQuestion,
+  );
+}
+/**
+ * The most a practice from this material can cost: its known length (pasted text) or photo count, with the longest
+ * passage and the most questions. A document's text is only known after extraction, so it holds the full-file price.
+ */
+export function readingPracticeHold(textChars: number, images = 0) {
+  return readingPracticeCredits(textChars, READING_LIMITS.passageWords.max, READING_LIMITS.questions.max, images);
+}
+
 /** The lowest and highest charge of an action; equal for every fixed-price action. */
 export function creditRange(action: AiAction) {
   const max = CREDIT_COSTS[action];
-  return { min: action === "vocabulary-import" ? vocabularyImportCredits(0, 1) : max, max };
+  if (action === "vocabulary-import") return { min: vocabularyImportCredits(0, 1), max };
+  if (action === "reading-practice") return { min: readingPracticeCredits(READING_LIMITS.minSourceChars, READING_LIMITS.passageWords.min, READING_LIMITS.questions.min), max };
+  return { min: max, max };
 }
 /** "5" for a fixed price, "1–17" for a priced-by-result action. */
 export function creditRangeLabel(action: AiAction) {
@@ -147,21 +218,27 @@ export function validAllowance(value: unknown): value is number {
 export function validGrant(value: unknown): value is number {
   return typeof value === "number" && Number.isInteger(value) && value >= CREDIT_GRANT_LIMITS.min && value <= CREDIT_GRANT_LIMITS.max;
 }
+/**
+ * The one AI credit pack on sale. Admins change both numbers in the Prices tab (`CreditPack`); this is the
+ * fallback when no row exists. Purchased credits never expire and are spent after the monthly and plan credits.
+ */
+export const DEFAULT_CREDIT_PACK = { credits: 1000, amountMnt: 5000 } as const;
+export type CreditPackOffer = { credits: number; amountMnt: number };
+export const CREDIT_PACK_LIMITS = { credits: { min: 10, max: 100_000 }, amountMnt: { min: 1000, max: 1_000_000, step: 100 } } as const;
+export function validCreditPack(credits: unknown, amountMnt: unknown) {
+  const { credits: c, amountMnt: m } = CREDIT_PACK_LIMITS;
+  return typeof credits === "number" && Number.isInteger(credits) && credits >= c.min && credits <= c.max
+    && typeof amountMnt === "number" && Number.isInteger(amountMnt) && amountMnt >= m.min && amountMnt <= m.max && amountMnt % m.step === 0;
+}
+
 /** The code defaults, used where no admin-set row exists. */
 export function defaultAllowances(): AllowanceTable {
   return Object.fromEntries([["free", FREE_MONTHLY_CREDITS], ...subscriptionPlans.map(plan => [plan.program, plan.aiCredits])]) as AllowanceTable;
 }
-/** Monthly allowance: the free credits plus each distinct active plan's credits (bonus grants are added separately). */
-export function monthlyAllowance(programs: readonly string[], table: AllowanceTable = defaultAllowances()) {
-  let total = table.free;
-  for (const program of new Set(programs)) if (program !== "free" && isAllowanceKey(program)) total += table[program];
-  return total;
-}
-
 const UB_OFFSET_MS = 8 * 3600_000;
-/** The Ulaanbaatar calendar month a charge belongs to, as "YYYY-MM". */
+/** The Ulaanbaatar calendar month a charge belongs to (and the free credits' month), as "YYYY-MM". */
 export function creditPeriod(now: number) { return new Date(now + UB_OFFSET_MS).toISOString().slice(0, 7); }
-/** When the next month's allowance starts: 00:00 Ulaanbaatar on the 1st. */
+/** When the next month's free credits start: 00:00 Ulaanbaatar on the 1st. Plan credits do not follow this. */
 export function creditResetAt(now: number) {
   const local = new Date(now + UB_OFFSET_MS);
   return new Date(Date.UTC(local.getUTCFullYear(), local.getUTCMonth() + 1, 1) - UB_OFFSET_MS);

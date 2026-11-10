@@ -38,7 +38,7 @@ export const statusLabel = (value: string) => ({ PAID: "Төлөгдсөн", PEN
 export const eventLabel = (value: string) => ({ "sign-in": "Нэвтэрсэн", "sign-up": "Бүртгүүлсэн", "password-change": "Нууц үг сольсон" }[value] ?? value);
 export const auditActions: readonly (readonly [string, string])[] = [
   ["grant-month", "Сарын эрх олгосон"], ["expire-plan", "Сарын эрх дуусгасан"], ["revoke-sessions", "Төхөөрөмжөөс гаргасан"],
-  ["suspend", "Бүртгэл хаасан"], ["unsuspend", "Хаалт цуцалсан"], ["add-note", "Тэмдэглэл нэмсэн"], ["set-price", "Үнэ өөрчилсөн"], ["grant-credits", "AI кредит олгосон"], ["set-credits", "AI кредитийн хэмжээ өөрчилсөн"],
+  ["suspend", "Бүртгэл хаасан"], ["unsuspend", "Хаалт цуцалсан"], ["add-note", "Тэмдэглэл нэмсэн"], ["set-price", "Үнэ өөрчилсөн"], ["grant-credits", "AI кредит олгосон"], ["set-credits", "AI кредитийн хэмжээ өөрчилсөн"], ["set-credit-pack", "AI кредит багц өөрчилсөн"],
   ["content-fix", "Асуулт зассан"], ["content-save", "Ноорог хадгалсан"], ["content-review", "Ноорог хянасан"], ["content-publish", "Контент нийтэлсэн"], ["review-content", "Хяналтын төлөв өөрчилсөн"],
 ];
 export const auditLabel = (action: string) => auditActions.find(([key]) => key === action)?.[1] ?? action;

@@ -379,6 +379,7 @@ main:has(> .wsp) { isolation: auto; }
 /* Pick tiles inside the hero box (exams / workshop segments). */
 .wsp-pick-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding: 14px; border: 1px solid var(--wsp-line); border-radius: 20px; background: var(--wsp-card); box-shadow: var(--wsp-shadow-card); }
 .wsp-pick-grid.is-three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.wsp-pick-grid.is-three.is-four { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .wsp-pick {
   position: relative; display: flex; flex-direction: column; gap: 4px;
   min-height: 92px; padding: 16px 44px 16px 16px;
@@ -510,6 +511,10 @@ main:has(> .wsp) { isolation: auto; }
 .wsp-messages { display: flex; flex: 1; flex-direction: column; gap: 22px; padding: 26px 0 28px; }
 .wsp-msg { display: flex; gap: 12px; min-width: 0; }
 .wsp-msg.user { justify-content: flex-end; }
+.wsp-msg.user.has-images { flex-direction: column; align-items: flex-end; gap: 0; }
+.wsp-composer-images { padding: 0 4px; }
+.wsp-composer.is-dropping { border-color: var(--wsp-accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--wsp-accent) 18%, transparent); }
+.wsp-composer-foot .wsp-attach { margin-right: auto; }
 .wsp-bubble { max-width: min(560px, 85%); padding: 11px 16px; border-radius: 18px 18px 4px 18px; background: var(--wsp-chip); color: var(--wsp-ink); }
 .wsp-bubble p { margin: 0; color: inherit; font-size: 15px; white-space: pre-wrap; overflow-wrap: anywhere; }
 .wsp-msg-avatar { display: grid; place-items: center; flex-shrink: 0; width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #2f80ff, #6a4cf5); color: #fff; }
@@ -628,6 +633,8 @@ main:has(> .wsp) { isolation: auto; }
 .wsp-coach-chips button { min-height: 30px; padding: 4px 10px; border: 1px solid var(--wsp-line); border-radius: 999px; background: var(--wsp-card); color: var(--wsp-text); font-size: 12.5px; font-weight: 550; cursor: pointer; }
 .wsp-coach-chips button:hover:not(:disabled) { border-color: var(--wsp-accent); color: var(--wsp-accent); }
 .wsp-coach-form { display: flex; align-items: flex-end; gap: 8px; margin: 0 14px; padding: 6px 6px 6px 12px; border: 1px solid var(--wsp-line); border-radius: 14px; }
+.wsp-coach-form .wsp-coach-attach { margin-left: -6px; }
+.wsp-coach-images { margin: 0 14px 8px; }
 .wsp-coach-form:focus-within { border-color: color-mix(in srgb, var(--wsp-accent) 50%, var(--wsp-line)); }
 .wsp-coach-form textarea { flex: 1; min-width: 0; max-height: 120px; padding: 8px 0; border: 0; outline: 0; background: transparent; color: var(--wsp-ink); font-size: 14px; resize: none; field-sizing: content; }
 .wsp-coach .wsp-fine { margin: 8px 14px 12px; font-size: 11.5px; }
@@ -670,6 +677,16 @@ main:has(> .wsp) { isolation: auto; }
 .workshop-listen .wave { fill: var(--blue); opacity: .85; }
 .workshop-listen .badge { fill: var(--btn-bg); }
 .workshop-listen .play { fill: var(--btn-ink); }
+.wsp-workshop-grid.is-four { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.wsp-workshop-grid.is-four .workshop-tile-art { aspect-ratio: 21 / 9; }
+@media (max-width: 640px) { .wsp-workshop-grid.is-four { grid-template-columns: 1fr; } }
+.workshop-read { width: 100%; height: 100%; }
+.workshop-read .page { fill: var(--surface); stroke: var(--ink); stroke-width: 3; stroke-linejoin: round; }
+.workshop-read .spine { stroke: var(--ink); stroke-width: 3; }
+.workshop-read .line { fill: color-mix(in srgb, var(--ink) 18%, transparent); }
+.workshop-read .hl { fill: color-mix(in srgb, #f3c74b 75%, transparent); }
+.workshop-read .badge { fill: var(--btn-bg); }
+.workshop-read .tick { fill: none; stroke: var(--btn-ink); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
 
 /* Exam library, collections, hubs and briefings keep their structure but take the Workspace's calmer type. */
 .wsp-content .eyebrow { color: var(--wsp-muted); font-size: 11.5px; font-weight: 600; letter-spacing: .06em; }

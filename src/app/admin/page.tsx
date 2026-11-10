@@ -14,9 +14,11 @@ import { pageInfo,parsePage } from "@/modules/admin/paging";
 import { AdminShell,Pager,StatusPill,SubTabs,adminGroups,adminTabInfo,adminTabs,auditActions,auditLabel,adminDate as date,money,statusLabel,type AdminTab } from "@/modules/admin/ui";
 import { AdminPriceForm } from "@/components/admin-price-form";
 import { AdminCreditForm } from "@/components/admin-credit-form";
+import { AdminCreditPackForm } from "@/components/admin-credit-pack-form";
 import { creditAllowances } from "@/modules/credits/service";
+import { creditPack } from "@/modules/credits/purchase";
 import { creditMonths, creditUsage } from "@/modules/admin/credits";
-import { AI_ACTIONS, CREDIT_USD, DEEPSEEK_PRICE, creditPeriod, creditRangeLabel, defaultAllowances, formatCredits, formatUsd, isAiAction } from "@/modules/credits/pricing";
+import { AI_ACTIONS, CREDIT_USD, DEEPSEEK_PRICE, DEFAULT_CREDIT_PACK, creditPeriod, creditRangeLabel, defaultAllowances, formatCredits, formatUsd, isAiAction } from "@/modules/credits/pricing";
 
 export const metadata:Metadata={title:"Удирдлагын төв",robots:{index:false,follow:false}};
 const one=(value:string|string[]|undefined)=>typeof value==="string"?value:"";
@@ -107,16 +109,18 @@ export default async function AdminPage({searchParams}:{searchParams:Promise<Rec
   }
 
   if(tab==="payments") {
-    const view=kind==="purchases"?"purchases":"orders";
+    const view=kind==="purchases"?"purchases":kind==="credits"?"credits":"orders";
     const statusWhere=["PAID","DECLINED","PENDING"].includes(filter)?{status:filter}:{};
     const base={user:userFilter,...paymentScope};
-    const [orderTotal,purchaseTotal]=await Promise.all([db.subscriptionOrder.count({where:{...base,...statusWhere}}),db.mockPurchase.count({where:{...base,...statusWhere}})]);
-    const info=pageInfo(view==="orders"?orderTotal:purchaseTotal,requested);
-    const rows=view==="orders"
+    const [orderTotal,purchaseTotal,creditTotal]=await Promise.all([db.subscriptionOrder.count({where:{...base,...statusWhere}}),db.mockPurchase.count({where:{...base,...statusWhere}}),db.creditOrder.count({where:{...base,...statusWhere}})]);
+    const info=pageInfo(view==="orders"?orderTotal:view==="credits"?creditTotal:purchaseTotal,requested);
+    const rows=view==="credits"
+      ?(await db.creditOrder.findMany({where:{...base,...statusWhere},skip:info.skip,take:info.size,orderBy:[{createdAt:"desc"},{id:"desc"}],select:{id:true,credits:true,status:true,provider:true,amountMnt:true,createdAt:true,paidAt:true,user:{select:{id:true,email:true}}}})).map(row=>({...row,label:formatCredits(row.credits)+" AI кредит"}))
+      :view==="orders"
       ?(await db.subscriptionOrder.findMany({where:{...base,...statusWhere},skip:info.skip,take:info.size,orderBy:[{createdAt:"desc"},{id:"desc"}],select:{id:true,program:true,status:true,provider:true,amountMnt:true,createdAt:true,paidAt:true,user:{select:{id:true,email:true}}}})).map(row=>({...row,label:row.program.toUpperCase()+" · сарын эрх"}))
       :(await db.mockPurchase.findMany({where:{...base,...statusWhere},skip:info.skip,take:info.size,orderBy:[{createdAt:"desc"},{id:"desc"}],select:{id:true,examSlug:true,status:true,provider:true,amountMnt:true,createdAt:true,paidAt:true,user:{select:{id:true,email:true}}}})).map(row=>({...row,label:findExam(row.examSlug)?.title??"Хасагдсан албан материал · "+row.examSlug}));
     return <AdminShell tab={tab} title={title} name={name} testData={testData} scope={scope} description={description}>{testBanner}
-      <SubTabs items={[["orders","Сарын багцын захиалга",orderTotal],["purchases","Нэг шалгалтын эрх",purchaseTotal]]} current={view} href={key=>link({kind:key,page:1})}/>
+      <SubTabs items={[["orders","Сарын багцын захиалга",orderTotal],["purchases","Нэг шалгалтын эрх",purchaseTotal],["credits","AI кредит",creditTotal]]} current={view} href={key=>link({kind:key,page:1})}/>
       {search("Хэрэглэгчийн нэр эсвэл имэйл…",{name:"filter",value:filter,options:[["","Бүх төлөв"],["PAID","Төлөгдсөн"],["PENDING","Хүлээгдэж байна"],["DECLINED","Амжилтгүй"]]})}
       {view==="orders"&&exportLink("payments","сарын багцын захиалга")}
       <div className="admin-table-wrap"><table><thead><tr><th>Огноо</th><th>Хэрэглэгч</th><th>Бүтээгдэхүүн</th><th>Дүн</th><th>Төлөв</th><th>Баримт</th></tr></thead><tbody>{rows.map(row=><tr key={row.id}><td>{date(row.createdAt)}{row.paidAt&&<small>Төлсөн: {date(row.paidAt)}</small>}</td><td>{userLink(row.user)}</td><td>{row.label}</td><td><strong>{money(row.amountMnt)}</strong></td><td><StatusPill status={row.status}/></td><td><code>{row.id}</code><small>{row.provider}</small></td></tr>)}</tbody></table>{!rows.length&&empty(testData?"Гүйлгээ олдсонгүй.":"Бодит төлбөр хараахан холбогдоогүй.")}</div>
@@ -163,7 +167,7 @@ export default async function AdminPage({searchParams}:{searchParams:Promise<Rec
   }
 
   if(tab==="pricing") {
-    const [prices,history,allowances,creditHistory]=await Promise.all([planPrices(),db.adminAudit.findMany({where:{action:"set-price"},orderBy:[{createdAt:"desc"},{id:"desc"}],take:20}),creditAllowances(),db.adminAudit.findMany({where:{action:"set-credits"},orderBy:[{createdAt:"desc"},{id:"desc"}],take:20})]);
+    const [prices,history,allowances,creditHistory,pack,packHistory]=await Promise.all([planPrices(),db.adminAudit.findMany({where:{action:"set-price"},orderBy:[{createdAt:"desc"},{id:"desc"}],take:20}),creditAllowances(),db.adminAudit.findMany({where:{action:"set-credits"},orderBy:[{createdAt:"desc"},{id:"desc"}],take:20}),creditPack(),db.adminAudit.findMany({where:{action:"set-credit-pack"},orderBy:[{createdAt:"desc"},{id:"desc"}],take:20})]);
     const defaults=defaultAllowances();
     return <AdminShell tab={tab} title={title} name={name} description={description}>
       <p className="admin-help">Шинэ болон төлөгдөөгүй захиалгад шууд үйлчилнэ. Төлөгдсөн захиалга анхны дүнгээрээ үлдэнэ.</p>
@@ -172,10 +176,15 @@ export default async function AdminPage({searchParams}:{searchParams:Promise<Rec
       <div className="admin-table-wrap"><table><thead><tr><th>Огноо</th><th>Багц</th><th>Өмнө → дараа</th><th>Шалтгаан</th></tr></thead><tbody>{history.map(row=>{const d=row.details as {program?:string;before?:number;after?:number};return <tr key={row.id}><td>{date(row.createdAt)}</td><td>{d.program?.toUpperCase()}</td><td>{money(d.before??0)} → {money(d.after??0)}</td><td>{row.reason}<small><code>{row.actorId}</code></small></td></tr>;})}</tbody></table>{!history.length&&<p className="admin-empty">Үнэ өөрчлөгдөөгүй. Анхны үнэ үйлчилж байна.</p>}</div>
       <p className="fine-print">Нэг mock шалгалтын үнэ ₮10,000 хэвээр (кодонд тогтмол).</p>
       <h3 className="admin-subhead" id="credit-allowances">AI кредит / сар</h3>
-      <p className="admin-help">Үнэгүй кредит бүх баталгаажсан бүртгэлд, багцын кредит идэвхтэй багц бүрт нэмэгдэнэ. Энэ сарын үлдэгдэлд шууд нөлөөлнө; зарцуулсан кредит буцахгүй. Үйлдэл бүрийн кредитийн үнэ DeepSeek-ийн токены үнээр кодонд тогтмол (<Link href="/admin?tab=credits">AI кредит</Link>).</p>
+      <p className="admin-help">Үнэгүй кредит бүх баталгаажсан бүртгэлд сар бүрийн 1-нд шинэчлэгдэнэ. Багцын кредит багцын сар бүр нэмэгдэж, ашиглаагүй нь багц дуустал хадгалагдана; багц дуусахад тэглэгдэнэ. Өөрчлөлт одоогийн үлдэгдэлд шууд нөлөөлнө; зарцуулсан кредит буцахгүй. Үйлдэл бүрийн кредитийн үнэ DeepSeek-ийн токены үнээр кодонд тогтмол (<Link href="/admin?tab=credits">AI кредит</Link>).</p>
       <div className="admin-prices admin-credit-allowances">{([["free","Үнэгүй (бүх бүртгэл)"],...subscriptionPlans.map(plan=>[plan.program,plan.title] as const)] as const).map(([key,label])=><AdminCreditForm key={key} allowanceKey={key} title={label} credits={allowances[key as keyof typeof allowances]} fallback={defaults[key as keyof typeof defaults]}/>)}</div>
       <h3 className="admin-subhead">Кредитийн хэмжээний түүх</h3>
       <div className="admin-table-wrap"><table><thead><tr><th>Огноо</th><th>Хэнд</th><th>Өмнө → дараа</th><th>Шалтгаан</th></tr></thead><tbody>{creditHistory.map(row=>{const d=row.details as {key?:string;before?:number;after?:number};return <tr key={row.id}><td>{date(row.createdAt)}</td><td>{d.key==="free"?"Үнэгүй":d.key?.toUpperCase()}</td><td>{formatCredits(d.before??0)} → {formatCredits(d.after??0)}</td><td>{row.reason}<small><code>{row.actorId}</code></small></td></tr>;})}</tbody></table>{!creditHistory.length&&<p className="admin-empty">Кредитийн хэмжээ өөрчлөгдөөгүй. Анхны хэмжээ үйлчилж байна.</p>}</div>
+      <h3 className="admin-subhead" id="credit-pack">AI кредит худалдаа</h3>
+      <p className="admin-help">Суралцагч Багцууд хуудаснаас энэ багцыг туршилтын төлбөрөөр авна. Худалдаж авсан кредит хугацаагүй, сарын болон багцын кредитийн дараа зарцуулагдана. Шинэ болон төлөгдөөгүй захиалгад шууд үйлчилнэ; төлөгдсөн захиалга анхны хэмжээ, дүнгээрээ үлдэнэ.</p>
+      <div className="admin-prices"><AdminCreditPackForm credits={pack.credits} amountMnt={pack.amountMnt} fallback={DEFAULT_CREDIT_PACK}/></div>
+      <h3 className="admin-subhead">Кредит багцын түүх</h3>
+      <div className="admin-table-wrap"><table><thead><tr><th>Огноо</th><th>Өмнө → дараа</th><th>Шалтгаан</th></tr></thead><tbody>{packHistory.map(row=>{const d=row.details as {before?:{credits?:number;amountMnt?:number};after?:{credits?:number;amountMnt?:number}};return <tr key={row.id}><td>{date(row.createdAt)}</td><td>{formatCredits(d.before?.credits??0)} кредит · {money(d.before?.amountMnt??0)} → {formatCredits(d.after?.credits??0)} кредит · {money(d.after?.amountMnt??0)}</td><td>{row.reason}<small><code>{row.actorId}</code></small></td></tr>;})}</tbody></table>{!packHistory.length&&<p className="admin-empty">Кредит багц өөрчлөгдөөгүй. Анхны багц үйлчилж байна.</p>}</div>
     </AdminShell>;
   }
 

@@ -6,8 +6,7 @@ import { MathScratchpad } from "@/components/math-scratchpad";
 import { AnswerOptions, MathTools, PassagePane, QuestionStrip, shortcutHint, useEliminations, usePassageScale, useQuestionShortcuts, type StripItem } from "@/modules/exams/session-tools";
 import { RichText } from "@/modules/exams/rich-text";
 import { ExamFigureView } from "@/modules/exams/figure";
-import { AssistantButton, type AssistantConfig } from "@/modules/tutor/panel";
-import type { TutorTurn } from "@/modules/tutor/contracts";
+import { AssistantButton, type AssistantConfig, type AssistantTurn } from "@/modules/tutor/panel";
 import type { PracticeQuestion, PracticeReveal, PracticeView } from "./types";
 import { ListeningPracticeView } from "./listening-view";
 import { JapaneseText } from "@/modules/exams/jlpt/text";
@@ -35,7 +34,7 @@ export function PracticeWorkspace({initial,speakingLab,initialSection}:{initial:
   const [currentId,setCurrentId]=useState(()=>{const list=form.questions.filter(q=>q.section===initialSection);return ((list.length?list:form.questions).find(question=>!initial.reveals[question.id])??list[0]??form.questions[0]).id;});
   const [readings,setReadings]=useState(true);
   const [filter,setFilter]=useState<Filter>("all"),[status,setStatus]=useState("Хадгалсан"),[error,setError]=useState(""),[checking,setChecking]=useState(false),[tools,setTools]=useState(false);
-  const [conversations,setConversations]=useState<Record<string,TutorTurn[]>>({});
+  const [conversations,setConversations]=useState<Record<string,AssistantTurn[]>>({});
   const pending=useRef<Record<string,string>>({}),flagsDirty=useRef(false),flagsLatest=useRef(initial.flags),timer=useRef<ReturnType<typeof setTimeout>|undefined>(undefined),saving=useRef<Promise<boolean>|null>(null),heading=useRef<HTMLDivElement>(null);
   const {struck,toggle}=useEliminations("practice-"+form.slug);
   const {scale,controls}=usePassageScale();

@@ -1,0 +1,48 @@
+/* Image attachments for AI features. Works inside the Workspace (--wsp-*) and on exam pages (site tokens). */
+
+.attach {
+  position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 6px; flex-shrink: 0;
+  min-width: 36px; height: 36px; padding: 0 8px; border: 1px solid transparent; border-radius: 10px;
+  background: transparent; color: var(--wsp-muted, var(--muted)); font: inherit; font-size: 13px; cursor: pointer;
+  transition: background .15s, color .15s, border-color .15s;
+}
+.attach:hover:not(:disabled) { background: var(--wsp-hover, color-mix(in srgb, var(--ink) 7%, transparent)); color: var(--wsp-ink, var(--ink)); }
+.attach:focus-visible { outline: 2px solid var(--wsp-accent, var(--blue)); outline-offset: 2px; }
+.attach:disabled { opacity: .45; cursor: default; }
+.count { font-size: 11.5px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.wrap { display: grid; gap: 6px; min-width: 0; }
+.strip { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.item {
+  position: relative; width: 64px; height: 64px; flex-shrink: 0; overflow: hidden; border-radius: 10px;
+  border: 1px solid var(--wsp-line, var(--line)); background: var(--wsp-chip, color-mix(in srgb, var(--ink) 5%, transparent));
+}
+.item img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.remove {
+  position: absolute; top: 3px; right: 3px; display: grid; place-items: center; width: 22px; height: 22px; padding: 0;
+  border: 0; border-radius: 50%; background: rgba(17, 19, 24, .72); color: #fff; font: inherit; font-size: 15px; line-height: 1; cursor: pointer;
+}
+.remove:hover:not(:disabled) { background: rgba(17, 19, 24, .9); }
+.remove:focus-visible { outline: 2px solid #fff; outline-offset: -2px; box-shadow: 0 0 0 3px var(--wsp-accent, var(--blue)); }
+.remove:disabled { opacity: .5; cursor: default; }
+.loading { display: grid; place-items: center; }
+.loading i { width: 20px; height: 20px; border: 2px solid var(--wsp-line-strong, var(--line)); border-top-color: var(--wsp-accent, var(--blue)); border-radius: 50%; animation: spin .8s linear infinite; }
+.error { margin: 0; color: var(--wsp-bad, #d1343f); font-size: 12.5px; line-height: 1.45; }
+
+.sent { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; margin-bottom: 6px; }
+.sent img { display: block; width: 88px; height: 88px; object-fit: cover; border-radius: 10px; border: 1px solid var(--wsp-line, var(--line)); }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .loading i { animation-duration: 2.4s; } }
+
+.material { display: grid; justify-items: center; gap: 10px; width: 100%; }
+.material .strip { justify-content: center; }
+.materialText { display: grid; gap: 2px; margin: 0; text-align: center; }
+.materialText strong { color: var(--wsp-ink, var(--ink)); font-size: 14px; }
+.materialText small { color: var(--wsp-muted, var(--muted)); font-size: 12.5px; }
+.more {
+  min-height: 34px; padding: 6px 14px; border: 1px solid var(--wsp-line-strong, var(--line)); border-radius: 999px;
+  background: var(--wsp-card, transparent); color: var(--wsp-ink, var(--ink)); font: inherit; font-size: 13px; font-weight: 550; cursor: pointer;
+}
+.more:hover:not(:disabled) { border-color: var(--wsp-accent, var(--blue)); color: var(--wsp-accent, var(--blue)); }
+.more:disabled { opacity: .5; cursor: default; }

@@ -44,6 +44,6 @@ export async function tutorReply(userId:string,body:unknown) {
       return {message,provider:"DeepSeek"};
     }
     finally {await db.rateLimit.update({where:{key},data:{lastRequest:BigInt(Date.now()+3000)}});}
-  });
+  },{images:body.images?.length??0});
 }
 

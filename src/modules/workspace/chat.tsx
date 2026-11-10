@@ -1,12 +1,13 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Composer, type ComposerState } from "./composer";
+import { Composer, emptyComposer, type ComposerState } from "./composer";
 import { Markdown } from "./markdown";
 import { Icon } from "./icons";
-import { deleteThread, newThreadId, saveThread, takePendingPrompt, useThreads, type ChatThread } from "./chat-store";
-import { CHAT_LIMITS, modeLabels, subjectLabels, threadTitle, type ChatMode, type ChatSubject, type ChatTurn } from "./chat-contract";
+import { deleteThread, newThreadId, saveThread, takePendingPrompt, useThreads, type ChatThread, type StoredTurn } from "./chat-store";
+import { CHAT_LIMITS, imageOnlyPrompts, modeLabels, subjectLabels, threadTitle, type ChatMode, type ChatSubject, type ChatTurn } from "./chat-contract";
 import { useCredits } from "@/modules/credits/client";
+import { SentImages, type AttachedImage } from "@/modules/ai-images/client";
 
 const suggestions: { mode: ChatMode; subject: ChatSubject; title: string; text: string }[] = [
   { mode: "solve", subject: "eesh-math", title: "Тэгшитгэл бодох", text: "x² − 5x + 6 = 0 тэгшитгэлийг бодоод, Виетийн теоремоор шалга." },
@@ -19,10 +20,12 @@ export function WorkspaceChat({ userKey, firstName }: { userKey: string; firstNa
   const threads = useThreads(userKey);
   const param = useSearchParams().get("thread");
   const [threadId, setThreadId] = useState<string | null>(param);
-  const [composer, setComposer] = useState<ComposerState>({ mode: "ask", subject: "general", language: "mn", text: "" });
+  const [composer, setComposer] = useState<ComposerState>(emptyComposer);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
   const busy = useRef(false);
+  // The last message's full images, so "Дахин илгээх" can resend them; the thread itself keeps only previews.
+  const lastImages = useRef<{ threadId: string; images: AttachedImage[] } | null>(null);
   const { apply } = useCredits();
   const end = useRef<HTMLDivElement>(null);
   const thread = threadId ? threads.find(item => item.id === threadId) ?? null : null;
@@ -42,23 +45,28 @@ export function WorkspaceChat({ userKey, firstName }: { userKey: string; firstNa
 
   useEffect(() => { end.current?.scrollIntoView({ block: "end", behavior: "smooth" }); }, [thread?.turns.length, pending]);
 
-  async function send(message: string, options: { mode: ChatMode; subject: ChatSubject; language: "mn" | "en" }, retry = false) {
-    const text = message.trim();
-    if (busy.current || !text) return;
+  async function send(message: string, options: { mode: ChatMode; subject: ChatSubject; language: "mn" | "en" }, retry = false, images: AttachedImage[] = []) {
+    const typed = message.trim();
+    if (busy.current || (!typed && !images.length)) return;
+    // A picture sent without words still reads as a request in the thread and to the model.
+    const text = typed || imageOnlyPrompts[options.mode];
     busy.current = true; setPending(true); setError("");
     const id = threadId ?? newThreadId();
     const existing = threads.find(item => item.id === id);
     const before = retry && existing ? existing.turns.slice(0, -1) : existing?.turns ?? [];
     const prior: ChatTurn[] = before.slice(-CHAT_LIMITS.history).map(turn => ({ role: turn.role, content: turn.content.slice(0, CHAT_LIMITS.turn) }));
-    const next: ChatThread = { id, title: existing?.title ?? threadTitle(text), ...options, updatedAt: Date.now(), turns: [...before, { role: "user", content: text }] };
+    const asked: StoredTurn = { role: "user", content: text, ...(images.length ? { images: images.map(image => image.thumb) } : {}) };
+    const next: ChatThread = { id, title: existing?.title ?? threadTitle(text), ...options, updatedAt: Date.now(), turns: [...before, asked] };
     saveThread(userKey, next);
+    lastImages.current = images.length ? { threadId: id, images } : null;
     if (!threadId) {
       setThreadId(id); setRestored(id); setLastParam(id);
       window.history.replaceState(null, "", "/workspace/chat?thread=" + encodeURIComponent(id));
     }
-    setComposer(current => ({ ...current, ...options, text: retry ? current.text : "" }));
+    setComposer(current => ({ ...current, ...options, text: retry ? current.text : "", images: retry ? current.images : [] }));
     try {
-      const response = await fetch("/api/workspace/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...options, message: text, history: prior }), signal: AbortSignal.timeout(80000) });
+      const body = { ...options, message: text, history: prior, ...(images.length ? { images: images.map(image => image.url) } : {}) };
+      const response = await fetch("/api/workspace/chat", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body), signal: AbortSignal.timeout(80000) });
       const data = await response.json().catch(() => ({})) as { message?: string; error?: string };
       if (response.status === 401) throw new Error("Нэвтрэх хугацаа дууссан. Дахин нэвтэрнэ үү.");
       if (!response.ok || !data.message) throw new Error(data.error || "AI хариу ирсэнгүй. Дахин оролдоно уу.");
@@ -68,7 +76,15 @@ export function WorkspaceChat({ userKey, firstName }: { userKey: string; firstNa
       setError(reason instanceof Error && reason.name !== "TimeoutError" ? reason.message : "Хариу удаж байна. Түр хүлээгээд дахин оролдоно уу.");
     } finally { busy.current = false; setPending(false); }
   }
-  const submit = () => void send(composer.text, { mode: composer.mode, subject: composer.subject, language: composer.language });
+  const submit = () => void send(composer.text, { mode: composer.mode, subject: composer.subject, language: composer.language }, false, composer.images);
+  function retryLast(current: ChatThread) {
+    const last = current.turns.at(-1);
+    if (!last) return;
+    const kept = lastImages.current?.threadId === current.id ? lastImages.current.images : [];
+    // After a reload only previews remain, which are too small to read: ask for the picture again.
+    if (last.images?.length && !kept.length) { setError("Зураг энэ хуудсанд хадгалагдаагүй байна. Зургаа дахин хавсаргаад илгээнэ үү."); return; }
+    void send(last.content, { mode: current.mode, subject: current.subject, language: current.language }, true, kept);
+  }
 
   // A first message typed on the Workspace home arrives here once.
   const sendRef = useRef(send);
@@ -77,13 +93,13 @@ export function WorkspaceChat({ userKey, firstName }: { userKey: string; firstNa
     if (param) return;
     const pendingPrompt = takePendingPrompt();
     if (!pendingPrompt) return;
-    const { text, ...options } = pendingPrompt;
-    void sendRef.current(text, options);
+    const { text, images, ...options } = pendingPrompt;
+    void sendRef.current(text, options, false, images ?? []);
   }, [param]);
 
   function startNew() {
     setThreadId(null); setLastParam(null); setRestored(null); setError("");
-    setComposer(current => ({ ...current, text: "" }));
+    setComposer(current => ({ ...current, text: "", images: [] }));
     window.history.replaceState(null, "", "/workspace/chat");
   }
   function remove() {
@@ -98,7 +114,7 @@ export function WorkspaceChat({ userKey, firstName }: { userKey: string; firstNa
     <header className="wsp-hero"><p className="wsp-hello"><Icon name="spark" size={18} />AI туслах</p><h1>{firstName}, юуг хамт ойлгох вэ?</h1></header>
     <Composer state={composer} onChange={setComposer} onSubmit={submit} pending={pending} autoFocus />
     {error ? <p className="wsp-error" role="alert">{error}</p> : null}
-    <p className="wsp-fine">Таны мессеж AI руу илгээгдэнэ. Нэр, утас зэрэг хувийн мэдээлэл бүү бичээрэй. Чат зөвхөн энэ хөтөчид хадгалагдана. Хугацаатай шалгалтын үеэр AI хаалттай.</p>
+    <p className="wsp-fine">Таны мессеж, хавсаргасан зураг AI руу илгээгдэнэ. Нэр, утас, нүүр царай зэрэг хувийн мэдээлэл бүү оруулаарай. Чат зөвхөн энэ хөтөчид хадгалагдана. Хугацаатай шалгалтын үеэр AI хаалттай.</p>
     <section className="wsp-section" aria-labelledby="chat-ideas"><div className="wsp-section-head"><h2 id="chat-ideas">Эхлэх санаа</h2></div>
       <div className="wsp-suggestions">{suggestions.map(item => <button key={item.title} type="button" className="wsp-suggestion" disabled={pending} onClick={() => void send(item.text, { mode: item.mode, subject: item.subject, language: composer.language })}>
         <span className="wsp-tag tone-blue">{subjectLabels[item.subject]}</span><strong>{item.title}</strong><span>{item.text}</span>
@@ -117,7 +133,7 @@ export function WorkspaceChat({ userKey, firstName }: { userKey: string; firstNa
     <div className="wsp-messages" role="log" aria-label="AI туслахтай ярилцсан түүх" aria-live="polite">
       {turns.map((turn, index) => <Message key={index} turn={turn} />)}
       {pending ? <div className="wsp-msg assistant"><span className="wsp-msg-avatar" aria-hidden="true"><Icon name="spark" size={16} /></span><div className="wsp-typing" role="status" aria-label="AI бичиж байна"><i /><i /><i /></div></div> : null}
-      {error ? <div className="wsp-error" role="alert"><p>{error}</p>{unanswered ? <button type="button" className="wsp-ghost" onClick={() => void send(turns.at(-1)!.content, { mode: thread.mode, subject: thread.subject, language: thread.language }, true)}>Дахин илгээх</button> : null}</div> : null}
+      {error ? <div className="wsp-error" role="alert"><p>{error}</p>{unanswered ? <button type="button" className="wsp-ghost" onClick={() => retryLast(thread)}>Дахин илгээх</button> : null}</div> : null}
       <div ref={end} />
     </div>
     <div className="wsp-dock">
@@ -127,9 +143,9 @@ export function WorkspaceChat({ userKey, firstName }: { userKey: string; firstNa
   </div>;
 }
 
-export function Message({ turn }: { turn: ChatTurn }) {
+export function Message({ turn }: { turn: StoredTurn }) {
   const [copied, setCopied] = useState(false);
-  if (turn.role === "user") return <div className="wsp-msg user"><div className="wsp-bubble"><p>{turn.content}</p></div></div>;
+  if (turn.role === "user") return <div className={"wsp-msg user" + (turn.images?.length ? " has-images" : "")}><SentImages urls={turn.images} /><div className="wsp-bubble"><p>{turn.content}</p></div></div>;
   async function copy() {
     try { await navigator.clipboard.writeText(turn.content); setCopied(true); setTimeout(() => setCopied(false), 1600); } catch { /* Clipboard can be blocked; nothing to undo. */ }
   }

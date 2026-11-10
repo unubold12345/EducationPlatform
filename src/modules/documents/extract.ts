@@ -33,7 +33,7 @@ export function detectSource(fileName: string, bytes: Uint8Array): SourceKind {
     throw new ApiError(415, "Энэ ZIP файл Word эсвэл PowerPoint биш байна.");
   }
   if (TEXT_EXTENSIONS.has(ext) || !ext) return "text";
-  throw new ApiError(415, "Зөвхөн PDF, DOCX, PPTX, TXT, MD эсвэл CSV файл оруулна уу.");
+  throw new ApiError(415, "Зөвхөн PDF, DOCX, PPTX, TXT, MD, CSV файл эсвэл зураг (JPG, PNG, WebP) оруулна уу.");
 }
 
 /** Turn one supported upload into plain text. Never trusts the extension alone. */
@@ -61,7 +61,7 @@ async function pdfDocument(bytes: Uint8Array): Promise<ExtractedDocument> {
     });
     const result = await Promise.race([extractText(pdf, { mergePages: true }), timeout]);
     const text = Array.isArray(result.text) ? result.text.join("\n\n") : result.text;
-    if (!text.trim()) throw new ApiError(422, "PDF-ээс уншигдах текст олдсонгүй. Скан хуудас бол текст болгосон (OCR) хувилбар оруулна уу.");
+    if (!text.trim()) throw new ApiError(422, "PDF-ээс уншигдах текст олдсонгүй. Скан хуудас бол хуудсуудынхаа зургийг (4 хүртэл) оруулна уу.");
     return { kind: "pdf", text, pages: result.totalPages };
   } finally {
     if (timer) clearTimeout(timer);

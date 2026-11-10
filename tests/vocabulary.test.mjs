@@ -9,7 +9,7 @@ import {
 } from "../src/modules/vocabulary/contracts.ts";
 import { subscriptionPlans } from "../src/modules/subscriptions/plans.ts";
 import { buildQuiz, questionLead, QUIZ_COUNTS, QUIZ_MIN_WORDS } from "../src/modules/vocabulary/quiz.ts";
-import { cleanSourceText, displayFileName, fallbackTitle } from "../src/modules/documents/text.ts";
+import { DOCUMENT_LIMITS, cleanSourceText, displayFileName, fallbackTitle } from "../src/modules/documents/text.ts";
 import { docxText, officeKind, pptxText, xmlToText, zipNames } from "../src/modules/documents/office.ts";
 
 const text = path => readFileSync(new URL("../" + path, import.meta.url), "utf8");
@@ -269,7 +269,11 @@ test("vocabulary stays behind the server's checks and limits", () => {
   assert.equal(service.match(/await ensureNoTimedExam\(userId\)/g)?.length, 2, "open sittings are checked before and after the provider call");
   assert.match(service, /count: \{ lt: DAILY_LIMIT \}/);
   assert.match(service, /lastRequest: \{ lte: BigInt\(now\) \}/);
-  assert.match(service, /file\.size > VOCABULARY_LIMITS\.fileBytes/);
+  // The size, count and kind of the upload are checked by the shared reader before credits are held.
+  assert.match(service, /readUploadedSource\(form, /);
+  assert.ok(service.indexOf("readUploadedSource(form, ") < service.indexOf("return chargeCredits("));
+  assert.match(text("src/modules/documents/upload.ts"), /total > DOCUMENT_LIMITS\.fileBytes/);
+  assert.equal(VOCABULARY_LIMITS.fileBytes, DOCUMENT_LIMITS.fileBytes);
   assert.match(service, /\["file", "language", "prompt", "count"\]/);
   assert.match(service, /readImportCount\(field\(form, "count"\)\)/);
   assert.match(service, /const wanted = Math\.min\(requested, limit - stored\)/, "an import asks only for the room left");

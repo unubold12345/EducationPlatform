@@ -78,10 +78,12 @@ export function usePassageScale() {
 }
 
 export function PassagePane({title,text,caption,controls,scale}:{title:string;text:string;caption?:string;controls?:ReactNode;scale?:number}) {
-  const rows = caption && text.includes(" | ") ? text.split("\n").map(row => row.split(" | ")) : null;
+  // Writing data: a block whose every line is "a | b | c" is a table; notes before or after it stay paragraphs.
+  const blocks = text.split(/\n{2,}/).map(block => caption && block.split("\n").every(row => row.includes(" | ")) ? block.split("\n").map(row => row.split(" | ")) : block);
+  const firstTable = blocks.findIndex(block => Array.isArray(block));
   return <section className="exam-passage" lang="en" style={scale && scale !== 1 ? { fontSize: scale + "em" } : undefined} data-scaled={scale && scale !== 1 ? "" : undefined}>
     <div className="passage-head"><h2>{title}</h2>{controls}</div>
-    {rows ? <div className="table-scroll"><table><caption>{caption}</caption><thead><tr>{rows[0].map(cell => <th scope="col" key={cell}>{cell}</th>)}</tr></thead><tbody>{rows.slice(1).map(row => <tr key={row[0]}>{row.map((cell, i) => i === 0 ? <th scope="row" key={i}>{cell}</th> : <td key={i}>{cell}</td>)}</tr>)}</tbody></table></div> : text.split("\n\n").map((paragraph, i) => <p key={i}>{paragraph}</p>)}
+    {blocks.map((rows, index) => Array.isArray(rows) ? <div className="table-scroll" key={index}><table>{index === firstTable ? <caption>{caption}</caption> : null}<thead><tr>{rows[0].map(cell => <th scope="col" key={cell}>{cell}</th>)}</tr></thead><tbody>{rows.slice(1).map(row => <tr key={row[0]}>{row.map((cell, i) => i === 0 ? <th scope="row" key={i}>{cell}</th> : <td key={i}>{cell}</td>)}</tr>)}</tbody></table></div> : <p key={index}>{rows}</p>)}
   </section>;
 }
 

@@ -1,0 +1,435 @@
+{
+  "form": 12,
+  "part": 1,
+  "file": "mock-12/audio/part-1.mp3",
+  "sha256": "c8e18570413ccb45ffda28f5a27c8b35c8fd8dac6daf3a928f673aedac670d14",
+  "bytes": 3631048,
+  "seconds": 363.010667,
+  "pcmSeconds": 363.0107,
+  "sourceScriptSha256": "45e3eb0c7a652f0f3eacedc72d62f8c286dc7e5523ef859be4d228696fff1c10",
+  "fingerprint": "b4fddc29ee965a7990a16c921414a0d902e131f6c5b4b1aa76309c197f360751",
+  "roles": {
+    "Assistant": "bf_isabella",
+    "Caller": "am_michael"
+  },
+  "settings": {
+    "speed": 1.0,
+    "sampleRate": 24000,
+    "turnGapSeconds": 0.4,
+    "previewSeconds": 60,
+    "midpointSeconds": 30,
+    "partCheckSeconds": 30,
+    "finalCheckSeconds": 120,
+    "narrator": "bf_emma",
+    "bitrate": "80k",
+    "revision": 1
+  },
+  "modelSha256": {
+    "kokoro-v1.0.onnx": "7d5df8ecf7d4b1878015a32686053fd0eebe2bc377234608764cc0ef3636a6c5",
+    "voices-v1.0.bin": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+  },
+  "packages": {
+    "kokoro-onnx": "0.6.1",
+    "onnxruntime": "1.31.1",
+    "numpy": "2.5.4"
+  },
+  "gain": 0.733625156362543,
+  "segments": [
+    {
+      "kind": "narration",
+      "start": 0.0,
+      "seconds": 9.0453,
+      "voice": "bf_emma",
+      "spokenText": "IELTS Academic practice. Mock 12. Listening. You will hear each part once. Write your answers on the answer sheet. There are four parts and forty questions."
+    },
+    {
+      "kind": "pause",
+      "start": 9.0453,
+      "seconds": 1.0
+    },
+    {
+      "kind": "narration",
+      "start": 10.0453,
+      "seconds": 5.9947,
+      "voice": "bf_emma",
+      "spokenText": "Part 1. Hiring equipment for a local history event. You now have one minute to read questions 1 to 10."
+    },
+    {
+      "kind": "pause",
+      "start": 16.04,
+      "seconds": 60.0,
+      "purpose": "preview"
+    },
+    {
+      "kind": "speech",
+      "start": 76.04,
+      "seconds": 2.3893,
+      "voice": "bf_isabella",
+      "spokenText": "Community Equipment Hire, this is Nina.",
+      "role": "Assistant",
+      "sourceText": "Community Equipment Hire, this is Nina."
+    },
+    {
+      "kind": "pause",
+      "start": 78.4293,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 78.8293,
+      "seconds": 14.1867,
+      "voice": "am_michael",
+      "spokenText": "Hello. We're holding a small local history evening and need some equipment. The hall has chairs and tables but no way to show photographs clearly to a group. I've never hired from you, so could you explain the process?",
+      "role": "Caller",
+      "sourceText": "Hello. We’re holding a small local history evening and need some equipment. The hall has chairs and tables but no way to show photographs clearly to a group. I’ve never hired from you, so could you explain the process?"
+    },
+    {
+      "kind": "pause",
+      "start": 93.016,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 93.416,
+      "seconds": 10.304,
+      "voice": "bf_isabella",
+      "spokenText": "Of course. We lend to community groups as well as individuals. Could I take your surname and the date first? Availability depends on the day, especially during the festival period.",
+      "role": "Assistant",
+      "sourceText": "Of course. We lend to community groups as well as individuals. Could I take your surname and the date first? Availability depends on the day, especially during the festival period."
+    },
+    {
+      "kind": "pause",
+      "start": 103.72,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 104.12,
+      "seconds": 12.3947,
+      "voice": "am_michael",
+      "spokenText": "It's Harker, H, A, R, K, E, R. The event is on the nineteenth of October. We originally planned the eighteenth, but the hall was booked, so please use the nineteenth of October.",
+      "role": "Caller",
+      "sourceText": "It’s Harker, H-A-R-K-E-R. The event is on the nineteenth of October. We originally planned the eighteenth, but the hall was booked, so please use 19 October."
+    },
+    {
+      "kind": "pause",
+      "start": 116.5147,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 116.9147,
+      "seconds": 9.8987,
+      "voice": "bf_isabella",
+      "spokenText": "I have that. What would you like to hire? We have a large television display or a projector with a separate screen. The display is easier in daylight but more difficult to transport.",
+      "role": "Assistant",
+      "sourceText": "I have that. What would you like to hire? We have a large television display or a projector with a separate screen. The display is easier in daylight but more difficult to transport."
+    },
+    {
+      "kind": "pause",
+      "start": 126.8133,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 127.2133,
+      "seconds": 12.4373,
+      "voice": "am_michael",
+      "spokenText": "We'll close the curtains, so a projector should be fine. We don't need a microphone; there will only be twenty people and the room is small. A projector is the main thing, plus the screen if that's separate.",
+      "role": "Caller",
+      "sourceText": "We’ll close the curtains, so a projector should be fine. We don’t need a microphone; there will only be twenty people and the room is small. A projector is the main thing, plus the screen if that’s separate."
+    },
+    {
+      "kind": "pause",
+      "start": 139.6507,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 140.0507,
+      "seconds": 11.5413,
+      "voice": "bf_isabella",
+      "spokenText": "It is separate, but included in the same community rate. Collection can be on the event day or the afternoon before. If you haven't used the equipment, I'd recommend the previous day so you can test your files in the hall.",
+      "role": "Assistant",
+      "sourceText": "It is separate, but included in the same community rate. Collection can be on the event day or the afternoon before. If you haven’t used the equipment, I’d recommend the previous day so you can test your files in the hall."
+    },
+    {
+      "kind": "pause",
+      "start": 151.592,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 151.992,
+      "seconds": 5.248,
+      "voice": "am_michael",
+      "spokenText": "The previous afternoon works. I finish work at three, so could I collect at four?",
+      "role": "Caller",
+      "sourceText": "The previous afternoon works. I finish work at three, so could I collect at four?"
+    },
+    {
+      "kind": "pause",
+      "start": 157.24,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 157.64,
+      "seconds": 9.536,
+      "voice": "bf_isabella",
+      "spokenText": "Yes, four o'clock is fine. Please allow twenty minutes for us to demonstrate the connections. We can't leave the equipment outside for a quick pickup if you arrive after we close.",
+      "role": "Assistant",
+      "sourceText": "Yes, 4:00 is fine. Please allow twenty minutes for us to demonstrate the connections. We can’t leave the equipment outside for a quick pickup if you arrive after we close."
+    },
+    {
+      "kind": "pause",
+      "start": 167.176,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 167.576,
+      "seconds": 1.6,
+      "voice": "am_michael",
+      "spokenText": "What will the charge be?",
+      "role": "Caller",
+      "sourceText": "What will the charge be?"
+    },
+    {
+      "kind": "pause",
+      "start": 169.176,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 169.576,
+      "seconds": 16.896,
+      "voice": "bf_isabella",
+      "spokenText": "Twenty-eight pounds for the projector and screen together. The forty-pound rate on one part of the website is for a commercial booking. We'll also take a refundable security deposit, but the actual hire charge for your group is twenty-eight pounds. Bring the booking confirmation so the desk applies the correct category.",
+      "role": "Assistant",
+      "sourceText": "Twenty-eight pounds for the projector and screen together. The forty-pound rate on one part of the website is for a commercial booking. We’ll also take a refundable security deposit, but the actual hire charge for your group is £28. Bring the booking confirmation so the desk applies the correct category."
+    },
+    {
+      "kind": "pause",
+      "start": 186.472,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "narration",
+      "start": 186.872,
+      "seconds": 2.048,
+      "voice": "bf_emma",
+      "spokenText": "Now look at questions 6 to 10."
+    },
+    {
+      "kind": "pause",
+      "start": 188.92,
+      "seconds": 30.0,
+      "purpose": "midpoint"
+    },
+    {
+      "kind": "speech",
+      "start": 218.92,
+      "seconds": 3.6907,
+      "voice": "am_michael",
+      "spokenText": "My laptop is fairly new. Do I need an extra cable?",
+      "role": "Caller",
+      "sourceText": "My laptop is fairly new. Do I need an extra cable?"
+    },
+    {
+      "kind": "pause",
+      "start": 222.6107,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 223.0107,
+      "seconds": 13.3333,
+      "voice": "bf_isabella",
+      "spokenText": "Bring your laptop for the demonstration and we can check its sockets. We supply the ordinary connection cable, and an adapter if required. Please don't buy an adapter before we know which one you need; they can look similar but serve different functions.",
+      "role": "Assistant",
+      "sourceText": "Bring your laptop for the demonstration and we can check its sockets. We supply the ordinary connection cable, and an adapter if required. Please don’t buy an adapter before we know which one you need; they can look similar but serve different functions."
+    },
+    {
+      "kind": "pause",
+      "start": 236.344,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 236.744,
+      "seconds": 4.7573,
+      "voice": "am_michael",
+      "spokenText": "Good. What identification do you require? I don't have a driving licence.",
+      "role": "Caller",
+      "sourceText": "Good. What identification do you require? I don’t have a driving licence."
+    },
+    {
+      "kind": "pause",
+      "start": 241.5013,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 241.9013,
+      "seconds": 11.0933,
+      "voice": "bf_isabella",
+      "spokenText": "A passport is fine. We also need proof of the address used for the booking, but that can be a recent bill. We don't keep a copy of the passport image, just a record that identification was checked.",
+      "role": "Assistant",
+      "sourceText": "A passport is fine. We also need proof of the address used for the booking, but that can be a recent bill. We don’t keep a copy of the passport image, just a record that identification was checked."
+    },
+    {
+      "kind": "pause",
+      "start": 252.9947,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 253.3947,
+      "seconds": 2.3893,
+      "voice": "am_michael",
+      "spokenText": "Will the equipment fit in a small car?",
+      "role": "Caller",
+      "sourceText": "Will the equipment fit in a small car?"
+    },
+    {
+      "kind": "pause",
+      "start": 255.784,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 256.184,
+      "seconds": 13.888,
+      "voice": "bf_isabella",
+      "spokenText": "The projector comes in a padded case. The folded screen is longer and might need the rear seats down. Check the dimensions in the confirmation before travelling. Two people aren't normally necessary, but don't force the screen into a space that bends its frame.",
+      "role": "Assistant",
+      "sourceText": "The projector comes in a padded case. The folded screen is longer and might need the rear seats down. Check the dimensions in the confirmation before travelling. Two people aren’t normally necessary, but don’t force the screen into a space that bends its frame."
+    },
+    {
+      "kind": "pause",
+      "start": 270.072,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 270.472,
+      "seconds": 9.344,
+      "voice": "am_michael",
+      "spokenText": "We'll test it as you suggest. The photographs are in a presentation. Should I rely on the hall's internet connection for the final few images?",
+      "role": "Caller",
+      "sourceText": "We’ll test it as you suggest. The photographs are in a presentation. Should I rely on the hall’s internet connection for the final few images?"
+    },
+    {
+      "kind": "pause",
+      "start": 279.816,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 280.216,
+      "seconds": 13.4613,
+      "voice": "bf_isabella",
+      "spokenText": "I'd save a backup locally, ideally on a memory stick as well as on the laptop. The projector doesn't supply internet access, and a connection problem shouldn't stop the whole evening. Check that the files open without needing an online account.",
+      "role": "Assistant",
+      "sourceText": "I’d save a backup locally, ideally on a memory stick as well as on the laptop. The projector doesn’t supply internet access, and a connection problem shouldn’t stop the whole evening. Check that the files open without needing an online account."
+    },
+    {
+      "kind": "pause",
+      "start": 293.6773,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 294.0773,
+      "seconds": 5.568,
+      "voice": "am_michael",
+      "spokenText": "When do we return everything? The event ends late, so the next morning would be easiest.",
+      "role": "Caller",
+      "sourceText": "When do we return everything? The event ends late, so the next morning would be easiest."
+    },
+    {
+      "kind": "pause",
+      "start": 299.6453,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 300.0453,
+      "seconds": 17.9627,
+      "voice": "bf_isabella",
+      "spokenText": "Return by ten the next morning. Bring it to the warehouse entrance, which is around the back; collections use the front desk. Staff at the warehouse check all the pieces before releasing the security deposit. If an item is missing, call us rather than making another journey with an incomplete set and hoping nobody notices.",
+      "role": "Assistant",
+      "sourceText": "Return by ten the next morning. Bring it to the warehouse entrance, which is around the back; collections use the front desk. Staff at the warehouse check all the pieces before releasing the security deposit. If an item is missing, call us rather than making another journey with an incomplete set and hoping nobody notices."
+    },
+    {
+      "kind": "pause",
+      "start": 318.008,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 318.408,
+      "seconds": 4.2453,
+      "voice": "am_michael",
+      "spokenText": "Thank you. I'll make the booking online and bring the laptop when I collect it.",
+      "role": "Caller",
+      "sourceText": "Thank you. I’ll make the booking online and bring the laptop when I collect it."
+    },
+    {
+      "kind": "pause",
+      "start": 322.6533,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 323.0533,
+      "seconds": 5.3333,
+      "voice": "bf_isabella",
+      "spokenText": "Look for the community-group category, and I'll attach a note confirming the equipment we've discussed.",
+      "role": "Assistant",
+      "sourceText": "Look for the community-group category, and I’ll attach a note confirming the equipment we’ve discussed."
+    },
+    {
+      "kind": "pause",
+      "start": 328.3867,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "narration",
+      "start": 328.7867,
+      "seconds": 4.224,
+      "voice": "bf_emma",
+      "spokenText": "That is the end of part 1. You now have thirty seconds to check your answers."
+    },
+    {
+      "kind": "pause",
+      "start": 333.0107,
+      "seconds": 30.0,
+      "purpose": "checking"
+    }
+  ]
+}

@@ -4,10 +4,13 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { MOCK_PRICE_LABEL } from "./pricing";
 import type { ExamProgram } from "./types";
-export function ExamStart({slug,program,hasAccess,loggedIn}:{slug:string;program:ExamProgram;hasAccess:boolean;loggedIn:boolean}) {
+import { ExaminerPicker } from "./speaking-examiner-picker";
+import { setExaminerChoice } from "./speaking-examiner-store";
+/** `examiner`: the AI examiner is enabled, so an IELTS mock offers it for the Speaking stages. */
+export function ExamStart({slug,program,hasAccess,loggedIn,examiner=false}:{slug:string;program:ExamProgram;hasAccess:boolean;loggedIn:boolean;examiner?:boolean}) {
   const router=useRouter();const busy=useRef(false);
   const [pending,setPending]=useState(false),[error,setError]=useState("");
-  const [audioReady,setAudioReady]=useState(false),[micReady,setMicReady]=useState(false),[micBusy,setMicBusy]=useState(false),[agreed,setAgreed]=useState(false);
+  const [audioReady,setAudioReady]=useState(false),[micReady,setMicReady]=useState(false),[micBusy,setMicBusy]=useState(false),[agreed,setAgreed]=useState(false),[withExaminer,setWithExaminer]=useState(true);
   async function testMic(){
     setMicBusy(true);setError("");
     try{if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder)throw Error("unsupported");const stream=await navigator.mediaDevices.getUserMedia({audio:true});stream.getTracks().forEach(t=>t.stop());setMicReady(true);}
@@ -19,15 +22,18 @@ export function ExamStart({slug,program,hasAccess,loggedIn}:{slug:string;program
       const response=await fetch("/api/mock-attempts",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({slug}),signal:AbortSignal.timeout(15000)});
       if(response.status===401){router.push("/login?next="+encodeURIComponent("/exams/"+slug));return;}
       if(response.status===402){router.push("/checkout/"+slug);return;}
-      if(!response.ok)throw Error("start");const data=await response.json();router.push("/exams/attempts/"+data.id);
+      if(!response.ok)throw Error("start");const data=await response.json();
+      // The choice stays in this browser; the Speaking stages read it and it can be changed there.
+      if(program==="ielts"&&examiner)setExaminerChoice(slug,withExaminer?"on":"off");
+      router.push("/exams/attempts/"+data.id);
     }catch{setError("Шалгалт нээгдсэнгүй. Холболтоо шалгаад дахин оролдоно уу.");}finally{busy.current=false;setPending(false);}
   }
-  if(!hasAccess)return <section className="exam-preflight exam-purchase-gate"><span className="status">{MOCK_PRICE_LABEL} · НЭГ ШАЛГАЛТЫН ЭРХ</span><h2>Бүх хэсгийг нэг эрхээр.</h2><p>Энэ mock шалгалтын бүх хэсэг, хадгалсан явц, тайлбартай үр дүн болон дахин өгөх боломж багтана. Бусад шалгалтын эрх тусдаа.</p><button className="button" onClick={()=>router.push(loggedIn?"/checkout/"+slug:"/login?next="+encodeURIComponent("/checkout/"+slug))}>Эрх авах · {MOCK_PRICE_LABEL} →</button>{program!=="jlpt"?<Link className="text-link subscription-alternative" href={"/subscribe/"+program}>Бүх mock · ₮60,000 / сар ↗</Link>:null}<p className="fine-print">Одоогоор туршилтын төлбөр ашиглаж байна. Бодит мөнгө суутгахгүй. Төлбөр төлөх үед шалгалтын цаг эхлэхгүй.</p></section>;
+  if(!hasAccess)return <section className="exam-preflight exam-purchase-gate"><span className="status">{MOCK_PRICE_LABEL} · НЭГ ШАЛГАЛТЫН ЭРХ</span><h2>Бүх хэсгийг нэг эрхээр.</h2><p>Энэ mock шалгалтын бүх хэсэг, хадгалсан явц, тайлбартай үр дүн болон дахин өгөх боломж багтана. Бусад шалгалтын эрх тусдаа.</p><button className="button" onClick={()=>router.push(loggedIn?"/checkout/"+slug:"/login?next="+encodeURIComponent("/checkout/"+slug))}>Эрх авах · {MOCK_PRICE_LABEL} →</button>{program!=="jlpt"&&program!=="hsk"?<Link className="text-link subscription-alternative" href={"/subscribe/"+program}>Бүх mock · ₮60,000 / сар ↗</Link>:null}<p className="fine-print">Одоогоор туршилтын төлбөр ашиглаж байна. Бодит мөнгө суутгахгүй. Төлбөр төлөх үед шалгалтын цаг эхлэхгүй.</p></section>;
   return <section className="exam-preflight"><span className="status access-unlocked">✓ ЭРХ НЭЭЛТТЭЙ</span><h2>Эхлэхээс өмнө</h2><p>Чимээгүй газар, тогтвортой холболттой төхөөрөмж бэлдээрэй. Хариулт бүртгэлд хадгалагдана. Эхэлсний дараа цаг зогсохгүй; хуудсыг хаасан ч хугацаа үргэлжилнэ.</p>
-    {program==="jlpt"?<div className="equipment-check"><div><h3>Чихэвчээ шалгах</h3><audio controls preload="none" src="/api/exams/audio-check" aria-label="Headphone sound check"/><label><input type="checkbox" checked={audioReady} onChange={e=>setAudioReady(e.target.checked)}/>Дууг тод сонсож байна</label></div></div>:null}
-    {program==="ielts"?<div className="equipment-check"><div><h3>1. Чихэвчээ шалгах</h3><audio controls preload="none" src="/api/exams/audio-check" aria-label="Headphone sound check"/><label><input type="checkbox" checked={audioReady} onChange={e=>setAudioReady(e.target.checked)}/>Дууг тод сонсож байна</label></div><div><h3>2. Микрофоноо шалгах</h3><p>Speaking хариуг зөвхөн өөрийн бүртгэлд бичиж хадгална. Дууссаны дараа сонсож, татаж авч болно.</p><button className="button secondary" onClick={testMic} disabled={micBusy}>{micReady?"Микрофон бэлэн ✓":micBusy?"Шалгаж байна…":"Микрофон шалгах"}</button></div></div>:null}
+    {program==="jlpt"||program==="hsk"?<div className="equipment-check"><div><h3>Чихэвчээ шалгах</h3><audio controls preload="none" src="/api/exams/audio-check" aria-label="Headphone sound check"/><label><input type="checkbox" checked={audioReady} onChange={e=>setAudioReady(e.target.checked)}/>Дууг тод сонсож байна</label></div></div>:null}
+    {program==="ielts"?<div className="equipment-check"><div><h3>1. Чихэвчээ шалгах</h3><audio controls preload="none" src="/api/exams/audio-check" aria-label="Headphone sound check"/><label><input type="checkbox" checked={audioReady} onChange={e=>setAudioReady(e.target.checked)}/>Дууг тод сонсож байна</label></div><div><h3>2. Микрофоноо шалгах</h3><p>Speaking хариуг зөвхөн өөрийн бүртгэлд бичиж хадгална. Дууссаны дараа сонсож, татаж авч болно.</p><button className="button secondary" onClick={testMic} disabled={micBusy}>{micReady?"Микрофон бэлэн ✓":micBusy?"Шалгаж байна…":"Микрофон шалгах"}</button></div>{examiner?<div><h3>3. Speaking · AI шалгагч</h3><p>AI шалгагч асуултуудыг чанга уншиж, таны хариуг сонсоно. Хариуг бичвэр болгохын тулд дууг манай сервер рүү илгээх бөгөөд бичвэр нь хариулт болж хадгалагдана.</p><label><input type="checkbox" checked={withExaminer} onChange={e=>setWithExaminer(e.target.checked)}/>Speaking-ийг AI шалгагчтай өгөх</label>{withExaminer?<><p>Шалгагчаа сонгоно уу:</p><ExaminerPicker/></>:null}</div>:null}</div>:null}
     <label className="exam-agreement"><input type="checkbox" checked={agreed} onChange={e=>setAgreed(e.target.checked)}/>Хэсгийн хугацаа дуусахад хариу түгжигдэж, дараагийн хэсэг автоматаар эхлэхийг ойлголоо.</label>
-    <button className="button" onClick={start} disabled={pending||!agreed||((program==="ielts"||program==="jlpt")&&!audioReady)||(program==="ielts"&&!micReady)}>{pending?"Нээж байна…":"Шалгалт эхлэх / үргэлжлүүлэх →"}</button>
+    <button className="button" onClick={start} disabled={pending||!agreed||((program==="ielts"||program==="jlpt"||program==="hsk")&&!audioReady)||(program==="ielts"&&!micReady)}>{pending?"Нээж байна…":"Шалгалт эхлэх / үргэлжлүүлэх →"}</button>
     <p className="fine-print">Нээлттэй оролдлого байвал үргэлжилнэ.</p>{error?<p className="error-message" role="alert">{error}</p>:null}
   </section>;
 }

@@ -1,12 +1,7 @@
 import Link from "next/link";
-import { ENTRANCE_SUBJECT_ORDER, entranceCounts, entranceSubjectHrefs, entranceSubjectLabels, entranceYears, mocksForYear, type EntranceSubject } from "./catalog";
+import { ENTRANCE_SUBJECT_ORDER, entranceCounts, entranceSubjectFormats, entranceSubjectHrefs, entranceSubjectLabels, entranceTotal, entranceYears, mocksForYear, type EntranceSubject } from "./catalog";
 import "./entrance.css";
 
-const subjectNotes: Record<EntranceSubject, string> = {
-  math: "36 сонгох · 4 бодолт · 100 минут",
-  physics: "46 сонгох · 4 бодолт · 100 минут",
-  english: "Part I + Part II · 80 минут",
-};
 
 export function EntranceHub({ subject }: { subject: EntranceSubject }) {
   const counts = entranceCounts();
@@ -24,11 +19,11 @@ export function EntranceHub({ subject }: { subject: EntranceSubject }) {
       <div>
         <p className="eyebrow">ЭЛСЭЛТИЙН ЕРӨНХИЙ ШАЛГАЛТ · {firstYear}–{lastYear}</p>
         <h1>ЭЕШ-ийн бүтэн mock</h1>
-        <p>Жил, хувилбараар эрэмбэлсэн {total} бүтэн дадлагын шалгалт. Хугацаатай эсвэл цаггүй дадлагаар бэлдээрэй.</p>
+        <p>{entranceSubjectLabels[subject]}: жил, хувилбараар эрэмбэлсэн {total} бүтэн дадлагын шалгалт. Хугацаатай эсвэл цаггүй дадлагаар бэлдээрэй.</p>
       </div>
       <dl className="eesh-hub-facts">
-        <div><dt>Хөтөлбөр</dt><dd>3</dd></div>
-        <div><dt>Бүтэн mock</dt><dd>{counts.math + counts.physics + counts.english}</dd></div>
+        <div><dt>Хөтөлбөр</dt><dd>{ENTRANCE_SUBJECT_ORDER.length}</dd></div>
+        <div><dt>Бүтэн mock</dt><dd>{entranceTotal}</dd></div>
         <div><dt>Он</dt><dd>{years.length}</dd></div>
       </dl>
     </header>
@@ -37,7 +32,7 @@ export function EntranceHub({ subject }: { subject: EntranceSubject }) {
       {ENTRANCE_SUBJECT_ORDER.map(item => <Link key={item} href={entranceSubjectHrefs[item]} className="eesh-subject" aria-current={item === subject ? "page" : undefined}>
         <span className="eesh-subject-name">{entranceSubjectLabels[item]}</span>
         <strong>{counts[item]} mock</strong>
-        <small>{subjectNotes[item]}</small>
+        <small>{entranceSubjectFormats[item]}</small>
       </Link>)}
     </nav>
 

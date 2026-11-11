@@ -1,7 +1,9 @@
 "use client";
-import {overallBand,type SpeakingReport} from "./contracts";
+import {overallBand,speakingVoices,type SpeakingCue,type SpeakingPart,type SpeakingReport,type SpeakingTip,type SpeakingVoice} from "./contracts";
+import {PartnerPortrait} from "./partner";
 import type {ProgressEntry} from "./progress";
 
+export type ReviewTurn={id:number;role:"user"|"assistant";content:string;part:SpeakingPart;tip?:SpeakingTip|null;cue?:SpeakingCue|null};
 export type SessionStats={answers:number;voiced:number;words:number;seconds:number;wpm:number|null;pauses:number};
 
 const criteria=[
@@ -22,18 +24,21 @@ export function Trend({entries}:{entries:ProgressEntry[]}) {
  </div>;
 }
 
-export function SpeakingReportView({report,stats,target,language,entries,saved,onSave,onListen,onNew,onAgain,onDownload,listening}:{
+export function SpeakingReportView({report,stats,target,language,entries,saved,voice,mock,review,onSave,onListen,onNew,onAgain,onDownload,listening}:{
  report:SpeakingReport;stats:SessionStats;target:number;language:"en"|"mn";entries:ProgressEntry[];saved:Set<string>;
- onSave:(text:string,note:string)=>void;onListen:(text:string)=>void;onNew:()=>void;onAgain:()=>void;onDownload:()=>void;listening:boolean;
+ voice:SpeakingVoice;mock:boolean;review:ReviewTurn[];
+ onSave:(text:string,note:string)=>void;
+ // The Lab's own actions. The report on a finished IELTS mock leaves them out.
+ onListen?:(text:string)=>void;onNew?:()=>void;onAgain?:()=>void;onDownload?:()=>void;listening?:boolean;
 }) {
  const overall=overallBand([report.bands.fluency,report.bands.lexical,report.bands.grammar]);
  const gap=Math.round((target-overall)*10)/10;
- const mn=language==="mn";
+ const mn=language==="mn",name=speakingVoices[voice].label,corrections=review.filter(turn=>turn.tip).length;
  return <div className="sl-report">
   <header className="sl-report-hero">
    <div className="sl-score"><Ring value={overall}/><div><strong>{overall.toFixed(1)}</strong><span>indicative</span></div></div>
    <div>
-    <p className="sl-kicker">{mn?"Таны тайлан":"Your speaking report"}</p>
+    <p className="sl-kicker sl-report-from"><PartnerPortrait voice={voice}/>{mn?`${name}-ийн тайлан`:mock?`Mock test report from ${name}`:`Feedback from ${name}`}</p>
     <h2>{gap<=0?(mn?"Зорилтот түвшиндээ хүрч байна!":"You’re performing at your target."):(mn?`Зорилт ${target} хүртэл ${gap} оноо`:`${gap} band${gap===1?"":"s"} from your ${target} target`)}</h2>
     <p>{report.summary}</p>
     <p className="sl-disclaimer">{mn?"Зөвхөн текстэд тулгуурласан AI тооцоолол. Албан ёсны IELTS оноо биш; дуудлагыг үнэлээгүй.":"AI estimate from your transcript and timing only — not an official IELTS score. Pronunciation is not assessed."}{report.confidence==="low"?(mn?" Хариулт цөөн тул итгэл бага.":" Low confidence: speak a little more for a firmer estimate."):""}</p>
@@ -79,18 +84,32 @@ export function SpeakingReportView({report,stats,target,language,entries,saved,o
   <section className="sl-model">
    <div><h3>{mn?`${Math.min(9,target+1)} түвшний жишээ хариулт`:`Band ${Math.min(9,target+1)} model answer`}</h3><p className="sl-q">{report.model.question}</p></div>
    <blockquote>{report.model.answer}</blockquote>
-   <button type="button" className="button secondary" onClick={()=>onListen(report.model.answer)} disabled={listening}>{listening?"Playing…":"▶ Listen & shadow it"}</button>
-   <small>{mn?"Сонсоод дагаж хэлэх (shadowing) нь хэллэг, хэмнэлийг сайжруулна.":"Shadowing — repeating right after the speaker — builds rhythm and natural phrasing."}</small>
+   {onListen&&<button type="button" className="button secondary" onClick={()=>onListen(report.model.answer)} disabled={listening}>{listening?"Playing…":"▶ Listen & shadow it"}</button>}
+   {onListen&&<small>{mn?"Сонсоод дагаж хэлэх (shadowing) нь хэллэг, хэмнэлийг сайжруулна.":"Shadowing — repeating right after the speaker — builds rhythm and natural phrasing."}</small>}
   </section>
 
   <section className="sl-next"><span>🎯</span><div><h3>{mn?"Маргаашийн дасгал":"Tomorrow’s practice"}</h3><p>{report.next}</p></div></section>
 
   {entries.length>1&&<section className="sl-card"><h3>{mn?"Таны ахиц":"Your progress"}</h3><Trend entries={entries}/><small className="sl-muted">Stored only in this browser.</small></section>}
 
-  <div className="sl-report-actions">
-   <button type="button" className="button primary" onClick={onAgain}>Practise again</button>
-   <button type="button" className="button secondary" onClick={onNew}>New setup</button>
-   <button type="button" className="sl-link" onClick={onDownload}>Download report ↓</button>
-  </div>
+  {review.length>0&&<details className="sl-review" open={mock&&corrections>0}>
+   <summary>{mn?"Яриа ба засварууд":"Your conversation and corrections"}{corrections>0&&<span className="sl-chip">{corrections}</span>}</summary>
+   <ol>{review.map(turn=><li key={turn.id} className={turn.role}>
+    <span>{turn.role==="user"?"You":name} · Part {turn.part}</span>
+    <p>{turn.content}</p>
+    {turn.cue&&<p className="sl-cue-line">{turn.cue.title}</p>}
+    {turn.tip&&<div className="sl-tip">
+     <div className="sl-diff"><s>{turn.tip.said}</s><span aria-hidden="true">→</span><ins>{turn.tip.better}</ins></div>
+     <small>{turn.tip.why}</small>
+     <button type="button" className="sl-link" disabled={saved.has(turn.tip.better.trim().toLowerCase())} onClick={()=>onSave(turn.tip!.better,turn.tip!.why)}>{saved.has(turn.tip.better.trim().toLowerCase())?"Saved ✓":"+ Phrasebook"}</button>
+    </div>}
+   </li>)}</ol>
+  </details>}
+
+  {(onAgain||onNew||onDownload)&&<div className="sl-report-actions">
+   {onAgain&&<button type="button" className="button primary" onClick={onAgain}>Practise again</button>}
+   {onNew&&<button type="button" className="button secondary" onClick={onNew}>New setup</button>}
+   {onDownload&&<button type="button" className="sl-link" onClick={onDownload}>Download report ↓</button>}
+  </div>}
  </div>;
 }

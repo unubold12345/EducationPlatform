@@ -123,14 +123,14 @@ export function makeReport(state:ExamState):ExamReport {
       const group=stage.groups?.find(item=>item.id===q.groupId);
       const shared=group&&(group.pageMode==="group"||group.kind==="listening")?group:undefined;
       const figure=q.figure??shared?.figure;
-      reviews.push({...(q.listening?{transcript:q.listening.script}:{}),id:q.id,groupId:q.groupId,domain:q.domain,prompt:q.prompt,passage:state.definition.stages.flatMap(s=>s.passages??[]).find(p=>p.title===q.passage)?.text ?? q.passage,selected:state.responses[q.id]??"",answer:q.answerDisplay??q.answers.join(" / "),explanation:q.explanation,correct,pretest:!!q.pretest,...(figure?{figure}:{}),points,earned:correct===null?null:correct?points:0,number:q.number,...(shared?.instructions?{instructions:shared.instructions}:{}),...(shared?.context?{context:shared.context}:{}),...(shared?.contextTitle?{contextTitle:shared.contextTitle}:{})});
+      reviews.push({...(q.listening?{transcript:q.listening.script}:{}),...(q.hsk?{hsk:q.hsk}:{}),...(group?.hsk?{hskGroup:group.hsk}:{}),id:q.id,groupId:q.groupId,domain:q.domain,prompt:q.prompt,passage:state.definition.stages.flatMap(s=>s.passages??[]).find(p=>p.title===q.passage)?.text ?? q.passage,selected:state.responses[q.id]??"",answer:q.answerDisplay??q.answers.join(" / "),explanation:q.explanation,correct,pretest:!!q.pretest,...(figure?{figure}:{}),points,earned:correct===null?null:correct?points:0,number:q.number,...(shared?.instructions?{instructions:shared.instructions}:{}),...(shared?.context?{context:shared.context}:{}),...(shared?.contextTitle?{contextTitle:shared.contextTitle}:{})});
     }
   }
   // ЭЕШ papers report marks by subject skill; SAT and IELTS keep their existing section names.
   const program=state.definition.program;
-  const names=program==="jlpt" ? ["文字・語彙", "文法・読解", "聴解"] : program==="sat" ? ["Reading & Writing","Math"] : program==="entrance" ? [...new Set(reviews.filter(q=>!q.pretest).map(q=>q.domain))] : ["Listening","Academic Reading","Writing","Speaking"];
+  const names=program==="jlpt" ? ["文字・語彙", "文法・読解", "聴解"] : program==="hsk" ? ["听力 · Сонсох","阅读 · Унших"] : program==="sat" ? ["Reading & Writing","Math"] : program==="entrance" ? [...new Set(reviews.filter(q=>!q.pretest).map(q=>q.domain))] : ["Listening","Academic Reading","Writing","Speaking"];
   const sections=names.map((title,sectionIndex)=>{
-    const list=reviews.filter(q=>!q.pretest&&(program==="jlpt" ? q.number?.startsWith(["V","G","L"][sectionIndex]) : program==="sat" ? (title==="Reading & Writing" ? q.id.startsWith("sat-rw") : q.id.startsWith("sat-math")) : program==="entrance" || q.domain===title));
+    const list=reviews.filter(q=>!q.pretest&&(program==="jlpt" ? q.number?.startsWith(["V","G","L"][sectionIndex]) : program==="hsk" ? q.groupId?.startsWith(["hsk-l-","hsk-r-"][sectionIndex]) : program==="sat" ? (title==="Reading & Writing" ? q.id.startsWith("sat-rw") : q.id.startsWith("sat-math")) : q.domain===title));
     const graded=list.filter(q=>q.correct!==null);
     return {title,correct:list.filter(q=>q.correct===true).length,total:graded.length,pending:list.filter(q=>q.correct===null).length,points:graded.reduce((sum,q)=>sum+q.points,0),earned:graded.reduce((sum,q)=>sum+q.earned!,0)};
   });

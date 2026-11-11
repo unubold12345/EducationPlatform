@@ -14,7 +14,7 @@ export default function ProgramsPage() {
   return <div className="container page-space programs-page">
     <h1 className="sr-only">Хөтөлбөрүүд</h1>
 
-    <div className="programs-meta" aria-label="Хөтөлбөрийн товч"><div><strong>167</strong><span>Бүтэн mock шалгалт</span></div><div><strong>155</strong><span>ЭЕШ mock</span></div><div><strong>04</strong><span>Writing & Speaking workshop</span></div></div>
+    <div className="programs-meta" aria-label="Хөтөлбөрийн товч"><div><strong>212</strong><span>Бүтэн mock шалгалт</span></div><div><strong>194</strong><span>ЭЕШ mock</span></div><div><strong>04</strong><span>Writing & Speaking workshop</span></div></div>
 
     <div className="program-grid program-picker">{programs.map((program, index) => <ProgramSpotlight key={program.slug} program={program} index={index} />)}</div>
 

@@ -7,6 +7,8 @@ import "./entrance.css";
 const structure: Record<string, string> = {
   math: "36 сонгох + 4 бодолт",
   physics: "46 сонгох + 4 бодолт",
+  chemistry: "40 сонгох + 4 бүтээх даалгавар",
+  biology: "A–E сонгох + 4 бүтээх даалгавар",
   english: "Part I + Part II",
 };
 

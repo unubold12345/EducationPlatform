@@ -12,18 +12,23 @@ const root = new URL("../", import.meta.url);
 const disk = path => new URL(path, root).pathname.replace(/^\/([A-Za-z]:)/, "$1");
 const publicFile = src => disk("public" + src);
 
-test("the imported ЭЕШ catalog covers 55 Mathematics, 60 Physics and 40 English papers", () => {
-  assert.equal(entranceTotal, 155);
-  assert.deepEqual(entranceCounts(), { math: 55, physics: 60, english: 40 });
+test("the imported ЭЕШ catalog covers 55 Mathematics, 60 Physics, 18 Chemistry, 21 Biology and 40 English papers", () => {
+  assert.equal(entranceTotal, 194);
+  assert.deepEqual(entranceCounts(), { math: 55, physics: 60, chemistry: 18, biology: 21, english: 40 });
   assert.deepEqual(entranceYears("math"), [2026, 2025, 2024, 2023, 2022, 2021, 2019, 2018, 2017, 2016, 2015]);
   assert.deepEqual(entranceYears("physics"), [2026, 2025, 2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015]);
   assert.deepEqual(entranceYears("english"), [2026, 2025, 2024, 2023, 2022, 2020, 2019, 2018]);
+  // Chemistry has no 2024 forms: no 2024 reference paper could be obtained.
+  assert.deepEqual(entranceYears("chemistry"), [2026, 2025, 2023, 2022, 2021, 2020]);
+  assert.deepEqual(entranceYears("biology"), [2026, 2025, 2024, 2023, 2022, 2021, 2020]);
+  const formsPerYear = { math: 5, physics: 5, english: 5, chemistry: 3, biology: 3 };
+  const minutes = { math: 100, physics: 100, chemistry: 100, biology: 80, english: 80 };
   for (const mock of entranceMocks) {
-    assert.equal(mocksForYear(mock.subject, mock.year).length, 5, mock.slug);
+    assert.equal(mocksForYear(mock.subject, mock.year).length, formsPerYear[mock.subject], mock.slug);
     assert.equal(mock.points, 100, mock.slug);
-    assert.equal(mock.durationMinutes, mock.subject === "english" ? 80 : 100, mock.slug);
+    assert.equal(mock.durationMinutes, minutes[mock.subject], mock.slug);
   }
-  assert.equal(new Set(entranceMocks.map(mock => mock.slug)).size, 155);
+  assert.equal(new Set(entranceMocks.map(mock => mock.slug)).size, 194);
 });
 
 test("every imported paper loads as a 100-point entrance exam with unique, complete questions", () => {
@@ -81,6 +86,19 @@ test("each subject keeps its printed structure and answer distribution", () => {
       assert.equal(choices.length, 46, meta.slug);
       assert.equal(tasks.length, 4, meta.slug);
     }
+    if (meta.subject === "chemistry") {
+      assert.equal(choices.length, 40, meta.slug);
+      assert.equal(tasks.length, 4, meta.slug);
+      // Part II: four tasks × a–h, one digit each.
+      const parts = stage.questions.filter(question => question.groupId !== "part-1");
+      assert.equal(parts.length, 32, meta.slug);
+      assert.ok(parts.every(question => question.kind === "number" && /^\d$/.test(question.answers[0])), meta.slug);
+    }
+    if (meta.subject === "biology") {
+      assert.equal(choices.length, meta.year === 2026 ? 46 : 50, meta.slug);
+      assert.equal(tasks.length, 4, meta.slug);
+      assert.ok(stage.questions.filter(question => question.groupId !== "part-1").every(question => question.kind === "number" && question.matcher === "numeric"), meta.slug);
+    }
     if (meta.subject === "english") {
       assert.ok(choices.length >= 47, meta.slug);
       assert.ok((stage.passages?.length ?? 0) >= 1, meta.slug);
@@ -126,15 +144,28 @@ test("a fully correct paper reports 100 marks and keeps the shared task material
   assert.ok(report.sections.length > 1);
   assert.ok(report.reviews.every(review => review.earned === review.points));
   const part = report.reviews.find(review => review.number?.startsWith("2.1"));
+  // Each skill row counts only its own questions, so the rows add up to the paper.
+  for (const slug of ["eesh-math-2024-m1", "eesh-physics-2024-p1", "eesh-english-2024-e1", "eesh-chemistry-2026-c1", "eesh-biology-2026-b1"]) {
+    const paper = entranceDefinition(slug);
+    const sitting = createExamState(paper, 0);
+    const questions = paper.stages[0].questions;
+    sitting.responses = Object.fromEntries(questions.slice(0, 20).map(question => [question.id, question.answers[0]]));
+    const result = makeReport(sitting);
+    assert.ok(result.sections.length >= 3, slug);
+    assert.equal(result.sections.reduce((sum, section) => sum + section.total, 0), questions.length, slug);
+    assert.equal(result.sections.reduce((sum, section) => sum + section.points, 0), 100, slug);
+    assert.equal(result.sections.reduce((sum, section) => sum + section.earned, 0), result.points.earned, slug);
+    assert.ok(result.sections.some(section => section.earned < section.points), slug);
+  }
   assert.ok(part?.instructions);
   assert.ok(part?.figure);
 });
 
 test("practice forms carry every imported paper and grade their own printed answers", () => {
-  for (const slug of ["eesh-math-2024-m1", "eesh-physics-2024-p1", "eesh-english-2024-e1"]) {
+  for (const slug of ["eesh-math-2024-m1", "eesh-physics-2024-p1", "eesh-english-2024-e1", "eesh-chemistry-2025-c1", "eesh-biology-2026-b2"]) {
     const definition = entranceDefinition(slug);
     const source = mockPractice(definition);
-    assert.equal(source.form.subject, slug.includes("math") ? "eesh-math" : slug.includes("physics") ? "eesh-physics" : "eesh-english");
+    assert.equal(source.form.subject, "eesh-" + slug.split("-")[1]);
     assert.ok(source.form.sections.length >= 2, slug);
     assert.equal(source.form.questions.length, definition.stages[0].questions.length, slug);
     assert.equal(new Set(source.form.questions.map(question => question.id)).size, source.form.questions.length, slug);
@@ -161,4 +192,7 @@ test("the old four site Mathematics mocks and their booklet route are retired, w
   assert.equal(findExam("eesh-english-2024-e1")?.program, "entrance");
   assert.equal(findExam("eesh-math-2024-m1")?.subject, "math");
   assert.equal(findEntranceMeta("eesh-english-2018-e1")?.year, 2018);
+  assert.equal(findExam("eesh-chemistry-2026-c3")?.subject, "chemistry");
+  assert.equal(findExam("eesh-biology-2020-b1")?.subject, "biology");
+  assert.equal(findExam("eesh-chemistry-2024-c1"), undefined);
 });

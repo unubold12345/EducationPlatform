@@ -4,6 +4,7 @@ import { ApiError } from "@/lib/api";
 import { examDefinitions } from "@/modules/exams/definitions";
 import { entranceMocks } from "@/modules/exams/entrance/catalog";
 import { jlptMocks } from "@/modules/exams/jlpt/catalog";
+import { hskMocks } from "@/modules/exams/hsk/catalog";
 import { guidedTasks } from "@/modules/workshops/guided";
 import { addCalendarMonth, findSubscriptionPlan, validPlanPrice } from "@/modules/subscriptions/plans";
 import { revalidatePath } from "next/cache";
@@ -23,6 +24,7 @@ export function contentCatalog() {
     ...examDefinitions.map(exam=>({key:exam.slug,title:exam.title,program:exam.program,kind:"Бүтэн mock",count:exam.stages.reduce((sum,stage)=>sum+(stage.variants?stage.variants.lower.length:stage.questions.length),0),href:"/exams/"+exam.slug})),
     ...entranceMocks.map(exam=>({key:exam.slug,title:exam.title,program:"entrance" as const,kind:"ЭЕШ mock",count:exam.questionCount,href:"/exams/"+exam.slug})),
     ...jlptMocks.map(exam=>({key:exam.slug,title:exam.title,program:"jlpt" as const,kind:"JLPT mock",count:exam.questions,href:"/exams/"+exam.slug})),
+    ...hskMocks.map(exam=>({key:exam.slug,title:exam.title,program:"hsk" as const,kind:"HSK mock",count:exam.questions,href:"/exams/"+exam.slug})),
     ...guidedTasks.map(task=>({key:task.slug,title:task.title,program:"ielts",kind:"Workshop",count:1,href:"/workshops/"+task.slug})),
   ];
 }

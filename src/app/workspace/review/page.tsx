@@ -9,7 +9,7 @@ import type { ExamProgram } from "@/modules/exams/types";
 export const metadata: Metadata = { title: "Миний үр дүн" };
 
 const PAGE = 12;
-const programs: ExamProgram[] = ["sat", "ielts", "entrance", "jlpt"];
+const programs: ExamProgram[] = ["sat", "ielts", "entrance", "jlpt", "hsk"];
 const date = new Intl.DateTimeFormat("mn-MN", { timeZone: "Asia/Ulaanbaatar", dateStyle: "medium" });
 
 export default async function ReviewList({ searchParams }: { searchParams: Promise<{ program?: string; page?: string }> }) {

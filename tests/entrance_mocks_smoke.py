@@ -48,10 +48,10 @@ with sync_playwright() as p:
     errors = []
     page.on("pageerror", lambda error: errors.append(str(error)))
 
-    # The library and the ЭЕШ hub: three programmes, dense year cards, subject tabs.
+    # The library and the ЭЕШ hub: five subjects, dense year cards, subject tabs.
     page.goto(BASE + "/exams")
-    expect(page.locator(".library-list .exam-card")).to_have_count(4)
-    expect(page.locator(".library-list .exam-card.entrance")).to_contain_text("155")
+    expect(page.locator(".library-list .exam-card")).to_have_count(5)
+    expect(page.locator(".library-list .exam-card.entrance")).to_contain_text("194")
     page.screenshot(path=str(ART / "eesh-library-desktop.png"), full_page=True)
     page.goto(BASE + "/exams/eesh")
     expect(page.get_by_role("heading", name="ЭЕШ-ийн бүтэн mock", exact=True)).to_be_visible()
@@ -64,6 +64,16 @@ with sync_playwright() as p:
     page.get_by_role("link", name="Англи хэл", exact=False).first.click()
     expect(page.locator(".eesh-form")).to_have_count(40)
     fits(page, "hub-english")
+    # Chemistry (no 2024 reference, so six years) and Biology have three forms a year.
+    page.locator('.eesh-subject[href="/exams/eesh?subject=chemistry"]').click()
+    expect(page).to_have_url(BASE + "/exams/eesh?subject=chemistry")
+    expect(page.locator(".eesh-form")).to_have_count(18)
+    expect(page.locator(".eesh-year")).to_have_count(6)
+    page.locator('.eesh-subject[href="/exams/eesh?subject=biology"]').click()
+    expect(page.locator(".eesh-form")).to_have_count(21)
+    expect(page.locator(".eesh-year")).to_have_count(7)
+    page.screenshot(path=str(ART / "eesh-hub-biology-desktop.png"), full_page=True)
+    fits(page, "hub-biology")
 
     # A compact briefing keeps the facts and starts the paper; the old booklet route and mock are gone.
     page.goto(BASE + "/exams/eesh-math-2024-m1")
@@ -149,11 +159,30 @@ with sync_playwright() as p:
     page.screenshot(path=str(ART / "eesh-sit-english-part2-desktop.png"), full_page=True)
     fits(page, "sit-english-part2")
 
+    # Chemistry: Mongolian prompts, the scratchpad, and a Part II task of eight one-digit cells.
+    chemistry = context.request.post(BASE + "/api/mock-attempts", headers=ORIGIN, data={"slug": "eesh-chemistry-2026-c1"})
+    assert chemistry.ok, (chemistry.status, chemistry.text())
+    page.goto(BASE + "/exams/attempts/" + chemistry.json()["id"])
+    expect(page.locator(".eesh-question h2")).to_have_attribute("lang", "mn")
+    expect(page.locator(".scratchpad, .math-scratchpad").first).to_be_visible()
+    page.get_by_role("button", name="Хариултын хуудас", exact=False).click()
+    page.get_by_role("button", name="2.1a", exact=True).click()
+    expect(page.locator(".eesh-part")).to_have_count(8)
+    page.screenshot(path=str(ART / "eesh-sit-chemistry-part2-desktop.png"), full_page=True)
+    fits(page, "sit-chemistry-part2")
+    biology = context.request.post(BASE + "/api/mock-attempts", headers=ORIGIN, data={"slug": "eesh-biology-2026-b1"})
+    assert biology.ok, (biology.status, biology.text())
+    page.goto(BASE + "/exams/attempts/" + biology.json()["id"])
+    page.get_by_role("button", name="Хариултын хуудас", exact=False).click()
+    page.get_by_role("button", name="4", exact=True).click()
+    expect(page.locator(".eesh-question .exam-figure img, .eesh-question img").first).to_be_visible()
+    fits(page, "sit-biology")
+
     # The Workspace home and the program page use the new hub.
     page.goto(BASE + "/workspace")
     expect(page.locator('.wsp-card[href="/exams/eesh"]')).to_be_visible()
     page.goto(BASE + "/programs/entrance")
-    expect(page.locator(".program-official-card")).to_have_count(3)
+    expect(page.locator(".program-official-card")).to_have_count(5)
     # A Next dev-only performance measure can report a negative timestamp; it is not an app error.
     errors = [error for error in errors if "negative time stamp" not in error]
     assert not errors, errors

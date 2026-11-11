@@ -3,12 +3,19 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { strToU8, zipSync } from "fflate";
 import {
-  DEFAULT_IMPORT_COUNT, IMPORT_COUNTS, VOCABULARY_LIMITS, bankFullMessage, cleanUserRequest, isImportLanguage,
-  parseGeneratedWords, readImportCount, readWordFields, readWordsJson, termKey, vocabularyCapacity, vocabularyMessages,
-  vocabularyUpgrade,
+  DECK_COLORS, IMPORT_COUNT, IMPORT_KINDS, IMPORT_LEVELS, VOCABULARY_LIMITS, bankFullMessage, cleanDeckName, cleanUserRequest, deckNameFromSource,
+  isImportKind, isImportLanguage, isImportLevel, isVocabularyId,
+  parseGeneratedWords, readBulkRequest, readDeckFields, readImportCount, readReview, readWordFields, readWordsJson, termKey, vocabularyCapacity,
+  vocabularyMessages, vocabularyUpgrade,
 } from "../src/modules/vocabulary/contracts.ts";
 import { subscriptionPlans } from "../src/modules/subscriptions/plans.ts";
-import { buildQuiz, questionLead, QUIZ_COUNTS, QUIZ_MIN_WORDS } from "../src/modules/vocabulary/quiz.ts";
+import {
+  acceptedAnswers, buildQuiz, checkTyped, clozeText, fiftyFifty, questionLead, quizPool, retryOf, speechFor, typingHint,
+  QUIZ_COUNTS, QUIZ_KINDS, QUIZ_MIN_WORDS, QUIZ_SCOPES, TRUE_FALSE_OPTIONS,
+} from "../src/modules/vocabulary/quiz.ts";
+import {
+  AGAIN_MINUTES, BOX_INTERVAL_DAYS, STUDY_BOX_MAX, isDue, isStudyGrade, isWeak, nextStudy, reviewedToday, studyPriority, studyStatus,
+} from "../src/modules/vocabulary/study.ts";
 import { DOCUMENT_LIMITS, cleanSourceText, displayFileName, fallbackTitle } from "../src/modules/documents/text.ts";
 import { docxText, officeKind, pptxText, xmlToText, zipNames } from "../src/modules/documents/office.ts";
 
@@ -45,6 +52,13 @@ test("manual word input takes only its exact shape and bounds", () => {
   assert.equal(readWordFields({ term: "word", translation: "үг", example: "x".repeat(VOCABULARY_LIMITS.example + 1) }), null);
   assert.equal(readWordFields({ term: 5, translation: "үг" }), null);
   assert.equal(readWordFields(null), null);
+  // A deck is named only by a well-formed id; null takes the word out of its deck.
+  const id = "c" + "a".repeat(24);
+  assert.deepEqual(readWordFields({ term: "word", translation: "үг", deckId: id }), { term: "word", translation: "үг", example: null, deckId: id });
+  assert.deepEqual(readWordFields({ term: "word", translation: "үг", deckId: null }), { term: "word", translation: "үг", example: null, deckId: null });
+  assert.equal(readWordFields({ term: "word", translation: "үг", deckId: "../x" }), null);
+  assert.equal(isVocabularyId(id), true);
+  for (const bad of ["short", "a".repeat(65), "has space 123456", 5, null]) assert.equal(isVocabularyId(bad), false, String(bad));
 });
 
 test("a folded term catches case, width and spacing duplicates", () => {
@@ -97,6 +111,16 @@ test("the import prompt fixes the rules before the document data", () => {
   assert.equal(isImportLanguage("mn"), true);
   assert.equal(isImportLanguage("en"), true);
   assert.equal(isImportLanguage("ru"), false);
+
+  // Level and word-type filters are fixed choices that become fixed sentences; "any" adds nothing.
+  assert.deepEqual(IMPORT_LEVELS, ["any", "basic", "intermediate", "advanced"]);
+  assert.deepEqual(IMPORT_KINDS, ["any", "nouns", "verbs", "adjectives", "phrases"]);
+  assert.ok(isImportLevel("advanced") && !isImportLevel("expert") && isImportKind("verbs") && !isImportKind("x"));
+  assert.doesNotMatch(vocabularyMessages({ text: "x", language: "mn", truncated: false, level: "any", kind: "any" })[0].content, /Student filter/);
+  const filtered = vocabularyMessages({ text: "x", language: "mn", truncated: false, level: "advanced", kind: "verbs" });
+  assert.match(filtered[0].content, /Student filter: keep only advanced, academic or rare vocabulary \(about CEFR C1–C2\) and skip common words; keep only verbs, including phrasal verbs\./);
+  assert.match(filtered[0].content, /return fewer rather than filling the list/);
+  assert.doesNotMatch(filtered[1].content, /Student filter/, "filters stay with the rules, not the document");
 });
 
 test("model JSON is read through fences and prose, then cleaned and deduplicated", () => {
@@ -140,8 +164,10 @@ test("the bank size follows the student's plans, and one import asks for a bound
   assert.match(bankFullMessage(100), /100 үгийн хязгаартаа хүрсэн/);
   assert.match(bankFullMessage(100), /IELTS эсвэл SAT багцтай бол 3,000 үг хадгална/);
   assert.doesNotMatch(bankFullMessage(3000), /багцтай бол/, "no upgrade hint once on the largest bank");
-  assert.deepEqual(IMPORT_COUNTS, [10, 20, 50, 120]);
-  assert.ok(IMPORT_COUNTS.includes(DEFAULT_IMPORT_COUNT));
+  // Any count from one word to the import bound, not a few fixed sizes.
+  assert.deepEqual(IMPORT_COUNT, { min: 1, max: 120, step: 5, default: 40 });
+  assert.equal(IMPORT_COUNT.max, VOCABULARY_LIMITS.importWords);
+  assert.equal(readImportCount("37"), 37);
   assert.equal(readImportCount(null), 120, "older clients without a count keep the full import");
   assert.equal(readImportCount(""), 120);
   assert.equal(readImportCount("20"), 20);
@@ -184,6 +210,223 @@ test("a quiz needs four words and keeps answers, options and both directions sou
   assert.equal(questionLead("term-to-translation"), "Энэ үгийн орчуулга аль вэ?");
   assert.equal(questionLead("translation-to-term"), "Энэ орчуулга аль үг вэ?");
   assert.ok(QUIZ_COUNTS.includes(10) && QUIZ_COUNTS.includes(20) && QUIZ_COUNTS.includes(30));
+  // The default form is the plain choice question the first quiz had.
+  for (const item of mixed) assert.equal(item.kind, "choice");
+});
+
+test("study progress follows a five-box schedule that cramming cannot fake", () => {
+  const DAY = 86_400_000, now = Date.UTC(2026, 10, 11, 4);
+  assert.equal(STUDY_BOX_MAX, 5);
+  assert.deepEqual(BOX_INTERVAL_DAYS, [0, 1, 2, 4, 8, 16]);
+  const fresh = { box: 0, correct: 0, wrong: 0, reviewedAt: null, dueAt: null };
+  assert.equal(studyStatus(fresh), "new");
+  assert.equal(isDue(fresh, now), false, "a word never studied is new, not due");
+  // A first right answer: box 1, back tomorrow.
+  const first = nextStudy(fresh, "good", now);
+  assert.deepEqual(first, { box: 1, correct: 1, wrong: 0, reviewedAt: now, dueAt: now + DAY });
+  assert.equal(studyStatus(first), "learning");
+  // Answering it again before it is due keeps the box and the date.
+  const crammed = nextStudy(first, "good", now + 60_000);
+  assert.deepEqual(crammed, { box: 1, correct: 2, wrong: 0, reviewedAt: now + 60_000, dueAt: now + DAY });
+  // Once due, each right answer moves one box up and doubles the wait, up to the last box.
+  let state = first, at = now;
+  for (const box of [2, 3, 4, 5, 5]) {
+    at = state.dueAt + 1;
+    assert.equal(isDue(state, at), true);
+    state = nextStudy(state, "good", at);
+    assert.equal(state.box, box);
+    assert.equal(state.dueAt, at + BOX_INTERVAL_DAYS[box] * DAY);
+  }
+  assert.equal(studyStatus(state), "mastered");
+  assert.equal(studyStatus({ box: 3 }), "familiar");
+  // A hinted or near-miss answer holds the box; a miss sends the word back to box 1, due in minutes, even early.
+  const held = nextStudy({ ...first, dueAt: now - 1 }, "hard", now);
+  assert.deepEqual([held.box, held.correct, held.dueAt], [1, 2, now + DAY]);
+  assert.equal(nextStudy(fresh, "hard", now).box, 1);
+  const missed = nextStudy(state, "again", at + 1000);
+  assert.deepEqual([missed.box, missed.wrong, missed.dueAt], [1, 1, at + 1000 + AGAIN_MINUTES * 60_000]);
+  assert.equal(isWeak(missed), true);
+  assert.equal(isWeak(first), false);
+  assert.equal(isWeak({ box: 5, correct: 9, wrong: 9 }), false, "a mastered word is not weak");
+  // Dates may arrive as ISO strings or Date objects; malformed state is treated as new.
+  assert.equal(isDue({ box: 2, correct: 1, wrong: 0, dueAt: new Date(now - 5).toISOString() }, now), true);
+  assert.equal(isDue({ box: 2, correct: 1, wrong: 0, dueAt: new Date(now + 5) }, now), false);
+  assert.equal(nextStudy({ box: 99, correct: -3, wrong: Number.NaN, dueAt: "nope" }, "good", now).box, 5);
+  assert.equal(nextStudy({ box: 2.5, correct: 0, wrong: 0 }, "good", now).box, 1);
+  assert.ok(isStudyGrade("again") && isStudyGrade("hard") && isStudyGrade("good") && !isStudyGrade("easy") && !isStudyGrade(1));
+  // Ulaanbaatar day: 23:30 UB yesterday is not today.
+  const ubMidnight = Date.UTC(2026, 10, 10, 16);
+  assert.equal(reviewedToday({ ...first, reviewedAt: ubMidnight + 1 }, ubMidnight + 3_600_000), true);
+  assert.equal(reviewedToday({ ...first, reviewedAt: ubMidnight - 1_800_000 }, ubMidnight + 3_600_000), false);
+  assert.equal(reviewedToday(fresh, now), false);
+  // Overdue words outrank new ones, which outrank weak ones, which outrank words that are not due.
+  const overdue = studyPriority({ box: 2, correct: 1, wrong: 0, dueAt: now - 3 * DAY }, now);
+  const notDue = studyPriority({ box: 4, correct: 4, wrong: 0, dueAt: now + DAY }, now);
+  const weak = studyPriority({ box: 1, correct: 0, wrong: 2, dueAt: now + DAY }, now);
+  assert.ok(overdue > studyPriority(fresh, now) && studyPriority(fresh, now) > weak && weak > notDue);
+});
+
+test("a smart quiz mixes question forms that suit each word", () => {
+  const now = Date.UTC(2026, 10, 11);
+  const bank = [
+    { id: "w1", term: "resilient", translation: "тэсвэртэй, уян хатан", example: "The material is resilient to heat.", deckId: "d1", box: 0 },
+    { id: "w2", term: "scarce", translation: "ховор", example: "Water is scarce here.", deckId: "d1", box: 1 },
+    { id: "w3", term: "ambiguous", translation: "хоёр утгатай", example: null, deckId: "d1", box: 2 },
+    { id: "w4", term: "meticulous", translation: "нягт нямбай", example: null, deckId: "d2", box: 3 },
+    { id: "w5", term: "candid", translation: "шударга", example: null, deckId: null, box: 4, starred: true },
+    { id: "w6", term: "deteriorate", translation: "муудах", example: "Roads deteriorate in winter.", deckId: null, box: 5 },
+    { id: "w7", term: "тэвчээр", translation: "patience", example: null, deckId: null, box: 0 },
+  ];
+  assert.deepEqual(QUIZ_KINDS, ["choice", "typing", "truefalse", "listening", "cloze", "card"]);
+  const all = buildQuiz(bank, { count: 50, direction: "mixed", kinds: QUIZ_KINDS, canSpeak: lang => lang === "en-US", random: seeded(21), now });
+  assert.equal(all.length, bank.length);
+  assert.equal(new Set(all.map(item => item.wordId)).size, bank.length, "one question per word");
+  for (const seed of [1, 2, 3, 4, 5, 6, 7, 8]) {
+    for (const item of buildQuiz(bank, { count: 50, direction: "mixed", kinds: QUIZ_KINDS, canSpeak: lang => lang === "en-US", random: seeded(seed), now })) {
+      assert.ok(QUIZ_KINDS.includes(item.kind) && item.retry === false);
+      if (item.kind === "typing") {
+        assert.deepEqual([item.options, item.answer], [[], -1]);
+        const answer = item.direction === "term-to-translation" ? item.translation : item.term;
+        assert.equal(checkTyped(answer, item.accepted), "exact", answer);
+      } else if (item.kind === "card") {
+        assert.deepEqual([item.options, item.answer], [[], -1]);
+        assert.equal(item.claim, item.direction === "term-to-translation" ? item.translation : item.term);
+      } else if (item.kind === "truefalse") {
+        assert.deepEqual(item.options, [...TRUE_FALSE_OPTIONS]);
+        const truth = item.direction === "term-to-translation" ? item.translation : item.term;
+        assert.equal(item.answer, item.claim === truth ? 0 : 1, "Зөв exactly when the pairing on offer is the real one");
+      } else {
+        assert.ok(item.options.length >= 2 && item.options.length <= 4);
+        assert.equal(new Set(item.options).size, item.options.length);
+        if (item.kind === "cloze") {
+          assert.match(item.prompt, /＿＿＿＿/);
+          assert.ok(!item.prompt.toLowerCase().includes(item.term.toLowerCase()), "the gap hides the answer");
+          assert.equal(item.options[item.answer], item.term);
+        }
+        if (item.kind === "listening") {
+          assert.equal(item.direction, "term-to-translation");
+          assert.equal(item.speech?.lang, "en-US");
+          assert.equal(item.options[item.answer], item.translation);
+        }
+      }
+    }
+  }
+  // Without a voice there is no listening; without an example there is no gap question; both fall back.
+  const silent = buildQuiz(bank, { count: 50, direction: "mixed", kinds: ["listening"], random: seeded(3), now });
+  assert.ok(silent.length === bank.length && silent.every(item => item.kind === "listening" || item.kind === "choice"));
+  assert.ok(silent.every(item => item.kind === "choice"), "no voice, no listening");
+  const gaps = buildQuiz(bank, { count: 50, direction: "mixed", kinds: ["cloze"], random: seeded(3), now });
+  assert.deepEqual(gaps.filter(item => item.kind === "cloze").map(item => item.wordId).sort(), ["w1", "w2", "w6"]);
+  // A Cyrillic term has no dependable browser voice.
+  assert.equal(speechFor("тэвчээр"), null);
+  assert.deepEqual(speechFor("  take   off "), { text: "take off", lang: "en-US" });
+  assert.equal(speechFor("ねこ")?.lang, "ja-JP");
+  // A gap needs the term as written, and as a whole word.
+  assert.equal(clozeText("Water is scarce here.", "scarce"), "Water is ＿＿＿＿ here.");
+  assert.equal(clozeText("We start now.", "art"), null);
+  assert.equal(clozeText("The plane took off.", "take off"), null);
+  assert.equal(clozeText(null, "x"), null);
+
+  // The pool: a deck, the words in no deck, and each scope.
+  const due = { ...bank[2], dueAt: new Date(now - 1000).toISOString() };
+  const weak = { ...bank[1], wrong: 2, correct: 0, dueAt: new Date(now + 1000).toISOString() };
+  const studied = [bank[0], weak, due, ...bank.slice(3)];
+  assert.deepEqual(QUIZ_SCOPES, ["smart", "all", "due", "new", "weak", "starred"]);
+  assert.deepEqual(quizPool(studied, { scope: "all", deckId: "d1", now }).map(word => word.id), ["w1", "w2", "w3"]);
+  assert.deepEqual(quizPool(studied, { scope: "all", deckId: null, now }).map(word => word.id), ["w5", "w6", "w7"]);
+  assert.deepEqual(quizPool(studied, { scope: "due", now }).map(word => word.id), ["w3"]);
+  assert.deepEqual(quizPool(studied, { scope: "new", now }).map(word => word.id), ["w1", "w7"]);
+  assert.deepEqual(quizPool(studied, { scope: "weak", now }).map(word => word.id), ["w2"]);
+  assert.deepEqual(quizPool(studied, { scope: "starred", now }).map(word => word.id), ["w5"]);
+  assert.equal(quizPool(studied, { scope: "smart", now }).length, studied.length);
+  // Smart order asks the due word and the new words before words that are not due.
+  for (const seed of [1, 2, 3, 4, 5]) {
+    const picked = buildQuiz(studied, { count: 3, direction: "term-to-translation", order: "smart", random: seeded(seed), now }).map(item => item.wordId).sort();
+    assert.deepEqual(picked, ["w1", "w3", "w7"], "seed " + seed);
+  }
+  // A few selected words still get wrong options from the whole bank.
+  const few = buildQuiz(bank.slice(0, 2), { count: 5, direction: "term-to-translation", bank, random: seeded(9), now });
+  assert.equal(few.length, 2);
+  for (const item of few) assert.equal(item.options.length, 4);
+  assert.deepEqual(buildQuiz(bank.slice(0, 2), { count: 5, direction: "mixed", random: seeded(9) }), [], "two words alone are not a quiz");
+  assert.deepEqual(buildQuiz([], { count: 5, direction: "mixed", bank, random: seeded(9) }), []);
+  // A retry is the same question marked as a second ask.
+  const again = retryOf(few[0], "r9");
+  assert.deepEqual([again.id, again.retry, again.wordId, again.prompt], ["r9", true, few[0].wordId, few[0].prompt]);
+});
+
+test("typed answers accept alternatives and small slips, and hints stay partial", () => {
+  const accepted = acceptedAnswers("тэсвэртэй, уян хатан (adj.)");
+  assert.ok(accepted.includes("тэсвэртэй") && accepted.includes("уян хатан"));
+  assert.equal(checkTyped("  Уян   хатан ", accepted), "exact");
+  assert.equal(checkTyped("тэсвэртэи", accepted), "close", "one slip in a longer word");
+  assert.equal(checkTyped("ховор", accepted), "wrong");
+  assert.equal(checkTyped("", accepted), "wrong");
+  assert.equal(checkTyped("   ", accepted), "wrong");
+  // Short answers must be exact; a leading "to" and punctuation are optional.
+  assert.equal(checkTyped("cat", acceptedAnswers("cut")), "wrong");
+  assert.equal(checkTyped("run", acceptedAnswers("to run")), "exact");
+  assert.equal(checkTyped("Take-off!", acceptedAnswers("take off")), "exact");
+  assert.equal(checkTyped("deterioratte", acceptedAnswers("deteriorate")), "close");
+  assert.equal(checkTyped("detriorrratte", acceptedAnswers("deteriorate")), "wrong");
+  assert.deepEqual(acceptedAnswers("муудах / доройтох").slice(-2), ["муудах", "доройтох"]);
+  assert.equal(typingHint("resilient"), "r••••••••");
+  assert.equal(typingHint("take off"), "t••• •••");
+  // 50/50 removes every wrong option but one and never the answer.
+  const question = { options: ["a", "b", "c", "d"], answer: 2 };
+  for (const seed of [1, 2, 3]) {
+    const gone = fiftyFifty(question, seeded(seed));
+    assert.equal(gone.length, 2);
+    assert.ok(!gone.includes(2));
+  }
+  assert.deepEqual(fiftyFifty({ options: ["a", "b"], answer: 0 }, seeded(1)), []);
+  for (const kind of QUIZ_KINDS) for (const direction of ["term-to-translation", "translation-to-term"]) assert.ok(questionLead(direction, kind).length > 5);
+});
+
+test("decks, bulk changes and quiz grades take only their exact shapes", () => {
+  const a = "c" + "a".repeat(24), b = "c" + "b".repeat(24);
+  // Decks.
+  assert.deepEqual(DECK_COLORS, ["blue", "violet", "green", "amber", "rose", "slate"]);
+  assert.deepEqual(readDeckFields({ name: "  IELTS   Reading " }, "create"), { name: "IELTS Reading" });
+  assert.deepEqual(readDeckFields({ name: "SAT", color: "green" }, "create"), { name: "SAT", color: "green" });
+  assert.equal(readDeckFields({ color: "green" }, "create"), null, "a new deck needs a name");
+  assert.deepEqual(readDeckFields({ color: "rose" }, "edit"), { color: "rose" });
+  assert.equal(readDeckFields({}, "edit"), null);
+  assert.equal(readDeckFields({ name: "x", color: "pink" }, "edit"), null);
+  assert.equal(readDeckFields({ name: "x", userId: "other" }, "create"), null, "no extra fields");
+  assert.equal(readDeckFields({ name: "x".repeat(VOCABULARY_LIMITS.deckName + 1) }, "create"), null);
+  assert.equal(cleanDeckName("   "), null);
+  assert.equal(deckNameFromSource("unit_3-glossary.pdf"), "unit 3-glossary");
+  assert.equal(deckNameFromSource(".pdf"), "Шинэ багц");
+  assert.ok(deckNameFromSource("x".repeat(200) + ".docx").length <= VOCABULARY_LIMITS.deckName);
+  // Bulk changes.
+  assert.deepEqual(readBulkRequest({ action: "move", ids: [a, b], deckId: null }), { action: "move", ids: [a, b], deckId: null });
+  assert.deepEqual(readBulkRequest({ action: "move", ids: [a], deckId: b }), { action: "move", ids: [a], deckId: b });
+  assert.deepEqual(readBulkRequest({ action: "star", ids: [a], starred: true }), { action: "star", ids: [a], starred: true });
+  assert.deepEqual(readBulkRequest({ action: "delete", ids: [a] }), { action: "delete", ids: [a] });
+  assert.deepEqual(readBulkRequest({ action: "reset", ids: [a] }), { action: "reset", ids: [a] });
+  for (const bad of [
+    null, {}, { action: "delete" }, { action: "delete", ids: [] }, { action: "delete", ids: [a, a] }, { action: "delete", ids: ["nope"] },
+    { action: "delete", ids: [a], userId: "other" }, { action: "move", ids: [a] }, { action: "move", ids: [a], deckId: "x" },
+    { action: "star", ids: [a], starred: "yes" }, { action: "grant", ids: [a] },
+    { action: "delete", ids: Array.from({ length: VOCABULARY_LIMITS.bulkIds + 1 }, (_, index) => "c" + String(index).padStart(24, "0")) },
+  ]) assert.equal(readBulkRequest(bad), null, JSON.stringify(bad)?.slice(0, 60));
+  // Saving a reviewed list: bounded, deduplicated, into one existing deck or one new deck, never both.
+  const add = readBulkRequest({ action: "add", words: [{ term: " take  off ", translation: "хөөрөх" }, { term: "TAKE OFF", translation: "давхар" }, { term: "scarce", translation: "ховор", example: "Water is scarce." }], deckName: " Unit  3 ", sourceName: "unit-3.pdf" });
+  assert.deepEqual(add, { action: "add", words: [{ term: "take off", translation: "хөөрөх", example: null }, { term: "scarce", translation: "ховор", example: "Water is scarce." }], deckId: null, deckName: "Unit 3", sourceName: "unit-3.pdf" });
+  assert.deepEqual(readBulkRequest({ action: "add", words: [{ term: "a", translation: "б" }] }), { action: "add", words: [{ term: "a", translation: "б", example: null }], deckId: null, deckName: null, sourceName: null });
+  assert.equal(readBulkRequest({ action: "add", words: [{ term: "a", translation: "б" }], deckId: a, deckName: "x" }), null);
+  assert.equal(readBulkRequest({ action: "add", words: [{ term: "a", translation: "б", deckId: a }] }), null, "words carry no deck of their own");
+  assert.equal(readBulkRequest({ action: "add", words: [{ term: "a" }] }), null);
+  assert.equal(readBulkRequest({ action: "add", words: [] }), null);
+  assert.equal(readBulkRequest({ action: "add", words: Array.from({ length: VOCABULARY_LIMITS.importWords + 1 }, (_, index) => ({ term: "w" + index, translation: "t" })) }), null);
+  // Quiz grades.
+  assert.deepEqual(readReview({ results: [{ id: a, grade: "good" }, { id: b, grade: "again" }] }), [{ id: a, grade: "good" }, { id: b, grade: "again" }]);
+  for (const bad of [
+    {}, { results: [] }, { results: [{ id: a, grade: "easy" }] }, { results: [{ id: a, grade: "good" }, { id: a, grade: "hard" }] },
+    { results: [{ id: a, grade: "good", box: 5 }] }, { results: [{ id: "x", grade: "good" }] }, { results: [{ id: a, grade: "good" }], score: 100 },
+    { results: Array.from({ length: VOCABULARY_LIMITS.reviewWords + 1 }, (_, index) => ({ id: "c" + String(index).padStart(24, "0"), grade: "good" })) },
+  ]) assert.equal(readReview(bad), null, JSON.stringify(bad).slice(0, 60));
 });
 
 test("duplicate meanings reduce options instead of breaking the quiz", () => {
@@ -274,7 +517,8 @@ test("vocabulary stays behind the server's checks and limits", () => {
   assert.ok(service.indexOf("readUploadedSource(form, ") < service.indexOf("return chargeCredits("));
   assert.match(text("src/modules/documents/upload.ts"), /total > DOCUMENT_LIMITS\.fileBytes/);
   assert.equal(VOCABULARY_LIMITS.fileBytes, DOCUMENT_LIMITS.fileBytes);
-  assert.match(service, /\["file", "language", "prompt", "count"\]/);
+  assert.match(service, /\["file", "language", "prompt", "count", "level", "kind"\]/);
+  assert.match(service, /!isImportLevel\(levelValue\) \|\| !isImportKind\(kindValue\)/);
   assert.match(service, /readImportCount\(field\(form, "count"\)\)/);
   assert.match(service, /const wanted = Math\.min\(requested, limit - stored\)/, "an import asks only for the room left");
   assert.match(service, /if \(total >= limit\) throw new ApiError\(409, bankFullMessage\(limit\)\)/);
@@ -287,15 +531,50 @@ test("vocabulary stays behind the server's checks and limits", () => {
   assert.match(service, /deleteMany\(\{ where: \{ id, userId \} \}\)/);
   assert.match(service, /createMany\(/);
   assert.match(service, /skipDuplicates: true/);
+  // A scan returns words for review and saves nothing; only the bulk "add" writes them.
+  const scan = service.slice(service.indexOf("export async function importVocabulary"));
+  assert.doesNotMatch(scan, /vocabularyWord\.(?:create|createMany|update|updateMany|delete|deleteMany)\(/);
+  assert.match(scan, /if \(!candidates\.length\) throw new ApiError\(409/, "a file with nothing new is refused and refunded");
+  // Decks, bulk changes and study progress are always scoped to the signed-in student.
+  assert.match(service, /vocabularyDeck\.findFirst\(\{ where: \{ id: deckId, userId \}/);
+  assert.match(service, /const where = \{ userId, id: \{ in: input\.ids \} \};/);
+  assert.match(service, /vocabularyWord\.findMany\(\{ where: \{ userId, id: \{ in: \[\.\.\.grades\.keys\(\)\] \} \}/);
+  assert.match(service, /nextStudy\(row, grades\.get\(row\.id\)!, now\)/, "the server computes the box from stored state, not from the browser");
+  assert.match(service, /where: \{ id: item\.id, userId \}/);
+  assert.match(service, /count >= VOCABULARY_LIMITS\.decks/);
+  for (const [path, reader] of [
+    ["src/app/api/workspace/vocabulary/words/route.ts", /readJson\(request, BULK_BODY_BYTES\)/],
+    ["src/app/api/workspace/vocabulary/review/route.ts", /readJson\(request, REVIEW_BODY_BYTES\)/],
+    ["src/app/api/workspace/vocabulary/decks/route.ts", /readJson\(request, 2 \* 1024\)/],
+    ["src/app/api/workspace/vocabulary/decks/[id]/route.ts", /readJson\(request, 2 \* 1024\)/],
+  ]) {
+    const route = text(path);
+    assert.match(route, reader, path);
+    const guards = route.match(/checkOrigin\(request\);\s+const user = await apiUser\(request\);/g) ?? [];
+    assert.equal(guards.length, (route.match(/export async function/g) ?? []).length, path + ": every handler checks origin, then the session");
+  }
   assert.doesNotMatch(service, /practiceDuringMockAllowed/);
   assert.match(text("src/modules/documents/extract.ts"), /pdf\.numPages > DOCUMENT_LIMITS\.pdfPages/);
   assert.match(text("src/modules/documents/extract.ts"), /maxImageSize: 16 \* 1024 \* 1024/);
-  assert.doesNotMatch(text("src/modules/vocabulary/client.tsx"), /dangerouslySetInnerHTML/);
-  assert.doesNotMatch(text("src/modules/vocabulary/quiz-view.tsx"), /dangerouslySetInnerHTML/);
+  for (const file of ["client.tsx", "library.tsx", "import-panel.tsx", "quiz-view.tsx"]) assert.doesNotMatch(text("src/modules/vocabulary/" + file), /dangerouslySetInnerHTML/, file);
+  // The import panel shows the price badge only; how the price is worked out is not explained on the page.
+  const panel = text("src/modules/vocabulary/import-panel.tsx");
+  assert.match(panel, /<CreditCost action="vocabulary-import" cost=\{vocabularyImportHold\(wanted\)\} upTo \/>/);
+  assert.doesNotMatch(panel + text("src/modules/vocabulary/client.tsx"), /vocabularyImportCredits|текстийн урт|түр барьж|Давхар үгэнд кредит/);
   const schema = text("prisma/schema.prisma");
   assert.match(schema, /model VocabularyWord/);
   assert.match(schema, /@@unique\(\[userId, termKey\]\)/);
   const migration = text("prisma/migrations/20261109164500_vocabulary_words/migration.sql");
   assert.match(migration, /CREATE TABLE "VocabularyWord"/);
   assert.match(migration, /ON DELETE CASCADE/);
+  // Decks and study state arrive in an additive migration: one new table, defaulted or nullable columns.
+  assert.match(schema, /model VocabularyDeck/);
+  assert.match(schema, /@@unique\(\[userId, nameKey\]\)/);
+  assert.match(schema, /deck VocabularyDeck\? @relation\(fields: \[deckId\], references: \[id\], onDelete: SetNull\)/);
+  const decks = text("prisma/migrations/20261111090000_vocabulary_decks_and_study/migration.sql");
+  assert.match(decks, /CREATE TABLE "VocabularyDeck"/);
+  assert.match(decks, /ADD COLUMN "box" INTEGER NOT NULL DEFAULT 0/);
+  assert.match(decks, /ADD COLUMN "starred" BOOLEAN NOT NULL DEFAULT false/);
+  assert.match(decks, /FOREIGN KEY \("deckId"\) REFERENCES "VocabularyDeck"\("id"\) ON DELETE SET NULL/);
+  assert.doesNotMatch(decks, /\bDROP\b|^\s*(?:DELETE|UPDATE)\b|\bALTER TABLE "(?!Vocabulary)/m);
 });

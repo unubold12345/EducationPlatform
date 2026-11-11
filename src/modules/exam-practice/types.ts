@@ -1,9 +1,9 @@
 // Client-safe shapes for practice mode. Nothing here may carry an answer before the student checks it.
-import type { ExamFigure } from "../exams/types";
+import type { ExamFigure, HskGroup, HskItem } from "../exams/types";
 export type PracticeKind = "choice" | "number" | "short" | "essay" | "speaking";
 export type PracticeSectionKind = "questions" | "listening" | "writing" | "speaking";
 /** ЭЕШ Mathematics, Physics and English are the imported set; SAT and IELTS are the international papers. */
-export type PracticeSubject = "sat" | "ielts" | "jlpt" | "eesh-math" | "eesh-physics" | "eesh-english";
+export type PracticeSubject = "sat" | "ielts" | "jlpt" | "hsk" | "eesh-math" | "eesh-physics" | "eesh-chemistry" | "eesh-biology" | "eesh-english";
 
 export type PracticeQuestion = {
   id: string; section: string; label: string; domain: string; kind: PracticeKind;
@@ -19,6 +19,8 @@ export type PracticeQuestion = {
   wordBank?: { label: string; text: string }[];
   /** Multi-part task title (2.1), its shared statement and drawing. */
   task?: string; instructions?: string; groupFigure?: ExamFigure;
+  /** HSK: the question's pictures, pinyin or text choices, and its part's shared pictures, bank and example. */
+  hsk?: HskItem; hskGroup?: HskGroup;
 };
 export type PracticeSection = { id: string; title: string; kind: PracticeSectionKind; hint: string; math: boolean };
 export type PracticeForm = {

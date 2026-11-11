@@ -1,7 +1,22 @@
 // Browser-only audio engine for the Speaking Lab: streamed voice playback and voice-activity microphone capture.
-import {VoiceFrameReader} from "./contracts";
+import {VoiceFrameReader,speakingVoices,type SpeakingVoice} from "./contracts";
 
 export type EnergyRef={current:number};
+
+// Device voices expose no gender, so match common name hints; each partner takes a different voice of its gender.
+const FEMALE_VOICE=/female|woman|zira|aria|jenny|michelle|ana|emma|ava|samantha|allison|susan|hazel|libby|sonia|victoria|karen|moira|tessa|fiona|serena/i;
+const MALE_VOICE=/male|man|david|mark|guy|eric|christopher|roger|steffan|andrew|brian|daniel|george|ryan|thomas|alex|fred|tom|aaron|arthur|oliver/i;
+/** The browser's own voice that best stands in for a partner when the natural voice is unavailable. */
+export function deviceVoice(voices:SpeechSynthesisVoice[],partner:SpeakingVoice):SpeechSynthesisVoice|null {
+ const {accent,gender}=speakingVoices[partner],locale=accent==="British"?"en-gb":"en-us";
+ const english=voices.filter(v=>v.lang.toLowerCase().startsWith("en"));
+ const local=english.filter(v=>v.lang.toLowerCase().replace("_","-")===locale),pool=local.length?local:english;
+ const wanted=gender==="Male"?MALE_VOICE:FEMALE_VOICE;
+ const matches=pool.filter(v=>wanted.test(v.name)&&!(gender==="Male"&&/female/i.test(v.name)));
+ const peers=(Object.keys(speakingVoices) as SpeakingVoice[]).filter(id=>speakingVoices[id].gender===gender&&speakingVoices[id].accent===accent);
+ const choices=matches.length?matches:pool;
+ return choices[peers.indexOf(partner)%Math.max(choices.length,1)]??english[0]??null;
+}
 
 export class VoicePlayer {
  context:AudioContext|null=null;
@@ -63,6 +78,21 @@ export class VoicePlayer {
   }finally{if(run===this.run){cancelAnimationFrame(this.frame);this.energy.current=0;}}
  }
 
+ // Decodes a whole short voice response up front, for clips that must start instantly later.
+ async load(response:Response):Promise<AudioBuffer[]> {
+  const context=this.ensure(),clips:AudioBuffer[]=[];
+  for(const frame of new VoiceFrameReader().push(new Uint8Array(await response.arrayBuffer())))clips.push(await context.decodeAudioData(frame.wav));
+  return clips;
+ }
+
+ // Plays a pre-loaded clip now. stop() silences it like any other speech.
+ playClip(clip:AudioBuffer) {
+  const context=this.ensure(),source=context.createBufferSource(),run=this.run;
+  source.buffer=clip;source.connect(this.analyser!);this.sources.add(source);
+  source.onended=()=>{this.sources.delete(source);if(run===this.run&&!this.sources.size){cancelAnimationFrame(this.frame);this.energy.current=0;}};
+  this.meter();source.start();
+ }
+
  stop() {
   this.run++;
   for(const timer of this.timers)clearTimeout(timer);this.timers.clear();
@@ -71,6 +101,13 @@ export class VoicePlayer {
  }
 
  close(){this.stop();void this.context?.close().catch(()=>{});this.context=null;}
+}
+
+// Length of a clip up to its last audible sample; synthesised speech ends with a stretch of silence.
+export function audibleSeconds(clip:AudioBuffer):number {
+ const samples=clip.getChannelData(0);let last=samples.length-1;
+ while(last>0&&Math.abs(samples[last])<.02)last--;
+ return (last+1)/clip.sampleRate;
 }
 
 export type Recording={pcm:Float32Array;seconds:number;pauses:number;duration:number;heardSpeech:boolean};

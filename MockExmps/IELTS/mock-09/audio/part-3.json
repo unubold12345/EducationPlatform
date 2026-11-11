@@ -1,0 +1,409 @@
+{
+  "form": 9,
+  "part": 3,
+  "file": "mock-09/audio/part-3.mp3",
+  "sha256": "f1933276ec853e3c7e0bf9c538958781b9449f1e99a6f2c261a1a4e811c5a591",
+  "bytes": 3575848,
+  "seconds": 357.493333,
+  "pcmSeconds": 357.4933,
+  "sourceScriptSha256": "51cbd2ceecd8d715f08ea7dd17213afb0c251ed6c6c0ebbf669fa27f68c83cf6",
+  "fingerprint": "de3c12f572d7eafd89e2beebb3a7675f4863de7745641bf9700820b83b1ab4fc",
+  "roles": {
+    "Tutor": "bm_george",
+    "Clara": "bf_isabella",
+    "Rafi": "am_michael"
+  },
+  "settings": {
+    "speed": 1.0,
+    "sampleRate": 24000,
+    "turnGapSeconds": 0.4,
+    "previewSeconds": 60,
+    "midpointSeconds": 30,
+    "partCheckSeconds": 30,
+    "finalCheckSeconds": 120,
+    "narrator": "bf_emma",
+    "bitrate": "80k",
+    "revision": 1
+  },
+  "modelSha256": {
+    "kokoro-v1.0.onnx": "7d5df8ecf7d4b1878015a32686053fd0eebe2bc377234608764cc0ef3636a6c5",
+    "voices-v1.0.bin": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+  },
+  "packages": {
+    "kokoro-onnx": "0.6.1",
+    "onnxruntime": "1.31.1",
+    "numpy": "2.5.4"
+  },
+  "gain": 0.8196393366133423,
+  "segments": [
+    {
+      "kind": "narration",
+      "start": 0.0,
+      "seconds": 6.2293,
+      "voice": "bf_emma",
+      "spokenText": "Part 3. Designing a visitor-label experiment. You now have one minute to read questions 21 to 30."
+    },
+    {
+      "kind": "pause",
+      "start": 6.2293,
+      "seconds": 60.0,
+      "purpose": "preview"
+    },
+    {
+      "kind": "speech",
+      "start": 66.2293,
+      "seconds": 3.136,
+      "voice": "bm_george",
+      "spokenText": "Tell me how the museum project is developing.",
+      "role": "Tutor",
+      "sourceText": "Tell me how the museum project is developing."
+    },
+    {
+      "kind": "pause",
+      "start": 69.3653,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 69.7653,
+      "seconds": 11.3707,
+      "voice": "bf_isabella",
+      "spokenText": "We want to compare two labels beside the same exhibit. One gives a straightforward description, while the other starts with a question. We'd like to know whether visitors look at the object for longer with the question version.",
+      "role": "Clara",
+      "sourceText": "We want to compare two labels beside the same exhibit. One gives a straightforward description, while the other starts with a question. We’d like to know whether visitors look at the object for longer with the question version."
+    },
+    {
+      "kind": "pause",
+      "start": 81.136,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 81.536,
+      "seconds": 9.8987,
+      "voice": "am_michael",
+      "spokenText": "We originally planned to ask which label visitors preferred. But preference wouldn't necessarily tell us whether they spent more time observing the object itself.",
+      "role": "Rafi",
+      "sourceText": "We originally planned to ask which label visitors preferred. But preference wouldn’t necessarily tell us whether they spent more time observing the object itself."
+    },
+    {
+      "kind": "pause",
+      "start": 91.4347,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 91.8347,
+      "seconds": 4.3093,
+      "voice": "bm_george",
+      "spokenText": "Good distinction. How will you avoid changing several things at once?",
+      "role": "Tutor",
+      "sourceText": "Good distinction. How will you avoid changing several things at once?"
+    },
+    {
+      "kind": "pause",
+      "start": 96.144,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 96.544,
+      "seconds": 8.6187,
+      "voice": "bf_isabella",
+      "spokenText": "We'll keep the factual information and length similar. The difference should be the opening question, not an extra paragraph of information or a larger typeface.",
+      "role": "Clara",
+      "sourceText": "We’ll keep the factual information and length similar. The difference should be the opening question, not an extra paragraph of information or a larger typeface."
+    },
+    {
+      "kind": "pause",
+      "start": 105.1627,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 105.5627,
+      "seconds": 12.3947,
+      "voice": "am_michael",
+      "spokenText": "And we won't put the two versions side by side. People would compare labels rather than use one naturally. We'll alternate versions across observation periods and record which is displayed.",
+      "role": "Rafi",
+      "sourceText": "And we won’t put the two versions side by side. People would compare labels rather than use one naturally. We’ll alternate versions across observation periods and record which is displayed."
+    },
+    {
+      "kind": "pause",
+      "start": 117.9573,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 118.3573,
+      "seconds": 6.144,
+      "voice": "bm_george",
+      "spokenText": "What counts as looking at the object? A visitor could stand there while talking to a friend about lunch.",
+      "role": "Tutor",
+      "sourceText": "What counts as looking at the object? A visitor could stand there while talking to a friend about lunch."
+    },
+    {
+      "kind": "pause",
+      "start": 124.5013,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 124.9013,
+      "seconds": 12.9707,
+      "voice": "bf_isabella",
+      "spokenText": "We need an operational definition. Our draft says the person's head is directed towards the exhibit, but that still leaves uncertain cases. We should practise coding the same short video, with permission, and discuss disagreements.",
+      "role": "Clara",
+      "sourceText": "We need an operational definition. Our draft says the person’s head is directed towards the exhibit, but that still leaves uncertain cases. We should practise coding the same short video, with permission, and discuss disagreements."
+    },
+    {
+      "kind": "pause",
+      "start": 137.872,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 138.272,
+      "seconds": 8.9813,
+      "voice": "am_michael",
+      "spokenText": "The museum has a staged training video made with staff. We can use that rather than recording real visitors just to test our coding sheet.",
+      "role": "Rafi",
+      "sourceText": "The museum has a staged training video made with staff. We can use that rather than recording real visitors just to test our coding sheet."
+    },
+    {
+      "kind": "pause",
+      "start": 147.2533,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 147.6533,
+      "seconds": 2.7093,
+      "voice": "bm_george",
+      "spokenText": "That's preferable. Who will be in the sample?",
+      "role": "Tutor",
+      "sourceText": "That’s preferable. Who will be in the sample?"
+    },
+    {
+      "kind": "pause",
+      "start": 150.3627,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 150.7627,
+      "seconds": 10.5387,
+      "voice": "bf_isabella",
+      "spokenText": "Adults arriving on their own or in groups, but not guided school parties. The guide controls where a school group stops, so their viewing time isn't comparable with independent visits.",
+      "role": "Clara",
+      "sourceText": "Adults arriving on their own or in groups, but not guided school parties. The guide controls where a school group stops, so their viewing time isn’t comparable with independent visits."
+    },
+    {
+      "kind": "pause",
+      "start": 161.3013,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 161.7013,
+      "seconds": 8.64,
+      "voice": "am_michael",
+      "spokenText": "We still need to record group size. A family could spend longer because one person wants to stay, even if the label has no effect.",
+      "role": "Rafi",
+      "sourceText": "We still need to record group size. A family could spend longer because one person wants to stay, even if the label has no effect."
+    },
+    {
+      "kind": "pause",
+      "start": 170.3413,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 170.7413,
+      "seconds": 10.3467,
+      "voice": "bm_george",
+      "spokenText": "And be careful about what your observation can establish. Longer looking may show attention, but it doesn't prove better understanding. You'd need a different measure for that.",
+      "role": "Tutor",
+      "sourceText": "And be careful about what your observation can establish. Longer looking may show attention, but it doesn’t prove better understanding. You’d need a different measure for that."
+    },
+    {
+      "kind": "pause",
+      "start": 181.088,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "narration",
+      "start": 181.488,
+      "seconds": 2.496,
+      "voice": "bf_emma",
+      "spokenText": "Now look at questions 26 to 30."
+    },
+    {
+      "kind": "pause",
+      "start": 183.984,
+      "seconds": 30.0,
+      "purpose": "midpoint"
+    },
+    {
+      "kind": "speech",
+      "start": 213.984,
+      "seconds": 5.2053,
+      "voice": "bf_isabella",
+      "spokenText": "We can add one short question about what visitors think the object was used for. Would that be enough?",
+      "role": "Clara",
+      "sourceText": "We can add one short question about what visitors think the object was used for. Would that be enough?"
+    },
+    {
+      "kind": "pause",
+      "start": 219.1893,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 219.5893,
+      "seconds": 14.5707,
+      "voice": "bm_george",
+      "spokenText": "It might add useful evidence, provided you explain its limited scope. Don't call it a complete test of learning. Also, it should come after the observed viewing period, or the invitation itself may change how people behave.",
+      "role": "Tutor",
+      "sourceText": "It might add useful evidence, provided you explain its limited scope. Don’t call it a complete test of learning. Also, it should come after the observed viewing period, or the invitation itself may change how people behave."
+    },
+    {
+      "kind": "pause",
+      "start": 234.16,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 234.56,
+      "seconds": 14.848,
+      "voice": "am_michael",
+      "spokenText": "We need to decide which object to use. We chose a carved wooden box because it isn't famous and its purpose isn't obvious from the shape. A well-known object might produce a ceiling effect if everyone already understands it.",
+      "role": "Rafi",
+      "sourceText": "We need to decide which object to use. We chose a carved wooden box because it isn’t famous and its purpose isn’t obvious from the shape. A well-known object might produce a ceiling effect if everyone already understands it."
+    },
+    {
+      "kind": "pause",
+      "start": 249.408,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 249.808,
+      "seconds": 9.8347,
+      "voice": "bf_isabella",
+      "spokenText": "The curator says we can move the box into the side gallery, but moving it would change the context and maybe the number of passers-by. I think we should leave it in its ordinary position.",
+      "role": "Clara",
+      "sourceText": "The curator says we can move the box into the side gallery, but moving it would change the context and maybe the number of passers-by. I think we should leave it in its ordinary position."
+    },
+    {
+      "kind": "pause",
+      "start": 259.6427,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 260.0427,
+      "seconds": 11.9253,
+      "voice": "bm_george",
+      "spokenText": "I agree. The display position should remain constant between conditions. You can note changes in nearby activity instead of relocating the object for a tidier-looking experiment.",
+      "role": "Tutor",
+      "sourceText": "I agree. The display position should remain constant between conditions. You can note changes in nearby activity instead of relocating the object for a tidier-looking experiment."
+    },
+    {
+      "kind": "pause",
+      "start": 271.968,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 272.368,
+      "seconds": 9.6853,
+      "voice": "am_michael",
+      "spokenText": "Our draft schedule has observation for ten days. That's too much for the two of us once seminars start. Would six days across two weeks be reasonable?",
+      "role": "Rafi",
+      "sourceText": "Our draft schedule has observation for ten days. That’s too much for the two of us once seminars start. Would six days across two weeks be reasonable?"
+    },
+    {
+      "kind": "pause",
+      "start": 282.0533,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 282.4533,
+      "seconds": 15.1253,
+      "voice": "bm_george",
+      "spokenText": "Yes, as long as your claims match the sample. Six days with careful records is better than ten days with exhausted observers missing entries. Include both busy and quiet periods and specify the schedule in advance.",
+      "role": "Tutor",
+      "sourceText": "Yes, as long as your claims match the sample. Six days with careful records is better than ten days with exhausted observers missing entries. Include both busy and quiet periods and specify the schedule in advance."
+    },
+    {
+      "kind": "pause",
+      "start": 297.5787,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 297.9787,
+      "seconds": 4.8427,
+      "voice": "bf_isabella",
+      "spokenText": "We haven't written the report structure yet. Should we decide on an expected conclusion now?",
+      "role": "Clara",
+      "sourceText": "We haven’t written the report structure yet. Should we decide on an expected conclusion now?"
+    },
+    {
+      "kind": "pause",
+      "start": 302.8213,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 303.2213,
+      "seconds": 19.648,
+      "voice": "bm_george",
+      "spokenText": "No. Decide what comparisons you will make, not which result you hope to obtain. Keep a log of any departures from the plan. A museum may prefer one label, but your responsibility is to describe what the study can support. An inconclusive result can still show why a more substantial trial is needed.",
+      "role": "Tutor",
+      "sourceText": "No. Decide what comparisons you will make, not which result you hope to obtain. Keep a log of any departures from the plan. A museum may prefer one label, but your responsibility is to describe what the study can support. An inconclusive result can still show why a more substantial trial is needed."
+    },
+    {
+      "kind": "pause",
+      "start": 322.8693,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "narration",
+      "start": 323.2693,
+      "seconds": 4.224,
+      "voice": "bf_emma",
+      "spokenText": "That is the end of part 3. You now have thirty seconds to check your answers."
+    },
+    {
+      "kind": "pause",
+      "start": 327.4933,
+      "seconds": 30.0,
+      "purpose": "checking"
+    }
+  ]
+}

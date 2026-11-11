@@ -8,12 +8,15 @@ import { RichText } from "../rich-text";
 import { ExamFigureView } from "../figure";
 import type { ExamGroup, PublicExamAttempt, PublicQuestion } from "../types";
 import { EntranceResults } from "./results";
+import { entranceSubjectLabels, subjectFromSlug } from "./subjects";
 import "./entrance.css";
 
 type Page = { id: string; group?: ExamGroup; indexes: number[] };
 const time = (seconds: number) => String(Math.floor(seconds / 60)).padStart(2, "0") + ":" + String(seconds % 60).padStart(2, "0");
-const subjectName = (subject: PublicExamAttempt["subject"]) => subject === "physics" ? "Физик" : subject === "english" ? "Англи хэл" : "Математик";
+const subjectName = (subject: PublicExamAttempt["subject"]) => entranceSubjectLabels[subject ?? "math"];
+// Mathematics and Physics typeset short formulas with KaTeX; Chemistry and Biology keep their Unicode formulas as text.
 const mathSubject = (subject: PublicExamAttempt["subject"]) => subject === "math" || subject === "physics";
+const langOf = (subject: PublicExamAttempt["subject"]) => subject === "english" ? "en" : "mn";
 
 export function EntranceRunner({ initial }: { initial: PublicExamAttempt }) {
   return initial.report ? <EntranceResults attempt={initial} /> : <EntranceSession initial={initial} />;
@@ -43,7 +46,7 @@ function EntranceSession({ initial }: { initial: PublicExamAttempt }) {
   const endpoint = "/api/mock-attempts/" + initial.id;
   const stage = (attempt.stage ?? initial.stage)!;
   const questions = stage.questions;
-  const subject = attempt.subject ?? initial.subject ?? (attempt.slug.includes("physics") ? "physics" : attempt.slug.includes("english") ? "english" : "math");
+  const subject = attempt.subject ?? initial.subject ?? subjectFromSlug(attempt.slug) ?? "math";
 
   const pages = useMemo<Page[]>(() => {
     const result: Page[] = [];
@@ -246,7 +249,7 @@ function EntranceSession({ initial }: { initial: PublicExamAttempt }) {
           </nav>
         </div>
       </div>
-      {mathSubject(subject) ? <MathScratchpad key={attempt.id + ":" + stage.id} attemptId={attempt.id} /> : null}
+      {subject !== "english" ? <MathScratchpad key={attempt.id + ":" + stage.id} attemptId={attempt.id} /> : null}
     </main>
 
     {sheet ? <div className="eesh-sheet-backdrop" role="presentation" onClick={() => setSheet(false)}>
@@ -344,7 +347,7 @@ function SinglePage({ question, group, answers, flags, conflict, subject, onChan
     <ContextBlock group={group} />
     {group?.figure ? <ExamFigureView figure={group.figure} /> : null}
     {question.figure ? <ExamFigureView figure={question.figure} /> : null}
-    <h2 ref={heading} tabIndex={-1} lang={math ? "mn" : "en"}>{math ? <MathText text={question.prompt} /> : <RichText text={question.prompt} />}</h2>
+    <h2 ref={heading} tabIndex={-1} lang={langOf(subject)}>{math ? <MathText text={question.prompt} /> : <RichText text={question.prompt} />}</h2>
     {question.kind === "choice" ? <ChoiceList question={question} subject={subject} selected={answers[question.id]} disabled={conflict} onChange={value => onChange(question.id, value)} onFocus={() => onFocus(question.id)} /> : <AnswerInput question={question} subject={subject} value={answers[question.id] ?? ""} disabled={conflict} onChange={value => onChange(question.id, value)} onFocus={() => onFocus(question.id)} />}
   </section>;
 }
@@ -355,13 +358,13 @@ function GroupPage({ group, items, answers, flags, conflict, subject, onChange, 
     <header className="eesh-group-head">
       <p className="eyebrow">{group?.section ?? "ДААЛГАВАР"}</p>
       <h2>{group?.title ?? "Даалгавар"}</h2>
-      {group?.instructions ? <div lang={math ? "mn" : "en"}>{math ? <MathText text={group.instructions} /> : <RichText text={group.instructions} />}</div> : null}
+      {group?.instructions ? <div lang={langOf(subject)}>{math ? <MathText text={group.instructions} /> : <RichText text={group.instructions} />}</div> : null}
     </header>
     {group?.figure ? <ExamFigureView figure={group.figure} /> : null}
     <ContextBlock group={group} />
     {group?.wordBank?.length ? <WordBank bank={group.wordBank} /> : null}
     <div className="eesh-parts">{items.map(({ question }) => <article className="eesh-part" id={"eesh-q-" + question.id} key={question.id} tabIndex={-1} onFocus={() => onFocus(question.id)}>
-      <header><strong>{question.number}</strong>{question.prompt ? <span lang={math ? "mn" : "en"}>{math ? <MathText text={question.prompt} /> : <RichText text={question.prompt} />}</span> : null}<small>{question.points ?? 1} оноо</small><FlagButton question={question} flagged={flags.includes(question.id)} disabled={conflict} onFlag={() => onFlag(question.id)} /></header>
+      <header><strong>{question.number}</strong>{question.prompt ? <span lang={langOf(subject)}>{math ? <MathText text={question.prompt} /> : <RichText text={question.prompt} />}</span> : null}<small>{question.points ?? 1} оноо</small><FlagButton question={question} flagged={flags.includes(question.id)} disabled={conflict} onFlag={() => onFlag(question.id)} /></header>
       {question.kind === "choice" ? <ChoiceList question={question} subject={subject} selected={answers[question.id]} disabled={conflict} onChange={value => onChange(question.id, value)} onFocus={() => onFocus(question.id)} dense /> : <AnswerInput question={question} subject={subject} value={answers[question.id] ?? ""} disabled={conflict} onChange={value => onChange(question.id, value)} onFocus={() => onFocus(question.id)} showLabel={false} />}
     </article>)}</div>
   </section>;

@@ -1,0 +1,1115 @@
+{
+  "engine": "Local Kokoro-82M ONNX, synthetic English stock voices",
+  "license": "Apache-2.0 model; stock voices only",
+  "settings": {
+    "speed": 1.0,
+    "sampleRate": 24000,
+    "turnGapSeconds": 0.4,
+    "previewSeconds": 60,
+    "midpointSeconds": 30,
+    "partCheckSeconds": 30,
+    "finalCheckSeconds": 120,
+    "narrator": "bf_emma",
+    "bitrate": "80k",
+    "revision": 1
+  },
+  "modelSha256": {
+    "kokoro-v1.0.onnx": "7d5df8ecf7d4b1878015a32686053fd0eebe2bc377234608764cc0ef3636a6c5",
+    "voices-v1.0.bin": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+  },
+  "packages": {
+    "kokoro-onnx": "0.6.1",
+    "onnxruntime": "1.31.1",
+    "numpy": "2.5.4"
+  },
+  "complete": true,
+  "parts": [
+    {
+      "form": 7,
+      "part": 1,
+      "file": "mock-07/audio/part-1.mp3",
+      "sha256": "78ea45881539e685b5beef6a320591207c7c2bc30b0db0d11129b8087f8cb9dd",
+      "bytes": 3629848,
+      "seconds": 362.893333,
+      "pcmSeconds": 362.8933,
+      "sourceScriptSha256": "0afa226cd32aeb98bb33cff59b08836701b311191ab73cd5e1d2eefaba7e8894",
+      "fingerprint": "9ae63121100c09965e7abd327a49a9712035d04d0a8a3e737ab39fe45bafc3c0",
+      "roles": {
+        "Coordinator": "bm_george",
+        "Caller": "af_heart"
+      },
+      "settings": {
+        "speed": 1.0,
+        "sampleRate": 24000,
+        "turnGapSeconds": 0.4,
+        "previewSeconds": 60,
+        "midpointSeconds": 30,
+        "partCheckSeconds": 30,
+        "finalCheckSeconds": 120,
+        "narrator": "bf_emma",
+        "bitrate": "80k",
+        "revision": 1
+      },
+      "modelSha256": {
+        "kokoro-v1.0.onnx": "7d5df8ecf7d4b1878015a32686053fd0eebe2bc377234608764cc0ef3636a6c5",
+        "voices-v1.0.bin": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+      },
+      "packages": {
+        "kokoro-onnx": "0.6.1",
+        "onnxruntime": "1.31.1",
+        "numpy": "2.5.4"
+      },
+      "gain": 0.8191414873257276
+    },
+    {
+      "form": 7,
+      "part": 2,
+      "file": "mock-07/audio/part-2.mp3",
+      "sha256": "ec6a486edeb7d5efde5e0253c8ce90a79925bb2c566cd1199854c87048378511",
+      "bytes": 3427288,
+      "seconds": 342.629333,
+      "pcmSeconds": 342.6293,
+      "sourceScriptSha256": "e3eb0da5139c6ed6a8f243807d6cd5eb71dd9e6e22f7d97fa007ba4a333c47b3",
+      "fingerprint": "1ec7accce7452ef88e854d835d6f59ade2ee7f3ee6855923bf3fce2f4dae17bc",
+      "roles": {
+        "Host": "bm_george"
+      },
+      "settings": {
+        "speed": 1.0,
+        "sampleRate": 24000,
+        "turnGapSeconds": 0.4,
+        "previewSeconds": 60,
+        "midpointSeconds": 30,
+        "partCheckSeconds": 30,
+        "finalCheckSeconds": 120,
+        "narrator": "bf_emma",
+        "bitrate": "80k",
+        "revision": 1
+      },
+      "modelSha256": {
+        "kokoro-v1.0.onnx": "7d5df8ecf7d4b1878015a32686053fd0eebe2bc377234608764cc0ef3636a6c5",
+        "voices-v1.0.bin": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+      },
+      "packages": {
+        "kokoro-onnx": "0.6.1",
+        "onnxruntime": "1.31.1",
+        "numpy": "2.5.4"
+      },
+      "gain": 1.0
+    },
+    {
+      "form": 7,
+      "part": 3,
+      "file": "mock-07/audio/part-3.mp3",
+      "sha256": "131e3b3ffd502ded19f2125da17fc219d74020b8bf145aaa95988371f515931f",
+      "bytes": 3707608,
+      "seconds": 370.666667,
+      "pcmSeconds": 370.6667,
+      "sourceScriptSha256": "2543425a2ed7faea1b7df8919de90225c92ea9c08019c08f2f7282152a261d40",
+      "fingerprint": "d5033fee9c575d562f90c7f3b19cc5ad53e2a74537b2c72250ec0837b5571c3e",
+      "roles": {
+        "Maya": "bf_isabella",
+        "Leo": "am_michael"
+      },
+      "settings": {
+        "speed": 1.0,
+        "sampleRate": 24000,
+        "turnGapSeconds": 0.4,
+        "previewSeconds": 60,
+        "midpointSeconds": 30,
+        "partCheckSeconds": 30,
+        "finalCheckSeconds": 120,
+        "narrator": "bf_emma",
+        "bitrate": "80k",
+        "revision": 1
+      },
+      "modelSha256": {
+        "kokoro-v1.0.onnx": "7d5df8ecf7d4b1878015a32686053fd0eebe2bc377234608764cc0ef3636a6c5",
+        "voices-v1.0.bin": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+      },
+      "packages": {
+        "kokoro-onnx": "0.6.1",
+        "onnxruntime": "1.31.1",
+        "numpy": "2.5.4"
+      },
+      "gain": 0.7842786209507554
+    },
+    {
+      "form": 7,
+      "part": 4,
+      "file": "mock-07/audio/part-4.mp3",
+      "sha256": "de2c88a067cdfe2466badae40e9e69473ac0a40ba519d976e14004ca6808f875",
+      "bytes": 4345528,
+      "seconds": 434.463333,
+      "pcmSeconds": 434.4633,
+      "sourceScriptSha256": "69c27844b9260786070227b911e31bd63342bfa04d47041480a7c30c00b3d8a1",
+      "fingerprint": "6479d250655ee7bd249634186c0cb6e77f29d0c1f8d5c783360630675419c292",
+      "roles": {
+        "Lecturer": "bf_emma"
+      },
+      "settings": {
+        "speed": 1.0,
+        "sampleRate": 24000,
+        "turnGapSeconds": 0.4,
+        "previewSeconds": 60,
+        "midpointSeconds": 30,
+        "partCheckSeconds": 30,
+        "finalCheckSeconds": 120,
+        "narrator": "bf_emma",
+        "bitrate": "80k",
+        "revision": 1
+      },
+      "modelSha256": {
+        "kokoro-v1.0.onnx": "7d5df8ecf7d4b1878015a32686053fd0eebe2bc377234608764cc0ef3636a6c5",
+        "voices-v1.0.bin": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+      },
+      "packages": {
+        "kokoro-onnx": "0.6.1",
+        "onnxruntime": "1.31.1",
+        "numpy": "2.5.4"
+      },
+      "gain": 0.9414001690289849
+    },
+    {
+      "form": 8,
+      "part": 1,
+      "file": "mock-08/audio/part-1.mp3",
+      "sha256": "4c27e4a16da8a12762c7306d2223c8de5214a8cb37a2687600580d075f84e764",
+      "bytes": 3651688,
+      "seconds": 365.069333,
+      "pcmSeconds": 365.0693,
+      "sourceScriptSha256": "ee09d76027aa1193da5f0aa05bd7ef12f1e566ad607dafcc2a9e11582d8b3a19",
+      "fingerprint": "a3c7bf5e84487de7483733cae08aecf5b17df82496214c2f462d792236ca49bc",
+      "roles": {
+        "Volunteer": "bm_george",
+        "Caller": "am_michael"
+      },
+      "settings": {
+        "speed": 1.0,
+        "sampleRate": 24000,
+        "turnGapSeconds": 0.4,
+        "previewSeconds": 60,
+        "midpointSeconds": 30,
+        "partCheckSeconds": 30,
+        "finalCheckSeconds": 120,
+        "narrator": "bf_emma",
+        "bitrate": "80k",
+        "revision": 1
+      },
+      "modelSha256": {
+        "kokoro-v1.0.onnx": "7d5df8ecf7d4b1878015a32686053fd0eebe2bc377234608764cc0ef3636a6c5",
+        "voices-v1.0.bin": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+      },
+      "packages": {
+        "kokoro-onnx": "0.6.1",
+        "onnxruntime": "1.31.1",
+        "numpy": "2.5.4"
+      },
+      "gain": 0.9274727444219073
+    },
+    {
+      "form": 8,
+      "part": 2,
+      "file": "mock-08/audio/part-2.mp3",
+      "sha256": "cda163ce88e4f5f54c25e219021bc576b1183c9b98c6e1eccaed6b4fc8f28de7",
+      "bytes": 3496648,
+      "seconds": 349.573333,
+      "pcmSeconds": 349.5733,
+      "sourceScriptSha256": "978c6de82ff035ddbd939ccffc031e350accd3a5f6ac3e64372ba52b821fa218",
+      "fingerprint": "fb883fde46eb3bd9eae08fdb089f4b54f8358645b308ef7260b300cfaa4e5037",
+      "roles": {
+        "Director": "bf_isabella"
+      },
+      "settings": {
+        "speed": 1.0,
+        "sampleRate": 24000,
+        "turnGapSeconds": 0.4,
+        "previewSeconds": 60,
+        "midpointSeconds": 30,
+        "partCheckSeconds": 30,
+        "finalCheckSeconds": 120,
+        "narrator": "bf_emma",
+        "bitrate": "80k",
+        "revision": 1
+      },
+      "modelSha256": {
+        "kokoro-v1.0.onnx": "7d5df8ecf7d4b1878015a32686053fd0eebe2bc377234608764cc0ef3636a6c5",
+        "voices-v1.0.bin": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+      },
+      "packages": {
+        "kokoro-onnx": "0.6.1",
+        "onnxruntime": "1.31.1",
+        "numpy": "2.5.4"
+      },
+      "gain": 0.7833266379658393
+    },
+    {
+      "form": 8,
+      "part": 3,
+      "file": "mock-08/audio/part-3.mp3",
+      "sha256": "6d7eaf748590f8d80a0958ecfa67bc7847dc36a92fa790b1d3463f3385a8f3c7",
+      "bytes": 3583768,
+      "seconds": 358.288,
+      "pcmSeconds": 358.288,
+      "sourceScriptSha256": "757280c4f151029899a96641bef56c0523fe6b829ff2be676a917f47943e9a0a",
+      "fingerprint": "76fc2868b12d75120f952a45dc4baa21f90e782ecee330572db841f04aee4c6c",
+      "roles": {
+        "Tutor": "bf_emma",
+        "Amira": "af_heart",
+        "Ben": "bm_george"
+      },
+      "settings": {
+        "speed": 1.0,
+        "sampleRate": 24000,
+        "turnGapSeconds": 0.4,
+        "previewSeconds": 60,
+        "midpointSeconds": 30,
+        "partCheckSeconds": 30,
+        "finalCheckSeconds": 120,
+        "narrator": "bf_emma",
+        "bitrate": "80k",
+        "revision": 1
+      },
+      "modelSha256": {
+        "kokoro-v1.0.onnx": "7d5df8ecf7d4b1878015a32686053fd0eebe2bc377234608764cc0ef3636a6c5",
+        "voices-v1.0.bin": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+      },
+      "packages": {
+        "kokoro-onnx": "0.6.1",
+        "onnxruntime": "1.31.1",
+        "numpy": "2.5.4"
+      },
+      "gain": 0.7222601028325583
+    },
+    {
+      "form": 8,
+      "part": 4,
+      "file": "mock-08/audio/part-4.mp3",
+      "sha256": "3a318cd17f8b529755f7c2bee81f829f5a6ed298308df97a3961caaa1ee0ac84",
+      "bytes": 4562488,
+      "seconds": 456.165333,
+      "pcmSeconds": 456.1653,
+      "sourceScriptSha256": "73c38c130be6706762f7a3cfebc7eb85f4f5aaaeb67545c8ff170beb06e20987",
+      "fingerprint": "25ce07c0264770ccbfcc5089733f317b4116ceb4e13aba9247ae4e5114d2a73c",
+      "roles": {
+        "Lecturer": "bm_george"
+      },
+      "settings": {
+        "speed": 1.0,
+        "sampleRate": 24000,
+        "turnGapSeconds": 0.4,
+        "previewSeconds": 60,
+        "midpointSeconds": 30,
+        "partCheckSeconds": 30,
+        "finalCheckSeconds": 120,
+        "narrator": "bf_emma",
+        "bitrate": "80k",
+        "revision": 1
+      },
+      "modelSha256": {
+        "kokoro-v1.0.onnx": "7d5df8ecf7d4b1878015a32686053fd0eebe2bc377234608764cc0ef3636a6c5",
+        "voices-v1.0.bin": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+      },
+      "packages": {
+        "kokoro-onnx": "0.6.1",
+        "onnxruntime": "1.31.1",
+        "numpy": "2.5.4"
+      },
+      "gain": 1.0
+    },
+    {
+      "form": 9,
+      "part": 1,
+      "file": "mock-09/audio/part-1.mp3",
+      "sha256": "570fd3173b0073fd0ce0c89e5baa9f6454f01176304c01d853a0759b1026863e",
+      "bytes": 3604648,
+      "seconds": 360.370667,
+      "pcmSeconds": 360.3707,
+      "sourceScriptSha256": "7866471f070c330baa24fffdad861bb7f6813f131f24a58272b4e00db2ca37fa",
+      "fingerprint": "4efd63cfafd7f38f5c3154e9e08dbebc88a8d9df3e3e0a27931c59520f2e5455",
+      "roles": {
+        "Mechanic": "am_michael",
+        "Customer": "bf_isabella"
+      },
+      "settings": {
+        "speed": 1.0,
+        "sampleRate": 24000,
+        "turnGapSeconds": 0.4,
+        "previewSeconds": 60,
+        "midpointSeconds": 30,
+        "partCheckSeconds": 30,
+        "finalCheckSeconds": 120,
+        "narrator": "bf_emma",
+        "bitrate": "80k",
+        "revision": 1
+      },
+      "modelSha256": {
+        "kokoro-v1.0.onnx": "7d5df8ecf7d4b1878015a32686053fd0eebe2bc377234608764cc0ef3636a6c5",
+        "voices-v1.0.bin": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+      },
+      "packages": {
+        "kokoro-onnx": "0.6.1",
+        "onnxruntime": "1.31.1",
+        "numpy": "2.5.4"
+      },
+      "gain": 0.8084162089057375
+    },
+    {
+      "form": 9,
+      "part": 2,
+      "file": "mock-09/audio/part-2.mp3",
+      "sha256": "4d8b51824a033fa824780822698a76fdf2a1462fefc22428d2a7a476c7b3e343",
+      "bytes": 3482008,
+      "seconds": 348.106667,
+      "pcmSeconds": 348.1067,
+      "sourceScriptSha256": "f1f4dee1ca89e05cfd98b1a9247a73bf6dde42561ec09e117553b3911cd0b8f4",
+      "fingerprint": "c1bd8452f6d5dcda73fb4236146b996ab838afc5394e49586e7d4e19fab46b5b",
+      "roles": {
+        "Coordinator": "bf_emma"
+      },
+      "settings": {
+        "speed": 1.0,
+        "sampleRate": 24000,
+        "turnGapSeconds": 0.4,
+        "previewSeconds": 60,
+        "midpointSeconds": 30,
+        "partCheckSeconds": 30,
+        "finalCheckSeconds": 120,
+        "narrator": "bf_emma",
+        "bitrate": "80k",
+        "revision": 1
+      },
+      "modelSha256": {
+        "kokoro-v1.0.onnx": "7d5df8ecf7d4b1878015a32686053fd0eebe2bc377234608764cc0ef3636a6c5",
+        "voices-v1.0.bin": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+      },
+      "packages": {
+        "kokoro-onnx": "0.6.1",
+        "onnxruntime": "1.31.1",
+        "numpy": "2.5.4"
+      },
+      "gain": 0.8027578049918143
+    },
+    {
+      "form": 9,
+      "part": 3,
+      "file": "mock-09/audio/part-3.mp3",
+      "sha256": "f1933276ec853e3c7e0bf9c538958781b9449f1e99a6f2c261a1a4e811c5a591",
+      "bytes": 3575848,
+      "seconds": 357.493333,
+      "pcmSeconds": 357.4933,
+      "sourceScriptSha256": "51cbd2ceecd8d715f08ea7dd17213afb0c251ed6c6c0ebbf669fa27f68c83cf6",
+      "fingerprint": "de3c12f572d7eafd89e2beebb3a7675f4863de7745641bf9700820b83b1ab4fc",
+      "roles": {
+        "Tutor": "bm_george",
+        "Clara": "bf_isabella",
+        "Rafi": "am_michael"
+      },
+      "settings": {
+        "speed": 1.0,
+        "sampleRate": 24000,
+        "turnGapSeconds": 0.4,
+        "previewSeconds": 60,
+        "midpointSeconds": 30,
+        "partCheckSeconds": 30,
+        "finalCheckSeconds": 120,
+        "narrator": "bf_emma",
+        "bitrate": "80k",
+        "revision": 1
+      },
+      "modelSha256": {
+        "kokoro-v1.0.onnx": "7d5df8ecf7d4b1878015a32686053fd0eebe2bc377234608764cc0ef3636a6c5",
+        "voices-v1.0.bin": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+      },
+      "packages": {
+        "kokoro-onnx": "0.6.1",
+        "onnxruntime": "1.31.1",
+        "numpy": "2.5.4"
+      },
+      "gain": 0.8196393366133423
+    },
+    {
+      "form": 9,
+      "part": 4,
+      "file": "mock-09/audio/part-4.mp3",
+      "sha256": "3f740c28c3aee5bc53215197b6724cc98a3e4f44d2997b191df0ca885e716e58",
+      "bytes": 4527208,
+      "seconds": 452.64,
+      "pcmSeconds": 452.64,
+      "sourceScriptSha256": "c5f98906c26250c6ffc0f7690afd7c87cd1e65b1c335637b448754c91b34e5d9",
+      "fingerprint": "51b79a4abd16889d6c79feab188abfffb796860b4f1eace980969de13d5f5cc2",
+      "roles": {
+        "Lecturer": "bf_isabella"
+      },
+      "settings": {
+        "speed": 1.0,
+        "sampleRate": 24000,
+        "turnGapSeconds": 0.4,
+        "previewSeconds": 60,
+        "midpointSeconds": 30,
+        "partCheckSeconds": 30,
+        "finalCheckSeconds": 120,
+        "narrator": "bf_emma",
+        "bitrate": "80k",
+        "revision": 1
+      },
+      "modelSha256": {
+        "kokoro-v1.0.onnx": "7d5df8ecf7d4b1878015a32686053fd0eebe2bc377234608764cc0ef3636a6c5",
+        "voices-v1.0.bin": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+      },
+      "packages": {
+        "kokoro-onnx": "0.6.1",
+        "onnxruntime": "1.31.1",
+        "numpy": "2.5.4"
+      },
+      "gain": 0.7879338883097184
+    },
+    {
+      "form": 10,
+      "part": 1,
+      "file": "mock-10/audio/part-1.mp3",
+      "sha256": "42bf9943f83785e67fd21437c45e93fa438d961890390fc1285f716b05f114b1",
+      "bytes": 3895288,
+      "seconds": 389.432,
+      "pcmSeconds": 389.432,
+      "sourceScriptSha256": "5735b2b034d93669160393367888ed51ca17f4b501eb9e6bd6b0fa0123f8ba2e",
+      "fingerprint": "c1faae3638a8da9996d29f39115363045c9d6c1d15338e8c396c72e976ca06be",
+      "roles": {
+        "Organiser": "am_michael",
+        "Caller": "af_heart"
+      },
+      "settings": {
+        "speed": 1.0,
+        "sampleRate": 24000,
+        "turnGapSeconds": 0.4,
+        "previewSeconds": 60,
+        "midpointSeconds": 30,
+        "partCheckSeconds": 30,
+        "finalCheckSeconds": 120,
+        "narrator": "bf_emma",
+        "bitrate": "80k",
+        "revision": 1
+      },
+      "modelSha256": {
+        "kokoro-v1.0.onnx": "7d5df8ecf7d4b1878015a32686053fd0eebe2bc377234608764cc0ef3636a6c5",
+        "voices-v1.0.bin": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+      },
+      "packages": {
+        "kokoro-onnx": "0.6.1",
+        "onnxruntime": "1.31.1",
+        "numpy": "2.5.4"
+      },
+      "gain": 0.7528871753479218
+    },
+    {
+      "form": 10,
+      "part": 2,
+      "file": "mock-10/audio/part-2.mp3",
+      "sha256": "7bdb206d09d962abb13ffebfd8b2ea44ca23d5067519ce1f38966c7eee72a530",
+      "bytes": 3269368,
+      "seconds": 326.842667,
+      "pcmSeconds": 326.8427,
+      "sourceScriptSha256": "e41fd0737067aaffbf36fb140962401ed3d96a7a8d6a80120a47b0392cdb90c7",
+      "fingerprint": "76bb3c4c5200d8bb1f05ae83e260250b591a0f7de8b687c9c440d4df667154cd",
+      "roles": {
+        "Guide": "bf_isabella"
+      },
+      "settings": {
+        "speed": 1.0,
+        "sampleRate": 24000,
+        "turnGapSeconds": 0.4,
+        "previewSeconds": 60,
+        "midpointSeconds": 30,
+        "partCheckSeconds": 30,
+        "finalCheckSeconds": 120,
+        "narrator": "bf_emma",
+        "bitrate": "80k",
+        "revision": 1
+      },
+      "modelSha256": {
+        "kokoro-v1.0.onnx": "7d5df8ecf7d4b1878015a32686053fd0eebe2bc377234608764cc0ef3636a6c5",
+        "voices-v1.0.bin": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+      },
+      "packages": {
+        "kokoro-onnx": "0.6.1",
+        "onnxruntime": "1.31.1",
+        "numpy": "2.5.4"
+      },
+      "gain": 0.7033383966600885
+    },
+    {
+      "form": 10,
+      "part": 3,
+      "file": "mock-10/audio/part-3.mp3",
+      "sha256": "eaa82fa3ca6ee585c3005e64f63bd1c6fc2c29b5f81b37b1e4d4e5d48376503d",
+      "bytes": 3541768,
+      "seconds": 354.096,
+      "pcmSeconds": 354.096,
+      "sourceScriptSha256": "1b71682ac17c528db678c3539f86b4e2793792200998c626026de0af5af67483",
+      "fingerprint": "60760c2864dd8f548beb026498c9e3c982ca3ec80af6d4458a4ca9155459f2d7",
+      "roles": {
+        "Tutor": "bf_emma",
+        "Nora": "bf_isabella",
+        "Ethan": "am_michael"
+      },
+      "settings": {
+        "speed": 1.0,
+        "sampleRate": 24000,
+        "turnGapSeconds": 0.4,
+        "previewSeconds": 60,
+        "midpointSeconds": 30,
+        "partCheckSeconds": 30,
+        "finalCheckSeconds": 120,
+        "narrator": "bf_emma",
+        "bitrate": "80k",
+        "revision": 1
+      },
+      "modelSha256": {
+        "kokoro-v1.0.onnx": "7d5df8ecf7d4b1878015a32686053fd0eebe2bc377234608764cc0ef3636a6c5",
+        "voices-v1.0.bin": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+      },
+      "packages": {
+        "kokoro-onnx": "0.6.1",
+        "onnxruntime": "1.31.1",
+        "numpy": "2.5.4"
+      },
+      "gain": 0.7713605147403269
+    },
+    {
+      "form": 10,
+      "part": 4,
+      "file": "mock-10/audio/part-4.mp3",
+      "sha256": "dc6b99d8982e1eedd5677d26505cd655f7b00f55efe7381f5c5f3882f857fbb8",
+      "bytes": 4775128,
+      "seconds": 477.429333,
+      "pcmSeconds": 477.4293,
+      "sourceScriptSha256": "a0423a7b533a09e4c497767098ccb168f8036c42dbee284d40f0800e84a89052",
+      "fingerprint": "adc12f4c99cf95b0e19ff83af38f4a56380b006da3fffaad9cd9b6b296e96d83",
+      "roles": {
+        "Lecturer": "bm_george"
+      },
+      "settings": {
+        "speed": 1.0,
+        "sampleRate": 24000,
+        "turnGapSeconds": 0.4,
+        "previewSeconds": 60,
+        "midpointSeconds": 30,
+        "partCheckSeconds": 30,
+        "finalCheckSeconds": 120,
+        "narrator": "bf_emma",
+        "bitrate": "80k",
+        "revision": 1
+      },
+      "modelSha256": {
+        "kokoro-v1.0.onnx": "7d5df8ecf7d4b1878015a32686053fd0eebe2bc377234608764cc0ef3636a6c5",
+        "voices-v1.0.bin": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+      },
+      "packages": {
+        "kokoro-onnx": "0.6.1",
+        "onnxruntime": "1.31.1",
+        "numpy": "2.5.4"
+      },
+      "gain": 1.0
+    },
+    {
+      "form": 11,
+      "part": 1,
+      "file": "mock-11/audio/part-1.mp3",
+      "sha256": "a9ceaf69749f8356ff28c35d7a9e473d65bc0c2af1e1a437dff7dc0ff157242c",
+      "bytes": 3718648,
+      "seconds": 371.778667,
+      "pcmSeconds": 371.7787,
+      "sourceScriptSha256": "03d251d294f317a88ce60377bbe99da6df57e33de735a43401a1fc2e5e5f6bca",
+      "fingerprint": "6688ceff7d84f4a1e75e7f8ad8a0ddcac1c2c54b9b90033a2dc73e47bd5490c5",
+      "roles": {
+        "Administrator": "bf_isabella",
+        "Caller": "am_michael"
+      },
+      "settings": {
+        "speed": 1.0,
+        "sampleRate": 24000,
+        "turnGapSeconds": 0.4,
+        "previewSeconds": 60,
+        "midpointSeconds": 30,
+        "partCheckSeconds": 30,
+        "finalCheckSeconds": 120,
+        "narrator": "bf_emma",
+        "bitrate": "80k",
+        "revision": 1
+      },
+      "modelSha256": {
+        "kokoro-v1.0.onnx": "7d5df8ecf7d4b1878015a32686053fd0eebe2bc377234608764cc0ef3636a6c5",
+        "voices-v1.0.bin": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+      },
+      "packages": {
+        "kokoro-onnx": "0.6.1",
+        "onnxruntime": "1.31.1",
+        "numpy": "2.5.4"
+      },
+      "gain": 0.796086024527711
+    },
+    {
+      "form": 11,
+      "part": 2,
+      "file": "mock-11/audio/part-2.mp3",
+      "sha256": "54d2ac1b5f8af619d71d40962b04ecf4be3f6da9ce3e78c89f24834663bedd67",
+      "bytes": 3882808,
+      "seconds": 388.186667,
+      "pcmSeconds": 388.1867,
+      "sourceScriptSha256": "053bd16c99a5729a91c49cbd21c35f6502547bdb6c2fc5c6144a5eea5665fdb8",
+      "fingerprint": "5e943d51cc3316f91926364f971764ddd66715aa0b7b72b5d83144e2491e5035",
+      "roles": {
+        "Guide": "bm_george"
+      },
+      "settings": {
+        "speed": 1.0,
+        "sampleRate": 24000,
+        "turnGapSeconds": 0.4,
+        "previewSeconds": 60,
+        "midpointSeconds": 30,
+        "partCheckSeconds": 30,
+        "finalCheckSeconds": 120,
+        "narrator": "bf_emma",
+        "bitrate": "80k",
+        "revision": 1
+      },
+      "modelSha256": {
+        "kokoro-v1.0.onnx": "7d5df8ecf7d4b1878015a32686053fd0eebe2bc377234608764cc0ef3636a6c5",
+        "voices-v1.0.bin": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+      },
+      "packages": {
+        "kokoro-onnx": "0.6.1",
+        "onnxruntime": "1.31.1",
+        "numpy": "2.5.4"
+      },
+      "gain": 1.0
+    },
+    {
+      "form": 11,
+      "part": 3,
+      "file": "mock-11/audio/part-3.mp3",
+      "sha256": "b0c905e6d707834080a300b71e405173b6efc7372564bbe639a4f5d1905964a0",
+      "bytes": 3610168,
+      "seconds": 360.922667,
+      "pcmSeconds": 360.9227,
+      "sourceScriptSha256": "1874da5d86c6dcb2969a2fe103945c797d24faab97cf21e8dcdccd0c229b93ab",
+      "fingerprint": "c821c5f2b14302a8354b25a89fea736dafd130b706d93c621815fab6a76910b8",
+      "roles": {
+        "Tutor": "bf_emma",
+        "Lena": "bf_isabella",
+        "Omar": "am_michael"
+      },
+      "settings": {
+        "speed": 1.0,
+        "sampleRate": 24000,
+        "turnGapSeconds": 0.4,
+        "previewSeconds": 60,
+        "midpointSeconds": 30,
+        "partCheckSeconds": 30,
+        "finalCheckSeconds": 120,
+        "narrator": "bf_emma",
+        "bitrate": "80k",
+        "revision": 1
+      },
+      "modelSha256": {
+        "kokoro-v1.0.onnx": "7d5df8ecf7d4b1878015a32686053fd0eebe2bc377234608764cc0ef3636a6c5",
+        "voices-v1.0.bin": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+      },
+      "packages": {
+        "kokoro-onnx": "0.6.1",
+        "onnxruntime": "1.31.1",
+        "numpy": "2.5.4"
+      },
+      "gain": 0.8203510082011355
+    },
+    {
+      "form": 11,
+      "part": 4,
+      "file": "mock-11/audio/part-4.mp3",
+      "sha256": "b711c2266ee825ba1835bc5aa7b5fe58a7be33158016802b045f5e905f8c6856",
+      "bytes": 4432408,
+      "seconds": 443.140667,
+      "pcmSeconds": 443.1407,
+      "sourceScriptSha256": "690ae1826992b8edde569fdf6b2b8d11c220849e1e506e11f7fb01abc1879f88",
+      "fingerprint": "d745c49d68dbb2967a1c89820563a7b8a0e7085d937ebe193b92deaa61fc9cab",
+      "roles": {
+        "Lecturer": "bf_isabella"
+      },
+      "settings": {
+        "speed": 1.0,
+        "sampleRate": 24000,
+        "turnGapSeconds": 0.4,
+        "previewSeconds": 60,
+        "midpointSeconds": 30,
+        "partCheckSeconds": 30,
+        "finalCheckSeconds": 120,
+        "narrator": "bf_emma",
+        "bitrate": "80k",
+        "revision": 1
+      },
+      "modelSha256": {
+        "kokoro-v1.0.onnx": "7d5df8ecf7d4b1878015a32686053fd0eebe2bc377234608764cc0ef3636a6c5",
+        "voices-v1.0.bin": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+      },
+      "packages": {
+        "kokoro-onnx": "0.6.1",
+        "onnxruntime": "1.31.1",
+        "numpy": "2.5.4"
+      },
+      "gain": 0.7513752274245586
+    },
+    {
+      "form": 12,
+      "part": 1,
+      "file": "mock-12/audio/part-1.mp3",
+      "sha256": "c8e18570413ccb45ffda28f5a27c8b35c8fd8dac6daf3a928f673aedac670d14",
+      "bytes": 3631048,
+      "seconds": 363.010667,
+      "pcmSeconds": 363.0107,
+      "sourceScriptSha256": "45e3eb0c7a652f0f3eacedc72d62f8c286dc7e5523ef859be4d228696fff1c10",
+      "fingerprint": "b4fddc29ee965a7990a16c921414a0d902e131f6c5b4b1aa76309c197f360751",
+      "roles": {
+        "Assistant": "bf_isabella",
+        "Caller": "am_michael"
+      },
+      "settings": {
+        "speed": 1.0,
+        "sampleRate": 24000,
+        "turnGapSeconds": 0.4,
+        "previewSeconds": 60,
+        "midpointSeconds": 30,
+        "partCheckSeconds": 30,
+        "finalCheckSeconds": 120,
+        "narrator": "bf_emma",
+        "bitrate": "80k",
+        "revision": 1
+      },
+      "modelSha256": {
+        "kokoro-v1.0.onnx": "7d5df8ecf7d4b1878015a32686053fd0eebe2bc377234608764cc0ef3636a6c5",
+        "voices-v1.0.bin": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+      },
+      "packages": {
+        "kokoro-onnx": "0.6.1",
+        "onnxruntime": "1.31.1",
+        "numpy": "2.5.4"
+      },
+      "gain": 0.733625156362543
+    },
+    {
+      "form": 12,
+      "part": 2,
+      "file": "mock-12/audio/part-2.mp3",
+      "sha256": "8a6642e87a9a2fe8abb46e6d981b6f455aa5857f5e89d24b0a0cc8058a68a7a9",
+      "bytes": 3752248,
+      "seconds": 375.130667,
+      "pcmSeconds": 375.1307,
+      "sourceScriptSha256": "b408c658185827bb27e564544940b4c2a143f82a57395f34f224ee4e18ea75d0",
+      "fingerprint": "a1c6224c85b2971881015c4102818c80e19cc83567ba5ffc4d3f0fa5cd597e16",
+      "roles": {
+        "Coordinator": "bm_george"
+      },
+      "settings": {
+        "speed": 1.0,
+        "sampleRate": 24000,
+        "turnGapSeconds": 0.4,
+        "previewSeconds": 60,
+        "midpointSeconds": 30,
+        "partCheckSeconds": 30,
+        "finalCheckSeconds": 120,
+        "narrator": "bf_emma",
+        "bitrate": "80k",
+        "revision": 1
+      },
+      "modelSha256": {
+        "kokoro-v1.0.onnx": "7d5df8ecf7d4b1878015a32686053fd0eebe2bc377234608764cc0ef3636a6c5",
+        "voices-v1.0.bin": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+      },
+      "packages": {
+        "kokoro-onnx": "0.6.1",
+        "onnxruntime": "1.31.1",
+        "numpy": "2.5.4"
+      },
+      "gain": 1.0
+    },
+    {
+      "form": 12,
+      "part": 3,
+      "file": "mock-12/audio/part-3.mp3",
+      "sha256": "2507f54faf13dd6349ac39df3b86404a8362386a2bb26a12572cb23c4fd950bd",
+      "bytes": 3536008,
+      "seconds": 353.514667,
+      "pcmSeconds": 353.5147,
+      "sourceScriptSha256": "0782ada47785ee3855a6e79227a5cb8427ec475cb4a3bd1326670019ef94769c",
+      "fingerprint": "8fcc820dce0880dfef338eaaade1f82a9ef8daf381e8e1a7f210e2076ca6051a",
+      "roles": {
+        "Tutor": "bf_emma",
+        "Alice": "bf_isabella",
+        "Jamal": "am_michael"
+      },
+      "settings": {
+        "speed": 1.0,
+        "sampleRate": 24000,
+        "turnGapSeconds": 0.4,
+        "previewSeconds": 60,
+        "midpointSeconds": 30,
+        "partCheckSeconds": 30,
+        "finalCheckSeconds": 120,
+        "narrator": "bf_emma",
+        "bitrate": "80k",
+        "revision": 1
+      },
+      "modelSha256": {
+        "kokoro-v1.0.onnx": "7d5df8ecf7d4b1878015a32686053fd0eebe2bc377234608764cc0ef3636a6c5",
+        "voices-v1.0.bin": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+      },
+      "packages": {
+        "kokoro-onnx": "0.6.1",
+        "onnxruntime": "1.31.1",
+        "numpy": "2.5.4"
+      },
+      "gain": 0.7529209631072958
+    },
+    {
+      "form": 12,
+      "part": 4,
+      "file": "mock-12/audio/part-4.mp3",
+      "sha256": "a039b7a34c0a87ca26b9c9a0c21b5cbe7234b15f95576a1cdc0fa3a2da1e6388",
+      "bytes": 4488808,
+      "seconds": 448.8,
+      "pcmSeconds": 448.8,
+      "sourceScriptSha256": "531642ad6001ef7db21414e073adf2407668c202cba4f10e0377c34ffa395038",
+      "fingerprint": "5fa4343d1a6cf0f3ebfd2ae4890209d460714f0114a61ed4936cbaab4f695203",
+      "roles": {
+        "Lecturer": "bf_emma"
+      },
+      "settings": {
+        "speed": 1.0,
+        "sampleRate": 24000,
+        "turnGapSeconds": 0.4,
+        "previewSeconds": 60,
+        "midpointSeconds": 30,
+        "partCheckSeconds": 30,
+        "finalCheckSeconds": 120,
+        "narrator": "bf_emma",
+        "bitrate": "80k",
+        "revision": 1
+      },
+      "modelSha256": {
+        "kokoro-v1.0.onnx": "7d5df8ecf7d4b1878015a32686053fd0eebe2bc377234608764cc0ef3636a6c5",
+        "voices-v1.0.bin": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+      },
+      "packages": {
+        "kokoro-onnx": "0.6.1",
+        "onnxruntime": "1.31.1",
+        "numpy": "2.5.4"
+      },
+      "gain": 0.9375594769862917
+    }
+  ],
+  "fullTests": [
+    {
+      "form": 7,
+      "file": "mock-07/audio/listening-full.mp3",
+      "seconds": 1510.652667,
+      "bytes": 15107370,
+      "sha256": "07cea313201eeb60539bd896e6adcb70ac261a885a064e0df775deddbeca34dc",
+      "parts": [
+        {
+          "part": 1,
+          "start": 0,
+          "seconds": 362.8933,
+          "file": "mock-07/audio/part-1.mp3"
+        },
+        {
+          "part": 2,
+          "start": 362.893,
+          "seconds": 342.6293,
+          "file": "mock-07/audio/part-2.mp3"
+        },
+        {
+          "part": 3,
+          "start": 705.523,
+          "seconds": 370.6667,
+          "file": "mock-07/audio/part-3.mp3"
+        },
+        {
+          "part": 4,
+          "start": 1076.189,
+          "seconds": 434.4633,
+          "file": "mock-07/audio/part-4.mp3"
+        }
+      ],
+      "assembly": "Decoded audio concatenation with continuous timestamps; re-encoded MP3"
+    },
+    {
+      "form": 8,
+      "file": "mock-08/audio/listening-full.mp3",
+      "seconds": 1529.096,
+      "bytes": 15291930,
+      "sha256": "7ce0bf2f6ce894431d3d0df837bef642a52f01bfaede07c9c777e0a92b2c518b",
+      "parts": [
+        {
+          "part": 1,
+          "start": 0,
+          "seconds": 365.0693,
+          "file": "mock-08/audio/part-1.mp3"
+        },
+        {
+          "part": 2,
+          "start": 365.069,
+          "seconds": 349.5733,
+          "file": "mock-08/audio/part-2.mp3"
+        },
+        {
+          "part": 3,
+          "start": 714.643,
+          "seconds": 358.288,
+          "file": "mock-08/audio/part-3.mp3"
+        },
+        {
+          "part": 4,
+          "start": 1072.931,
+          "seconds": 456.1653,
+          "file": "mock-08/audio/part-4.mp3"
+        }
+      ],
+      "assembly": "Decoded audio concatenation with continuous timestamps; re-encoded MP3"
+    },
+    {
+      "form": 9,
+      "file": "mock-09/audio/listening-full.mp3",
+      "seconds": 1518.610667,
+      "bytes": 15187050,
+      "sha256": "4f3c22b4180b1246d5e1e85ba44b665c3c5790223432526920d0f82cfe0ddd87",
+      "parts": [
+        {
+          "part": 1,
+          "start": 0,
+          "seconds": 360.3707,
+          "file": "mock-09/audio/part-1.mp3"
+        },
+        {
+          "part": 2,
+          "start": 360.371,
+          "seconds": 348.1067,
+          "file": "mock-09/audio/part-2.mp3"
+        },
+        {
+          "part": 3,
+          "start": 708.477,
+          "seconds": 357.4933,
+          "file": "mock-09/audio/part-3.mp3"
+        },
+        {
+          "part": 4,
+          "start": 1065.971,
+          "seconds": 452.64,
+          "file": "mock-09/audio/part-4.mp3"
+        }
+      ],
+      "assembly": "Decoded audio concatenation with continuous timestamps; re-encoded MP3"
+    },
+    {
+      "form": 10,
+      "file": "mock-10/audio/listening-full.mp3",
+      "seconds": 1547.8,
+      "bytes": 15478890,
+      "sha256": "e0ee79d576329030e54fae00896255463ec24a192686bec933bf4f2e6b8e70d6",
+      "parts": [
+        {
+          "part": 1,
+          "start": 0,
+          "seconds": 389.432,
+          "file": "mock-10/audio/part-1.mp3"
+        },
+        {
+          "part": 2,
+          "start": 389.432,
+          "seconds": 326.8427,
+          "file": "mock-10/audio/part-2.mp3"
+        },
+        {
+          "part": 3,
+          "start": 716.275,
+          "seconds": 354.096,
+          "file": "mock-10/audio/part-3.mp3"
+        },
+        {
+          "part": 4,
+          "start": 1070.371,
+          "seconds": 477.4293,
+          "file": "mock-10/audio/part-4.mp3"
+        }
+      ],
+      "assembly": "Decoded audio concatenation with continuous timestamps; re-encoded MP3"
+    },
+    {
+      "form": 11,
+      "file": "mock-11/audio/listening-full.mp3",
+      "seconds": 1564.028667,
+      "bytes": 15641130,
+      "sha256": "7ff9d4f1b3be3338e5f7e4708bd71c2ae070cd14c7fa26eb4c4caccbf510c9f4",
+      "parts": [
+        {
+          "part": 1,
+          "start": 0,
+          "seconds": 371.7787,
+          "file": "mock-11/audio/part-1.mp3"
+        },
+        {
+          "part": 2,
+          "start": 371.779,
+          "seconds": 388.1867,
+          "file": "mock-11/audio/part-2.mp3"
+        },
+        {
+          "part": 3,
+          "start": 759.965,
+          "seconds": 360.9227,
+          "file": "mock-11/audio/part-3.mp3"
+        },
+        {
+          "part": 4,
+          "start": 1120.888,
+          "seconds": 443.1407,
+          "file": "mock-11/audio/part-4.mp3"
+        }
+      ],
+      "assembly": "Decoded audio concatenation with continuous timestamps; re-encoded MP3"
+    },
+    {
+      "form": 12,
+      "file": "mock-12/audio/listening-full.mp3",
+      "seconds": 1540.456,
+      "bytes": 15405450,
+      "sha256": "0e9779b8c7e1818f497a41d63857853923e2235e6756332e1895f6922c55e450",
+      "parts": [
+        {
+          "part": 1,
+          "start": 0,
+          "seconds": 363.0107,
+          "file": "mock-12/audio/part-1.mp3"
+        },
+        {
+          "part": 2,
+          "start": 363.011,
+          "seconds": 375.1307,
+          "file": "mock-12/audio/part-2.mp3"
+        },
+        {
+          "part": 3,
+          "start": 738.141,
+          "seconds": 353.5147,
+          "file": "mock-12/audio/part-3.mp3"
+        },
+        {
+          "part": 4,
+          "start": 1091.656,
+          "seconds": 448.8,
+          "file": "mock-12/audio/part-4.mp3"
+        }
+      ],
+      "assembly": "Decoded audio concatenation with continuous timestamps; re-encoded MP3"
+    }
+  ]
+}

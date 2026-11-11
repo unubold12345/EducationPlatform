@@ -1,0 +1,58 @@
+/* The AI examiner inside an IELTS mock Speaking stage. The stage, avatar, cue card and report reuse the
+   Speaking Lab's .sl-* styles (globals.css); these rules only fit them into the exam page. */
+.exam-examiner { max-width: none; display: grid; grid-template-columns: minmax(0,1.05fr) minmax(0,.95fr); gap: 20px; align-items: start; margin: 18px 0 8px; }
+.exam-examiner .sl-stage { position: relative; top: 0; min-height: 430px; }
+.exam-examiner .sl-portrait { padding: 22px 20px 10px; }
+.exam-examiner .speaking-avatar { width: clamp(150px,44%,220px); }
+.exam-examiner .sl-caption { min-height: 84px; }
+.exam-examiner .sl-dock .button { margin: 6px 0 2px; }
+.exam-examiner-side { display: flex; flex-direction: column; min-height: 430px; }
+.exam-examiner-side .sl-task { max-height: none; }
+.exam-examiner-notes { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 13px; line-height: 1.6; color: var(--ink); padding: 10px; border: 1px dashed var(--line); border-radius: 10px; }
+.exam-examiner-log { flex: 1 1 auto; display: flex; flex-direction: column; gap: 12px; padding: 18px; max-height: 420px; overflow-y: auto; overscroll-behavior: contain; }
+.exam-examiner-turn { display: grid; gap: 6px; }
+.exam-examiner-turn p { font-size: 14px; line-height: 1.6; padding: 10px 14px; border-radius: 16px; border-top-left-radius: 6px; background: var(--paper); color: var(--ink); max-width: 92%; white-space: pre-wrap; overflow-wrap: anywhere; }
+.exam-examiner-turn p.mine { justify-self: end; border-radius: 16px; border-top-right-radius: 6px; background: color-mix(in srgb,var(--sl-accent) 12%,var(--sl-card)); }
+.exam-examiner-turn strong { display: block; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--sl-accent); margin-bottom: 2px; }
+.exam-examiner-foot { margin-top: auto; padding: 12px 18px 16px; border-top: 1px solid var(--line); font-size: 12px; line-height: 1.6; color: var(--muted); }
+.exam-examiner-foot .sl-link { font-size: 12px; padding: 0; }
+
+/* The choice shown before the examiner starts, and the small switch back to it. */
+.exam-examiner-invite { display: grid; grid-template-columns: auto minmax(0,1fr); gap: 18px; align-items: center; margin: 18px 0; padding: 20px; border: 1.5px solid var(--blue); border-radius: 20px; background: color-mix(in srgb,var(--blue) 5%,var(--surface)); }
+.exam-examiner-invite h2 { font-size: 20px; line-height: 1.3; margin-bottom: 6px; }
+.exam-examiner-invite p { font-size: 13px; line-height: 1.65; color: var(--muted); max-width: 70ch; }
+.exam-examiner-invite .result-actions { margin-top: 14px; gap: 12px; flex-wrap: wrap; }
+.exam-examiner-face { width: 72px; height: 72px; border-radius: 50%; background: color-mix(in srgb,var(--partner,var(--blue)) 20%,var(--paper)); flex-shrink: 0; }
+/* Choosing which partner is the examiner: start page, invitation, practice offer and the stage's own footer. */
+.exam-examiner-pick { display: flex; flex-wrap: wrap; gap: 4px; margin: 12px 0 2px; }
+.exam-examiner-pick button { display: grid; justify-items: center; gap: 3px; width: 60px; padding: 6px 2px 5px; border: 1.5px solid transparent; border-radius: 14px; background: none; color: var(--muted); font: inherit; font-size: 11px; line-height: 1.3; cursor: pointer; transition: border-color .15s, background .15s; }
+.exam-examiner-pick svg { width: 40px; height: 40px; border-radius: 50%; background: color-mix(in srgb,var(--partner,var(--blue)) 20%,var(--paper)); }
+.exam-examiner-pick button:hover { background: color-mix(in srgb,var(--blue) 7%,transparent); }
+.exam-examiner-pick button[aria-checked="true"] { border-color: var(--blue); background: var(--surface); color: var(--ink); font-weight: 600; }
+.exam-examiner-pick button:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.exam-examiner-change { padding: 0 18px 14px; }
+.exam-examiner-change .exam-examiner-pick { margin-top: 0; }
+.exam-examiner-change p { font-size: 12px; color: var(--muted); }
+.exam-examiner-switch { margin: 10px 0 0; font-size: 13px; color: var(--muted); }
+
+/* Results page: the AI report on the Speaking transcripts. */
+.exam-speaking-report { max-width: none; margin: 32px 0; padding: 22px; border: 1px solid var(--line); border-radius: 22px; background: var(--sl-card); }
+.exam-speaking-report-head { display: grid; grid-template-columns: auto minmax(0,1fr); gap: 16px; align-items: center; }
+.exam-speaking-report-head h2 { font-size: 22px; margin-bottom: 6px; }
+.exam-speaking-report-head p { font-size: 13px; line-height: 1.65; color: var(--muted); max-width: 86ch; }
+.exam-speaking-report-form { display: flex; align-items: end; gap: 14px; flex-wrap: wrap; margin-top: 16px; }
+.exam-speaking-report-form label { display: grid; gap: 5px; font-size: 12px; color: var(--muted); }
+.exam-speaking-report-form select { font: inherit; font-size: 14px; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 9px 10px; }
+.exam-speaking-report .sl-report { max-width: none; padding: 22px 0 0; }
+.exam-speaking-report>.fine-print, .exam-speaking-report>.error-message { margin-top: 12px; }
+
+@media(max-width:960px) {
+ .exam-examiner { grid-template-columns: minmax(0,1fr); }
+ .exam-examiner .sl-stage, .exam-examiner-side { min-height: 0; }
+ .exam-examiner-log { max-height: 320px; }
+}
+@media(max-width:600px) {
+ .exam-examiner-invite, .exam-speaking-report-head { grid-template-columns: minmax(0,1fr); }
+ .exam-examiner-invite .button { width: 100%; }
+ .exam-speaking-report { padding: 16px; }
+}

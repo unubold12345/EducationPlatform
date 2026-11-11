@@ -65,3 +65,8 @@
   .practice-sections button { max-width: 220px; padding: 8px 11px; }
   .practice-filter .practice-retry-all { margin-left: 0; }
 }
+/* IELTS Speaking sections: the offer to practise with the AI examiner. */
+.practice-examiner-offer { display: flex; align-items: center; justify-content: space-between; gap: 16px 24px; flex-wrap: wrap; margin: 14px 0; padding: 16px 18px; border: 1.5px solid var(--blue); border-radius: 18px; background: color-mix(in srgb,var(--blue) 5%,var(--surface)); }
+.practice-examiner-offer>div { flex: 1 1 320px; min-width: 0; }
+.practice-examiner-offer strong { font-size: 16px; }
+.practice-examiner-offer p { margin-top: 4px; font-size: 13px; line-height: 1.6; color: var(--muted); }

@@ -5,11 +5,11 @@ import { AI_IMAGE_LIMITS, IMAGE_ONLY_REQUEST, PAGE_IMAGES_RULE, imageDataUrl, im
 import { CHAT_BODY_BYTES, chatMessages, imageOnlyPrompts, validChatInput, CHAT_MODES } from "../src/modules/workspace/chat-contract.ts";
 import { ASSISTANT_BODY_BYTES, tutorMessages, validTutorInput } from "../src/modules/tutor/contracts.ts";
 import { practiceMessages, validAssistantInput } from "../src/modules/exam-practice/assistant-contract.ts";
-import { VOCABULARY_LIMITS, IMPORT_COUNTS, vocabularyMessages } from "../src/modules/vocabulary/contracts.ts";
+import { VOCABULARY_LIMITS, vocabularyMessages } from "../src/modules/vocabulary/contracts.ts";
 import { examMessages } from "../src/modules/my-exams/contracts.ts";
 import {
   AI_ACTION_IDS, CREDIT_COSTS, CREDIT_USD, DEEPSEEK_PRICE, IMAGE_ACTIONS, IMAGE_CREDITS, IMAGE_OUTPUT_TOKENS, creditCost, maxCreditCost,
-  vocabularyImportCredits, vocabularyImportHold,
+  vocabularyImportCostNano, vocabularyImportCredits, vocabularyImportHold,
 } from "../src/modules/credits/pricing.ts";
 
 const text = path => readFileSync(new URL("../" + path, import.meta.url), "utf8");
@@ -125,10 +125,10 @@ test("an attached image adds whole credits that cover DeepSeek's image tokens an
   assert.equal(creditCost("chat", -4), CREDIT_COSTS.chat);
   assert.equal(creditCost("chat", Number.NaN), maxCreditCost("chat"), "a malformed count prices as the maximum");
   // Page photos replace the document text, so an import's maximum still covers them.
-  for (const count of IMPORT_COUNTS) {
+  for (const count of [1, 10, 20, 50, 120]) {
     assert.ok(vocabularyImportCredits(0, count, AI_IMAGE_LIMITS.perUpload) <= vocabularyImportHold(count), String(count));
   }
-  assert.ok(vocabularyImportCredits(0, 10, 4) > vocabularyImportCredits(0, 10, 0), "photos are priced as read");
+  assert.ok(vocabularyImportCostNano(0, 10, 4) > vocabularyImportCostNano(0, 10, 0), "photos are costed as read");
   assert.equal(vocabularyImportCredits(0, 10, 99), vocabularyImportCredits(0, 10, AI_IMAGE_LIMITS.perUpload));
   assert.equal(vocabularyImportCredits(VOCABULARY_LIMITS.textChars, VOCABULARY_LIMITS.importWords), creditCost("vocabulary-import"));
 });

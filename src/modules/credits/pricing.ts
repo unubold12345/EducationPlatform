@@ -1,5 +1,6 @@
 /**
- * AI credits: one price list for every AI action, derived from DeepSeek's published token prices.
+ * AI credits: one price list for every AI action, derived from DeepSeek's published token prices
+ * (the vocabulary import adds a margin over them; see `VOCABULARY_IMPORT_PRICE`).
  * Pure module (no server or browser APIs): the server charges from it, pages show the same numbers,
  * and the unit tests import it directly.
  */
@@ -75,9 +76,73 @@ export function costNanoUsd(promptTokens: number, completionTokens: number, cach
 export function creditsForTokens(promptTokens: number, completionTokens: number, cachedTokens = 0) {
   return Math.max(1, Math.ceil(costNanoUsd(promptTokens, completionTokens, cachedTokens) / NANO_PER_CREDIT));
 }
-export const CREDIT_COSTS = Object.fromEntries(
-  AI_ACTION_IDS.map(action => [action, creditsForTokens(AI_ACTIONS[action].inputTokens, AI_ACTIONS[action].outputTokens)]),
-) as Record<AiAction, number>;
+
+/**
+ * What DeepSeek bills for a file import: the document text it reads plus each word it writes back.
+ * These rates fill that action's token budget above (a full 45,000-character document with 120 words).
+ */
+export const VOCABULARY_IMPORT_RATE = {
+  /** Extraction rules and the optional selection request. */
+  promptTokens: 1500,
+  /** Document text: one token per two characters, generous for Mongolian Cyrillic. */
+  charsPerToken: 2,
+  /** One entry: term, translation, an optional example and the JSON around them. */
+  tokensPerWord: 66,
+} as const;
+
+/**
+ * What a student pays for a file import (owner rule 2026-11-11: an AI action should earn, not only cover
+ * its DeepSeek cost). The price follows what the student receives: a base fee plus a fee per new word found,
+ * cheaper per word as the list grows. It is never below `floorMargin` times the DeepSeek peak list cost of
+ * that import, so a long document that yields few words still earns.
+ */
+export const VOCABULARY_IMPORT_PRICE = {
+  base: 3,
+  /** Tenths of a credit per word, by position in the list: words 1–20, 21–60 and 61–120. */
+  tiers: [{ upTo: 20, tenths: 5 }, { upTo: 60, tenths: 4 }, { upTo: 120, tenths: 3 }],
+  floorMargin: 2,
+} as const;
+
+// Missing or malformed input prices as the maximum, so a bug can never undercharge.
+const bounded = (value: number, max: number) => Number.isFinite(value) ? Math.min(max, Math.max(0, Math.ceil(value))) : max;
+
+/** DeepSeek peak list cost, in nano-dollars, of reading `textChars` (or `images` page photos) and writing `words` entries. */
+export function vocabularyImportCostNano(textChars: number, words: number, images = 0) {
+  const chars = bounded(textChars, VOCABULARY_LIMITS.textChars);
+  const count = bounded(words, VOCABULARY_LIMITS.importWords);
+  const pictures = bounded(images, AI_IMAGE_LIMITS.perUpload);
+  return costNanoUsd(
+    VOCABULARY_IMPORT_RATE.promptTokens + Math.ceil(chars / VOCABULARY_IMPORT_RATE.charsPerToken) + pictures * AI_IMAGE_LIMITS.tokens,
+    count * VOCABULARY_IMPORT_RATE.tokensPerWord,
+  );
+}
+
+/**
+ * Credits for a scan that read `textChars` of document text (or `images` page photos) and found `words` new
+ * words: the value price, or the cost floor when that is higher.
+ */
+export function vocabularyImportCredits(textChars: number, words: number, images = 0) {
+  const count = bounded(words, VOCABULARY_LIMITS.importWords);
+  let tenths = 0, from = 0;
+  for (const tier of VOCABULARY_IMPORT_PRICE.tiers) {
+    tenths += Math.max(0, Math.min(count, tier.upTo) - from) * tier.tenths;
+    from = tier.upTo;
+  }
+  const value = VOCABULARY_IMPORT_PRICE.base + Math.ceil(tenths / 10);
+  const floor = Math.ceil(VOCABULARY_IMPORT_PRICE.floorMargin * vocabularyImportCostNano(textChars, words, images) / NANO_PER_CREDIT);
+  return Math.max(value, floor);
+}
+/** The most a scan for up to `words` new words can cost (a full-length document); held before the call. */
+export function vocabularyImportHold(words: number) {
+  return vocabularyImportCredits(VOCABULARY_LIMITS.textChars, words);
+}
+
+/** Actions sold above their DeepSeek cost; every other action's price is its token budget's cost. */
+export const MARGIN_ACTIONS: readonly AiAction[] = ["vocabulary-import"];
+export const CREDIT_COSTS = {
+  ...Object.fromEntries(AI_ACTION_IDS.map(action => [action, creditsForTokens(AI_ACTIONS[action].inputTokens, AI_ACTIONS[action].outputTokens)])),
+  "vocabulary-import": vocabularyImportHold(VOCABULARY_LIMITS.importWords),
+} as Record<AiAction, number>;
 /**
  * An image attached to a conversation is billed by DeepSeek as at most 1,024 more input tokens, and the reply
  * first restates what it read (the prompt asks for that), budgeted here as this many more output tokens.
@@ -100,44 +165,6 @@ export function creditCost(action: AiAction, images = 0) {
 export function maxCreditCost(action: AiAction) { return creditCost(action, AI_IMAGE_LIMITS.perMessage); }
 export function isAiAction(value: unknown): value is AiAction {
   return typeof value === "string" && Object.hasOwn(AI_ACTIONS, value);
-}
-
-/**
- * A file import is priced by what it delivers, not one flat fee: the document text DeepSeek reads plus
- * each new word saved to the bank. The rates fill that action's token budget above, so a full
- * 45,000-character document that saves 120 new words costs exactly its listed (maximum) price.
- * The maximum for the chosen word count is held before the call; the rest is returned once the words are
- * saved, so duplicates and words that do not fit cost nothing.
- */
-export const VOCABULARY_IMPORT_RATE = {
-  /** Extraction rules and the optional selection request. */
-  promptTokens: 1500,
-  /** Document text: one token per two characters, generous for Mongolian Cyrillic. */
-  charsPerToken: 2,
-  /** One saved entry: term, translation, an optional example and the JSON around them. */
-  tokensPerWord: 66,
-} as const;
-
-// Missing or malformed input prices as the maximum, so a bug can never undercharge.
-const bounded = (value: number, max: number) => Number.isFinite(value) ? Math.min(max, Math.max(0, Math.ceil(value))) : max;
-
-/**
- * Credits for reading `textChars` of document text (or `images` page photos, each billed as at most 1,024
- * tokens) and saving `words` new words. Four photos read fewer tokens than a full-length document, so the
- * maximum held for a word count covers either kind of upload.
- */
-export function vocabularyImportCredits(textChars: number, words: number, images = 0) {
-  const chars = bounded(textChars, VOCABULARY_LIMITS.textChars);
-  const count = bounded(words, VOCABULARY_LIMITS.importWords);
-  const pictures = bounded(images, AI_IMAGE_LIMITS.perUpload);
-  return creditsForTokens(
-    VOCABULARY_IMPORT_RATE.promptTokens + Math.ceil(chars / VOCABULARY_IMPORT_RATE.charsPerToken) + pictures * AI_IMAGE_LIMITS.tokens,
-    count * VOCABULARY_IMPORT_RATE.tokensPerWord,
-  );
-}
-/** The most an import of up to `words` new words can cost (a full-length document); held before the call. */
-export function vocabularyImportHold(words: number) {
-  return vocabularyImportCredits(VOCABULARY_LIMITS.textChars, words);
 }
 
 /**

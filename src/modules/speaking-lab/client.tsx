@@ -1,12 +1,12 @@
 "use client";
-import {useEffect,useMemo,useRef,useState,useSyncExternalStore} from "react";
+import {useEffect,useMemo,useRef,useState,useSyncExternalStore,type CSSProperties} from "react";
 import Link from "next/link";
 import {encodeSpeechWav} from "./pcm";
 import {SpeakingAvatar,type AvatarGesture,type AvatarMood} from "./avatar";
-import {PartnerPortrait} from "./partner";
-import {VoicePlayer,startRecorder,type RecorderHandle} from "./audio";
+import {PartnerPortrait,partnerLooks} from "./partner";
+import {VoicePlayer,audibleSeconds,deviceVoice,startRecorder,type RecorderHandle} from "./audio";
 import {
- HISTORY_LIMIT,REPORT_HISTORY_LIMIT,countWords,overallBand,speakingSpeeds,speakingTargets,speakingTopics,speakingVoices,
+ HISTORY_LIMIT,REPORT_HISTORY_LIMIT,countWords,isClarificationRequest,overallBand,speakingAcks,speakingSpeeds,speakingTargets,speakingTopics,speakingVoices,
  type AnswerStats,type SpeakingAction,type SpeakingCue,type SpeakingHint,type SpeakingPart,type SpeakingReply,type SpeakingReport,
  type SpeakingSpeed,type SpeakingTip,type SpeakingTopic,type SpeakingVoice,
 } from "./contracts";
@@ -14,30 +14,34 @@ import {getProgress,getServerProgress,removePhrase,savePhrase,subscribeProgress,
 import {SpeakingReportView,Trend,type SessionStats} from "./report";
 import {CreditCost,useCredits} from "@/modules/credits/client";
 
-type Turn={id:number;role:"user"|"assistant";content:string;part:SpeakingPart;tip?:SpeakingTip|null;cue?:SpeakingCue|null;stats?:AnswerStats|null};
+// aside: a request to repeat or explain; it is answered but does not count as one of the mock test's questions.
+type Turn={id:number;role:"user"|"assistant";content:string;part:SpeakingPart;tip?:SpeakingTip|null;cue?:SpeakingCue|null;stats?:AnswerStats|null;aside?:boolean};
 type Status="idle"|"thinking"|"voicing"|"speaking"|"listening"|"transcribing"|"reporting";
-type Settings={mode:"mock"|"practice";part:SpeakingPart;topic:SpeakingTopic;target:number;language:"en"|"mn";voice:SpeakingVoice;speed:SpeakingSpeed;voiceOn:boolean;engine:"neural"|"device";handsFree:boolean};
+type Settings={mode:"mock"|"practice";part:SpeakingPart;topic:SpeakingTopic;target:number;language:"en"|"mn";voice:SpeakingVoice;speed:SpeakingSpeed;voiceOn:boolean;engine:"neural"|"device";handsFree:boolean;captions:boolean};
 
-// Device voices expose no gender, so match common name hints; each partner takes a different voice of its gender.
-const FEMALE_VOICE=/female|woman|zira|aria|jenny|michelle|ana|emma|ava|samantha|allison|susan|hazel|libby|sonia|victoria|karen|moira|tessa|fiona|serena/i;
-const MALE_VOICE=/male|man|david|mark|guy|eric|christopher|roger|steffan|andrew|brian|daniel|george|ryan|thomas|alex|fred|tom|aaron|arthur|oliver/i;
-function deviceVoice(voices:SpeechSynthesisVoice[],partner:SpeakingVoice):SpeechSynthesisVoice|null {
- const {accent,gender}=speakingVoices[partner],locale=accent==="British"?"en-gb":"en-us";
- const english=voices.filter(v=>v.lang.toLowerCase().startsWith("en"));
- const local=english.filter(v=>v.lang.toLowerCase().replace("_","-")===locale),pool=local.length?local:english;
- const wanted=gender==="Male"?MALE_VOICE:FEMALE_VOICE;
- const matches=pool.filter(v=>wanted.test(v.name)&&!(gender==="Male"&&/female/i.test(v.name)));
- const peers=(Object.keys(speakingVoices) as SpeakingVoice[]).filter(id=>speakingVoices[id].gender===gender&&speakingVoices[id].accent===accent);
- const choices=matches.length?matches:pool;
- return choices[peers.indexOf(partner)%Math.max(choices.length,1)]??english[0]??null;
-}
 const CHAT_URL="/api/labs/ielts-speaking",VOICE_URL="/api/labs/ielts-speaking/voice",TRANSCRIBE_URL="/api/labs/ielts-speaking/transcribe";
 // Answers per part in a full mock before moving on (Part 2 = long turn + one rounding-off question).
 const PLAN:Record<SpeakingPart,number>={1:4,2:2,3:4};
 const TARGET_SECONDS:Record<SpeakingPart,[number,number]>={1:[15,35],2:[60,120],3:[30,60]};
 const PART_NAMES:Record<SpeakingPart,string>={1:"Interview",2:"Long turn",3:"Discussion"};
-const DEFAULTS:Settings={mode:"mock",part:1,topic:"everyday",target:6.5,language:"en",voice:"af_heart",speed:1,voiceOn:true,engine:"neural",handsFree:true};
+const DEFAULTS:Settings={mode:"mock",part:1,topic:"everyday",target:6.5,language:"en",voice:"af_heart",speed:1,voiceOn:true,engine:"neural",handsFree:true,captions:true};
+const MODES=[
+ ["mock","Exam conditions","Full mock test","An AI examiner takes you through Parts 1, 2 and 3 in about 12 minutes. No help along the way; corrections and bands come in the report."],
+ ["practice","Relaxed","Practise one part","An open conversation on one part. Live corrections, ideas when you’re stuck, and you can retry any answer."],
+] as const;
+const ICONS={
+ mic:"M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.9V21h2v-2.1a7 7 0 0 0 6-6.9h-2Z",
+ stop:"M9 7h6a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2Z",
+ sound:"M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Z",
+ muted:"M4 9v6h4l5 4V5L8 9H4Zm12.6-.4-1.4 1.4 2 2-2 2 1.4 1.4 2-2 2 2 1.4-1.4-2-2 2-2-1.4-1.4-2 2-2-2Z",
+ captions:"M19 4H5c-1.11 0-2 .9-2 2v12c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-8 7H9.5v-.5h-2v3h2V13H11v1c0 .55-.45 1-1 1H7c-.55 0-1-.45-1-1v-4c0-.55.45-1 1-1h3c.55 0 1 .45 1 1v1zm7 0h-1.5v-.5h-2v3h2V13H18v1c0 .55-.45 1-1 1h-3c-.55 0-1-.45-1-1v-4c0-.55.45-1 1-1h3c.55 0 1 .45 1 1v1z",
+ repeat:"M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z",
+ idea:"M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z",
+} as const;
+function Glyph({name}:{name:keyof typeof ICONS}){return <svg viewBox="0 0 24 24" aria-hidden="true"><path d={ICONS[name]}/></svg>;}
 const subscribeNothing=()=>()=>{};
+// Monotonic time for event handlers (acknowledgement and nod timing); never read while rendering.
+const clockNow=()=>performance.now();
 const micAvailable=()=>typeof MediaRecorder!=="undefined"&&!!navigator.mediaDevices?.getUserMedia;
 const clock=(seconds:number)=>`${Math.floor(seconds/60)}:${String(Math.floor(seconds%60)).padStart(2,"0")}`;
 const failure=(reason:unknown,fallback:string)=>reason instanceof Error&&!["TimeoutError","AbortError"].includes(reason.name)&&reason.message?reason.message:fallback;
@@ -51,6 +55,12 @@ function Elapsed({target,limit}:{target:[number,number];limit:number}) {
   <div><i style={{width:`${Math.min(100,seconds/limit*100)}%`}}/><b style={{left:`${target[0]/limit*100}%`,width:`${(target[1]-target[0])/limit*100}%`}}/></div>
   <small>{zone==="short"?`Aim for ${target[0]}–${target[1]}s`:zone==="good"?"Good length":"You can wrap up"}</small>
  </div>;
+}
+
+function SessionClock() {
+ const [seconds,setSeconds]=useState(0);
+ useEffect(()=>{const start=performance.now();const id=setInterval(()=>setSeconds((performance.now()-start)/1000),1000);return()=>clearInterval(id);},[]);
+ return <>{clock(seconds)}</>;
 }
 
 function Countdown({seconds,onDone}:{seconds:number;onDone:()=>void}) {
@@ -85,6 +95,7 @@ export function SpeakingLab({signedIn}:{signedIn:boolean}) {
  const [error,setError]=useState("");
  const [notice,setNotice]=useState("");
  const [previewing,setPreviewing]=useState(false);
+ const [sessionKey,setSessionKey]=useState(0);
 
  const micSupported=useSyncExternalStore(subscribeNothing,micAvailable,()=>false);
  const progress=useSyncExternalStore(subscribeProgress,getProgress,getServerProgress);
@@ -94,9 +105,12 @@ export function SpeakingLab({signedIn}:{signedIn:boolean}) {
  const turnsRef=useRef<Turn[]>([]),statusRef=useRef<Status>("idle"),busy=useRef(false),sessionRun=useRef(0),speechRun=useRef(0),ids=useRef(0),startPart=useRef<SpeakingPart>(1);
  const chatAbort=useRef<AbortController|null>(null),voiceAbort=useRef<AbortController|null>(null),transcribeAbort=useRef<AbortController|null>(null);
  const {apply}=useCredits();
- const deviceStop=useRef<(()=>void)|null>(null),cancelStart=useRef(false),levelRing=useRef<HTMLDivElement>(null),transcript=useRef<HTMLDivElement>(null),answerBox=useRef<HTMLTextAreaElement>(null);
+ const deviceStop=useRef<(()=>void)|null>(null),cancelStart=useRef(false),stage=useRef<HTMLElement>(null),transcript=useRef<HTMLDivElement>(null),answerBox=useRef<HTMLTextAreaElement>(null);
  const settingsRef=useRef<Settings>(DEFAULTS),phaseRef=useRef<"setup"|"session"|"report">("setup"),micConsentRef=useRef(false);
  const keys=useRef<{space:()=>void;escape:()=>void}>({space:()=>{},escape:()=>{}});
+ // Pre-loaded acknowledgement clips for the current partner, and when the one now playing ends.
+ const acks=useRef<{key:string;clips:AudioBuffer[];next:number}>({key:"",clips:[],next:0}),ackUntil=useRef(0);
+ const lastNod=useRef(0),listenStart=useRef(0);
 
  // Background warm-up of the local voice and transcription models.
  useEffect(()=>{if(signedIn)void fetch("/api/labs/ielts-speaking/warm",{method:"POST"}).catch(()=>{});},[signedIn]);
@@ -152,12 +166,14 @@ export function SpeakingLab({signedIn}:{signedIn:boolean}) {
    if(cfg().engine==="device")return await speakDevice(text,run,voice);
    const controller=new AbortController();voiceAbort.current=controller;
    const response=await fetch(VOICE_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text:text.slice(0,700),voice,speed:cfg().speed}),signal:AbortSignal.any([controller.signal,AbortSignal.timeout(150000)])});
-   if(!response.ok){const data=await response.json().catch(()=>({}));throw new Error(data.error||"Natural voice is unavailable.");}
+   // A refusal carries the server's reason (for example an unfinished timed mock), which the student should see.
+   if(!response.ok){const data=await response.json().catch(()=>({}));throw Object.assign(new Error("Natural voice is unavailable."),{refusal:typeof data.error==="string"?data.error:""});}
    const result=await getPlayer().play(response,{onStart:()=>{if(run===speechRun.current)changeStatus("speaking");},onCaption:line=>{if(run===speechRun.current)setCaption(line);}});
    return result==="ended"&&run===speechRun.current;
   }catch(reason){
    if(run!==speechRun.current||(reason instanceof DOMException&&reason.name==="AbortError"))return false;
-   setNotice("Natural voice is unavailable right now — using your device voice.");
+   const refusal=(reason as {refusal?:string}).refusal;
+   setNotice(refusal?`${refusal} You are hearing your device voice, not ${speakingVoices[voice].label}'s.`:"Natural voice is unavailable right now — using your device voice.");
    return await speakDevice(text,run,voice);
   }finally{
    if(run===speechRun.current){setCaption("");if(statusRef.current==="voicing"||statusRef.current==="speaking")changeStatus("idle");}
@@ -168,12 +184,47 @@ export function SpeakingLab({signedIn}:{signedIn:boolean}) {
   try{await speak(`Hi, I'm ${speakingVoices[voice].label}. Take your time — I'm here to listen.`,{force:true,voice});}finally{setPreviewing(false);}
  }
 
+ // ---------- Acknowledgements ----------
+ // A person says "okay" the moment you finish. These clips are synthesised once, while the student is
+ // speaking, so one can play instantly while the real reply is still being written.
+ const ackKey=()=>`${cfg().voice}:${cfg().speed}:${cfg().mode}`;
+ async function loadAcks() {
+  const key=ackKey();
+  if(!cfg().voiceOn||cfg().engine!=="neural"||acks.current.key===key)return;
+  const {voice,speed,mode}=cfg(),clips:AudioBuffer[]=[];acks.current={key,clips,next:0};
+  try {
+   for(const text of speakingAcks[mode]){
+    const response=await fetch(VOICE_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text,voice,speed}),signal:AbortSignal.timeout(60000)});
+    if(!response.ok||acks.current.key!==key)return;
+    clips.push(...(await getPlayer().load(response)).slice(0,1));
+   }
+  }catch{/* Acknowledgements are a nicety; the conversation works without them. */}
+ }
+ function acknowledge() {
+  setGesture({name:"Yes",id:nextId()});
+  if(!cfg().voiceOn)return;
+  if(cfg().engine==="device"){
+   const synth=window.speechSynthesis;if(!synth)return;
+   const lines=speakingAcks[cfg().mode],utterance=new SpeechSynthesisUtterance(lines[acks.current.next++%lines.length]);
+   utterance.lang=speakingVoices[cfg().voice].accent==="British"?"en-GB":"en-US";utterance.rate=cfg().speed;utterance.voice=deviceVoice(synth.getVoices(),cfg().voice);
+   synth.speak(utterance);ackUntil.current=clockNow()+900;return;
+  }
+  const {key,clips}=acks.current;if(key!==ackKey()||!clips.length)return;
+  const clip=clips[acks.current.next++%clips.length];
+  getPlayer().playClip(clip);ackUntil.current=clockNow()+audibleSeconds(clip)*1000;
+ }
+ // The partner nods now and then while the student is talking, when they pause for breath.
+ function listenerNod() {
+  const now=clockNow();if(now-lastNod.current<7000||now-listenStart.current<3500)return;
+  lastNod.current=now;setGesture({name:"Yes",id:nextId()});
+ }
+
  // ---------- Model requests ----------
  async function request(action:SpeakingAction,options:{part:SpeakingPart;history:Turn[];message?:string;stats?:AnswerStats|null}):Promise<SpeakingReply|null> {
   const controller=new AbortController();chatAbort.current=controller;const run=sessionRun.current;
   const limit=action==="report"?REPORT_HISTORY_LIMIT:HISTORY_LIMIT;
   const timing=action==="report"?options.history.flatMap(t=>t.role==="user"&&t.stats?[{part:t.part,seconds:t.stats.seconds,words:t.stats.words,pauses:t.stats.pauses}]:[]).slice(-REPORT_HISTORY_LIMIT):[];
-  const body={part:options.part,topic:cfg().topic,target:cfg().target,language:cfg().language,action,message:options.message??"",history:options.history.slice(-limit).map(({role,content})=>({role,content})),stats:options.stats??null,timing};
+  const body={mode:cfg().mode,voice:cfg().voice,part:options.part,topic:cfg().topic,target:cfg().target,language:cfg().language,action,message:options.message??"",history:options.history.slice(-limit).map(({role,content})=>({role,content})),stats:options.stats??null,timing};
   const response=await fetch(CHAT_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body),signal:AbortSignal.any([controller.signal,AbortSignal.timeout(action==="report"?175000:70000)])});
   const data=await response.json().catch(()=>({error:"Your partner couldn’t reply."}));
   if(!response.ok)throw new Error(data.error||"Your partner couldn’t reply.");
@@ -182,8 +233,13 @@ export function SpeakingLab({signedIn}:{signedIn:boolean}) {
  }
 
  async function afterReply(reply:SpeakingReply) {
-  const run=sessionRun.current,finished=await speak(reply.reply);
+  const run=sessionRun.current,gap=ackUntil.current-clockNow();
+  // Let a playing acknowledgement finish, with a beat of silence, before the reply starts.
+  if(gap>0)await new Promise(resolve=>setTimeout(resolve,gap+150));
   if(run!==sessionRun.current)return;
+  const finished=await speak(reply.reply);
+  if(run!==sessionRun.current)return;
+  void loadAcks();
   if(reply.cue){setNotes("");setPrep(nextId());return;}
   if(finished&&cfg().handsFree&&micConsentRef.current&&micSupported)void startListening();
  }
@@ -191,7 +247,7 @@ export function SpeakingLab({signedIn}:{signedIn:boolean}) {
  async function startSession() {
   if(!consent||busy.current)return;
   getPlayer().ensure();stopVoice();recorder.current?.abort();recorder.current=null;
-  sessionRun.current++;commitTurns([]);setReport(null);changePhase("session");setError("");setNotice("");setHint(null);setPrep(null);setDraft("");setDraftStats(null);
+  sessionRun.current++;commitTurns([]);setReport(null);changePhase("session");setSessionKey(nextId());ackUntil.current=0;setError("");setNotice("");setHint(null);setPrep(null);setDraft("");setDraftStats(null);
   const part:SpeakingPart=cfg().mode==="mock"?1:cfg().part;startPart.current=part;
   busy.current=true;changeStatus("thinking");
   try {
@@ -204,13 +260,17 @@ export function SpeakingLab({signedIn}:{signedIn:boolean}) {
 
  async function submitAnswer(raw:string,stats:AnswerStats|null) {
   const text=raw.trim().slice(0,2000);if(!text||busy.current||phaseRef.current!=="session")return;
-  busy.current=true;stopVoice();
-  const before=turnsRef.current,part=currentPart(before);
-  const user:Turn={id:nextId(),role:"user",content:text,part,stats:stats?{...stats,words:countWords(text)}:null,tip:null};
+  busy.current=true;
+  // A spoken answer has just been acknowledged aloud; a typed one may interrupt the partner mid-sentence.
+  if(clockNow()>ackUntil.current){stopVoice();if(!stats)setGesture({name:"Yes",id:nextId()});}
+  const before=turnsRef.current,part=currentPart(before),aside=isClarificationRequest(text);
+  const user:Turn={id:nextId(),role:"user",content:text,part,stats:stats?{...stats,words:countWords(text)}:null,tip:null,aside};
   commitTurns([...before,user]);setDraft("");setDraftStats(null);setHint(null);setError("");setNotice("");setPrep(null);
-  const answered=before.filter(t=>t.role==="user"&&t.part===part).length+1;
+  const answered=before.filter(t=>t.role==="user"&&t.part===part&&!t.aside).length+(aside?0:1);
+  // A cue card stays in force when the student only asked to hear it again.
+  const carried=aside&&awaitingLongTurn(before)?before.at(-1)?.cue??null:null;
   let action:SpeakingAction="answer",nextPart:SpeakingPart=part;
-  if(cfg().mode==="mock"&&answered>=PLAN[part]){
+  if(cfg().mode==="mock"&&!aside&&answered>=PLAN[part]){
    if(part===3){busy.current=false;await finishSession([...before,user]);return;}
    action="advance";nextPart=(part+1) as SpeakingPart;
   }
@@ -218,8 +278,7 @@ export function SpeakingLab({signedIn}:{signedIn:boolean}) {
   try {
    const reply=await request(action,{part:nextPart,history:before,message:text,stats:user.stats});
    if(!reply)return;
-   commitTurns([...turnsRef.current.map(t=>t.id===user.id?{...t,tip:reply.tip}:t),{id:nextId(),role:"assistant",content:reply.reply,part:nextPart,cue:reply.cue}]);
-   if(!reply.tip)setGesture({name:"Yes",id:nextId()});
+   commitTurns([...turnsRef.current.map(t=>t.id===user.id?{...t,tip:reply.tip}:t),{id:nextId(),role:"assistant",content:reply.reply,part:nextPart,cue:reply.cue??carried}]);
    changeStatus("idle");busy.current=false;void afterReply(reply);
   }catch(reason){
    commitTurns(before);setDraft(text);setDraftStats(stats);changeStatus("idle");
@@ -271,12 +330,12 @@ export function SpeakingLab({signedIn}:{signedIn:boolean}) {
   if(["thinking","transcribing","reporting","listening"].includes(statusRef.current))return;
   stopVoice();setError("");setNotice("");setPrep(null);cancelStart.current=false;
   const part=currentPart(),long=awaitingLongTurn(),run=sessionRun.current;
-  changeStatus("listening");
+  listenStart.current=clockNow();changeStatus("listening");
   try {
    const handle=await startRecorder(getPlayer().ensure(),{
     autoStop:cfg().handsFree,silenceMs:long?5000:part===3?2300:1800,maxMs:long?120000:90000,
-    onLevel:level=>levelRing.current?.style.setProperty("--level",level.toFixed(3)),
-    onSpeech:setHearing,
+    onLevel:level=>stage.current?.style.setProperty("--level",level.toFixed(3)),
+    onSpeech:speaking=>{setHearing(speaking);if(!speaking)listenerNod();},
     onAutoStop:reason=>{void finishListening(reason);},
    });
    if(cancelStart.current||run!==sessionRun.current){handle.abort();changeStatus("idle");return;}
@@ -296,6 +355,7 @@ export function SpeakingLab({signedIn}:{signedIn:boolean}) {
    const recording=await handle.stop();
    if(run!==sessionRun.current)return;
    if(!recording||!recording.heardSpeech){changeStatus("idle");setNotice(reason==="quiet"?"I didn’t hear anything. Tap the mic or press Space when you’re ready.":"I didn’t catch that. Try again a little closer to the microphone.");return;}
+   if(cfg().handsFree)acknowledge();
    const controller=new AbortController();transcribeAbort.current=controller;
    const response=await fetch(TRANSCRIBE_URL,{method:"POST",headers:{"Content-Type":"audio/wav"},body:encodeSpeechWav(recording.pcm),signal:AbortSignal.any([controller.signal,AbortSignal.timeout(150000)])});
    const data=await response.json().catch(()=>({error:"Transcription failed."}));
@@ -304,6 +364,7 @@ export function SpeakingLab({signedIn}:{signedIn:boolean}) {
    const text=String(data.text??"").trim();
    const stats:AnswerStats={seconds:Math.round(recording.seconds*10)/10,words:countWords(text),pauses:recording.pauses};
    changeStatus("idle");
+   if(!text){setNotice("I couldn’t make out any words. Try again a little closer to the microphone, or type your answer.");return;}
    if(reason==="limit"&&long)setNotice("That’s two minutes — well done for keeping going.");
    if(cfg().handsFree)await submitAnswer(text,stats);
    else{setDraft(current=>[current.trim(),text].filter(Boolean).join(" ").slice(0,2000));setDraftStats(stats);answerBox.current?.focus();}
@@ -335,6 +396,15 @@ export function SpeakingLab({signedIn}:{signedIn:boolean}) {
   sessionRun.current++;stopVoice();recorder.current?.abort();recorder.current=null;chatAbort.current?.abort();transcribeAbort.current?.abort();
   busy.current=false;changeStatus("idle");commitTurns([]);changePhase("setup");setHint(null);setPrep(null);setError("");setNotice("");setDraft("");setDraftStats(null);
  }
+ function leave() {
+  if(turnsRef.current.some(t=>t.role==="user")&&!window.confirm("Leave now? This conversation will be discarded without a report."))return;
+  resetToSetup();
+ }
+ function repeatQuestion() {
+  const last=turnsRef.current.findLast(t=>t.role==="assistant");
+  if(!last||busy.current||statusRef.current==="listening")return;
+  void speak(last.content,{force:true}).then(finished=>{if(finished&&cfg().handsFree&&micConsentRef.current&&micSupported&&phaseRef.current==="session"&&prep===null)void startListening();});
+ }
  function download(kind:"transcript"|"report") {
   const lines=turnsRef.current.map(t=>`${t.role==="user"?"You":speakingVoices[cfg().voice].label} (Part ${t.part}): ${t.content}${t.tip?`\n   Tip: "${t.tip.said}" → "${t.tip.better}" — ${t.tip.why}`:""}`);
   if(kind==="report"&&report){
@@ -346,45 +416,67 @@ export function SpeakingLab({signedIn}:{signedIn:boolean}) {
  }
 
  // ---------- Derived view state ----------
- const part=phase==="setup"?(settings.mode==="mock"?1:settings.part):currentPartForView(turns,settings);
- const longTurn=phase==="session"&&!!turns.at(-1)?.cue&&turns.at(-1)?.role==="assistant";
+ const mock=settings.mode==="mock";
+ const part=phase==="setup"?(mock?1:settings.part):currentPartForView(turns,settings);
+ const activeCue=phase==="session"&&turns.at(-1)?.role==="assistant"?turns.at(-1)?.cue??null:null;
+ const longTurn=!!activeCue;
  const mood:AvatarMood=status==="listening"?"listening":status==="speaking"?"speaking":["thinking","transcribing","reporting","voicing"].includes(status)?"thinking":"idle";
  const working=["thinking","transcribing","reporting"].includes(status);
- const canTalk=phase==="session"&&micConsent&&micSupported&&!working&&prep===null&&turns.length>0;
+ const micReady=micConsent&&micSupported;
+ const canTalk=phase==="session"&&micReady&&!working&&prep===null&&turns.length>0;
  const lastUserIndex=turns.findLastIndex(t=>t.role==="user");
- const answeredInPart=turns.filter(t=>t.role==="user"&&t.part===part).length;
- const name=speakingVoices[settings.voice].label;
- const statusLine=status==="listening"?(hearing?"I’m listening…":"Go ahead — I’m listening")
-  :status==="transcribing"?"Catching your words…":status==="thinking"?(turns.length?`${name} is thinking…`:`${name} is joining…`)
-  :status==="reporting"?"Writing your report…":status==="voicing"?"…":status==="speaking"?"":prep!==null?"Prepare your talk — make a few notes"
-  :phase==="session"?(micConsent&&micSupported?"Your turn — tap the mic or press Space":"Your turn — type your answer below"):phase==="report"?"Great work today.":`Hi, I’m ${name}. Ready when you are.`;
- const lastAssistant=turns.findLastIndex(t=>t.role==="assistant");
+ const answeredInPart=turns.filter(t=>t.role==="user"&&t.part===part&&!t.aside).length;
+ const chosen=speakingVoices[settings.voice],name=chosen.label;
+ const manner=chosen.manner[0].toUpperCase()+chosen.manner.slice(1);
+ const statusLine=status==="listening"?(hearing?"Listening…":longTurn?"Start whenever you’re ready":"Go ahead — I’m listening")
+  :status==="transcribing"||status==="thinking"?(turns.length?`${name} is thinking`:`${name} is joining`)
+  :status==="reporting"?"Writing your report":status==="voicing"?"":status==="speaking"?`${name} is speaking`
+  :prep!==null?"Take a minute to plan your talk":phase==="session"?(longTurn?"Your turn — speak for one to two minutes":"Your turn"):`Hi, I’m ${name}. Ready when you are.`;
+ const dockHint=status==="listening"?(settings.handsFree?"Pause when you finish · Esc to cancel":"Tap again when you finish")
+  :status==="speaking"||status==="voicing"?(micReady?"Tap the mic to interrupt":"Esc to stop the voice"):prep!==null?"Your talk starts when the minute is up, or press I’m ready":micReady?"Tap the mic or press Space to answer":"Microphone is off — type your answer";
 
  if(!signedIn)return <div className="sl-root container page-space"><div className="sl-signin"><PartnerPortrait voice="af_heart" className="sl-signin-face"/><p className="sl-kicker">IELTS Speaking</p><h1>Sign in to practise speaking with your AI partner.</h1><p>Нэвтэрсний дараа ярианы бэлтгэлдээ шууд буцаж ирнэ.</p><Link className="button primary" href="/login?next=%2Flabs%2Fielts-speaking">Нэвтрэх →</Link></div></div>;
 
- return <div className="sl-root container page-space">
+ return <div className={`sl-root container page-space phase-${phase}`}>
   <header className="sl-top">
-   <div><p className="sl-kicker">IELTS Speaking · Experiment</p><h1>Speaking partner</h1></div>
-   {phase!=="setup"&&settings.mode==="mock"&&<ol className="sl-steps" aria-label="Mock test progress">
+   <div><p className="sl-kicker">IELTS Speaking · Experiment</p><h1>{phase==="setup"?"Speaking partner":mock?"Speaking mock test":`Talking with ${name}`}</h1></div>
+   {phase!=="setup"&&mock&&<ol className="sl-steps" aria-label="Mock test progress">
     {([1,2,3] as SpeakingPart[]).map(p=><li key={p} className={phase==="report"||p<part?"done":p===part?"active":""}>Part {p}</li>)}
     <li className={phase==="report"?"active":""}>Report</li>
    </ol>}
   </header>
 
   <div className="sl-main">
-   <section className={`sl-stage mood-${mood}`} aria-label="Your AI speaking partner">
-    <div className="sl-stage-top"><span className="sl-live"/><strong>{name}</strong><span>{phase==="setup"?"AI speaking partner":phase==="report"?"Report ready":`Part ${part} · ${PART_NAMES[part]}`}</span>{phase==="session"&&settings.mode==="mock"&&<em>{Math.min(answeredInPart+1,PLAN[part])}/{PLAN[part]}</em>}</div>
-    <SpeakingAvatar level={energy} mood={mood} gesture={gesture} voice={settings.voice}/>
-    <div className="sl-caption" aria-live="polite">{status==="speaking"&&caption?<p>{caption}</p>:<p className="sl-status">{working&&<i className="sl-dots"><b/><b/><b/></i>}{statusLine}</p>}</div>
+   <section ref={stage} className={`sl-stage mood-${mood}`} style={{"--partner":partnerLooks[settings.voice].top} as CSSProperties} aria-label="Your AI speaking partner">
+    <div className="sl-stage-top">
+     <span className="sl-live"/><strong>{name}</strong>
+     <span>{phase==="setup"?`AI speaking partner · ${chosen.accent} accent`:phase==="report"?"Report ready":`${mock?"AI examiner":"AI partner"} · Part ${part} ${PART_NAMES[part]}`}</span>
+     {phase==="session"&&<em>{mock&&`Question ${Math.min(answeredInPart+1,PLAN[part])} of ${PLAN[part]} · `}<SessionClock key={sessionKey}/></em>}
+    </div>
+    <div className="sl-portrait">
+     <SpeakingAvatar level={energy} mood={mood} gesture={gesture} voice={settings.voice}/>
+     {phase==="session"&&micReady&&<div className={`sl-self ${status==="listening"?"on":""}`} aria-hidden="true"><span>You</span><div><i/><i/><i/><i/><i/></div></div>}
+    </div>
+    <div className="sl-caption" aria-live="polite">{status==="speaking"&&caption&&settings.captions?<p>{caption}</p>:<p className="sl-status">{(working||status==="voicing")&&<i className="sl-dots"><b/><b/><b/></i>}{statusLine}</p>}</div>
+    {phase==="setup"&&<div className="sl-pick">
+     <div className="sl-partners" role="radiogroup" aria-label="Speaking partner">
+      {(Object.entries(speakingVoices) as [SpeakingVoice,(typeof speakingVoices)[SpeakingVoice]][]).map(([id,v])=><button type="button" role="radio" key={id} aria-checked={settings.voice===id} aria-label={`${v.label}, ${v.accent}`} onClick={()=>{update({voice:id});setGesture({name:"Wave",id:nextId()});}}><PartnerPortrait voice={id}/><span>{v.label}</span></button>)}
+     </div>
+     <p>{manner}. <button type="button" className="sl-link" disabled={previewing} onClick={()=>void preview(settings.voice)}>{previewing?"Playing…":`▶ Hear ${name}`}</button></p>
+     {notice&&<p className="sl-notice" role="status">{notice}</p>}
+    </div>}
     {phase==="session"&&<div className="sl-dock">
-     {prep!==null&&<div className="sl-prep"><span>Preparation</span><Countdown key={prep} seconds={60} onDone={endPrep}/><button type="button" onClick={endPrep}>I’m ready</button></div>}
      {status==="listening"&&recordingKey>0&&<Elapsed key={recordingKey} target={TARGET_SECONDS[longTurn?2:part===2?1:part]} limit={longTurn?120:90}/>}
-     {micConsent&&micSupported&&<div className={`sl-mic-wrap ${status==="listening"?"on":""} ${hearing?"hearing":""}`} ref={levelRing}>
-      <button type="button" className="sl-mic" onClick={toggleMic} disabled={!canTalk&&status!=="listening"} aria-pressed={status==="listening"} aria-label={status==="listening"?"Stop recording and send":"Start speaking"}>
-       {status==="listening"?<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="2"/></svg>:<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.9V21h2v-2.1a7 7 0 0 0 6-6.9h-2Z"/></svg>}
-      </button>
-     </div>}
-     {micConsent&&micSupported&&<p className="sl-dock-hint">{status==="listening"?(settings.handsFree?"Pause to finish · Esc to cancel":"Tap again when you finish"):(status==="speaking"||status==="voicing")?"Tap the mic to interrupt":"Space to talk"}</p>}
+     <div className="sl-controls">
+      <button type="button" className="sl-ctl" aria-pressed={settings.captions} onClick={()=>update({captions:!settings.captions})}><i><Glyph name="captions"/></i>Captions</button>
+      <button type="button" className="sl-ctl" aria-pressed={settings.voiceOn} aria-label={settings.voiceOn?`Mute ${name}`:`Unmute ${name}`} onClick={()=>{if(settings.voiceOn)stopVoice();update({voiceOn:!settings.voiceOn});}}><i><Glyph name={settings.voiceOn?"sound":"muted"}/></i>Voice</button>
+      {micReady&&<div className={`sl-mic-wrap ${status==="listening"?"on":""} ${hearing?"hearing":""}`}>
+       <button type="button" className="sl-mic" onClick={toggleMic} disabled={!canTalk&&status!=="listening"} aria-pressed={status==="listening"} aria-label={status==="listening"?"Stop recording and send":"Start speaking"}><Glyph name={status==="listening"?"stop":"mic"}/></button>
+      </div>}
+      <button type="button" className="sl-ctl" disabled={working||status==="listening"||!turns.length} onClick={repeatQuestion}><i><Glyph name="repeat"/></i>Repeat</button>
+      {!mock&&<button type="button" className="sl-ctl" disabled={working||hintPending||!turns.length} onClick={()=>void askHint()}><i><Glyph name="idea"/></i>{hintPending?"Finding…":"Ideas"}</button>}
+     </div>
+     <p className="sl-dock-hint">{dockHint}</p>
     </div>}
    </section>
 
@@ -392,33 +484,38 @@ export function SpeakingLab({signedIn}:{signedIn:boolean}) {
     {phase==="setup"&&renderSetup()}
     {phase==="session"&&<div className="sl-session">
      <div className="sl-session-head">
-      <div><strong>{speakingTopics[settings.topic]}</strong><span>Target {settings.target}</span><CreditCost action="speaking-turn" english suffix="per reply"/></div>
+      <div><strong>{speakingTopics[settings.topic]}</strong><span>{mock?"Mock test":`Practice · Part ${part}`} · Target {settings.target.toFixed(1)}</span></div>
       <div>
-       <button type="button" className="sl-icon" aria-pressed={!settings.voiceOn} aria-label={settings.voiceOn?`Mute ${name}`:`Unmute ${name}`} title={settings.voiceOn?"Mute":"Unmute"} onClick={()=>{if(settings.voiceOn)stopVoice();update({voiceOn:!settings.voiceOn});}}>{settings.voiceOn?<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4Z"/></svg>:<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4Zm12.6-.4-1.4 1.4 2 2-2 2 1.4 1.4 2-2 2 2 1.4-1.4-2-2 2-2-1.4-1.4-2 2-2-2Z"/></svg>}</button>
+       <button type="button" className="sl-link" onClick={leave}>Leave</button>
        <button type="button" className="button secondary sl-small" disabled={working||lastUserIndex<0} onClick={()=>void finishSession()}>Finish & report <CreditCost action="speaking-report" english compact/></button>
       </div>
      </div>
+     {activeCue&&<div className="sl-task">
+      <div className="sl-task-head">
+       <span className="sl-cue-label">Cue card · Part 2</span>
+       {prep!==null?<span className="sl-prep">Preparation <Countdown key={prep} seconds={60} onDone={endPrep}/><button type="button" onClick={endPrep}>I’m ready</button></span>:<span className="sl-task-go">Speak for one to two minutes</span>}
+      </div>
+      <h3>{activeCue.title}</h3>
+      <p>You should say:</p><ul>{activeCue.points.map(point=><li key={point}>{point}</li>)}</ul>
+      <p className="sl-cue-close">{activeCue.closing}</p>
+      <label className="sl-notes">Your notes (only on this page)<textarea rows={3} value={notes} maxLength={600} onChange={event=>setNotes(event.target.value)} placeholder="Key words: who · when · why it matters…"/></label>
+     </div>}
      <div className="sl-transcript" ref={transcript} role="log" aria-label="Conversation">
+      {mock&&<p className="sl-exam-note">Exam conditions — corrections and ideas come with your report.</p>}
       {turns.map((turn,index)=><article key={turn.id} className={`sl-msg ${turn.role}`}>
        {turn.role==="assistant"?<>
-        <div className="sl-msg-meta"><strong>{name}</strong>{index===lastAssistant&&<button type="button" className="sl-link sl-replay" onClick={()=>void speak(turn.content,{force:true})} disabled={working}>↻ Repeat</button>}</div>
+        <div className="sl-msg-meta"><strong>{name}</strong>{turn.cue&&<span className="sl-chip">Cue card</span>}</div>
         <p>{turn.content}</p>
-        {turn.cue&&<div className="sl-cue">
-         <span className="sl-cue-label">Cue card · Part 2</span>
-         <h3>{turn.cue.title}</h3>
-         <p>You should say:</p><ul>{turn.cue.points.map(point=><li key={point}>{point}</li>)}</ul>
-         <p className="sl-cue-close">{turn.cue.closing}</p>
-         {index===turns.length-1&&<label className="sl-notes">Your notes (only on this page)<textarea rows={3} value={notes} maxLength={600} onChange={event=>setNotes(event.target.value)} placeholder="Key words: who · when · why it matters…"/></label>}
-        </div>}
+        {turn.cue&&turn.cue!==activeCue&&<p className="sl-cue-line">{turn.cue.title}</p>}
        </>:<>
         <div className="sl-msg-meta"><strong>You</strong>{turn.stats&&<span className="sl-chip" title="Measured from your recording">{Math.round(turn.stats.seconds)}s · {turn.stats.words} words{turn.stats.seconds>=4?` · ${Math.round(turn.stats.words/turn.stats.seconds*60)} wpm`:""}{turn.stats.pauses?` · ${turn.stats.pauses} long pause${turn.stats.pauses>1?"s":""}`:""}</span>}</div>
         <p>{turn.content}</p>
-        {turn.tip&&<div className="sl-tip">
+        {!mock&&turn.tip&&<div className="sl-tip">
          <div className="sl-diff"><s>{turn.tip.said}</s><span aria-hidden="true">→</span><ins>{turn.tip.better}</ins></div>
          <small>{turn.tip.why}</small>
          <button type="button" className="sl-link" disabled={saved.has(turn.tip.better.trim().toLowerCase())} onClick={()=>savePhrase(turn.tip!.better,turn.tip!.why)}>{saved.has(turn.tip.better.trim().toLowerCase())?"Saved ✓":"+ Phrasebook"}</button>
         </div>}
-        {index===lastUserIndex&&index===turns.length-2&&!working&&<button type="button" className="sl-link sl-redo" onClick={redo}>↺ Try this answer again</button>}
+        {!mock&&index===lastUserIndex&&index===turns.length-2&&!working&&<button type="button" className="sl-link sl-redo" onClick={redo}>↺ Try this answer again</button>}
        </>}
       </article>)}
       {(status==="thinking"||status==="reporting")&&<p className="sl-typing"><i className="sl-dots"><b/><b/><b/></i>{status==="reporting"?"Writing your report — about 20 seconds":`${name} is thinking`}</p>}
@@ -433,13 +530,14 @@ export function SpeakingLab({signedIn}:{signedIn:boolean}) {
      <form className="sl-compose" onSubmit={event=>{event.preventDefault();void submitAnswer(draft,draftStats);}}>
       <div className="sl-compose-box">
        <label htmlFor="speaking-answer" className="sr-only">Your answer</label>
-       <textarea id="speaking-answer" ref={answerBox} rows={2} maxLength={2000} value={draft} disabled={working||status==="listening"} onChange={event=>setDraft(event.target.value)} onKeyDown={event=>{if(event.key==="Enter"&&!event.shiftKey){event.preventDefault();void submitAnswer(draft,draftStats);}}} placeholder={micConsent&&micSupported?"Speak, or type here and press Enter":"Type your answer and press Enter"}/>
+       <textarea id="speaking-answer" ref={answerBox} rows={micReady?1:2} maxLength={2000} value={draft} disabled={working||status==="listening"} onChange={event=>setDraft(event.target.value)} onKeyDown={event=>{if(event.key==="Enter"&&!event.shiftKey){event.preventDefault();void submitAnswer(draft,draftStats);}}} placeholder={micReady?"Or type your answer and press Enter":"Type your answer and press Enter"}/>
        <button type="submit" className="sl-send" aria-label="Send answer" disabled={working||!draft.trim()||status==="listening"}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h12m-5-5 5 5-5 5"/></svg></button>
       </div>
-      <button type="button" className="sl-link sl-stuck" disabled={working||hintPending||!turns.length} onClick={()=>void askHint()}>{hintPending?"Finding ideas…":"Stuck? Get ideas"}</button>
+      <CreditCost action="speaking-turn" english suffix="per reply"/>
      </form>
     </div>}
     {phase==="report"&&report&&<SpeakingReportView report={report.data} stats={report.stats} target={settings.target} language={settings.language} entries={progress.entries} saved={saved}
+     voice={settings.voice} mock={mock} review={turns}
      onSave={savePhrase} onListen={text=>void speak(text,{force:true})} listening={status==="voicing"||status==="speaking"}
      onNew={resetToSetup} onAgain={()=>void startSession()} onDownload={()=>download("report")}/>}
     {phase==="report"&&!report&&<p className="sl-notice">No report yet.</p>}
@@ -453,32 +551,28 @@ export function SpeakingLab({signedIn}:{signedIn:boolean}) {
 
  // Setup screen shares the component's state and handlers; called as a function, not a component.
  function renderSetup() {
-  const voices=Object.entries(speakingVoices) as [SpeakingVoice,(typeof speakingVoices)[SpeakingVoice]][],chosen=speakingVoices[settings.voice];
   return <div className="sl-setup">
    <div className="sl-field">
-    <span>Session</span>
-    <div className="sl-seg" role="radiogroup" aria-label="Session type">
-     {([["mock","Full mock test"],["practice","Practise one part"]] as const).map(([value,title])=><button type="button" role="radio" aria-checked={settings.mode===value} key={value} onClick={()=>update({mode:value})}>{title}</button>)}
+    <span>What would you like to do?</span>
+    <div className="sl-modes" role="radiogroup" aria-label="Session type">
+     {MODES.map(([value,tag,title,text])=><button type="button" role="radio" className="sl-mode" aria-checked={settings.mode===value} key={value} onClick={()=>update({mode:value})}><em>{tag}</em><strong>{title}</strong><small>{text}</small></button>)}
     </div>
-    <small>{settings.mode==="mock"?"Parts 1 → 2 → 3 · about 12 minutes · band report at the end":"Unlimited questions on one part · finish whenever you like"}</small>
    </div>
-   {settings.mode==="practice"&&<div className="sl-field"><span>Part</span><div className="sl-seg">{([1,2,3] as SpeakingPart[]).map(p=><button type="button" key={p} aria-pressed={settings.part===p} onClick={()=>update({part:p})}>{p} · {PART_NAMES[p]}</button>)}</div></div>}
-   <div className="sl-row">
-    <label className="sl-select">Topic<select value={settings.topic} onChange={event=>update({topic:event.target.value as SpeakingTopic})}>{(Object.entries(speakingTopics) as [SpeakingTopic,string][]).map(([id,title])=><option key={id} value={id}>{title}</option>)}</select></label>
-    <label className="sl-select">Target band<select value={settings.target} onChange={event=>update({target:Number(event.target.value)})}>{speakingTargets.map(t=><option key={t} value={t}>{t}</option>)}</select></label>
+   {!mock&&<div className="sl-field"><span>Part</span><div className="sl-seg">{([1,2,3] as SpeakingPart[]).map(p=><button type="button" key={p} aria-pressed={settings.part===p} onClick={()=>update({part:p})}>{p} · {PART_NAMES[p]}</button>)}</div></div>}
+   <div className="sl-field">
+    <span>Topic</span>
+    <div className="sl-chips" role="radiogroup" aria-label="Topic">{(Object.entries(speakingTopics) as [SpeakingTopic,string][]).map(([id,title])=><button type="button" role="radio" key={id} aria-checked={settings.topic===id} onClick={()=>update({topic:id})}>{title}</button>)}</div>
    </div>
    <div className="sl-field">
-    <span>Partner</span>
-    <div className="sl-partners" role="radiogroup" aria-label="Speaking partner">
-     {voices.map(([id,v])=><button type="button" role="radio" key={id} aria-checked={settings.voice===id} aria-label={`${v.label}, ${v.accent}`} onClick={()=>update({voice:id})}><PartnerPortrait voice={id}/><span>{v.label}</span></button>)}
-    </div>
-    <small>{chosen.accent} accent · {chosen.note} · <button type="button" className="sl-link" disabled={previewing} onClick={()=>void preview(settings.voice)}>{previewing?"Playing…":`▶ Hear ${chosen.label}`}</button></small>
+    <span>Target band</span>
+    <div className="sl-seg" role="radiogroup" aria-label="Target band">{speakingTargets.map(t=><button type="button" role="radio" key={t} aria-checked={settings.target===t} onClick={()=>update({target:t})}>{t.toFixed(1)}</button>)}</div>
    </div>
    <details className="sl-more">
     <summary>More settings</summary>
     <div className="sl-toggles">
      <label className="sl-switch"><input type="checkbox" checked={settings.handsFree} onChange={event=>update({handsFree:event.target.checked})}/><span><strong>Hands-free</strong><small>Mic opens after your partner speaks; pause to send</small></span></label>
      <label className="sl-switch"><input type="checkbox" checked={settings.voiceOn} onChange={event=>update({voiceOn:event.target.checked})}/><span><strong>Partner speaks aloud</strong><small>Turn off to read only</small></span></label>
+     <label className="sl-switch"><input type="checkbox" checked={settings.captions} onChange={event=>update({captions:event.target.checked})}/><span><strong>Live captions</strong><small>Show the words under your partner as they speak</small></span></label>
      <label className="sl-select">Pace<select value={settings.speed} onChange={event=>update({speed:Number(event.target.value) as SpeakingSpeed})}>{speakingSpeeds.map(s=><option key={s} value={s}>{s===1?"Natural":s===.95?"Slightly slower":"Slower"}</option>)}</select></label>
      <label className="sl-select">Voice engine<select value={settings.engine} onChange={event=>update({engine:event.target.value as "neural"|"device"})}><option value="neural">Natural (Kokoro)</option><option value="device">Device voice</option></select></label>
      <label className="sl-select">Feedback in<select value={settings.language} onChange={event=>update({language:event.target.value as "en"|"mn"})}><option value="en">English</option><option value="mn">Монгол</option></select></label>
@@ -490,8 +584,8 @@ export function SpeakingLab({signedIn}:{signedIn:boolean}) {
     {!micSupported&&<small>Microphone recording isn’t available in this browser — try Chrome or Edge, or type your answers.</small>}
    </div>
    {error&&<p className="error-message" role="alert">{error}</p>}
-   <button type="button" className="button primary sl-start" disabled={!consent||status==="thinking"} onClick={()=>void startSession()}>{status==="thinking"?`Calling ${chosen.label}…`:settings.mode==="mock"?"Start mock test →":"Start practice →"}</button>
-   <p className="sl-credit-note" style={{display:"flex",flexWrap:"wrap",justifyContent:"center",gap:8,margin:"10px 0 0"}}><CreditCost action="speaking-turn" english suffix="per partner reply"/> <CreditCost action="speaking-report" english suffix="for the report"/></p>
+   <button type="button" className="button primary sl-start" disabled={!consent||status==="thinking"} onClick={()=>void startSession()}>{status==="thinking"?`Calling ${name}…`:mock?"Start mock test →":"Start practice →"}</button>
+   <p className="sl-credit-note"><CreditCost action="speaking-turn" english suffix="per partner reply"/> <CreditCost action="speaking-report" english suffix="for the report"/></p>
    {(progress.entries.length>0||progress.phrases.length>0)&&<div className="sl-progress">
     {progress.entries.length>0&&<div><h3>Recent sessions</h3><Trend entries={progress.entries}/>{progress.entries.length===1&&<p className="sl-muted">First report: {progress.entries[0].overall} — come back tomorrow to see your trend.</p>}</div>}
     {progress.phrases.length>0&&<details><summary>Your phrasebook ({progress.phrases.length})</summary><ul>{progress.phrases.slice().reverse().map(p=><li key={p.id}><strong>{p.text}</strong><small>{p.note}</small><button type="button" className="sl-icon" aria-label={`Remove ${p.text}`} onClick={()=>removePhrase(p.id)}>×</button></li>)}</ul></details>}

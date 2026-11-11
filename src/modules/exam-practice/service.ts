@@ -30,7 +30,7 @@ export async function practiceAllowed(userId: string, slug: string) {
   return Boolean(await getDb().mockPurchase.findFirst({ where: { userId, examSlug: slug, status: "PAID" }, select: { id: true } })) || await hasSubscription(userId, definition.program);
 }
 // Entitlement and the open-sitting block are checked on every read, save, check, audio and AI request.
-async function requirePractice(userId: string, slug: string): Promise<PracticeSource> {
+export async function requirePractice(userId: string, slug: string): Promise<PracticeSource> {
   const source = await sourceFor(slug);
   if (!source) throw new ApiError(404, "Шалгалт олдсонгүй.");
   if (!await practiceAllowed(userId, slug)) throw new ApiError(402, "Энэ шалгалтын эрх эсвэл сарын багц шаардлагатай.");
@@ -83,6 +83,10 @@ export async function checkPractice(userId: string, slug: string, input: unknown
   if (!validPracticeCheck(source.form, input)) throw new ApiError(400, "Хариултын бүтэц буруу.");
   const next = await changeProgress(userId, slug, progress => applyPracticeCheck(source, progress, input.questionId, input.response));
   return { reveal: source.reveal(input.questionId, next.results[input.questionId]) };
+}
+/** The saved responses of this student's practice on one exam (empty before the first save). */
+export async function practiceResponses(userId: string, slug: string) {
+  return progressOf(await getDb().practiceSession.findUnique({ where: { userId_slug: { userId, slug } } })).responses;
 }
 export async function resetPractice(userId: string, slug: string) {
   await requirePractice(userId, slug);

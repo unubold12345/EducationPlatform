@@ -9,7 +9,7 @@ from uuid import uuid4
 from playwright.sync_api import sync_playwright,expect
 ROOT=Path(__file__).resolve().parent.parent;ART=ROOT/'artifacts';ART.mkdir(exist_ok=True)
 BASE=os.environ.get('TEST_BASE_URL','http://localhost:3001').rstrip('/');ORIGIN={'Origin':BASE}
-START={'part':1,'topic':'everyday','target':6.5,'language':'en','action':'start','message':'','history':[],'stats':None,'timing':[]}
+START={'mode':'practice','voice':'af_heart','part':1,'topic':'everyday','target':6.5,'language':'en','action':'start','message':'','history':[],'stats':None,'timing':[]}
 
 def frames(raw):
  out,i=[],0
@@ -52,7 +52,7 @@ with sync_playwright() as p:
  page.get_by_role('radio',name='Ava, American').click();expect(page.locator('.sl-stage-top strong')).to_have_text('Ava')
  # Guards before any provider use.
  assert context.request.post(BASE+'/api/labs/ielts-speaking',headers={'Origin':'https://untrusted.invalid'},data=START).status==403
- for bad in [{**START,'part':9},{**START,'action':'feedback'},{**START,'band':9},{**START,'target':9}]:
+ for bad in [{**START,'part':9},{**START,'action':'feedback'},{**START,'band':9},{**START,'target':9},{**START,'mode':'exam'},{**START,'voice':'person-clone'}]:
   assert context.request.post(BASE+'/api/labs/ielts-speaking',headers=ORIGIN,data=bad).status==400,bad
  assert context.request.post(BASE+'/api/labs/ielts-speaking/voice',headers=ORIGIN,data={'text':'hello','voice':'person-clone','speed':1}).status==400
  assert context.request.post(BASE+'/api/labs/ielts-speaking/warm',headers=ORIGIN,timeout=180000).status==200

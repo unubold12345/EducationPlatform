@@ -6,7 +6,7 @@ export const CHAT_LIMITS = { message: 3000, turn: 2500, history: 6, title: 80 } 
 /** The chat route's body cap: the text request plus base64 images, below Vercel's 4.5 MB function limit. */
 export const CHAT_BODY_BYTES = 48_000 + Math.ceil(AI_IMAGE_LIMITS.messageBytes / 3) * 4 + 1024;
 
-export const CHAT_SUBJECTS = ["general", "sat", "ielts", "eesh-math", "eesh-physics", "eesh-english", "jlpt"] as const;
+export const CHAT_SUBJECTS = ["general", "sat", "ielts", "eesh-math", "eesh-physics", "eesh-chemistry", "eesh-biology", "eesh-english", "jlpt", "hsk"] as const;
 export type ChatSubject = (typeof CHAT_SUBJECTS)[number];
 export const CHAT_MODES = ["ask", "solve", "explain", "quiz", "writing", "vocab"] as const;
 export type ChatMode = (typeof CHAT_MODES)[number];
@@ -27,8 +27,11 @@ export const subjectLabels: Record<ChatSubject, string> = {
   ielts: "IELTS",
   "eesh-math": "ЭЕШ · Математик",
   "eesh-physics": "ЭЕШ · Физик",
+  "eesh-chemistry": "ЭЕШ · Хими",
+  "eesh-biology": "ЭЕШ · Биологи",
   "eesh-english": "ЭЕШ · Англи хэл",
   jlpt: "JLPT · Япон хэл",
+  hsk: "HSK · Хятад хэл",
 };
 export const modeLabels: Record<ChatMode, { label: string; placeholder: string }> = {
   ask: { label: "Асуух", placeholder: "Юу ч асуугаарай: хичээл, шалгалтын бүтэц, сурах арга…" },
@@ -88,8 +91,11 @@ const subjectGuides: Record<ChatSubject, string> = {
   ielts: "IELTS Academic: explain paraphrase, FALSE versus NOT GIVEN, listening traps, and Writing/Speaking criteria (task response, coherence and cohesion, lexical resource, grammatical range and accuracy). Never give a band score.",
   "eesh-math": "Mongolian university entrance exam (ЭЕШ) mathematics: calculators are not allowed, so show working that can be done by hand. Use Mongolian school terminology.",
   "eesh-physics": "Mongolian university entrance exam (ЭЕШ) physics: write the formula before substituting numbers, keep units in every step and use g = 10 m/s² unless told otherwise.",
+  "eesh-chemistry": "Mongolian university entrance exam (ЭЕШ) chemistry: balance equations, show mole and unit working step by step and use Mongolian school terminology.",
+  "eesh-biology": "Mongolian university entrance exam (ЭЕШ) biology: explain the concept behind each option in Mongolian school terminology and show genetics or statistics calculations step by step.",
   "eesh-english": "Mongolian university entrance exam (ЭЕШ) English: explain the grammar or vocabulary point and why the other options fail; explain in Mongolian when the student writes in Mongolian.",
   jlpt: "JLPT N5/N4 Japanese: explain vocabulary, kanji readings, particles and grammar; keep Japanese examples in Japanese with kana readings for kanji. Never predict an official JLPT score or pass.",
+  hsk: "HSK 1 Chinese: explain characters, pinyin and tones, word meanings, measure words and simple sentence patterns; keep Chinese examples in simplified characters with pinyin. HSK pictures are given as descriptions; never claim to see an image. Never predict an official HSK score, level or pass.",
 };
 const modeGuides: Record<ChatMode | ReviewMode, string> = {
   ask: "Answer the student's question directly and clearly, then suggest one useful next step.",

@@ -3,7 +3,9 @@
 import { isCorrect } from "../exams/engine.ts";
 import { listeningScripts } from "../exams/ielts-listening.ts";
 import { additionalListeningScripts } from "../exams/ielts-additional-listening.ts";
+import { ieltsFormScripts } from "../exams/ielts-forms.ts";
 import { entranceSubjectOf } from "../exams/entrance/catalog.ts";
+import { hskChoices, hskDescription } from "../exams/hsk/describe.ts";
 import type { ExamDefinition, ExamGroup, ExamQuestion, ExamStage } from "../exams/types.ts";
 import type { PracticeEdit, PracticeForm, PracticeKind, PracticeProgress, PracticeQuestion, PracticeResult, PracticeReveal, PracticeSection, PracticeSubject } from "./types.ts";
 
@@ -26,18 +28,17 @@ const hints = {
 const subjectOf = (definition: ExamDefinition): PracticeSubject => {
   if (definition.program !== "entrance") return definition.program;
   const subject = entranceSubjectOf(definition.slug);
-  return subject === "physics" ? "eesh-physics" : subject === "english" ? "eesh-english" : "eesh-math";
+  return `eesh-${subject ?? "math"}`;
 };
 
 const listeningPartSize = 10;
 function transcriptsFor(slug: string,revision:number) {
   const form = /^ielts-academic-0([1-6])$/.exec(slug)?.[1];
-  if (!form) return [];
+  if (!form) return ieltsFormScripts(slug);
   const scripts = form === "1" ? listeningScripts : additionalListeningScripts(Number(form),revision);
   return scripts.map(script => script.title + "\n\n" + script.halves.flat().map(turn => turn.text).join("\n\n"));
 }
 const pointsOf = (question: Pick<ExamQuestion, "points">) => question.points ?? 1;
-
 function entranceSections(stage: ExamStage, english: boolean) {
   const sections = new Map<string, PracticeSection>();
   const ordered: PracticeSection[] = [];
@@ -93,7 +94,19 @@ export function mockPractice(definition: ExamDefinition): PracticeSource {
     });
   }
   const entrance = definition.program === "entrance";
-  if (definition.program === "jlpt") {
+  if (definition.program === "hsk") {
+    for (const stage of definition.stages) for (const group of stage.groups ?? []) {
+      const listening = stage.kind === "listening";
+      sections.push({id:group.id,title:`${listening?"听力":"阅读"} · ${group.title}`,kind:listening?"listening":"questions",math:false,
+        hint:listening?"Хятад бичлэгийг дахин сонсож болно. Шалгасны дараа текст нээгдэнэ.":"Хариугаа сонгоод «Шалгах» дарна уу. Pinyin-ийг нууж, ханзаар уншиж дасгал хийгээрэй."});
+      for (const question of stage.questions.filter(item=>item.groupId===group.id)) {
+        authored.set(question.id,question);
+        const {id,number,domain,prompt,options,kind,optionLabels,figure,hsk}=question;
+        questions.push({id,section:group.id,label:number!,domain,prompt,options,kind,optionLabels,points:1,instructions:group.instructions,
+          ...(figure?{figure}:{}),...(hsk?{hsk}:{}),...(group.hsk?{hskGroup:group.hsk}:{}),...(question.listening?{audioPart:question.listening.part}:{})});
+      }
+    }
+  } else if (definition.program === "jlpt") {
     for (const stage of definition.stages) for (const group of stage.groups ?? []) {
       const list = stage.questions.filter(question=>question.groupId===group.id);
       sections.push({id:group.id,title:group.title,kind:stage.kind==="listening"?"listening":"questions",math:false,
@@ -130,7 +143,7 @@ export function mockPractice(definition: ExamDefinition): PracticeSource {
   };
   const partOf = (id: string) => questions.find(question => question.id === id)?.audioPart;
   const transcriptFor = (id: string) => {
-    if (definition.program === "jlpt") return authored.get(id)?.listening?.script;
+    if (definition.program === "jlpt" || definition.program === "hsk") return authored.get(id)?.listening?.script;
     const part = partOf(id);
     return part ? transcripts[part - 1] : undefined;
   };
@@ -141,14 +154,15 @@ export function mockPractice(definition: ExamDefinition): PracticeSource {
     reveal(id, result) {
       const question = questionFor(id);
       const transcript = transcriptFor(id);
-      return { ...result, answer: question.answerDisplay ?? question.answers.join(" / "), ...(definition.program==="jlpt"?{answerValue:question.answers[0]}:{}), explanation: question.explanation, points: pointsOf(question), ...(transcript ? { transcript } : {}) };
+      return { ...result, answer: question.answerDisplay ?? question.answers.join(" / "), ...(definition.program==="jlpt"||definition.program==="hsk"?{answerValue:question.answers[0]}:{}), explanation: question.explanation, points: pointsOf(question), ...(transcript ? { transcript } : {}) };
     },
     material(id) {
       const question = questionFor(id);
       const summary = questions.find(item => item.id === id)!;
       const passage = question.passage ? passages.find(item => item.title === question.passage)?.text ?? question.passage : undefined;
-      const context = [summary.instructions, summary.context].filter(Boolean).join("\n\n");
-      return { section: sections.find(section => section.id === summary.section)!.title, domain: question.domain, prompt: question.prompt, options: question.options, passage: passage || undefined, context: context || undefined };
+      // HSK pictures reach the assistant as their descriptions, with the printed Chinese and pinyin.
+      const context = [summary.instructions, summary.context, hskDescription(summary)].filter(Boolean).join("\n\n");
+      return { section: sections.find(section => section.id === summary.section)!.title, domain: question.domain, prompt: question.prompt, options: hskChoices(summary) ?? question.options, passage: passage || undefined, context: context || undefined };
     },
   };
 }

@@ -1,0 +1,424 @@
+{
+  "form": 10,
+  "part": 3,
+  "file": "mock-10/audio/part-3.mp3",
+  "sha256": "eaa82fa3ca6ee585c3005e64f63bd1c6fc2c29b5f81b37b1e4d4e5d48376503d",
+  "bytes": 3541768,
+  "seconds": 354.096,
+  "pcmSeconds": 354.096,
+  "sourceScriptSha256": "1b71682ac17c528db678c3539f86b4e2793792200998c626026de0af5af67483",
+  "fingerprint": "60760c2864dd8f548beb026498c9e3c982ca3ec80af6d4458a4ca9155459f2d7",
+  "roles": {
+    "Tutor": "bf_emma",
+    "Nora": "bf_isabella",
+    "Ethan": "am_michael"
+  },
+  "settings": {
+    "speed": 1.0,
+    "sampleRate": 24000,
+    "turnGapSeconds": 0.4,
+    "previewSeconds": 60,
+    "midpointSeconds": 30,
+    "partCheckSeconds": 30,
+    "finalCheckSeconds": 120,
+    "narrator": "bf_emma",
+    "bitrate": "80k",
+    "revision": 1
+  },
+  "modelSha256": {
+    "kokoro-v1.0.onnx": "7d5df8ecf7d4b1878015a32686053fd0eebe2bc377234608764cc0ef3636a6c5",
+    "voices-v1.0.bin": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+  },
+  "packages": {
+    "kokoro-onnx": "0.6.1",
+    "onnxruntime": "1.31.1",
+    "numpy": "2.5.4"
+  },
+  "gain": 0.7713605147403269,
+  "segments": [
+    {
+      "kind": "narration",
+      "start": 0.0,
+      "seconds": 5.376,
+      "voice": "bf_emma",
+      "spokenText": "Part 3. Testing a model bridge. You now have one minute to read questions 21 to 30."
+    },
+    {
+      "kind": "pause",
+      "start": 5.376,
+      "seconds": 60.0,
+      "purpose": "preview"
+    },
+    {
+      "kind": "speech",
+      "start": 65.376,
+      "seconds": 4.0747,
+      "voice": "bf_emma",
+      "spokenText": "Your bridge project report is due next week. How did the first test go?",
+      "role": "Tutor",
+      "sourceText": "Your bridge project report is due next week. How did the first test go?"
+    },
+    {
+      "kind": "pause",
+      "start": 69.4507,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 69.8507,
+      "seconds": 8.896,
+      "voice": "bf_isabella",
+      "spokenText": "The model carried more weight than we expected, but it failed suddenly. We thought the main beam would bend first. Instead, a connection near the support pulled apart.",
+      "role": "Nora",
+      "sourceText": "The model carried more weight than we expected, but it failed suddenly. We thought the main beam would bend first. Instead, a connection near the support pulled apart."
+    },
+    {
+      "kind": "pause",
+      "start": 78.7467,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 79.1467,
+      "seconds": 10.688,
+      "voice": "am_michael",
+      "spokenText": "We used the right dimensions from the drawing, so at first we blamed the material. Looking again at the video, we saw the connection moving before the beam changed shape.",
+      "role": "Ethan",
+      "sourceText": "We used the right dimensions from the drawing, so at first we blamed the material. Looking again at the video, we saw the connection moving before the beam changed shape."
+    },
+    {
+      "kind": "pause",
+      "start": 89.8347,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 90.2347,
+      "seconds": 8.32,
+      "voice": "bf_emma",
+      "spokenText": "That's an important observation. A structure is not stronger than every point through which the load must pass. Did you record where each weight was placed?",
+      "role": "Tutor",
+      "sourceText": "That’s an important observation. A structure is not stronger than every point through which the load must pass. Did you record where each weight was placed?"
+    },
+    {
+      "kind": "pause",
+      "start": 98.5547,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 98.9547,
+      "seconds": 11.3707,
+      "voice": "bf_isabella",
+      "spokenText": "Yes, but our first diagram wasn't precise enough. The weights were spread over a wider area in one test. We need a loading template so that the comparison isn't affected by where we happen to set them down.",
+      "role": "Nora",
+      "sourceText": "Yes, but our first diagram wasn’t precise enough. The weights were spread over a wider area in one test. We need a loading template so that the comparison isn’t affected by where we happen to set them down."
+    },
+    {
+      "kind": "pause",
+      "start": 110.3253,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 110.7253,
+      "seconds": 10.6027,
+      "voice": "am_michael",
+      "spokenText": "We also want to repeat the test on more than one model. Otherwise one badly made connection could be mistaken for the inevitable behaviour of the design.",
+      "role": "Ethan",
+      "sourceText": "We also want to repeat the test on more than one model. Otherwise one badly made connection could be mistaken for the inevitable behaviour of the design."
+    },
+    {
+      "kind": "pause",
+      "start": 121.328,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 121.728,
+      "seconds": 13.2693,
+      "voice": "bf_emma",
+      "spokenText": "Sensible. Keep construction records so you can discuss differences. Don't quietly discard a model because it performs less well than you hoped. A poor result may be telling you something about how difficult the design is to build consistently.",
+      "role": "Tutor",
+      "sourceText": "Sensible. Keep construction records so you can discuss differences. Don’t quietly discard a model because it performs less well than you hoped. A poor result may be telling you something about how difficult the design is to build consistently."
+    },
+    {
+      "kind": "pause",
+      "start": 134.9973,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 135.3973,
+      "seconds": 5.8027,
+      "voice": "bf_isabella",
+      "spokenText": "We considered changing the material and the joint together, but then we'd be unable to tell which change mattered.",
+      "role": "Nora",
+      "sourceText": "We considered changing the material and the joint together, but then we’d be unable to tell which change mattered."
+    },
+    {
+      "kind": "pause",
+      "start": 141.2,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 141.6,
+      "seconds": 11.3493,
+      "voice": "am_michael",
+      "spokenText": "So we'll first change only the joint, keeping the other dimensions and material the same. If that improves performance, we'll still need to say how many tests support the claim.",
+      "role": "Ethan",
+      "sourceText": "So we’ll first change only the joint, keeping the other dimensions and material the same. If that improves performance, we’ll still need to say how many tests support the claim."
+    },
+    {
+      "kind": "pause",
+      "start": 152.9493,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 153.3493,
+      "seconds": 6.848,
+      "voice": "bf_emma",
+      "spokenText": "Good. What will you count as failure? Total collapse is easy to identify, but a real bridge can become unusable before that.",
+      "role": "Tutor",
+      "sourceText": "Good. What will you count as failure? Total collapse is easy to identify, but a real bridge can become unusable before that."
+    },
+    {
+      "kind": "pause",
+      "start": 160.1973,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 160.5973,
+      "seconds": 7.6373,
+      "voice": "bf_isabella",
+      "spokenText": "We can measure deflection at the centre and set a limit before testing. The report will distinguish exceeding that limit from final collapse.",
+      "role": "Nora",
+      "sourceText": "We can measure deflection at the centre and set a limit before testing. The report will distinguish exceeding that limit from final collapse."
+    },
+    {
+      "kind": "pause",
+      "start": 168.2347,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 168.6347,
+      "seconds": 8.4693,
+      "voice": "bf_emma",
+      "spokenText": "Exactly. A stated criterion makes the comparison meaningful. It also prevents you from redefining success after seeing which version looks best.",
+      "role": "Tutor",
+      "sourceText": "Exactly. A stated criterion makes the comparison meaningful. It also prevents you from redefining success after seeing which version looks best."
+    },
+    {
+      "kind": "pause",
+      "start": 177.104,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "narration",
+      "start": 177.504,
+      "seconds": 2.496,
+      "voice": "bf_emma",
+      "spokenText": "Now look at questions 26 to 30."
+    },
+    {
+      "kind": "pause",
+      "start": 180.0,
+      "seconds": 30.0,
+      "purpose": "midpoint"
+    },
+    {
+      "kind": "speech",
+      "start": 210.0,
+      "seconds": 13.12,
+      "voice": "am_michael",
+      "spokenText": "For the next test, we need some equipment. The scale is available in our lab, but the displacement sensor requires booking from the engineering store. We should reserve that today rather than assume it will be there.",
+      "role": "Ethan",
+      "sourceText": "For the next test, we need some equipment. The scale is available in our lab, but the displacement sensor requires booking from the engineering store. We should reserve that today rather than assume it will be there."
+    },
+    {
+      "kind": "pause",
+      "start": 223.12,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 223.52,
+      "seconds": 3.3067,
+      "voice": "bf_isabella",
+      "spokenText": "I can arrange the sensor. What about the loading template?",
+      "role": "Nora",
+      "sourceText": "I can arrange the sensor. What about the loading template?"
+    },
+    {
+      "kind": "pause",
+      "start": 226.8267,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 227.2267,
+      "seconds": 10.8373,
+      "voice": "am_michael",
+      "spokenText": "That's the piece we should try out before the main test. The current cardboard version slides when we add weights. If it changes position, the careful markings won't help us.",
+      "role": "Ethan",
+      "sourceText": "That’s the piece we should try out before the main test. The current cardboard version slides when we add weights. If it changes position, the careful markings won’t help us."
+    },
+    {
+      "kind": "pause",
+      "start": 238.064,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 238.464,
+      "seconds": 9.92,
+      "voice": "bf_emma",
+      "spokenText": "Make a pilot version and check the practical handling. A procedure can look rigorous on paper and still be impossible to carry out consistently with the hands and space available.",
+      "role": "Tutor",
+      "sourceText": "Make a pilot version and check the practical handling. A procedure can look rigorous on paper and still be impossible to carry out consistently with the hands and space available."
+    },
+    {
+      "kind": "pause",
+      "start": 248.384,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 248.784,
+      "seconds": 6.3787,
+      "voice": "bf_isabella",
+      "spokenText": "The safety screen has already been checked by the technician. We have written confirmation, so that item is complete.",
+      "role": "Nora",
+      "sourceText": "The safety screen has already been checked by the technician. We have written confirmation, so that item is complete."
+    },
+    {
+      "kind": "pause",
+      "start": 255.1627,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 255.5627,
+      "seconds": 6.144,
+      "voice": "bf_emma",
+      "spokenText": "Keep the confirmation with the risk assessment. Nobody should stand in line with a joint that might release a fragment.",
+      "role": "Tutor",
+      "sourceText": "Keep the confirmation with the risk assessment. Nobody should stand in line with a joint that might release a fragment."
+    },
+    {
+      "kind": "pause",
+      "start": 261.7067,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 262.1067,
+      "seconds": 14.7413,
+      "voice": "am_michael",
+      "spokenText": "Our draft introduction includes a long history of famous bridges. It takes up most of the word allowance without explaining our experiment. We'll remove that section and use the space for the joint design and testing procedure.",
+      "role": "Ethan",
+      "sourceText": "Our draft introduction includes a long history of famous bridges. It takes up most of the word allowance without explaining our experiment. We’ll remove that section and use the space for the joint design and testing procedure."
+    },
+    {
+      "kind": "pause",
+      "start": 276.848,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 277.248,
+      "seconds": 6.272,
+      "voice": "bf_emma",
+      "spokenText": "A brief context is enough. The reader needs to understand your question, not prove that you have looked at many photographs.",
+      "role": "Tutor",
+      "sourceText": "A brief context is enough. The reader needs to understand your question, not prove that you have looked at many photographs."
+    },
+    {
+      "kind": "pause",
+      "start": 283.52,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 283.92,
+      "seconds": 9.6,
+      "voice": "bf_isabella",
+      "spokenText": "Finally, the cost comparison. We can't finish it until we know how much extra material the revised joint uses. We'll calculate that after constructing the final models.",
+      "role": "Nora",
+      "sourceText": "Finally, the cost comparison. We can’t finish it until we know how much extra material the revised joint uses. We’ll calculate that after constructing the final models."
+    },
+    {
+      "kind": "pause",
+      "start": 293.52,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 293.92,
+      "seconds": 9.8987,
+      "voice": "am_michael",
+      "spokenText": "And include labour time separately. A joint that uses very little material but takes much longer to make might not be the better option in every setting.",
+      "role": "Ethan",
+      "sourceText": "And include labour time separately. A joint that uses very little material but takes much longer to make might not be the better option in every setting."
+    },
+    {
+      "kind": "pause",
+      "start": 303.8187,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 304.2187,
+      "seconds": 15.2533,
+      "voice": "bf_emma",
+      "spokenText": "Excellent. Just keep the scope clear. A classroom model can demonstrate a principle and expose construction issues. It cannot certify the safety of a full-size bridge. Your conclusions should be ambitious enough to answer your question and restrained enough to respect that difference.",
+      "role": "Tutor",
+      "sourceText": "Excellent. Just keep the scope clear. A classroom model can demonstrate a principle and expose construction issues. It cannot certify the safety of a full-size bridge. Your conclusions should be ambitious enough to answer your question and restrained enough to respect that difference."
+    },
+    {
+      "kind": "pause",
+      "start": 319.472,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "narration",
+      "start": 319.872,
+      "seconds": 4.224,
+      "voice": "bf_emma",
+      "spokenText": "That is the end of part 3. You now have thirty seconds to check your answers."
+    },
+    {
+      "kind": "pause",
+      "start": 324.096,
+      "seconds": 30.0,
+      "purpose": "checking"
+    }
+  ]
+}

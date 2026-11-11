@@ -7,6 +7,6 @@ export const metadata: Metadata = { title: "Үгсийн сан" };
 
 export default async function VocabularyPage() {
   const user = await requireUser("/workspace/vocabulary");
-  const { words, limit } = await vocabularyBank(user.id);
-  return <Vocabulary initialWords={words} limit={limit} />;
+  const { words, decks, limit, now } = await vocabularyBank(user.id);
+  return <Vocabulary userId={user.id} initialWords={words} initialDecks={decks} limit={limit} now={now} />;
 }

@@ -1,0 +1,1220 @@
+{
+  "listening": [
+    {
+      "title": "Booking a community kitchen",
+      "script": "Coordinator: Good afternoon, Riverside Community Kitchen. How can I help?\nCaller: Our neighbourhood group wants to run a cooking evening. We used the church hall last year, but it had only two small ovens, and people spent more time waiting than cooking. Someone said your kitchen could accommodate twelve people working together.\nCoordinator: Twelve is our maximum for a practical class. We can seat more for a demonstration, but that doesn’t sound like your plan. Will one person be responsible for the booking?\nCaller: Yes, that will be me, Anna Mercer. I sometimes get letters addressed to Merker, but it’s Mercer, M-E-R-C-E-R. The group itself is called Shared Table.\nCoordinator: Thank you. Were you thinking of a weekday evening or a weekend? Saturday afternoons are mostly reserved for our own courses, although there’s one gap later this month.\nCaller: We first discussed Friday, but two members finish work late then. Thursday is the day we’ve agreed on. We’d prefer the second week of next month if that’s available.\nCoordinator: It is. You could have the room from six, but another group finishes just before that. If you want it fully reset before you arrive, I’d recommend six thirty. Would that leave enough time?\nCaller: Yes, let’s start at 6:30. We can circulate recipes beforehand rather than spend the first half-hour explaining them. Is there a minimum hire period?\nCoordinator: Three hours. The charge for a community group is eighteen pounds an hour. Businesses pay twenty-five, but your event qualifies for the lower rate, so the hire will be fifty-four pounds. Cleaning is included if you leave the work surfaces clear.\nCaller: That’s manageable. Do we pay the whole amount now?\nCoordinator: No, a deposit of twenty pounds confirms it. The balance is due one week beforehand. We send a reminder, but please don’t depend on receiving it if your email changes.\n---\nCaller: We’ll be making vegetable dishes. Is there anything we should bring besides ingredients? Our organiser has a set of knives, though carrying them across town seems unnecessary.\nCoordinator: Knives and boards are supplied, and so are pans. Every participant needs an apron. We used to lend those, but laundering them was becoming difficult. Ordinary comfortable clothes and enclosed shoes are sensible too.\nCaller: One member uses a wheelchair. I saw a photograph of steps at the front. Is there another way in?\nCoordinator: Yes. The side entrance is level and opens directly into the kitchen corridor. The front doors are mainly used for the meeting rooms. I’ll include a little plan in the confirmation so nobody has to search after dark.\nCaller: That would help. Can we store ingredients before the event? A couple of people can deliver things during their lunch break, but nobody wants to leave milk in an office all afternoon.\nCoordinator: You can use the fridge from midday on the day. Label everything with your group’s name, please. The freezer is already allocated to our regular classes, so don’t bring anything that requires freezing.\nCaller: Fine. What do you need from me to finish the booking?\nCoordinator: A contact number and a copy of your proposed menu. We don’t approve individual recipes, but we need to know about activities requiring unusual equipment. Email the menu by Monday, and we’ll confirm any questions before you buy ingredients.\nCaller: I’ll send it this weekend. Where should we meet our participants?\nCoordinator: The easiest landmark is the library opposite us. Ask everyone to wait there rather than beside the narrow driveway. You can collect the group together and use the side entrance. I’ll arrange for someone to show you the controls when you arrive.",
+      "groups": [
+        {
+          "kind": "completion",
+          "instruction": "Complete the notes. Write ONE WORD AND/OR A NUMBER for each answer.",
+          "items": [
+            {
+              "prompt": "Booking contact’s surname: ____",
+              "answers": [
+                "Mercer"
+              ],
+              "evidence": "M-E-R-C-E-R",
+              "explanation": "M-E-R-C-E-R",
+              "options": null,
+              "number": 1
+            },
+            {
+              "prompt": "Chosen day: ____",
+              "answers": [
+                "Thursday"
+              ],
+              "evidence": "Thursday is the day we’ve agreed on",
+              "explanation": "Thursday is the day we’ve agreed on",
+              "options": null,
+              "number": 2
+            },
+            {
+              "prompt": "Start time: ____",
+              "answers": [
+                "6:30"
+              ],
+              "evidence": "let’s start at 6:30",
+              "explanation": "let’s start at 6:30",
+              "options": null,
+              "number": 3
+            },
+            {
+              "prompt": "Total hire charge: £____",
+              "answers": [
+                "54"
+              ],
+              "evidence": "the hire will be fifty-four pounds",
+              "explanation": "The full three-hour charge is £54, not the hourly rate or commercial rate.",
+              "options": null,
+              "number": 4
+            },
+            {
+              "prompt": "Deposit required: £____",
+              "answers": [
+                "20"
+              ],
+              "evidence": "a deposit of twenty pounds",
+              "explanation": "a deposit of twenty pounds",
+              "options": null,
+              "number": 5
+            }
+          ],
+          "bank": null,
+          "maxWords": 1,
+          "numbersAllowed": true
+        },
+        {
+          "kind": "completion",
+          "instruction": "Complete the notes. Write ONE WORD ONLY for each answer.",
+          "items": [
+            {
+              "prompt": "Each participant must bring an ____.",
+              "answers": [
+                "apron"
+              ],
+              "evidence": "Every participant needs an apron",
+              "explanation": "Every participant needs an apron",
+              "options": null,
+              "number": 6
+            },
+            {
+              "prompt": "Wheelchair users should use the ____ entrance.",
+              "answers": [
+                "side"
+              ],
+              "evidence": "The side entrance is level",
+              "explanation": "The side entrance is level",
+              "options": null,
+              "number": 7
+            },
+            {
+              "prompt": "Ingredients may be kept in the ____ from midday.",
+              "answers": [
+                "fridge"
+              ],
+              "evidence": "use the fridge from midday",
+              "explanation": "use the fridge from midday",
+              "options": null,
+              "number": 8
+            },
+            {
+              "prompt": "The organiser should email the ____ by Monday.",
+              "answers": [
+                "menu"
+              ],
+              "evidence": "Email the menu by Monday",
+              "explanation": "Email the menu by Monday",
+              "options": null,
+              "number": 9
+            },
+            {
+              "prompt": "Participants should initially gather outside the ____.",
+              "answers": [
+                "library"
+              ],
+              "evidence": "The easiest landmark is the library opposite us",
+              "explanation": "The easiest landmark is the library opposite us",
+              "options": null,
+              "number": 10
+            }
+          ],
+          "bank": null,
+          "maxWords": 1,
+          "numbersAllowed": false
+        }
+      ]
+    },
+    {
+      "title": "Welcome to the riverside craft fair",
+      "script": "Host: Welcome to our annual riverside craft fair. Before you explore, I’ll explain the site and mention a few changes to the programme. Please keep the printed plan facing the way you entered: the gate is at the bottom and the river at the top. The main path runs straight from the gate towards the river. The letters on the plan mark places, not the names of activities. We have kept the central crossing clear so visitors can move between the two sides without walking through a stall queue.\nThe information tent is the first place on your left as you come through the gate. You can leave a message there if you become separated from someone. Directly opposite it, on the right-hand side of the entrance path, is the bag store. Please don’t confuse the two. We can keep a coat or shopping bag in the store, but valuables should stay with you. There is no charge, though everything must be collected before we close.\nContinue up the path to the crossing. The pottery demonstrations are on the left, in the middle row of the plan. The demonstrators need water, which is why they aren’t using the dry space near the gate this year. Across the path in the same row is the repair stall. Bring a small household object there and the volunteers will discuss what might be possible. They cannot promise to complete every repair during the fair, but can often identify the next useful step.\nAt the far end, beside the river, you’ll find the quiet seating area. It’s the space on the left, not the performance platform on the right. We’ve kept music away from that seating because some visitors want somewhere to rest and talk without raising their voices. The central space nearest the river is being kept empty for access, and it isn’t an extra picnic area.\n---\nNow, about today’s arrangements. The fair has been moved from Sunday to Saturday this year because the riverside road will be used for a running event tomorrow. It wasn’t a change caused by the weather forecast, and it has nothing to do with the availability of the makers. Most have reserved both dates anyway. We hope announcing it early has prevented wasted journeys.\nThere will be a small admission charge for the evening music, but entrance to the craft fair itself is free. The money from the music will pay for next year’s sign-language interpretation. We had considered buying more display tables, but accessibility support was the priority chosen at our last public meeting.\nFor children, there is a short weaving workshop. Parents sometimes expect to leave children there while they shop. This time an adult must stay with each child, since the activity is designed for them to work together. You don’t need to reserve, but if a table is full you’ll be asked to return at the next starting time rather than stand in the working area.\nWe ask stallholders to avoid disposable packaging where possible. Visitors can help by bringing containers for small purchases. There is a recycling point near the gate, but using fewer packages is our first aim; the recycling bins aren’t a reason to wrap everything twice. Some delicate pieces do need protection, and makers will explain the options.\nFinally, if you have comments about the fair, please use the short paper form at the information tent. We will post an online survey next week, but today’s form asks about routes and seating while they’re fresh in your mind. There’s no prize draw attached. We want to hear about a difficulty even if the rest of your visit was enjoyable. Thank you, and have a good afternoon.",
+      "groups": [
+        {
+          "kind": "matching",
+          "instruction": "Label the plan with the correct location letter. Write the correct letter. You may use any letter more than once.",
+          "items": [
+            {
+              "prompt": "Information tent",
+              "answers": [
+                "E"
+              ],
+              "evidence": "the first place on your left",
+              "explanation": "the first place on your left",
+              "options": null,
+              "number": 11
+            },
+            {
+              "prompt": "Bag store",
+              "answers": [
+                "F"
+              ],
+              "evidence": "on the right-hand side of the entrance path",
+              "explanation": "on the right-hand side of the entrance path",
+              "options": null,
+              "number": 12
+            },
+            {
+              "prompt": "Pottery demonstrations",
+              "answers": [
+                "C"
+              ],
+              "evidence": "on the left, in the middle row",
+              "explanation": "on the left, in the middle row",
+              "options": null,
+              "number": 13
+            },
+            {
+              "prompt": "Repair stall",
+              "answers": [
+                "D"
+              ],
+              "evidence": "Across the path in the same row",
+              "explanation": "Across the path in the same row",
+              "options": null,
+              "number": 14
+            },
+            {
+              "prompt": "Quiet seating",
+              "answers": [
+                "A"
+              ],
+              "evidence": "beside the river",
+              "explanation": "The left riverside space, not the right platform.",
+              "options": null,
+              "number": 15
+            }
+          ],
+          "bank": {
+            "A": "Location on the plan",
+            "B": "Location on the plan",
+            "C": "Location on the plan",
+            "D": "Location on the plan",
+            "E": "Location on the plan",
+            "F": "Location on the plan"
+          },
+          "maxWords": null,
+          "numbersAllowed": false
+        },
+        {
+          "kind": "multiple-choice",
+          "instruction": "Choose the correct letter, A, B or C.",
+          "items": [
+            {
+              "prompt": "Why is the fair on Saturday?",
+              "answers": [
+                "B"
+              ],
+              "evidence": "used for a running event tomorrow",
+              "explanation": "Sunday road use caused the change.",
+              "options": [
+                "Rain was forecast for Sunday.",
+                "The road is needed for another event on Sunday.",
+                "The makers requested a shorter weekend."
+              ],
+              "number": 16
+            },
+            {
+              "prompt": "What will evening-music income support?",
+              "answers": [
+                "C"
+              ],
+              "evidence": "pay for next year’s sign-language interpretation",
+              "explanation": "Not tables or musicians' equipment.",
+              "options": [
+                "New display tables.",
+                "Sound equipment for performers.",
+                "Communication access at the next fair."
+              ],
+              "number": 17
+            },
+            {
+              "prompt": "What is required at the children’s workshop?",
+              "answers": [
+                "A"
+              ],
+              "evidence": "an adult must stay with each child",
+              "explanation": "Participation is a shared activity.",
+              "options": [
+                "An adult must remain with the child.",
+                "A place must be booked beforehand.",
+                "Children must bring their own materials."
+              ],
+              "number": 18
+            },
+            {
+              "prompt": "What is the main packaging aim?",
+              "answers": [
+                "B"
+              ],
+              "evidence": "using fewer packages is our first aim",
+              "explanation": "Waste prevention takes priority over recycling.",
+              "options": [
+                "To package all items in recyclable layers.",
+                "To reduce how much packaging is used.",
+                "To prohibit protection of fragile items."
+              ],
+              "number": 19
+            },
+            {
+              "prompt": "Why complete the paper form today?",
+              "answers": [
+                "C"
+              ],
+              "evidence": "while they’re fresh in your mind",
+              "explanation": "It captures immediate experience of routes and seats.",
+              "options": [
+                "It is the only way to enter a prize draw.",
+                "No online feedback will be accepted.",
+                "Details of the visit will still be easy to recall."
+              ],
+              "number": 20
+            }
+          ],
+          "bank": null,
+          "maxWords": null,
+          "numbersAllowed": false
+        }
+      ],
+      "visual": "Plan (not to scale). North / river is at the top. All boxes are beside the straight central path.\n\n```text\n                 RIVER / NORTH\n       +-------------+   +-------------+\n       |      A      |   |      B      |\n       +-------------+   +-------------+\n                    PATH\n       +-------------+   +-------------+\n       |      C      |---|      D      |  CROSSING\n       +-------------+   +-------------+\n                    PATH\n       +-------------+   +-------------+\n       |      E      |   |      F      |\n       +-------------+   +-------------+\n                    GATE\n```\n"
+    },
+    {
+      "title": "Planning a study of queue information",
+      "script": "Maya: We need to narrow our project before the methods seminar. I liked the idea of studying queues in the campus café, but counting how long people wait sounds like something the manager could do without us.\nLeo: The tutor’s comment was that our original question was too broad. We were trying to measure satisfaction, purchasing and staff performance all at once. Why don’t we focus on whether information changes people’s experience of waiting?\nMaya: Like displaying an estimated wait? We shouldn’t promise that information always makes people happier. If the estimate is wrong, it could make things worse.\nLeo: Exactly. We could compare a simple expected-wait sign with the ordinary queue. But I don’t think asking people to recall the time afterwards gives us a reliable actual duration.\nMaya: Let’s have an observer note arrival and service times. Then the questionnaire can ask about perceived waiting, which is a different thing. That distinction might be the useful part of the project.\nLeo: We also need comparable periods. Monday lunchtime and Friday afternoon would differ for too many reasons. The manager says the same lunch menu is served on Tuesday and Thursday, and the usual staffing level is the same.\nMaya: That’s better, though a club event could still change the crowd. We should log unusual events rather than assuming two days are identical. Maybe use several weeks so that one odd day doesn’t dominate.\nLeo: How do we decide who sees the sign? We can’t put it up for one person and hide it from the next if they’re standing together.\nMaya: No. Use whole time blocks, alternating the order across days. Otherwise the sign condition would always be later, when perhaps people are less rushed. We need the schedule written before we see any results.\nLeo: And the questionnaire must be optional. People are trying to buy lunch, not volunteering for a long interview. A brief invitation after they’ve been served would interfere less than asking while they’re choosing food.\n---\nMaya: Let’s allocate the preparation. First, the consent notice. I can draft it, but the tutor needs to check the wording. It’s not ready for customers until we have that approval.\nLeo: Agreed. The manager’s permission is already sorted. She signed the email yesterday, including the observation positions. We’ll put that in the project folder as completed rather than spend another meeting rewriting it.\nMaya: What about the timing sheet? We’ve designed columns, but we haven’t tried using it while several people arrive together. That’s the thing we should pilot before the main collection.\nLeo: Yes. We can practise during a quiet half-hour with volunteers, without treating those entries as study data. If we can’t keep track, the form needs changing, not the customers.\nMaya: The question about how much money people spend seems unnecessary now. It belonged to the earlier project, and collecting it would make the survey longer without answering our revised question.\nLeo: Let’s remove it. We don’t need personal spending information merely because it might be interesting later. The fewer irrelevant details we ask for, the easier it is to explain the purpose honestly.\nMaya: We also need a final chart. I started choosing colours, then realised we don’t know the distribution of the data. We could decide what variables belong on it, but should leave the exact display until after collection.\nLeo: Right. Averages might hide a few very long waits. We should show enough detail to make those visible, though we don’t need to decide between every possible graph this afternoon.\nMaya: I’m glad we narrowed it. The study won’t tell the manager how to redesign the whole café, but it could show whether estimated-wait information changes perceptions under these conditions.\nLeo: And if actual times differ between conditions, we’ll report that rather than attribute every difference to the sign. A small honest study is more useful than a grand conclusion our design can’t support.",
+      "groups": [
+        {
+          "kind": "multiple-choice",
+          "instruction": "Choose the correct letter, A, B or C.",
+          "items": [
+            {
+              "prompt": "Why do the students revise their initial project?",
+              "answers": [
+                "A"
+              ],
+              "evidence": "our original question was too broad",
+              "explanation": "They were trying to investigate too many outcomes.",
+              "options": [
+                "It attempted to examine too many things.",
+                "The manager refused all observation.",
+                "No queues existed at the café."
+              ],
+              "number": 21
+            },
+            {
+              "prompt": "How will actual waiting time be measured?",
+              "answers": [
+                "C"
+              ],
+              "evidence": "an observer note arrival and service times",
+              "explanation": "Separate observed duration from perceived waiting.",
+              "options": [
+                "By customers recalling it later.",
+                "By reading the estimated-wait sign.",
+                "By recording arrival and service times."
+              ],
+              "number": 22
+            },
+            {
+              "prompt": "Why choose Tuesday and Thursday lunch periods?",
+              "answers": [
+                "B"
+              ],
+              "evidence": "the same lunch menu is served",
+              "explanation": "Menu and staffing are more comparable.",
+              "options": [
+                "They attract exactly the same customers.",
+                "Some important operating conditions are similar.",
+                "No unusual events can occur on those days."
+              ],
+              "number": 23
+            },
+            {
+              "prompt": "Why alternate the order of time blocks?",
+              "answers": [
+                "A"
+              ],
+              "evidence": "the sign condition would always be later",
+              "explanation": "Avoid confounding the sign with time of day.",
+              "options": [
+                "To avoid consistently showing the sign later.",
+                "To make the café serve everyone faster.",
+                "To let each customer choose a condition."
+              ],
+              "number": 24
+            },
+            {
+              "prompt": "When will people be invited to answer questions?",
+              "answers": [
+                "C"
+              ],
+              "evidence": "after they’ve been served",
+              "explanation": "This reduces disruption while ordering.",
+              "options": [
+                "As they enter the café.",
+                "While they choose their food.",
+                "After they have been served."
+              ],
+              "number": 25
+            }
+          ],
+          "bank": null,
+          "maxWords": null,
+          "numbersAllowed": false
+        },
+        {
+          "kind": "matching",
+          "instruction": "What action do the students decide on for each item? Write the correct letter. You may use any letter more than once.",
+          "items": [
+            {
+              "prompt": "Consent notice",
+              "answers": [
+                "B"
+              ],
+              "evidence": "the tutor needs to check the wording",
+              "explanation": "the tutor needs to check the wording",
+              "options": null,
+              "number": 26
+            },
+            {
+              "prompt": "Manager’s permission",
+              "answers": [
+                "D"
+              ],
+              "evidence": "as completed",
+              "explanation": "as completed",
+              "options": null,
+              "number": 27
+            },
+            {
+              "prompt": "Timing sheet",
+              "answers": [
+                "A"
+              ],
+              "evidence": "the thing we should pilot",
+              "explanation": "the thing we should pilot",
+              "options": null,
+              "number": 28
+            },
+            {
+              "prompt": "Spending question",
+              "answers": [
+                "C"
+              ],
+              "evidence": "Let’s remove it",
+              "explanation": "Let’s remove it",
+              "options": null,
+              "number": 29
+            },
+            {
+              "prompt": "Final chart format",
+              "answers": [
+                "E"
+              ],
+              "evidence": "leave the exact display until after collection",
+              "explanation": "leave the exact display until after collection",
+              "options": null,
+              "number": 30
+            }
+          ],
+          "bank": {
+            "A": "Try it out before the main study",
+            "B": "Obtain tutor approval",
+            "C": "Remove it",
+            "D": "Treat it as completed",
+            "E": "Decide after collecting data",
+            "F": "Ask customers to design it"
+          },
+          "maxWords": null,
+          "numbersAllowed": false
+        }
+      ]
+    },
+    {
+      "title": "How wetlands preserve traces of the past",
+      "script": "Lecturer: Today we’ll consider why some wetlands contain remarkable archaeological remains, and why discovering those remains creates a new set of problems. When people imagine an ancient object surviving for centuries, they often think of stone or metal. In waterlogged settings, materials such as wood can sometimes remain where they would ordinarily decay. The important condition is not simply that the object is wet. Water can restrict the supply of oxygen, slowing some of the processes that normally destroy organic material. Conditions vary, so the presence of a wetland is not a guarantee that everything deposited there will survive.\nWetland deposits can also build up in layers. A boat landing, a discarded tool and later plant remains may occupy different levels. Archaeologists record these layers because position helps establish relationships between events. A beautiful object removed without its context can answer fewer questions than a less spectacular object whose location was carefully documented. For that reason, a discovery reported promptly by a walker or landowner can be especially valuable. The object may need to be left in place until its surroundings have been recorded and a suitable recovery plan has been made.\nOne source of evidence is pollen. These tiny particles can survive in certain deposits, and their forms can indicate groups of plants that were present in the surrounding landscape. This does not produce a perfectly detailed picture of an ancient garden. Wind carries some pollen farther than others, and different plants produce different quantities. Researchers therefore compare patterns and use several sources of evidence. A change in pollen may suggest a change in vegetation, but deciding whether people, climate or another process caused it requires additional argument.\nSmall samples are often examined under a microscope. The work involves identification, counting and attention to possible contamination from more recent material. Sample containers must be labelled clearly, and the sampling position must be recorded. Without that information, laboratory precision cannot restore a lost connection to the site. Researchers may also examine seeds, insects and pieces of wood. Agreement between these sources can strengthen an interpretation, while disagreement can reveal a question that would remain invisible if only one kind of material were studied.\nA particularly important threat is drainage. Lowering the water level can expose deposits to air and alter conditions that had preserved them. Damage may begin before a buried structure becomes visible at the surface. Farmers, engineers and archaeologists consequently need ways to exchange information before major ground changes occur. This is not a demand to prohibit every use of wet land. It is an argument for assessing what may be lost while there is still time to modify a plan or record vulnerable evidence properly.\nRecovery itself also changes the environment of an object. A wooden implement that looks solid in the ground may distort or crack if it is allowed to dry without treatment. Conservators must plan stabilisation before excavation, including suitable packaging and access to facilities. Removing an object first and searching for money afterwards can leave an institution responsible for material it cannot care for. Sometimes leaving a deposit undisturbed, with monitoring, is the more responsible choice. Excavation is one method of research rather than an automatic reward for every promising discovery.\nFinally, consider public interpretation. Museums often display the surviving object but not the months of recording and treatment around it. A useful display can include a reconstruction, provided visitors can distinguish it from the original material. The distinction matters because a completed shape may contain informed guesses. Good interpretation makes those guesses visible without making the object uninteresting. Wetlands preserve opportunities to ask questions about the past. The purpose of careful archaeology is to keep those opportunities connected to evidence rather than turn a fragile discovery into an attractive object stripped of its story.",
+      "groups": [
+        {
+          "kind": "completion",
+          "instruction": "Complete the notes. Write ONE WORD ONLY for each answer.",
+          "items": [
+            {
+              "prompt": "Preservation can occur when water restricts the supply of ____.",
+              "answers": [
+                "oxygen"
+              ],
+              "evidence": "restrict the supply of oxygen",
+              "explanation": "restrict the supply of oxygen",
+              "options": null,
+              "number": 31
+            },
+            {
+              "prompt": "The position of objects within ____ helps establish relationships between events.",
+              "answers": [
+                "layers"
+              ],
+              "evidence": "record these layers because position",
+              "explanation": "record these layers because position",
+              "options": null,
+              "number": 32
+            },
+            {
+              "prompt": "An object separated from its ____ answers fewer questions.",
+              "answers": [
+                "context"
+              ],
+              "evidence": "removed without its context",
+              "explanation": "removed without its context",
+              "options": null,
+              "number": 33
+            },
+            {
+              "prompt": "The tiny plant particles discussed as evidence of earlier vegetation are ____.",
+              "answers": [
+                "pollen"
+              ],
+              "evidence": "One source of evidence is pollen",
+              "explanation": "One source of evidence is pollen",
+              "options": null,
+              "number": 34
+            },
+            {
+              "prompt": "Tiny samples may be studied using a ____.",
+              "answers": [
+                "microscope"
+              ],
+              "evidence": "examined under a microscope",
+              "explanation": "examined under a microscope",
+              "options": null,
+              "number": 35
+            },
+            {
+              "prompt": "Researchers must guard against ____ by newer material.",
+              "answers": [
+                "contamination"
+              ],
+              "evidence": "possible contamination from more recent material",
+              "explanation": "possible contamination from more recent material",
+              "options": null,
+              "number": 36
+            },
+            {
+              "prompt": "A major threat to preservation is ____.",
+              "answers": [
+                "drainage"
+              ],
+              "evidence": "A particularly important threat is drainage",
+              "explanation": "A particularly important threat is drainage",
+              "options": null,
+              "number": 37
+            },
+            {
+              "prompt": "Conservators should plan ____ before objects are excavated.",
+              "answers": [
+                "stabilisation"
+              ],
+              "evidence": "plan stabilisation before excavation",
+              "explanation": "plan stabilisation before excavation",
+              "options": null,
+              "number": 38
+            },
+            {
+              "prompt": "Leaving deposits in place may require continuing ____.",
+              "answers": [
+                "monitoring"
+              ],
+              "evidence": "with monitoring",
+              "explanation": "with monitoring",
+              "options": null,
+              "number": 39
+            },
+            {
+              "prompt": "Visitors should distinguish a ____ from original material.",
+              "answers": [
+                "reconstruction"
+              ],
+              "evidence": "include a reconstruction",
+              "explanation": "include a reconstruction",
+              "options": null,
+              "number": 40
+            }
+          ],
+          "bank": null,
+          "maxWords": 1,
+          "numbersAllowed": false
+        }
+      ]
+    }
+  ],
+  "reading": [
+    {
+      "title": "The second life of a railway station",
+      "paragraphs": {
+        "A": "When the last passenger train left Mereford's station, the council inherited a building that seemed inconvenient in almost every respect. Its long waiting room was costly to heat, the platform divided the site, and there was little parking. Several councillors favoured demolition. Residents, however, remembered the station as the town's informal meeting place, not merely somewhere to board a train. A public consultation therefore asked what activities the town lacked before asking what should happen to the building. This reversed the usual sequence of choosing a use and then seeking support for it.",
+        "B": "The consultation revealed demand for spaces that could be borrowed briefly: a room for a job interview, a table for a small club, or somewhere to mend a torn coat. It did not reveal much enthusiasm for another exhibition about railway history. The architects initially proposed one large open hall, believing that maximum flexibility required minimum division. During a trial weekend, however, a children's storytelling session overwhelmed a conversation group at the opposite end. Curtains softened the appearance but did little to stop sound. The final plan included several enclosed rooms with glazed doors, retaining visual openness while allowing incompatible activities to coexist.",
+        "C": "Keeping the platform was another disputed decision. It could not provide step-free access by itself, and early sketches treated it as an obstacle to be removed. A resident who used a wheelchair suggested a gently sloping route along the outer wall instead. The resulting ramp joined the old platform at its far end and created a sheltered place to wait. It was longer than a direct staircase but required no lift or electrical machinery. The design team subsequently used this route as the principal entrance for everyone, rather than labelling it as a separate accessible entrance.",
+        "D": "Finances shaped the refurbishment as much as architectural preference. The project had received a grant for construction but no permanent promise to cover running costs. The committee rejected polished stone flooring because its price would consume money needed for insulation. Original floorboards were repaired where possible; damaged sections were replaced with matching reclaimed timber. The choices were not presented as historical reconstruction. The committee wanted a building that could survive everyday wear and remain affordable to maintain, even when the initial excitement had faded and volunteers had other demands on their time.",
+        "E": "The first winter tested those priorities. A new booking system showed that most daytime users needed only two of the rooms. Heating the entire building for them made little sense, so separate heating controls were installed. Users could reserve adjoining rooms when they needed more space. Electricity use fell, although the committee warned that the mild winter prevented a fair comparison with the station's previous bills. It published monthly meter readings alongside opening hours, allowing residents to see both the expenditure and the amount of activity it supported. No claim of a precise percentage saving was made.",
+        "F": "Running the centre also required rules that were less visible than the renovation. Small groups could book ordinary meetings without charge, while commercial courses paid a modest fee. A refundable deposit covered the keys, but the committee offered an alternative arrangement for residents who could not afford it. Volunteers discovered that a complicated application form discouraged the very informal groups the centre hoped to attract. They replaced it with a short conversation and a one-page agreement. Insurance and safety requirements remained, but the process no longer assumed that every group had an experienced secretary.",
+        "G": "After two years, attendance alone was no longer considered a sufficient measure of success. A crowded craft market might attract many people who never returned, while a weekly reading group could matter greatly to six regular participants. The coordinator began keeping a diary of requests that the centre could not accommodate. Some concerned opening hours, others the lack of storage or difficulty reaching the station after the evening bus stopped. This record described unmet needs rather than only celebrating completed bookings. It also helped distinguish problems within the committee's control from those requiring transport or other public services.",
+        "H": "Mereford's experience offers no simple formula for every disused station. The building benefited from committed residents and a central location, advantages that cannot be manufactured by a clever floor plan. Nevertheless, its history challenges the idea that preserving a public building means preserving its former purpose. Railway objects occupy one small cabinet, while most rooms serve activities never imagined by the original builders. The committee argues that continued usefulness is a stronger defence against neglect than admiration alone. For this station, keeping the building has depended on allowing its social meaning to change."
+      },
+      "groups": [
+        {
+          "kind": "true-false-not-given",
+          "instruction": "Do these statements agree with the information in the passage? Write TRUE, FALSE or NOT GIVEN.",
+          "items": [
+            {
+              "prompt": "The consultation began by identifying activities missing from the town.",
+              "answers": [
+                "TRUE"
+              ],
+              "evidence": "asked what activities the town lacked before asking what should happen to the building",
+              "explanation": "Needs were explored before a new use was chosen.",
+              "options": null,
+              "number": 1
+            },
+            {
+              "prompt": "The open-hall arrangement successfully separated noisy and quiet activities.",
+              "answers": [
+                "FALSE"
+              ],
+              "evidence": "a children's storytelling session overwhelmed a conversation group",
+              "explanation": "The trial exposed acoustic conflict.",
+              "options": null,
+              "number": 2
+            },
+            {
+              "prompt": "The resident who proposed the ramp had previously worked as an architect.",
+              "answers": [
+                "NOT GIVEN"
+              ],
+              "evidence": "A resident who used a wheelchair suggested a gently sloping route",
+              "explanation": "The resident's profession is not stated.",
+              "options": null,
+              "number": 3
+            },
+            {
+              "prompt": "The ramp became the main entrance for all visitors.",
+              "answers": [
+                "TRUE"
+              ],
+              "evidence": "used this route as the principal entrance for everyone",
+              "explanation": "It was not reserved for wheelchair users.",
+              "options": null,
+              "number": 4
+            },
+            {
+              "prompt": "The construction grant guaranteed future operating funds.",
+              "answers": [
+                "FALSE"
+              ],
+              "evidence": "no permanent promise to cover running costs",
+              "explanation": "Construction funding did not guarantee running costs.",
+              "options": null,
+              "number": 5
+            },
+            {
+              "prompt": "The reclaimed timber was donated by a local business.",
+              "answers": [
+                "NOT GIVEN"
+              ],
+              "evidence": "replaced with matching reclaimed timber",
+              "explanation": "The source and purchase terms are not specified.",
+              "options": null,
+              "number": 6
+            }
+          ],
+          "bank": null,
+          "maxWords": null,
+          "numbersAllowed": false
+        },
+        {
+          "kind": "completion",
+          "instruction": "Complete the notes. Write ONE WORD ONLY for each answer.",
+          "items": [
+            {
+              "prompt": "Money was retained for ____ instead of expensive stone floors.",
+              "answers": [
+                "insulation"
+              ],
+              "evidence": "money needed for insulation",
+              "explanation": "money needed for insulation",
+              "options": null,
+              "number": 7
+            },
+            {
+              "prompt": "Each room could be heated separately using its own ____.",
+              "answers": [
+                "controls"
+              ],
+              "evidence": "separate heating controls were installed",
+              "explanation": "separate heating controls were installed",
+              "options": null,
+              "number": 8
+            },
+            {
+              "prompt": "The committee published monthly ____ readings.",
+              "answers": [
+                "meter"
+              ],
+              "evidence": "published monthly meter readings",
+              "explanation": "published monthly meter readings",
+              "options": null,
+              "number": 9
+            },
+            {
+              "prompt": "A refundable ____ was normally required for the keys.",
+              "answers": [
+                "deposit"
+              ],
+              "evidence": "A refundable deposit covered the keys",
+              "explanation": "A refundable deposit covered the keys",
+              "options": null,
+              "number": 10
+            },
+            {
+              "prompt": "The coordinator recorded unmet requests in a ____.",
+              "answers": [
+                "diary"
+              ],
+              "evidence": "keeping a diary of requests",
+              "explanation": "keeping a diary of requests",
+              "options": null,
+              "number": 11
+            },
+            {
+              "prompt": "One difficulty outside the committee's direct control involved public ____.",
+              "answers": [
+                "transport"
+              ],
+              "evidence": "requiring transport or other public services",
+              "explanation": "requiring transport or other public services",
+              "options": null,
+              "number": 12
+            },
+            {
+              "prompt": "Railway objects are displayed in a small ____.",
+              "answers": [
+                "cabinet"
+              ],
+              "evidence": "Railway objects occupy one small cabinet",
+              "explanation": "Railway objects occupy one small cabinet",
+              "options": null,
+              "number": 13
+            }
+          ],
+          "bank": null,
+          "maxWords": 1,
+          "numbersAllowed": false
+        }
+      ]
+    },
+    {
+      "title": "Listening to a landscape",
+      "paragraphs": {
+        "A": "A landscape can be surveyed with a camera, but photographs omit much of what happens beyond the visible frame. A recorder left beside a pond may capture insects, traffic, wind and human voices throughout the night. Researchers use the term soundscape for this combined acoustic environment. It is tempting to describe a rich recording as evidence of a healthy ecosystem. Yet an impressive chorus is not a census. A single loud animal can dominate a microphone, while numerous quiet species remain inaudible. The attraction of sound recording lies partly in its reach, but its limitations begin with the same property.",
+        "B": "In an imagined monitoring project at Bellwater Reserve, ecologist Mara Sen placed identical recorders at twelve ponds. Her colleague, technician Owen Price, suggested positioning them where volunteers could reach them easily. Sen objected that convenient paths might also be the noisiest places. They eventually selected positions using a grid, then documented exceptions where water or private land prevented installation. Each microphone was mounted at the same height. This did not eliminate all environmental differences, but it made the reasons for variation more visible. A comparable procedure mattered more than locating the most spectacular sounds.",
+        "C": "The team soon encountered a less obvious problem: rain striking protective covers sounded remarkably like repeated animal calls to an automatic detector. Price redesigned the cover and added a short record of weather conditions to every file. Simply deleting all wet nights would have introduced a different bias, because some animals are especially active after rainfall. Instead, the team labelled intervals in which rain interfered with identification. A recording could therefore remain in the archive without being treated as reliable evidence for every possible question. Quality was attached to particular uses, not to the file as a whole.",
+        "D": "For comparison with the machine, volunteers listened to short extracts and marked calls they recognised. Training began with clear examples, but Sen insisted on including ambiguous ones before volunteers worked independently. She wanted listeners to recognise uncertainty, not merely memorise ideal calls. Each extract was assessed by two people who could not see one another's decisions. Disagreements were retained for review rather than resolved by automatically choosing the more confident listener. Confidence, Sen noted, was itself a human judgement; it could reflect familiarity with a training example rather than a genuinely distinctive sound.",
+        "E": "Software made it possible to search months of recordings quickly. However, detector developer Lila Tran warned against comparing a new system only with its own earlier version. If both versions missed the same quiet species, an apparent improvement could still leave a major gap. Her team built a separate reference set, including recordings from sites absent from the training collection. Performance fell on these unfamiliar sites. Tran regarded this as useful information about the limits of transfer, although a sponsor had hoped to advertise a single accuracy figure. A lower, properly qualified result could guide deployment more effectively than an impressive average.",
+        "F": "Interpreting changes over time required another distinction. A decline in detected calls might mean fewer animals, but it could also mean that traffic had increased, masking the same population. Sen therefore paired acoustic observations with occasional visual surveys. These surveys were expensive and covered shorter periods, yet they offered a different kind of evidence. When the two sources disagreed, the team investigated rather than discarding the inconvenient result. No instrument acted as a final judge. The purpose of combining methods was to expose their different blind spots, not to declare that agreement was guaranteed.",
+        "G": "The recordings also contained conversations from a footpath near two ponds. Local adviser Imani Cole argued that obtaining permission to place a recorder was not the same as obtaining permission to distribute everything it captured. The public archive consequently excluded speech-containing segments, while authorised researchers could request restricted access for an approved purpose. This reduced the amount of openly available material. Cole considered the restriction a condition of responsible monitoring rather than a failure of scientific openness. Signs near the path explained what was collected and whom residents could contact, including people who never used the project's website.",
+        "H": "Soundscape research thus involves more than replacing field visits with unattended devices. Decisions about placement, weather, training and access shape the evidence long before anyone draws an ecological conclusion. Bellwater's fictional project illustrates why cheap data collection need not produce cheap interpretation. The recorder can work while a researcher sleeps, but it cannot decide which uncertainty matters or whose privacy deserves attention. For Sen, the most valuable outcome was not a claim that every pond had been understood. It was a record detailed enough for later researchers to ask different questions without mistaking the original team's choices for facts about nature."
+      },
+      "groups": [
+        {
+          "kind": "matching",
+          "instruction": "Which paragraph contains the following information? Write the correct letter. You may use any letter more than once.",
+          "items": [
+            {
+              "prompt": "a reason for retaining apparently poor-quality material",
+              "answers": [
+                "C"
+              ],
+              "evidence": "A recording could therefore remain in the archive",
+              "explanation": "Rain-contaminated material can still be useful for some purposes.",
+              "options": null,
+              "number": 14
+            },
+            {
+              "prompt": "a proposed placement method rejected because of possible bias",
+              "answers": [
+                "B"
+              ],
+              "evidence": "convenient paths might also be the noisiest places",
+              "explanation": "convenient paths might also be the noisiest places",
+              "options": null,
+              "number": 15
+            },
+            {
+              "prompt": "an example of two methods producing different results",
+              "answers": [
+                "F"
+              ],
+              "evidence": "When the two sources disagreed, the team investigated",
+              "explanation": "When the two sources disagreed, the team investigated",
+              "options": null,
+              "number": 16
+            },
+            {
+              "prompt": "a distinction between permission to collect and permission to share",
+              "answers": [
+                "G"
+              ],
+              "evidence": "not the same as obtaining permission to distribute",
+              "explanation": "not the same as obtaining permission to distribute",
+              "options": null,
+              "number": 17
+            }
+          ],
+          "bank": {
+            "A": "Paragraph",
+            "B": "Paragraph",
+            "C": "Paragraph",
+            "D": "Paragraph",
+            "E": "Paragraph",
+            "F": "Paragraph",
+            "G": "Paragraph",
+            "H": "Paragraph"
+          },
+          "maxWords": null,
+          "numbersAllowed": false
+        },
+        {
+          "kind": "matching",
+          "instruction": "Match each statement with the correct person. Write the correct letter. You may use any letter more than once.",
+          "items": [
+            {
+              "prompt": "Insisted that training should include uncertain examples",
+              "answers": [
+                "A"
+              ],
+              "evidence": "Sen insisted on including ambiguous ones",
+              "explanation": "Sen insisted on including ambiguous ones",
+              "options": null,
+              "number": 18
+            },
+            {
+              "prompt": "Altered equipment to reduce a misleading signal",
+              "answers": [
+                "B"
+              ],
+              "evidence": "Price redesigned the cover",
+              "explanation": "Price redesigned the cover",
+              "options": null,
+              "number": 19
+            },
+            {
+              "prompt": "Asked for testing on material from unfamiliar locations",
+              "answers": [
+                "C"
+              ],
+              "evidence": "Her team built a separate reference set",
+              "explanation": "Tran's team used sites outside training.",
+              "options": null,
+              "number": 20
+            },
+            {
+              "prompt": "Defended limits on the open publication of recordings",
+              "answers": [
+                "D"
+              ],
+              "evidence": "Cole considered the restriction a condition of responsible monitoring",
+              "explanation": "Cole considered the restriction a condition of responsible monitoring",
+              "options": null,
+              "number": 21
+            }
+          ],
+          "bank": {
+            "A": "Mara Sen",
+            "B": "Owen Price",
+            "C": "Lila Tran",
+            "D": "Imani Cole"
+          },
+          "maxWords": null,
+          "numbersAllowed": false
+        },
+        {
+          "kind": "multiple-choice",
+          "instruction": "Choose the correct letter, A, B, C or D.",
+          "items": [
+            {
+              "prompt": "What does the opening paragraph emphasise?",
+              "answers": [
+                "B"
+              ],
+              "evidence": "an impressive chorus is not a census",
+              "explanation": "Loudness or richness alone is not a reliable count.",
+              "options": [
+                "Recorders usually miss events outside the camera frame.",
+                "The apparent richness of a recording can be misleading.",
+                "Quiet species are best identified from photographs.",
+                "A single microphone provides a complete species list."
+              ],
+              "number": 22
+            },
+            {
+              "prompt": "Why were volunteer disagreements retained?",
+              "answers": [
+                "D"
+              ],
+              "evidence": "Confidence, Sen noted, was itself a human judgement",
+              "explanation": "Confidence was not sufficient grounds to prefer one listener.",
+              "options": [
+                "The volunteers were not allowed to repeat training.",
+                "The team wanted identical totals from every listener.",
+                "Machines had already resolved all difficult cases.",
+                "Confidence did not necessarily establish correctness."
+              ],
+              "number": 23
+            },
+            {
+              "prompt": "How did Tran respond to the lower test result?",
+              "answers": [
+                "A"
+              ],
+              "evidence": "useful information about the limits of transfer",
+              "explanation": "It exposed where the system might fail.",
+              "options": [
+                "She saw it as helpful for deciding where the system could work.",
+                "She concluded that training sites should replace test sites.",
+                "She treated it as proof that all detectors were useless.",
+                "She proposed reporting only the best-performing site."
+              ],
+              "number": 24
+            },
+            {
+              "prompt": "What is the main purpose of the final paragraph?",
+              "answers": [
+                "C"
+              ],
+              "evidence": "Decisions about placement, weather, training and access shape the evidence",
+              "explanation": "The author brings methodological and social decisions together.",
+              "options": [
+                "To recommend unrestricted access to all field recordings.",
+                "To argue that unattended recording saves no fieldwork.",
+                "To show why recording requires continuing human judgement.",
+                "To establish that ecological conclusions are always impossible."
+              ],
+              "number": 25
+            },
+            {
+              "prompt": "What benefit did detailed documentation offer?",
+              "answers": [
+                "B"
+              ],
+              "evidence": "ask different questions without mistaking the original team's choices for facts",
+              "explanation": "It allows later users to understand how evidence was constructed.",
+              "options": [
+                "It removed the need for later field observations.",
+                "It supported later questions while revealing original decisions.",
+                "It ensured that all later users would reach one conclusion.",
+                "It made the recordings representative of every landscape."
+              ],
+              "number": 26
+            }
+          ],
+          "bank": null,
+          "maxWords": null,
+          "numbersAllowed": false
+        }
+      ]
+    },
+    {
+      "title": "The value of leaving room to choose",
+      "paragraphs": {
+        "A": "The promise of a recommendation system is that it will make an excessive range of choices manageable. A reader opens a catalogue and receives a short list rather than confronting thousands of titles. At its best, such help makes unfamiliar material accessible. Yet a catalogue is also an environment in which preferences develop. A system that repeatedly supplies what someone already appears to like can quietly decide which alternatives the person ever encounters. The central question is therefore not whether recommendations are accurate, but what kind of opportunity that accuracy creates or removes.",
+        "B": "One account of good recommendation treats a successful click as evidence that a person's desire has been satisfied. This is reasonable for a narrow request: someone looking for a particular manual benefits from finding it quickly. But a click on an unexpected article may mean curiosity, irritation or accidental selection. Even a long reading time is ambiguous when the text is unusually difficult. Behavioural traces are useful evidence, not transparent windows into intention. A designer who calls every measurable response a revealed preference risks turning the convenience of measurement into a theory of human motivation.",
+        "C": "Consider a fictional community library that experiments with two digital shelves. The first orders books by predicted borrowing probability. The second includes a small space for titles selected to differ from the reader's recent loans. During the trial, the second shelf produces fewer immediate reservations but more reports of discovering an unfamiliar author. Neither result alone settles which shelf is better. A reservation and a discovery describe different benefits, and discovery itself may take weeks to become a borrowing decision. Judging the trial by the fastest observable response would build the desired conclusion into the measurement.",
+        "D": "Advocates of prediction sometimes reply that users can simply leave the recommended shelf. Formally, the rest of the catalogue is available. Practically, the cost of reaching it matters. A link hidden below several screens is a weaker invitation than a prominent search box. This does not mean every arrangement is manipulation; all interfaces distribute attention in some way. It means that an assessment of freedom must consider effort as well as formal availability. A choice can remain technically possible while becoming unlikely enough to disappear from most people's ordinary experience.",
+        "E": "There is an opposing danger in praising surprise without qualification. A system that inserts unfamiliar items arbitrarily may waste time and undermine trust. The relevant distinction is between useful exploration and mere randomness. Someone learning a language might welcome material slightly beyond their current interests, provided its difficulty remains manageable. The same person may not welcome an unrelated technical document presented as an exciting discovery. Good exploration needs a relationship to the user's purpose, even when it challenges a narrow prediction of their taste. Difference is a means to an opportunity, not an achievement by itself.",
+        "F": "Giving users control can help, but control must be intelligible. A panel containing many unexplained settings transfers work without necessarily transferring power. More useful controls might let a reader request greater variety, inspect why an item appeared, or temporarily ignore earlier borrowing history. Explanations need not expose every mathematical operation. They should reveal the practical basis of a suggestion well enough for a person to dispute it. If a system infers an interest from a book borrowed for somebody else, the user needs a simple way to correct the inference rather than a technical lecture about the model.",
+        "G": "Institutions also need to decide what they will refuse to optimise. A public library may legitimately value access to minority-language material even when predicted demand is low. That choice is not a defect in prediction; it is a statement about the institution's purpose. Leaving such decisions entirely to a model hides a public judgement behind an apparently neutral calculation. Conversely, declaring values does not excuse a badly functioning search service. Institutions need evidence that their systems work and an explicit account of what working means. Technical performance and public responsibility answer different questions, but neither can replace the other.",
+        "H": "The best recommendation systems may therefore be those that know when to recede. They can help with a defined search, offer a defensible suggestion and then leave a visible route beyond it. This is not a demand that every user spend more time choosing. For some tasks, fewer decisions are a real benefit. It is a demand that efficiency remain answerable to the person's changing purposes. A successful system should reduce unnecessary effort without treating yesterday's pattern as tomorrow's boundary. The aim is assistance that preserves the possibility of becoming interested in something the model did not anticipate."
+      },
+      "groups": [
+        {
+          "kind": "headings",
+          "instruction": "Choose the correct heading for each paragraph from the list below. Write the Roman numeral. Use each heading at most once.",
+          "items": [
+            {
+              "prompt": "Paragraph B",
+              "answers": [
+                "v"
+              ],
+              "evidence": "Behavioural traces are useful evidence, not transparent windows into intention",
+              "explanation": "B questions the interpretation of clicks.",
+              "options": null,
+              "number": 27
+            },
+            {
+              "prompt": "Paragraph C",
+              "answers": [
+                "ii"
+              ],
+              "evidence": "A reservation and a discovery describe different benefits",
+              "explanation": "C contrasts evaluation measures.",
+              "options": null,
+              "number": 28
+            },
+            {
+              "prompt": "Paragraph D",
+              "answers": [
+                "vii"
+              ],
+              "evidence": "consider effort as well as formal availability",
+              "explanation": "D distinguishes nominal from usable choice.",
+              "options": null,
+              "number": 29
+            },
+            {
+              "prompt": "Paragraph E",
+              "answers": [
+                "i"
+              ],
+              "evidence": "between useful exploration and mere randomness",
+              "explanation": "E qualifies the value of novelty.",
+              "options": null,
+              "number": 30
+            },
+            {
+              "prompt": "Paragraph F",
+              "answers": [
+                "iv"
+              ],
+              "evidence": "control must be intelligible",
+              "explanation": "F describes usable control.",
+              "options": null,
+              "number": 31
+            }
+          ],
+          "bank": {
+            "i": "When novelty needs a purpose",
+            "ii": "Competing measures of a successful trial",
+            "iii": "The disappearance of public libraries",
+            "iv": "Making user control meaningful",
+            "v": "The limits of interpreting behaviour",
+            "vi": "A mathematical solution to every preference",
+            "vii": "Why available choices may be hard to reach"
+          },
+          "maxWords": null,
+          "numbersAllowed": false
+        },
+        {
+          "kind": "yes-no-not-given",
+          "instruction": "Do these statements agree with the views of the writer? Write YES, NO or NOT GIVEN.",
+          "items": [
+            {
+              "prompt": "A recommendation should be judged solely by its prediction accuracy.",
+              "answers": [
+                "NO"
+              ],
+              "evidence": "not whether recommendations are accurate, but what kind of opportunity",
+              "explanation": "The writer argues that accuracy alone misses opportunity.",
+              "options": null,
+              "number": 32
+            },
+            {
+              "prompt": "Long reading time always demonstrates strong interest.",
+              "answers": [
+                "NO"
+              ],
+              "evidence": "a long reading time is ambiguous",
+              "explanation": "Difficulty can also prolong reading.",
+              "options": null,
+              "number": 33
+            },
+            {
+              "prompt": "Most library users prefer unexpected suggestions to familiar ones.",
+              "answers": [
+                "NOT GIVEN"
+              ],
+              "evidence": "more reports of discovering an unfamiliar author",
+              "explanation": "No population preference comparison is supplied.",
+              "options": null,
+              "number": 34
+            },
+            {
+              "prompt": "An institution can reasonably support material with low predicted demand.",
+              "answers": [
+                "YES"
+              ],
+              "evidence": "may legitimately value access to minority-language material",
+              "explanation": "Low demand need not override the institution's purpose.",
+              "options": null,
+              "number": 35
+            },
+            {
+              "prompt": "A system should allow for changes in a user's purposes.",
+              "answers": [
+                "YES"
+              ],
+              "evidence": "answerable to the person's changing purposes",
+              "explanation": "The final paragraph expressly supports this.",
+              "options": null,
+              "number": 36
+            }
+          ],
+          "bank": null,
+          "maxWords": null,
+          "numbersAllowed": false
+        },
+        {
+          "kind": "completion",
+          "instruction": "Complete the notes. Write ONE WORD ONLY for each answer.",
+          "items": [
+            {
+              "prompt": "A language learner may benefit from unfamiliar material if its ____ is manageable.",
+              "answers": [
+                "difficulty"
+              ],
+              "evidence": "provided its difficulty remains manageable",
+              "explanation": "provided its difficulty remains manageable",
+              "options": null,
+              "number": 37
+            },
+            {
+              "prompt": "A user should be able to correct an inaccurate ____ about an interest.",
+              "answers": [
+                "inference"
+              ],
+              "evidence": "correct the inference",
+              "explanation": "correct the inference",
+              "options": null,
+              "number": 38
+            },
+            {
+              "prompt": "Choosing to support low-demand material expresses an institution's ____.",
+              "answers": [
+                "purpose"
+              ],
+              "evidence": "a statement about the institution's purpose",
+              "explanation": "a statement about the institution's purpose",
+              "options": null,
+              "number": 39
+            },
+            {
+              "prompt": "The writer wants a system to reduce unnecessary ____ while preserving exploration.",
+              "answers": [
+                "effort"
+              ],
+              "evidence": "reduce unnecessary effort",
+              "explanation": "reduce unnecessary effort",
+              "options": null,
+              "number": 40
+            }
+          ],
+          "bank": null,
+          "maxWords": 1,
+          "numbersAllowed": false
+        }
+      ]
+    }
+  ],
+  "writing": [
+    {
+      "prompt": "The line graph shows annual visits to public libraries by three age groups in the fictional city of Branton between 2005 and 2025. Summarise the information by selecting and reporting the main features, and make comparisons where relevant. Write at least 150 words.",
+      "visual": "![Annual library visits](writing-1.svg)\n\nData (thousands of visits; each visit counted, not unique visitors):\n\n| Year | Under 18 | 18–64 | 65 and over |\n| --- | ---: | ---: | ---: |\n| 2005 | 120 | 180 | 60 |\n| 2010 | 135 | 170 | 75 |\n| 2015 | 150 | 145 | 95 |\n| 2020 | 110 | 100 | 90 |\n| 2025 | 160 | 125 | 120 |",
+      "guidance": "An overview can contrast the net rise for under-18s and over-64s with the net decline for 18–64s. All groups fall between 2015 and 2020, then recover. Under-18 visits overtake 18–64 visits by 2015 and finish highest; the oldest group finishes close to working-age adults. Distinguish visits from unique people. Causes of the 2020 dip are not supplied."
+    },
+    {
+      "prompt": "Some people think publicly funded scientific research should focus on problems that can be solved soon. Others believe research with uncertain long-term benefits is equally important. Discuss both views and give your own opinion. Give reasons and relevant examples. Write at least 250 words.",
+      "guidance": "Address near-term public needs and the possible value of uncertain fundamental work. Develop an actual position on priorities or balance. Examples can be hypothetical or drawn from experience; named studies are unnecessary. A balanced position needs a reasoned allocation principle, not merely a final sentence saying both are important."
+    }
+  ],
+  "speaking": {
+    "part1": {
+      "Work or study": [
+        "What do you work on or study at present?",
+        "Which part of a usual day requires the most concentration?",
+        "Would you like to change your daily schedule? Why?"
+      ],
+      "Food": [
+        "Do you enjoy preparing food?",
+        "What food do people often share in your home?",
+        "Have your food preferences changed?"
+      ],
+      "Messages": [
+        "How do you usually send a short message?",
+        "When would you prefer to call somebody?",
+        "Do you reply to messages immediately?"
+      ]
+    },
+    "part2": {
+      "cue": "Describe a time when somebody gave you useful advice.",
+      "points": [
+        "who gave you the advice",
+        "what the situation was",
+        "what you did after receiving it"
+      ],
+      "explain": "why the advice was useful to you.",
+      "followups": [
+        "Do you still speak to that person?",
+        "Have you given similar advice to anyone?"
+      ]
+    },
+    "part3": [
+      "Why do people sometimes ignore good advice?",
+      "When is advice from experience more useful than expert knowledge?",
+      "Should schools teach students how to assess advice?",
+      "How has the internet changed where people seek guidance?",
+      "What responsibilities do public figures have when giving advice?",
+      "Can too much advice make decisions harder?"
+    ]
+  },
+  "schemaVersion": 1,
+  "number": 7,
+  "title": "IELTS Academic — Original Mock 07",
+  "timing": {
+    "listeningMinutesApprox": [
+      25,
+      31
+    ],
+    "readingMinutes": 60,
+    "writingMinutes": 60,
+    "speakingMinutes": [
+      11,
+      14
+    ],
+    "listeningSeconds": 1510.652667
+  },
+  "writingMinimumWords": [
+    150,
+    250
+  ],
+  "status": "Original uncalibrated practice draft; teacher review pending",
+  "audioStatus": "Synthetic Listening recordings included",
+  "provenance": "Original authored text and fictional case studies/data; format references in SOURCES.md",
+  "audio": {
+    "form": 7,
+    "file": "mock-07/audio/listening-full.mp3",
+    "seconds": 1510.652667,
+    "bytes": 15107370,
+    "sha256": "07cea313201eeb60539bd896e6adcb70ac261a885a064e0df775deddbeca34dc",
+    "parts": [
+      {
+        "part": 1,
+        "start": 0,
+        "seconds": 362.8933,
+        "file": "mock-07/audio/part-1.mp3"
+      },
+      {
+        "part": 2,
+        "start": 362.893,
+        "seconds": 342.6293,
+        "file": "mock-07/audio/part-2.mp3"
+      },
+      {
+        "part": 3,
+        "start": 705.523,
+        "seconds": 370.6667,
+        "file": "mock-07/audio/part-3.mp3"
+      },
+      {
+        "part": 4,
+        "start": 1076.189,
+        "seconds": 434.4633,
+        "file": "mock-07/audio/part-4.mp3"
+      }
+    ],
+    "assembly": "Decoded audio concatenation with continuous timestamps; re-encoded MP3"
+  }
+}

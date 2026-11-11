@@ -1,0 +1,1223 @@
+{
+  "listening": [
+    {
+      "title": "Joining a neighbourhood walking group",
+      "script": "Volunteer: Hello, Green Routes walking group. You’re speaking to Max.\nCaller: Hello. I’d like to join one of your weekend walks. I saw a leaflet at the health centre, but it listed several groups and I wasn’t sure which one was suitable. I walk to work, though I haven’t done anything long in the countryside recently.\nVolunteer: Our introductory route would be a sensible start. It’s mostly level and has places to stop. Could I take your name first? We keep a list so that the leader knows whom to expect, but we don’t ask for medical details on the telephone.\nCaller: It’s Joel Ashby. That’s A-S-H-B-Y. My cousin has the same surname with an extra letter, so I usually spell it. Is there an annual membership payment?\nVolunteer: There is for the longer programme, but your first walk costs nothing. You can decide about joining afterwards. The next introductory one is on Sunday. We used to run it on Saturday, but the leader now works then.\nCaller: Sunday is better for me anyway. Where do you meet? The leaflet mentioned the station.\nVolunteer: That was the starting point while the footbridge was being repaired. We’re back at the museum now, beside its main doors. It’s easy to find from the bus stop, and there’s shelter if people arrive early.\nCaller: And how early is early? I prefer not to rush off a bus straight into a long walk.\nVolunteer: We gather at nine fifteen and leave at nine thirty. Put 9:15 in your diary, because the leader gives a short briefing before departure. If you’re delayed, call the number on the confirmation rather than trying to catch up alone.\nCaller: How far will we go? I can manage four kilometres comfortably, but eight might be a bit much the first time.\nVolunteer: This one is six kilometres. There’s a shorter return option if someone needs it, although most people complete the full route. We don’t use the speed of the fastest person to set the pace. The leader stays aware of the group and a second volunteer walks at the back.\n---\nCaller: I own ordinary trainers. Would I need to buy boots before coming?\nVolunteer: Not for this route if it’s dry. Trainers with a good grip are fine. Please bring a waterproof, though. A forecast can change, and the riverside section has nowhere to shelter. A large umbrella is awkward on the narrow path, so a jacket is more useful.\nCaller: Should I bring lunch as well?\nVolunteer: A snack and some water. We finish near a café, but buying anything there is entirely optional. Carry a bottle rather than depending on places along the way, since the public fountain is currently out of use.\nCaller: I sometimes use a walking pole. Is the path wide enough for that?\nVolunteer: Yes. There’s one section with a stile, but we use a nearby gate instead. We don’t go up the steps shown on an older route map. If you have any concerns about the gate width or surface, the leader can discuss them before the day.\nCaller: That sounds reassuring. Can people bring dogs? My neighbour might come, and hers is very calm.\nVolunteer: Dogs aren’t permitted on this particular walk because we cross a field containing livestock. Some of our other routes welcome them. It isn’t a general judgement about well-behaved dogs; it’s an agreement with the farmer for this route.\nCaller: Fair enough. What happens if there’s severe weather? Would you call everyone?\nVolunteer: We send a text by eight that morning if we cancel. For ordinary rain the walk usually goes ahead, but strong wind near the trees is different. Please reply to acknowledge a cancellation so we know you won’t travel unnecessarily. I’ll send a confirmation now with the route description and the leader’s contact number.",
+      "groups": [
+        {
+          "kind": "completion",
+          "instruction": "Complete the notes. Write ONE WORD AND/OR A NUMBER for each answer.",
+          "items": [
+            {
+              "prompt": "Caller’s surname: ____",
+              "answers": [
+                "Ashby"
+              ],
+              "evidence": "A-S-H-B-Y",
+              "explanation": "A-S-H-B-Y",
+              "options": null,
+              "number": 1
+            },
+            {
+              "prompt": "Day of first walk: ____",
+              "answers": [
+                "Sunday"
+              ],
+              "evidence": "The next introductory one is on Sunday",
+              "explanation": "The next introductory one is on Sunday",
+              "options": null,
+              "number": 2
+            },
+            {
+              "prompt": "Meeting building: ____",
+              "answers": [
+                "museum"
+              ],
+              "evidence": "We’re back at the museum now",
+              "explanation": "We’re back at the museum now",
+              "options": null,
+              "number": 3
+            },
+            {
+              "prompt": "Time to arrive: ____",
+              "answers": [
+                "9:15"
+              ],
+              "evidence": "Put 9:15 in your diary",
+              "explanation": "Put 9:15 in your diary",
+              "options": null,
+              "number": 4
+            },
+            {
+              "prompt": "Full route length: ____ kilometres",
+              "answers": [
+                "6"
+              ],
+              "evidence": "This one is six kilometres",
+              "explanation": "This one is six kilometres",
+              "options": null,
+              "number": 5
+            }
+          ],
+          "bank": null,
+          "maxWords": 1,
+          "numbersAllowed": true
+        },
+        {
+          "kind": "completion",
+          "instruction": "Complete the notes. Write ONE WORD ONLY for each answer.",
+          "items": [
+            {
+              "prompt": "Bring a ____ rather than an umbrella.",
+              "answers": [
+                "waterproof"
+              ],
+              "evidence": "Please bring a waterproof",
+              "explanation": "Please bring a waterproof",
+              "options": null,
+              "number": 6
+            },
+            {
+              "prompt": "Carry water in a ____.",
+              "answers": [
+                "bottle"
+              ],
+              "evidence": "Carry a bottle",
+              "explanation": "Carry a bottle",
+              "options": null,
+              "number": 7
+            },
+            {
+              "prompt": "The route uses a ____ instead of a stile.",
+              "answers": [
+                "gate"
+              ],
+              "evidence": "we use a nearby gate",
+              "explanation": "we use a nearby gate",
+              "options": null,
+              "number": 8
+            },
+            {
+              "prompt": "Animals not permitted on this route: ____",
+              "answers": [
+                "dogs"
+              ],
+              "evidence": "Dogs aren’t permitted",
+              "explanation": "Dogs aren’t permitted",
+              "options": null,
+              "number": 9
+            },
+            {
+              "prompt": "Cancellation will be announced by ____.",
+              "answers": [
+                "text"
+              ],
+              "evidence": "We send a text",
+              "explanation": "We send a text",
+              "options": null,
+              "number": 10
+            }
+          ],
+          "bank": null,
+          "maxWords": 1,
+          "numbersAllowed": false
+        }
+      ]
+    },
+    {
+      "title": "An orientation talk at a community arts centre",
+      "script": "Director: Welcome to everyone starting a course at the Foundry Arts Centre. The building was once a small factory, but its new name isn’t an invitation to operate industrial equipment. We run practical arts courses for adults, and some family sessions during school holidays. Today I’ll describe five activities you may want to try and then explain how the centre works. You don’t have to decide everything this morning. The aim is to help you understand which course fits the time and experience you actually have.\nFirst, bookbinding. This starts next week and lasts four Tuesday evenings. Materials are provided, but we require a reservation because the tutor prepares a separate pack for each person. Turning up on the first evening and hoping to find an empty chair won’t work, even if someone is absent. We can often offer a place on the next course instead.\nThe lunchtime sketch group is quite different. There is no advance booking and no expectation that you already draw well. Its special arrangement is that it’s held outside the centre, in the covered market across the road. The group meets under the market clock. This gives people moving subjects to draw, and traders have agreed that participants may sit along the wall without blocking customers.\nFor textile printing, you should bring something of your own to print on. A plain cotton bag is ideal; a smooth T-shirt is another possibility. We provide inks and tools, but not the fabric item itself. Please avoid a favourite expensive garment for your first experiment. The tutor will explain why different surfaces absorb colour differently.\nOur percussion session has been moved to an earlier time. People used to arrive at seven on Wednesdays; it now begins at six, because the neighbouring room is needed for a quiet class later in the evening. That’s a permanent change for this term, not just for the first week.\nFinally, the clay modelling course allows children to attend, provided an adult takes the course with them. It isn’t a supervised drop-off club. Both people make something and can help each other. If you were hoping to work completely on your own, choose the adults-only session on the other day.\n---\nNow for some general information. Membership fees cover the shared studio space and basic maintenance. They don’t cover every course material. We used to charge one inclusive fee, but someone taking only sketching was helping pay for expensive clay. Separating the costs makes the arrangement more transparent, even though the price list is slightly longer.\nOur noticeboard displays examples of work, but you don’t have to agree to public display. Some people enjoy sharing a first attempt; others want to practise privately. Ask the tutor to mark your work as not for display. That decision will have no effect on your access to future courses or the amount of help you receive.\nEquipment may stay in the studio between sessions, but unfinished pieces must have a name and date. Unlabelled work is difficult to store responsibly because staff can’t tell whether it has been abandoned. We won’t throw things away immediately. After a published storage period, we’ll contact the maker where possible and clear space for current classes.\nThe café next door offers a small discount to course members on weekday afternoons. It is independent of the centre, so please raise food orders with café staff rather than a tutor. We mention it because many students like to continue talking after class, not because a café purchase is part of membership.\nPlease tell us if you need adjustments to take part. The best time is when you book, because some arrangements require planning. However, if you discover a difficulty during a session, speak to the tutor then. We don’t expect you to predict every problem in advance. The office can discuss an alternative rather than simply telling you to wait until the next term.",
+      "groups": [
+        {
+          "kind": "matching",
+          "instruction": "What special arrangement applies to each activity? Write the correct letter. You may use any letter more than once.",
+          "items": [
+            {
+              "prompt": "Bookbinding",
+              "answers": [
+                "C"
+              ],
+              "evidence": "we require a reservation",
+              "explanation": "we require a reservation",
+              "options": null,
+              "number": 11
+            },
+            {
+              "prompt": "Lunchtime sketch group",
+              "answers": [
+                "F"
+              ],
+              "evidence": "held outside the centre",
+              "explanation": "held outside the centre",
+              "options": null,
+              "number": 12
+            },
+            {
+              "prompt": "Textile printing",
+              "answers": [
+                "A"
+              ],
+              "evidence": "bring something of your own",
+              "explanation": "bring something of your own",
+              "options": null,
+              "number": 13
+            },
+            {
+              "prompt": "Percussion",
+              "answers": [
+                "E"
+              ],
+              "evidence": "moved to an earlier time",
+              "explanation": "moved to an earlier time",
+              "options": null,
+              "number": 14
+            },
+            {
+              "prompt": "Clay modelling",
+              "answers": [
+                "B"
+              ],
+              "evidence": "provided an adult takes the course with them",
+              "explanation": "provided an adult takes the course with them",
+              "options": null,
+              "number": 15
+            }
+          ],
+          "bank": {
+            "A": "Bring a personal item to use",
+            "B": "An adult must join a child",
+            "C": "Reserve a place before attending",
+            "D": "Have previous experience",
+            "E": "Note the revised starting time",
+            "F": "Go to a different venue"
+          },
+          "maxWords": null,
+          "numbersAllowed": false
+        },
+        {
+          "kind": "multiple-choice",
+          "instruction": "Choose the correct letter, A, B or C.",
+          "items": [
+            {
+              "prompt": "Why are materials charged separately?",
+              "answers": [
+                "B"
+              ],
+              "evidence": "someone taking only sketching was helping pay for expensive clay",
+              "explanation": "Users now pay more directly for their activity.",
+              "options": [
+                "All courses use identical materials.",
+                "The previous fee shared costs unevenly between activities.",
+                "Membership no longer covers studio maintenance."
+              ],
+              "number": 16
+            },
+            {
+              "prompt": "What is the policy on displaying students' work?",
+              "answers": [
+                "A"
+              ],
+              "evidence": "you don’t have to agree to public display",
+              "explanation": "Participation does not require exhibition.",
+              "options": [
+                "Students can choose not to display it.",
+                "Every first attempt must be exhibited.",
+                "Only advanced students can refuse."
+              ],
+              "number": 17
+            },
+            {
+              "prompt": "Why must unfinished work be labelled?",
+              "answers": [
+                "C"
+              ],
+              "evidence": "can’t tell whether it has been abandoned",
+              "explanation": "Staff need to distinguish stored work from abandoned pieces.",
+              "options": [
+                "To rank it by artistic quality.",
+                "To advertise it for sale.",
+                "To manage storage and identify its owner."
+              ],
+              "number": 18
+            },
+            {
+              "prompt": "What is said about the café?",
+              "answers": [
+                "B"
+              ],
+              "evidence": "It is independent of the centre",
+              "explanation": "Orders are its own responsibility.",
+              "options": [
+                "Its purchases are included in membership.",
+                "It operates separately from the centre.",
+                "Tutors take orders during lessons."
+              ],
+              "number": 19
+            },
+            {
+              "prompt": "When should a new access difficulty be raised?",
+              "answers": [
+                "C"
+              ],
+              "evidence": "speak to the tutor then",
+              "explanation": "A problem discovered during class can be addressed then.",
+              "options": [
+                "Only at the start of the next term.",
+                "Only before a booking is confirmed.",
+                "When it becomes apparent, including during class."
+              ],
+              "number": 20
+            }
+          ],
+          "bank": null,
+          "maxWords": null,
+          "numbersAllowed": false
+        }
+      ]
+    },
+    {
+      "title": "Reviewing an interview project",
+      "script": "Tutor: Come in, Amira and Ben. I’ve read your proposal about independent shopkeepers. You’ve found an interesting question about how businesses adapt when a street changes, but I think we need to look closely at recruitment.\nAmira: We’ve made a list from the traders' association website. It seemed better than walking along the street and approaching whoever wasn’t busy.\nTutor: It’s organised, certainly. But remember that the association includes only members. Shops that closed recently won’t appear, and new businesses may not have joined. If you use it alone, you’ll hear from a particular surviving group.\nBen: We could add names from older street directories and contact the former owners where details are public. We can’t guarantee they’ll agree, but at least the recruitment frame wouldn’t automatically exclude them.\nAmira: Should we ask the association chair to conduct the introductions? People know her, so perhaps they’d speak more freely.\nTutor: She can circulate an invitation. I wouldn’t have her sitting in the interviews. A trader might hesitate to criticise a scheme the association supported. Make clear that the project isn’t a performance review and that individual statements won’t be sent to her.\nBen: Our draft starts with, 'How has the new pedestrian area improved your business?' I can see now that assumes an improvement.\nAmira: We should ask what changed, if anything, and then invite positive and negative examples. Otherwise we’d be providing the conclusion in the question.\nTutor: Good. You’ll also need to distinguish memory from records. Someone may recall fewer customers during construction, but sales figures could follow a different pattern. Ask whether records are available without making their participation depend on handing over private accounts.\nBen: We planned an audio recording rather than trying to write everything while they speak. We’d ask permission first and offer a note-only interview if they prefer.\nTutor: That’s sensible. Explain where the file will be kept and when it will be deleted. Permission to talk to you is not permission to put a voice recording on a public website.\n---\nAmira: We made a checklist of remaining tasks. For the recruitment invitation, we need approval from you before sending it. We’ve drafted it but haven’t contacted anyone yet.\nTutor: Send it after this meeting. The interview schedule is different: its wording needs a trial. Ask somebody outside the final sample to respond, so you can see whether the order makes sense and how long it takes.\nBen: The street map is finished. We’ve marked present businesses and former addresses from the directories, and checked that none of the symbols hides the street names.\nTutor: Fine, treat that as completed for now. Don’t spend another day improving its colours at the expense of preparation.\nAmira: We also had a question asking each trader for their exact annual income. It doesn’t answer our revised question and might put people off, so we intend to remove it.\nTutor: I agree. You can ask how they describe changes without collecting an unnecessary financial profile. Remember that an interview isn’t improved merely by making it longer.\nBen: Our coding categories are still provisional. We thought we’d wait until after the first interviews before deciding the final set. We have broad interests, but people may describe problems we haven’t anticipated.\nTutor: Yes, retain that flexibility. Keep a record of changes to the categories, though. You shouldn’t quietly redefine them every time you encounter an inconvenient example.\nAmira: Would it be useful to compare two of us coding the same short extract?\nTutor: Very useful, as a way to discuss interpretation rather than produce a ceremonial agreement figure. If you disagree, ask whether the categories are unclear or the account genuinely supports more than one reading. The explanation of that decision may be more valuable than an artificially neat table.",
+      "groups": [
+        {
+          "kind": "multiple-choice",
+          "instruction": "Choose the correct letter, A, B or C.",
+          "items": [
+            {
+              "prompt": "What is the tutor’s concern about the website list?",
+              "answers": [
+                "C"
+              ],
+              "evidence": "a particular surviving group",
+              "explanation": "It excludes some relevant types of business.",
+              "options": [
+                "Its street addresses are all out of date.",
+                "It contains too many unrelated districts.",
+                "It omits non-members and former businesses."
+              ],
+              "number": 21
+            },
+            {
+              "prompt": "Why should the chair not sit in interviews?",
+              "answers": [
+                "B"
+              ],
+              "evidence": "hesitate to criticise a scheme",
+              "explanation": "Her presence could affect what traders say.",
+              "options": [
+                "She has no knowledge of local businesses.",
+                "Her presence might discourage critical responses.",
+                "She has already interviewed every trader."
+              ],
+              "number": 22
+            },
+            {
+              "prompt": "What is wrong with the original opening question?",
+              "answers": [
+                "A"
+              ],
+              "evidence": "assumes an improvement",
+              "explanation": "It leads respondents towards a positive answer.",
+              "options": [
+                "It presupposes a positive effect.",
+                "It is too technical to understand.",
+                "It requests a precise sales total."
+              ],
+              "number": 23
+            },
+            {
+              "prompt": "How should business records be treated?",
+              "answers": [
+                "C"
+              ],
+              "evidence": "without making their participation depend on handing over private accounts",
+              "explanation": "Records are optional evidence.",
+              "options": [
+                "Every participant must hand over private accounts.",
+                "Recollections should be discarded if records exist.",
+                "Their availability can be explored without requiring disclosure."
+              ],
+              "number": 24
+            },
+            {
+              "prompt": "What does the tutor emphasise about recording?",
+              "answers": [
+                "B"
+              ],
+              "evidence": "not permission to put a voice recording on a public website",
+              "explanation": "Public sharing needs distinct permission.",
+              "options": [
+                "All recordings must be publicly accessible.",
+                "Consent to an interview does not automatically allow publication.",
+                "Note-only interviews are unacceptable."
+              ],
+              "number": 25
+            }
+          ],
+          "bank": null,
+          "maxWords": null,
+          "numbersAllowed": false
+        },
+        {
+          "kind": "matching",
+          "instruction": "What next step is agreed for each item? Write the correct letter. You may use any letter more than once.",
+          "items": [
+            {
+              "prompt": "Recruitment invitation",
+              "answers": [
+                "D"
+              ],
+              "evidence": "approval from you before sending it",
+              "explanation": "approval from you before sending it",
+              "options": null,
+              "number": 26
+            },
+            {
+              "prompt": "Interview schedule",
+              "answers": [
+                "A"
+              ],
+              "evidence": "its wording needs a trial",
+              "explanation": "its wording needs a trial",
+              "options": null,
+              "number": 27
+            },
+            {
+              "prompt": "Street map",
+              "answers": [
+                "E"
+              ],
+              "evidence": "treat that as completed",
+              "explanation": "treat that as completed",
+              "options": null,
+              "number": 28
+            },
+            {
+              "prompt": "Exact-income question",
+              "answers": [
+                "B"
+              ],
+              "evidence": "we intend to remove it",
+              "explanation": "we intend to remove it",
+              "options": null,
+              "number": 29
+            },
+            {
+              "prompt": "Final coding categories",
+              "answers": [
+                "C"
+              ],
+              "evidence": "wait until after the first interviews",
+              "explanation": "wait until after the first interviews",
+              "options": null,
+              "number": 30
+            }
+          ],
+          "bank": {
+            "A": "Pilot it with someone outside the sample",
+            "B": "Delete it",
+            "C": "Decide after initial data collection",
+            "D": "Get tutor approval",
+            "E": "Consider it complete",
+            "F": "Publish it immediately"
+          },
+          "maxWords": null,
+          "numbersAllowed": false
+        }
+      ]
+    },
+    {
+      "title": "The changing idea of a standard measure",
+      "script": "Lecturer: Think about buying a length of cloth from someone you have never met. The transaction requires more than agreement about price. You need a shared understanding of length. Today I’ll discuss standard measures as a social arrangement as well as a technical achievement. A measure is useful when different people can reproduce it closely enough for the task. That does not mean every task needs the same precision. Selling cloth and testing an optical instrument place different demands on the system, even though both involve statements about distance.\nEarly local arrangements often used a physical reference kept in a public place. Traders could compare their own rods with it. The object represented authority as well as length: somebody had to decide who could inspect it and what happened if a trader’s measure differed. Copies made trading easier, but each copy introduced the possibility of error. Wear, damage and the method of comparison could change the result. The practical problem was not solved simply by declaring that one reference existed. People needed a dependable chain connecting everyday measures to it.\nExpansion of trade increased the value of compatibility. Two towns could each have internally consistent measures and still face confusion when goods moved between them. Converting between systems required tables or specialist knowledge, and a familiar unit name did not always mean a familiar quantity. Shared measures could reduce that work, though adopting them imposed costs of its own. Tools had to be changed, labels rewritten and users trained. Resistance was not necessarily ignorance. A new system could offer broad benefits while asking particular workers to bear immediate expense.\nCalibration is the process of comparing an instrument with a suitable reference and establishing how its readings relate to that reference. It does not mean making every instrument perfect. A useful calibration record can describe an error and the uncertainty around it. For example, a workshop may apply a correction when using an instrument rather than replacing it immediately. The important point is that the reading should not be treated as exact merely because it appears as a number. Extra digits on a display can create an appearance of knowledge that the measurement process does not support.\nTemperature provides a straightforward example of environmental influence. A material may expand or contract as conditions change, so a physical reference needs specified conditions of use. Handling, storage and comparison procedures become part of the definition in practice. Modern systems aim for references that can be reproduced in different laboratories, but reproducibility still requires procedures and trained judgement. It is misleading to contrast an entirely social past with an entirely objective present. Social cooperation makes technical comparison possible in both cases, even when the scientific basis becomes more stable.\nDocumentation allows the chain of comparison to be checked. A certificate should identify the instrument, the reference, the conditions and the relevant date. Without traceability, a precise-looking result may be difficult to connect to anything beyond the local device. This matters when several organisations contribute to one product. A component made in one workshop must fit another made elsewhere, and differences may not become visible until assembly. Shared measurement practice allows organisations to investigate a mismatch rather than merely argue about whose number looks more convincing.\nFinally, standards must be maintained as living arrangements. A reference that nobody can access, or a procedure that ordinary laboratories cannot follow, may fail despite theoretical elegance. Institutions provide training, comparisons and opportunities to question results. The achievement is not the elimination of every uncertainty. It is the creation of a reliable way to describe and reduce uncertainty for a particular purpose. Standard measures make cooperation possible because they organise disagreement: when numbers differ, there is a route back through evidence, conditions and references instead of only a contest of authority.",
+      "groups": [
+        {
+          "kind": "completion",
+          "instruction": "Complete the notes. Write ONE WORD ONLY for each answer.",
+          "items": [
+            {
+              "prompt": "Different measurement tasks require different degrees of ____.",
+              "answers": [
+                "precision"
+              ],
+              "evidence": "every task needs the same precision",
+              "explanation": "every task needs the same precision",
+              "options": null,
+              "number": 31
+            },
+            {
+              "prompt": "A public reference represented both length and ____.",
+              "answers": [
+                "authority"
+              ],
+              "evidence": "authority as well as length",
+              "explanation": "authority as well as length",
+              "options": null,
+              "number": 32
+            },
+            {
+              "prompt": "Wear and ____ could affect copied measures.",
+              "answers": [
+                "damage"
+              ],
+              "evidence": "Wear, damage",
+              "explanation": "Wear, damage",
+              "options": null,
+              "number": 33
+            },
+            {
+              "prompt": "Conversion between local systems could require ____.",
+              "answers": [
+                "tables"
+              ],
+              "evidence": "required tables",
+              "explanation": "required tables",
+              "options": null,
+              "number": 34
+            },
+            {
+              "prompt": "The process of comparison with a reference is ____.",
+              "answers": [
+                "calibration"
+              ],
+              "evidence": "Calibration is the process",
+              "explanation": "Calibration is the process",
+              "options": null,
+              "number": 35
+            },
+            {
+              "prompt": "An error may be managed by applying a ____.",
+              "answers": [
+                "correction"
+              ],
+              "evidence": "apply a correction",
+              "explanation": "apply a correction",
+              "options": null,
+              "number": 36
+            },
+            {
+              "prompt": "A material’s size can change with ____.",
+              "answers": [
+                "temperature"
+              ],
+              "evidence": "Temperature provides a straightforward example",
+              "explanation": "Temperature provides a straightforward example",
+              "options": null,
+              "number": 37
+            },
+            {
+              "prompt": "Records establish a chain that can be checked through ____.",
+              "answers": [
+                "traceability"
+              ],
+              "evidence": "Without traceability",
+              "explanation": "Without traceability",
+              "options": null,
+              "number": 38
+            },
+            {
+              "prompt": "Incompatibility between components may only appear at ____.",
+              "answers": [
+                "assembly"
+              ],
+              "evidence": "until assembly",
+              "explanation": "until assembly",
+              "options": null,
+              "number": 39
+            },
+            {
+              "prompt": "Institutions teach measurement procedures through ____.",
+              "answers": [
+                "training"
+              ],
+              "evidence": "provide training",
+              "explanation": "provide training",
+              "options": null,
+              "number": 40
+            }
+          ],
+          "bank": null,
+          "maxWords": 1,
+          "numbersAllowed": false
+        }
+      ]
+    }
+  ],
+  "reading": [
+    {
+      "title": "A city learns to deliver differently",
+      "paragraphs": {
+        "A": "Every morning, delivery vans entered the narrow streets around Halden Market carrying goods for small independent shops. Many left almost empty after visiting a single customer. Shopkeepers complained about congestion but resisted a proposal to keep vehicles outside the centre: they depended on reliable deliveries and feared another administrative burden. The eventual experiment began with a practical offer rather than a restriction. A warehouse near the ring road would receive consignments from different suppliers, combine them, and complete the final journey with electric cargo cycles. Participation was voluntary during the first six months.",
+        "B": "The project manager, Rosa Vale, expected the strongest interest to come from shops selling light, expensive products. In fact, a bakery became one of the earliest regular users. Its flour sacks were too heavy for an ordinary bicycle, but the project's three-wheeled cycles had enclosed load compartments and were designed for commercial loads. The bakery valued predictable arrival times more than the environmental message. Its owner could schedule preparation without leaving a worker watching the street. This response changed the project's publicity, which began emphasising reliability alongside reduced traffic rather than assuming that every business shared the same motivation.",
+        "C": "Not every product was suitable. A florist found that delicate arrangements moved during sharp turns unless special supports were fitted. A furniture shop continued receiving large tables directly by lorry, though smaller fittings travelled through the warehouse. These exceptions were recorded instead of being treated as embarrassing failures. The manager wanted a service that removed appropriate journeys, not a claim that one vehicle could replace every other vehicle. Staff kept dimensions and handling instructions with each booking so that an unsuitable consignment could be redirected before it reached the loading bay and delayed other customers.",
+        "D": "The warehouse initially asked shops to make orders by midday for next-morning delivery. This suited some businesses but not restaurants that adjusted purchases after the evening service. A later collection from suppliers was introduced on three nights each week. It increased staffing costs, yet also attracted enough regular users to make better use of the morning cycles. The project did not publish a standard saving per delivery, because costs depended on distance, load and how consistently a shop used the service. Monthly statements instead separated the handling charge from the charge for the final journey.",
+        "E": "Routes were planned with local knowledge as well as software. The shortest line on a map could involve steep cobbles, steps or a market entrance closed during trading hours. Riders marked these problems on a shared map, and the route planner updated permitted approaches. The city also installed secure loading stands near several shops. Without these, a rider might have to leave a loaded cycle while carrying goods around a corner. Reducing that risk mattered for insurance and for the willingness of riders to accept the work, not simply for the speed of individual deliveries.",
+        "F": "Evaluating the trial proved more difficult than counting cycles leaving the warehouse. Some suppliers had previously combined deliveries to several shops on a single van trip. Replacing one shop's parcel did not necessarily remove that trip. The evaluation therefore asked suppliers about routes, not just the number of consignments transferred. It also counted travel between suppliers and the warehouse. These additional movements reduced the estimated traffic benefit but made the comparison more credible. The researchers warned that figures from the first months reflected volunteers who were particularly willing to cooperate and might not represent later customers.",
+        "G": "Residents noticed another change that was absent from the original spreadsheet. With fewer vehicles blocking shop fronts at breakfast time, the pavement became easier to use, especially for people pushing prams. However, some residents objected when cycles were parked across pedestrian routes. The council introduced marked stopping areas and required riders to dismount in the busiest pedestrian section. The scheme's environmental intention did not exempt it from ordinary questions about public space. Shopkeepers were asked to report problems as well as praise so that the trial would not be evaluated entirely through its organisers' expectations.",
+        "H": "When the six months ended, the service continued with fewer subsidies but a narrower delivery area. Serving distant customers had consumed disproportionate time, while regular central routes were becoming viable. The revised boundaries disappointed some businesses, yet avoided promising universal coverage that the service could not sustain. Halden's experience suggests that delivery reform is partly a problem of coordination: suppliers, shops, riders and street managers must change compatible parts of their routines. A different vehicle helps, but it succeeds within an arrangement of schedules, handling practices and realistic limits rather than through technology alone."
+      },
+      "groups": [
+        {
+          "kind": "headings",
+          "instruction": "Choose the correct heading for each paragraph from the list below. Write the Roman numeral. Use each heading at most once.",
+          "items": [
+            {
+              "prompt": "Paragraph A",
+              "answers": [
+                "iv"
+              ],
+              "evidence": "a practical offer rather than a restriction",
+              "explanation": "a practical offer rather than a restriction",
+              "options": null,
+              "number": 1
+            },
+            {
+              "prompt": "Paragraph B",
+              "answers": [
+                "i"
+              ],
+              "evidence": "valued predictable arrival times more than the environmental message",
+              "explanation": "valued predictable arrival times more than the environmental message",
+              "options": null,
+              "number": 2
+            },
+            {
+              "prompt": "Paragraph C",
+              "answers": [
+                "vi"
+              ],
+              "evidence": "Not every product was suitable",
+              "explanation": "Not every product was suitable",
+              "options": null,
+              "number": 3
+            },
+            {
+              "prompt": "Paragraph D",
+              "answers": [
+                "iii"
+              ],
+              "evidence": "A later collection from suppliers was introduced",
+              "explanation": "A later collection from suppliers was introduced",
+              "options": null,
+              "number": 4
+            },
+            {
+              "prompt": "Paragraph E",
+              "answers": [
+                "vii"
+              ],
+              "evidence": "local knowledge as well as software",
+              "explanation": "local knowledge as well as software",
+              "options": null,
+              "number": 5
+            }
+          ],
+          "bank": {
+            "i": "An unexpected customer priority",
+            "ii": "Compulsory participation for all traders",
+            "iii": "Changing the timetable to attract users",
+            "iv": "Offering an alternative before imposing limits",
+            "v": "Replacing warehouse workers with machines",
+            "vi": "Recognising the limits of the service",
+            "vii": "Information missing from the route algorithm"
+          },
+          "maxWords": null,
+          "numbersAllowed": false
+        },
+        {
+          "kind": "true-false-not-given",
+          "instruction": "Do these statements agree with the information in the passage? Write TRUE, FALSE or NOT GIVEN.",
+          "items": [
+            {
+              "prompt": "Moving a parcel to a cycle always removed a whole van journey.",
+              "answers": [
+                "FALSE"
+              ],
+              "evidence": "did not necessarily remove that trip",
+              "explanation": "A van could still deliver to other shops.",
+              "options": null,
+              "number": 6
+            },
+            {
+              "prompt": "The evaluators included journeys made to the warehouse.",
+              "answers": [
+                "TRUE"
+              ],
+              "evidence": "counted travel between suppliers and the warehouse",
+              "explanation": "counted travel between suppliers and the warehouse",
+              "options": null,
+              "number": 7
+            },
+            {
+              "prompt": "All riders were paid the same hourly rate.",
+              "answers": [
+                "NOT GIVEN"
+              ],
+              "evidence": "willingness of riders to accept the work",
+              "explanation": "Pay rates are not described.",
+              "options": null,
+              "number": 8
+            },
+            {
+              "prompt": "The scheme continued with a smaller service area.",
+              "answers": [
+                "TRUE"
+              ],
+              "evidence": "continued with fewer subsidies but a narrower delivery area",
+              "explanation": "continued with fewer subsidies but a narrower delivery area",
+              "options": null,
+              "number": 9
+            }
+          ],
+          "bank": null,
+          "maxWords": null,
+          "numbersAllowed": false
+        },
+        {
+          "kind": "completion",
+          "instruction": "Complete the notes. Write ONE WORD ONLY for each answer.",
+          "items": [
+            {
+              "prompt": "Riders recorded route obstacles on a shared ____.",
+              "answers": [
+                "map"
+              ],
+              "evidence": "marked these problems on a shared map",
+              "explanation": "marked these problems on a shared map",
+              "options": null,
+              "number": 10
+            },
+            {
+              "prompt": "Secure loading stands helped reduce a risk relevant to ____.",
+              "answers": [
+                "insurance"
+              ],
+              "evidence": "that risk mattered for insurance",
+              "explanation": "that risk mattered for insurance",
+              "options": null,
+              "number": 11
+            },
+            {
+              "prompt": "Some early customers may have been unusually willing to ____.",
+              "answers": [
+                "cooperate"
+              ],
+              "evidence": "particularly willing to cooperate",
+              "explanation": "particularly willing to cooperate",
+              "options": null,
+              "number": 12
+            },
+            {
+              "prompt": "Riders had to ____ in the busiest pedestrian section.",
+              "answers": [
+                "dismount"
+              ],
+              "evidence": "required riders to dismount",
+              "explanation": "required riders to dismount",
+              "options": null,
+              "number": 13
+            }
+          ],
+          "bank": null,
+          "maxWords": 1,
+          "numbersAllowed": false
+        }
+      ]
+    },
+    {
+      "title": "Who notices the night?",
+      "paragraphs": {
+        "A": "Night-time lighting is often discussed in terms of brightness, but brightness alone describes neither the experience of a street nor its effect on the surrounding environment. A lamp may illuminate a doorway while sending light into bedroom windows or beyond a riverbank. Another may leave a pavement unevenly lit despite producing more total light. In a fictional research programme, the town of Calder investigated where its lighting went and how different people used it. The starting point was not a commitment to darkness. It was recognition that good lighting requires a purpose and a location.",
+        "B": "Lighting engineer Arun Mehta began by mapping lamps and measuring illumination on the pavement. His map showed large differences between adjacent streets that had been upgraded in different decades. Replacing every old lamp immediately would have exhausted the budget without establishing which changes mattered. Mehta proposed a staged trial in which matched streets received new fittings at different times. Measurements continued on streets awaiting replacement. This arrangement helped separate the effects of the trial from changes affecting the whole town, such as seasonal shifts in commuting and the amount of natural light during evening journeys.",
+        "C": "Ecologist Beth Rowan examined a footbridge crossing a small stream. Lamps on its railings directed light onto the water as well as the walking surface. She recommended shields that limited the sideways beam. Her team recorded insect activity before and after installation, while also recording wind and temperature. An increase near one lamp could represent attraction to the light rather than growth in the local insect population. Rowan therefore resisted the simple claim that seeing more insects always indicated a healthier site. The pattern of movement mattered, including whether activity was being concentrated away from neighbouring dark areas.",
+        "D": "For social researcher Cora Blake, a technically uniform pavement was not automatically a comfortable route. She accompanied volunteers on evening walks and asked where they hesitated. Several pointed to the transition from a very bright shopping entrance to a much dimmer side street. Their concern involved sudden contrast rather than the side street's measured brightness alone. Blake also interviewed people who avoided evening walking entirely. Surveying only pedestrians already on the route would have omitted them and exaggerated satisfaction. Her sample was designed to include absence as a form of relevant behaviour, not merely as missing data.",
+        "E": "Business representative Dan Wu initially feared that reduced lighting would discourage late customers. He agreed to a trial after the council separated decorative lighting from the lights used for entrances and steps. Shop signs could switch off after closing while essential access lighting remained. Wu asked businesses to log actual closing times, since a fixed schedule based on official hours would not cover seasonal events. Some shops closed early on quiet evenings; others held occasional late workshops. A flexible arrangement required more communication than a single town-wide switch, but avoided treating every commercial frontage as if it had identical needs.",
+        "F": "The trial's energy figures were easier to calculate than its social outcomes. Meter readings showed the electricity used by each circuit, but a fall in reported complaints did not prove that everyone preferred the new lighting. Residents might not know where to report concerns or might assume the decision was final. Blake distributed paper feedback cards as well as an online form and returned to several households that had not replied. These efforts did not create a perfectly representative sample. They did reveal problems that would have disappeared from an evaluation relying exclusively on the most convenient reporting channel.",
+        "G": "There were disagreements about which results should determine the next investment. Mehta favoured repairing the least efficient circuits, while Rowan wanted attention to a sensitive riverside section that used relatively little electricity. Both positions could be supported by evidence because they pursued different objectives. The council published the trade-off rather than combining every measure into an unexplained score. Its final programme reserved part of the budget for ecological locations and part for general replacement. No claim was made that the chosen division was the only scientific answer; it was a public decision informed by several kinds of expertise.",
+        "H": "Calder's imagined programme demonstrates why the phrase better lighting cannot be reduced to either more light or less light. A fitting can use less energy and still direct light badly. A well-lit route can still be difficult to enter, and an apparently popular policy can overlook people least likely to comment. The value of the trial lay in making these distinctions observable. It provided a method for revising decisions, not a final design suitable for every street. The town treated lighting as an ongoing service to different users rather than as a product whose quality ended with installation."
+      },
+      "groups": [
+        {
+          "kind": "matching",
+          "instruction": "Which paragraph contains the following information? Write the correct letter. You may use any letter more than once.",
+          "items": [
+            {
+              "prompt": "a method intended to distinguish local changes from town-wide ones",
+              "answers": [
+                "B"
+              ],
+              "evidence": "matched streets received new fittings at different times",
+              "explanation": "matched streets received new fittings at different times",
+              "options": null,
+              "number": 14
+            },
+            {
+              "prompt": "a reason why a decrease in complaints may be misleading",
+              "answers": [
+                "F"
+              ],
+              "evidence": "Residents might not know where to report concerns",
+              "explanation": "Residents might not know where to report concerns",
+              "options": null,
+              "number": 15
+            },
+            {
+              "prompt": "a decision to make competing objectives public",
+              "answers": [
+                "G"
+              ],
+              "evidence": "published the trade-off",
+              "explanation": "published the trade-off",
+              "options": null,
+              "number": 16
+            },
+            {
+              "prompt": "an example of changes in light level mattering more than one absolute level",
+              "answers": [
+                "D"
+              ],
+              "evidence": "Their concern involved sudden contrast",
+              "explanation": "Their concern involved sudden contrast",
+              "options": null,
+              "number": 17
+            }
+          ],
+          "bank": {
+            "A": "Paragraph",
+            "B": "Paragraph",
+            "C": "Paragraph",
+            "D": "Paragraph",
+            "E": "Paragraph",
+            "F": "Paragraph",
+            "G": "Paragraph",
+            "H": "Paragraph"
+          },
+          "maxWords": null,
+          "numbersAllowed": false
+        },
+        {
+          "kind": "matching",
+          "instruction": "Match each statement with the correct person. Write the correct letter. You may use any letter more than once.",
+          "items": [
+            {
+              "prompt": "Suggested reducing light falling sideways from a bridge",
+              "answers": [
+                "B"
+              ],
+              "evidence": "She recommended shields that limited the sideways beam",
+              "explanation": "She recommended shields that limited the sideways beam",
+              "options": null,
+              "number": 18
+            },
+            {
+              "prompt": "Wanted information on when businesses really stopped trading",
+              "answers": [
+                "D"
+              ],
+              "evidence": "Wu asked businesses to log actual closing times",
+              "explanation": "Wu asked businesses to log actual closing times",
+              "options": null,
+              "number": 19
+            },
+            {
+              "prompt": "Included people who were not using the walking route",
+              "answers": [
+                "C"
+              ],
+              "evidence": "interviewed people who avoided evening walking entirely",
+              "explanation": "interviewed people who avoided evening walking entirely",
+              "options": null,
+              "number": 20
+            },
+            {
+              "prompt": "Preferred investment in poorly performing electrical circuits",
+              "answers": [
+                "A"
+              ],
+              "evidence": "Mehta favoured repairing the least efficient circuits",
+              "explanation": "Mehta favoured repairing the least efficient circuits",
+              "options": null,
+              "number": 21
+            }
+          ],
+          "bank": {
+            "A": "Arun Mehta",
+            "B": "Beth Rowan",
+            "C": "Cora Blake",
+            "D": "Dan Wu"
+          },
+          "maxWords": null,
+          "numbersAllowed": false
+        },
+        {
+          "kind": "completion",
+          "instruction": "Complete the notes. Write ONE WORD ONLY for each answer.",
+          "items": [
+            {
+              "prompt": "Rowan's team recorded temperature and ____ alongside insect activity.",
+              "answers": [
+                "wind"
+              ],
+              "evidence": "recording wind and temperature",
+              "explanation": "recording wind and temperature",
+              "options": null,
+              "number": 22
+            },
+            {
+              "prompt": "Businesses could turn off ____ lighting while retaining access lighting.",
+              "answers": [
+                "decorative"
+              ],
+              "evidence": "separated decorative lighting from the lights used for entrances",
+              "explanation": "separated decorative lighting from the lights used for entrances",
+              "options": null,
+              "number": 23
+            },
+            {
+              "prompt": "Feedback was collected on paper ____ as well as online.",
+              "answers": [
+                "cards"
+              ],
+              "evidence": "distributed paper feedback cards",
+              "explanation": "distributed paper feedback cards",
+              "options": null,
+              "number": 24
+            },
+            {
+              "prompt": "Part of the budget was reserved for ____ locations.",
+              "answers": [
+                "ecological"
+              ],
+              "evidence": "reserved part of the budget for ecological locations",
+              "explanation": "reserved part of the budget for ecological locations",
+              "options": null,
+              "number": 25
+            },
+            {
+              "prompt": "The town regarded lighting as an ongoing ____.",
+              "answers": [
+                "service"
+              ],
+              "evidence": "lighting as an ongoing service",
+              "explanation": "lighting as an ongoing service",
+              "options": null,
+              "number": 26
+            }
+          ],
+          "bank": null,
+          "maxWords": 1,
+          "numbersAllowed": false
+        }
+      ]
+    },
+    {
+      "title": "When a copy is an achievement",
+      "paragraphs": {
+        "A": "Originality has an attractive place in accounts of creativity. We celebrate the first version of an idea and often treat later copies as evidence of limited imagination. Yet much skilled activity depends on reproducing something well enough to discover what its description leaves unsaid. A musician learns another player's phrase; a craftsperson reconstructs an old joint; a researcher repeats a procedure. These activities are not equivalent in every respect, but they expose a weakness in the assumption that copying and understanding are opposites. Reproduction can be a demanding way of asking how an achievement became possible.",
+        "B": "There are, of course, copies whose purpose is deception. An imitation sold as an original painting misrepresents its history, whatever the technical skill involved. Condemning that deception does not establish that all imitation lacks educational value. The relevant question is what claim is made for the copy and what work it enables. A clearly labelled reconstruction invites comparison. A counterfeit prevents it by concealing the distinction on which a fair judgement depends. The difference concerns honesty about provenance as well as visual resemblance, and a discussion that ignores provenance confuses two quite separate kinds of value.",
+        "C": "In a fictional design class, students are asked to rebuild a simple folding stool from photographs and measurements. Many initially think the task will require little interpretation because the object is so familiar. Difficulties appear when they decide how much clearance the moving parts need and how to assemble joints without trapping the frame. These matters are not obvious in a completed photograph. When students later design their own stools, they can explain why a particular attractive shape will not fold safely. Their copied object has become evidence of decisions, not merely a substitute for the photographed original.",
+        "D": "This does not imply that accurate reproduction automatically creates transferable expertise. A student can follow a memorised sequence while misunderstanding its purpose. Teachers therefore need to vary the conditions: a different material, an altered scale or a constraint on available tools. If the learner adapts successfully and can justify the adaptation, there is stronger evidence of understanding. The variation is useful precisely because it interrupts effortless repetition. Copying becomes educational when it makes features available for inspection and revision, rather than when it rewards the preservation of an unexamined routine.",
+        "E": "The same distinction helps explain why a detailed written recipe may fail to reproduce a skilled performance. Experts often omit actions that have become automatic: testing a surface with a fingertip, listening for a change in a tool, or waiting until a material feels right. A novice needs these cues named or demonstrated. Observing a performance and attempting a copy can make such omissions visible to both learner and expert. The expert may then improve the instructions. Knowledge is not simply transferred from a complete document into an empty learner; the act of teaching can reveal that the document was incomplete.",
+        "F": "Digital tools introduce a different situation. A file can be duplicated with great accuracy without the person pressing the button learning anything about its construction. This is not a criticism of duplication, which is often exactly what the task requires. It is a reminder that similarity in the result does not prove similarity in the process. Rebuilding a model and downloading it can produce indistinguishable outputs while providing very different learning opportunities. Assessments that inspect only the final object therefore need caution if their stated purpose is to evaluate the maker's reasoning, not merely the object's usefulness.",
+        "G": "Nor should reconstruction erase the social setting of an earlier work. Reproducing a historic tool with modern machinery can demonstrate its geometry while revealing little about the time, labour or organisation once required to make it. A responsible account states which conditions were replicated and which were changed. Such limits do not render the copy worthless. They identify the questions it can answer. An experiment need not recreate an entire past world to be informative, but it must not use success under one set of conditions as proof that the same success occurred under another.",
+        "H": "The strongest defence of copying is therefore neither that everything is imitation nor that originality is a myth. It is that different activities deserve evaluation against their actual purposes. A copy may preserve access, reveal a hidden technique, test a description or prepare someone to innovate. It may also deceive or merely repeat. We should ask which of these things it does before deciding that its secondary status settles its worth. Creativity includes the ability to depart from a model, but that departure often becomes meaningful only after someone has understood what the model demands."
+      },
+      "groups": [
+        {
+          "kind": "yes-no-not-given",
+          "instruction": "Do these statements agree with the views of the writer? Write YES, NO or NOT GIVEN.",
+          "items": [
+            {
+              "prompt": "The writer regards copying and understanding as necessarily incompatible.",
+              "answers": [
+                "NO"
+              ],
+              "evidence": "a weakness in the assumption that copying and understanding are opposites",
+              "explanation": "a weakness in the assumption that copying and understanding are opposites",
+              "options": null,
+              "number": 27
+            },
+            {
+              "prompt": "An openly labelled reconstruction can have educational value.",
+              "answers": [
+                "YES"
+              ],
+              "evidence": "A clearly labelled reconstruction invites comparison",
+              "explanation": "A clearly labelled reconstruction invites comparison",
+              "options": null,
+              "number": 28
+            },
+            {
+              "prompt": "The design students had previously built furniture at home.",
+              "answers": [
+                "NOT GIVEN"
+              ],
+              "evidence": "students are asked to rebuild a simple folding stool",
+              "explanation": "No prior home experience is stated.",
+              "options": null,
+              "number": 29
+            },
+            {
+              "prompt": "Accurate repetition alone is sufficient proof of transferable skill.",
+              "answers": [
+                "NO"
+              ],
+              "evidence": "does not imply that accurate reproduction automatically creates transferable expertise",
+              "explanation": "does not imply that accurate reproduction automatically creates transferable expertise",
+              "options": null,
+              "number": 30
+            },
+            {
+              "prompt": "Assessing only an output may miss the reasoning used to make it.",
+              "answers": [
+                "YES"
+              ],
+              "evidence": "Assessments that inspect only the final object therefore need caution",
+              "explanation": "Assessments that inspect only the final object therefore need caution",
+              "options": null,
+              "number": 31
+            }
+          ],
+          "bank": null,
+          "maxWords": null,
+          "numbersAllowed": false
+        },
+        {
+          "kind": "multiple-choice",
+          "instruction": "Choose the correct letter, A, B, C or D.",
+          "items": [
+            {
+              "prompt": "What distinguishes a counterfeit from a labelled reconstruction?",
+              "answers": [
+                "C"
+              ],
+              "evidence": "concealing the distinction on which a fair judgement depends",
+              "explanation": "The key issue is misleading provenance.",
+              "options": [
+                "The quality of the materials it uses.",
+                "The number of people who can view it.",
+                "The claim made about its origin.",
+                "The length of time needed to make it."
+              ],
+              "number": 32
+            },
+            {
+              "prompt": "What did the stool exercise reveal?",
+              "answers": [
+                "A"
+              ],
+              "evidence": "These matters are not obvious in a completed photograph",
+              "explanation": "Making exposed hidden practical decisions.",
+              "options": [
+                "A familiar object can embody difficult unseen decisions.",
+                "Measurements remove the need for interpretation.",
+                "Safe furniture usually requires an unfamiliar shape.",
+                "Students learn most by avoiding existing designs."
+              ],
+              "number": 33
+            },
+            {
+              "prompt": "Why should teachers alter a copying task's conditions?",
+              "answers": [
+                "D"
+              ],
+              "evidence": "stronger evidence of understanding",
+              "explanation": "Adaptation tests knowledge beyond routine.",
+              "options": [
+                "To make every product look entirely different.",
+                "To reduce the time spent discussing a process.",
+                "To remove all support from inexperienced learners.",
+                "To test whether learners can adapt and explain decisions."
+              ],
+              "number": 34
+            },
+            {
+              "prompt": "What does the digital-file example illustrate?",
+              "answers": [
+                "B"
+              ],
+              "evidence": "similarity in the result does not prove similarity in the process",
+              "explanation": "Identical outputs can represent different learning.",
+              "options": [
+                "Digital copying is less accurate than rebuilding.",
+                "Equivalent products can conceal different learning processes.",
+                "Downloading is unsuitable for any practical purpose.",
+                "A useful product always demonstrates its maker's expertise."
+              ],
+              "number": 35
+            }
+          ],
+          "bank": null,
+          "maxWords": null,
+          "numbersAllowed": false
+        },
+        {
+          "kind": "completion",
+          "instruction": "Complete the notes. Write ONE WORD ONLY for each answer.",
+          "items": [
+            {
+              "prompt": "Experts may omit actions that have become ____.",
+              "answers": [
+                "automatic"
+              ],
+              "evidence": "omit actions that have become automatic",
+              "explanation": "omit actions that have become automatic",
+              "options": null,
+              "number": 36
+            },
+            {
+              "prompt": "A learner's attempt may reveal that a written document was ____.",
+              "answers": [
+                "incomplete"
+              ],
+              "evidence": "the document was incomplete",
+              "explanation": "the document was incomplete",
+              "options": null,
+              "number": 37
+            },
+            {
+              "prompt": "Modern reconstruction may show a tool's ____ without recreating its historical labour.",
+              "answers": [
+                "geometry"
+              ],
+              "evidence": "can demonstrate its geometry",
+              "explanation": "can demonstrate its geometry",
+              "options": null,
+              "number": 38
+            },
+            {
+              "prompt": "An account should identify conditions that were replicated and those that were ____.",
+              "answers": [
+                "changed"
+              ],
+              "evidence": "which were changed",
+              "explanation": "which were changed",
+              "options": null,
+              "number": 39
+            },
+            {
+              "prompt": "Activities should be evaluated according to their actual ____.",
+              "answers": [
+                "purposes"
+              ],
+              "evidence": "against their actual purposes",
+              "explanation": "against their actual purposes",
+              "options": null,
+              "number": 40
+            }
+          ],
+          "bank": null,
+          "maxWords": 1,
+          "numbersAllowed": false
+        }
+      ]
+    }
+  ],
+  "writing": [
+    {
+      "prompt": "The charts compare how households in the fictional town of Larton allocated their average monthly expenditure in 2005 and 2025. The totals are given below each chart. Summarise the information by selecting and reporting the main features, and make comparisons where relevant. Write at least 150 words.",
+      "visual": "![Household spending shares](writing-1.svg)\n\n| Category | 2005 share | 2025 share |\n| --- | ---: | ---: |\n| Housing | 25% | 35% |\n| Food | 30% | 20% |\n| Transport | 20% | 15% |\n| Leisure | 15% | 20% |\n| Other | 10% | 10% |\n\nAverage total monthly expenditure: 2005, 1,200 currency units; 2025, 2,000 currency units. Figures are nominal; no inflation adjustment is supplied.",
+      "guidance": "Housing replaces food as the largest share. Housing and leisure shares rise; food and transport fall; other is unchanged as a share. Shares are not amounts: food rises from 360 to 400 units despite falling from 30% to 20%; transport rises from 240 to 300. Other rises from 120 to 200. Do not infer changes in purchasing power from nominal figures."
+    },
+    {
+      "prompt": "In many cities, workers travel long distances between home and work. What problems can this cause for individuals and communities? What measures could reduce these problems? Give reasons and relevant examples. Write at least 250 words.",
+      "guidance": "Develop both problems and measures. Individual costs can include time, fatigue and expense; community effects might include congestion or uneven demand. Match proposals to problems and consider practical limits. A response about the benefits of travel alone does not address the task."
+    }
+  ],
+  "speaking": {
+    "part1": {
+      "Home area": [
+        "What do you like about the area where you live?",
+        "Where do people usually meet there?",
+        "Has the area changed since you first knew it?"
+      ],
+      "Clothes": [
+        "How do you decide what clothes to buy?",
+        "Do you keep clothes for a long time?",
+        "When do you need to dress more formally?"
+      ],
+      "Evenings": [
+        "What do you usually do in the evening?",
+        "Do you prefer quiet or busy evenings?",
+        "Were your evenings different as a child?"
+      ]
+    },
+    "part2": {
+      "cue": "Describe an event you helped to organise.",
+      "points": [
+        "what the event was",
+        "who you worked with",
+        "what you were responsible for"
+      ],
+      "explain": "what you learned from organising it.",
+      "followups": [
+        "Would you help organise it again?",
+        "Which part was most enjoyable?"
+      ]
+    },
+    "part3": [
+      "What makes a community event successful?",
+      "Why do some people volunteer while others prefer to attend?",
+      "Should local authorities pay for public celebrations?",
+      "How can organisers include people with different needs?",
+      "Do large events bring more benefits than small ones?",
+      "How might technology change event organisation?"
+    ]
+  },
+  "schemaVersion": 1,
+  "number": 8,
+  "title": "IELTS Academic — Original Mock 08",
+  "timing": {
+    "listeningMinutesApprox": [
+      25,
+      31
+    ],
+    "readingMinutes": 60,
+    "writingMinutes": 60,
+    "speakingMinutes": [
+      11,
+      14
+    ],
+    "listeningSeconds": 1529.096
+  },
+  "writingMinimumWords": [
+    150,
+    250
+  ],
+  "status": "Original uncalibrated practice draft; teacher review pending",
+  "audioStatus": "Synthetic Listening recordings included",
+  "provenance": "Original authored text and fictional case studies/data; format references in SOURCES.md",
+  "audio": {
+    "form": 8,
+    "file": "mock-08/audio/listening-full.mp3",
+    "seconds": 1529.096,
+    "bytes": 15291930,
+    "sha256": "7ce0bf2f6ce894431d3d0df837bef642a52f01bfaede07c9c777e0a92b2c518b",
+    "parts": [
+      {
+        "part": 1,
+        "start": 0,
+        "seconds": 365.0693,
+        "file": "mock-08/audio/part-1.mp3"
+      },
+      {
+        "part": 2,
+        "start": 365.069,
+        "seconds": 349.5733,
+        "file": "mock-08/audio/part-2.mp3"
+      },
+      {
+        "part": 3,
+        "start": 714.643,
+        "seconds": 358.288,
+        "file": "mock-08/audio/part-3.mp3"
+      },
+      {
+        "part": 4,
+        "start": 1072.931,
+        "seconds": 456.1653,
+        "file": "mock-08/audio/part-4.mp3"
+      }
+    ],
+    "assembly": "Decoded audio concatenation with continuous timestamps; re-encoded MP3"
+  }
+}

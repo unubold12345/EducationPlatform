@@ -1,0 +1,435 @@
+{
+  "form": 11,
+  "part": 1,
+  "file": "mock-11/audio/part-1.mp3",
+  "sha256": "a9ceaf69749f8356ff28c35d7a9e473d65bc0c2af1e1a437dff7dc0ff157242c",
+  "bytes": 3718648,
+  "seconds": 371.778667,
+  "pcmSeconds": 371.7787,
+  "sourceScriptSha256": "03d251d294f317a88ce60377bbe99da6df57e33de735a43401a1fc2e5e5f6bca",
+  "fingerprint": "6688ceff7d84f4a1e75e7f8ad8a0ddcac1c2c54b9b90033a2dc73e47bd5490c5",
+  "roles": {
+    "Administrator": "bf_isabella",
+    "Caller": "am_michael"
+  },
+  "settings": {
+    "speed": 1.0,
+    "sampleRate": 24000,
+    "turnGapSeconds": 0.4,
+    "previewSeconds": 60,
+    "midpointSeconds": 30,
+    "partCheckSeconds": 30,
+    "finalCheckSeconds": 120,
+    "narrator": "bf_emma",
+    "bitrate": "80k",
+    "revision": 1
+  },
+  "modelSha256": {
+    "kokoro-v1.0.onnx": "7d5df8ecf7d4b1878015a32686053fd0eebe2bc377234608764cc0ef3636a6c5",
+    "voices-v1.0.bin": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+  },
+  "packages": {
+    "kokoro-onnx": "0.6.1",
+    "onnxruntime": "1.31.1",
+    "numpy": "2.5.4"
+  },
+  "gain": 0.796086024527711,
+  "segments": [
+    {
+      "kind": "narration",
+      "start": 0.0,
+      "seconds": 9.1733,
+      "voice": "bf_emma",
+      "spokenText": "IELTS Academic practice. Mock 11. Listening. You will hear each part once. Write your answers on the answer sheet. There are four parts and forty questions."
+    },
+    {
+      "kind": "pause",
+      "start": 9.1733,
+      "seconds": 1.0
+    },
+    {
+      "kind": "narration",
+      "start": 10.1733,
+      "seconds": 5.3547,
+      "voice": "bf_emma",
+      "spokenText": "Part 1. Booking a short residential course. You now have one minute to read questions 1 to 10."
+    },
+    {
+      "kind": "pause",
+      "start": 15.528,
+      "seconds": 60.0,
+      "purpose": "preview"
+    },
+    {
+      "kind": "speech",
+      "start": 75.528,
+      "seconds": 3.0293,
+      "voice": "bf_isabella",
+      "spokenText": "Oak House adult learning centre. How may I help?",
+      "role": "Administrator",
+      "sourceText": "Oak House adult learning centre. How may I help?"
+    },
+    {
+      "kind": "pause",
+      "start": 78.5573,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 78.9573,
+      "seconds": 14.3573,
+      "voice": "am_michael",
+      "spokenText": "I'd like information about the weekend course on making radio programmes. I've listened to the sample online and it sounds practical, but I need to check accommodation and travel before booking. I'll be coming from another town.",
+      "role": "Caller",
+      "sourceText": "I’d like information about the weekend course on making radio programmes. I’ve listened to the sample online and it sounds practical, but I need to check accommodation and travel before booking. I’ll be coming from another town."
+    },
+    {
+      "kind": "pause",
+      "start": 93.3147,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 93.7147,
+      "seconds": 9.4293,
+      "voice": "bf_isabella",
+      "spokenText": "Certainly. The course includes a room on Friday and Saturday nights, though meals have separate arrangements. Could I take your surname in case we need to continue the booking later?",
+      "role": "Administrator",
+      "sourceText": "Certainly. The course includes a room on Friday and Saturday nights, though meals have separate arrangements. Could I take your surname in case we need to continue the booking later?"
+    },
+    {
+      "kind": "pause",
+      "start": 103.144,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 103.544,
+      "seconds": 9.6,
+      "voice": "am_michael",
+      "spokenText": "It's Varden, V, A, R, D, E, N. I've never stayed at the centre. Is the building close to public transport, or would I need to hire a car?",
+      "role": "Caller",
+      "sourceText": "It’s Varden, V-A-R-D-E-N. I’ve never stayed at the centre. Is the building close to public transport, or would I need to hire a car?"
+    },
+    {
+      "kind": "pause",
+      "start": 113.144,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 113.544,
+      "seconds": 13.5893,
+      "voice": "bf_isabella",
+      "spokenText": "You won't need a car. Come to Brook station, not the larger station at Hillgate. People sometimes choose Hillgate because more trains stop there, but the onward connection is much less convenient. From Brook there's a local bus that stops at our gate.",
+      "role": "Administrator",
+      "sourceText": "You won’t need a car. Come to Brook station, not the larger station at Hillgate. People sometimes choose Hillgate because more trains stop there, but the onward connection is much less convenient. From Brook there’s a local bus that stops at our gate."
+    },
+    {
+      "kind": "pause",
+      "start": 127.1333,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 127.5333,
+      "seconds": 7.808,
+      "voice": "am_michael",
+      "spokenText": "I can get there on Friday evening. What time can I collect the room key? The train I'd prefer arrives at about five.",
+      "role": "Caller",
+      "sourceText": "I can get there on Friday evening. What time can I collect the room key? The train I’d prefer arrives at about five."
+    },
+    {
+      "kind": "pause",
+      "start": 135.3413,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 135.7413,
+      "seconds": 15.5947,
+      "voice": "bf_isabella",
+      "spokenText": "Reception opens for arriving residents at four thirty, so four thirty is the earliest. Before then the rooms are being checked. If your train is later, someone will be here until eight. Please tell us if you expect to arrive after that rather than assuming the front door will stay open.",
+      "role": "Administrator",
+      "sourceText": "Reception opens for arriving residents at four thirty, so 4:30 is the earliest. Before then the rooms are being checked. If your train is later, someone will be here until eight. Please tell us if you expect to arrive after that rather than assuming the front door will stay open."
+    },
+    {
+      "kind": "pause",
+      "start": 151.336,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 151.736,
+      "seconds": 4.5867,
+      "voice": "am_michael",
+      "spokenText": "Fine. What is the full course fee? I saw two prices on an old leaflet.",
+      "role": "Caller",
+      "sourceText": "Fine. What is the full course fee? I saw two prices on an old leaflet."
+    },
+    {
+      "kind": "pause",
+      "start": 156.3227,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 156.7227,
+      "seconds": 16.8107,
+      "voice": "bf_isabella",
+      "spokenText": "The residential weekend is one hundred and sixty-eight pounds. The lower figure, one hundred and twenty, is for people who attend teaching sessions but sleep elsewhere. It isn't a discount available just because you're travelling by train. Your booking would be one hundred and sixty-eight pounds before optional meals.",
+      "role": "Administrator",
+      "sourceText": "The residential weekend is one hundred and sixty-eight pounds. The lower figure, one hundred and twenty, is for people who attend teaching sessions but sleep elsewhere. It isn’t a discount available just because you’re travelling by train. Your booking would be £168 before optional meals."
+    },
+    {
+      "kind": "pause",
+      "start": 173.5333,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 173.9333,
+      "seconds": 2.5173,
+      "voice": "am_michael",
+      "spokenText": "And how much do I pay to secure a place?",
+      "role": "Caller",
+      "sourceText": "And how much do I pay to secure a place?"
+    },
+    {
+      "kind": "pause",
+      "start": 176.4507,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 176.8507,
+      "seconds": 10.9653,
+      "voice": "bf_isabella",
+      "spokenText": "A deposit of forty pounds. The rest is due two weeks before the course. We can hold a provisional place until tomorrow while you check the trains, but it isn't confirmed until we receive the deposit.",
+      "role": "Administrator",
+      "sourceText": "A deposit of forty pounds. The rest is due two weeks before the course. We can hold a provisional place until tomorrow while you check the trains, but it isn’t confirmed until we receive the deposit."
+    },
+    {
+      "kind": "pause",
+      "start": 187.816,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "narration",
+      "start": 188.216,
+      "seconds": 2.048,
+      "voice": "bf_emma",
+      "spokenText": "Now look at questions 6 to 10."
+    },
+    {
+      "kind": "pause",
+      "start": 190.264,
+      "seconds": 30.0,
+      "purpose": "midpoint"
+    },
+    {
+      "kind": "speech",
+      "start": 220.264,
+      "seconds": 7.0187,
+      "voice": "am_michael",
+      "spokenText": "Are the rooms shared? I'm happy working with other people all day, but I'd prefer somewhere quiet in the evening.",
+      "role": "Caller",
+      "sourceText": "Are the rooms shared? I’m happy working with other people all day, but I’d prefer somewhere quiet in the evening."
+    },
+    {
+      "kind": "pause",
+      "start": 227.2827,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 227.6827,
+      "seconds": 11.0293,
+      "voice": "bf_isabella",
+      "spokenText": "Most are single rooms. There are a few twins for friends booking together, but we never assign a stranger to share without agreement. You'll have a single room. Towels are included; bring your own toiletries.",
+      "role": "Administrator",
+      "sourceText": "Most are single rooms. There are a few twins for friends booking together, but we never assign a stranger to share without agreement. You’ll have a single room. Towels are included; bring your own toiletries."
+    },
+    {
+      "kind": "pause",
+      "start": 238.712,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 239.112,
+      "seconds": 8.1493,
+      "voice": "am_michael",
+      "spokenText": "What about meals? I don't eat meat, and sometimes a residential course provides only a sandwich if you mention it too late.",
+      "role": "Caller",
+      "sourceText": "What about meals? I don’t eat meat, and sometimes a residential course provides only a sandwich if you mention it too late."
+    },
+    {
+      "kind": "pause",
+      "start": 247.2613,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 247.6613,
+      "seconds": 14.592,
+      "voice": "bf_isabella",
+      "spokenText": "We can provide vegetarian meals. Please put vegetarian on the booking form rather than only telling the tutor, because the kitchen uses the form to plan. Breakfast is included in the room price. You can buy lunch and dinner here or use places in the village.",
+      "role": "Administrator",
+      "sourceText": "We can provide vegetarian meals. Please put vegetarian on the booking form rather than only telling the tutor, because the kitchen uses the form to plan. Breakfast is included in the room price. You can buy lunch and dinner here or use places in the village."
+    },
+    {
+      "kind": "pause",
+      "start": 262.2533,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 262.6533,
+      "seconds": 6.08,
+      "voice": "am_michael",
+      "spokenText": "Do participants need to bring recording equipment? I have a laptop, but no special microphone.",
+      "role": "Caller",
+      "sourceText": "Do participants need to bring recording equipment? I have a laptop, but no special microphone."
+    },
+    {
+      "kind": "pause",
+      "start": 268.7333,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 269.1333,
+      "seconds": 13.5893,
+      "voice": "bf_isabella",
+      "spokenText": "We'll provide microphones and recorders. Bring headphones if you have a comfortable pair. We have some spares, but people often prefer their own for editing. Your laptop can be useful, though it's not a requirement and we can supply a shared computer.",
+      "role": "Administrator",
+      "sourceText": "We’ll provide microphones and recorders. Bring headphones if you have a comfortable pair. We have some spares, but people often prefer their own for editing. Your laptop can be useful, though it’s not a requirement and we can supply a shared computer."
+    },
+    {
+      "kind": "pause",
+      "start": 282.7227,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 283.1227,
+      "seconds": 8.4267,
+      "voice": "am_michael",
+      "spokenText": "I may have a large bag because I'm continuing to visit family afterwards. Is there somewhere to leave it on Sunday after checkout?",
+      "role": "Caller",
+      "sourceText": "I may have a large bag because I’m continuing to visit family afterwards. Is there somewhere to leave it on Sunday after checkout?"
+    },
+    {
+      "kind": "pause",
+      "start": 291.5493,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 291.9493,
+      "seconds": 12.224,
+      "voice": "bf_isabella",
+      "spokenText": "Yes, bags can stay in the office until the last session ends. They shouldn't be left in the corridor, which is an emergency route. The workshop itself is on the ground floor, so you won't need to carry the bag upstairs and down again.",
+      "role": "Administrator",
+      "sourceText": "Yes, bags can stay in the office until the last session ends. They shouldn’t be left in the corridor, which is an emergency route. The workshop itself is on the ground floor, so you won’t need to carry the bag upstairs and down again."
+    },
+    {
+      "kind": "pause",
+      "start": 304.1733,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 304.5733,
+      "seconds": 3.2853,
+      "voice": "am_michael",
+      "spokenText": "Good. Is there preparation to complete before arriving?",
+      "role": "Caller",
+      "sourceText": "Good. Is there preparation to complete before arriving?"
+    },
+    {
+      "kind": "pause",
+      "start": 307.8587,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 308.2587,
+      "seconds": 12.8213,
+      "voice": "bf_isabella",
+      "spokenText": "Please bring a photograph of a place you know. You'll use it as a starting point for a short spoken piece. It needn't be artistic, and it won't be assessed as a photograph. We're interested in the story it helps you tell, not the camera you used.",
+      "role": "Administrator",
+      "sourceText": "Please bring a photograph of a place you know. You’ll use it as a starting point for a short spoken piece. It needn’t be artistic, and it won’t be assessed as a photograph. We’re interested in the story it helps you tell, not the camera you used."
+    },
+    {
+      "kind": "pause",
+      "start": 321.08,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 321.48,
+      "seconds": 4.7787,
+      "voice": "am_michael",
+      "spokenText": "That sounds manageable. I'll check the train now and complete the form tonight.",
+      "role": "Caller",
+      "sourceText": "That sounds manageable. I’ll check the train now and complete the form tonight."
+    },
+    {
+      "kind": "pause",
+      "start": 326.2587,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 326.6587,
+      "seconds": 10.496,
+      "voice": "bf_isabella",
+      "spokenText": "I'll send the travel sheet and provisional booking reference. Check the dates before paying, as there is a second radio course in the following month and the accommodation arrangements differ slightly.",
+      "role": "Administrator",
+      "sourceText": "I’ll send the travel sheet and provisional booking reference. Check the dates before paying, as there is a second radio course in the following month and the accommodation arrangements differ slightly."
+    },
+    {
+      "kind": "pause",
+      "start": 337.1547,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "narration",
+      "start": 337.5547,
+      "seconds": 4.224,
+      "voice": "bf_emma",
+      "spokenText": "That is the end of part 1. You now have thirty seconds to check your answers."
+    },
+    {
+      "kind": "pause",
+      "start": 341.7787,
+      "seconds": 30.0,
+      "purpose": "checking"
+    }
+  ]
+}

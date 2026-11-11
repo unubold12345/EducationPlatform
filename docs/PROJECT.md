@@ -22,9 +22,10 @@ authentication require provider configuration; see the actual hosted checkpoint 
 | Area | What exists |
 | --- | --- |
 | IELTS workshops | Four focused workshops with saved work and grading |
-| Full mocks | Six Digital SAT and six IELTS Academic mocks (01–06), with server-authoritative timers |
+| Full mocks | Six Digital SAT and twelve IELTS Academic mocks (01–12), with server-authoritative timers |
 | JLPT | Three N5 and three N4 mocks, 456 original items, Japanese synthetic listening, timed sections and focused practice |
-| ЭЕШ mocks | 155 imported practice papers: 55 Mathematics, 60 Physics and 40 English (2015–2026), on the site as University Prep |
+| HSK 1 | Three original HSK 1 mocks (120 items), picture tasks, pinyin, Mandarin synthetic listening and practice (section 3) |
+| ЭЕШ mocks | 194 imported practice papers: 55 Mathematics, 60 Physics, 18 Chemistry, 21 Biology and 40 English (2015–2026), on the site as University Prep |
 | Practice mode | Untimed practice on every mock, with instant checks and a DeepSeek assistant |
 | Accounts | Better Auth email/password, profile, Google OAuth, verification and password recovery |
 | Plans and payments | Three monthly plans plus per-mock and per-paper simulated purchases |
@@ -35,7 +36,7 @@ authentication require provider configuration; see the actual hosted checkpoint 
 | Listening Lab | Two original IELTS Listening practice tests (Parts 1–4, mock-style recordings) at `/labs/ielts-listening` |
 | Reading Lab | Five original IELTS Academic passages (62 questions, seven question types) and credit-paid AI practices from the student's own file, page photos or pasted text at `/labs/ielts-reading` (section 7) |
 | Workspace | `/workspace`: the signed-in study app, separate from the marketing site, with left tabs for Home, AI chat, Vocabulary, Exams, Review, Workshop and Plans, plus the profile (section 7) |
-| Vocabulary | Add words and translations, import a document for AI extraction, keep the bank on the account and take a quiz at `/workspace/vocabulary`; the old `/workspace/flashcards` address redirects |
+| Vocabulary | Add words and translations, organize them in decks, scan a document with AI and choose which words to keep, and study with an adaptive quiz that stores per-word progress at `/workspace/vocabulary`; the old `/workspace/flashcards` address redirects |
 | Exam from file | Upload a PDF, Word, PowerPoint or text file, or up to four page photos, and get an AI multiple-choice exam at `/workspace/my-exams`; sittings, drafts and scores stay in the browser |
 | Study tools | Light/dark theme and a browser-only mathematics scratchpad |
 
@@ -60,7 +61,8 @@ remain in the schema, unused, because a dropping migration would delete hosted d
 versions; hosted databases also need `--confirm-host=<hostname>`. Mocks, workshops, purchases, plans, accounts
 and audit history are not touched. A later migration can drop the empty tables.
 
-The `/exams` library has four categories: SAT, IELTS, ЭЕШ and JLPT. `/exams/sat` and `/exams/ielts` collect
+The `/exams` library has five categories: SAT, IELTS, ЭЕШ, JLPT and HSK, three per row on a desktop canvas (a container query on
+`.library-page`, so it follows the Workspace rail: 3 columns from 900px of canvas, 2 from 640px, then 1). `/exams/sat` and `/exams/ielts` collect
 their six mocks. `/exams/eesh` is the ЭЕШ hub: subject tabs (`?subject=math|physics|english`) and dense
 year rows with five variants per year. The retired `/exams/eesh-math` route and the first four Mathematics
 mocks (`eesh-math-01`–`04`) return 404; their files are kept unserved in `reference/retired-site-mocks/eesh-math/`.
@@ -92,8 +94,9 @@ Collection URLs cannot be purchased or started as exams. The library, collection
 
 ### IELTS Academic
 
-- Mocks `ielts-academic-01` through `ielts-academic-06` are separately purchasable; an active
-  IELTS plan includes all six. The 2026-11-09 revision strengthens all six forms: plausible Listening/Reading distractors,
+- Mocks `ielts-academic-01` through `ielts-academic-12` are separately purchasable; an active
+  IELTS plan includes all twelve. Mocks 07–12 (2026-11-10) are described at the end of this section.
+- Mocks 01–06: the 2026-11-09 revision strengthens all six forms: plausible Listening/Reading distractors,
   passage-specific paragraph matching, richer Writing data and a process diagram in Mock 05. Mocks 02–06 use authored
   connected scripts, with longer academic sections, rather than answer-announcing templates. Their three distinct Reading
   passages total about 2,200 words per form; each has a distinct essay, cue card and linked discussion.
@@ -102,7 +105,9 @@ Collection URLs cannot be purchased or started as exams. The library, collection
   recordings.
 - Reading: 40 questions over three passages (2,265 words) in 60 minutes.
 - Writing: two tasks in 60 minutes.
-- Speaking: a 12-minute simulation.
+- Speaking: a 12-minute simulation in four timed stages (Part 1, the preparation minute, the long turn, Part 3). The whole
+  stage is recorded and stored for review. Where the Speaking Lab is enabled the student can take it with the AI examiner
+  ("AI examiner in the IELTS mocks" in section 7); otherwise the prompts are read from the screen as before.
 - No IELTS band score is calculated.
 - Authenticated audio serving resolves the exact mock slug to its own allowlisted recording files.
   Original and revised recordings are included in the production function trace. New audio provenance, script
@@ -113,6 +118,30 @@ Collection URLs cannot be purchased or started as exams. The library, collection
   `ielts-audio-v2.json` timing catalogue. `audioRevision` in each attempt snapshot selects the matching files and timing;
   missing revision means legacy audio, independently of the publishing version. Never overwrite a released recording set.
   Parts play back to back; the 30-minute stage leaves checking time after the last part.
+- Mocks 07–12 (2026-11-10): Codex's offline pack `MockExmps/IELTS` (kept local, not committed) is converted by
+  `node scripts/build-ielts-mocks.mjs` into `src/modules/exams/ielts-forms.json` (server-side, with keys and the
+  four Listening scripts per form), `ielts-forms-audio.json` (answer-free file prefixes and part lengths),
+  `public/ielts-mocks/mock-XX-writing-1.svg` and the two Listening plans (Mocks 07 and 10, drawn from the pack's
+  fixed-width plans). Each form reuses the revised Mock 02 stages and timing. Question types: note completion,
+  A–C/A–D choice, plan and bank matching, paragraph matching, headings (Roman-numeral labels), TRUE/FALSE/NOT GIVEN
+  and YES/NO/NOT GIVEN; Speaking has nine Part 1 prompts, a cue card with two rounding-off questions and six
+  Part 3 prompts. Completion keys also accept 6.30 for 6:30 and October 19 / 19th October for 19 October; the word
+  limit counts the number that "AND/OR A NUMBER" allows.
+- Mocks 07–12 audio: the pack's 80 kbps Kokoro recordings are re-encoded to 48 kbps mono in their own folder
+  (`assets/ielts-forms/ielts-07-part-1.mp3` … `ielts-12-part-4.mp3`, 55 MB; hashes and durations in
+  `assets/ielts-forms/manifest.json`).
+- Audio functions: a Vercel function must stay under 250 MB, and the build bundles into a route every file its code
+  can read, so one shared reader of `assets/exams` once put all 93 recordings (236 MB) into every audio route.
+  Each folder now has its own reader and route: `/audio` reads `assets/exams` through `audio-response.ts`
+  (IELTS 01–06 and JLPT, 180 MB bundle) and `/audio/forms` reads `assets/ielts-forms` through
+  `audio-response-forms.ts` (IELTS 07–12, 77 MB), `/audio/hsk` reads `assets/hsk-audio` (HSK 1, 12 MB), for both `/api/mock-attempts/<id>/…` and
+  `/api/exam-practice/<slug>/…`. `audio-handlers.ts` holds the shared checks and reads no files;
+  `audioPath()` in `audio-files.ts` picks the route, and each route refuses the other folder's mocks.
+  `next.config.ts` lists only the `/audio/forms` folder: tracing keys match anywhere in a route path, so an `/audio`
+  key would also feed `/audio/forms`. Give any new recording set its own folder, reader and route segment, and
+  check the bundle sizes in `.next/server/app/api/**/route.js.nft.json` after a build. There is one recording set per form,
+  so `audioRevision` is unset. Scripts stay out of the definition (and so out of attempt snapshots); practice
+  mode reads them by part after a check. Teacher review and learner calibration remain pending.
 
 ### JLPT N5 and N4
 
@@ -125,18 +154,65 @@ Collection URLs cannot be purchased or started as exams. The library, collection
 - Per-mock access uses the existing simulated ₮10,000 purchase. No JLPT monthly plan or cross-program access is added. Raw scores only; no 180-point conversion or pass/fail claim.
 - All questions are original drafts awaiting Japanese-teacher review. Situational text replaces illustrations. Synthetic tracks are shorter than the official listening window; remaining time is answer checking. Native-speaker listening review and learner calibration remain pending.
 
+### HSK 1 (2026-11-11)
+
+- The owner asked for the offline HSK pack on the site. `hsk1-mock-01`–`03` (program `hsk`) follow the current regular HSK 1 (2.0)
+  paper: Listening 20 items in 15 minutes, then Reading 20 items in 17 minutes (32 minutes; the paper's 5 minutes of personal
+  information and 3 minutes of answer transfer are not needed on screen). Eight five-item parts: picture √/×, three-picture choice,
+  dialogue to one of six pictures, short question with three printed answers; word–picture √/×, sentence to one of six pictures,
+  question to one of six answers, word into a gap. Every printed Chinese line carries the pack's pinyin (a Pinyin toggle hides it);
+  each part opens with the paper's worked example. Hub `/exams/hsk`; `/exams` has an HSK card.
+- Build: `node scripts/build-hsk-mocks.mjs` converts `MockExmps/HSK` (never deployed) into `assets/hsk/<slug>.json` (server-side,
+  with keys and listening scripts), `public/exam-assets/hsk/` (118 answer-free, text-free SVG pictures) and the client-safe
+  `src/modules/exams/hsk/catalog.json`. Display data sits in `question.hsk` / `group.hsk` (pictures, pinyin lines, choices,
+  example) and the single pictures in `figure`; `pictures` is an immutable content field, so admin edits can fix text and pinyin
+  but not media. Answers are the labels (√/×, A–F).
+- Audio: the pack has none (it is reader-administered), so `scripts/generate-hsk-audio.py` (setup in its header) synthesises it
+  locally with Kokoro-82M v1.0 Mandarin voices (narrator `zm_yunxia`, woman `zf_xiaoyi`, man `zm_yunxi`, speed 0.9), from the
+  pack's authored pinyin rather than automatic conversion (neutral tones, 一/不 as printed; third-tone runs changed). Each item is
+  read twice (5 s, then 10 s), with each part's instruction and example; about 11 minutes per mock, the rest of the 15 minutes is
+  checking time. Four tracks per mock, 48 kbps mono, 12 MB in `assets/hsk-audio` with hashes and per-item timings
+  (`src/modules/exams/hsk/audio-catalog.json`, used for practice replay). Voices were chosen by a Whisper-small round trip
+  (2026-11-11): over the 60 scored items 0.97 mean toneless and 0.96 toned pinyin match; the weakest are 2–3-syllable phrases
+  (喝水 heard as 河水). No person has listened to them.
+- Own audio route segment `/audio/hsk` (`audio-response-hsk.ts`, both `/api/mock-attempts/<id>/…` and `/api/exam-practice/<slug>/…`),
+  with the usual rule: in a sitting only the part playing now. Results: raw correct (40) and the paper's practice conversion
+  (correct × 5 per section, 200 in all; 120 is the usual pass mark), stated as not an official or equated score. Access is the
+  ₮10,000 per-mock purchase only; no plan. Practice mode, the practice assistant and the review coach (`hsk` chat subject) get
+  pictures as their descriptions (`hsk/describe.ts`). Tests: `tests/hsk.test.mjs`, browser group `hsk` (`tests/hsk_smoke.py`).
+- All items, pictures and keys are DeepSeek Harness drafts (2026-11-10) awaiting a Chinese teacher's review; not HSK 3.0.
+
 ### ЭЕШ mocks (University Prep)
 
-- 155 imported papers live on the site, all with program `entrance`:
+- 194 imported papers live on the site, all with program `entrance`:
   - `eesh-math-<year>-m1`–`m5`: 55 Mathematics forms for 2015–2026 (2020 excluded).
   - `eesh-physics-<year>-p1`–`p5`: 60 Physics forms for 2015–2026.
+  - `eesh-chemistry-<year>-c1`–`c3`: 18 Chemistry forms for 2020–2023, 2025 and 2026 (no 2024 reference was found).
+    40 A–E items (68 points) and four Part II tasks of eight one-digit cells (32 points); 100 minutes.
+    2020–2023 Part II tasks are provisional (no official Part II source); the task says so.
+  - `eesh-biology-<year>-b1`–`b3`: 21 Biology forms for 2020–2026. 50 A–E items (46 in 2026, 76 points) and four
+    Part II tasks with numeric or choice-number answers (24 points); 80 minutes. 2020, 2021 and 2023 Part II tasks
+    are provisional.
   - `eesh-english-<year>-e1`–`e5`: 40 English forms for 2018–2020 and 2022–2026.
 - Source and build: the offline authoring packs stay in `MockExmps/` (never served or deployed).
   `node scripts/build-entrance-mocks.mjs` converts them into `assets/entrance-mocks/<subject>/<slug>.json`
   (server-side content with answers) and `public/exam-assets/eesh/<subject>/<slug>/*.svg` (2825 diagrams).
   It also writes the client-safe catalogue in `src/modules/exams/entrance/catalog.json` and
-  `catalog-data.ts`. `next.config.ts` traces the content JSON for every server route. Rebuilding is
-  deterministic; rerun it after editing `MockExmps`.
+  `catalog-data.ts`. `next.config.ts` traces the content JSON for every server route. Rerun it after editing
+  `MockExmps`, naming the subjects you changed (`node scripts/build-entrance-mocks.mjs biology chemistry`): the
+  committed Mathematics/Physics output differs from what the script now produces from `MockExmps` (diagram sizes
+  were adjusted after generation), so a full rebuild rewrites those 115 papers. The catalogue is always rebuilt from
+  every pack. Chemistry/Biology figures are the packs' own SVG files; an explanation shorter than 12 characters
+  is shown after its answer ("H₂SO₄: +6."). Biology's generic "№ / Бүтэц / жишээ" tables are left out when every
+  word in them is already in the question or its options (360 items); every other figure is shown. The Biology
+  generator also hyphenated case endings onto ordinary nouns ("Шош-ийн"); the converter spells the 63 reviewed
+  forms out ("Шошны", "үндсэнд", …) and fails the build on any new one. Hyphens after abbreviations, units and
+  numbers (ДНХ-ийн, 3 мин-д, 20 °С-д) are correct Mongolian and stay.
+- Results (all ЭЕШ papers, fixed 2026-11-10): each skill row counts only its own questions; a precedence slip had
+  made every row show the whole paper. The header separates wrong from blank answers, and the review list opens on
+  the wrong answers, or on the blanks when nothing was answered wrongly.
+- Chemistry and Biology prompts are Mongolian prose with Unicode formulas, so they render as text (no KaTeX) with
+  the scratchpad; the AI assistant and Workspace chat have `eesh-chemistry` and `eesh-biology` subjects.
 - `src/modules/exams/entrance/content.ts` loads a paper on demand (one `readFileSync`, cached).
   `findExam()` resolves it lazily; SAT/IELTS definitions stay in memory. `getExam()` still applies
   published content versions and admin edits.
@@ -163,7 +239,7 @@ Collection URLs cannot be purchased or started as exams. The library, collection
   explanations come from the paper snapshot, never from current definitions.
 - Access is ₮10,000 per paper or the University Prep plan; the server checks it on start, read, save,
   check, audio and AI paths. Practice mode, the admin question fixer and versioned publishing work.
-- `tests/entrance-mocks.test.mjs` checks all 155 papers: 5 forms per year, unique IDs, five options,
+- `tests/entrance-mocks.test.mjs` checks all 194 papers: 5 forms per year (3 for Chemistry/Biology), unique IDs, five options,
   answer membership, answer spread, 100-point totals, diagram files, typed-answer equivalence and a
   full 100-mark report. `tests/entrance_mocks_smoke.py` covers the hub, access, a bought Mathematics
   paper, University Prep, the reading/Part II layouts and mobile widths.
@@ -193,7 +269,7 @@ guards against their return. Local attempts, purchases and content rows were del
 
 | Item | Price | Access rule |
 | --- | --- | --- |
-| University Prep | 40,000 MNT/month | All 155 ЭЕШ Mathematics, Physics and English papers |
+| University Prep | 40,000 MNT/month | All 194 ЭЕШ Mathematics, Physics, Chemistry, Biology and English papers |
 | IELTS | 60,000 MNT/month | IELTS mocks and workshops |
 | SAT | 60,000 MNT/month | SAT mocks |
 | Full SAT, IELTS or ЭЕШ mock | 10,000 MNT each | Per-exam purchase, including retakes, or a matching plan |
@@ -312,7 +388,8 @@ gated by `AUTH_HOSTED_DEMO_ACCOUNTS=true`.
   exam (matching plan or per-exam purchase), checked on every read, save, check, audio and AI request. The owner asked for this
   on 2026-11-06.
 - SAT practice covers all 147 authored items, both Module 2 routes included. IELTS has replayable audio, the part's transcript
-  after a check, both Writing tasks and all Speaking prompts; recordings are not stored here. ЭЕШ Mathematics and Physics
+  after a check, both Writing tasks and all Speaking prompts (with the AI examiner where the Speaking Lab is enabled; section 7,
+  "AI examiner in the IELTS mocks"); recordings are not stored here. ЭЕШ Mathematics and Physics
   have Mongolian prompts, the scratchpad and the imported paper's section structure; ЭЕШ English shows its conversation,
   word bank or reading passage beside the question and keeps the printed Part II choices.
 - One `PracticeSession` per student and exam (`responses`, `flags`, `results`), created on the first save. It is not an attempt:
@@ -388,16 +465,18 @@ page already holds. Results add per-skill totals, review filters and a link to p
   similar question, free questions). The server builds the coach's context from the student's own SUBMITTED snapshot via
   `ownMock`; the page sends only the attempt and question ids. Replies render as a small Markdown subset through React text.
 
-### Vocabulary (2026-11-09)
+### Vocabulary (2026-11-09, reorganized 2026-11-11)
 
 - `/workspace/vocabulary` replaces the 2026-11-08 flashcards page; `/workspace/flashcards` redirects there. It is a Workspace rail tab ("Үгсийн сан"); guests are sent to sign-in with the vocabulary page as the return path.
-- A student adds a word or phrase with its translation and an optional example by hand; saved words can be edited or deleted from the list. `VocabularyWord` is unique by a case/width-folded `termKey`, so a duplicate term is refused (409) rather than silently doubled.
-- Bank size (2026-11-09, owner rule): 100 words on a free account, 3,000 while an IELTS or SAT plan is active (`vocabularyWords` in `subscriptions/plans.ts`; the largest active plan wins, plans do not stack; University Prep keeps 100, owner-confirmed 2026-11-09). Adds and imports past the size get a 409 that names the IELTS/SAT upgrade; words kept above it after a plan ends stay listed, editable and deletable, but no new word fits until the bank is under its size.
-- A file is uploaded as multipart (4 MB maximum) to `POST /api/workspace/vocabulary/import`. It reuses the shared bounded document pipeline in `src/modules/documents` (signature check, 100 PDF pages, Office ZIP bounds, text decoding). DeepSeek receives only the extracted text (first 45,000 characters) and the chosen fallback language, with document text treated as data; it returns term/translation pairs, optionally with a copied example. If the document supplies a translation or meaning, that wording is kept, even when it is in another language; the selected language is only a fallback for terms the document lists without a meaning. Malformed output gets one silent retry, and the new pairs are saved to the account in one transaction. The student picks how many words to add (10, 20, 50 or all = 120; the `count` field, 1–120, defaults to 120 for older clients); the server lowers it to the room left in the bank, tells the model that maximum and cuts the list to it.
-- The import panel states that a document's own translation is used as-is, and warns that words without a translation are translated by AI and that fallback translation may be inaccurate. An optional selection request (at most 500 characters), such as "only academic verbs", is sent with the extracted text; it can narrow or focus the list, or ask for fewer words than the chosen count but never more, and is treated as untrusted data, so it cannot change the extraction rules, fallback language or JSON shape.
-- The import route checks same origin, a verified session, the exact multipart shape, the file signature and the no-open-timed-sitting rule before and after the provider call. It allows 20 imports per student per Ulaanbaatar day with one in flight, using the shared `RateLimit` compare-and-set. The file itself is never stored. A scanned PDF with no text layer is still refused (pages are not rendered on the server); since 2026-11-09 the student can send up to four photos of the pages instead (see "Image input").
-- Words are server-stored per account, not in this browser, so they persist across devices and browsers. Every edit and delete is scoped by `userId` on the server.
-- Quiz: the browser builds 10, 20 or 30 multiple-choice questions from the saved words, mixed or one-directional (word→translation / translation→word). Distractors come from the student's other words; a quiz needs at least four words. Answers receive immediate feedback, the result lists missed pairs, and a retake reshuffles. The score is self-study feedback and is not saved or sent to the server.
+- Words: a student adds a word or phrase with its translation, an optional example and an optional deck; saved words can be edited or deleted. `VocabularyWord` is unique by a case/width-folded `termKey`, so a duplicate term is refused (409) rather than silently doubled. Words are server-stored per account, so they follow the student between devices; every read and write is scoped by `userId` on the server.
+- Bank size (2026-11-09, owner rule): 100 words on a free account, 3,000 while an IELTS or SAT plan is active (`vocabularyWords` in `subscriptions/plans.ts`; the largest active plan wins, plans do not stack; University Prep keeps 100, owner-confirmed 2026-11-09). Adds and saves past the size get a 409 that names the IELTS/SAT upgrade; words kept above it after a plan ends stay listed, editable and deletable, but no new word fits until the bank is under its size.
+- Organization (2026-11-11, owner asked for the list to stop being "a scroll dump"): the page opens on four figures (saved / bank size, due now, mastered, reviewed today), a study banner and the library. The library has a deck rail (all words, starred, words in no deck, then the student's decks with counts), search over term, translation, example and source file, level filters with counts (due, new, learning, familiar, mastered, weak), five sort orders, a list or card view (the choice is kept in this browser) and pages of 25. Rows can be selected (one page, or everything the filter matches up to 500) for bulk move to a deck, star, quiz, reset progress or delete. `VocabularyDeck` (name unique per student by a folded `nameKey`, one of six colours, at most 50) is created from the rail, renamed and recoloured in place; deleting a deck keeps its words unless the student chooses to delete them too. Migration `20261111090000_vocabulary_decks_and_study` is additive (one table, defaulted or nullable columns). The page is a size container: its layouts follow the page's own width, so the Workspace rail being open or collapsed does not break the list.
+- API: `POST /api/workspace/vocabulary` (one word), `PATCH`/`DELETE …/words/[id]`, `POST …/words` (bulk: `add` a reviewed list, `move`, `star`, `reset`, `delete`; 384 KB body, 500 ids), `POST …/decks`, `PATCH`/`DELETE …/decks/[id]` (`?words=delete`), `POST …/review` and `POST …/import`. Every handler checks same origin, then a verified session; every shape is exact (`contracts.ts`), and a deck id is only used after the server finds it under the same `userId`.
+- File scan (2026-11-11 replaces the 10/20/50/all buttons): a file is uploaded as multipart (4 MB maximum) to `POST …/import`, which reuses the shared bounded document pipeline in `src/modules/documents` (signature check, 100 PDF pages, Office ZIP bounds, text decoding). The student sets the most words to find with a slider or a number (`count`, 1–120, lowered to the room left in the bank; missing means 120), and may filter by level (`level`: any, basic A1–A2, intermediate B1–B2, advanced C1–C2) and word type (`kind`: any, nouns, verbs, adjectives/adverbs, phrases); both are fixed choices mapped to fixed prompt sentences. An optional instruction (at most 500 characters) is sent as untrusted data and can only narrow the list. DeepSeek receives only the extracted text (first 45,000 characters) or up to four page photos, and returns term/translation pairs with an optional copied example; a translation the document supplies is kept as written, and the chosen fallback language is used only for terms without one. Malformed output gets one silent retry.
+- Review before saving: the scan saves nothing. It returns the words that are not already in the bank (`candidates`; words the student already has are left out and not charged, and a file with nothing new is a refunded 409). The page lists them with checkboxes and editable term and translation, and the student chooses the target: a new deck named after the file, an existing deck or none. Only the chosen words are saved, through the bulk `add`. The list is kept in this browser (`education-vocabulary-scan-v1:<userId>`) until it is saved or discarded, so a reload does not lose a scan that was paid for.
+- The import route checks same origin, a verified session, the exact multipart shape, the file signature and the no-open-timed-sitting rule before and after the provider call. It allows 20 scans per student per Ulaanbaatar day with one in flight, using the shared `RateLimit` compare-and-set. The file itself is never stored. A scanned PDF with no text layer is still refused (pages are not rendered on the server); the student can send up to four photos of the pages instead (see "Image input"). The panel shows the price badge only; the worked price examples and the rules about holds were removed at the owner's request (2026-11-11). Price: "AI credits" below.
+- Study progress (2026-11-11): each word carries a Leitner box 0–5, right and wrong counts, `reviewedAt` and `dueAt` (`study.ts`, shared by server and browser). A right answer moves a due word up one box and schedules it 1, 2, 4, 8 or 16 days out; a hinted or near-miss answer holds the box; a miss sends the word to box 1, due in 10 minutes. An answer given before a word is due keeps its box and date, so repeating one quiz cannot fake mastery. A quiz session posts one grade per word (`again`, `hard`, `good`) to `POST …/review`; the server computes the new state from the stored one and never accepts a box, date or score from the browser. This is self-study data, not a grade. Levels shown: new (0), learning (1–2), familiar (3–4), mastered (5).
+- Quiz (2026-11-11): built in the browser from the saved words (`quiz.ts`), at least four words in the bank. Scope: smart (due, new and weak words first), all, due, new, weak or starred, within one deck or all, or an explicit selection from the list. Six question forms can be mixed, and each word gets a form that suits it and its box (easier forms for new words, recall for familiar ones): four-option choice, typing (alternatives separated by commas count, one or two slips in a longer answer count as a near miss), true/false, listening (the browser's own voice reads the term; offered only when the browser has a voice for the term's script), gap-fill from the word's own example sentence, and self-graded cards. Wrong options come from the student's other words, same deck and similar length first. Settings: 1–50 questions, direction, an optional 10 or 20 second timer per question, re-asking missed words at the end, reading words aloud; they are kept in this browser (`education-vocabulary-quiz-v2:<userId>`). During a question there are a hint (50/50 or the first letter), "don't know", a streak counter and keyboard answers (1–4, Enter, H, Space, Esc). The result shows the score of first attempts, time, best streak, each word's level change, and offers a retry of the missed words and starring them. "Ухаалаг давталт" on the page starts a smart session at once with the saved settings. Leaving early keeps the answered words' progress.
 - AI-generated translations and examples are drafts, not teacher-reviewed material. The browser-stored flashcard decks created by the 2026-11-08 page are not migrated into the vocabulary bank; the old local data is simply unused.
 
 ### Exams from a file (2026-11-09)
@@ -415,16 +494,19 @@ page already holds. Results add per-skill totals, review filters and a link to p
   checked 2026-11-09 on the official pricing page) and 1 credit = USD 0.001. Each action has a token budget (output = the
   provider `max_tokens` the service sends; input = a generous prompt estimate, all priced as cache misses); its fixed cost is
   the budget's cost rounded up: chat 5, review coach 6, practice assistant 5, SAT math tutor 3, Essay Studio ideas 3 /
-  grammar 5 / feedback 6, Speaking Lab reply 3 / report 9, vocabulary import 1–17 (below), file-to-exam 13 (10 questions) or 17 (20),
+  grammar 5 / feedback 6, Speaking Lab reply 3 / report 9, vocabulary import 4–47 (sold with a margin, below), file-to-exam 13 (10 questions) or 17 (20),
   Reading Lab practice 4–15 (priced by length, below).
   Changing a price or budget there changes the charge, the badges and the plans page together.
-- Vocabulary import is priced by result (2026-11-09), so 10 words no longer cost the same as 100: `vocabularyImportCredits` =
-  1,500 prompt tokens + one token per two characters of the extracted text (input) + 66 output tokens per new word saved,
-  rounded up (10 words from a 2,000-character list = 2; 100 words from 20,000 characters = 12; a full 45,000-character file
-  with 120 new words = 17, the listed maximum). The maximum for the chosen count on a full-length file is held first (10 words 8,
-  20 → 9, 50 → 12, 120 → 17); once the words are saved the charge settles to the real text length and new-word count and the
-  rest returns in the same transaction. Duplicates and words that do not fit cost nothing; badges show "хамгийн ихдээ N" and
-  the price list shows 1–17.
+- Vocabulary import is sold with a margin (owner rule 2026-11-11: an AI action should earn, not only cover its DeepSeek cost),
+  and priced by what the student receives rather than by tokens. `vocabularyImportCredits` = 3 credits + 0.5 per new word for
+  words 1–20, 0.4 for words 21–60 and 0.3 for words 61–120, rounded up (10 words = 8, 20 = 13, 40 = 21, 120 = 47, the listed
+  maximum), and never less than twice the DeepSeek peak list cost of that scan (`vocabularyImportCostNano`: 1,500 prompt tokens
+  + one token per two characters read or 1,024 per page photo + 66 output tokens per word), so 10 words from a full
+  45,000-character file cost 16. Against that cost model the price is about 4–5× on ordinary files and at least 2× in the worst
+  case. The maximum for the chosen count on a full-length file is held first (10 words 16, 20 → 18, 40 → 21, 120 → 47); the
+  charge settles to the new words found and the rest returns in the same transaction. Words already in the bank cost nothing.
+  The badge shows "хамгийн ихдээ N"; the page no longer explains how the price is worked out. `MARGIN_ACTIONS` lists the
+  actions sold this way; every other action is still priced at its token budget's cost.
 - Reading Lab practices are priced by length (owner rule 2026-11-10) with the same hold-and-settle: `readingPracticeCredits` =
   1,500 prompt tokens + the larger of one token per two characters of material or 1,024 per page photo (input), plus 600 + 2 per
   passage word + 200 per question (output). The rates fill the 24,000/6,000 budget, so a full 45,000-character file with a
@@ -525,11 +607,68 @@ page already holds. Results add per-skill totals, review filters and a link to p
 `/labs/ielts-speaking` is an experimental, `noindex` studio. The homepage and IELTS program show a
 Speaking invitation only when the studio is enabled: local pilot, or hosted pilot with
 `SPEAKING_LAB_ENABLED=true`. Sign-in and registration preserve the return path to the studio.
-The studio stays separate from graded practice and exams. It requires login and explicit transcript/microphone
+The studio stays separate from graded practice and exams (its examiner also runs inside the IELTS mocks; see the end of
+this section). It requires login and explicit transcript/microphone
 consent, uses DeepSeek for text conversation, Kokoro for local British English speech, Whisper for
-transcription and flat SVG speaking partners (one per voice) drawn for this site. It writes no attempts, scores,
+transcription and illustrated SVG speaking partners (one per voice, shaded portraits drawn in code in `partner.tsx`; no
+image files, 3D model or third-party artwork). It writes no attempts, scores,
 subscriptions or chat history. Bands shown are transcript-only AI estimates, not official IELTS
 scores; pronunciation is not assessed. Raw microphone recordings are not persisted.
+- Two modes, sent to the server as `mode` with the chosen partner as `voice` (both validated against fixed lists).
+  **Full mock test**: the partner is an AI examiner using standard IELTS framing, neutral and without praise, under exam
+  conditions; the screen shows no tips, ideas or retries, and every correction arrives in the report's conversation review.
+  **Practise one part**: a named conversational partner with its own manner (`speakingVoices[..].manner`) that reacts to what
+  was said, with live tips, ideas and retries. Both prompts keep the AI/not-an-examiner disclosure and forbid an invented human life.
+- Human touches are browser-side: after the first reply the page pre-loads three or four acknowledgement clips ("Okay.",
+  "Thank you.") through the normal voice route and plays one the instant a spoken answer ends; the partner nods on pauses;
+  the portrait ring follows the voice level and the student's microphone while listening. The mouth is redrawn every frame
+  from `mouthShape()`: its opening follows the voice level and the lip width wanders between stretched and rounded, because
+  the page knows loudness, not phonemes (it is not true lip-sync). A short
+  request to repeat or explain (`isClarificationRequest`) is answered but does not count as a mock question, and keeps the cue card.
+- The server drops a tip unless it quotes the answer it is attached to (`tipQuotesAnswer`); the model otherwise re-corrects earlier
+  answers. Every answer sent to the model ends with a JSON-format cue, because a bare one-word answer returned an empty reply.
+
+#### AI examiner in the IELTS mocks (2026-11-11)
+
+The owner asked for the Speaking Lab inside the IELTS mock exams. In the four Speaking stages of all twelve mocks the Lab's
+examiner (the same avatars, Kokoro voice, microphone loop and Whisper transcription) can conduct the test. George is the
+default; since 2026-11-11 the student picks any of the six partners (start page, invitation, practice offer, or "Шалгагч солих"
+in the stage). The choice lives in the browser (`education-mock-examiner-voice-v1`) and is sent as `voice` with each speech
+request, validated against the fixed list; only the greeting names the examiner, and the words still come from the script.
+- **Scripted, no language model during a sitting.** The examiner reads the mock's own authored questions from the attempt
+  snapshot with standard framing ("Let's talk about …" per Part 1 topic in Mocks 07–12, the cue card on screen, the
+  rounding-off questions, the Part 3 link), repeats a question on request (`isClarificationRequest` or the Repeat button),
+  asks one fixed follow-up ("Why is that?") after a short answer and says "Thank you" as an answer ends. The rule that no AI
+  answers while a timed sitting is open is unchanged: the Lab's own routes still return 403 during a mock.
+- **Server checks** (`exams/speaking-examiner-service.ts`, routes under `/api/mock-attempts/<id>/speaking/`): `voice` and
+  `transcribe` need the Lab switch, same origin, a verified session, the student's own IELTS attempt with access, and the
+  server clock inside a Speaking stage (deadlines are applied to a copy first, so an ended stage is refused). The page never
+  sends text to speak: it names script lines by key (`intro`, `q:<id>`, `follow:<n>`, …) and the server resolves them against
+  the current stage. `warm` loads the speech models from the Writing stage on. The Lab's daily voice and transcription
+  counts are shared.
+- **Clock and answers.** Stages, deadlines and saving are the runner's. Each transcript is saved through the normal autosave
+  as that question's response, prefixed `[Transcript] ` so it is told apart from typed notes; a follow-up answer goes on a new
+  line. Recording stops seven seconds before a deadline so the transcript can still be saved, a new question is not started
+  in a stage's last seconds, and after a reload the script resumes at the first unanswered question. The stored whole-stage
+  recording is unchanged. Speaking stays "pending human review" in the mock's report; no band is stored.
+- **Choice.** The IELTS start page has a third check, on by default ("Speaking-ийг AI шалгагчтай өгөх"); the choice lives in
+  this browser per mock (`education-mock-examiner-v1:<slug>`). With no choice (an attempt opened elsewhere) the Speaking stage
+  shows an invitation above the unchanged prompt view. The student can switch either way at any time. If the natural voice
+  is slow or missing, the line is read by the device voice and shown on screen; if the microphone fails, the panel says so.
+- **Report after the mock.** The results page offers the Lab's report for the examiner's transcripts
+  (`POST …/speaking/report`, 9 credits as `speaking-report`, through the Lab's one provider call). It is the only DeepSeek
+  call of the feature, is refused before the mock has finished and while any sitting is open, rebuilds the conversation from
+  the submitted snapshot (the page sends only the feedback language, target band and measured timing) and returns transcript-only
+  band estimates, fixes, vocabulary and a model answer. The report and the timing are kept in this browser
+  (`education-mock-speaking-v1:<attemptId>`); asking again, or on another device, costs credits again.
+- **Practice mode.** The IELTS Speaking sections of `/exams/<slug>/practice` offer the same examiner ("AI шалгагчтай эхлэх";
+  opened by a click, off by default). There is no clock: the Part 2 preparation minute is given inside the section and
+  can be ended early, its notes stay in this browser, a finished part can be done again (its saved answers are cleared),
+  and no audio is stored. Transcripts are saved as the section's practice responses, so the practice assistant can read
+  them too. Routes `/api/exam-practice/<slug>/speaking/{voice,transcribe,report}` (`exam-practice/speaking.ts`) run
+  practice mode's own check on every request (entitlement to the exam, no open timed sitting) plus the Lab switch and
+  IELTS only; the report is built from the saved practice responses and costs the same 9 credits.
+- Pure rules and tests: `exams/speaking-examiner.ts`, `tests/speaking-examiner.test.mjs`. The examiner has no browser suite yet.
 
 ### Workshop Essay Studio
 
@@ -613,13 +752,18 @@ rounding), vocabulary upgrades, strengths, next steps and one rewritten passage.
 | `assets/jlpt` | Private JLPT definitions and audio provenance; answers/scripts stripped before client delivery |
 | `public/exam-assets/eesh` | Generated SVG diagrams for the imported papers; answer-free |
 | `MockExmps` | Offline authoring packs and validation tools; never served, built or deployed |
-| `scripts/build-entrance-mocks.mjs` | Deterministic converter from `MockExmps` to site content, diagrams and catalogue |
+| `scripts/build-entrance-mocks.mjs` | Converter from `MockExmps` to ЭЕШ site content, diagrams and catalogue (name the subjects to rebuild) |
+| `scripts/build-ielts-mocks.mjs` | Converter from the local `MockExmps/IELTS` pack to IELTS Mocks 07–12, their visuals and 48 kbps audio |
+| `public/ielts-mocks` | Answer-free IELTS Writing visuals and Listening plans |
+| `src/modules/exams/hsk` | HSK 1 catalogue, loader, sitting, practice audio, results and picture/pinyin views |
+| `assets/hsk`, `assets/hsk-audio` | Private HSK definitions with keys; Mandarin tracks, hashes and provenance |
+| `scripts/build-hsk-mocks.mjs`, `scripts/generate-hsk-audio.py` | HSK pack converter (definitions, pictures, catalogue) and local Mandarin audio generator |
 | `reference/official-papers` | Withdrawn official papers, kept as a format guide only; never served, built or deployed |
 | `reference/retired-site-mocks` | Retired site mocks (the first four Mathematics forms and the old English set); never built |
 | `src/modules/workspace` | Workspace shell, home, AI chat (contract, service, browser-stored threads), review and styles |
 | `src/modules/documents` | Shared bounded document extraction (PDF, DOCX, PPTX, TXT, MD, CSV), the upload reader for one document or page photos, and text helpers |
 | `src/modules/ai-images` | Image input for AI features: signature/size rules and prompt parts (pure), and the browser resize, attach button and previews |
-| `src/modules/vocabulary` | Vocabulary limits, AI import contract, server-stored word bank, quiz builder and UI |
+| `src/modules/vocabulary` | Vocabulary limits and request shapes, AI scan contract, server-stored word bank with decks and study progress, the Leitner schedule, quiz builder and UI |
 | `src/modules/my-exams` | Upload-to-exam contract, sealed answer token, server generation/grading, browser-stored exams and the runner |
 | `src/modules/reading-lab` | Reading Lab: five sample passages, question contract and marking, AI generation and sealed key, browser store and the split-screen runner |
 | `src/modules/subscriptions` | Plans, purchases, entitlements and legacy grants |
@@ -673,8 +817,10 @@ npm run dev
 ```
 
 The imported ЭЕШ content is already generated in `assets/entrance-mocks` and `public/exam-assets/eesh`.
-After editing the offline packs in `MockExmps`, run `node scripts/build-entrance-mocks.mjs` and commit the
-regenerated JSON, SVG and catalogue. The script validates 155 forms, 100-point totals and diagram files.
+After editing the offline packs in `MockExmps`, run `node scripts/build-entrance-mocks.mjs <subjects>` and commit the
+regenerated JSON, SVG and catalogue. The script validates 194 forms, 100-point totals and diagram files.
+IELTS Mocks 07–12: `node scripts/build-ielts-mocks.mjs` (needs ffmpeg/ffprobe and the local `MockExmps/IELTS` pack);
+it re-encodes a recording only when its source hash changes.
 
 Open <http://localhost:3001>. Local services:
 
@@ -727,7 +873,7 @@ deadlines; they must never add a runtime bypass, shorten a public exam or change
 - Scores are raw; SAT scaled scores and IELTS bands are not calculated. ЭЕШ papers report a 100-point
   practice total from printed item marks, not the official weighted ЭЕШ score. The Speaking Lab's and
   Essay Studio's bands are AI estimates only.
-- All 155 imported ЭЕШ papers await teacher review, so their answers, explanations and the AI's answers
+- All 194 imported ЭЕШ papers await teacher review, so their answers, explanations and the AI's answers
   about them are unverified. The 2022–2026 Mathematics and English references are third-party copies,
   not official БҮТ files.
 - The 2018 and 2019 English listening sections have a script but no recording; they are labelled as

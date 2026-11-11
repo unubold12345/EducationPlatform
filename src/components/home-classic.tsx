@@ -7,7 +7,7 @@ import { HomeAtmosphere } from "@/components/home-atmosphere";
 import { HomeMotion } from "@/components/home-motion";
 import { HOME_ART_STYLE, homeArtwork } from "@/components/home-art";
 
-const tickerItems = ["Digital SAT", "IELTS Academic", "ЭЕШ · 155 mock", "JLPT · N5 / N4", "Speaking", "Writing"];
+const tickerItems = ["Digital SAT", "IELTS Academic", "ЭЕШ · 194 mock", "JLPT · N5 / N4", "Speaking", "Writing"];
 
 export async function HomeClassic() {
   const plans = await pricedPlans();
@@ -20,7 +20,7 @@ export async function HomeClassic() {
           <h1>Том зорилго.<br /><span>Өдөр бүрийн</span><br />жижиг алхам.</h1>
           <p className="hero-description">Шалгалтаа давт. Алдаагаа ойлго.<br />Өөрийн хэмнэлээр урагшил.</p>
           <div className="hero-actions"><Link className="button" href="/workspace">Workspace нээх <span aria-hidden="true">↗</span></Link><Link className="home-watch-link" href="#demos"><span aria-hidden="true">▶</span> Хэрхэн ажилладаг вэ?</Link></div>
-          <div className="hero-stats" aria-label="Бэлтгэлийн боломжууд"><div><strong>04</strong><span>Хөтөлбөр</span></div><div><strong>155</strong><span>ЭЕШ mock</span></div><div><strong>03</strong><span>Хэлний студи</span></div></div>
+          <div className="hero-stats" aria-label="Бэлтгэлийн боломжууд"><div><strong>04</strong><span>Хөтөлбөр</span></div><div><strong>194</strong><span>ЭЕШ mock</span></div><div><strong>03</strong><span>Хэлний студи</span></div></div>
         </div>
         <div className="home-hero-visual" data-reveal>
           <div className="home-hero-photo"><Image src={homeArtwork.studyHero.src} alt={homeArtwork.studyHero.alt} fill sizes="(max-width: 760px) 100vw, 52vw" loading="eager" fetchPriority="high" /><span className="home-photo-label">ӨӨРИЙН ИРЭЭДҮЙД ЦАГ ГАРГА.</span></div>

@@ -12,7 +12,7 @@ const empty = () => ({ responses: {}, flags: [], results: {} });
 const text = path => readFileSync(new URL("../" + path, import.meta.url), "utf8");
 
 test("every SAT and IELTS mock has a practice form with the whole authored bank", () => {
-  assert.equal(examDefinitions.length, 12);
+  assert.equal(examDefinitions.length, 18);
   for (const definition of examDefinitions.filter(exam => exam.program !== "entrance")) {
     const { form } = mockPractice(definition);
     assert.equal(new Set(form.questions.map(q => q.id)).size, form.questions.length, definition.slug);
@@ -33,7 +33,7 @@ test("every SAT and IELTS mock has a practice form with the whole authored bank"
 });
 
 test("every ЭЕШ mock has a practice form, graded by its own answers", () => {
-  assert.equal(entranceMocks.length, 155);
+  assert.equal(entranceMocks.length, 194);
   for (const slug of ["eesh-math-2024-m1", "eesh-physics-2024-p1", "eesh-english-2024-e1"]) {
     const definition = entranceDefinition(slug);
     const source = mockPractice(definition);

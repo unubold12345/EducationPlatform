@@ -12,7 +12,9 @@ import { hasSubscription } from "@/modules/subscriptions/access";
 import { mockBriefingSummary } from "@/modules/exams/briefing-summary";
 import { PracticeEntry } from "@/modules/exam-practice/entry";
 import { JlptBriefing } from "@/modules/exams/jlpt/briefing";
+import { HskBriefing } from "@/modules/exams/hsk/briefing";
 import { EntranceBriefing } from "@/modules/exams/entrance/briefing";
+import { speakingLabEnabled } from "@/lib/local-pilot";
 
 export async function generateMetadata({params}:{params:Promise<{slug:string}>}):Promise<Metadata>{return{title:(await getExam((await params).slug))?.title??"Шалгалт олдсонгүй"};}
 
@@ -34,6 +36,7 @@ export default async function ExamPage({params}:{params:Promise<{slug:string}>})
   const activeAttempt=session?await getDb().mockAttempt.findFirst({where:{userId:session.user.id,slug:exam.slug,status:"IN_PROGRESS"},select:{id:true}}):null;
   const hasAccess=Boolean(access)||subscribed||Boolean(subscriptionSitting);
   if(exam.program==="jlpt")return <JlptBriefing exam={exam} hasAccess={hasAccess} loggedIn={Boolean(session)} activeAttemptId={activeAttempt?.id}/>;
+  if(exam.program==="hsk")return <HskBriefing exam={exam} hasAccess={hasAccess} loggedIn={Boolean(session)} activeAttemptId={activeAttempt?.id}/>;
   if(exam.program==="entrance")return <EntranceBriefing exam={exam} hasAccess={hasAccess} loggedIn={Boolean(session)} activeAttemptId={activeAttempt?.id}/>;
   const summary=mockBriefingSummary(exam);
   const sat=exam.program==="sat";
@@ -61,7 +64,7 @@ export default async function ExamPage({params}:{params:Promise<{slug:string}>})
           <p className="briefing-price">{summary.priceNote}</p>
           {activeAttempt ? <Link className="briefing-resume" href={"/exams/attempts/" + activeAttempt.id}>Нээлттэй оролдлого · үргэлжлүүлэх <span aria-hidden="true">→</span></Link> : null}
         </div>
-        <div className="briefing-start"><ExamStart slug={exam.slug} program={exam.program} hasAccess={hasAccess} loggedIn={Boolean(session)}/><PracticeEntry slug={exam.slug} hasAccess={Boolean(access)||subscribed}/></div>
+        <div className="briefing-start"><ExamStart slug={exam.slug} program={exam.program} hasAccess={hasAccess} loggedIn={Boolean(session)} examiner={exam.program==="ielts"&&speakingLabEnabled()}/><PracticeEntry slug={exam.slug} hasAccess={Boolean(access)||subscribed}/></div>
       </aside>
 
       <section className="briefing-section exam-stages" aria-labelledby="exam-stages-heading">
@@ -78,7 +81,7 @@ export default async function ExamPage({params}:{params:Promise<{slug:string}>})
         <div className="briefing-section-head"><span aria-hidden="true">02</span><div><p className="eyebrow">ЭХЛЭХЭЭС ӨМНӨ</p><h2 id="exam-rules-heading">Шалгалтын горим</h2></div></div>
         <div className="briefing-rule-grid">
           <div><h3>Цаг ба хадгалалт</h3><ul><li>Цаг серверт хадгалагдана. Refresh хийсэн ч дахин эхлэхгүй.</li><li>Хариу автоматаар хадгалагдана. Цаг дуусахад эцэслэгдэнэ.</li><li>Нээлттэй оролдлого байвал үргэлжилнэ.</li></ul></div>
-          <div><h3>Хэсгийн дүрэм</h3><ul><li>Одоогийн хэсэгт буцаж, хариугаа засаж болно. Дууссан хэсэг рүү буцахгүй.</li><li>Стандарт хугацаа дуусахаас өмнө хэсэг алгасах, шалгалтыг дуусгах боломжгүй.</li><li>Хариулаагүй асуулт байж болно.</li>{sat ? <li>Math-ийн турш тооны машин, томьёоны лавлах болон Desmos нээлттэй.</li> : <li>Listening бичлэг нэг удаа тоглоно. Speaking нь микрофонтой, 12 минутын simulation.</li>}</ul></div>
+          <div><h3>Хэсгийн дүрэм</h3><ul><li>Одоогийн хэсэгт буцаж, хариугаа засаж болно. Дууссан хэсэг рүү буцахгүй.</li><li>Стандарт хугацаа дуусахаас өмнө хэсэг алгасах, шалгалтыг дуусгах боломжгүй.</li><li>Хариулаагүй асуулт байж болно.</li>{sat ? <li>Math-ийн турш тооны машин, томьёоны лавлах болон Desmos нээлттэй.</li> : <li>Listening бичлэг нэг удаа тоглоно. Speaking нь микрофонтой, 12 минутын simulation{speakingLabEnabled()?"; AI шалгагчтай ярилцаж өгч болно":""}.</li>}</ul></div>
           <div><h3>Үр дүн</h3><ul>{sat ? <><li>SAT raw оноо; 1600 хөрвүүлэлтгүй.</li><li>Албан ёсны College Board оноо биш.</li></> : <><li>Listening, Reading-ийн зөв хариултын тоо.</li><li>Writing, Speaking-д автомат band өгөхгүй.</li></>}<li>Эцсийн дүн таны бүртгэлд хадгалагдана.</li></ul></div>
         </div>
         <p className="briefing-caveat">Энэ mock нь албан ёсны шалгалт эсвэл баталгаажсан оноо биш.</p>

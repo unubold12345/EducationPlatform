@@ -1,7 +1,7 @@
-// Display-only split of generated IELTS Listening prompts (Mocks 02–06 use
+// Display-only split of generated IELTS Listening prompts (Mocks 02–12 use
 // "Part N · Title\nLabel: Instruction") so the title and instruction show once per part
 // instead of on every question. Prompts in any other shape pass through unchanged.
-const INSTRUCTION = /^([\s\S]*?):\s*((?:Complete the notes|Choose ONE answer)\.[\s\S]*)$/;
+const INSTRUCTION = /^([\s\S]*?):\s*((?:(?:Complete the notes|Choose ONE answer)\.|Choose the correct letter,|Label the plan\b|What [^?\n]*\?\s*Write the correct letter)[\s\S]*)$/;
 
 export type ListeningPrompt = { title: string | null; text: string; instruction: string | null };
 

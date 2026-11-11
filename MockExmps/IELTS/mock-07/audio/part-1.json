@@ -1,0 +1,405 @@
+{
+  "form": 7,
+  "part": 1,
+  "file": "mock-07/audio/part-1.mp3",
+  "sha256": "78ea45881539e685b5beef6a320591207c7c2bc30b0db0d11129b8087f8cb9dd",
+  "bytes": 3629848,
+  "seconds": 362.893333,
+  "pcmSeconds": 362.8933,
+  "sourceScriptSha256": "0afa226cd32aeb98bb33cff59b08836701b311191ab73cd5e1d2eefaba7e8894",
+  "fingerprint": "9ae63121100c09965e7abd327a49a9712035d04d0a8a3e737ab39fe45bafc3c0",
+  "roles": {
+    "Coordinator": "bm_george",
+    "Caller": "af_heart"
+  },
+  "settings": {
+    "speed": 1.0,
+    "sampleRate": 24000,
+    "turnGapSeconds": 0.4,
+    "previewSeconds": 60,
+    "midpointSeconds": 30,
+    "partCheckSeconds": 30,
+    "finalCheckSeconds": 120,
+    "narrator": "bf_emma",
+    "bitrate": "80k",
+    "revision": 1
+  },
+  "modelSha256": {
+    "kokoro-v1.0.onnx": "7d5df8ecf7d4b1878015a32686053fd0eebe2bc377234608764cc0ef3636a6c5",
+    "voices-v1.0.bin": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+  },
+  "packages": {
+    "kokoro-onnx": "0.6.1",
+    "onnxruntime": "1.31.1",
+    "numpy": "2.5.4"
+  },
+  "gain": 0.8191414873257276,
+  "segments": [
+    {
+      "kind": "narration",
+      "start": 0.0,
+      "seconds": 9.088,
+      "voice": "bf_emma",
+      "spokenText": "IELTS Academic practice. Mock 7. Listening. You will hear each part once. Write your answers on the answer sheet. There are four parts and forty questions."
+    },
+    {
+      "kind": "pause",
+      "start": 9.088,
+      "seconds": 1.0
+    },
+    {
+      "kind": "narration",
+      "start": 10.088,
+      "seconds": 5.0987,
+      "voice": "bf_emma",
+      "spokenText": "Part 1. Booking a community kitchen. You now have one minute to read questions 1 to 10."
+    },
+    {
+      "kind": "pause",
+      "start": 15.1867,
+      "seconds": 60.0,
+      "purpose": "preview"
+    },
+    {
+      "kind": "speech",
+      "start": 75.1867,
+      "seconds": 4.224,
+      "voice": "bm_george",
+      "spokenText": "Good afternoon, Riverside Community Kitchen. How can I help?",
+      "role": "Coordinator",
+      "sourceText": "Good afternoon, Riverside Community Kitchen. How can I help?"
+    },
+    {
+      "kind": "pause",
+      "start": 79.4107,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 79.8107,
+      "seconds": 13.9733,
+      "voice": "af_heart",
+      "spokenText": "Our neighbourhood group wants to run a cooking evening. We used the church hall last year, but it had only two small ovens, and people spent more time waiting than cooking. Someone said your kitchen could accommodate twelve people working together.",
+      "role": "Caller",
+      "sourceText": "Our neighbourhood group wants to run a cooking evening. We used the church hall last year, but it had only two small ovens, and people spent more time waiting than cooking. Someone said your kitchen could accommodate twelve people working together."
+    },
+    {
+      "kind": "pause",
+      "start": 93.784,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 94.184,
+      "seconds": 10.4747,
+      "voice": "bm_george",
+      "spokenText": "Twelve is our maximum for a practical class. We can seat more for a demonstration, but that doesn't sound like your plan. Will one person be responsible for the booking?",
+      "role": "Coordinator",
+      "sourceText": "Twelve is our maximum for a practical class. We can seat more for a demonstration, but that doesn’t sound like your plan. Will one person be responsible for the booking?"
+    },
+    {
+      "kind": "pause",
+      "start": 104.6587,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 105.0587,
+      "seconds": 10.3467,
+      "voice": "af_heart",
+      "spokenText": "Yes, that will be me, Anna Mercer. I sometimes get letters addressed to Merker, but it's Mercer, M, E, R, C, E, R. The group itself is called Shared Table.",
+      "role": "Caller",
+      "sourceText": "Yes, that will be me, Anna Mercer. I sometimes get letters addressed to Merker, but it’s Mercer, M-E-R-C-E-R. The group itself is called Shared Table."
+    },
+    {
+      "kind": "pause",
+      "start": 115.4053,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 115.8053,
+      "seconds": 10.304,
+      "voice": "bm_george",
+      "spokenText": "Thank you. Were you thinking of a weekday evening or a weekend? Saturday afternoons are mostly reserved for our own courses, although there's one gap later this month.",
+      "role": "Coordinator",
+      "sourceText": "Thank you. Were you thinking of a weekday evening or a weekend? Saturday afternoons are mostly reserved for our own courses, although there’s one gap later this month."
+    },
+    {
+      "kind": "pause",
+      "start": 126.1093,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 126.5093,
+      "seconds": 9.5573,
+      "voice": "af_heart",
+      "spokenText": "We first discussed Friday, but two members finish work late then. Thursday is the day we've agreed on. We'd prefer the second week of next month if that's available.",
+      "role": "Caller",
+      "sourceText": "We first discussed Friday, but two members finish work late then. Thursday is the day we’ve agreed on. We’d prefer the second week of next month if that’s available."
+    },
+    {
+      "kind": "pause",
+      "start": 136.0667,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 136.4667,
+      "seconds": 11.4347,
+      "voice": "bm_george",
+      "spokenText": "It is. You could have the room from six, but another group finishes just before that. If you want it fully reset before you arrive, I'd recommend six thirty. Would that leave enough time?",
+      "role": "Coordinator",
+      "sourceText": "It is. You could have the room from six, but another group finishes just before that. If you want it fully reset before you arrive, I’d recommend six thirty. Would that leave enough time?"
+    },
+    {
+      "kind": "pause",
+      "start": 147.9013,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 148.3013,
+      "seconds": 9.216,
+      "voice": "af_heart",
+      "spokenText": "Yes, let's start at six thirty. We can circulate recipes beforehand rather than spend the first half-hour explaining them. Is there a minimum hire period?",
+      "role": "Caller",
+      "sourceText": "Yes, let’s start at 6:30. We can circulate recipes beforehand rather than spend the first half-hour explaining them. Is there a minimum hire period?"
+    },
+    {
+      "kind": "pause",
+      "start": 157.5173,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 157.9173,
+      "seconds": 15.616,
+      "voice": "bm_george",
+      "spokenText": "Three hours. The charge for a community group is eighteen pounds an hour. Businesses pay twenty-five, but your event qualifies for the lower rate, so the hire will be fifty-four pounds. Cleaning is included if you leave the work surfaces clear.",
+      "role": "Coordinator",
+      "sourceText": "Three hours. The charge for a community group is eighteen pounds an hour. Businesses pay twenty-five, but your event qualifies for the lower rate, so the hire will be fifty-four pounds. Cleaning is included if you leave the work surfaces clear."
+    },
+    {
+      "kind": "pause",
+      "start": 173.5333,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 173.9333,
+      "seconds": 2.6453,
+      "voice": "af_heart",
+      "spokenText": "That's manageable. Do we pay the whole amount now?",
+      "role": "Caller",
+      "sourceText": "That’s manageable. Do we pay the whole amount now?"
+    },
+    {
+      "kind": "pause",
+      "start": 176.5787,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 176.9787,
+      "seconds": 11.3493,
+      "voice": "bm_george",
+      "spokenText": "No, a deposit of twenty pounds confirms it. The balance is due one week beforehand. We send a reminder, but please don't depend on receiving it if your email changes.",
+      "role": "Coordinator",
+      "sourceText": "No, a deposit of twenty pounds confirms it. The balance is due one week beforehand. We send a reminder, but please don’t depend on receiving it if your email changes."
+    },
+    {
+      "kind": "pause",
+      "start": 188.328,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "narration",
+      "start": 188.728,
+      "seconds": 2.048,
+      "voice": "bf_emma",
+      "spokenText": "Now look at questions 6 to 10."
+    },
+    {
+      "kind": "pause",
+      "start": 190.776,
+      "seconds": 30.0,
+      "purpose": "midpoint"
+    },
+    {
+      "kind": "speech",
+      "start": 220.776,
+      "seconds": 10.4747,
+      "voice": "af_heart",
+      "spokenText": "We'll be making vegetable dishes. Is there anything we should bring besides ingredients? Our organiser has a set of knives, though carrying them across town seems unnecessary.",
+      "role": "Caller",
+      "sourceText": "We’ll be making vegetable dishes. Is there anything we should bring besides ingredients? Our organiser has a set of knives, though carrying them across town seems unnecessary."
+    },
+    {
+      "kind": "pause",
+      "start": 231.2507,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 231.6507,
+      "seconds": 14.72,
+      "voice": "bm_george",
+      "spokenText": "Knives and boards are supplied, and so are pans. Every participant needs an apron. We used to lend those, but laundering them was becoming difficult. Ordinary comfortable clothes and enclosed shoes are sensible too.",
+      "role": "Coordinator",
+      "sourceText": "Knives and boards are supplied, and so are pans. Every participant needs an apron. We used to lend those, but laundering them was becoming difficult. Ordinary comfortable clothes and enclosed shoes are sensible too."
+    },
+    {
+      "kind": "pause",
+      "start": 246.3707,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 246.7707,
+      "seconds": 5.6107,
+      "voice": "af_heart",
+      "spokenText": "One member uses a wheelchair. I saw a photograph of steps at the front. Is there another way in?",
+      "role": "Caller",
+      "sourceText": "One member uses a wheelchair. I saw a photograph of steps at the front. Is there another way in?"
+    },
+    {
+      "kind": "pause",
+      "start": 252.3813,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 252.7813,
+      "seconds": 13.7173,
+      "voice": "bm_george",
+      "spokenText": "Yes. The side entrance is level and opens directly into the kitchen corridor. The front doors are mainly used for the meeting rooms. I'll include a little plan in the confirmation so nobody has to search after dark.",
+      "role": "Coordinator",
+      "sourceText": "Yes. The side entrance is level and opens directly into the kitchen corridor. The front doors are mainly used for the meeting rooms. I’ll include a little plan in the confirmation so nobody has to search after dark."
+    },
+    {
+      "kind": "pause",
+      "start": 266.4987,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 266.8987,
+      "seconds": 10.24,
+      "voice": "af_heart",
+      "spokenText": "That would help. Can we store ingredients before the event? A couple of people can deliver things during their lunch break, but nobody wants to leave milk in an office all afternoon.",
+      "role": "Caller",
+      "sourceText": "That would help. Can we store ingredients before the event? A couple of people can deliver things during their lunch break, but nobody wants to leave milk in an office all afternoon."
+    },
+    {
+      "kind": "pause",
+      "start": 277.1387,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 277.5387,
+      "seconds": 12.0533,
+      "voice": "bm_george",
+      "spokenText": "You can use the fridge from midday on the day. Label everything with your group's name, please. The freezer is already allocated to our regular classes, so don't bring anything that requires freezing.",
+      "role": "Coordinator",
+      "sourceText": "You can use the fridge from midday on the day. Label everything with your group’s name, please. The freezer is already allocated to our regular classes, so don’t bring anything that requires freezing."
+    },
+    {
+      "kind": "pause",
+      "start": 289.592,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 289.992,
+      "seconds": 2.4533,
+      "voice": "af_heart",
+      "spokenText": "Fine. What do you need from me to finish the booking?",
+      "role": "Caller",
+      "sourceText": "Fine. What do you need from me to finish the booking?"
+    },
+    {
+      "kind": "pause",
+      "start": 292.4453,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 292.8453,
+      "seconds": 16.2133,
+      "voice": "bm_george",
+      "spokenText": "A contact number and a copy of your proposed menu. We don't approve individual recipes, but we need to know about activities requiring unusual equipment. Email the menu by Monday, and we'll confirm any questions before you buy ingredients.",
+      "role": "Coordinator",
+      "sourceText": "A contact number and a copy of your proposed menu. We don’t approve individual recipes, but we need to know about activities requiring unusual equipment. Email the menu by Monday, and we’ll confirm any questions before you buy ingredients."
+    },
+    {
+      "kind": "pause",
+      "start": 309.0587,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 309.4587,
+      "seconds": 3.3067,
+      "voice": "af_heart",
+      "spokenText": "I'll send it this weekend. Where should we meet our participants?",
+      "role": "Caller",
+      "sourceText": "I’ll send it this weekend. Where should we meet our participants?"
+    },
+    {
+      "kind": "pause",
+      "start": 312.7653,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 313.1653,
+      "seconds": 15.104,
+      "voice": "bm_george",
+      "spokenText": "The easiest landmark is the library opposite us. Ask everyone to wait there rather than beside the narrow driveway. You can collect the group together and use the side entrance. I'll arrange for someone to show you the controls when you arrive.",
+      "role": "Coordinator",
+      "sourceText": "The easiest landmark is the library opposite us. Ask everyone to wait there rather than beside the narrow driveway. You can collect the group together and use the side entrance. I’ll arrange for someone to show you the controls when you arrive."
+    },
+    {
+      "kind": "pause",
+      "start": 328.2693,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "narration",
+      "start": 328.6693,
+      "seconds": 4.224,
+      "voice": "bf_emma",
+      "spokenText": "That is the end of part 1. You now have thirty seconds to check your answers."
+    },
+    {
+      "kind": "pause",
+      "start": 332.8933,
+      "seconds": 30.0,
+      "purpose": "checking"
+    }
+  ]
+}

@@ -18,18 +18,18 @@ export const programs: Program[] = [
   {
     slug: "ielts", title: "IELTS", subtitle: "Англи хэлний бэлтгэл",
     description: "Бүтэн Academic mock, бичих болон ярих workshop-оор бэлдээрэй.",
-    color: "purple", symbol: "Aa", status: "6 бүтэн mock + 4 workshop",
+    color: "purple", symbol: "Aa", status: "12 бүтэн mock + 4 workshop",
     audience: "Гадаадад суралцах, цагаачлах бол",
-    highlights: ["6 бүтэн Academic mock", "Writing, Speaking workshop", "Listening, Reading, Writing, Speaking"],
+    highlights: ["12 бүтэн Academic mock", "Writing, Speaking workshop", "Listening, Reading, Writing, Speaking"],
     topics: ["Listening", "Academic Reading", "Writing", "Speaking"], available: true,
   },
   {
     slug: "entrance", title: "Элсэлтийн шалгалт", subtitle: "Их сургуулийн эхний алхам",
-    description: "ЭЕШ-ийн математик, физик, англи хэлний 155 бүтэн mock. 2015–2026 оны жишиг бүтэцтэй, хугацаатай бэлтгэл.",
-    color: "green", symbol: "∑", status: "155 бүтэн mock",
+    description: "ЭЕШ-ийн математик, физик, хими, биологи, англи хэлний 194 бүтэн mock. 2015–2026 оны жишиг бүтэцтэй, хугацаатай бэлтгэл.",
+    color: "green", symbol: "∑", status: "194 бүтэн mock",
     audience: "Монголын их сургуульд орох бол",
-    highlights: ["Математик · 55 mock", "Физик · 60 mock", "Англи хэл · 40 mock"],
-    topics: ["Математик", "Физик", "Англи хэл"], available: true,
+    highlights: ["Математик · 55 mock", "Физик · 60 mock", "Хими · 18 mock", "Биологи · 21 mock", "Англи хэл · 40 mock"],
+    topics: ["Математик", "Физик", "Хими", "Биологи", "Англи хэл"], available: true,
   },
 ];
 

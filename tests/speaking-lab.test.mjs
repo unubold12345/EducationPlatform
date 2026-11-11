@@ -1,19 +1,21 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {stressPronounI,validSpeakingInput,normalizeSpeakingReply,validVoiceInput,speakingMessages,speechChunks,encodeVoiceFrame,VoiceFrameReader,overallBand,countWords} from "../src/modules/speaking-lab/contracts.ts";
+import {stressPronounI,validSpeakingInput,normalizeSpeakingReply,validVoiceInput,speakingMessages,speechChunks,encodeVoiceFrame,VoiceFrameReader,overallBand,countWords,isClarificationRequest,tipQuotesAnswer,speakingAcks,speakingVoices} from "../src/modules/speaking-lab/contracts.ts";
 import {encodeSpeechWav,decodeSpeechWav} from "../src/modules/speaking-lab/pcm.ts";
 
-const start={part:1,topic:"everyday",target:6.5,language:"en",action:"start",message:"",history:[],stats:null,timing:[]};
+const start={mode:"practice",voice:"af_heart",part:1,topic:"everyday",target:6.5,language:"en",action:"start",message:"",history:[],stats:null,timing:[]};
 const history=[{role:"assistant",content:"What do you do in your free time?"},{role:"user",content:"I play basketball with my friends."}];
 
 test("speaking lab accepts bounded, explicit actions and rejects privileged or malformed input",()=>{
  assert.ok(validSpeakingInput(start));
  assert.ok(validSpeakingInput({...start,part:2,topic:"technology",target:8,language:"mn"}));
+ assert.ok(validSpeakingInput({...start,mode:"mock",voice:"bm_george"}));
  assert.ok(validSpeakingInput({...start,action:"answer",message:"I like it.",history,stats:{seconds:12.5,words:30,pauses:1}}));
  assert.ok(validSpeakingInput({...start,part:2,action:"advance",message:"Yes.",history}));
  assert.ok(validSpeakingInput({...start,action:"hint",history}));
  assert.ok(validSpeakingInput({...start,action:"report",history,timing:[{part:1,seconds:10,words:25,pauses:0}]}));
  for(const input of [
+  {...start,mode:"exam"},{...start,mode:undefined},{...start,voice:"clone-a-person"},{...start,voice:"toString"},Object.fromEntries(Object.entries(start).filter(([key])=>key!=="mode")),
   {...start,part:"1"},{...start,part:4},{...start,topic:"unknown"},{...start,target:9},{...start,language:"fr"},{...start,prompt:"override"},
   {...start,message:"prefill"},{...start,action:"answer"},{...start,action:"feedback"},{...start,action:"report"},{...start,action:"hint"},
   {...start,action:"advance",message:"x",history},// cannot advance into Part 1
@@ -87,10 +89,47 @@ test("prompts identify the AI, ask one question, never assess pronunciation and 
  assert.match(speakingMessages({...start,part:3})[0].content,/abstract discussion/);
  assert.match(speakingMessages({...start,language:"mn"})[0].content,/Mongolian Cyrillic/);
  const answer=speakingMessages({...start,action:"answer",message:"I like tea.",history,stats:{seconds:10,words:3,pauses:0}});
- assert.equal(answer.at(-1).content,"I like tea. [measured: 3 words in 10s, 0 long pauses]");
+ // The closing cue keeps JSON mode from returning an empty reply after a one-word answer (seen live with "Yes.").
+ assert.equal(answer.at(-1).content,"I like tea. [measured: 3 words in 10s, 0 long pauses]\n[Reply now in the required JSON format.]");
+ assert.equal(speakingMessages({...start,action:"advance",part:2,message:"Yes.",history}).at(-1).content,"Yes.\n[Reply now in the required JSON format.]");
  assert.equal(answer.filter(m=>m.role==="system").length,1);
  assert.match(speakingMessages({...start,action:"report",history,timing:[{part:1,seconds:10,words:25,pauses:2}]}).at(-1).content,/P1 10s\/25w\/2p/);
  assert.equal(countWords("I'm keen on it — really!"),5);
+});
+
+test("the mock is run by a neutral examiner and practice by a named, conversational partner",()=>{
+ const practice=speakingMessages({...start,voice:"am_michael"})[0].content,mock=speakingMessages({...start,mode:"mock",voice:"bm_george"})[0].content;
+ assert.match(practice,/^You are Michael, an AI speaking partner/);assert.match(practice,/calm, thoughtful and unhurried/);
+ assert.match(practice,/responding to what the student actually said/);assert.match(practice,/never grade their English aloud/);
+ assert.match(mock,/^You are George, the AI examiner for a realistic IELTS Speaking mock test/);
+ assert.match(mock,/Do not praise, comment on, react to or evaluate answers/);assert.match(mock,/Do not ask for a name or identification/);
+ assert.doesNotMatch(mock,/responding to what the student actually said/);
+ assert.match(speakingMessages({...start,mode:"mock",part:2,action:"advance",message:"Yes.",history})[0].content,/begin Part 2/);
+ // Both keep the honesty and safety rules, and neither opens with the acknowledgement the app has already spoken.
+ for(const prompt of [practice,mock])for(const pattern of [/not a human/,/Never invent a human life/,/untrusted data/,/do not begin your reply with "Okay"/,/ask the same question again/])assert.match(prompt,pattern);
+ for(const manner of Object.values(speakingVoices).map(v=>v.manner))assert.ok(manner.length>10&&manner[0]===manner[0].toLowerCase());
+});
+
+test("spoken acknowledgements are short, valid voice requests for every partner",()=>{
+ for(const lines of Object.values(speakingAcks)){
+  assert.ok(lines.length>=3);
+  for(const text of lines){assert.ok(text.length<=24);assert.deepEqual(speechChunks(text),[text]);for(const voice of Object.keys(speakingVoices))assert.ok(validVoiceInput({text,voice,speed:1}));}
+ }
+});
+
+test("a tip is kept only when it quotes the answer it is attached to",()=>{
+ const answer="I usually study in the evening, because I can concentrate more better.";
+ assert.ok(tipQuotesAnswer(answer,{said:"concentrate more better",better:"concentrate much better",why:"x"}));
+ assert.ok(tipQuotesAnswer("I didn’t went there",{said:"I didn't went",better:"I didn't go",why:"x"}),"quote marks and case are ignored");
+ assert.ok(tipQuotesAnswer(answer,{said:"Evening, because I can",better:"evening as I can",why:"x"}));
+ // An error from an earlier answer, a partial word and an empty quote are all refused.
+ for(const said of ["I very like mathematics","concentrate more bett","even","…"])assert.equal(tipQuotesAnswer(answer,{said,better:"y",why:"x"}),false,said);
+ assert.equal(tipQuotesAnswer("Yes.",{said:"I very like",better:"I really like",why:"x"}),false);
+});
+
+test("a request to repeat or explain is recognised and a real answer is not",()=>{
+ for(const text of ["Sorry, could you repeat the question?","Can you say that again please","Pardon?","I didn’t catch that","I don't understand","What do you mean?","What does commute mean?","Could you please speak more slowly?","one more time please"])assert.ok(isClarificationRequest(text),text);
+ for(const text of ["I usually get up at seven.","I mean, I like it because it is quiet.","Yes","I repeat the same routine every single day because my school starts early and I have to catch the bus at seven.","My teacher explained it well."])assert.equal(isClarificationRequest(text),false,text);
 });
 
 test("local transcription accepts only bounded mono 16kHz PCM and preserves samples",()=>{

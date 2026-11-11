@@ -19,6 +19,7 @@ model User {
   mockAttempts MockAttempt[]
   practiceSessions PracticeSession[]
   vocabularyWords VocabularyWord[]
+  vocabularyDecks VocabularyDeck[]
   creditPeriods CreditPeriod[]
   creditCharges CreditCharge[]
   creditPlanTerms CreditPlanTerm[]
@@ -321,10 +322,36 @@ model VocabularyWord {
   sourceName String?
   // Case- and width-folded term, unique per student, so one word is saved once.
   termKey String
+  // Organization (2026-11-11): an optional deck and a star. Deleting a deck keeps its words.
+  deckId String?
+  deck VocabularyDeck? @relation(fields: [deckId], references: [id], onDelete: SetNull)
+  starred Boolean @default(false)
+  // Study state from the quiz: a Leitner box (0 = never studied, 5 = mastered), answer counts and
+  // when the word is due again. Self-study data only; it is never a grade.
+  box Int @default(0)
+  correct Int @default(0)
+  wrong Int @default(0)
+  reviewedAt DateTime?
+  dueAt DateTime?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   @@unique([userId, termKey])
   @@index([userId, createdAt])
+  @@index([userId, deckId])
+}
+
+// A student's own collection of vocabulary words ("багц"), unique by a folded name.
+model VocabularyDeck {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name String
+  nameKey String
+  color String @default("blue")
+  words VocabularyWord[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([userId, nameKey])
 }
 
 // AI credits (2026-11-09). One row per student per Ulaanbaatar month counts the credits used; the

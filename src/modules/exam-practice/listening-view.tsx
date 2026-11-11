@@ -5,13 +5,15 @@
 import { Fragment, useEffect, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import type { PracticeQuestion, PracticeReveal } from "./types";
 import { listeningPartInfo } from "@/modules/exams/listening-prompt";
+import { ExamFigureView } from "@/modules/exams/figure";
 import styles from "@/modules/listening-lab/listening.module.css";
 
 const LETTERS = "ABCDEFGH", SPEEDS = [0.75, 0.9, 1, 1.15];
 const clock = (seconds: number) => `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, "0")}`;
 
 type Props = {
-  url: string; questions: PracticeQuestion[]; currentId: string;
+  /** The practice audio route for this mock (`…/audio` or `…/audio/forms`). */
+  audio: string; questions: PracticeQuestion[]; currentId: string;
   responses: Record<string, string>; reveals: Record<string, PracticeReveal>; flags: string[]; checking: boolean;
   onSelect: (id: string) => void; onChange: (id: string, value: string) => void; onFlag: (id: string) => void;
   onCheck: (ids: string[]) => void; onRetry: (ids: string[]) => void;
@@ -44,12 +46,14 @@ function Player({ src }: { src: string }) {
   </div>;
 }
 
-export function ListeningPracticeView({ url, questions, currentId, responses, reveals, flags, checking, onSelect, onChange, onFlag, onCheck, onRetry, assistant }: Props) {
+export function ListeningPracticeView({ audio, questions, currentId, responses, reveals, flags, checking, onSelect, onChange, onFlag, onCheck, onRetry, assistant }: Props) {
   const parts = [...new Set(questions.map(q => q.audioPart ?? 1))].sort((a, b) => a - b);
   const current = questions.find(q => q.id === currentId) ?? questions[0];
   const part = current.audioPart ?? parts[0];
   const inPart = questions.filter(q => (q.audioPart ?? 1) === part);
   const info = listeningPartInfo(inPart.map(q => q.prompt ?? ""));
+  // A plan-labelling task (IELTS Mocks 07 and 10) shows its plan once, above the part's questions.
+  const plan = inPart.find(q => q.figure)?.figure;
   const open = inPart.filter(q => !reveals[q.id]), checked = inPart.filter(q => reveals[q.id]);
   const correct = checked.filter(q => reveals[q.id].correct).length;
   const answered = inPart.filter(q => responses[q.id]?.trim()).length;
@@ -77,13 +81,14 @@ export function ListeningPracticeView({ url, questions, currentId, responses, re
       </nav>
 
       <section className={styles.work} aria-labelledby="practice-part-title">
-        <Player src={`${url}/audio?part=${part}`} />
+        <Player src={`${audio}?part=${part}`} />
 
         <div className={styles.questions}>
           <div className={styles.qhead}>
             <h3 id="practice-part-title" tabIndex={-1}>Part {part}{info.title ? ` · ${info.title}` : ""} · Questions {inPart[0].label}–{inPart[inPart.length - 1].label}</h3>
             <p>{info.instructions.length ? info.instructions.join(" · ") : "Follow the word/number limit printed on each question."}</p>
           </div>
+          {plan ? <ExamFigureView figure={plan} /> : null}
           <ol>{inPart.map((question, index) => {
             const value = responses[question.id] ?? "", reveal = reveals[question.id], flagged = flags.includes(question.id);
             const result = reveal ? (reveal.correct ? "good" : "bad") : undefined, active = question.id === current.id;
@@ -97,7 +102,7 @@ export function ListeningPracticeView({ url, questions, currentId, responses, re
                   <legend>{prompt}</legend>
                   {(question.options ?? []).map((option, o) => <label key={option} data-chosen={value === option ? "" : undefined} data-correct={reveal && reveal.answer === option ? "" : undefined}>
                     <input type="radio" name={question.id} value={option} checked={value === option} disabled={Boolean(reveal)} onChange={() => onChange(question.id, option)} />
-                    <span className={styles.letter}>{LETTERS[o]}</span>{option}
+                    <span className={styles.letter}>{question.optionLabels?.[o] ?? LETTERS[o]}</span>{option}
                   </label>)}
                 </fieldset> : <div className={styles.gap} lang="en">
                   {blank ? prompt.split(/_{3,}/).map((piece, p, all) => <Fragment key={p}>{piece}{p === 0 && all.length > 1 ? input : null}</Fragment>) : <>{prompt}{input}</>}

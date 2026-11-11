@@ -16,6 +16,17 @@ ART.mkdir(parents=True,exist_ok=True)
 def fixture(action,attempt_id,*args):
     return json.loads(subprocess.check_output(["node","tests/mock_fixture.mjs",action,attempt_id,*args],cwd=ROOT,text=True,encoding="utf-8"))
 
+# Mocks 02–06 come from the site's revised authoring; 07–12 from the offline IELTS pack.
+FORMS=[("sat","sat-full",n) for n in range(2,7)]+[("ielts","ielts-academic",n) for n in range(2,13)]
+LAST={"sat":6,"ielts":12}
+# Each audio route bundles only its own recordings (next.config.ts): Mocks 07–12 use /audio/forms.
+def audio_path(program,n):
+    return "/audio/forms" if program=="ielts" and n>6 else "/audio"
+def other_audio_path(program,n):
+    return "/audio" if audio_path(program,n)=="/audio/forms" else "/audio/forms"
+def ielts_audio(n,part):
+    return ROOT/(f"assets/exams/ielts-{n:02}-v2-part-{part}.mp3" if n<=6 else f"assets/ielts-forms/ielts-{n:02}-part-{part}.mp3")
+
 def state(context,endpoint):
     r=context.request.get(endpoint)
     assert r.status==200,(r.status,r.text())
@@ -29,11 +40,11 @@ with sync_playwright() as p:
     errors=[]
     page.on("pageerror",lambda e:errors.append(str(e)))
     page.goto(BASE+"/exams")
-    expect(page.locator(".library-list .exam-card")).to_have_count(4)
+    expect(page.locator(".library-list .exam-card")).to_have_count(5)
     for program,prefix in [("sat","sat-full"),("ielts","ielts-academic")]:
         page.goto(BASE+"/exams/"+program)
-        expect(page.locator(".mock-variant")).to_have_count(6)
-        for n in range(2,7):
+        expect(page.locator(".mock-variant")).to_have_count(LAST[program])
+        for n in range(2,LAST[program]+1):
             slug=f"{prefix}-{n:02}"
             expect(page.locator(f'.mock-variant[href="/exams/{slug}"] strong')).to_have_text(f"Full Mock {n:02}")
             assert context.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":slug}).status==401
@@ -46,8 +57,7 @@ with sync_playwright() as p:
     for category in ["sat","ielts"]:
         assert context.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":category}).status==404
         assert context.request.post(BASE+"/api/mock-payments",headers=ORIGIN,data={"slug":category}).status==404
-    for n in range(2,7):
-        for program,prefix in [("sat","sat-full"),("ielts","ielts-academic")]:
+    for program,prefix,n in FORMS:
             slug=f"{prefix}-{n:02}"
             page.goto(BASE+"/exams/"+slug)
             expect(page.get_by_role("heading",level=1)).to_contain_text(f"Full Mock {n:02}")
@@ -59,7 +69,7 @@ with sync_playwright() as p:
             assert context.request.post(BASE+"/api/mock-payments/"+purchase["id"]+"/confirm",headers=ORIGIN,data={"decision":"success"}).status==200
             # Paying for this form never grants the other student's access, or a later form.
             assert other.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":slug}).status==402
-            if n<6:
+            if n<LAST[program]:
                 assert context.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":f"{prefix}-{n+1:02}"}).status==402
             started=context.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":slug})
             assert started.status==200,started.text()
@@ -68,7 +78,7 @@ with sync_playwright() as p:
             initial=state(context,endpoint)
             assert initial["slug"]==slug and initial["report"] is None
             assert other.request.get(endpoint).status==404
-            assert other.request.get(endpoint+"/audio?part=1").status==404
+            assert other.request.get(endpoint+audio_path(program,n)+"?part=1").status==404
             assert context.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":slug}).json()["id"]==attempt_id
             for q in initial["stage"]["questions"]:
                 assert all(key not in q for key in ["answers","explanation","pretest"])
@@ -85,19 +95,21 @@ with sync_playwright() as p:
             current=state(context,endpoint)
             assert current["responses"][first["id"]]==selected and current["deadline"]==initial["deadline"]
             if program=="ielts":
-                recording=context.request.get(endpoint+"/audio?part=1")
+                recording=context.request.get(endpoint+audio_path(program,n)+"?part=1")
                 assert recording.status==200
-                assert hashlib.sha256(recording.body()).digest()==hashlib.sha256((ROOT/f"assets/exams/ielts-{n:02}-v2-part-1.mp3").read_bytes()).digest()
-                partial=context.request.get(endpoint+"/audio?part=1",headers={"Range":"bytes=2048-4095"})
+                assert hashlib.sha256(recording.body()).digest()==hashlib.sha256(ielts_audio(n,1).read_bytes()).digest()
+                partial=context.request.get(endpoint+audio_path(program,n)+"?part=1",headers={"Range":"bytes=2048-4095"})
                 assert partial.status==206 and partial.body()==recording.body()[2048:4096]
-                assert context.request.get(endpoint+"/audio?part=2").status==403
-                assert context.request.get(endpoint+"/audio?part=../1").status==404
+                assert context.request.get(endpoint+audio_path(program,n)+"?part=2").status==403
+                assert context.request.get(endpoint+audio_path(program,n)+"?part=../1").status==404
+                # The other set's route never serves this form, even the part playing now.
+                assert context.request.get(endpoint+other_audio_path(program,n)+"?part=1").status==404
             while not current["finishedAt"]:
                 stage=current["stage"]
                 answers=fixture("answers",attempt_id)
                 response=context.request.patch(endpoint,headers=ORIGIN,data={"revision":current["revision"],"stageId":stage["id"],"responses":answers["responses"],"flags":[]})
                 assert response.status==200,(slug,stage["id"],response.status,response.text())
-                if (n==2 and stage["id"] in ["sat-math-1","ielts-reading","ielts-writing"]) or (program=="ielts" and n==5 and stage["id"]=="ielts-writing"):
+                if (n==2 and stage["id"] in ["sat-math-1","ielts-reading","ielts-writing"]) or (program=="ielts" and n==5 and stage["id"]=="ielts-writing") or (n==7 and stage["id"] in ["ielts-listening","ielts-reading","ielts-writing"]):
                     page.goto(BASE+"/exams/attempts/"+attempt_id)
                     if stage["id"]=="ielts-writing" and n==2:
                         expect(page.get_by_role("table")).to_contain_text("Facility")
@@ -107,6 +119,18 @@ with sync_playwright() as p:
                         expect(diagram).to_be_visible()
                         expect(page.get_by_role("link",name="View full-size diagram")).to_have_attribute("target","_blank")
                         assert diagram.evaluate("image=>image.complete && image.naturalWidth>0")
+                    if n==7 and stage["id"]=="ielts-listening":
+                        page.locator('[data-part="2"]').click()
+                        plan=page.locator('img[src="/ielts-mocks/mock-07-listening-plan.svg"]')
+                        expect(plan).to_be_visible()
+                        assert plan.evaluate("image=>image.complete && image.naturalWidth>0")
+                        expect(page.locator("#listening-part-title")).to_contain_text("riverside craft fair")
+                    if n==7 and stage["id"]=="ielts-reading":
+                        page.locator(".exam-question-map button, .question-strip button").filter(has_text="27").first.click()
+                        expect(page.locator(".option-letter").first).to_have_text("i")
+                    if n==7 and stage["id"]=="ielts-writing":
+                        expect(page.get_by_role("table")).to_contain_text("65 and over")
+                        expect(page.locator('img[src="/ielts-mocks/mock-07-writing-1.svg"]')).to_be_visible()
                     for theme in ["light","dark"]:
                         page.evaluate("theme=>document.documentElement.dataset.theme=theme",theme)
                         for width in [1440,390,320]:
@@ -118,14 +142,23 @@ with sync_playwright() as p:
                 current=state(context,endpoint)
             report=current["report"]
             assert [(s["correct"],s["total"]) for s in report["sections"][:2]]==([(50,50),(40,40)] if program=="sat" else [(40,40),(40,40)])
-            assert len(report["reviews"])==(98 if program=="sat" else 94)
+            # Mocks 07–12 have nine Part 1 prompts, two rounding-off questions and six Part 3 prompts.
+            speaking=12 if n<=6 else 18
+            assert len(report["reviews"])==(98 if program=="sat" else 82+speaking)
             if program=="ielts":
-                assert [s["pending"] for s in report["sections"]]==[0,0,2,12]
+                assert [s["pending"] for s in report["sections"]]==[0,0,2,speaking]
                 for part in range(1,5):
-                    audio=context.request.get(endpoint+f"/audio?part={part}")
+                    audio=context.request.get(endpoint+audio_path(program,n)+f"?part={part}")
                     assert audio.status==200
-                    assert hashlib.sha256(audio.body()).digest()==hashlib.sha256((ROOT/f"assets/exams/ielts-{n:02}-v2-part-{part}.mp3").read_bytes()).digest()
+                    assert hashlib.sha256(audio.body()).digest()==hashlib.sha256(ielts_audio(n,part).read_bytes()).digest()
             if program=="ielts":
+                # Practice replays the same recording through its own route of the same set.
+                practice=BASE+"/api/exam-practice/"+slug
+                replay=context.request.get(practice+audio_path(program,n)+"?part=3")
+                assert replay.status==200,(slug,replay.status,replay.text()[:200])
+                assert hashlib.sha256(replay.body()).digest()==hashlib.sha256(ielts_audio(n,3).read_bytes()).digest()
+                assert context.request.get(practice+other_audio_path(program,n)+"?part=3").status==404
+            if program=="ielts" and n<=6:
                 # Absence of a revision on an old snapshot must select legacy media,
                 # even if its publishing/content version counter happens to be 2.
                 fixture("audio-revision",attempt_id,"0")
@@ -143,12 +176,13 @@ with sync_playwright() as p:
         order=other.request.post(BASE+"/api/subscriptions/orders",headers=ORIGIN,data={"program":program})
         assert order.status==200,order.text()
         assert other.request.post(BASE+"/api/subscriptions/orders/"+order.json()["id"]+"/confirm",headers=ORIGIN,data={"decision":"success"}).status==200
-        for n in range(2,7):
+        for n in range(2,LAST[program]+1):
             entitled=other.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":f"{prefix}-{n:02}"})
             assert entitled.status==200,entitled.text()
             assert state(other,BASE+"/api/mock-attempts/"+entitled.json()["id"])["program"]==program
             if program=="sat":
                 assert other.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":f"ielts-academic-{n:02}"}).status==402
+                assert other.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":f"ielts-academic-{n+6:02}"}).status==402
     page.goto(BASE+"/exams")
     for theme in ["light","dark"]:
         page.evaluate("theme=>document.documentElement.dataset.theme=theme",theme)
@@ -158,4 +192,4 @@ with sync_playwright() as p:
             page.screenshot(path=str(ART/f"catalog-{theme}-{width}.png"),full_page=True)
     assert not errors,errors
     browser.close()
-print("Additional exams: all ten full lifecycles and all twenty matching audio assets passed.")
+print("Additional exams: all sixteen full lifecycles and all forty-four matching audio assets passed.")

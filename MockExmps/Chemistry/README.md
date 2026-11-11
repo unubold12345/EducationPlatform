@@ -1,11 +1,19 @@
 # Chemistry ЭЕШ / ЭШ 2020–2026: offline mock pack
 
 **18 Mongolian JSON mock forms: three for each of 2020, 2021, 2022, 2023, 2025 and 2026, with
-authored answer keys, explanations and original SVG figures. Nothing is integrated into the website.**
+authored answer keys, explanations and original SVG figures. On the website since 2026-11-10 (see "Website integration").**
 
 These are preparation drafts written as "other variants" of one official reference paper per year:
 same item order, item type, skill and point value, with different substances, contexts and numbers.
 They are **not** official papers or official keys, and their difficulty has not been equated.
+
+## Website integration (2026-11-10)
+
+`node scripts/build-entrance-mocks.mjs chemistry` converts these drafts into the site's ЭЕШ papers
+(`eesh-chemistry-<year>-c1`–`c3`, program `entrance`, ₮10,000 each or University Prep). The pack itself
+stays offline and excluded from deployment. Rerun the converter for this subject after editing a JSON file; it
+validates keys, options, 100-point totals and figure files. Everything under "Limitations" below
+still applies: the papers are labelled as practice content awaiting teacher review.
 
 ## Contents
 
@@ -79,4 +87,4 @@ Content lives in `tools/content_<year>.py`; figure helpers in `figures.py`, `che
 only for optional previews).
 
 Written 2026-11-09 by Claude Code (Claude Opus 5.5), using Python, curl, web search and the in-app
-browser (Wayback Machine). No routes, catalogue entries, database rows or website code were changed.
+browser (Wayback Machine). At authoring time no routes, catalogue entries, database rows or website code were changed.

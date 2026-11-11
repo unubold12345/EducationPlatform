@@ -1,0 +1,465 @@
+{
+  "form": 10,
+  "part": 1,
+  "file": "mock-10/audio/part-1.mp3",
+  "sha256": "42bf9943f83785e67fd21437c45e93fa438d961890390fc1285f716b05f114b1",
+  "bytes": 3895288,
+  "seconds": 389.432,
+  "pcmSeconds": 389.432,
+  "sourceScriptSha256": "5735b2b034d93669160393367888ed51ca17f4b501eb9e6bd6b0fa0123f8ba2e",
+  "fingerprint": "c1faae3638a8da9996d29f39115363045c9d6c1d15338e8c396c72e976ca06be",
+  "roles": {
+    "Organiser": "am_michael",
+    "Caller": "af_heart"
+  },
+  "settings": {
+    "speed": 1.0,
+    "sampleRate": 24000,
+    "turnGapSeconds": 0.4,
+    "previewSeconds": 60,
+    "midpointSeconds": 30,
+    "partCheckSeconds": 30,
+    "finalCheckSeconds": 120,
+    "narrator": "bf_emma",
+    "bitrate": "80k",
+    "revision": 1
+  },
+  "modelSha256": {
+    "kokoro-v1.0.onnx": "7d5df8ecf7d4b1878015a32686053fd0eebe2bc377234608764cc0ef3636a6c5",
+    "voices-v1.0.bin": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+  },
+  "packages": {
+    "kokoro-onnx": "0.6.1",
+    "onnxruntime": "1.31.1",
+    "numpy": "2.5.4"
+  },
+  "gain": 0.7528871753479218,
+  "segments": [
+    {
+      "kind": "narration",
+      "start": 0.0,
+      "seconds": 9.024,
+      "voice": "bf_emma",
+      "spokenText": "IELTS Academic practice. Mock 10. Listening. You will hear each part once. Write your answers on the answer sheet. There are four parts and forty questions."
+    },
+    {
+      "kind": "pause",
+      "start": 9.024,
+      "seconds": 1.0
+    },
+    {
+      "kind": "narration",
+      "start": 10.024,
+      "seconds": 5.8453,
+      "voice": "bf_emma",
+      "spokenText": "Part 1. Registering for a bookshop volunteer shift. You now have one minute to read questions 1 to 10."
+    },
+    {
+      "kind": "pause",
+      "start": 15.8693,
+      "seconds": 60.0,
+      "purpose": "preview"
+    },
+    {
+      "kind": "speech",
+      "start": 75.8693,
+      "seconds": 2.4107,
+      "voice": "am_michael",
+      "spokenText": "Hello, Page Turners charity bookshop.",
+      "role": "Organiser",
+      "sourceText": "Hello, Page Turners charity bookshop."
+    },
+    {
+      "kind": "pause",
+      "start": 78.28,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 78.68,
+      "seconds": 11.6693,
+      "voice": "af_heart",
+      "spokenText": "Hello. I saw your notice asking for volunteers. I've recently moved to the area and have some free time each week. I've worked in a shop before, though not with books. Are you still looking for people?",
+      "role": "Caller",
+      "sourceText": "Hello. I saw your notice asking for volunteers. I’ve recently moved to the area and have some free time each week. I’ve worked in a shop before, though not with books. Are you still looking for people?"
+    },
+    {
+      "kind": "pause",
+      "start": 90.3493,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 90.7493,
+      "seconds": 12.1173,
+      "voice": "am_michael",
+      "spokenText": "We are, especially for regular shifts. We don't expect volunteers to know every author. Being willing to ask questions and follow the stock procedure matters more. Could I take your name?",
+      "role": "Organiser",
+      "sourceText": "We are, especially for regular shifts. We don’t expect volunteers to know every author. Being willing to ask questions and follow the stock procedure matters more. Could I take your name?"
+    },
+    {
+      "kind": "pause",
+      "start": 102.8667,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 103.2667,
+      "seconds": 11.2,
+      "voice": "af_heart",
+      "spokenText": "It's Nadia Seldon. S, E, L, D, O, N. People sometimes write Sheldon, but there's no H. I live close enough to walk, so I wouldn't depend on the bus for an early start.",
+      "role": "Caller",
+      "sourceText": "It’s Nadia Seldon. S-E-L-D-O-N. People sometimes write Sheldon, but there’s no H. I live close enough to walk, so I wouldn’t depend on the bus for an early start."
+    },
+    {
+      "kind": "pause",
+      "start": 114.4667,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 114.8667,
+      "seconds": 8.192,
+      "voice": "am_michael",
+      "spokenText": "Thank you. Which days could you offer? We have a full team on Saturday at present, but weekday afternoons are more difficult to cover.",
+      "role": "Organiser",
+      "sourceText": "Thank you. Which days could you offer? We have a full team on Saturday at present, but weekday afternoons are more difficult to cover."
+    },
+    {
+      "kind": "pause",
+      "start": 123.0587,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 123.4587,
+      "seconds": 10.6667,
+      "voice": "af_heart",
+      "spokenText": "My first thought was Wednesday, but I've enrolled on a Wednesday course. I can do Monday every week. I'd rather promise one reliable day than offer several and keep changing them.",
+      "role": "Caller",
+      "sourceText": "My first thought was Wednesday, but I’ve enrolled on a Wednesday course. I can do Monday every week. I’d rather promise one reliable day than offer several and keep changing them."
+    },
+    {
+      "kind": "pause",
+      "start": 134.1253,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 134.5253,
+      "seconds": 12.8853,
+      "voice": "am_michael",
+      "spokenText": "That would be excellent. The afternoon shift begins at one, but for your first visit please come at twelve thirty. The supervisor can show you the building before customers arrive for the afternoon session.",
+      "role": "Organiser",
+      "sourceText": "That would be excellent. The afternoon shift begins at one, but for your first visit please come at twelve thirty. The supervisor can show you the building before customers arrive for the afternoon session."
+    },
+    {
+      "kind": "pause",
+      "start": 147.4107,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 147.8107,
+      "seconds": 3.0933,
+      "voice": "af_heart",
+      "spokenText": "All right, twelve thirty on Monday. Is it a long shift?",
+      "role": "Caller",
+      "sourceText": "All right, 12:30 on Monday. Is it a long shift?"
+    },
+    {
+      "kind": "pause",
+      "start": 150.904,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 151.304,
+      "seconds": 13.248,
+      "voice": "am_michael",
+      "spokenText": "Three hours normally. For the induction we'll keep it to two if you prefer, though it's useful to see the closing routine on a later visit. You can discuss that with the supervisor when you know your other commitments.",
+      "role": "Organiser",
+      "sourceText": "Three hours normally. For the induction we’ll keep it to two if you prefer, though it’s useful to see the closing routine on a later visit. You can discuss that with the supervisor when you know your other commitments."
+    },
+    {
+      "kind": "pause",
+      "start": 164.552,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 164.952,
+      "seconds": 6.4,
+      "voice": "af_heart",
+      "spokenText": "What kind of work needs doing? I'm happy speaking to customers, but I wouldn't want to start on the till without training.",
+      "role": "Caller",
+      "sourceText": "What kind of work needs doing? I’m happy speaking to customers, but I wouldn’t want to start on the till without training."
+    },
+    {
+      "kind": "pause",
+      "start": 171.352,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 171.752,
+      "seconds": 17.536,
+      "voice": "am_michael",
+      "spokenText": "You won't. New volunteers usually begin with sorting. Donations come in mixed boxes, and we separate saleable books from items needing specialist advice. You'll work with an experienced person rather than decide alone what an unfamiliar volume is worth.",
+      "role": "Organiser",
+      "sourceText": "You won’t. New volunteers usually begin with sorting. Donations come in mixed boxes, and we separate saleable books from items needing specialist advice. You’ll work with an experienced person rather than decide alone what an unfamiliar volume is worth."
+    },
+    {
+      "kind": "pause",
+      "start": 189.288,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 189.688,
+      "seconds": 4.1173,
+      "voice": "af_heart",
+      "spokenText": "That sounds interesting. Should I bring any documents for the registration?",
+      "role": "Caller",
+      "sourceText": "That sounds interesting. Should I bring any documents for the registration?"
+    },
+    {
+      "kind": "pause",
+      "start": 193.8053,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 194.2053,
+      "seconds": 12.3947,
+      "voice": "am_michael",
+      "spokenText": "Bring one reference, please, from somebody outside your household. A former work supervisor is fine. We don't need your school certificates or a formal essay about why you like reading.",
+      "role": "Organiser",
+      "sourceText": "Bring one reference, please, from somebody outside your household. A former work supervisor is fine. We don’t need your school certificates or a formal essay about why you like reading."
+    },
+    {
+      "kind": "pause",
+      "start": 206.6,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "narration",
+      "start": 207.0,
+      "seconds": 2.048,
+      "voice": "bf_emma",
+      "spokenText": "Now look at questions 6 to 10."
+    },
+    {
+      "kind": "pause",
+      "start": 209.048,
+      "seconds": 30.0,
+      "purpose": "midpoint"
+    },
+    {
+      "kind": "speech",
+      "start": 239.048,
+      "seconds": 5.9307,
+      "voice": "af_heart",
+      "spokenText": "Could you explain where to arrive? I know the shop front, but I imagine you don't want me knocking while it's closed.",
+      "role": "Caller",
+      "sourceText": "Could you explain where to arrive? I know the shop front, but I imagine you don’t want me knocking while it’s closed."
+    },
+    {
+      "kind": "pause",
+      "start": 244.9787,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 245.3787,
+      "seconds": 12.2453,
+      "voice": "am_michael",
+      "spokenText": "Use the rear door on your first day. It's reached from the small lane beside the café. The front shutters will still be down at twelve thirty, and the bell there isn't easy to hear from the stockroom.",
+      "role": "Organiser",
+      "sourceText": "Use the rear door on your first day. It’s reached from the small lane beside the café. The front shutters will still be down at twelve thirty, and the bell there isn’t easy to hear from the stockroom."
+    },
+    {
+      "kind": "pause",
+      "start": 257.624,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 258.024,
+      "seconds": 3.9467,
+      "voice": "af_heart",
+      "spokenText": "I'll find it. What should I wear? The notice mentioned comfortable shoes.",
+      "role": "Caller",
+      "sourceText": "I’ll find it. What should I wear? The notice mentioned comfortable shoes."
+    },
+    {
+      "kind": "pause",
+      "start": 261.9707,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 262.3707,
+      "seconds": 12.8853,
+      "voice": "am_michael",
+      "spokenText": "Yes, and ordinary clothes you don't mind getting dusty. We'll provide a badge once you've registered. Please wear it on the shop floor so customers can tell who is working. There's no uniform purchase.",
+      "role": "Organiser",
+      "sourceText": "Yes, and ordinary clothes you don’t mind getting dusty. We’ll provide a badge once you’ve registered. Please wear it on the shop floor so customers can tell who is working. There’s no uniform purchase."
+    },
+    {
+      "kind": "pause",
+      "start": 275.256,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 275.656,
+      "seconds": 7.4453,
+      "voice": "af_heart",
+      "spokenText": "Are volunteers expected to move heavy boxes? I can carry a few books but should avoid lifting something large from the floor.",
+      "role": "Caller",
+      "sourceText": "Are volunteers expected to move heavy boxes? I can carry a few books but should avoid lifting something large from the floor."
+    },
+    {
+      "kind": "pause",
+      "start": 283.1013,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 283.5013,
+      "seconds": 15.552,
+      "voice": "am_michael",
+      "spokenText": "We have a trolley, and heavy boxes should be split into smaller loads. Tell the supervisor about any task you shouldn't do. Nobody is expected to prove enthusiasm by taking a risk, and there's plenty of work that doesn't involve lifting.",
+      "role": "Organiser",
+      "sourceText": "We have a trolley, and heavy boxes should be split into smaller loads. Tell the supervisor about any task you shouldn’t do. Nobody is expected to prove enthusiasm by taking a risk, and there’s plenty of work that doesn’t involve lifting."
+    },
+    {
+      "kind": "pause",
+      "start": 299.0533,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 299.4533,
+      "seconds": 3.904,
+      "voice": "af_heart",
+      "spokenText": "Good. I assume personal belongings stay somewhere away from donations?",
+      "role": "Caller",
+      "sourceText": "Good. I assume personal belongings stay somewhere away from donations?"
+    },
+    {
+      "kind": "pause",
+      "start": 303.3573,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 303.7573,
+      "seconds": 12.288,
+      "voice": "am_michael",
+      "spokenText": "There are lockers in the office. Please don't leave a bag on the sorting table, because it could be mistaken for something brought in by a donor. Bring a small padlock if you'd like to lock your locker.",
+      "role": "Organiser",
+      "sourceText": "There are lockers in the office. Please don’t leave a bag on the sorting table, because it could be mistaken for something brought in by a donor. Bring a small padlock if you’d like to lock your locker."
+    },
+    {
+      "kind": "pause",
+      "start": 316.0453,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 316.4453,
+      "seconds": 3.4987,
+      "voice": "af_heart",
+      "spokenText": "I have one at home. What if I can't make a shift after I've joined?",
+      "role": "Caller",
+      "sourceText": "I have one at home. What if I can’t make a shift after I’ve joined?"
+    },
+    {
+      "kind": "pause",
+      "start": 319.944,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 320.344,
+      "seconds": 16.6613,
+      "voice": "am_michael",
+      "spokenText": "Call the supervisor as early as possible. Text is fine if the shop is closed, but please don't just put a message in the social-media group. It can get buried under photographs and general conversation. A direct message lets us arrange cover.",
+      "role": "Organiser",
+      "sourceText": "Call the supervisor as early as possible. Text is fine if the shop is closed, but please don’t just put a message in the social-media group. It can get buried under photographs and general conversation. A direct message lets us arrange cover."
+    },
+    {
+      "kind": "pause",
+      "start": 337.0053,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 337.4053,
+      "seconds": 3.6267,
+      "voice": "af_heart",
+      "spokenText": "Understood. I'll get the reference organised and see you on Monday.",
+      "role": "Caller",
+      "sourceText": "Understood. I’ll get the reference organised and see you on Monday."
+    },
+    {
+      "kind": "pause",
+      "start": 341.032,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 341.432,
+      "seconds": 13.376,
+      "voice": "am_michael",
+      "spokenText": "I'll email the induction outline today. Read it before you come if you can, but don't worry about memorising the stock categories. The first visit is for learning the system, not passing a test.",
+      "role": "Organiser",
+      "sourceText": "I’ll email the induction outline today. Read it before you come if you can, but don’t worry about memorising the stock categories. The first visit is for learning the system, not passing a test."
+    },
+    {
+      "kind": "pause",
+      "start": 354.808,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "narration",
+      "start": 355.208,
+      "seconds": 4.224,
+      "voice": "bf_emma",
+      "spokenText": "That is the end of part 1. You now have thirty seconds to check your answers."
+    },
+    {
+      "kind": "pause",
+      "start": 359.432,
+      "seconds": 30.0,
+      "purpose": "checking"
+    }
+  ]
+}

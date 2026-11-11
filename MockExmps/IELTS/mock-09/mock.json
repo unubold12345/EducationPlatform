@@ -1,0 +1,1223 @@
+{
+  "listening": [
+    {
+      "title": "Arranging a bicycle repair visit",
+      "script": "Mechanic: Hello, Mobile Cycle Repairs. I’m Sam. What can I do for you?\nCustomer: My bicycle needs attention, and I wondered whether you could come to my workplace. I can ride it slowly, but I don’t want to use it for my normal journey until it’s been checked. Your website says you cover the northern part of town.\nMechanic: We do. Could I take your surname first, please? Then we’ll check the address and what kind of work may be involved.\nCustomer: Lennox, L-E-N-N-O-X. The bicycle is quite old, though it was serviced last spring. The brakes feel all right, but the chain slips when I’m pushing hard uphill. A friend suggested changing it myself, but I’d prefer a proper inspection.\nMechanic: That’s sensible. A slipping chain can have more than one cause. We won’t replace anything just on the basis of a telephone description. What kind of bicycle is it: a road model, a mountain bike or something else?\nCustomer: It’s a folding bike. I take it on the train sometimes, which is why I don’t want to replace it with a larger one. There’s nothing electrical on it.\nMechanic: Fine. For appointments, I could offer Monday afternoon or Wednesday morning. Tuesday is fully booked, and we don’t have an evening round this week.\nCustomer: Wednesday would be best. I have meetings on Monday. Is nine o’clock possible?\nMechanic: The first slot has gone, but we can be there at ten fifteen. Allow up to an hour for the inspection and ordinary adjustments, though we may need to order a part for a later visit.\nCustomer: Let’s say 10:15, then.\n---\nCustomer: What is the basic charge?\nMechanic: The inspection and call-out together are thirty-five pounds. That doesn’t include parts, which we’d quote separately. If you decide not to proceed with a repair after the inspection, the basic charge still applies. We used to offer a shorter twenty-pound check, but that no longer includes a workplace visit.\nCustomer: The office address is on Willow Road. There’s a reception area at the front, but our bicycles are behind the building. Would you want the exact entrance instructions?\nMechanic: Yes, please. We carry tools, so avoiding unnecessary steps helps. Also, tell reception we’re expected; otherwise we can lose half the appointment trying to find the person who booked us.\nCustomer: Come through the courtyard from the side lane. The gate is usually open during office hours. I’ll put your name on the visitor list and meet you there rather than make you carry equipment through reception.\nMechanic: Good. Is there somewhere dry to work if it rains? We don’t need a full workshop, but a covered area is useful when tools are spread out.\nCustomer: There’s a shelter beside the staff entrance. It isn’t locked, and there should be room if I move two spare racks. I could ask someone to reserve that space for the morning.\nMechanic: That sounds ideal. Please leave any accessories with us that relate to the fault. And have you still got the key for the folding mechanism’s security lock?\nCustomer: Yes. I’ll bring the key. I normally leave it at home, so I’m glad you mentioned it. Do you need a receipt from the previous service?\nMechanic: Not essential. You can show us any notes you have, but we’ll inspect the current condition. How would you like to pay?\nCustomer: By card, if possible. Our accounts team only reimburses expenses with a receipt, so please make sure I get one showing the bicycle work separately from any extra items.\nMechanic: We can do that. We’ll send the confirmation today. If your meeting schedule changes, cancellation is free until noon on the previous working day. After that, we charge for the call-out because we may not be able to fill the slot. Please call rather than relying on an email sent late at night.",
+      "groups": [
+        {
+          "kind": "completion",
+          "instruction": "Complete the notes. Write ONE WORD AND/OR A NUMBER for each answer.",
+          "items": [
+            {
+              "prompt": "Customer’s surname: ____",
+              "answers": [
+                "Lennox"
+              ],
+              "evidence": "L-E-N-N-O-X",
+              "explanation": "L-E-N-N-O-X",
+              "options": null,
+              "number": 1
+            },
+            {
+              "prompt": "Part reported to be slipping: ____",
+              "answers": [
+                "chain"
+              ],
+              "evidence": "the chain slips",
+              "explanation": "the chain slips",
+              "options": null,
+              "number": 2
+            },
+            {
+              "prompt": "Type of bicycle: ____",
+              "answers": [
+                "folding"
+              ],
+              "evidence": "It’s a folding bike",
+              "explanation": "It’s a folding bike",
+              "options": null,
+              "number": 3
+            },
+            {
+              "prompt": "Appointment day: ____",
+              "answers": [
+                "Wednesday"
+              ],
+              "evidence": "Wednesday would be best",
+              "explanation": "Wednesday would be best",
+              "options": null,
+              "number": 4
+            },
+            {
+              "prompt": "Appointment time: ____",
+              "answers": [
+                "10:15"
+              ],
+              "evidence": "Let’s say 10:15",
+              "explanation": "Let’s say 10:15",
+              "options": null,
+              "number": 5
+            }
+          ],
+          "bank": null,
+          "maxWords": 1,
+          "numbersAllowed": true
+        },
+        {
+          "kind": "completion",
+          "instruction": "Complete the notes. Write ONE WORD AND/OR A NUMBER for each answer.",
+          "items": [
+            {
+              "prompt": "Basic inspection and call-out price: £____",
+              "answers": [
+                "35"
+              ],
+              "evidence": "thirty-five pounds",
+              "explanation": "thirty-five pounds",
+              "options": null,
+              "number": 6
+            },
+            {
+              "prompt": "Mechanic should enter through the ____.",
+              "answers": [
+                "courtyard"
+              ],
+              "evidence": "Come through the courtyard",
+              "explanation": "Come through the courtyard",
+              "options": null,
+              "number": 7
+            },
+            {
+              "prompt": "Covered working space: a ____",
+              "answers": [
+                "shelter"
+              ],
+              "evidence": "There’s a shelter",
+              "explanation": "There’s a shelter",
+              "options": null,
+              "number": 8
+            },
+            {
+              "prompt": "Customer must bring the ____.",
+              "answers": [
+                "key"
+              ],
+              "evidence": "I’ll bring the key",
+              "explanation": "I’ll bring the key",
+              "options": null,
+              "number": 9
+            },
+            {
+              "prompt": "Preferred payment method: ____",
+              "answers": [
+                "card"
+              ],
+              "evidence": "By card",
+              "explanation": "By card",
+              "options": null,
+              "number": 10
+            }
+          ],
+          "bank": null,
+          "maxWords": 1,
+          "numbersAllowed": true
+        }
+      ]
+    },
+    {
+      "title": "Information for volunteers at a food festival",
+      "script": "Coordinator: Thanks for volunteering at the town food festival. Some of you helped last year, but the layout and duties have changed, so please listen even if you know the site. We have more small producers this year, and we’ve tried to make unloading less disruptive. The first thing to explain is why the festival is opening an hour later than advertised in the early leaflet. The main road is being resurfaced overnight, and the work crew needs access until eight. Stallholders then need time to set up safely. It isn’t because we expect fewer visitors in the morning.\nVisitors are encouraged to come by bus. The usual car park is available, but half of it is reserved for accessible parking and producer vehicles. We aren’t closing it entirely. The temporary shuttle from the station is the most useful addition, since several regular routes don’t operate frequently on Sunday. Please direct people to that service rather than promising that a space will be free when they arrive by car.\nIf someone asks about ingredients, take them to the stallholder. Volunteers must not make guesses, even if a dish looks familiar. A recipe can change or contain an ingredient you cannot see. Each producer has been asked to provide written information, but the producer remains the right person to confirm it. Our role is to help people reach the information, not to improvise assurance that could be wrong.\nThe reusable cup scheme is different too. People pay a small deposit and receive it back when they return the cup. We no longer give a voucher for a future event. Several visitors lost those vouchers last year, and others never attended another festival. There are return points at both exits, so no one needs to walk back through a crowded area just to recover the deposit.\nLost children should be brought to the staffed family point near the entrance. Don’t announce a child’s full name over the public address system. Staff there will follow the safeguarding procedure. If an adult approaches you searching for a child, send the adult to the same point rather than taking them on an improvised tour of the stalls.\n---\nNow I’ll describe the duties for five volunteer teams. The welcome team needs no equipment beyond an identifying jacket. Your key instruction is to remain in pairs. One person can speak to a visitor while the other watches for anyone needing help nearby. You can change partners after your break, but please don’t leave a post unstaffed while both of you fetch a drink.\nThe tasting team works near the demonstration kitchen. Before starting, you’ll attend a short hygiene briefing with the food coordinator. Previous experience doesn’t exempt you, because the procedure is specific to this event. You won’t be expected to cook, but you will handle small serving trays and need to know which areas must stay separate.\nThe survey team should collect responses only after visitors have finished at least part of their visit. Please wait until after lunch to begin. Morning arrivals cannot reasonably comment on the whole experience, and asking them at the gate slows entry. The survey isn’t a competition; people are free to decline without being asked twice.\nThe recycling team will move between several collection points. Wear the protective gloves supplied in your kit. Even clearly labelled bins sometimes contain broken items in the wrong place. You are not required to sort a hazardous object by hand; call the supervisor if you are unsure how to deal with something.\nFinally, the photography team must ask permission before taking an identifiable close-up of a visitor. General crowd images are covered by our displayed notice, but a close portrait is different. If someone declines, respect that immediately. We want a record of an enjoyable public day, not a collection of images obtained by making people uncomfortable. Your supervisor can show you examples of what counts as an identifiable close-up.",
+      "groups": [
+        {
+          "kind": "multiple-choice",
+          "instruction": "Choose the correct letter, A, B or C.",
+          "items": [
+            {
+              "prompt": "Why will opening be later?",
+              "answers": [
+                "A"
+              ],
+              "evidence": "road is being resurfaced overnight",
+              "explanation": "Road access delays setup.",
+              "options": [
+                "Road work affects access for setting up.",
+                "Stallholders requested fewer trading hours.",
+                "Low morning attendance is expected."
+              ],
+              "number": 11
+            },
+            {
+              "prompt": "What transport addition does the coordinator highlight?",
+              "answers": [
+                "C"
+              ],
+              "evidence": "temporary shuttle from the station",
+              "explanation": "This helps on infrequent Sunday routes.",
+              "options": [
+                "A larger public car park.",
+                "Free parking in every street.",
+                "A station shuttle."
+              ],
+              "number": 12
+            },
+            {
+              "prompt": "What should volunteers do about ingredient questions?",
+              "answers": [
+                "B"
+              ],
+              "evidence": "take them to the stallholder",
+              "explanation": "Avoid assumptions from appearance.",
+              "options": [
+                "Answer from the dish’s appearance.",
+                "Refer visitors to the producer.",
+                "Ask another visitor who has tasted it."
+              ],
+              "number": 13
+            },
+            {
+              "prompt": "What happens when a cup is returned?",
+              "answers": [
+                "C"
+              ],
+              "evidence": "receive it back",
+              "explanation": "The deposit is refunded.",
+              "options": [
+                "A voucher is issued for next year.",
+                "The visitor receives a free drink.",
+                "The deposit is repaid."
+              ],
+              "number": 14
+            },
+            {
+              "prompt": "Where should an adult seeking a child be directed?",
+              "answers": [
+                "A"
+              ],
+              "evidence": "send the adult to the same point",
+              "explanation": "Both child and adult go to the staffed family point.",
+              "options": [
+                "The staffed family point.",
+                "The public-address microphone.",
+                "The nearest food stall."
+              ],
+              "number": 15
+            }
+          ],
+          "bank": null,
+          "maxWords": null,
+          "numbersAllowed": false
+        },
+        {
+          "kind": "matching",
+          "instruction": "What instruction is given to each team? Write the correct letter. You may use any letter more than once.",
+          "items": [
+            {
+              "prompt": "Welcome team",
+              "answers": [
+                "D"
+              ],
+              "evidence": "remain in pairs",
+              "explanation": "remain in pairs",
+              "options": null,
+              "number": 16
+            },
+            {
+              "prompt": "Tasting team",
+              "answers": [
+                "A"
+              ],
+              "evidence": "attend a short hygiene briefing",
+              "explanation": "attend a short hygiene briefing",
+              "options": null,
+              "number": 17
+            },
+            {
+              "prompt": "Survey team",
+              "answers": [
+                "F"
+              ],
+              "evidence": "wait until after lunch",
+              "explanation": "wait until after lunch",
+              "options": null,
+              "number": 18
+            },
+            {
+              "prompt": "Recycling team",
+              "answers": [
+                "B"
+              ],
+              "evidence": "Wear the protective gloves",
+              "explanation": "Wear the protective gloves",
+              "options": null,
+              "number": 19
+            },
+            {
+              "prompt": "Photography team",
+              "answers": [
+                "E"
+              ],
+              "evidence": "ask permission before taking an identifiable close-up",
+              "explanation": "ask permission before taking an identifiable close-up",
+              "options": null,
+              "number": 20
+            }
+          ],
+          "bank": {
+            "A": "Complete a safety briefing",
+            "B": "Use protective equipment",
+            "C": "Bring a personal camera",
+            "D": "Work with a partner",
+            "E": "Seek individual permission",
+            "F": "Start later in the day"
+          },
+          "maxWords": null,
+          "numbersAllowed": false
+        }
+      ]
+    },
+    {
+      "title": "Designing a visitor-label experiment",
+      "script": "Tutor: Tell me how the museum project is developing.\nClara: We want to compare two labels beside the same exhibit. One gives a straightforward description, while the other starts with a question. We’d like to know whether visitors look at the object for longer with the question version.\nRafi: We originally planned to ask which label visitors preferred. But preference wouldn’t necessarily tell us whether they spent more time observing the object itself.\nTutor: Good distinction. How will you avoid changing several things at once?\nClara: We’ll keep the factual information and length similar. The difference should be the opening question, not an extra paragraph of information or a larger typeface.\nRafi: And we won’t put the two versions side by side. People would compare labels rather than use one naturally. We’ll alternate versions across observation periods and record which is displayed.\nTutor: What counts as looking at the object? A visitor could stand there while talking to a friend about lunch.\nClara: We need an operational definition. Our draft says the person’s head is directed towards the exhibit, but that still leaves uncertain cases. We should practise coding the same short video, with permission, and discuss disagreements.\nRafi: The museum has a staged training video made with staff. We can use that rather than recording real visitors just to test our coding sheet.\nTutor: That’s preferable. Who will be in the sample?\nClara: Adults arriving on their own or in groups, but not guided school parties. The guide controls where a school group stops, so their viewing time isn’t comparable with independent visits.\nRafi: We still need to record group size. A family could spend longer because one person wants to stay, even if the label has no effect.\nTutor: And be careful about what your observation can establish. Longer looking may show attention, but it doesn’t prove better understanding. You’d need a different measure for that.\n---\nClara: We can add one short question about what visitors think the object was used for. Would that be enough?\nTutor: It might add useful evidence, provided you explain its limited scope. Don’t call it a complete test of learning. Also, it should come after the observed viewing period, or the invitation itself may change how people behave.\nRafi: We need to decide which object to use. We chose a carved wooden box because it isn’t famous and its purpose isn’t obvious from the shape. A well-known object might produce a ceiling effect if everyone already understands it.\nClara: The curator says we can move the box into the side gallery, but moving it would change the context and maybe the number of passers-by. I think we should leave it in its ordinary position.\nTutor: I agree. The display position should remain constant between conditions. You can note changes in nearby activity instead of relocating the object for a tidier-looking experiment.\nRafi: Our draft schedule has observation for ten days. That’s too much for the two of us once seminars start. Would six days across two weeks be reasonable?\nTutor: Yes, as long as your claims match the sample. Six days with careful records is better than ten days with exhausted observers missing entries. Include both busy and quiet periods and specify the schedule in advance.\nClara: We haven’t written the report structure yet. Should we decide on an expected conclusion now?\nTutor: No. Decide what comparisons you will make, not which result you hope to obtain. Keep a log of any departures from the plan. A museum may prefer one label, but your responsibility is to describe what the study can support. An inconclusive result can still show why a more substantial trial is needed.",
+      "groups": [
+        {
+          "kind": "multiple-choice",
+          "instruction": "Choose the correct letter, A, B or C.",
+          "items": [
+            {
+              "prompt": "What outcome is the main focus?",
+              "answers": [
+                "B"
+              ],
+              "evidence": "whether visitors look at the object for longer",
+              "explanation": "Preference alone is not the intended measure.",
+              "options": [
+                "Which label visitors say they prefer.",
+                "How long visitors look at the object.",
+                "How much additional information a label contains."
+              ],
+              "number": 21
+            },
+            {
+              "prompt": "What will remain similar across labels?",
+              "answers": [
+                "A"
+              ],
+              "evidence": "factual information and length similar",
+              "explanation": "The opening form is the intended difference.",
+              "options": [
+                "The amount and content of factual information.",
+                "The exact opening sentence.",
+                "The number of labels shown together."
+              ],
+              "number": 22
+            },
+            {
+              "prompt": "Why use the staff training video?",
+              "answers": [
+                "C"
+              ],
+              "evidence": "rather than recording real visitors just to test our coding sheet",
+              "explanation": "It permits piloting the observation criteria.",
+              "options": [
+                "To replace observations in the final study.",
+                "To find out which staff like the exhibit.",
+                "To practise and compare observation coding."
+              ],
+              "number": 23
+            },
+            {
+              "prompt": "Why exclude guided school parties?",
+              "answers": [
+                "B"
+              ],
+              "evidence": "The guide controls where a school group stops",
+              "explanation": "Viewing behaviour is constrained differently.",
+              "options": [
+                "The museum does not allow children near the object.",
+                "Their stopping behaviour is directed by a guide.",
+                "School visitors never read labels."
+              ],
+              "number": 24
+            },
+            {
+              "prompt": "What limitation does the tutor emphasise?",
+              "answers": [
+                "A"
+              ],
+              "evidence": "doesn’t prove better understanding",
+              "explanation": "Attention is not the same as learning.",
+              "options": [
+                "Longer viewing does not establish greater understanding.",
+                "Time spent looking cannot be observed at all.",
+                "Visitors in groups must all be excluded."
+              ],
+              "number": 25
+            }
+          ],
+          "bank": null,
+          "maxWords": null,
+          "numbersAllowed": false
+        },
+        {
+          "kind": "completion",
+          "instruction": "Complete the notes. Write ONE WORD AND/OR A NUMBER for each answer.",
+          "items": [
+            {
+              "prompt": "Any comprehension question should come ____ the observation period.",
+              "answers": [
+                "after"
+              ],
+              "evidence": "after the observed viewing period",
+              "explanation": "after the observed viewing period",
+              "options": null,
+              "number": 26
+            },
+            {
+              "prompt": "The chosen object is a wooden ____.",
+              "answers": [
+                "box"
+              ],
+              "evidence": "a carved wooden box",
+              "explanation": "a carved wooden box",
+              "options": null,
+              "number": 27
+            },
+            {
+              "prompt": "Its display ____ should remain constant.",
+              "answers": [
+                "position"
+              ],
+              "evidence": "display position should remain constant",
+              "explanation": "display position should remain constant",
+              "options": null,
+              "number": 28
+            },
+            {
+              "prompt": "Final observation schedule: ____ days",
+              "answers": [
+                "6"
+              ],
+              "evidence": "Six days with careful records",
+              "explanation": "Six days with careful records",
+              "options": null,
+              "number": 29
+            },
+            {
+              "prompt": "Departures from the plan should be entered in a ____.",
+              "answers": [
+                "log"
+              ],
+              "evidence": "Keep a log",
+              "explanation": "Keep a log",
+              "options": null,
+              "number": 30
+            }
+          ],
+          "bank": null,
+          "maxWords": 1,
+          "numbersAllowed": true
+        }
+      ]
+    },
+    {
+      "title": "From textile waste to usable fibre",
+      "script": "Lecturer: A discarded garment may look like a straightforward source of material, but recovering useful fibre requires a sequence of decisions. Today we’ll follow a simplified mechanical recycling process for a stream of donated textiles. This is not a description of every industrial method. Different fabrics and desired outputs require different treatments. The point is to understand why collecting a large mass of clothing does not automatically create an equal mass of high-quality new cloth. Each stage changes what is available to the next, and some losses are unavoidable.\nThe first decision is whether an item should enter recycling at all. Wearable garments may be more useful through reuse. Sorting workers therefore separate items that can still be worn from those intended for material recovery. This stage requires judgement about condition and practical demand, not just age. A nearly new garment with severe damage may be unsuitable for reuse, while an older coat can remain serviceable. Reuse and recycling serve related purposes, but mixing their outputs in one impressive total can hide what actually happens to the collected clothing.\nNext, workers examine composition. Labels provide a starting point, though they may be missing or unreliable. A blend contains more than one fibre type, and that combination can make recovery harder. A process designed for a relatively uniform stream may perform poorly on mixed materials. Some facilities use instruments to help identify composition, but readings still need to be interpreted within the process’s limits. Sorting is not merely putting red garments in one pile and blue garments in another; colour and composition answer different production questions.\nColour separation can nevertheless be useful. Keeping similar colours together may reduce the need for later dyeing when the recovered fibre is used in a suitable product. This does not mean every faded shirt can become a new shirt of exactly the same appearance. The final use depends on fibre quality and the specifications of the next manufacturer. A less demanding product may be the realistic destination for some material. Calling that outcome a failure without considering the available alternatives can obscure a useful recovery, while calling it identical to garment-to-garment recycling can also mislead.\nBefore cutting, workers remove hard components such as buttons and metal fasteners. These can damage machinery or remain as unwanted fragments in the output. Removal takes time, and garment construction affects how easy it is. A designer choosing decorative hardware may therefore influence a future recycling cost without seeing it at the design stage. After preparation, the textile is cut into smaller pieces. The pieces pass through equipment that pulls the fabric apart, releasing fibres rather than preserving the original woven or knitted structure.\nMechanical opening usually shortens fibres. Length matters because very short fibres can be difficult to spin into a strong new yarn. The recovered material may be blended with a proportion of new fibre to meet the intended requirement. The proportion is not a universal recipe: it varies with the input and product. A claim about recycled content should state what is being measured and in which component. A small recycled lining does not make the whole garment entirely recycled, even if the marketing photograph draws attention to the lining.\nThe output undergoes checks before a manufacturer uses it. Tests may include strength and the presence of unwanted contamination. Sampling needs to represent a batch, not only its cleanest corner. Failed material may enter another suitable route rather than the same spinning process, but that route should be recorded. Mass balances help account for useful output, removed components and losses. Without such records, a collection programme can report what entered the facility while leaving the destination of much of it unexplained.\nThe broader lesson is that recycling begins before a garment is discarded. Material choice, construction and accurate labelling affect later options. Collection remains necessary, but the quality of the route after collection determines what the activity achieves. A transparent account follows the material through the process, states the intended product and acknowledges limitations. It offers more useful guidance than an unqualified claim that all donated clothing returns to the wardrobe in an endless loop.",
+      "groups": [
+        {
+          "kind": "completion",
+          "instruction": "Complete the notes. Write ONE WORD ONLY for each answer.",
+          "items": [
+            {
+              "prompt": "Wearable garments are first separated for possible ____.",
+              "answers": [
+                "reuse"
+              ],
+              "evidence": "useful through reuse",
+              "explanation": "useful through reuse",
+              "options": null,
+              "number": 31
+            },
+            {
+              "prompt": "Material ____ must then be assessed.",
+              "answers": [
+                "composition"
+              ],
+              "evidence": "workers examine composition",
+              "explanation": "workers examine composition",
+              "options": null,
+              "number": 32
+            },
+            {
+              "prompt": "A fabric containing different fibres is a ____.",
+              "answers": [
+                "blend"
+              ],
+              "evidence": "A blend contains more than one fibre type",
+              "explanation": "A blend contains more than one fibre type",
+              "options": null,
+              "number": 33
+            },
+            {
+              "prompt": "Sorting by colour can reduce later ____.",
+              "answers": [
+                "dyeing"
+              ],
+              "evidence": "reduce the need for later dyeing",
+              "explanation": "reduce the need for later dyeing",
+              "options": null,
+              "number": 34
+            },
+            {
+              "prompt": "Hard items such as ____ are removed before cutting.",
+              "answers": [
+                "buttons"
+              ],
+              "evidence": "such as buttons",
+              "explanation": "such as buttons",
+              "options": null,
+              "number": 35
+            },
+            {
+              "prompt": "Fabric is mechanically pulled apart to release ____.",
+              "answers": [
+                "fibres"
+              ],
+              "evidence": "releasing fibres",
+              "explanation": "releasing fibres",
+              "options": null,
+              "number": 36
+            },
+            {
+              "prompt": "Mechanical opening tends to reduce fibre ____.",
+              "answers": [
+                "length"
+              ],
+              "evidence": "Length matters",
+              "explanation": "Length matters",
+              "options": null,
+              "number": 37
+            },
+            {
+              "prompt": "New fibre may be added to produce sufficiently strong ____.",
+              "answers": [
+                "yarn"
+              ],
+              "evidence": "a strong new yarn",
+              "explanation": "a strong new yarn",
+              "options": null,
+              "number": 38
+            },
+            {
+              "prompt": "Checks look for unwanted ____ in the output.",
+              "answers": [
+                "contamination"
+              ],
+              "evidence": "unwanted contamination",
+              "explanation": "unwanted contamination",
+              "options": null,
+              "number": 39
+            },
+            {
+              "prompt": "Records should account for useful output as well as removed components and ____.",
+              "answers": [
+                "losses"
+              ],
+              "evidence": "removed components and losses",
+              "explanation": "removed components and losses",
+              "options": null,
+              "number": 40
+            }
+          ],
+          "bank": null,
+          "maxWords": 1,
+          "numbersAllowed": false
+        }
+      ]
+    }
+  ],
+  "reading": [
+    {
+      "title": "Cooling food before the grid arrived",
+      "paragraphs": {
+        "A": "Before reliable electricity reached the fictional valley of Orlen, households used several methods to keep food cool. A shaded cellar worked well for some homes, while others stood pots in a stream. Neither arrangement was convenient for the women who sold fresh cheese at the weekly market. Their products travelled for hours in summer, and a cool destination could not undo warming during the journey. A local cooperative therefore investigated containers rather than planning a central cold store. The problem it chose to solve was movement between places, not storage at one fixed location.",
+        "B": "The first container used a porous outer clay pot, an inner vessel and damp sand between them. As moisture escaped from the outer surface, evaporation removed heat. The design depended on moving air and relatively dry conditions; it was not a miniature refrigerator that could work equally well anywhere. Trials on humid afternoons produced disappointing results. The cooperative kept those records alongside successful tests instead of advertising only the largest temperature fall. A shaded stand improved performance, but enclosing the pot in a sealed cupboard prevented the airflow on which its operation depended.",
+        "C": "Potter Elin Daro changed the design after watching sellers load their carts. A round pot could roll or tip during transport, and a lid that was easy to lift at home was difficult to secure on a rough track. She added a broad base and a fastening strap. These changes did not improve the cooling mechanism directly, but they reduced spills and breakage. The cooperative discovered that a technically effective object could still be rejected if handling it added work. Users judged the whole trip, including loading and cleaning, rather than one laboratory measurement of temperature.",
+        "D": "Water supply created another constraint. The sand had to remain damp, but sellers did not want dirty water near food. The revised inner vessel could be removed and washed separately, while a small reservoir fed moisture to the sand. A mark on the reservoir indicated the minimum level before a journey. Sellers were trained to inspect the outer surface for cracks and to replace a damaged vessel. These routines were simple but necessary. Calling the device passive did not mean that it required no attention; it meant that cooling did not depend on a powered compressor.",
+        "E": "To compare containers fairly, the cooperative placed equal quantities of cheese in them at the same initial temperature. Some travelled in carts, while others stayed on the shaded market stand. A thermometer was read at fixed intervals, and the test sheets recorded air temperature and humidity. The organisers did not ask sellers to taste products that had been stored beyond ordinary safety limits. Cooling performance and food safety were treated as related but distinct questions. A container could slow warming without demonstrating that every kind of food would remain safe for an entire day.",
+        "F": "The most useful improvement emerged from the trading schedule. Previously, sellers waited until all orders were ready before leaving the village together. Small producers sometimes kept finished cheese waiting for their neighbours. The cooperative organised two departure times, reducing that delay. Better scheduling lowered the demand placed on the containers without changing their construction. Some members initially considered this outside the cooling project, but later recognised that temperature exposure included time before loading. The device was one component of a chain whose other components involved decisions about work, transport and market opening hours.",
+        "G": "When electricity eventually became available, the clay containers did not disappear immediately. A powered store could hold larger quantities overnight, but the last part of the journey still involved unpowered carts and exposed stalls. Some members used both systems; others abandoned the pots because their routes had become shorter. The cooperative stopped describing one technology as the replacement for the other. Its records instead showed which combination suited which journey. A method could remain useful in a limited role even after a newer system expanded the range of things that the community could do.",
+        "H": "Orlen's fictional experience illustrates a familiar error in histories of technology: judging an invention only by the device that follows it. A clay cooler looks inadequate beside a modern refrigerator if both are imagined in identical conditions. Real users rarely face that abstract comparison. They consider purchase price, repair, water, travel and the consequences of failure. Understanding their choice requires attention to the service they need, not simply the age of the mechanism. Progress may mean gaining another useful option rather than replacing every earlier practice with a single supposedly universal solution."
+      },
+      "groups": [
+        {
+          "kind": "true-false-not-given",
+          "instruction": "Do these statements agree with the information in the passage? Write TRUE, FALSE or NOT GIVEN.",
+          "items": [
+            {
+              "prompt": "The cooperative's first priority was a permanent cooling building.",
+              "answers": [
+                "FALSE"
+              ],
+              "evidence": "investigated containers rather than planning a central cold store",
+              "explanation": "investigated containers rather than planning a central cold store",
+              "options": null,
+              "number": 1
+            },
+            {
+              "prompt": "The clay cooler's effectiveness varied with atmospheric conditions.",
+              "answers": [
+                "TRUE"
+              ],
+              "evidence": "depended on moving air and relatively dry conditions",
+              "explanation": "depended on moving air and relatively dry conditions",
+              "options": null,
+              "number": 2
+            },
+            {
+              "prompt": "The initial pot was developed using a foreign grant.",
+              "answers": [
+                "NOT GIVEN"
+              ],
+              "evidence": "The first container used a porous outer clay pot",
+              "explanation": "No funding source is described.",
+              "options": null,
+              "number": 3
+            },
+            {
+              "prompt": "Daro's changes made the container easier to transport safely.",
+              "answers": [
+                "TRUE"
+              ],
+              "evidence": "they reduced spills and breakage",
+              "explanation": "they reduced spills and breakage",
+              "options": null,
+              "number": 4
+            },
+            {
+              "prompt": "The term passive meant users never had to maintain the container.",
+              "answers": [
+                "FALSE"
+              ],
+              "evidence": "did not mean that it required no attention",
+              "explanation": "did not mean that it required no attention",
+              "options": null,
+              "number": 5
+            }
+          ],
+          "bank": null,
+          "maxWords": null,
+          "numbersAllowed": false
+        },
+        {
+          "kind": "completion",
+          "instruction": "Complete the notes. Write ONE WORD ONLY for each answer.",
+          "items": [
+            {
+              "prompt": "Heat was removed through ____ from the outer surface.",
+              "answers": [
+                "evaporation"
+              ],
+              "evidence": "evaporation removed heat",
+              "explanation": "evaporation removed heat",
+              "options": null,
+              "number": 6
+            },
+            {
+              "prompt": "The device performed poorly inside a sealed ____.",
+              "answers": [
+                "cupboard"
+              ],
+              "evidence": "enclosing the pot in a sealed cupboard prevented the airflow",
+              "explanation": "enclosing the pot in a sealed cupboard prevented the airflow",
+              "options": null,
+              "number": 7
+            },
+            {
+              "prompt": "A fastening ____ helped secure the lid.",
+              "answers": [
+                "strap"
+              ],
+              "evidence": "a fastening strap",
+              "explanation": "a fastening strap",
+              "options": null,
+              "number": 8
+            },
+            {
+              "prompt": "Water reached the sand from a small ____.",
+              "answers": [
+                "reservoir"
+              ],
+              "evidence": "a small reservoir fed moisture",
+              "explanation": "a small reservoir fed moisture",
+              "options": null,
+              "number": 9
+            },
+            {
+              "prompt": "Test sheets included air temperature and ____.",
+              "answers": [
+                "humidity"
+              ],
+              "evidence": "air temperature and humidity",
+              "explanation": "air temperature and humidity",
+              "options": null,
+              "number": 10
+            }
+          ],
+          "bank": null,
+          "maxWords": 1,
+          "numbersAllowed": false
+        },
+        {
+          "kind": "multiple-choice",
+          "instruction": "Choose the correct letter, A, B, C or D.",
+          "items": [
+            {
+              "prompt": "Why were two departure times introduced?",
+              "answers": [
+                "B"
+              ],
+              "evidence": "reducing that delay",
+              "explanation": "Finished products spent less time waiting.",
+              "options": [
+                "To increase the number of different cheeses produced.",
+                "To reduce the time some cheese spent waiting before travel.",
+                "To make all journeys take exactly the same time.",
+                "To avoid needing a market stand."
+              ],
+              "number": 11
+            },
+            {
+              "prompt": "What happened after electricity became available?",
+              "answers": [
+                "D"
+              ],
+              "evidence": "Some members used both systems",
+              "explanation": "The technologies sometimes complemented each other.",
+              "options": [
+                "All users immediately discarded the clay pots.",
+                "The cooperative prohibited unpowered transport.",
+                "The powered store was used only during journeys.",
+                "Different combinations were used for different circumstances."
+              ],
+              "number": 12
+            },
+            {
+              "prompt": "What does the writer criticise in the final paragraph?",
+              "answers": [
+                "A"
+              ],
+              "evidence": "judging an invention only by the device that follows it",
+              "explanation": "A context-free ranking misses users' needs.",
+              "options": [
+                "Evaluating an older technology without its context of use.",
+                "Recording the costs of maintaining simple devices.",
+                "Using more than one method within a supply chain.",
+                "Considering repair when deciding which device to buy."
+              ],
+              "number": 13
+            }
+          ],
+          "bank": null,
+          "maxWords": null,
+          "numbersAllowed": false
+        }
+      ]
+    },
+    {
+      "title": "The gap between knowing and remembering",
+      "paragraphs": {
+        "A": "A student who can explain a concept immediately after a lesson may still struggle to recall it a week later. The difference is not necessarily evidence that the lesson failed. Immediate performance and durable access to knowledge are different outcomes, influenced by what happens during and after learning. In a fictional series of classroom investigations, psychologist Nia Vale examined how students judged these outcomes. She was particularly interested in why a method that feels smooth can produce strong confidence without producing equally strong later recall. Her research treated confidence as something to explain, not as a direct measure of learning.",
+        "B": "In the first investigation, students encountered short accounts of unfamiliar inventions. One group reread each account, while another closed the text and attempted to reconstruct its main points. The second group found the exercise harder and rated its expected later performance less favourably. A week later, however, it recalled more of the central relationships. Vale cautioned that this comparison did not mean reading was unnecessary: both groups needed an initial explanation. The question concerned what learners did after first encountering material, not whether an unsupported attempt could replace every form of instruction.",
+        "C": "Education researcher Tomas Iven questioned how general the result would be. Recalling a short account under quiet conditions differed from solving a demanding problem in a busy classroom. He designed a follow-up in which learners applied a rule to new examples, some superficially unlike those used in teaching. Performance depended partly on whether the practice required students to explain why the rule applied. Mere repetition of a familiar answer was less helpful. Iven argued that the content of a retrieval attempt mattered as much as the fact that the learner had been asked to remember something.",
+        "D": "Teacher Sara Omari noticed a practical difficulty in her own classes. When practice attempts were publicly graded, hesitant students sometimes avoided attempting an answer at all. She introduced short private exercises with feedback before using any marks. Students could see a correct explanation after they had committed to an attempt. The change was intended to make an error informative rather than socially costly. Omari did not conclude that all assessment should disappear. She distinguished the function of a practice attempt from that of a final judgement, particularly when students were still deciding whether they could risk exposing a misunderstanding.",
+        "E": "Another investigation concerned spacing. Learners completed the same amount of practice either in one session or across several days. Spreading it created more occasions on which knowledge had to be brought back after becoming less accessible. Yet the team rejected the slogan that longer gaps were always better. If a gap was so long that learners could recover nothing, frustration replaced useful effort. They adjusted intervals to the material and offered cues where needed. The aim was successful reconstruction with some difficulty, not maximum difficulty as an educational virtue in its own right.",
+        "F": "Analyst Joel Chen examined how the tests themselves might shape the findings. A later task that repeated practice questions exactly could favour a narrow routine. He therefore included questions requiring explanation in different wording and an application task with a changed surface context. Scores fell compared with the identical-question test, but differences between practice conditions did not vanish. Chen regarded both results as necessary: the fall showed limits, while the remaining difference suggested some transfer. Reporting only the more flattering test would make the intervention look broader than the evidence justified.",
+        "G": "Students' own study decisions changed only slowly. Many still preferred rereading because a familiar page felt reassuring and because generating an answer exposed gaps they would rather not notice. Vale asked them to predict performance on specific items and then compare those predictions with later results. The exercise made mistaken confidence visible without treating confidence itself as a personal flaw. Some students began using short self-tests voluntarily. Others needed more support, especially when they interpreted an unsuccessful attempt as proof of inability rather than information about what to study next.",
+        "H": "The fictional investigations do not supply a single timetable or universal recipe. Their shared message is that learning activities should be evaluated against the kind of later performance they are intended to support. An activity may be useful for introducing an idea, another for making it retrievable, and another for extending it to a new context. Feeling fluent during one of these activities is not worthless, but it cannot settle every question. Teachers and learners need evidence that extends beyond the pleasant experience of recognising material while it is still in front of them."
+      },
+      "groups": [
+        {
+          "kind": "matching",
+          "instruction": "Which paragraph contains the following information? Write the correct letter. You may use any letter more than once.",
+          "items": [
+            {
+              "prompt": "a concern that classroom conditions differ from those of an initial study",
+              "answers": [
+                "C"
+              ],
+              "evidence": "a busy classroom",
+              "explanation": "Iven questions whether the initial result generalises to classroom problem solving.",
+              "options": null,
+              "number": 14
+            },
+            {
+              "prompt": "a reason students avoided making practice attempts",
+              "answers": [
+                "D"
+              ],
+              "evidence": "hesitant students sometimes avoided attempting an answer",
+              "explanation": "hesitant students sometimes avoided attempting an answer",
+              "options": null,
+              "number": 15
+            },
+            {
+              "prompt": "a warning that excessive delay can make practice unhelpful",
+              "answers": [
+                "E"
+              ],
+              "evidence": "frustration replaced useful effort",
+              "explanation": "frustration replaced useful effort",
+              "options": null,
+              "number": 16
+            },
+            {
+              "prompt": "a method of exposing inaccurate predictions",
+              "answers": [
+                "G"
+              ],
+              "evidence": "compare those predictions with later results",
+              "explanation": "compare those predictions with later results",
+              "options": null,
+              "number": 17
+            }
+          ],
+          "bank": {
+            "A": "Paragraph",
+            "B": "Paragraph",
+            "C": "Paragraph",
+            "D": "Paragraph",
+            "E": "Paragraph",
+            "F": "Paragraph",
+            "G": "Paragraph",
+            "H": "Paragraph"
+          },
+          "maxWords": null,
+          "numbersAllowed": false
+        },
+        {
+          "kind": "matching",
+          "instruction": "Match each statement with the correct person. Write the correct letter. You may use any letter more than once.",
+          "items": [
+            {
+              "prompt": "Introduced private practice before marked assessment",
+              "answers": [
+                "C"
+              ],
+              "evidence": "She introduced short private exercises",
+              "explanation": "She introduced short private exercises",
+              "options": null,
+              "number": 18
+            },
+            {
+              "prompt": "Compared identical test items with changed applications",
+              "answers": [
+                "D"
+              ],
+              "evidence": "an application task with a changed surface context",
+              "explanation": "an application task with a changed surface context",
+              "options": null,
+              "number": 19
+            },
+            {
+              "prompt": "Studied students' confidence in study methods",
+              "answers": [
+                "A"
+              ],
+              "evidence": "how students judged these outcomes",
+              "explanation": "how students judged these outcomes",
+              "options": null,
+              "number": 20
+            },
+            {
+              "prompt": "Emphasised explaining why a rule applied",
+              "answers": [
+                "B"
+              ],
+              "evidence": "explain why the rule applied",
+              "explanation": "explain why the rule applied",
+              "options": null,
+              "number": 21
+            }
+          ],
+          "bank": {
+            "A": "Nia Vale",
+            "B": "Tomas Iven",
+            "C": "Sara Omari",
+            "D": "Joel Chen"
+          },
+          "maxWords": null,
+          "numbersAllowed": false
+        },
+        {
+          "kind": "true-false-not-given",
+          "instruction": "Do these statements agree with the information in the passage? Write TRUE, FALSE or NOT GIVEN.",
+          "items": [
+            {
+              "prompt": "Vale claimed that initial reading could always be omitted.",
+              "answers": [
+                "FALSE"
+              ],
+              "evidence": "both groups needed an initial explanation",
+              "explanation": "both groups needed an initial explanation",
+              "options": null,
+              "number": 22
+            },
+            {
+              "prompt": "The spaced-practice groups did more practice in total.",
+              "answers": [
+                "FALSE"
+              ],
+              "evidence": "the same amount of practice",
+              "explanation": "the same amount of practice",
+              "options": null,
+              "number": 23
+            },
+            {
+              "prompt": "The application test produced lower scores than the identical-question test.",
+              "answers": [
+                "TRUE"
+              ],
+              "evidence": "Scores fell compared with the identical-question test",
+              "explanation": "Scores fell compared with the identical-question test",
+              "options": null,
+              "number": 24
+            },
+            {
+              "prompt": "All students began using self-tests independently.",
+              "answers": [
+                "FALSE"
+              ],
+              "evidence": "Some students began using short self-tests voluntarily",
+              "explanation": "Some students began using short self-tests voluntarily",
+              "options": null,
+              "number": 25
+            },
+            {
+              "prompt": "Chen's test papers were marked by external examiners.",
+              "answers": [
+                "NOT GIVEN"
+              ],
+              "evidence": "Analyst Joel Chen examined how the tests themselves might shape the findings",
+              "explanation": "Marking arrangements are not described.",
+              "options": null,
+              "number": 26
+            }
+          ],
+          "bank": null,
+          "maxWords": null,
+          "numbersAllowed": false
+        }
+      ]
+    },
+    {
+      "title": "The case for a repairable future",
+      "paragraphs": {
+        "A": "To describe a product as durable is to make a claim about time, but the claim is incomplete until we know what happens when one part fails. An object may contain excellent materials and still become unusable because a small component cannot be replaced. Conversely, a less imposing object may remain useful through many repairs. Discussions of sustainable design often focus on the moment of manufacture or disposal. The period between them deserves equal attention: this is where ordinary decisions about access, information and maintenance determine how long a product actually serves a purpose.",
+        "B": "Repairability is sometimes reduced to the presence of screws rather than glue. Accessible fasteners do matter, but access to an internal part is only one step. A user must identify the fault, obtain a suitable replacement, perform the work safely and verify that the object functions afterwards. A product that can be opened easily may still be difficult to repair if its parts have no identifying marks. Design for repair is therefore a property of an arrangement of object, documentation, supply and skills. Treating it as a single visible feature produces reassuring labels without necessarily extending useful life.",
+        "C": "In a fictional procurement trial, a college compared two models of desk lamp. One was cheaper to purchase and had a sealed light unit. The other cost more but came with a replaceable module and a public parts list. The buyers calculated costs over several years rather than comparing only the invoice. Their result depended strongly on assumptions about failure rates and the continued availability of parts. They published those assumptions, allowing readers to see circumstances in which the cheaper lamp would remain cheaper. A calculation is more informative when its uncertainty is visible than when one favourable estimate is presented as inevitable.",
+        "D": "Manufacturers can reasonably raise safety concerns. Opening some devices exposes hazards, and an incorrect repair can create risks for users who never performed the work. But safety is not served by leaving a failing product in use because a responsible repair is impossible. The appropriate response depends on the task: some repairs can be supported with clear instructions, while others require trained personnel. A blanket appeal to danger avoids this distinction. The question is not whether every owner should attempt every repair, but whether a workable and proportionate route to repair exists.",
+        "E": "Information also has an economic role. A business may promise to keep spare parts available but provide no clear price or delivery time. If a replacement costs almost as much as a new object, formal availability gives little practical help. Public buyers can ask for price commitments and delivery expectations before purchasing, not only after equipment fails. These requests will not remove every future uncertainty. They can, however, make maintenance part of competition rather than leaving it as a private inconvenience discovered when the initial sale is complete and the buyer has few alternatives.",
+        "F": "Consumers are often blamed for preferring novelty, yet their choices reflect the options presented to them. A person offered an immediate replacement and an uncertain repair several weeks away may rationally choose the replacement even while valuing conservation. Convenient repair services can alter this calculation. Loan equipment, clear quotations and local collection points reduce the disruption involved. Moral appeals to keep things longer are unlikely to succeed if the surrounding service makes doing so unusually difficult. Responsibility belongs partly to users, but also to those who shape the time and effort a repair requires.",
+        "G": "There is a limit to the argument. Keeping every old appliance indefinitely is not necessarily sensible if use consumes far more resources than a replacement would. A comparison should include the impact of making the new product, the expected remaining life of the old one and the difference during use. The balance will vary by product and circumstance. This qualification does not defeat repairability. It prevents repair from becoming a slogan detached from outcomes. A repairable product preserves an option; deciding whether to exercise it still requires judgement about the actual situation rather than automatic loyalty to oldness.",
+        "H": "A serious repair policy would therefore change more than the construction of objects. It would make long-term support visible at the point of purchase and encourage institutions to retain maintenance knowledge. It would also distinguish repair opportunities from claims that every repair is worthwhile. The goal is neither to freeze technology nor to make consumers responsible for industrial design. It is to ensure that the failure of a small part does not unnecessarily dictate the fate of a whole product. Longevity becomes credible when there is a practical route from breakdown to renewed use."
+      },
+      "groups": [
+        {
+          "kind": "yes-no-not-given",
+          "instruction": "Do these statements agree with the views of the writer? Write YES, NO or NOT GIVEN.",
+          "items": [
+            {
+              "prompt": "Material quality alone guarantees a long useful life.",
+              "answers": [
+                "NO"
+              ],
+              "evidence": "excellent materials and still become unusable",
+              "explanation": "excellent materials and still become unusable",
+              "options": null,
+              "number": 27
+            },
+            {
+              "prompt": "Repairability involves more than gaining access to a product's interior.",
+              "answers": [
+                "YES"
+              ],
+              "evidence": "access to an internal part is only one step",
+              "explanation": "access to an internal part is only one step",
+              "options": null,
+              "number": 28
+            },
+            {
+              "prompt": "The college's lamp trial was financed by a manufacturer.",
+              "answers": [
+                "NOT GIVEN"
+              ],
+              "evidence": "a college compared two models of desk lamp",
+              "explanation": "No funding source is given.",
+              "options": null,
+              "number": 29
+            },
+            {
+              "prompt": "Safety concerns justify prohibiting all repairs by owners.",
+              "answers": [
+                "NO"
+              ],
+              "evidence": "A blanket appeal to danger avoids this distinction",
+              "explanation": "A blanket appeal to danger avoids this distinction",
+              "options": null,
+              "number": 30
+            },
+            {
+              "prompt": "In some circumstances replacing an old appliance can be reasonable.",
+              "answers": [
+                "YES"
+              ],
+              "evidence": "not necessarily sensible if use consumes far more resources",
+              "explanation": "not necessarily sensible if use consumes far more resources",
+              "options": null,
+              "number": 31
+            }
+          ],
+          "bank": null,
+          "maxWords": null,
+          "numbersAllowed": false
+        },
+        {
+          "kind": "completion",
+          "instruction": "Complete the notes. Write ONE WORD ONLY for each answer.",
+          "items": [
+            {
+              "prompt": "A user needs to ____ the fault before obtaining a replacement part.",
+              "answers": [
+                "identify"
+              ],
+              "evidence": "identify the fault",
+              "explanation": "identify the fault",
+              "options": null,
+              "number": 32
+            },
+            {
+              "prompt": "The college considered costs beyond the original ____.",
+              "answers": [
+                "invoice"
+              ],
+              "evidence": "rather than comparing only the invoice",
+              "explanation": "rather than comparing only the invoice",
+              "options": null,
+              "number": 33
+            },
+            {
+              "prompt": "Some repairs should be performed by trained ____.",
+              "answers": [
+                "personnel"
+              ],
+              "evidence": "require trained personnel",
+              "explanation": "require trained personnel",
+              "options": null,
+              "number": 34
+            },
+            {
+              "prompt": "Public buyers can seek commitments about spare-part ____.",
+              "answers": [
+                "price"
+              ],
+              "evidence": "ask for price commitments",
+              "explanation": "ask for price commitments",
+              "options": null,
+              "number": 35
+            },
+            {
+              "prompt": "Lending equipment during repair can reduce ____.",
+              "answers": [
+                "disruption"
+              ],
+              "evidence": "reduce the disruption involved",
+              "explanation": "reduce the disruption involved",
+              "options": null,
+              "number": 36
+            }
+          ],
+          "bank": null,
+          "maxWords": 1,
+          "numbersAllowed": false
+        },
+        {
+          "kind": "multiple-choice",
+          "instruction": "Choose the correct letter, A, B, C or D.",
+          "items": [
+            {
+              "prompt": "Why were the procurement assumptions published?",
+              "answers": [
+                "C"
+              ],
+              "evidence": "allowing readers to see circumstances",
+              "explanation": "Readers could assess when the conclusion would change.",
+              "options": [
+                "To guarantee the lamps would never fail.",
+                "To avoid comparing the two products directly.",
+                "To make the conditions behind the result assessable.",
+                "To prove that sealed products always cost more."
+              ],
+              "number": 37
+            },
+            {
+              "prompt": "What is the writer's view of users who choose replacement?",
+              "answers": [
+                "A"
+              ],
+              "evidence": "may rationally choose the replacement",
+              "explanation": "Service constraints can explain the decision.",
+              "options": [
+                "Their decision can reflect practical limits on repair.",
+                "They invariably misunderstand environmental questions.",
+                "They should always wait for repair regardless of delay.",
+                "Their preferences cannot change when services improve."
+              ],
+              "number": 38
+            },
+            {
+              "prompt": "What does repairability primarily preserve?",
+              "answers": [
+                "D"
+              ],
+              "evidence": "A repairable product preserves an option",
+              "explanation": "It enables a later informed choice.",
+              "options": [
+                "An obligation to retain every old product.",
+                "A guarantee that repairing is always cheaper.",
+                "A reason to stop introducing new technology.",
+                "The ability to choose repair when it makes sense."
+              ],
+              "number": 39
+            },
+            {
+              "prompt": "Which proposal best represents the final paragraph?",
+              "answers": [
+                "B"
+              ],
+              "evidence": "make long-term support visible at the point of purchase",
+              "explanation": "Information and support should be part of the purchase decision.",
+              "options": [
+                "Judge longevity entirely by the heaviness of materials.",
+                "Include maintenance support in purchasing decisions.",
+                "Let consumers independently redesign unsafe parts.",
+                "Replace all institutional equipment on fixed dates."
+              ],
+              "number": 40
+            }
+          ],
+          "bank": null,
+          "maxWords": null,
+          "numbersAllowed": false
+        }
+      ]
+    }
+  ],
+  "writing": [
+    {
+      "prompt": "The table gives information about three types of visitor accommodation in the fictional region of Penford in 2010 and 2025. Summarise the information by selecting and reporting the main features, and make comparisons where relevant. Write at least 150 words.",
+      "visual": "![Accommodation indicators](writing-1.svg)\n\n| Type | Available rooms 2010 | Available rooms 2025 | Average occupancy 2010 | Average occupancy 2025 | Average stay 2010 (nights) | Average stay 2025 (nights) |\n| --- | ---: | ---: | ---: | ---: | ---: | ---: |\n| Hotels | 800 | 1,000 | 70% | 68% | 2.5 | 2.8 |\n| Guesthouses | 300 | 250 | 60% | 72% | 3.0 | 3.5 |\n| Self-catering units | 400 | 900 | 55% | 65% | 5.0 | 4.2 |\n\nOccupancy means the average proportion of available rooms occupied, not the share of all visitors.",
+      "guidance": "Self-catering capacity more than doubles, hotels grow more modestly and guesthouses contract. Guesthouse occupancy rises to the highest rate, while hotels decline slightly. Self-catering stays shorten but remain longest. Do not equate capacity with demand or add occupancy percentages across categories. Select comparisons rather than narrating all 18 values mechanically."
+    },
+    {
+      "prompt": "Some people believe secondary schools should give students more choice over the subjects they study. Others think all students should follow a broad common curriculum. Discuss both views and give your own opinion. Give reasons and relevant examples. Write at least 250 words.",
+      "guidance": "Discuss student choice and a common breadth of education. Consider motivation, future uncertainty and access to expertise. The position can favour one view or a justified combination, but should clarify what is compulsory and where choice belongs. Avoid switching to a general discussion of university specialisation."
+    }
+  ],
+  "speaking": {
+    "part1": {
+      "Work or studies": [
+        "What is your current work or course like?",
+        "Who do you usually work with?",
+        "What would make your workplace or study space better?"
+      ],
+      "Weather": [
+        "What kind of weather do you enjoy?",
+        "Does the weather affect your daily plans?",
+        "How do you find out the forecast?"
+      ],
+      "Photographs": [
+        "What do you usually photograph?",
+        "Do you prefer printed or digital photographs?",
+        "Is there a photograph you often look at?"
+      ]
+    },
+    "part2": {
+      "cue": "Describe something you borrowed that was useful.",
+      "points": [
+        "what it was",
+        "who lent it to you",
+        "how you used it"
+      ],
+      "explain": "why borrowing it was helpful.",
+      "followups": [
+        "Did you return it quickly?",
+        "Would you lend a similar thing to someone?"
+      ]
+    },
+    "part3": [
+      "Why do people sometimes prefer owning to borrowing?",
+      "What things are suitable for sharing in a neighbourhood?",
+      "How can a lending service encourage people to return items?",
+      "Can sharing reduce waste? In what circumstances?",
+      "Should schools teach children how to look after borrowed things?",
+      "How do online platforms change trust between strangers?"
+    ]
+  },
+  "schemaVersion": 1,
+  "number": 9,
+  "title": "IELTS Academic — Original Mock 09",
+  "timing": {
+    "listeningMinutesApprox": [
+      25,
+      31
+    ],
+    "readingMinutes": 60,
+    "writingMinutes": 60,
+    "speakingMinutes": [
+      11,
+      14
+    ],
+    "listeningSeconds": 1518.610667
+  },
+  "writingMinimumWords": [
+    150,
+    250
+  ],
+  "status": "Original uncalibrated practice draft; teacher review pending",
+  "audioStatus": "Synthetic Listening recordings included",
+  "provenance": "Original authored text and fictional case studies/data; format references in SOURCES.md",
+  "audio": {
+    "form": 9,
+    "file": "mock-09/audio/listening-full.mp3",
+    "seconds": 1518.610667,
+    "bytes": 15187050,
+    "sha256": "4f3c22b4180b1246d5e1e85ba44b665c3c5790223432526920d0f82cfe0ddd87",
+    "parts": [
+      {
+        "part": 1,
+        "start": 0,
+        "seconds": 360.3707,
+        "file": "mock-09/audio/part-1.mp3"
+      },
+      {
+        "part": 2,
+        "start": 360.371,
+        "seconds": 348.1067,
+        "file": "mock-09/audio/part-2.mp3"
+      },
+      {
+        "part": 3,
+        "start": 708.477,
+        "seconds": 357.4933,
+        "file": "mock-09/audio/part-3.mp3"
+      },
+      {
+        "part": 4,
+        "start": 1065.971,
+        "seconds": 452.64,
+        "file": "mock-09/audio/part-4.mp3"
+      }
+    ],
+    "assembly": "Decoded audio concatenation with continuous timestamps; re-encoded MP3"
+  }
+}

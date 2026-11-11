@@ -5,6 +5,7 @@ import { MathText, MathFormula } from "../math-text";
 import { RichText } from "../rich-text";
 import { ExamFigureView } from "../figure";
 import type { PublicExamAttempt } from "../types";
+import { entranceSubjectLabels } from "./subjects";
 import "./entrance.css";
 
 type ReviewFilter = "all" | "wrong" | "blank" | "correct";
@@ -19,18 +20,22 @@ export function EntranceResults({ attempt }: { attempt: PublicExamAttempt }) {
   const report = attempt.report!;
   const subject = attempt.subject ?? "math";
   const math = subject === "math" || subject === "physics";
-  const [filter, setFilter] = useState<ReviewFilter>(() => report.reviews.some(review => review.correct === false) ? "wrong" : "all");
+  const mongolian = subject !== "english";
+  // Open on the mistakes; a paper with blanks but no wrong answers opens on the blanks rather than an empty list.
+  const [filter, setFilter] = useState<ReviewFilter>(() => report.reviews.some(review => groupOf(review) === "wrong") ? "wrong" : report.reviews.some(review => groupOf(review) === "blank") ? "blank" : "all");
   const correct = report.reviews.filter(review => review.correct === true).length;
   const graded = report.reviews.filter(review => review.correct !== null).length;
+  const wrong = report.reviews.filter(review => groupOf(review) === "wrong").length;
+  const blank = report.reviews.filter(review => groupOf(review) === "blank").length;
   const total = report.points.total || 1;
   const percent = Math.round((report.points.earned / total) * 100);
   const visible = useMemo(() => report.reviews.filter(review => filter === "all" || groupOf(review) === filter), [report.reviews, filter]);
   return <div className="eesh-results">
     <header className="eesh-result-head">
       <div>
-        <p className="eyebrow">ДУУССАН · {subject === "math" ? "МАТЕМАТИК" : subject === "physics" ? "ФИЗИК" : "АНГЛИ ХЭЛ"}</p>
+        <p className="eyebrow">ДУУССАН · {entranceSubjectLabels[subject].toUpperCase()}</p>
         <h1>{attempt.title.replace(/^ЭЕШ · /, "")}</h1>
-        <p className="eesh-result-sub">{graded} хариулт үнэлэгдсэн · {correct} зөв · Буруу {graded - correct}</p>
+        <p className="eesh-result-sub">{graded} хариулт үнэлэгдсэн · {correct} зөв · {wrong} буруу{blank ? ` · ${blank} хоосон` : ""}</p>
       </div>
       <div className="eesh-score" aria-label={`Оноо ${round(report.points.earned)} / ${total}`}>
         <strong>{round(report.points.earned)}</strong>
@@ -73,16 +78,16 @@ export function EntranceResults({ attempt }: { attempt: PublicExamAttempt }) {
           <span className="eesh-review-points">{review.earned ? `+${review.earned}` : "0"} / {review.points}</span>
         </summary>
         <div className="eesh-review-body">
-          {review.instructions ? <div className="eesh-review-instructions" lang={math ? "mn" : "en"}>{math ? <MathText text={review.instructions} /> : <RichText text={review.instructions} />}</div> : null}
+          {review.instructions ? <div className="eesh-review-instructions" lang={mongolian ? "mn" : "en"}>{math ? <MathText text={review.instructions} /> : <RichText text={review.instructions} />}</div> : null}
           {review.context ? <details className="eesh-review-passage" open={review.context.length < 400}><summary>{review.contextTitle ?? "Өгөгдөл"}</summary><p lang="en"><RichText text={review.context} /></p></details> : null}
-          {review.prompt ? <p className="eesh-review-prompt" lang={math ? "mn" : "en"}>{math ? <MathText text={review.prompt} /> : <RichText text={review.prompt} />}</p> : null}
+          {review.prompt ? <p className="eesh-review-prompt" lang={mongolian ? "mn" : "en"}>{math ? <MathText text={review.prompt} /> : <RichText text={review.prompt} />}</p> : null}
           {review.figure ? <ExamFigureView figure={review.figure} /> : null}
           {review.passage ? <details className="eesh-review-passage"><summary>Эх текст</summary><p lang="en"><RichText text={review.passage} /></p></details> : null}
           <dl className="eesh-review-answers">
             <div><dt>Таны хариу</dt><dd>{review.selected ? math ? <MathFormula text={review.selected} /> : <RichText text={review.selected} /> : "Хариулаагүй"}</dd></div>
             <div><dt>Зөв хариу</dt><dd>{math ? <MathFormula text={review.answer} /> : <RichText text={review.answer} />}</dd></div>
           </dl>
-          {review.explanation ? <p className="eesh-explanation" lang={math ? "mn" : "en"}>{math ? <MathText text={review.explanation} /> : <RichText text={review.explanation} />}</p> : null}
+          {review.explanation ? <p className="eesh-explanation" lang={mongolian ? "mn" : "en"}>{math ? <MathText text={review.explanation} /> : <RichText text={review.explanation} />}</p> : null}
         </div>
       </details>)}
     </div>

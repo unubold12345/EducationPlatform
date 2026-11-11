@@ -1,0 +1,439 @@
+{
+  "form": 12,
+  "part": 3,
+  "file": "mock-12/audio/part-3.mp3",
+  "sha256": "2507f54faf13dd6349ac39df3b86404a8362386a2bb26a12572cb23c4fd950bd",
+  "bytes": 3536008,
+  "seconds": 353.514667,
+  "pcmSeconds": 353.5147,
+  "sourceScriptSha256": "0782ada47785ee3855a6e79227a5cb8427ec475cb4a3bd1326670019ef94769c",
+  "fingerprint": "8fcc820dce0880dfef338eaaade1f82a9ef8daf381e8e1a7f210e2076ca6051a",
+  "roles": {
+    "Tutor": "bf_emma",
+    "Alice": "bf_isabella",
+    "Jamal": "am_michael"
+  },
+  "settings": {
+    "speed": 1.0,
+    "sampleRate": 24000,
+    "turnGapSeconds": 0.4,
+    "previewSeconds": 60,
+    "midpointSeconds": 30,
+    "partCheckSeconds": 30,
+    "finalCheckSeconds": 120,
+    "narrator": "bf_emma",
+    "bitrate": "80k",
+    "revision": 1
+  },
+  "modelSha256": {
+    "kokoro-v1.0.onnx": "7d5df8ecf7d4b1878015a32686053fd0eebe2bc377234608764cc0ef3636a6c5",
+    "voices-v1.0.bin": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+  },
+  "packages": {
+    "kokoro-onnx": "0.6.1",
+    "onnxruntime": "1.31.1",
+    "numpy": "2.5.4"
+  },
+  "gain": 0.7529209631072958,
+  "segments": [
+    {
+      "kind": "narration",
+      "start": 0.0,
+      "seconds": 5.7813,
+      "voice": "bf_emma",
+      "spokenText": "Part 3. Comparing two audio guides. You now have one minute to read questions 21 to 30."
+    },
+    {
+      "kind": "pause",
+      "start": 5.7813,
+      "seconds": 60.0,
+      "purpose": "preview"
+    },
+    {
+      "kind": "speech",
+      "start": 65.7813,
+      "seconds": 4.16,
+      "voice": "bf_emma",
+      "spokenText": "I understand you're comparing audio guides at the gallery. What is the question?",
+      "role": "Tutor",
+      "sourceText": "I understand you’re comparing audio guides at the gallery. What is the question?"
+    },
+    {
+      "kind": "pause",
+      "start": 69.9413,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 70.3413,
+      "seconds": 10.8587,
+      "voice": "bf_isabella",
+      "spokenText": "Whether a guide told as a short story changes what visitors remember compared with a factual list. We don't want to assume that a story is necessarily better, just because we find it more entertaining.",
+      "role": "Alice",
+      "sourceText": "Whether a guide told as a short story changes what visitors remember compared with a factual list. We don’t want to assume that a story is necessarily better, just because we find it more entertaining."
+    },
+    {
+      "kind": "pause",
+      "start": 81.2,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 81.6,
+      "seconds": 8.4267,
+      "voice": "am_michael",
+      "spokenText": "Both versions will cover the same three paintings. We need to keep the information content comparable, though the organisation will differ.",
+      "role": "Jamal",
+      "sourceText": "Both versions will cover the same three paintings. We need to keep the information content comparable, though the organisation will differ."
+    },
+    {
+      "kind": "pause",
+      "start": 90.0267,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 90.4267,
+      "seconds": 4.992,
+      "voice": "bf_emma",
+      "spokenText": "And length? A longer guide could produce more recall simply because it includes more exposure.",
+      "role": "Tutor",
+      "sourceText": "And length? A longer guide could produce more recall simply because it includes more exposure."
+    },
+    {
+      "kind": "pause",
+      "start": 95.4187,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 95.8187,
+      "seconds": 9.5147,
+      "voice": "bf_isabella",
+      "spokenText": "We've edited both to about four minutes, read by the same speaker at the same pace. We first used two voices, but that would introduce another difference, so we've removed it.",
+      "role": "Alice",
+      "sourceText": "We’ve edited both to about four minutes, read by the same speaker at the same pace. We first used two voices, but that would introduce another difference, so we’ve removed it."
+    },
+    {
+      "kind": "pause",
+      "start": 105.3333,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 105.7333,
+      "seconds": 10.3893,
+      "voice": "am_michael",
+      "spokenText": "We also need to avoid people hearing both versions and recognising repeated facts. We plan separate visitor groups rather than having everyone listen twice.",
+      "role": "Jamal",
+      "sourceText": "We also need to avoid people hearing both versions and recognising repeated facts. We plan separate visitor groups rather than having everyone listen twice."
+    },
+    {
+      "kind": "pause",
+      "start": 116.1227,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 116.5227,
+      "seconds": 1.3653,
+      "voice": "bf_emma",
+      "spokenText": "How will you assign them?",
+      "role": "Tutor",
+      "sourceText": "How will you assign them?"
+    },
+    {
+      "kind": "pause",
+      "start": 117.888,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 118.288,
+      "seconds": 9.984,
+      "voice": "bf_isabella",
+      "spokenText": "We'll use a pre-set random list, not let people choose story or list. Otherwise people with different interests might select the version they expect to like, and the groups would already differ.",
+      "role": "Alice",
+      "sourceText": "We’ll use a pre-set random list, not let people choose story or list. Otherwise people with different interests might select the version they expect to like, and the groups would already differ."
+    },
+    {
+      "kind": "pause",
+      "start": 128.272,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 128.672,
+      "seconds": 9.664,
+      "voice": "am_michael",
+      "spokenText": "The invitation will say it's a study of guide formats, without calling one the creative version. We shouldn't encourage a preference before anyone has heard it.",
+      "role": "Jamal",
+      "sourceText": "The invitation will say it’s a study of guide formats, without calling one the creative version. We shouldn’t encourage a preference before anyone has heard it."
+    },
+    {
+      "kind": "pause",
+      "start": 138.336,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 138.736,
+      "seconds": 1.664,
+      "voice": "bf_emma",
+      "spokenText": "Good. How will you assess memory?",
+      "role": "Tutor",
+      "sourceText": "Good. How will you assess memory?"
+    },
+    {
+      "kind": "pause",
+      "start": 140.4,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 140.8,
+      "seconds": 10.752,
+      "voice": "bf_isabella",
+      "spokenText": "With a short set of questions after the visit. Some ask for facts from the guide, and one asks visitors to connect a painting with an explanation. We're not measuring everything they learn in the gallery.",
+      "role": "Alice",
+      "sourceText": "With a short set of questions after the visit. Some ask for facts from the guide, and one asks visitors to connect a painting with an explanation. We’re not measuring everything they learn in the gallery."
+    },
+    {
+      "kind": "pause",
+      "start": 151.552,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 151.952,
+      "seconds": 8.7893,
+      "voice": "am_michael",
+      "spokenText": "We should ask about prior familiarity too. Someone who knew a painting already might answer correctly without relying on either guide.",
+      "role": "Jamal",
+      "sourceText": "We should ask about prior familiarity too. Someone who knew a painting already might answer correctly without relying on either guide."
+    },
+    {
+      "kind": "pause",
+      "start": 160.7413,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 161.1413,
+      "seconds": 11.9253,
+      "voice": "bf_emma",
+      "spokenText": "Yes. Record that and explain how you use it in analysis. Be careful not to discard knowledgeable visitors after seeing which condition they were in. Your inclusion rules should be defined before collecting results.",
+      "role": "Tutor",
+      "sourceText": "Yes. Record that and explain how you use it in analysis. Be careful not to discard knowledgeable visitors after seeing which condition they were in. Your inclusion rules should be defined before collecting results."
+    },
+    {
+      "kind": "pause",
+      "start": 173.0667,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "narration",
+      "start": 173.4667,
+      "seconds": 2.496,
+      "voice": "bf_emma",
+      "spokenText": "Now look at questions 26 to 30."
+    },
+    {
+      "kind": "pause",
+      "start": 175.9627,
+      "seconds": 30.0,
+      "purpose": "midpoint"
+    },
+    {
+      "kind": "speech",
+      "start": 205.9627,
+      "seconds": 9.8347,
+      "voice": "bf_isabella",
+      "spokenText": "For the practical tasks, the audio files are edited but need a listening trial on the actual devices. They sound clear on our laptops, but we haven't checked the gallery headsets.",
+      "role": "Alice",
+      "sourceText": "For the practical tasks, the audio files are edited but need a listening trial on the actual devices. They sound clear on our laptops, but we haven’t checked the gallery headsets."
+    },
+    {
+      "kind": "pause",
+      "start": 215.7973,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 216.1973,
+      "seconds": 9.8773,
+      "voice": "am_michael",
+      "spokenText": "We can pilot those tomorrow. The memory questions need tutor approval. We've drafted them, but we'd like you to check that none gives away an answer to another.",
+      "role": "Jamal",
+      "sourceText": "We can pilot those tomorrow. The memory questions need tutor approval. We’ve drafted them, but we’d like you to check that none gives away an answer to another."
+    },
+    {
+      "kind": "pause",
+      "start": 226.0747,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 226.4747,
+      "seconds": 11.4133,
+      "voice": "bf_emma",
+      "spokenText": "Send them today. I can review the content, but the pilot should also test how long the questionnaire takes. A theoretically good question can still be confusing to a tired visitor standing near the exit.",
+      "role": "Tutor",
+      "sourceText": "Send them today. I can review the content, but the pilot should also test how long the questionnaire takes. A theoretically good question can still be confusing to a tired visitor standing near the exit."
+    },
+    {
+      "kind": "pause",
+      "start": 237.888,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 238.288,
+      "seconds": 7.9147,
+      "voice": "bf_isabella",
+      "spokenText": "The gallery permission is complete. The education officer sent the signed approval this morning, including the times when we can approach visitors.",
+      "role": "Alice",
+      "sourceText": "The gallery permission is complete. The education officer sent the signed approval this morning, including the times when we can approach visitors."
+    },
+    {
+      "kind": "pause",
+      "start": 246.2027,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 246.6027,
+      "seconds": 12.8,
+      "voice": "am_michael",
+      "spokenText": "We originally included a question asking visitors to rate the café. It's unrelated and comes from a template we borrowed, so we're going to delete it rather than collect information with no clear use.",
+      "role": "Jamal",
+      "sourceText": "We originally included a question asking visitors to rate the café. It’s unrelated and comes from a template we borrowed, so we’re going to delete it rather than collect information with no clear use."
+    },
+    {
+      "kind": "pause",
+      "start": 259.4027,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 259.8027,
+      "seconds": 5.0133,
+      "voice": "bf_emma",
+      "spokenText": "Good. A template is a starting point, not authority to ask every question printed on it.",
+      "role": "Tutor",
+      "sourceText": "Good. A template is a starting point, not authority to ask every question printed on it."
+    },
+    {
+      "kind": "pause",
+      "start": 264.816,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 265.216,
+      "seconds": 11.6907,
+      "voice": "bf_isabella",
+      "spokenText": "The final comparison chart will wait until we have data. We know the variables, but if scores cluster near the maximum we may need a display that shows that clearly, not just two broad average bars.",
+      "role": "Alice",
+      "sourceText": "The final comparison chart will wait until we have data. We know the variables, but if scores cluster near the maximum we may need a display that shows that clearly, not just two broad average bars."
+    },
+    {
+      "kind": "pause",
+      "start": 276.9067,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 277.3067,
+      "seconds": 9.7707,
+      "voice": "am_michael",
+      "spokenText": "We'll decide the presentation after looking at the distribution, and explain the choice. We won't change the research question to make the chart more exciting.",
+      "role": "Jamal",
+      "sourceText": "We’ll decide the presentation after looking at the distribution, and explain the choice. We won’t change the research question to make the chart more exciting."
+    },
+    {
+      "kind": "pause",
+      "start": 287.0773,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 287.4773,
+      "seconds": 11.264,
+      "voice": "bf_emma",
+      "spokenText": "That's the right distinction. Analysis needs a plan, while presentation should remain responsive to the data's shape. Keep records of decisions so a reader can follow the route from question to conclusion.",
+      "role": "Tutor",
+      "sourceText": "That’s the right distinction. Analysis needs a plan, while presentation should remain responsive to the data’s shape. Keep records of decisions so a reader can follow the route from question to conclusion."
+    },
+    {
+      "kind": "pause",
+      "start": 298.7413,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 299.1413,
+      "seconds": 12.0747,
+      "voice": "bf_isabella",
+      "spokenText": "The gallery hopes the story version will work well because it is considering a larger production. We'll make clear that our small study can inform that decision but cannot guarantee the same effect for every painting or visitor.",
+      "role": "Alice",
+      "sourceText": "The gallery hopes the story version will work well because it is considering a larger production. We’ll make clear that our small study can inform that decision but cannot guarantee the same effect for every painting or visitor."
+    },
+    {
+      "kind": "pause",
+      "start": 311.216,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 311.616,
+      "seconds": 7.2747,
+      "voice": "bf_emma",
+      "spokenText": "Exactly. Useful evidence is not the same as a universal promise, and an honest limitation need not make the project unhelpful.",
+      "role": "Tutor",
+      "sourceText": "Exactly. Useful evidence is not the same as a universal promise, and an honest limitation need not make the project unhelpful."
+    },
+    {
+      "kind": "pause",
+      "start": 318.8907,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "narration",
+      "start": 319.2907,
+      "seconds": 4.224,
+      "voice": "bf_emma",
+      "spokenText": "That is the end of part 3. You now have thirty seconds to check your answers."
+    },
+    {
+      "kind": "pause",
+      "start": 323.5147,
+      "seconds": 30.0,
+      "purpose": "checking"
+    }
+  ]
+}

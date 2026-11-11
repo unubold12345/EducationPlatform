@@ -1,0 +1,378 @@
+{
+  "form": 7,
+  "part": 3,
+  "file": "mock-07/audio/part-3.mp3",
+  "sha256": "131e3b3ffd502ded19f2125da17fc219d74020b8bf145aaa95988371f515931f",
+  "bytes": 3707608,
+  "seconds": 370.666667,
+  "pcmSeconds": 370.6667,
+  "sourceScriptSha256": "2543425a2ed7faea1b7df8919de90225c92ea9c08019c08f2f7282152a261d40",
+  "fingerprint": "d5033fee9c575d562f90c7f3b19cc5ad53e2a74537b2c72250ec0837b5571c3e",
+  "roles": {
+    "Maya": "bf_isabella",
+    "Leo": "am_michael"
+  },
+  "settings": {
+    "speed": 1.0,
+    "sampleRate": 24000,
+    "turnGapSeconds": 0.4,
+    "previewSeconds": 60,
+    "midpointSeconds": 30,
+    "partCheckSeconds": 30,
+    "finalCheckSeconds": 120,
+    "narrator": "bf_emma",
+    "bitrate": "80k",
+    "revision": 1
+  },
+  "modelSha256": {
+    "kokoro-v1.0.onnx": "7d5df8ecf7d4b1878015a32686053fd0eebe2bc377234608764cc0ef3636a6c5",
+    "voices-v1.0.bin": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+  },
+  "packages": {
+    "kokoro-onnx": "0.6.1",
+    "onnxruntime": "1.31.1",
+    "numpy": "2.5.4"
+  },
+  "gain": 0.7842786209507554,
+  "segments": [
+    {
+      "kind": "narration",
+      "start": 0.0,
+      "seconds": 5.9947,
+      "voice": "bf_emma",
+      "spokenText": "Part 3. Planning a study of queue information. You now have one minute to read questions 21 to 30."
+    },
+    {
+      "kind": "pause",
+      "start": 5.9947,
+      "seconds": 60.0,
+      "purpose": "preview"
+    },
+    {
+      "kind": "speech",
+      "start": 65.9947,
+      "seconds": 10.9227,
+      "voice": "bf_isabella",
+      "spokenText": "We need to narrow our project before the methods seminar. I liked the idea of studying queues in the campus café, but counting how long people wait sounds like something the manager could do without us.",
+      "role": "Maya",
+      "sourceText": "We need to narrow our project before the methods seminar. I liked the idea of studying queues in the campus café, but counting how long people wait sounds like something the manager could do without us."
+    },
+    {
+      "kind": "pause",
+      "start": 76.9173,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 77.3173,
+      "seconds": 14.4,
+      "voice": "am_michael",
+      "spokenText": "The tutor's comment was that our original question was too broad. We were trying to measure satisfaction, purchasing and staff performance all at once. Why don't we focus on whether information changes people's experience of waiting?",
+      "role": "Leo",
+      "sourceText": "The tutor’s comment was that our original question was too broad. We were trying to measure satisfaction, purchasing and staff performance all at once. Why don’t we focus on whether information changes people’s experience of waiting?"
+    },
+    {
+      "kind": "pause",
+      "start": 91.7173,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 92.1173,
+      "seconds": 8.32,
+      "voice": "bf_isabella",
+      "spokenText": "Like displaying an estimated wait? We shouldn't promise that information always makes people happier. If the estimate is wrong, it could make things worse.",
+      "role": "Maya",
+      "sourceText": "Like displaying an estimated wait? We shouldn’t promise that information always makes people happier. If the estimate is wrong, it could make things worse."
+    },
+    {
+      "kind": "pause",
+      "start": 100.4373,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 100.8373,
+      "seconds": 12.2453,
+      "voice": "am_michael",
+      "spokenText": "Exactly. We could compare a simple expected-wait sign with the ordinary queue. But I don't think asking people to recall the time afterwards gives us a reliable actual duration.",
+      "role": "Leo",
+      "sourceText": "Exactly. We could compare a simple expected-wait sign with the ordinary queue. But I don’t think asking people to recall the time afterwards gives us a reliable actual duration."
+    },
+    {
+      "kind": "pause",
+      "start": 113.0827,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 113.4827,
+      "seconds": 10.3893,
+      "voice": "bf_isabella",
+      "spokenText": "Let's have an observer note arrival and service times. Then the questionnaire can ask about perceived waiting, which is a different thing. That distinction might be the useful part of the project.",
+      "role": "Maya",
+      "sourceText": "Let’s have an observer note arrival and service times. Then the questionnaire can ask about perceived waiting, which is a different thing. That distinction might be the useful part of the project."
+    },
+    {
+      "kind": "pause",
+      "start": 123.872,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 124.272,
+      "seconds": 14.784,
+      "voice": "am_michael",
+      "spokenText": "We also need comparable periods. Monday lunchtime and Friday afternoon would differ for too many reasons. The manager says the same lunch menu is served on Tuesday and Thursday, and the usual staffing level is the same.",
+      "role": "Leo",
+      "sourceText": "We also need comparable periods. Monday lunchtime and Friday afternoon would differ for too many reasons. The manager says the same lunch menu is served on Tuesday and Thursday, and the usual staffing level is the same."
+    },
+    {
+      "kind": "pause",
+      "start": 139.056,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 139.456,
+      "seconds": 10.8587,
+      "voice": "bf_isabella",
+      "spokenText": "That's better, though a club event could still change the crowd. We should log unusual events rather than assuming two days are identical. Maybe use several weeks so that one odd day doesn't dominate.",
+      "role": "Maya",
+      "sourceText": "That’s better, though a club event could still change the crowd. We should log unusual events rather than assuming two days are identical. Maybe use several weeks so that one odd day doesn’t dominate."
+    },
+    {
+      "kind": "pause",
+      "start": 150.3147,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 150.7147,
+      "seconds": 7.3173,
+      "voice": "am_michael",
+      "spokenText": "How do we decide who sees the sign? We can't put it up for one person and hide it from the next if they're standing together.",
+      "role": "Leo",
+      "sourceText": "How do we decide who sees the sign? We can’t put it up for one person and hide it from the next if they’re standing together."
+    },
+    {
+      "kind": "pause",
+      "start": 158.032,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 158.432,
+      "seconds": 11.392,
+      "voice": "bf_isabella",
+      "spokenText": "No. Use whole time blocks, alternating the order across days. Otherwise the sign condition would always be later, when perhaps people are less rushed. We need the schedule written before we see any results.",
+      "role": "Maya",
+      "sourceText": "No. Use whole time blocks, alternating the order across days. Otherwise the sign condition would always be later, when perhaps people are less rushed. We need the schedule written before we see any results."
+    },
+    {
+      "kind": "pause",
+      "start": 169.824,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 170.224,
+      "seconds": 13.44,
+      "voice": "am_michael",
+      "spokenText": "And the questionnaire must be optional. People are trying to buy lunch, not volunteering for a long interview. A brief invitation after they've been served would interfere less than asking while they're choosing food.",
+      "role": "Leo",
+      "sourceText": "And the questionnaire must be optional. People are trying to buy lunch, not volunteering for a long interview. A brief invitation after they’ve been served would interfere less than asking while they’re choosing food."
+    },
+    {
+      "kind": "pause",
+      "start": 183.664,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "narration",
+      "start": 184.064,
+      "seconds": 2.496,
+      "voice": "bf_emma",
+      "spokenText": "Now look at questions 26 to 30."
+    },
+    {
+      "kind": "pause",
+      "start": 186.56,
+      "seconds": 30.0,
+      "purpose": "midpoint"
+    },
+    {
+      "kind": "speech",
+      "start": 216.56,
+      "seconds": 9.7707,
+      "voice": "bf_isabella",
+      "spokenText": "Let's allocate the preparation. First, the consent notice. I can draft it, but the tutor needs to check the wording. It's not ready for customers until we have that approval.",
+      "role": "Maya",
+      "sourceText": "Let’s allocate the preparation. First, the consent notice. I can draft it, but the tutor needs to check the wording. It’s not ready for customers until we have that approval."
+    },
+    {
+      "kind": "pause",
+      "start": 226.3307,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 226.7307,
+      "seconds": 14.2933,
+      "voice": "am_michael",
+      "spokenText": "Agreed. The manager's permission is already sorted. She signed the email yesterday, including the observation positions. We'll put that in the project folder as completed rather than spend another meeting rewriting it.",
+      "role": "Leo",
+      "sourceText": "Agreed. The manager’s permission is already sorted. She signed the email yesterday, including the observation positions. We’ll put that in the project folder as completed rather than spend another meeting rewriting it."
+    },
+    {
+      "kind": "pause",
+      "start": 241.024,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 241.424,
+      "seconds": 9.024,
+      "voice": "bf_isabella",
+      "spokenText": "What about the timing sheet? We've designed columns, but we haven't tried using it while several people arrive together. That's the thing we should pilot before the main collection.",
+      "role": "Maya",
+      "sourceText": "What about the timing sheet? We’ve designed columns, but we haven’t tried using it while several people arrive together. That’s the thing we should pilot before the main collection."
+    },
+    {
+      "kind": "pause",
+      "start": 250.448,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 250.848,
+      "seconds": 12.0533,
+      "voice": "am_michael",
+      "spokenText": "Yes. We can practise during a quiet half-hour with volunteers, without treating those entries as study data. If we can't keep track, the form needs changing, not the customers.",
+      "role": "Leo",
+      "sourceText": "Yes. We can practise during a quiet half-hour with volunteers, without treating those entries as study data. If we can’t keep track, the form needs changing, not the customers."
+    },
+    {
+      "kind": "pause",
+      "start": 262.9013,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 263.3013,
+      "seconds": 10.432,
+      "voice": "bf_isabella",
+      "spokenText": "The question about how much money people spend seems unnecessary now. It belonged to the earlier project, and collecting it would make the survey longer without answering our revised question.",
+      "role": "Maya",
+      "sourceText": "The question about how much money people spend seems unnecessary now. It belonged to the earlier project, and collecting it would make the survey longer without answering our revised question."
+    },
+    {
+      "kind": "pause",
+      "start": 273.7333,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 274.1333,
+      "seconds": 12.864,
+      "voice": "am_michael",
+      "spokenText": "Let's remove it. We don't need personal spending information merely because it might be interesting later. The fewer irrelevant details we ask for, the easier it is to explain the purpose honestly.",
+      "role": "Leo",
+      "sourceText": "Let’s remove it. We don’t need personal spending information merely because it might be interesting later. The fewer irrelevant details we ask for, the easier it is to explain the purpose honestly."
+    },
+    {
+      "kind": "pause",
+      "start": 286.9973,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 287.3973,
+      "seconds": 12.1387,
+      "voice": "bf_isabella",
+      "spokenText": "We also need a final chart. I started choosing colours, then realised we don't know the distribution of the data. We could decide what variables belong on it, but should leave the exact display until after collection.",
+      "role": "Maya",
+      "sourceText": "We also need a final chart. I started choosing colours, then realised we don’t know the distribution of the data. We could decide what variables belong on it, but should leave the exact display until after collection."
+    },
+    {
+      "kind": "pause",
+      "start": 299.536,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 299.936,
+      "seconds": 11.5627,
+      "voice": "am_michael",
+      "spokenText": "Right. Averages might hide a few very long waits. We should show enough detail to make those visible, though we don't need to decide between every possible graph this afternoon.",
+      "role": "Leo",
+      "sourceText": "Right. Averages might hide a few very long waits. We should show enough detail to make those visible, though we don’t need to decide between every possible graph this afternoon."
+    },
+    {
+      "kind": "pause",
+      "start": 311.4987,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 311.8987,
+      "seconds": 10.3467,
+      "voice": "bf_isabella",
+      "spokenText": "I'm glad we narrowed it. The study won't tell the manager how to redesign the whole café, but it could show whether estimated-wait information changes perceptions under these conditions.",
+      "role": "Maya",
+      "sourceText": "I’m glad we narrowed it. The study won’t tell the manager how to redesign the whole café, but it could show whether estimated-wait information changes perceptions under these conditions."
+    },
+    {
+      "kind": "pause",
+      "start": 322.2453,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 322.6453,
+      "seconds": 13.3973,
+      "voice": "am_michael",
+      "spokenText": "And if actual times differ between conditions, we'll report that rather than attribute every difference to the sign. A small honest study is more useful than a grand conclusion our design can't support.",
+      "role": "Leo",
+      "sourceText": "And if actual times differ between conditions, we’ll report that rather than attribute every difference to the sign. A small honest study is more useful than a grand conclusion our design can’t support."
+    },
+    {
+      "kind": "pause",
+      "start": 336.0427,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "narration",
+      "start": 336.4427,
+      "seconds": 4.224,
+      "voice": "bf_emma",
+      "spokenText": "That is the end of part 3. You now have thirty seconds to check your answers."
+    },
+    {
+      "kind": "pause",
+      "start": 340.6667,
+      "seconds": 30.0,
+      "purpose": "checking"
+    }
+  ]
+}

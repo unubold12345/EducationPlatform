@@ -1,5 +1,6 @@
 import { MOCK_PRICE_LABEL } from "./pricing.ts";
 import type { ExamDefinition, ExamStage } from "./types.ts";
+import { entranceSubjectLabels, subjectFromSlug } from "./entrance/subjects.ts";
 
 export type BriefingFact = { label: string; value: string };
 
@@ -60,9 +61,9 @@ export function mockBriefingSummary(exam: ExamDefinition): MockBriefingSummary {
     const questions = exam.stages.flatMap(stage => stage.questions);
     const choices = questions.filter(question => question.kind === "choice").length;
     const tasks = exam.stages.flatMap(stage => stage.groups ?? []).filter(group => group.pageMode === "group").length;
-    const subject = exam.subject ?? (exam.slug.startsWith("eesh-math") ? "math" : exam.slug.startsWith("eesh-physics") ? "physics" : "english");
-    const label = subject === "math" ? "МАТЕМАТИК" : subject === "physics" ? "ФИЗИК" : "АНГЛИ ХЭЛ";
-    const structure = subject === "english" ? "Part I + Part II" : `${choices} сонгох + ${tasks} бодолт`;
+    const subject = exam.subject ?? subjectFromSlug(exam.slug) ?? "math";
+    const label = entranceSubjectLabels[subject].toUpperCase();
+    const structure = subject === "english" ? "Part I + Part II" : `${choices} сонгох + ${tasks} ${subject === "math" || subject === "physics" ? "бодолт" : "бүтээх"}`;
     return {
       eyebrow: `ЭЕШ · ${label} · MOCK`,
       chips: [`${questions.length} хариулт`, structure, `${formatExamDuration(totalSeconds)}`, `${exam.points ?? 100} оноо`],

@@ -7,10 +7,11 @@ import {requireSpeakingLab,reserveSpeakingRequest,serialized} from "./service";
 const MAX_SAMPLES=24000*70;
 
 // Streams one framed WAV per sentence so playback starts after the first sentence, not the whole reply.
-export async function speakingVoiceStream(userId:string,input:unknown):Promise<ReadableStream<Uint8Array>> {
+// `allow` is the access check: the Lab's own (no open timed sitting) by default, or the mock examiner's live-stage check.
+export async function speakingVoiceStream(userId:string,input:unknown,allow:(userId:string)=>Promise<void>=requireSpeakingLab):Promise<ReadableStream<Uint8Array>> {
  if(!validVoiceInput(input))throw new ApiError(400,"Дууны хүсэлтийн бүтэц буруу байна.");
  const chunks=speechChunks(input.text);if(!chunks.length)throw new ApiError(400,"Дуудах текст хоосон байна.");
- await requireSpeakingLab(userId);
+ await allow(userId);
  await reserveSpeakingRequest(userId,"voice");
  const tts=await voiceModel().catch(error=>{console.error("Speaking voice load failed",error instanceof Error?error.name:"Unknown");throw new ApiError(503,"Байгалийн дууг ачаалж чадсангүй. Төхөөрөмжийн дууг сонгоно уу.");});
  let cancelled=false,index=0,samples=0;

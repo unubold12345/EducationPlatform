@@ -6,7 +6,7 @@ import { notFound } from "next/navigation";
 import { programs, findProgram } from "@/modules/programs/catalog";
 import { getWorkshop } from "@/modules/content/published";
 import { examDefinitions } from "@/modules/exams/definitions";
-import { entranceCounts, entranceSubjectHrefs, entranceSubjectLabels, entranceTotal } from "@/modules/exams/entrance/catalog";
+import { ENTRANCE_SUBJECT_ORDER, entranceCounts, entranceSubjectFormats, entranceSubjectHrefs, entranceSubjectLabels, entranceTotal, entranceYears } from "@/modules/exams/entrance/catalog";
 import { SpeakingInvitation } from "@/components/speaking-invitation";
 import { guidedTasks } from "@/modules/workshops/guided";
 
@@ -98,10 +98,10 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
         <p>{mockCount} mock</p>
       </div>
       <div className="program-official-grid">
-        {(["math", "physics", "english"] as const).map(subject => <Link key={subject} className="program-official-card" href={entranceSubjectHrefs[subject]}>
+        {ENTRANCE_SUBJECT_ORDER.map(subject => <Link key={subject} className="program-official-card" href={entranceSubjectHrefs[subject]}>
           <span className="eyebrow">{entranceSubjectLabels[subject].toUpperCase()}</span>
-          <strong>{entranceCounts()[subject]} mock · 2015–2026 оны жишиг бүтэц</strong>
-          <span>{subject === "english" ? "Part I сонголт, Part II холболт, нөхөлт. 80 минут." : "A–E сонголт, бичих бодолт. 100 минут."} Цагтай шалгалт, оноотой үр дүн, AI туслахтай дадлагын горим.</span>
+          <strong>{entranceCounts()[subject]} mock · {Math.min(...entranceYears(subject))}–{Math.max(...entranceYears(subject))} оны жишиг бүтэц</strong>
+          <span>{entranceSubjectFormats[subject]}. Цагтай шалгалт, оноотой үр дүн, AI туслахтай дадлагын горим.</span>
           <span className="text-link">Шалгалтууд үзэх <span aria-hidden="true">→</span></span>
         </Link>)}
       </div>

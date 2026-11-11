@@ -11,12 +11,13 @@ import { createExamState,stageFor,expireStages,editExam,validateExamEdit,makeRep
 const papers=[2,3,4,5,6];
 const slug=(program,n)=>`${program==='sat'?'sat-full':'ielts-academic'}-${String(n).padStart(2,'0')}`;
 
-test("six distinct full mocks per program preserve existing slugs and timing",()=>{
+test("SAT keeps six forms and IELTS twelve; Mocks 02–06 preserve existing slugs and timing",()=>{
   // The ten ЭЕШ mocks (program "entrance") are tested in entrance-mocks.test.mjs.
-  assert.equal(examDefinitions.filter(e=>e.program!=="entrance").length,12);
+  assert.equal(examDefinitions.filter(e=>e.program==="sat"||e.program==="ielts").length,18);
   assert.equal(new Set(examDefinitions.map(e=>e.slug)).size,examDefinitions.length);
   for(const program of ['sat','ielts']){
-    assert.equal(examDefinitions.filter(e=>e.program===program).length,6);
+    // IELTS 07–12 come from the offline pack and are covered by ielts-forms.test.mjs.
+    assert.equal(examDefinitions.filter(e=>e.program===program).length,program==='sat'?6:12);
     const original=findExam(slug(program,1));
     for(const n of papers){
       const exam=findExam(slug(program,n));assert.ok(exam);assert.equal(exam.version,program==='ielts'?2:1);
@@ -121,6 +122,6 @@ test("new Listening recordings match their own scripts, file hashes and fit the 
   }
   assert.equal(hashes.size,20);
   assert.equal(listeningFile('ielts-academic-01',1),'ielts-01-part-1.mp3');
-  for(const s of ['../ielts-academic-02','sat-full-02','ielts-academic-07','__proto__','ielts-academic-02/..'])assert.equal(listeningFile(s,1),undefined);
+  for(const s of ['../ielts-academic-02','sat-full-02','ielts-academic-13','__proto__','ielts-academic-02/..'])assert.equal(listeningFile(s,1),undefined);
   for(const n of [0,5,1.5,NaN])assert.equal(listeningFile('ielts-academic-02',n),undefined);
 });

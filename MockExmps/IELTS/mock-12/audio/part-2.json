@@ -1,0 +1,242 @@
+{
+  "form": 12,
+  "part": 2,
+  "file": "mock-12/audio/part-2.mp3",
+  "sha256": "8a6642e87a9a2fe8abb46e6d981b6f455aa5857f5e89d24b0a0cc8058a68a7a9",
+  "bytes": 3752248,
+  "seconds": 375.130667,
+  "pcmSeconds": 375.1307,
+  "sourceScriptSha256": "b408c658185827bb27e564544940b4c2a143f82a57395f34f224ee4e18ea75d0",
+  "fingerprint": "a1c6224c85b2971881015c4102818c80e19cc83567ba5ffc4d3f0fa5cd597e16",
+  "roles": {
+    "Coordinator": "bm_george"
+  },
+  "settings": {
+    "speed": 1.0,
+    "sampleRate": 24000,
+    "turnGapSeconds": 0.4,
+    "previewSeconds": 60,
+    "midpointSeconds": 30,
+    "partCheckSeconds": 30,
+    "finalCheckSeconds": 120,
+    "narrator": "bf_emma",
+    "bitrate": "80k",
+    "revision": 1
+  },
+  "modelSha256": {
+    "kokoro-v1.0.onnx": "7d5df8ecf7d4b1878015a32686053fd0eebe2bc377234608764cc0ef3636a6c5",
+    "voices-v1.0.bin": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+  },
+  "packages": {
+    "kokoro-onnx": "0.6.1",
+    "onnxruntime": "1.31.1",
+    "numpy": "2.5.4"
+  },
+  "gain": 1.0,
+  "segments": [
+    {
+      "kind": "narration",
+      "start": 0.0,
+      "seconds": 6.1867,
+      "voice": "bf_emma",
+      "spokenText": "Part 2. An induction for citizen weather observers. You now have one minute to read questions 11 to 20."
+    },
+    {
+      "kind": "pause",
+      "start": 6.1867,
+      "seconds": 60.0,
+      "purpose": "preview"
+    },
+    {
+      "kind": "speech",
+      "start": 66.1867,
+      "seconds": 31.3387,
+      "voice": "bm_george",
+      "spokenText": "Welcome to the weather-observation project. We are comparing conditions across different parts of the town, and your observations will complement the fixed station at the college. They won't replace it. A single official site gives a consistent long-term record, while a local network can reveal variation within the town. Please remember that a higher number of observations isn't useful if the method changes unpredictably from one person to another. Today's induction explains the details that need to remain consistent.",
+      "role": "Coordinator",
+      "sourceText": "Welcome to the weather-observation project. We are comparing conditions across different parts of the town, and your observations will complement the fixed station at the college. They won’t replace it. A single official site gives a consistent long-term record, while a local network can reveal variation within the town. Please remember that a higher number of observations isn’t useful if the method changes unpredictably from one person to another. Today’s induction explains the details that need to remain consistent."
+    },
+    {
+      "kind": "pause",
+      "start": 97.5253,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 97.9253,
+      "seconds": 24.8107,
+      "voice": "bm_george",
+      "spokenText": "First, equipment remains the property of the project. It is lent without charge, but please report a fault promptly instead of making an unrecorded replacement. Two instruments sold under the same broad description may behave differently. We can compare a replacement before it goes into use and mark the date of the change. Otherwise a difference caused by equipment might look like a sudden change in your neighbourhood's weather.",
+      "role": "Coordinator",
+      "sourceText": "First, equipment remains the property of the project. It is lent without charge, but please report a fault promptly instead of making an unrecorded replacement. Two instruments sold under the same broad description may behave differently. We can compare a replacement before it goes into use and mark the date of the change. Otherwise a difference caused by equipment might look like a sudden change in your neighbourhood’s weather."
+    },
+    {
+      "kind": "pause",
+      "start": 122.736,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 123.136,
+      "seconds": 23.7867,
+      "voice": "bm_george",
+      "spokenText": "Site selection comes next. Choose somewhere you can reach safely and repeatedly, but don't assume the easiest windowsill is suitable. Heat from a wall or an outlet can affect a reading. The project officer will visit to agree a position with you. If you later need to move an instrument, contact us first. A temporary building or growing hedge may matter even if the new spot is only a short distance away.",
+      "role": "Coordinator",
+      "sourceText": "Site selection comes next. Choose somewhere you can reach safely and repeatedly, but don’t assume the easiest windowsill is suitable. Heat from a wall or an outlet can affect a reading. The project officer will visit to agree a position with you. If you later need to move an instrument, contact us first. A temporary building or growing hedge may matter even if the new spot is only a short distance away."
+    },
+    {
+      "kind": "pause",
+      "start": 146.9227,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 147.3227,
+      "seconds": 24.256,
+      "voice": "bm_george",
+      "spokenText": "Please make the standard observation at the agreed time, not whenever you happen to remember. If you miss it, record the omission. Don't enter a plausible-looking number from a phone forecast to fill the gap. A visible missing value is more useful than a hidden mixture of observed and predicted data. You can add a note explaining the problem, which helps us distinguish a forgotten reading from equipment failure.",
+      "role": "Coordinator",
+      "sourceText": "Please make the standard observation at the agreed time, not whenever you happen to remember. If you miss it, record the omission. Don’t enter a plausible-looking number from a phone forecast to fill the gap. A visible missing value is more useful than a hidden mixture of observed and predicted data. You can add a note explaining the problem, which helps us distinguish a forgotten reading from equipment failure."
+    },
+    {
+      "kind": "pause",
+      "start": 171.5787,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 171.9787,
+      "seconds": 19.6907,
+      "voice": "bm_george",
+      "spokenText": "For severe conditions, your safety comes before a reading. Stay indoors if going out would be dangerous. Nobody should climb over a fallen branch to preserve a perfect attendance record. The analysis will account for missing observations, and the project is not a competition to collect data at any cost.",
+      "role": "Coordinator",
+      "sourceText": "For severe conditions, your safety comes before a reading. Stay indoors if going out would be dangerous. Nobody should climb over a fallen branch to preserve a perfect attendance record. The analysis will account for missing observations, and the project is not a competition to collect data at any cost."
+    },
+    {
+      "kind": "pause",
+      "start": 191.6693,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "narration",
+      "start": 192.0693,
+      "seconds": 2.4107,
+      "voice": "bf_emma",
+      "spokenText": "Now look at questions 16 to 20."
+    },
+    {
+      "kind": "pause",
+      "start": 194.48,
+      "seconds": 30.0,
+      "purpose": "midpoint"
+    },
+    {
+      "kind": "speech",
+      "start": 224.48,
+      "seconds": 20.2027,
+      "voice": "bm_george",
+      "spokenText": "There are five routine records to keep, each with a particular instruction. For the thermometer reading, wait until the instrument has settled after you approach. Don't hold it in your hand while reading, because your body can influence the result. The project guide explains the short waiting procedure, and it is the same for everyone.",
+      "role": "Coordinator",
+      "sourceText": "There are five routine records to keep, each with a particular instruction. For the thermometer reading, wait until the instrument has settled after you approach. Don’t hold it in your hand while reading, because your body can influence the result. The project guide explains the short waiting procedure, and it is the same for everyone."
+    },
+    {
+      "kind": "pause",
+      "start": 244.6827,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 245.0827,
+      "seconds": 18.176,
+      "voice": "bm_george",
+      "spokenText": "For rainfall, empty the collector after taking the daily reading. Otherwise yesterday's water can be counted again. If you've been away, note the longer collection period rather than dividing the total into invented daily values. We need to know what interval the measurement actually covers.",
+      "role": "Coordinator",
+      "sourceText": "For rainfall, empty the collector after taking the daily reading. Otherwise yesterday’s water can be counted again. If you’ve been away, note the longer collection period rather than dividing the total into invented daily values. We need to know what interval the measurement actually covers."
+    },
+    {
+      "kind": "pause",
+      "start": 263.2587,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 263.6587,
+      "seconds": 20.864,
+      "voice": "bm_george",
+      "spokenText": "For cloud observations, use the reference sheet. Its examples help distinguish the categories used in this project. You don't need to memorise a professional atlas. The aim is consistency in a limited set of observations, not to claim that every complicated sky can be described perfectly by one simple label.",
+      "role": "Coordinator",
+      "sourceText": "For cloud observations, use the reference sheet. Its examples help distinguish the categories used in this project. You don’t need to memorise a professional atlas. The aim is consistency in a limited set of observations, not to claim that every complicated sky can be described perfectly by one simple label."
+    },
+    {
+      "kind": "pause",
+      "start": 284.5227,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 284.9227,
+      "seconds": 17.088,
+      "voice": "bm_george",
+      "spokenText": "For wind direction, report the direction the wind comes from. This is easy to reverse if you focus on where a flag is pointing away from its support. Practise with the officer during the first visit, and ask if the local buildings make the indication unclear.",
+      "role": "Coordinator",
+      "sourceText": "For wind direction, report the direction the wind comes from. This is easy to reverse if you focus on where a flag is pointing away from its support. Practise with the officer during the first visit, and ask if the local buildings make the indication unclear."
+    },
+    {
+      "kind": "pause",
+      "start": 302.0107,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 302.4107,
+      "seconds": 20.3733,
+      "voice": "bm_george",
+      "spokenText": "Finally, for unusual events, add a photograph where it is safe and practical. A picture of ice or a flooded path can help interpret a short written note. Don't photograph identifiable neighbours without permission, and don't enter private land to improve a view. The photo is supporting evidence, not a reason to take a risk.",
+      "role": "Coordinator",
+      "sourceText": "Finally, for unusual events, add a photograph where it is safe and practical. A picture of ice or a flooded path can help interpret a short written note. Don’t photograph identifiable neighbours without permission, and don’t enter private land to improve a view. The photo is supporting evidence, not a reason to take a risk."
+    },
+    {
+      "kind": "pause",
+      "start": 322.784,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 323.184,
+      "seconds": 17.344,
+      "voice": "bm_george",
+      "spokenText": "You will receive a monthly summary showing how your record fits the network. Differences aren't automatically errors. Part of the purpose is to understand real local variation, while recording enough context to distinguish it from the effects of instruments and methods.",
+      "role": "Coordinator",
+      "sourceText": "You will receive a monthly summary showing how your record fits the network. Differences aren’t automatically errors. Part of the purpose is to understand real local variation, while recording enough context to distinguish it from the effects of instruments and methods."
+    },
+    {
+      "kind": "pause",
+      "start": 340.528,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "narration",
+      "start": 340.928,
+      "seconds": 4.2027,
+      "voice": "bf_emma",
+      "spokenText": "That is the end of part 2. You now have thirty seconds to check your answers."
+    },
+    {
+      "kind": "pause",
+      "start": 345.1307,
+      "seconds": 30.0,
+      "purpose": "checking"
+    }
+  ]
+}

@@ -3,10 +3,10 @@ import assert from "node:assert/strict";
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import {
   AI_ACTIONS, AI_ACTION_IDS, ALLOWANCE_KEYS, CREDIT_ALLOWANCE_LIMITS, CREDIT_COSTS, CREDIT_GRANT_LIMITS, CREDIT_PACK_LIMITS, CREDIT_USD, DEEPSEEK_PRICE,
-  DEFAULT_CREDIT_PACK, FREE_MONTHLY_CREDITS, READING_PRACTICE_RATE, UsageMeter, VOCABULARY_IMPORT_RATE, costNanoUsd, creditCost, creditPeriod, creditRange, creditRangeLabel,
+  DEFAULT_CREDIT_PACK, FREE_MONTHLY_CREDITS, MARGIN_ACTIONS, READING_PRACTICE_RATE, UsageMeter, VOCABULARY_IMPORT_PRICE, VOCABULARY_IMPORT_RATE, costNanoUsd, creditCost, creditPeriod, creditRange, creditRangeLabel,
   creditResetAt, creditValueMicroUsd, creditsForTokens,
   defaultAllowances, examCreditAction, formatCredits, formatUsd, isAiAction, isAllowanceKey, readReceipt,
-  readUsage, readingPracticeCredits, readingPracticeHold, speakingCreditAction, validAllowance, validCreditPack, validGrant, vocabularyImportCredits, vocabularyImportHold, writingCreditAction,
+  readUsage, readingPracticeCredits, readingPracticeHold, speakingCreditAction, validAllowance, validCreditPack, validGrant, vocabularyImportCostNano, vocabularyImportCredits, vocabularyImportHold, writingCreditAction,
 } from "../src/modules/credits/pricing.ts";
 import {
   allocateCredits, available, creditTotals, planTermCredits, returnParts, spendOrder, termMonthsStarted, totalsAfter,
@@ -27,14 +27,17 @@ test("credit prices follow the DeepSeek peak list price", () => {
     "chat": 5, "review-coach": 6, "practice-assistant": 5, "math-tutor": 3,
     "writing-ideas": 3, "writing-grammar": 5, "writing-feedback": 6,
     "speaking-turn": 3, "speaking-report": 9,
-    "vocabulary-import": 17, "exam-10": 13, "exam-20": 17, "reading-practice": 15,
+    "vocabulary-import": 47, "exam-10": 13, "exam-20": 17, "reading-practice": 15,
   });
+  assert.deepEqual(MARGIN_ACTIONS, ["vocabulary-import"]);
   for (const action of AI_ACTION_IDS) {
     const { inputTokens, outputTokens } = AI_ACTIONS[action];
     const usd = (inputTokens * DEEPSEEK_PRICE.inputCacheMiss + outputTokens * DEEPSEEK_PRICE.output) / 1e6;
     // The fixed charge always covers its whole token budget, and never by a full extra credit.
     assert.ok(creditCost(action) * CREDIT_USD >= usd - 1e-12, action);
-    assert.ok((creditCost(action) - 1) * CREDIT_USD < usd, action);
+    // An action sold with a margin costs at least twice its budget; every other action is priced at cost.
+    if (MARGIN_ACTIONS.includes(action)) assert.ok(creditCost(action) * CREDIT_USD >= 2 * usd, action);
+    else assert.ok((creditCost(action) - 1) * CREDIT_USD < usd, action);
     assert.ok(Number.isSafeInteger(creditCost(action)) && creditCost(action) > 0, action);
   }
 });
@@ -53,31 +56,46 @@ test("token costs use integer arithmetic and price cache hits lower", () => {
   assert.equal(costNanoUsd(-5, -5, -5), 0);
 });
 
-test("a vocabulary import is priced by the text read and the new words saved", () => {
+test("a vocabulary import is priced by the new words found, with a margin over its DeepSeek cost", () => {
   const { inputTokens, outputTokens } = AI_ACTIONS["vocabulary-import"];
-  // The rates fill the action's token budget, so its listed price is the most one import can cost.
+  // The cost model fills the action's token budget: a full-length document and the most words.
   assert.equal(VOCABULARY_IMPORT_RATE.promptTokens + VOCABULARY_LIMITS.textChars / VOCABULARY_IMPORT_RATE.charsPerToken, inputTokens);
   assert.ok(VOCABULARY_IMPORT_RATE.tokensPerWord * VOCABULARY_LIMITS.importWords <= outputTokens);
-  assert.equal(vocabularyImportCredits(VOCABULARY_LIMITS.textChars, VOCABULARY_LIMITS.importWords), creditCost("vocabulary-import"));
-  // Fewer words and shorter text cost fewer credits.
-  assert.equal(vocabularyImportCredits(2_000, 10), 2);
-  assert.equal(vocabularyImportCredits(45_000, 10), 8);
-  assert.equal(vocabularyImportCredits(20_000, 100), 12);
-  assert.ok(vocabularyImportCredits(45_000, 10) < vocabularyImportCredits(45_000, 100));
-  assert.ok(vocabularyImportCredits(2_000, 50) < vocabularyImportCredits(40_000, 50));
-  assert.deepEqual([10, 20, 50, 120].map(vocabularyImportHold), [8, 9, 12, 17]);
-  // The hold always covers the settled price, which stays between one credit and the listed maximum.
+  assert.equal(vocabularyImportCostNano(VOCABULARY_LIMITS.textChars, VOCABULARY_LIMITS.importWords), costNanoUsd(inputTokens, VOCABULARY_IMPORT_RATE.tokensPerWord * VOCABULARY_LIMITS.importWords));
+  // The value price: a base fee plus a per-word fee that gets cheaper as the list grows.
+  assert.deepEqual(VOCABULARY_IMPORT_PRICE, { base: 3, tiers: [{ upTo: 20, tenths: 5 }, { upTo: 60, tenths: 4 }, { upTo: 120, tenths: 3 }], floorMargin: 2 });
+  assert.equal(VOCABULARY_IMPORT_PRICE.tiers.at(-1).upTo, VOCABULARY_LIMITS.importWords, "the tiers cover one import");
+  assert.equal(vocabularyImportCredits(2_000, 10), 8);
+  assert.equal(vocabularyImportCredits(5_000, 20), 13);
+  assert.equal(vocabularyImportCredits(10_000, 40), 21);
+  assert.equal(vocabularyImportCredits(20_000, 100), 41);
+  assert.equal(vocabularyImportCredits(VOCABULARY_LIMITS.textChars, VOCABULARY_LIMITS.importWords), 47);
+  assert.equal(vocabularyImportCredits(VOCABULARY_LIMITS.textChars, VOCABULARY_LIMITS.importWords), creditCost("vocabulary-import"), "the listed price is the most one import can cost");
+  // The same number of words costs the same from a short list as from a medium file; more words cost more, less each.
+  assert.equal(vocabularyImportCredits(2_000, 20), vocabularyImportCredits(12_000, 20));
+  assert.ok(vocabularyImportCredits(5_000, 10) < vocabularyImportCredits(5_000, 100));
+  assert.ok(vocabularyImportCredits(5_000, 120) / 120 < vocabularyImportCredits(5_000, 20) / 20, "a longer list is cheaper per word");
+  // A long document that yields few words is sold at the cost floor, never below it.
+  assert.equal(vocabularyImportCredits(45_000, 10), 16);
+  assert.ok(vocabularyImportCredits(45_000, 10) > vocabularyImportCredits(2_000, 10));
+  assert.deepEqual([1, 10, 20, 40, 60, 120].map(vocabularyImportHold), [15, 16, 18, 21, 29, 47]);
+  // Every import earns at least the floor margin over its DeepSeek peak list cost, and the hold covers it.
   for (const words of [0, 1, 10, 20, 50, 100, 120]) {
     for (const chars of [0, 40, 2_000, 20_000, 45_000]) {
-      const price = vocabularyImportCredits(chars, words);
-      assert.ok(price >= 1 && price <= vocabularyImportHold(words) && Number.isSafeInteger(price), `${chars}/${words}`);
+      for (const images of chars ? [0] : [0, 1, 4]) {
+        const price = vocabularyImportCredits(chars, words, images);
+        const cost = vocabularyImportCostNano(chars, words, images) / 1e9;
+        assert.ok(Number.isSafeInteger(price) && price >= VOCABULARY_IMPORT_PRICE.base && price <= creditCost("vocabulary-import"), `${chars}/${words}/${images}`);
+        assert.ok(price * CREDIT_USD >= VOCABULARY_IMPORT_PRICE.floorMargin * cost - 1e-12, `margin ${chars}/${words}/${images}`);
+        if (!images) assert.ok(price <= vocabularyImportHold(words), `hold ${chars}/${words}`);
+      }
     }
   }
-  assert.equal(vocabularyImportCredits(1e9, 1e9), 17, "input is clamped to one import's bounds");
-  assert.equal(vocabularyImportCredits(NaN, NaN), 17, "malformed input prices as the maximum");
-  assert.equal(vocabularyImportCredits(-5, -5), 1);
-  assert.deepEqual(creditRange("vocabulary-import"), { min: 1, max: 17 });
-  assert.equal(creditRangeLabel("vocabulary-import"), "1–17");
+  assert.equal(vocabularyImportCredits(1e9, 1e9), 47, "input is clamped to one import's bounds");
+  assert.equal(vocabularyImportCredits(NaN, NaN), 47, "malformed input prices as the maximum");
+  assert.equal(vocabularyImportCredits(-5, -5), 3);
+  assert.deepEqual(creditRange("vocabulary-import"), { min: 4, max: 47 });
+  assert.equal(creditRangeLabel("vocabulary-import"), "4–47");
   assert.deepEqual(creditRange("chat"), { min: 5, max: 5 });
   assert.equal(creditRangeLabel("exam-20"), "17");
 });
@@ -331,7 +349,7 @@ test("a priced-by-result charge holds its maximum and returns the rest when it s
   assert.match(service, /\$transaction\(async tx => \{\s+const marked = await tx\.creditCharge\.updateMany\(\{ where: \{ id: hold\.id, status: "HELD" \}, data: \{ status: "SPENT"/);
   const vocabulary = text("src/modules/vocabulary/service.ts");
   assert.match(vocabulary, /hold: vocabularyImportHold\(wanted\)/);
-  assert.match(vocabulary, /settle: reply => vocabularyImportCredits\(readChars, reply\.added, pictures\)/);
+  assert.match(vocabulary, /settle: reply => vocabularyImportCredits\(readChars, reply\.found, pictures\)/, "the charge follows the new words found");
   assert.match(vocabulary, /readChars = cleaned\.text\.length;/);
   assert.ok(vocabulary.indexOf("if (stored >= limit)") < vocabulary.indexOf("return chargeCredits("), "a full bank is refused before credits are held");
 });

@@ -3,9 +3,10 @@
 // questions of a part on one page. Timing, audio access, saving and grading stay with the runner and server:
 // the recording follows the server clock, cannot be paused or replayed, and answers go through onChange.
 import { Fragment, useEffect, useRef, useState, type CSSProperties } from "react";
-import { listeningParts, listeningPosition } from "./audio-files";
+import { audioPath, listeningParts, listeningPosition } from "./audio-files";
 import type { PublicStage } from "./types";
 import { listeningPartInfo } from "./listening-prompt";
+import { ExamFigureView } from "./figure";
 import styles from "@/modules/listening-lab/listening.module.css";
 
 const LETTERS = "ABCDEFGH";
@@ -50,7 +51,7 @@ export function LockedListeningPlayer({ attemptId, slug, elapsed, version=1 }: {
       <input type="range" min={0} max={length} step={0.1} value={at} disabled readOnly aria-label="Бичлэгийн байрлал" style={{ "--progress": `${Math.min(100, at / length * 100)}%` } as CSSProperties} />
       <span className={styles.time}>{clock(at)} / {clock(length)}</span>
     </div>
-    {!ended && <audio key={part} ref={audio} src={`/api/mock-attempts/${attemptId}/audio?part=${part}`} preload="auto" aria-label={"Listening recording part " + part}
+    {!ended && <audio key={part} ref={audio} src={`/api/mock-attempts/${attemptId}${audioPath(slug)}?part=${part}`} preload="auto" aria-label={"Listening recording part " + part}
       onLoadedMetadata={() => void resume()} onError={() => setBlocked(true)} onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)}
       onTimeUpdate={event => setShown(event.currentTarget.currentTime)} />}
     {blocked && !ended ? <button className="button secondary small" onClick={() => void resume()}>Дууг одоогийн байрлалаас холбох →</button> : null}
@@ -68,6 +69,8 @@ export function ListeningSection({ attemptId, slug, stage, elapsed, version=1, a
   const questions = stage.questions.slice((selected - 1) * PER_PART, selected * PER_PART);
   const first = (selected - 1) * PER_PART + 1;
   const info = listeningPartInfo(questions.map(q => q.prompt));
+  // A plan-labelling task (Mocks 07 and 10) shows its plan once, above the part's questions.
+  const plan = questions.find(q => q.figure)?.figure;
   const answered = (part: number) => stage.questions.slice((part - 1) * PER_PART, part * PER_PART).filter(q => answers[q.id]?.trim()).length;
   const show = (part: number) => { setSelected(part); requestAnimationFrame(() => document.getElementById("listening-part-title")?.scrollIntoView({ block: "nearest" })); };
 
@@ -90,6 +93,7 @@ export function ListeningSection({ attemptId, slug, stage, elapsed, version=1, a
             <h3 id="listening-part-title" tabIndex={-1}>Part {selected}{info.title ? ` · ${info.title}` : ""} · Questions {first}–{first + questions.length - 1}</h3>
             <p>{info.instructions.length ? info.instructions.join(" · ") : "Follow the word/number limit printed on each question."}</p>
           </div>
+          {plan ? <ExamFigureView figure={plan} /> : null}
           <ol>{questions.map((question, i) => {
             const value = answers[question.id] ?? "", number = first + i, flagged = flags.includes(question.id);
             const prompt = info.parsed[i].text, blank = question.kind !== "choice" && prompt.includes("____");
@@ -99,7 +103,7 @@ export function ListeningSection({ attemptId, slug, stage, elapsed, version=1, a
                 <legend>{prompt}</legend>
                 {question.options!.map((option, o) => <label key={option} data-chosen={value === option ? "" : undefined}>
                   <input type="radio" name={question.id} value={option} checked={value === option} disabled={disabled} onChange={() => onChange(question.id, option)} />
-                  <span className={styles.letter}>{LETTERS[o]}</span>{option}
+                  <span className={styles.letter}>{question.optionLabels?.[o] ?? LETTERS[o]}</span>{option}
                 </label>)}
               </fieldset> : <div className={styles.gap} lang="en">
                 {blank ? prompt.split(/_{3,}/).map((piece, p, all) => <Fragment key={p}>{piece}{p < all.length - 1 && p === 0 &&

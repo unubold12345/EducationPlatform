@@ -1,0 +1,420 @@
+{
+  "form": 9,
+  "part": 1,
+  "file": "mock-09/audio/part-1.mp3",
+  "sha256": "570fd3173b0073fd0ce0c89e5baa9f6454f01176304c01d853a0759b1026863e",
+  "bytes": 3604648,
+  "seconds": 360.370667,
+  "pcmSeconds": 360.3707,
+  "sourceScriptSha256": "7866471f070c330baa24fffdad861bb7f6813f131f24a58272b4e00db2ca37fa",
+  "fingerprint": "4efd63cfafd7f38f5c3154e9e08dbebc88a8d9df3e3e0a27931c59520f2e5455",
+  "roles": {
+    "Mechanic": "am_michael",
+    "Customer": "bf_isabella"
+  },
+  "settings": {
+    "speed": 1.0,
+    "sampleRate": 24000,
+    "turnGapSeconds": 0.4,
+    "previewSeconds": 60,
+    "midpointSeconds": 30,
+    "partCheckSeconds": 30,
+    "finalCheckSeconds": 120,
+    "narrator": "bf_emma",
+    "bitrate": "80k",
+    "revision": 1
+  },
+  "modelSha256": {
+    "kokoro-v1.0.onnx": "7d5df8ecf7d4b1878015a32686053fd0eebe2bc377234608764cc0ef3636a6c5",
+    "voices-v1.0.bin": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d"
+  },
+  "packages": {
+    "kokoro-onnx": "0.6.1",
+    "onnxruntime": "1.31.1",
+    "numpy": "2.5.4"
+  },
+  "gain": 0.8084162089057375,
+  "segments": [
+    {
+      "kind": "narration",
+      "start": 0.0,
+      "seconds": 9.1307,
+      "voice": "bf_emma",
+      "spokenText": "IELTS Academic practice. Mock 9. Listening. You will hear each part once. Write your answers on the answer sheet. There are four parts and forty questions."
+    },
+    {
+      "kind": "pause",
+      "start": 9.1307,
+      "seconds": 1.0
+    },
+    {
+      "kind": "narration",
+      "start": 10.1307,
+      "seconds": 5.6107,
+      "voice": "bf_emma",
+      "spokenText": "Part 1. Arranging a bicycle repair visit. You now have one minute to read questions 1 to 10."
+    },
+    {
+      "kind": "pause",
+      "start": 15.7413,
+      "seconds": 60.0,
+      "purpose": "preview"
+    },
+    {
+      "kind": "speech",
+      "start": 75.7413,
+      "seconds": 4.2453,
+      "voice": "am_michael",
+      "spokenText": "Hello, Mobile Cycle Repairs. I'm Sam. What can I do for you?",
+      "role": "Mechanic",
+      "sourceText": "Hello, Mobile Cycle Repairs. I’m Sam. What can I do for you?"
+    },
+    {
+      "kind": "pause",
+      "start": 79.9867,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 80.3867,
+      "seconds": 12.4587,
+      "voice": "bf_isabella",
+      "spokenText": "My bicycle needs attention, and I wondered whether you could come to my workplace. I can ride it slowly, but I don't want to use it for my normal journey until it's been checked. Your website says you cover the northern part of town.",
+      "role": "Customer",
+      "sourceText": "My bicycle needs attention, and I wondered whether you could come to my workplace. I can ride it slowly, but I don’t want to use it for my normal journey until it’s been checked. Your website says you cover the northern part of town."
+    },
+    {
+      "kind": "pause",
+      "start": 92.8453,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 93.2453,
+      "seconds": 6.8267,
+      "voice": "am_michael",
+      "spokenText": "We do. Could I take your surname first, please? Then we'll check the address and what kind of work may be involved.",
+      "role": "Mechanic",
+      "sourceText": "We do. Could I take your surname first, please? Then we’ll check the address and what kind of work may be involved."
+    },
+    {
+      "kind": "pause",
+      "start": 100.072,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 100.472,
+      "seconds": 13.0987,
+      "voice": "bf_isabella",
+      "spokenText": "Lennox, L, E, N, N, O, X. The bicycle is quite old, though it was serviced last spring. The brakes feel all right, but the chain slips when I'm pushing hard uphill. A friend suggested changing it myself, but I'd prefer a proper inspection.",
+      "role": "Customer",
+      "sourceText": "Lennox, L-E-N-N-O-X. The bicycle is quite old, though it was serviced last spring. The brakes feel all right, but the chain slips when I’m pushing hard uphill. A friend suggested changing it myself, but I’d prefer a proper inspection."
+    },
+    {
+      "kind": "pause",
+      "start": 113.5707,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 113.9707,
+      "seconds": 14.0373,
+      "voice": "am_michael",
+      "spokenText": "That's sensible. A slipping chain can have more than one cause. We won't replace anything just on the basis of a telephone description. What kind of bicycle is it: a road model, a mountain bike or something else?",
+      "role": "Mechanic",
+      "sourceText": "That’s sensible. A slipping chain can have more than one cause. We won’t replace anything just on the basis of a telephone description. What kind of bicycle is it: a road model, a mountain bike or something else?"
+    },
+    {
+      "kind": "pause",
+      "start": 128.008,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 128.408,
+      "seconds": 7.872,
+      "voice": "bf_isabella",
+      "spokenText": "It's a folding bike. I take it on the train sometimes, which is why I don't want to replace it with a larger one. There's nothing electrical on it.",
+      "role": "Customer",
+      "sourceText": "It’s a folding bike. I take it on the train sometimes, which is why I don’t want to replace it with a larger one. There’s nothing electrical on it."
+    },
+    {
+      "kind": "pause",
+      "start": 136.28,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 136.68,
+      "seconds": 9.3867,
+      "voice": "am_michael",
+      "spokenText": "Fine. For appointments, I could offer Monday afternoon or Wednesday morning. Tuesday is fully booked, and we don't have an evening round this week.",
+      "role": "Mechanic",
+      "sourceText": "Fine. For appointments, I could offer Monday afternoon or Wednesday morning. Tuesday is fully booked, and we don’t have an evening round this week."
+    },
+    {
+      "kind": "pause",
+      "start": 146.0667,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 146.4667,
+      "seconds": 4.5227,
+      "voice": "bf_isabella",
+      "spokenText": "Wednesday would be best. I have meetings on Monday. Is nine o'clock possible?",
+      "role": "Customer",
+      "sourceText": "Wednesday would be best. I have meetings on Monday. Is nine o’clock possible?"
+    },
+    {
+      "kind": "pause",
+      "start": 150.9893,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 151.3893,
+      "seconds": 11.456,
+      "voice": "am_michael",
+      "spokenText": "The first slot has gone, but we can be there at ten fifteen. Allow up to an hour for the inspection and ordinary adjustments, though we may need to order a part for a later visit.",
+      "role": "Mechanic",
+      "sourceText": "The first slot has gone, but we can be there at ten fifteen. Allow up to an hour for the inspection and ordinary adjustments, though we may need to order a part for a later visit."
+    },
+    {
+      "kind": "pause",
+      "start": 162.8453,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 163.2453,
+      "seconds": 1.9627,
+      "voice": "bf_isabella",
+      "spokenText": "Let's say ten fifteen, then.",
+      "role": "Customer",
+      "sourceText": "Let’s say 10:15, then."
+    },
+    {
+      "kind": "pause",
+      "start": 165.208,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "narration",
+      "start": 165.608,
+      "seconds": 2.048,
+      "voice": "bf_emma",
+      "spokenText": "Now look at questions 6 to 10."
+    },
+    {
+      "kind": "pause",
+      "start": 167.656,
+      "seconds": 30.0,
+      "purpose": "midpoint"
+    },
+    {
+      "kind": "speech",
+      "start": 197.656,
+      "seconds": 1.8347,
+      "voice": "bf_isabella",
+      "spokenText": "What is the basic charge?",
+      "role": "Customer",
+      "sourceText": "What is the basic charge?"
+    },
+    {
+      "kind": "pause",
+      "start": 199.4907,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 199.8907,
+      "seconds": 19.9253,
+      "voice": "am_michael",
+      "spokenText": "The inspection and call-out together are thirty-five pounds. That doesn't include parts, which we'd quote separately. If you decide not to proceed with a repair after the inspection, the basic charge still applies. We used to offer a shorter twenty-pound check, but that no longer includes a workplace visit.",
+      "role": "Mechanic",
+      "sourceText": "The inspection and call-out together are thirty-five pounds. That doesn’t include parts, which we’d quote separately. If you decide not to proceed with a repair after the inspection, the basic charge still applies. We used to offer a shorter twenty-pound check, but that no longer includes a workplace visit."
+    },
+    {
+      "kind": "pause",
+      "start": 219.816,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 220.216,
+      "seconds": 9.0453,
+      "voice": "bf_isabella",
+      "spokenText": "The office address is on Willow Road. There's a reception area at the front, but our bicycles are behind the building. Would you want the exact entrance instructions?",
+      "role": "Customer",
+      "sourceText": "The office address is on Willow Road. There’s a reception area at the front, but our bicycles are behind the building. Would you want the exact entrance instructions?"
+    },
+    {
+      "kind": "pause",
+      "start": 229.2613,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 229.6613,
+      "seconds": 12.8213,
+      "voice": "am_michael",
+      "spokenText": "Yes, please. We carry tools, so avoiding unnecessary steps helps. Also, tell reception we're expected; otherwise we can lose half the appointment trying to find the person who booked us.",
+      "role": "Mechanic",
+      "sourceText": "Yes, please. We carry tools, so avoiding unnecessary steps helps. Also, tell reception we’re expected; otherwise we can lose half the appointment trying to find the person who booked us."
+    },
+    {
+      "kind": "pause",
+      "start": 242.4827,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 242.8827,
+      "seconds": 10.368,
+      "voice": "bf_isabella",
+      "spokenText": "Come through the courtyard from the side lane. The gate is usually open during office hours. I'll put your name on the visitor list and meet you there rather than make you carry equipment through reception.",
+      "role": "Customer",
+      "sourceText": "Come through the courtyard from the side lane. The gate is usually open during office hours. I’ll put your name on the visitor list and meet you there rather than make you carry equipment through reception."
+    },
+    {
+      "kind": "pause",
+      "start": 253.2507,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 253.6507,
+      "seconds": 8.1493,
+      "voice": "am_michael",
+      "spokenText": "Good. Is there somewhere dry to work if it rains? We don't need a full workshop, but a covered area is useful when tools are spread out.",
+      "role": "Mechanic",
+      "sourceText": "Good. Is there somewhere dry to work if it rains? We don’t need a full workshop, but a covered area is useful when tools are spread out."
+    },
+    {
+      "kind": "pause",
+      "start": 261.8,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 262.2,
+      "seconds": 8.7253,
+      "voice": "bf_isabella",
+      "spokenText": "There's a shelter beside the staff entrance. It isn't locked, and there should be room if I move two spare racks. I could ask someone to reserve that space for the morning.",
+      "role": "Customer",
+      "sourceText": "There’s a shelter beside the staff entrance. It isn’t locked, and there should be room if I move two spare racks. I could ask someone to reserve that space for the morning."
+    },
+    {
+      "kind": "pause",
+      "start": 270.9253,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 271.3253,
+      "seconds": 9.728,
+      "voice": "am_michael",
+      "spokenText": "That sounds ideal. Please leave any accessories with us that relate to the fault. And have you still got the key for the folding mechanism's security lock?",
+      "role": "Mechanic",
+      "sourceText": "That sounds ideal. Please leave any accessories with us that relate to the fault. And have you still got the key for the folding mechanism’s security lock?"
+    },
+    {
+      "kind": "pause",
+      "start": 281.0533,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 281.4533,
+      "seconds": 6.6133,
+      "voice": "bf_isabella",
+      "spokenText": "Yes. I'll bring the key. I normally leave it at home, so I'm glad you mentioned it. Do you need a receipt from the previous service?",
+      "role": "Customer",
+      "sourceText": "Yes. I’ll bring the key. I normally leave it at home, so I’m glad you mentioned it. Do you need a receipt from the previous service?"
+    },
+    {
+      "kind": "pause",
+      "start": 288.0667,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 288.4667,
+      "seconds": 7.424,
+      "voice": "am_michael",
+      "spokenText": "Not essential. You can show us any notes you have, but we'll inspect the current condition. How would you like to pay?",
+      "role": "Mechanic",
+      "sourceText": "Not essential. You can show us any notes you have, but we’ll inspect the current condition. How would you like to pay?"
+    },
+    {
+      "kind": "pause",
+      "start": 295.8907,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 296.2907,
+      "seconds": 9.92,
+      "voice": "bf_isabella",
+      "spokenText": "By card, if possible. Our accounts team only reimburses expenses with a receipt, so please make sure I get one showing the bicycle work separately from any extra items.",
+      "role": "Customer",
+      "sourceText": "By card, if possible. Our accounts team only reimburses expenses with a receipt, so please make sure I get one showing the bicycle work separately from any extra items."
+    },
+    {
+      "kind": "pause",
+      "start": 306.2107,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "speech",
+      "start": 306.6107,
+      "seconds": 19.136,
+      "voice": "am_michael",
+      "spokenText": "We can do that. We'll send the confirmation today. If your meeting schedule changes, cancellation is free until noon on the previous working day. After that, we charge for the call-out because we may not be able to fill the slot. Please call rather than relying on an email sent late at night.",
+      "role": "Mechanic",
+      "sourceText": "We can do that. We’ll send the confirmation today. If your meeting schedule changes, cancellation is free until noon on the previous working day. After that, we charge for the call-out because we may not be able to fill the slot. Please call rather than relying on an email sent late at night."
+    },
+    {
+      "kind": "pause",
+      "start": 325.7467,
+      "seconds": 0.4,
+      "purpose": "turn"
+    },
+    {
+      "kind": "narration",
+      "start": 326.1467,
+      "seconds": 4.224,
+      "voice": "bf_emma",
+      "spokenText": "That is the end of part 1. You now have thirty seconds to check your answers."
+    },
+    {
+      "kind": "pause",
+      "start": 330.3707,
+      "seconds": 30.0,
+      "purpose": "checking"
+    }
+  ]
+}

@@ -16,7 +16,7 @@ function publicMock(row:Row,state:ExamState,now:number,knownStage?:string):Publi
   const unchanged=Boolean(current&&knownStage===current.id);
   const stage=current&&!unchanged ? {
     id:current.id,title:current.title,seconds:current.seconds,kind:current.kind,instructions:current.instructions,passages:current.passages,groups:current.groups,
-    questions:current.questions.map(({id,number,domain,prompt,passage,options,kind,maxWords,minWords,figure,points,groupId,optionLabels,compactOptions,matcher,context})=>({id,number,domain,prompt,passage,options,kind,maxWords,minWords,points,groupId,optionLabels,compactOptions,matcher,context,...(figure?{figure}:{})})),
+    questions:current.questions.map(({id,number,domain,prompt,passage,options,kind,maxWords,minWords,figure,points,groupId,optionLabels,compactOptions,matcher,context,hsk})=>({id,number,domain,prompt,passage,options,kind,maxWords,minWords,points,groupId,optionLabels,compactOptions,matcher,context,...(figure?{figure}:{}),...(hsk?{hsk}:{})})),
   } : null;
   return {id:row.id,slug:row.slug,title:state.definition.title,program:state.definition.program,subject:state.definition.subject,audioRevision:state.definition.audioRevision??1,revision:row.revision,stageIndex:state.stageIndex,
     stage,serverNow:new Date(now).toISOString(),deadline:state.deadline,stageStartedAt:state.stageStartedAt,responses:state.responses,flags:state.flags,

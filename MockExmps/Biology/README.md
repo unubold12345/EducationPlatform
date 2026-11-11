@@ -1,11 +1,21 @@
 # Biology ЭЕШ / ЭШ: 2020–2026 offline draft pack
 
 **21 Mongolian JSON drafts: three forms for each year, with authored answers,
-explanations and original SVG figures. Nothing is integrated into the website.**
+explanations and original SVG figures. On the website since 2026-11-10 (see "Website integration").**
 
 These are review drafts, **not a completed set of equivalent official variants**.
 The remaining source and fidelity gaps below matter to the owner's requirements.
 Do not describe these files as official exams, official keys, or calibrated forms.
+
+## Website integration (2026-11-10)
+
+`node scripts/build-entrance-mocks.mjs biology` converts these drafts into the site's ЭЕШ papers
+(`eesh-biology-<year>-b1`–`b3`, program `entrance`, ₮10,000 each or University Prep). The pack itself
+stays offline and excluded from deployment. Rerun the converter for this subject after editing a JSON file; it
+validates keys, options, 100-point totals and figure files. Everything under "What still needs work" below
+still applies: the papers are labelled as practice content awaiting teacher review.
+The converter leaves out a "№ / Бүтэц / жишээ" table when every word in it is already in the
+question or its options (360 items); every other figure is shown.
 
 ## Contents
 
@@ -63,7 +73,7 @@ See [SOURCES.md](SOURCES.md) for the actual URLs and acquisition evidence.
    distractors and diagrams. Use learner data to assess difficulty. Structural
    and arithmetic checks cannot establish that the papers are equally hard.
 
-No routes, catalogue entries, database records, timers, grading code or purchases
+At authoring time (2026-11-08) no routes, catalogue entries, database records, timers, grading code or purchases
 were added. `.vercelignore` excludes this pack. No commit, push or deployment
 was performed for this task.
 

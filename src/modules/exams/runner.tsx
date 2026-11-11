@@ -3,7 +3,9 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { AiAssistant } from "@/modules/tutor/panel";
 import { MathScratchpad } from "@/components/math-scratchpad";
-import { useCallback,useEffect,useRef,useState } from "react";
+import "./speaking-examiner.css";
+import { useCallback,useEffect,useRef,useState,useSyncExternalStore } from "react";
+import { examinerChoice,setExaminerChoice,subscribeExaminer } from "./speaking-examiner-store";
 import type { PublicExamAttempt } from "./types";
 import { SpeakingRecorder } from "./speaking-recorder";
 import { ListeningSection } from "./listening-section";
@@ -11,11 +13,18 @@ import { AnswerOptions, MathTools, PassagePane, QuestionStrip, shortcutHint, use
 import { questionFigure } from "./math-paper-model";
 import { JlptSection } from "./jlpt/section";
 import { JlptResults } from "./jlpt/results";
+import { HskSection } from "./hsk/section";
+import { HskResults } from "./hsk/results";
 import { EntranceRunner } from "./entrance/session";
 
 const MathText = dynamic(() => import("./math-text").then(module => module.MathText));
 const MathFormula = dynamic(() => import("./math-text").then(module => module.MathFormula));
 const MathFigure = dynamic(() => import("./figure").then(module => module.ExamFigureView));
+// The AI examiner (IELTS Speaking stages) and its report load only when they are shown.
+const SpeakingExaminer = dynamic(() => import("./speaking-examiner-view").then(module => module.SpeakingExaminer), { ssr: false });
+const ExaminerInvitation = dynamic(() => import("./speaking-examiner-view").then(module => module.ExaminerInvitation), { ssr: false });
+const MockSpeakingReport = dynamic(() => import("./speaking-examiner-view").then(module => module.MockSpeakingReport), { ssr: false });
+const speakingStage=(stage:PublicExamAttempt["stage"])=>stage?.kind==="speaking"||stage?.kind==="preparation";
 
 type ReviewFilter="all"|"wrong"|"blank"|"correct";
 const reviewFilters:[ReviewFilter,string][]=[["all","Бүгд"],["wrong","Алдсан"],["blank","Хоосон"],["correct","Зөв"]];
@@ -40,11 +49,12 @@ function DomainBreakdown({reviews}:{reviews:NonNullable<PublicExamAttempt["repor
   const rows=[...domains].sort((a,b)=>a[1].correct/a[1].total-b[1].correct/b[1].total);
   return <section className="review-domains" aria-label="Чадвар бүрийн үр дүн"><h2>Чадвар бүрийн үр дүн</h2>{rows.map(([domain,{correct,total}])=><div className="review-domain" key={domain}><span lang="en">{domain}</span><i aria-hidden="true"><b style={{width:Math.round(correct/total*100)+"%"}}/></i><span>{correct} / {total}</span></div>)}</section>;
 }
-export function ExamRunner({initial}:{initial:PublicExamAttempt}){
-  return initial.program === "entrance" ? <EntranceRunner initial={initial}/> : <StandardExamRunner initial={initial}/>;
+/** `examiner`: the server says the Speaking Lab's AI examiner is enabled; it is offered in IELTS Speaking stages only. */
+export function ExamRunner({initial,examiner=false}:{initial:PublicExamAttempt;examiner?:boolean}){
+  return initial.program === "entrance" ? <EntranceRunner initial={initial}/> : <StandardExamRunner initial={initial} examiner={examiner&&initial.program==="ielts"}/>;
 }
 
-function StandardExamRunner({initial}:{initial:PublicExamAttempt}){
+function StandardExamRunner({initial,examiner}:{initial:PublicExamAttempt;examiner:boolean}){
   const [attempt,setAttempt]=useState(initial),[answers,setAnswers]=useState(initial.responses),[flags,setFlags]=useState(initial.flags),[index,setIndex]=useState(0);
   const [remaining,setRemaining]=useState(Math.max(0,Math.ceil((Date.parse(initial.deadline)-Date.parse(initial.serverNow))/1000)));
   const [status,setStatus]=useState("Хадгалсан"),[error,setError]=useState(""),[conflict,setConflict]=useState(false),[grid,setGrid]=useState(false),[tools,setTools]=useState(false),[hiddenTimer,setHiddenTimer]=useState(false);
@@ -56,9 +66,18 @@ function StandardExamRunner({initial}:{initial:PublicExamAttempt}){
   const [reviewFilter,setReviewFilter]=useState<ReviewFilter>("all");
   const {struck,toggle:strike}=useEliminations(initial.id);
   const {scale,controls:passageControls}=usePassageScale();
+  // The student's examiner choice for this mock lives in this browser; "unknown" until the page has read it.
+  const choice=useSyncExternalStore(subscribeExaminer,()=>examinerChoice(initial.slug),()=>"unknown" as const);
+  const examining=examiner&&choice==="on"&&speakingStage(attempt.stage);
+  const stageKind=attempt.stage?.kind;
+  // Load the local speech models while the student is still writing, so the examiner's first line is not late.
+  useEffect(()=>{
+    if(!examiner||choice!=="on"||!stageKind||!["writing","speaking","preparation"].includes(stageKind))return;
+    void fetch(endpoint+"/speaking/warm",{method:"POST"}).catch(()=>{});
+  },[examiner,choice,stageKind,endpoint]);
   // The Listening layout shows a whole part at once, so single-question shortcuts are off there.
   const listeningView=(stage:PublicExamAttempt["stage"])=>stage?.kind==="listening"||stage?.id==="ielts-listening-check";
-  useQuestionShortcuts(initial.program==="jlpt"||listeningView(attempt.stage)?{}:{
+  useQuestionShortcuts(initial.program==="jlpt"||initial.program==="hsk"||listeningView(attempt.stage)||examining?{}:{
     onPrevious:()=>{if(index>0&&latest.current.stage?.questions.length)navigate(index-1);},
     onNext:()=>{const count=latest.current.stage?.questions.length??0;if(index<count-1)navigate(index+1);},
     onFlag:()=>{if(latest.current.stage?.questions.length&&!paused.current)flag();},
@@ -69,6 +88,8 @@ function StandardExamRunner({initial}:{initial:PublicExamAttempt}){
     const old=latest.current;const moved=old.stage?.id!==data.stage?.id;
     if(!moved&&!force&&saved===undefined&&data.revision!==old.revision){paused.current=true;setConflict(true);setError("Өөр цонхонд өөрчлөлт байна. Хадгалсан хувилбарыг ачаалж үргэлжлүүлнэ үү.");return;}
     latest.current=data;anchor.current={server:Date.parse(data.serverNow),performance:performance.now()};setAttempt(data);
+    // A new stage brings its own clock at once, so nothing reads the finished stage's zero as this stage's time.
+    if(moved)setRemaining(Math.max(0,Math.ceil((Date.parse(data.deadline)-Date.parse(data.serverNow))/1000)));
     if(moved||force){draft.current={...data.responses};flagDraft.current=data.flags;generation.current++;savedGeneration.current=generation.current;setAnswers(data.responses);setFlags(data.flags);setIndex(0);setGrid(false);setTools(false);setHiddenTimer(false);paused.current=false;setConflict(false);setError("");setStatus("Хадгалсан");}
     else if(saved!==undefined){savedGeneration.current=saved;if(generation.current===saved){draft.current={...data.responses};setAnswers(data.responses);}setStatus(generation.current===saved?"Хадгалсан":"Хадгалж байна…");}
   }
@@ -133,10 +154,12 @@ function StandardExamRunner({initial}:{initial:PublicExamAttempt}){
   const recovery=<>{recoveries.map(item=><div className="notice" key={item.url}><p>{item.error}</p><a className="text-link" href={item.url} download={item.stageId+".webm"}>Бичлэгээ татах ↓</a></div>)}</>;
 
   if(attempt.report&&attempt.program==="jlpt")return <JlptResults attempt={attempt}/>;
+  if(attempt.report&&attempt.program==="hsk")return <HskResults attempt={attempt}/>;
   if(attempt.report)return <div className="container page-space exam-results"><p className="eyebrow">Шалгалт дууссан · Хадгалсан үр дүн</p><h1>{attempt.title}</h1><p>Хугацаа дууссан хэсгүүдийн хариу өөрчлөгдөхгүй.</p>{recovery}
     <div className="exam-report-grid">{attempt.report.sections.map(section=><section key={section.title}><p className="eyebrow">{section.title}</p>{section.pending?<><strong>Хяналт хүлээгдэж байна</strong><p>{section.pending} хариу / prompt · Багшаар үнэлүүлнэ</p></>:<><strong>{section.correct}<span> / {section.total}</span></strong><p>Зөв хариулт · Raw count</p></>}</section>)}</div>
     <div className="notice">{attempt.program==="sat"?"SAT-ийн хоёрдугаар модуль нь 65%-ийн дадлагын босгоор сонгогдсон. Модуль бүрийн хоёр туршилтын асуултыг үндсэн raw тоонд оруулаагүй. Доор бүх 98 асуултын тайлбар бий. Үүнийг 400–1600 албан ёсны SAT оноонд хөрвүүлэхгүй.":attempt.program==="entrance"?"Зөв хариултын тоо (raw) гарлаа. Хариулт бүр нэг оноотой; албан ЭЕШ-ийн жинлэсэн оноо болон 800 онооны хөрвүүлэлт биш. Энэ mock-ийн даалгавруудыг энэ сайтад зориулж зохиосон.":"Listening болон Reading-ийн raw тоо гарлаа. Writing, Speaking нь task response, fluency, vocabulary, grammar болон pronunciation зэрэг шалгуураар багшийн үнэлгээ шаарддаг. Энэ mock нь band оноо зохиож гаргахгүй."}</div>
     {attempt.program==="ielts"?<section className="exam-recordings"><h2>Speaking бичлэгүүд</h2>{attempt.recordings.length?attempt.recordings.map(recording=><div key={recording.stageId}><h3>{recording.stageId.replace("ielts-","")}</h3><audio controls preload="none" src={endpoint+"/recordings/"+recording.stageId}/><a className="text-link" download={recording.stageId+(recording.mime.includes("mp4")?".m4a":".webm")} href={endpoint+"/recordings/"+recording.stageId}>Татах ↓</a></div>):<p>Хадгалсан бичлэг одоогоор алга. Илгээж буй бичлэг байвал дуусмагц шинэчилнэ.</p>}</section>:null}
+    {examiner?<MockSpeakingReport attemptId={attempt.id} reviews={attempt.report.reviews}/>:null}
     <DomainBreakdown reviews={attempt.report.reviews}/>
     <div className="result-actions"><Link className="button" href={"/exams/"+attempt.slug+"/practice"}>Дадлагын горимд давтах →</Link><button className="button secondary" onClick={()=>downloadText("mock-exam-result.json",JSON.stringify(attempt,null,2),"application/json")}>Хариу, үр дүнгээ татах ↓</button><Link className="button secondary" href={"/workspace/review/"+attempt.id}>AI-тай задлах →</Link><Link className="button secondary" href="/exams">Бүх шалгалт →</Link><Link className="text-link" href="/workspace/review">Миний үр дүн</Link></div>
     <h2 className="exam-review-title">Хариу ба тайлбар</h2>
@@ -145,29 +168,36 @@ function StandardExamRunner({initial}:{initial:PublicExamAttempt}){
   </div>;
 
   const stage=attempt.stage!;const question=stage.questions[index]??stage.questions[0];
-  const jlpt=attempt.program==="jlpt";
+  const hsk=attempt.program==="hsk";
+  // JLPT and HSK draw their own section pages, so the generic strip, map and question panel stay off.
+  const jlpt=attempt.program==="jlpt"||hsk;
   const math=/^sat-math/.test(stage.id),calculator=math;const elapsed=stage.seconds-remaining;const listening=listeningView(stage);
   const passage=question?.passage ? stage.passages?.find(p=>p.title===question.passage)?.text??question.passage : "";
   const answered=stage.questions.filter(q=>!!answers[q.id]?.trim()).length;
   // Changes only at the two thresholds, so a screen reader announces each one once.
   const timeNotice=remaining<=60?"1 минутаас бага хугацаа үлдлээ. "+(stage.questions.length-answered)+" асуултад хариулаагүй.":remaining<=300?"5 минутаас бага хугацаа үлдлээ.":"";
   return <div className="exam-session"><div className="exam-toolbar"><div><p className="eyebrow">{attempt.title}</p><h1>{stage.title}</h1></div><div className="exam-clock"><span role="timer" aria-label="Үлдсэн хугацаа" className={remaining<=300?"urgent":""}>{hiddenTimer&&remaining>300?"Цаг нуугдсан":time(remaining)}</span>{remaining>300?<button onClick={()=>setHiddenTimer(v=>!v)}>{hiddenTimer?"Харуулах":"Нуух"}</button>:null}</div></div>
-    <div className="exam-session-meta"><p role="status">{status}</p><p>{attempt.stageIndex+1} / {attempt.timeline.length} хэсэг · {answered} / {stage.questions.length} хариулсан</p><div>{calculator?<button className="text-link" onClick={()=>setTools(v=>!v)}>Тооны машин / томьёо</button>:null}{jlpt||listening?null:<button className="text-link" onClick={()=>setGrid(v=>!v)}>Асуултууд / Review</button>}</div></div>
+    <div className="exam-session-meta"><p role="status">{status}</p><p>{attempt.stageIndex+1} / {attempt.timeline.length} хэсэг · {answered} / {stage.questions.length} хариулсан</p><div>{calculator?<button className="text-link" onClick={()=>setTools(v=>!v)}>Тооны машин / томьёо</button>:null}{jlpt||listening||examining?null:<button className="text-link" onClick={()=>setGrid(v=>!v)}>Асуултууд / Review</button>}</div></div>
     {error?<div className="container error-message" role="alert"><p>{error}</p><div className="result-actions">{conflict?<button className="button secondary" onClick={()=>void network("sync",true)}>Хадгалсан хувилбарыг ачаалах</button>:<button className="button secondary" onClick={()=>void network("save")}>Дахин хадгалах</button>}<a className="text-link" href="/login" target="_blank" rel="noopener noreferrer">Нэвтрэх ↗</a><button className="text-link" onClick={()=>downloadText("unsent-exam-answers.json",JSON.stringify(draft.current,null,2),"application/json")}>Хариугаа татах ↓</button></div></div>:null}{recovery}
     <p className="sr-only" aria-live="polite">{timeNotice}</p>
     <div className="container exam-workspace"><details className="exam-directions"><summary>Directions / Заавар</summary><p>{stage.instructions}</p></details>
-      {jlpt?<JlptSection key={stage.id} stage={stage} slug={attempt.slug} attemptId={attempt.id} elapsed={Math.max(0,elapsed)} answers={answers} flags={flags} disabled={conflict} onChange={changeFor} onFlag={flagFor}/>:null}
+      {hsk?<HskSection key={stage.id} stage={stage} slug={attempt.slug} attemptId={attempt.id} elapsed={Math.max(0,elapsed)} answers={answers} flags={flags} disabled={conflict} onChange={changeFor} onFlag={flagFor}/>:null}
+      {jlpt&&!hsk?<JlptSection key={stage.id} stage={stage} slug={attempt.slug} attemptId={attempt.id} elapsed={Math.max(0,elapsed)} answers={answers} flags={flags} disabled={conflict} onChange={changeFor} onFlag={flagFor}/>:null}
       {!jlpt&&listening?<ListeningSection version={attempt.audioRevision??1} attemptId={attempt.id} slug={attempt.slug} stage={stage} elapsed={stage.kind==="listening"?Math.max(0,elapsed):null} answers={answers} flags={flags} disabled={conflict} onChange={changeFor} onFlag={flagFor}/>:null}
-      {!jlpt&&!listening&&stage.questions.length>1?<QuestionStrip current={question.id} onSelect={id=>navigate(stage.questions.findIndex(q=>q.id===id))} items={stage.questions.map((q,i)=>({id:q.id,label:String(i+1),state:answers[q.id]?.trim()?"answered":undefined,flagged:flags.includes(q.id)}))}/>:null}
-      {!jlpt&&!listening&&grid?<section className="exam-question-map"><h2>Асуултаа шалгах</h2><p>Тэмдэгтэй = дараа харах · Цэнхэр = хариулсан. Зөвхөн энэ хэсгийн асуултууд.</p><div>{stage.questions.map((q,i)=><button key={q.id} className={(answers[q.id]?"answered ":"")+(flags.includes(q.id)?"flagged":"")} onClick={()=>navigate(i)} aria-label={"Асуулт "+(i+1)+(flags.includes(q.id)?", тэмдэгтэй":"")}>{i+1}{flags.includes(q.id)?" ⚑":""}</button>)}</div><p className="fine-print">Хугацаа дуусахад дараагийн хэсэг автоматаар эхэлнэ. Эрт дуусгах боломжгүй.</p></section>:null}
+      {!jlpt&&!listening&&!examining&&stage.questions.length>1?<QuestionStrip current={question.id} onSelect={id=>navigate(stage.questions.findIndex(q=>q.id===id))} items={stage.questions.map((q,i)=>({id:q.id,label:String(i+1),state:answers[q.id]?.trim()?"answered":undefined,flagged:flags.includes(q.id)}))}/>:null}
+      {!jlpt&&!listening&&!examining&&grid?<section className="exam-question-map"><h2>Асуултаа шалгах</h2><p>Тэмдэгтэй = дараа харах · Цэнхэр = хариулсан. Зөвхөн энэ хэсгийн асуултууд.</p><div>{stage.questions.map((q,i)=><button key={q.id} className={(answers[q.id]?"answered ":"")+(flags.includes(q.id)?"flagged":"")} onClick={()=>navigate(i)} aria-label={"Асуулт "+(i+1)+(flags.includes(q.id)?", тэмдэгтэй":"")}>{i+1}{flags.includes(q.id)?" ⚑":""}</button>)}</div><p className="fine-print">Хугацаа дуусахад дараагийн хэсэг автоматаар эхэлнэ. Эрт дуусгах боломжгүй.</p></section>:null}
       {stage.kind==="speaking"?<SpeakingRecorder key={stage.id} onComplete={blob=>void uploadRecording(blob,stage.id)}/>:null}
+      {examiner&&speakingStage(stage)&&choice==="ask"?<ExaminerInvitation onChoose={value=>setExaminerChoice(attempt.slug,value)}/>:null}
+      {examiner&&speakingStage(stage)&&choice==="off"?<p className="exam-examiner-switch">Асуултыг дэлгэцээс уншиж, чанга хариулна. <button className="text-link" onClick={()=>setExaminerChoice(attempt.slug,"on")}>AI шалгагчтай үргэлжлүүлэх →</button></p>:null}
+      {/* Not keyed by stage: one examiner (and its audio) carries on through Parts 1, 2 and 3. */}
+      {examining?<SpeakingExaminer base={endpoint} recordId={attempt.id} stage={stage} remaining={remaining} answers={answers} disabled={conflict} onChange={changeFor} onLeave={()=>setExaminerChoice(attempt.slug,"off")}/>:null}
       {math&&<MathScratchpad key={attempt.id} attemptId={attempt.id}/>}
       {tools&&calculator?<MathTools/>:null}
-      {jlpt||listening?null:stage.kind==="break"?<section className="exam-break"><p className="eyebrow">Scheduled break · 10 minutes</p><h2>Амраад, Math хэсэгт бэлдээрэй.</h2><p>Завсарлага дуусмагц дараагийн хэсэг эхэлнэ. Энэ цагийг урагшлуулах эсвэл дахин эхлүүлэх боломжгүй.</p><strong>{time(remaining)}</strong></section>:question?<div className={"exam-question-layout "+(passage?"with-passage":"")}>
+      {jlpt||listening||examining?null:stage.kind==="break"?<section className="exam-break"><p className="eyebrow">Scheduled break · 10 minutes</p><h2>Амраад, Math хэсэгт бэлдээрэй.</h2><p>Завсарлага дуусмагц дараагийн хэсэг эхэлнэ. Энэ цагийг урагшлуулах эсвэл дахин эхлүүлэх боломжгүй.</p><strong>{time(remaining)}</strong></section>:question?<div className={"exam-question-layout "+(passage?"with-passage":"")}>
         {passage?<PassagePane title={stage.passages?question.passage!:"Passage / Information"} text={passage} caption={question.kind==="essay"?"Academic Writing · Task 1 data":undefined} controls={passageControls} scale={scale}/>:null}
         <section className="exam-answer-panel"><div className="exam-question-number"><strong>{question.kind==="essay"?"Task":questionLang==="mn"?"Даалгавар":"Question"} {index+1} {questionLang==="mn"?"/":"of"} {stage.questions.length}</strong><button aria-pressed={flags.includes(question.id)} onClick={flag} disabled={conflict}>⚑ {flags.includes(question.id)?"Тэмдэглэсэн":"Дараа харах"}</button></div><h2 lang={questionLang} ref={questionHeading} tabIndex={-1}>{question.prompt}</h2>
           {question.figure?<MathFigure figure={question.figure}/>:null}
-          {question.kind==="choice"?<AnswerOptions name={question.id} selected={answers[question.id]} disabled={conflict} onSelect={change} lang={questionLang} struck={struck[question.id]} onStrike={option=>strike(question.id,option)} options={question.options!.map(option=>({value:option,content:option}))}/>:
+          {question.kind==="choice"?<AnswerOptions name={question.id} selected={answers[question.id]} disabled={conflict} onSelect={change} lang={questionLang} struck={struck[question.id]} onStrike={option=>strike(question.id,option)} labels={question.optionLabels} options={question.options!.map(option=>({value:option,content:option}))}/>:
           question.kind==="essay"||question.kind==="speaking"?<div className="exam-written-response"><label htmlFor="exam-text">{stage.kind==="speaking"?"Туслах тэмдэглэл (үнэлгээ нь ярианы бичлэгээр хийгдэнэ)":stage.kind==="preparation"?"Нэг минутын төлөвлөгөө":"Your response"}</label><textarea id="exam-text" lang="en" rows={question.kind==="essay"?17:5} maxLength={question.kind==="essay"?16000:4000} value={answers[question.id]??""} onChange={e=>change(e.target.value)} disabled={conflict}/><p className="fine-print">{(answers[question.id]??"").trim().split(/\s+/).filter(Boolean).length} words{question.minWords?" · Minimum "+question.minWords:""}</p></div>:
           <div className="exam-short-response"><label htmlFor="exam-short">{question.kind==="number"?(attempt.program==="entrance"?"Хариу: бүхэл тоо эсвэл энгийн бутархай (жишээ нь −3, 9/2)":"Numerical response — integer, decimal or fraction"):"Your answer — follow the word/number limit above"}</label><input id="exam-short" lang="en" autoComplete="off" maxLength={question.kind==="number"?32:120} value={answers[question.id]??""} onChange={e=>change(e.target.value)} disabled={conflict}/></div>}
           <div className="question-actions"><button className="button secondary" disabled={index===0} onClick={()=>navigate(index-1)}>← Өмнөх</button>{index<stage.questions.length-1?<button className="button" onClick={()=>navigate(index+1)}>Дараах →</button>:<button className="button" onClick={()=>setGrid(true)}>Хариугаа эргэн харах →</button>}</div>

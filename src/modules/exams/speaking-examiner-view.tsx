@@ -32,7 +32,7 @@ export function ExaminerInvitation({onChoose}:{onChoose:(choice:"on"|"off")=>voi
   <PartnerPortrait voice={voice} className="exam-examiner-face"/>
   <div>
    <h2>Speaking-ийг AI шалгагчтай өгөх үү?</h2>
-   <p>{examinerName(voice)} асуултуудыг чанга уншиж, таны хариуг сонсоно. Хариуг бичвэр болгохын тулд дууг манай сервер рүү илгээх бөгөөд бичвэр нь таны хариулт болж хадгалагдана. Цаг зогсохгүй. Шалгагчаа доороос сонгож болно.</p>
+   <p>{examinerName(voice)} асуултуудыг чанга уншиж, таны хариуг сонсоно. Хариуг бичвэр болгохын тулд дууг манай сервер рүү илгээх (тэндээс яриа таних үйлчилгээнд дамжиж болно) бөгөөд бичвэр нь таны хариулт болж хадгалагдана. Цаг зогсохгүй. Шалгагчаа доороос сонгож болно.</p>
    <ExaminerPicker/>
    <div className="result-actions">
     <button type="button" className="button" onClick={()=>onChoose("on")}>AI шалгагчтай эхлэх →</button>
@@ -147,7 +147,7 @@ export function SpeakingExaminer({base,recordId,stage,remaining=Infinity,answers
    </div>}
    {view.notice&&<p className="sl-notice" role="status">{view.notice}</p>}
    {view.error&&<p className="error-message" role="alert">{view.error}</p>}
-   <p className="exam-examiner-foot">Хариуг бичвэр болгохын тулд дууг манай сервер рүү илгээнэ. Автомат бичвэр алдаатай байж болно{timed?"; бүтэн бичлэг тусдаа хадгалагдана":"; дууны бичлэг хадгалахгүй"}. <button type="button" className="sl-link" aria-expanded={picking} onClick={()=>setPicking(open=>!open)}>Шалгагч солих</button> · <button type="button" className="sl-link" onClick={onLeave}>{timed?"Шалгагчгүй үргэлжлүүлэх":"Шалгагчийг хаах"}</button></p>
+   <p className="exam-examiner-foot">Хариуг бичвэр болгохын тулд дууг манай сервер рүү илгээнэ (тэндээс яриа таних үйлчилгээнд дамжиж болно). Автомат бичвэр алдаатай байж болно{timed?"; бүтэн бичлэг тусдаа хадгалагдана":"; дууны бичлэг хадгалахгүй"}. <button type="button" className="sl-link" aria-expanded={picking} onClick={()=>setPicking(open=>!open)}>Шалгагч солих</button> · <button type="button" className="sl-link" onClick={onLeave}>{timed?"Шалгагчгүй үргэлжлүүлэх":"Шалгагчийг хаах"}</button></p>
    {picking&&<div className="exam-examiner-change"><ExaminerPicker/><p>Сонгосон шалгагч дараагийн өгүүлбэрээс эхлэн ярина.</p></div>}
   </section>
  </div>;

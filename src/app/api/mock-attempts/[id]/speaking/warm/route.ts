@@ -1,6 +1,6 @@
 import {apiFailure,apiUser,checkOrigin,privateJson} from "@/lib/api";
 import {requireExaminerSitting} from "@/modules/exams/speaking-examiner-service";
-import {speechModelStatus,voiceModel,whisperModel} from "@/modules/speaking-lab/models";
+import {speechModelStatus,warmSpeechModels} from "@/modules/speaking-lab/models";
 import {after} from "next/server";
 export const runtime="nodejs";
 export const maxDuration=180;
@@ -10,7 +10,7 @@ export async function POST(request:Request,{params}:Context) {
  try {
   checkOrigin(request);const user=await apiUser(request);await requireExaminerSitting((await params).id,user.id);
   const before=speechModelStatus();
-  after(async()=>{await Promise.allSettled([voiceModel(),whisperModel()]);});
+  after(warmSpeechModels);
   return privateJson(before);
  }catch(error){return apiFailure(error);}
 }

@@ -3,6 +3,7 @@ import path from "node:path";
 import os from "node:os";
 import {createRequire} from "node:module";
 import {stressPronounI} from "./contracts";
+import {hostedSpeechKey} from "./speech-provider";
 import type {KokoroTTS} from "kokoro-js";
 import type {AutomaticSpeechRecognitionPipeline} from "@huggingface/transformers";
 
@@ -44,5 +45,12 @@ export function whisperModel() {
 }
 
 export function speechModelStatus() {
+ if(hostedSpeechKey())return {voice:"hosted",transcribe:"hosted"};
  return {voice:state.educationLabVoice?"loading-or-ready":"cold",transcribe:state.educationLabWhisper?"loading-or-ready":"cold"};
+}
+
+/** Loads the local models ahead of the first request. With a hosted speech provider there is nothing to load. */
+export async function warmSpeechModels() {
+ if(hostedSpeechKey())return;
+ await Promise.allSettled([voiceModel(),whisperModel()]);
 }

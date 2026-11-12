@@ -28,7 +28,7 @@ authentication require provider configuration; see the actual hosted checkpoint 
 | ЭЕШ mocks | 194 imported practice papers: 55 Mathematics, 60 Physics, 18 Chemistry, 21 Biology and 40 English (2015–2026), on the site as University Prep |
 | Practice mode | Untimed practice on every mock, with instant checks and a DeepSeek assistant |
 | Accounts | Better Auth email/password, profile, Google OAuth, verification and password recovery |
-| Plans and payments | Three monthly plans plus per-mock and per-paper simulated purchases |
+| Plans and payments | A free account and three monthly plans plus per-mock and per-paper simulated purchases |
 | Admin | Protected overview, members, subscriptions, payments, monitoring, content and audits |
 | AI tutor | DeepSeek math hints, explanations and mistake review; students can attach photos of a problem or their working (section 7) |
 | Speaking Lab | Isolated IELTS speaking studio at `/labs/ielts-speaking` |
@@ -37,7 +37,7 @@ authentication require provider configuration; see the actual hosted checkpoint 
 | Reading Lab | Five original IELTS Academic passages (62 questions, seven question types) and credit-paid AI practices from the student's own file, page photos or pasted text at `/labs/ielts-reading` (section 7) |
 | Workspace | `/workspace`: the signed-in study app, separate from the marketing site, with left tabs for Home, AI chat, Vocabulary, Exams, Review, Workshop and Plans, plus the profile (section 7) |
 | Vocabulary | Add words and translations, organize them in decks, scan a document with AI and choose which words to keep, and study with an adaptive quiz that stores per-word progress at `/workspace/vocabulary`; the old `/workspace/flashcards` address redirects |
-| Exam from file | Upload a PDF, Word, PowerPoint or text file, or up to four page photos, and get an AI multiple-choice exam at `/workspace/my-exams`; sittings, drafts and scores stay in the browser |
+| Exam from file | Upload a PDF, Word, PowerPoint or text file, or up to four page photos, and get an AI multiple-choice exam of 5–20 questions at `/workspace/my-exams` (5 saved exams free, 15 with IELTS or SAT); exams, sittings and scores are saved on the account and follow the student between devices |
 | Study tools | Light/dark theme and a browser-only mathematics scratchpad |
 
 Workshops require the IELTS plan. Full mocks accept a matching plan or a prior per-exam purchase. Subscription-backed
@@ -70,7 +70,8 @@ Homepage and program links open the hub; individual mock briefings link back to 
 saved attempts and purchases remain readable. The library itself uses four programme cards with a compact
 index (counts, timings, included parts and direct entry); the ЭЕШ row links to the three subject tabs.
 `/workspace/plans` (moved from `/plans`, which redirects) is a comparison-first pricing page inside the Workspace that guests
-can read: three plan cards, a feature table, the per-mock option and month terms. Both pages use scoped CSS
+can read: a free-account card (2026-11-12: ₮0, the monthly free credits, 100 vocabulary words, 5 saved file exams) and three plan
+cards, a feature table with a free column, the per-mock option and month terms. Both pages use scoped CSS
 (`src/app/exams/library.css`, `src/app/workspace/plans/plans.css`).
 Collection URLs cannot be purchased or started as exams. The library, collections, hubs, briefings, timed sittings
 (`/exams/attempts/*`), results and practice (`/exams/*/practice`) all render inside the Workspace shell
@@ -269,6 +270,7 @@ guards against their return. Local attempts, purchases and content rows were del
 
 | Item | Price | Access rule |
 | --- | --- | --- |
+| Free account | 0 | Workspace tools with 100 AI credits a month, a 100-word vocabulary bank and 5 saved file exams; mocks by per-exam purchase |
 | University Prep | 40,000 MNT/month | All 194 ЭЕШ Mathematics, Physics, Chemistry, Biology and English papers |
 | IELTS | 60,000 MNT/month | IELTS mocks and workshops |
 | SAT | 60,000 MNT/month | SAT mocks |
@@ -481,10 +483,14 @@ page already holds. Results add per-skill totals, review filters and a link to p
 
 ### Exams from a file (2026-11-09)
 
-- `/workspace/my-exams` is a Workspace rail tab, linked from the home "Шалгалтууд" heading. A student uploads a PDF, DOCX, PPTX, TXT, MD or CSV (4 MB maximum, first 45,000 characters) and chooses 10 or 20 questions in Mongolian or English. DeepSeek writes a title, four-option prompts, one key, an explanation and an optional topic per question; malformed or too-short output gets one silent retry. The JSON reader, prompt limits and malformed-question handling live in `src/modules/my-exams/contracts.ts`.
-- The server reuses the shared bounded document pipeline (`src/modules/documents/extract.ts`): signature check, 100 PDF pages, Office ZIP bounds and text decoding. The route checks same origin, a verified session, the exact multipart shape and the no-open-sitting rule before and after the provider call. A 15-per-Ulaanbaatar-day quota with one request in flight uses the shared `RateLimit` compare-and-set; the file and the exam are never stored on the server.
-- The answer key is sealed in an AES-256-GCM token derived from `BETTER_AUTH_SECRET`, bound to the student's id as additional authenticated data, and valid for 30 days. The browser receives only the questions and the opaque token; `POST /api/workspace/my-exams/grade` opens the token server-side, grades the submitted option indexes and returns the key, explanations and score. The timer (suggested 15 or 30 minutes) is a browser study aid that auto-submits at zero; this is personal practice, not a `MockAttempt` and not a server-enforced deadline.
-- Exams live only in this browser, per account (`education-my-exams-v1:<userId>`, 20 exams). A draft keeps answers, the current question, flags and the start time, so a reload resumes the same sitting. The last result (with key and explanations), best percentage and attempt count are kept for review; deleting the exam removes all of it. `/workspace/review` lists graded mocks only, not these browser-local exams.
+- `/workspace/my-exams` is a Workspace rail tab, linked from the home "Шалгалтууд" heading. A student uploads a PDF, DOCX, PPTX, TXT, MD or CSV (4 MB maximum, first 45,000 characters) and sets any question count from 5 to 20 with a slider or a number box (`count`; 2026-11-12 replaces the 10/20 buttons; 20 is the most one 8,000-token reply holds), in Mongolian or English. DeepSeek writes a title, four-option prompts, one key, an explanation and an optional topic per question; malformed or too-short output gets one silent retry. The JSON reader, prompt limits and malformed-question handling live in `src/modules/my-exams/contracts.ts`.
+- Structure (2026-11-12): the prompt has a fixed "Exam structure" rule (follow the material's order, spread the questions over its parts, easier to harder), and the student may add a structure request (`structure`, at most 500 characters: sections, questions per topic, question kinds, difficulty, order). It is sent in the user message as data and can only arrange the exam; it cannot raise the count or change the format, language, rules or JSON shape. Live DeepSeek output with a structure request is untested.
+- Saved-exam limit (2026-11-12, owner rule): 5 exams on a free account, 15 while an IELTS or SAT plan is active (`savedExams` in `subscriptions/plans.ts`; University Prep keeps 5, by analogy with the vocabulary bank and not separately confirmed). The server reads the plan (`savedExamLimit`) and counts the account's `MyExam` rows for the page and for every generation, and refuses a full library with a 409 before any credits are held; the page also disables the button and names the upgrade. Clearing the browser or switching devices does not change the count. Exams above the limit (moved from a browser, or kept after a plan ends) stay usable, but no new one fits; an account never keeps more than 20.
+- The setting hints, the upload fine print, the briefing note and the runner's filler lines were removed at the owner's request (2026-11-12). The library heading shows "N / limit · бүртгэлд" and the results page keeps one line saying the exam is AI-made and not teacher-reviewed.
+- The server reuses the shared bounded document pipeline (`src/modules/documents/extract.ts`): signature check, 100 PDF pages, Office ZIP bounds and text decoding. The route checks same origin, a verified session, the exact multipart shape and the no-open-sitting rule before and after the provider call. A 15-per-Ulaanbaatar-day quota with one request in flight uses the shared `RateLimit` compare-and-set; the uploaded file is never stored.
+- Storage (2026-11-12, owner request): exams live on the account in `MyExam` (migration `20261112100000_my_exams`), not in the browser, so they survive cleared site data and appear on every device. A row holds the questions with their key and explanations, the open sitting (`draft`: answers, current question, flags, start time, mode), the last graded sitting, the best score and the attempt count; deleting the exam removes all of it. The page is server-rendered from `myExamLibrary`, and the browser only ever receives the public questions; the key and explanations leave the server inside a graded result. `/workspace/review` lists graded mocks only, not these exams.
+- Routes, all same-origin, session-checked, exact-shape and scoped to the student's own rows: `POST /api/workspace/my-exams` generates and saves; `PATCH …/[id]` starts a sitting or saves its progress (a save must name the open sitting by its start time, so a stale tab or a graded sitting gets 409); `DELETE …/[id]`; `POST …/grade` takes `{ id, answers, elapsedSeconds, timed }`, grades from the stored key and stores the result. The runner saves 0.6 s after the last change, retries a failed save and sends the last progress when the tab closes. The timer (suggested 90 seconds a question, 7.5 to 30 minutes) and the elapsed time come from the student's device: a study aid that auto-submits at zero, not a `MockAttempt` and not a server-enforced deadline.
+- Exams made before the move stay in a browser (`education-my-exams-v1:<userId>`) with their key sealed in an AES-256-GCM token (`token.ts`, derived from `BETTER_AUTH_SECRET`, bound to the student's id). On the next visit the page sends each one to `POST …/import` and forgets it locally once the account has it. Only the token is believed: the questions and key come out of it, the last sitting's answers are graded again (a score claimed by the browser is ignored; the earlier best score is not carried over), an expired token is accepted, a token is imported once (`importKey`), and an unreadable token is reported and dropped. No new token is issued; `sealExam` remains for tests and `tests/my_exams_fixture.mjs`. A page loaded before the move still sends `saved` and is told to reload before any credits are held.
 - The runner has one question per page, an always-visible answer grid, flags, keyboard answers (1–4, arrows, F, Esc), a confirm step, corrective review filters and the source's math through `MathText`/KaTeX. Generated exams and explanations are AI drafts and are not teacher-reviewed. A scanned PDF is refused; page photos are accepted instead (see "Image input").
 
 ### AI credits (2026-11-09)
@@ -494,7 +500,7 @@ page already holds. Results add per-skill totals, review filters and a link to p
   checked 2026-11-09 on the official pricing page) and 1 credit = USD 0.001. Each action has a token budget (output = the
   provider `max_tokens` the service sends; input = a generous prompt estimate, all priced as cache misses); its fixed cost is
   the budget's cost rounded up: chat 5, review coach 6, practice assistant 5, SAT math tutor 3, Essay Studio ideas 3 /
-  grammar 5 / feedback 6, Speaking Lab reply 3 / report 9, vocabulary import 4–47 (sold with a margin, below), file-to-exam 13 (10 questions) or 17 (20),
+  grammar 5 / feedback 6, Speaking Lab reply 3 / report 9, vocabulary import 4–47 (sold with a margin, below), file-to-exam 10–40 (two credits a question, sold with a margin, below),
   Reading Lab practice 4–15 (priced by length, below).
   Changing a price or budget there changes the charge, the badges and the plans page together.
 - Vocabulary import is sold with a margin (owner rule 2026-11-11: an AI action should earn, not only cover its DeepSeek cost),
@@ -507,6 +513,14 @@ page already holds. Results add per-skill totals, review filters and a link to p
   charge settles to the new words found and the rest returns in the same transaction. Words already in the bank cost nothing.
   The badge shows "хамгийн ихдээ N"; the page no longer explains how the price is worked out. `MARGIN_ACTIONS` lists the
   actions sold this way; every other action is still priced at its token budget's cost.
+- An exam from a file is priced by its questions and sold with a margin (owner request 2026-11-12; it was 13 or 17 at cost).
+  `examCredits` = 2 credits per question delivered (5 = 10, 10 = 20, 20 = 40, the listed maximum), and never less than twice
+  the DeepSeek peak list cost of that exam (`examCostNano`: 1,500 prompt tokens + one token per two characters read or 1,024 per
+  page photo, plus 800 + 360 output tokens per question, which is also the call's `max_tokens`), so 5 questions from a full
+  45,000-character file cost 21 and 10 cost 25. The hold is the most the chosen count can cost (a document at the full-file
+  price: 5 → 21, 10 → 25, 15 → 30, 20 → 40; page photos by their number: 10 → 20) and the charge settles to the questions
+  delivered and the text read. The 2 and the margin are code constants (`EXAM_PRICE`); the owner did not name a figure.
+  The retired `exam-10`/`exam-20` ids stay in the price list only so earlier charges keep their name in admin reports.
 - Reading Lab practices are priced by length (owner rule 2026-11-10) with the same hold-and-settle: `readingPracticeCredits` =
   1,500 prompt tokens + the larger of one token per two characters of material or 1,024 per page photo (input), plus 600 + 2 per
   passage word + 200 per question (output). The rates fill the 24,000/6,000 budget, so a full 45,000-character file with a
@@ -627,6 +641,20 @@ scores; pronunciation is not assessed. Raw microphone recordings are not persist
   request to repeat or explain (`isClarificationRequest`) is answered but does not count as a mock question, and keeps the cue card.
 - The server drops a tip unless it quotes the answer it is attached to (`tipQuotesAnswer`); the model otherwise re-corrects earlier
   answers. Every answer sent to the model ends with a JSON-format cue, because a bare one-word answer returned an empty reply.
+
+#### Hosted speech provider (2026-11-12)
+
+Running Kokoro and Whisper inside the web server does not scale: each instance loads about 460 MB of models and
+`serialized()` lets one sentence or one answer through at a time, so students queue behind each other. With the server-only
+`DEEPINFRA_API_KEY` set, `speech-provider.ts` sends the work to DeepInfra instead: `hexgrad/Kokoro-82M` (the same six voice
+ids, returned as MP3) and `openai/whisper-large-v3-turbo` (English fixed). Nothing else moves: the Lab, mock and practice
+routes, their access checks before and after, the daily voice/transcription counts, the frame format and the device-voice
+and typing fallbacks are unchanged, and there is no queue on this path. A provider failure is retried once, then becomes the
+same 503 the page already handles. Without the key the local models serve as before (local development needs no key).
+The student's audio leaves this server only for transcription, with no account data attached; the microphone notices say so.
+Listed prices on 2026-11-12 (check before budgeting): about $0.99 per million characters and $0.0002 per audio minute, under
+one US cent for a full mock; the daily limits cap a student at roughly $0.12 a day. Called live once from a script on
+2026-11-12 (six distinct voices, 1.3–2.0 s a sentence, correct transcripts) and through the Lab's routes in a browser (ten voice requests at once in 3.2 s).
 
 #### AI examiner in the IELTS mocks (2026-11-11)
 
@@ -764,7 +792,7 @@ rounding), vocabulary upgrades, strengths, next steps and one rewritten passage.
 | `src/modules/documents` | Shared bounded document extraction (PDF, DOCX, PPTX, TXT, MD, CSV), the upload reader for one document or page photos, and text helpers |
 | `src/modules/ai-images` | Image input for AI features: signature/size rules and prompt parts (pure), and the browser resize, attach button and previews |
 | `src/modules/vocabulary` | Vocabulary limits and request shapes, AI scan contract, server-stored word bank with decks and study progress, the Leitner schedule, quiz builder and UI |
-| `src/modules/my-exams` | Upload-to-exam contract, sealed answer token, server generation/grading, browser-stored exams and the runner |
+| `src/modules/my-exams` | Upload-to-exam contract, server generation, account-stored exams (`MyExam`), sittings and grading, the import of older browser-stored exams and the runner |
 | `src/modules/reading-lab` | Reading Lab: five sample passages, question contract and marking, AI generation and sealed key, browser store and the split-screen runner |
 | `src/modules/subscriptions` | Plans, purchases, entitlements and legacy grants |
 | `src/modules/credits` | AI credit price list from DeepSeek prices, free/plan-term/purchased credit buckets, hold/refund ledger, the credit pack purchase and cost badges |
@@ -887,8 +915,8 @@ deadlines; they must never add a runtime bypass, shorten a public exam or change
 - Vocabulary is generated from the uploaded text only: imported words can be incomplete or wrong, are not teacher-reviewed, and scans or photos are not OCR'd. A translation written in the document is kept; a fallback translation that the AI writes for a word with no meaning in the document may be inaccurate. The chosen word count is a strict maximum (the model may return fewer); the free-text selection request is only a preference.
 - Vocabulary quiz scores are self-study feedback in the browser; they are not saved, graded or official results.
 - Exams from a file are generated from the uploaded text only and are also unreviewed AI drafts. Their
-  timer, results and history are browser-local, the score is practice feedback rather than an official
-  result, and scanned documents are refused because there is no OCR.
+  results and history are saved on the account, the timer runs on the student's device, the score is practice
+  feedback rather than an official result, and scanned documents are refused because there is no OCR.
 - Reading Lab samples are original practice texts awaiting teacher review; generated practices are unreviewed AI drafts made only
   from the student's material, and their scores are browser-local self-study feedback, not band scores.
 - Personal-data retention, account deletion policy, email deliverability and accessibility audits

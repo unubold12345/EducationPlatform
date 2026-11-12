@@ -545,7 +545,7 @@ export function SpeakingLab({signedIn}:{signedIn:boolean}) {
   </div>
 
   <footer className="sl-foot">
-   <p>Experimental pilot · Nothing is saved to your account; practice history and phrasebook stay in this browser. Synthetic AI voices (Kokoro-82M, Apache-2.0) and Whisper (MIT) transcription run on the application server. AI estimates are not official IELTS scores.</p>
+   <p>Experimental pilot · Nothing is saved to your account; practice history and phrasebook stay in this browser. Synthetic AI voices (Kokoro-82M, Apache-2.0) and Whisper (MIT) transcription run on the application server or its speech-processing service. AI estimates are not official IELTS scores.</p>
   </footer>
  </div>;
 
@@ -580,7 +580,7 @@ export function SpeakingLab({signedIn}:{signedIn:boolean}) {
    </details>
    <div className="sl-consents">
     <label><input type="checkbox" checked={consent} onChange={event=>setConsent(event.target.checked)}/>My answers (as text) are sent to an AI service to generate replies and feedback. I won’t share personal details.</label>
-    <label><input type="checkbox" checked={micConsent} disabled={!micSupported} onChange={event=>toggleMicConsent(event.target.checked)}/>Use my microphone. Recordings are sent to the application server for transcription and never saved.</label>
+    <label><input type="checkbox" checked={micConsent} disabled={!micSupported} onChange={event=>toggleMicConsent(event.target.checked)}/>Use my microphone. Recordings are sent to the application server, which may pass them to a speech-processing service, for transcription only. We never save them.</label>
     {!micSupported&&<small>Microphone recording isn’t available in this browser — try Chrome or Edge, or type your answers.</small>}
    </div>
    {error&&<p className="error-message" role="alert">{error}</p>}

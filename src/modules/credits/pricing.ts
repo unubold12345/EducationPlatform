@@ -1,6 +1,6 @@
 /**
  * AI credits: one price list for every AI action, derived from DeepSeek's published token prices
- * (the vocabulary import adds a margin over them; see `VOCABULARY_IMPORT_PRICE`).
+ * (the vocabulary import and the exam from a file add a margin over them; see `MARGIN_ACTIONS`).
  * Pure module (no server or browser APIs): the server charges from it, pages show the same numbers,
  * and the unit tests import it directly.
  */
@@ -8,6 +8,7 @@ import { subscriptionPlans, type SubscriptionProgram } from "../subscriptions/pl
 import { VOCABULARY_LIMITS } from "../vocabulary/contracts.ts";
 import { AI_IMAGE_LIMITS } from "../ai-images/contracts.ts";
 import { READING_LIMITS } from "../reading-lab/contracts.ts";
+import { MY_EXAM_LIMITS } from "../my-exams/contracts.ts";
 
 /**
  * DeepSeek list prices in USD per million tokens for the model every AI feature calls.
@@ -40,7 +41,7 @@ export type AiAction =
   | "chat" | "review-coach" | "practice-assistant" | "math-tutor"
   | "writing-ideas" | "writing-grammar" | "writing-feedback"
   | "speaking-turn" | "speaking-report"
-  | "vocabulary-import" | "exam-10" | "exam-20" | "reading-practice";
+  | "vocabulary-import" | "exam" | "exam-10" | "exam-20" | "reading-practice";
 
 type ActionBudget = { label: string; area: string; inputTokens: number; outputTokens: number };
 
@@ -60,8 +61,12 @@ export const AI_ACTIONS: Record<AiAction, ActionBudget> = {
   "speaking-turn": { label: "Ярилцагчийн нэг хариулт", area: "Speaking Lab", inputTokens: 5000, outputTokens: 900 },
   "speaking-report": { label: "Эцсийн тайлан", area: "Speaking Lab", inputTokens: 14000, outputTokens: 3200 },
   "vocabulary-import": { label: "Файлаас үг оруулах", area: "Үгсийн сан", inputTokens: 24000, outputTokens: 8000 },
-  "exam-10": { label: "10 асуулттай шалгалт", area: "Файлаас шалгалт", inputTokens: 24000, outputTokens: 4800 },
-  "exam-20": { label: "20 асуулттай шалгалт", area: "Файлаас шалгалт", inputTokens: 24000, outputTokens: 8000 },
+  // Priced by its questions (`examCredits` below); this budget is the largest exam from a full-length file.
+  "exam": { label: "Шалгалт үүсгэх", area: "Файлаас шалгалт", inputTokens: 24000, outputTokens: 8000 },
+  // Retired 2026-11-12, when the exam became priced per question. Nothing charges these any more; they stay
+  // so earlier charges keep their name and totals in the admin's credit reports.
+  "exam-10": { label: "10 асуулттай шалгалт (хуучин үнэ)", area: "Файлаас шалгалт", inputTokens: 24000, outputTokens: 4800 },
+  "exam-20": { label: "20 асуулттай шалгалт (хуучин үнэ)", area: "Файлаас шалгалт", inputTokens: 24000, outputTokens: 8000 },
   // Priced by length (`readingPracticeCredits` below); this budget is the most one practice can cost.
   "reading-practice": { label: "Унших дасгал үүсгэх", area: "Reading Lab", inputTokens: 24000, outputTokens: 6000 },
 };
@@ -137,11 +142,67 @@ export function vocabularyImportHold(words: number) {
   return vocabularyImportCredits(VOCABULARY_LIMITS.textChars, words);
 }
 
+/**
+ * What DeepSeek bills for an exam from a file: the material it reads plus the questions it writes back.
+ * `examOutputTokens` is also the provider's `max_tokens` for that exam, so the cost below is the most the call
+ * can cost. The rates fill the action's token budget above (a full 45,000-character document, 20 questions).
+ */
+export const EXAM_RATE = {
+  /** Exam rules, the structure rules and the student's optional structure request. */
+  promptTokens: 1500,
+  /** Document text: one token per two characters, generous for Mongolian Cyrillic. */
+  charsPerToken: 2,
+  /** The title and the JSON around the questions. */
+  replyTokens: 800,
+  /** One question: prompt, four options, the key, an explanation and a topic. */
+  tokensPerQuestion: 360,
+} as const;
+
+/**
+ * What a student pays for an exam from a file (owner rule 2026-11-12: the price follows the number of
+ * questions, and, as for the vocabulary import, an AI action should earn rather than only cover its DeepSeek
+ * cost). Each question delivered costs `perQuestion` credits; the price is never below `floorMargin` times
+ * the DeepSeek peak list cost of that exam, so a few questions from a long document still earn.
+ */
+export const EXAM_PRICE = { perQuestion: 2, floorMargin: 2 } as const;
+
+/** The reply budget, and the provider's `max_tokens`, for an exam of `questions` questions. */
+export function examOutputTokens(questions: number) {
+  return EXAM_RATE.replyTokens + bounded(questions, MY_EXAM_LIMITS.questions) * EXAM_RATE.tokensPerQuestion;
+}
+/** DeepSeek peak list cost, in nano-dollars, of reading `textChars` (or `images` page photos) and writing `questions` questions. */
+export function examCostNano(textChars: number, questions: number, images = 0) {
+  const chars = bounded(textChars, MY_EXAM_LIMITS.textChars);
+  const pictures = bounded(images, AI_IMAGE_LIMITS.perUpload);
+  // An exam reads a document or page photos, never both, so the larger one is priced.
+  return costNanoUsd(
+    EXAM_RATE.promptTokens + Math.max(Math.ceil(chars / EXAM_RATE.charsPerToken), pictures * AI_IMAGE_LIMITS.tokens),
+    examOutputTokens(questions),
+  );
+}
+/**
+ * Credits for an exam that read `textChars` of document text (or `images` page photos) and delivered
+ * `questions` questions: the per-question price, or the cost floor when that is higher.
+ */
+export function examCredits(textChars: number, questions: number, images = 0) {
+  const value = bounded(questions, MY_EXAM_LIMITS.questions) * EXAM_PRICE.perQuestion;
+  const floor = Math.ceil(EXAM_PRICE.floorMargin * examCostNano(textChars, questions, images) / NANO_PER_CREDIT);
+  return Math.max(1, value, floor);
+}
+/**
+ * The most an exam of up to `questions` questions can cost, held before the call: a full-length document
+ * (its text is only known after extraction) or the page photos chosen, whose number is known.
+ */
+export function examHold(questions: number, images = 0) {
+  return images > 0 ? examCredits(0, questions, images) : examCredits(MY_EXAM_LIMITS.textChars, questions);
+}
+
 /** Actions sold above their DeepSeek cost; every other action's price is its token budget's cost. */
-export const MARGIN_ACTIONS: readonly AiAction[] = ["vocabulary-import"];
+export const MARGIN_ACTIONS: readonly AiAction[] = ["vocabulary-import", "exam"];
 export const CREDIT_COSTS = {
   ...Object.fromEntries(AI_ACTION_IDS.map(action => [action, creditsForTokens(AI_ACTIONS[action].inputTokens, AI_ACTIONS[action].outputTokens)])),
   "vocabulary-import": vocabularyImportHold(VOCABULARY_LIMITS.importWords),
+  "exam": examHold(MY_EXAM_LIMITS.questions),
 } as Record<AiAction, number>;
 /**
  * An image attached to a conversation is billed by DeepSeek as at most 1,024 more input tokens, and the reply
@@ -212,6 +273,7 @@ export function readingPracticeHold(textChars: number, images = 0) {
 export function creditRange(action: AiAction) {
   const max = CREDIT_COSTS[action];
   if (action === "vocabulary-import") return { min: vocabularyImportCredits(0, 1), max };
+  if (action === "exam") return { min: examCredits(0, MY_EXAM_LIMITS.minQuestions), max };
   if (action === "reading-practice") return { min: readingPracticeCredits(READING_LIMITS.minSourceChars, READING_LIMITS.passageWords.min, READING_LIMITS.questions.min), max };
   return { min: max, max };
 }
@@ -227,7 +289,6 @@ export function writingCreditAction(action: "ideas" | "grammar" | "feedback"): A
 export function speakingCreditAction(action: string): AiAction {
   return action === "report" ? "speaking-report" : "speaking-turn";
 }
-export function examCreditAction(count: 10 | 20): AiAction { return count === 20 ? "exam-20" : "exam-10"; }
 
 /** Monthly amounts an admin can change: the free credits and each plan's credits. */
 export type AllowanceKey = "free" | SubscriptionProgram;

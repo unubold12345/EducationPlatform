@@ -3,9 +3,9 @@ import assert from "node:assert/strict";
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import {
   AI_ACTIONS, AI_ACTION_IDS, ALLOWANCE_KEYS, CREDIT_ALLOWANCE_LIMITS, CREDIT_COSTS, CREDIT_GRANT_LIMITS, CREDIT_PACK_LIMITS, CREDIT_USD, DEEPSEEK_PRICE,
-  DEFAULT_CREDIT_PACK, FREE_MONTHLY_CREDITS, MARGIN_ACTIONS, READING_PRACTICE_RATE, UsageMeter, VOCABULARY_IMPORT_PRICE, VOCABULARY_IMPORT_RATE, costNanoUsd, creditCost, creditPeriod, creditRange, creditRangeLabel,
+  DEFAULT_CREDIT_PACK, EXAM_PRICE, EXAM_RATE, FREE_MONTHLY_CREDITS, MARGIN_ACTIONS, READING_PRACTICE_RATE, UsageMeter, VOCABULARY_IMPORT_PRICE, VOCABULARY_IMPORT_RATE, costNanoUsd, creditCost, creditPeriod, creditRange, creditRangeLabel,
   creditResetAt, creditValueMicroUsd, creditsForTokens,
-  defaultAllowances, examCreditAction, formatCredits, formatUsd, isAiAction, isAllowanceKey, readReceipt,
+  defaultAllowances, examCostNano, examCredits, examHold, examOutputTokens, formatCredits, formatUsd, isAiAction, isAllowanceKey, readReceipt,
   readUsage, readingPracticeCredits, readingPracticeHold, speakingCreditAction, validAllowance, validCreditPack, validGrant, vocabularyImportCostNano, vocabularyImportCredits, vocabularyImportHold, writingCreditAction,
 } from "../src/modules/credits/pricing.ts";
 import {
@@ -14,6 +14,7 @@ import {
 import { addCalendarMonth } from "../src/modules/subscriptions/plans.ts";
 import { VOCABULARY_LIMITS } from "../src/modules/vocabulary/contracts.ts";
 import { READING_LIMITS } from "../src/modules/reading-lab/contracts.ts";
+import { MY_EXAM_LIMITS } from "../src/modules/my-exams/contracts.ts";
 import { AI_IMAGE_LIMITS } from "../src/modules/ai-images/contracts.ts";
 import { subscriptionPlans } from "../src/modules/subscriptions/plans.ts";
 
@@ -27,9 +28,9 @@ test("credit prices follow the DeepSeek peak list price", () => {
     "chat": 5, "review-coach": 6, "practice-assistant": 5, "math-tutor": 3,
     "writing-ideas": 3, "writing-grammar": 5, "writing-feedback": 6,
     "speaking-turn": 3, "speaking-report": 9,
-    "vocabulary-import": 47, "exam-10": 13, "exam-20": 17, "reading-practice": 15,
+    "vocabulary-import": 47, "exam": 40, "exam-10": 13, "exam-20": 17, "reading-practice": 15,
   });
-  assert.deepEqual(MARGIN_ACTIONS, ["vocabulary-import"]);
+  assert.deepEqual(MARGIN_ACTIONS, ["vocabulary-import", "exam"]);
   for (const action of AI_ACTION_IDS) {
     const { inputTokens, outputTokens } = AI_ACTIONS[action];
     const usd = (inputTokens * DEEPSEEK_PRICE.inputCacheMiss + outputTokens * DEEPSEEK_PRICE.output) / 1e6;
@@ -100,6 +101,51 @@ test("a vocabulary import is priced by the new words found, with a margin over i
   assert.equal(creditRangeLabel("exam-20"), "17");
 });
 
+test("an exam from a file is priced by its questions, with a margin over its DeepSeek cost", () => {
+  const { inputTokens, outputTokens } = AI_ACTIONS["exam"];
+  // The cost model fills the action's token budget: a full-length document and the most questions.
+  assert.equal(EXAM_RATE.promptTokens + MY_EXAM_LIMITS.textChars / EXAM_RATE.charsPerToken, inputTokens);
+  assert.equal(examOutputTokens(MY_EXAM_LIMITS.questions), outputTokens);
+  assert.deepEqual([5, 10, 20, 99, NaN].map(examOutputTokens), [2600, 4400, 8000, 8000, 8000], "the reply budget follows the count and stops at the listed budget");
+  assert.equal(examCostNano(MY_EXAM_LIMITS.textChars, MY_EXAM_LIMITS.questions), costNanoUsd(inputTokens, outputTokens));
+  // Two credits a question on an ordinary file: more questions cost more, the same count costs the same.
+  assert.deepEqual(EXAM_PRICE, { perQuestion: 2, floorMargin: 2 });
+  assert.deepEqual([5, 10, 15, 20].map(count => examCredits(6_000, count)), [10, 20, 30, 40]);
+  assert.equal(examCredits(2_000, 12), examCredits(9_000, 12));
+  assert.equal(examCredits(0, 10, 4), 20, "four page photos");
+  // A few questions from a long document are sold at the cost floor, never below it.
+  assert.equal(examCredits(MY_EXAM_LIMITS.textChars, 5), 21);
+  assert.equal(examCredits(MY_EXAM_LIMITS.textChars, 10), 25);
+  assert.ok(examCredits(MY_EXAM_LIMITS.textChars, 5) > examCredits(6_000, 5));
+  // Holds: a document at the full-file price for its count, page photos by their known number.
+  assert.deepEqual([5, 10, 15, 20].map(count => examHold(count)), [21, 25, 30, 40]);
+  assert.deepEqual([5, 10, 20].map(count => examHold(count, 4)), [10, 20, 40]);
+  assert.equal(examHold(MY_EXAM_LIMITS.questions), creditCost("exam"), "the listed price is the most one exam can cost");
+  // Every exam earns at least the floor margin over its DeepSeek peak list cost, and the hold covers it.
+  for (const questions of [MY_EXAM_LIMITS.minQuestions, 7, 10, 14, MY_EXAM_LIMITS.questions]) {
+    for (const chars of [0, 80, 6_000, 20_000, MY_EXAM_LIMITS.textChars]) {
+      for (const images of chars ? [0] : [0, 1, AI_IMAGE_LIMITS.perUpload]) {
+        const price = examCredits(chars, questions, images);
+        const cost = examCostNano(chars, questions, images) / 1e9;
+        assert.ok(Number.isSafeInteger(price) && price >= questions * EXAM_PRICE.perQuestion && price <= creditCost("exam"), `${chars}/${questions}/${images}`);
+        assert.ok(price * CREDIT_USD >= EXAM_PRICE.floorMargin * cost - 1e-12, `margin ${chars}/${questions}/${images}`);
+        assert.ok(price <= examHold(questions, images), `hold ${chars}/${questions}/${images}`);
+        // Fewer questions delivered than asked for never cost more than the hold for the asked count.
+        assert.ok(examCredits(chars, Math.ceil(questions * 0.7), images) <= examHold(questions, images), `partial ${chars}/${questions}/${images}`);
+      }
+    }
+  }
+  assert.equal(examCredits(1e9, 1e9, 1e9), 40, "input is clamped to one exam's bounds");
+  assert.equal(examCredits(NaN, NaN), 40, "malformed input prices as the maximum");
+  assert.ok(examCredits(-5, -5) >= 1);
+  assert.deepEqual(creditRange("exam"), { min: 10, max: 40 });
+  assert.equal(creditRangeLabel("exam"), "10–40");
+  // The two flat prices it replaced stay listed only so earlier charges keep their name in admin reports.
+  assert.equal(creditRangeLabel("exam-10"), "13");
+  assert.match(AI_ACTIONS["exam-10"].label, /хуучин үнэ/);
+  assert.match(AI_ACTIONS["exam-20"].label, /хуучин үнэ/);
+});
+
 test("a reading practice is priced by the material read and the passage and questions written", () => {
   const { inputTokens, outputTokens } = AI_ACTIONS["reading-practice"];
   const rate = READING_PRACTICE_RATE;
@@ -142,8 +188,7 @@ test("feature actions map to their price list entries", () => {
   assert.equal(writingCreditAction("feedback"), "writing-feedback");
   for (const action of ["start", "answer", "advance", "hint"]) assert.equal(speakingCreditAction(action), "speaking-turn");
   assert.equal(speakingCreditAction("report"), "speaking-report");
-  assert.equal(examCreditAction(10), "exam-10");
-  assert.equal(examCreditAction(20), "exam-20");
+  assert.ok(isAiAction("exam") && isAiAction("exam-20"));
   assert.ok(isAiAction("chat") && !isAiAction("toString") && !isAiAction("free") && !isAiAction(5));
 });
 
@@ -287,7 +332,7 @@ test("every DeepSeek call is charged against credits, with its budget from the p
     "src/modules/writing-lab/service.ts": "writingCreditAction(body.action)",
     "src/modules/speaking-lab/service.ts": "speakingCreditAction(body.action)",
     "src/modules/vocabulary/service.ts": "\"vocabulary-import\"",
-    "src/modules/my-exams/service.ts": "examCreditAction(count)",
+    "src/modules/my-exams/service.ts": "chargeCredits(userId, \"exam\",",
     "src/modules/reading-lab/service.ts": "\"reading-practice\"",
   };
   for (const [path, action] of Object.entries(charged)) {
@@ -352,6 +397,13 @@ test("a priced-by-result charge holds its maximum and returns the rest when it s
   assert.match(vocabulary, /settle: reply => vocabularyImportCredits\(readChars, reply\.found, pictures\)/, "the charge follows the new words found");
   assert.match(vocabulary, /readChars = cleaned\.text\.length;/);
   assert.ok(vocabulary.indexOf("if (stored >= limit)") < vocabulary.indexOf("return chargeCredits("), "a full bank is refused before credits are held");
+  const exams = text("src/modules/my-exams/service.ts");
+  assert.match(exams, /hold: examHold\(count, pictures\)/);
+  // The reply now carries the exam saved on the account; the charge still follows its question count.
+  assert.match(exams, /settle: reply => examCredits\(readChars, reply\.exam\.questions\.length, pictures\)/, "the charge follows the questions delivered");
+  assert.match(exams, /readChars = cleaned\.text\.length;/);
+  assert.match(exams, /max_tokens: Math\.min\(AI_ACTIONS\["exam"\]\.outputTokens, examOutputTokens\(count\)\)/, "the provider never writes more than the price covers");
+  assert.doesNotMatch(exams, /exam-10|exam-20/, "the retired flat prices are never charged");
 });
 
 test("admin credit actions are validated, audited and kept server-side", () => {

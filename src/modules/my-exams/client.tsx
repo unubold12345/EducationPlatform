@@ -1,22 +1,29 @@
 "use client";
-import { useEffect, useRef, useState, type DragEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type DragEvent } from "react";
+import Link from "next/link";
 import { Icon } from "@/modules/workspace/icons";
 import { ScoreRing } from "@/modules/workspace/score";
 import { MathText } from "@/modules/exams/math-text";
-import { EXAM_COUNTS, MY_EXAM_LIMITS, type ExamCount, type ExamLanguage } from "./contracts";
 import {
-  beginDraft, deleteExam, newExamId, saveExam, saveGrade, updateDraft, useExams,
-  type Draft, type GradeReply, type StoredExam, type StoredQuestion, type StoredResult, type StoredResultItem,
-} from "./store";
+  EXAM_COUNT, MY_EXAM_LIMITS, examUpgrade, examsFullMessage, readDraft, readSavedExam,
+  type ExamDraft, type ExamLanguage, type ExamResult, type GradeItem, type SavedExam,
+} from "./contracts";
+import { forgetLegacyExam, legacyExams } from "./store";
 import styles from "./my-exams.module.css";
 import { CreditCost, useCredits } from "@/modules/credits/client";
-import { examCreditAction } from "@/modules/credits/pricing";
+import { examHold } from "@/modules/credits/pricing";
 import { MaterialImages, useMaterialPick } from "@/modules/ai-images/client";
 
 const ACCEPT = ".pdf,.docx,.pptx,.txt,.md,.csv,image/*";
 const ALLOWED = new Set(["pdf", "docx", "pptx", "txt", "md", "csv"]);
 const LETTERS = "ABCDE";
-const dateLabel = new Intl.DateTimeFormat("mn-MN", { timeZone: "Asia/Ulaanbaatar", month: "short", day: "numeric" });
+const UPGRADE = examUpgrade();
+// "11-р сарын 9" in Ulaanbaatar time (UTC+8 all year), written out by hand: the list is rendered on the server and
+// again in the browser, and a browser without Mongolian locale data would format the same date differently.
+const dateLabel = (time: number) => {
+  const date = new Date(time + 8 * 60 * 60 * 1000);
+  return `${date.getUTCMonth() + 1}-р сарын ${date.getUTCDate()}`;
+};
 const bytes = (size: number) => size >= 1024 * 1024 ? (size / 1024 / 1024).toFixed(1) + " MB" : Math.max(1, Math.round(size / 1024)) + " KB";
 const minutes = (seconds: number) => Math.max(1, Math.round(seconds / 60)) + " мин";
 const clock = (seconds: number) => {
@@ -24,30 +31,114 @@ const clock = (seconds: number) => {
   return String(Math.floor(safe / 60)).padStart(2, "0") + ":" + String(safe % 60).padStart(2, "0");
 };
 const kindLabel = (kind: string) => kind === "pdf" ? "PDF" : kind === "docx" ? "Word" : kind === "pptx" ? "PowerPoint" : kind === "image" ? "Зураг" : "Текст";
+const EXAM_API = "/api/workspace/my-exams";
 
 type View =
   | { kind: "list" }
   | { kind: "brief"; id: string }
-  | { kind: "run"; id: string; mode: Draft["mode"]; startedAt: number }
+  | { kind: "run"; id: string; mode: ExamDraft["mode"]; startedAt: number }
   | { kind: "result"; id: string };
+type DraftPatch = Pick<ExamDraft, "answers" | "index" | "flagged">;
 
-export function MyExams({ userKey }: { userKey: string }) {
-  const exams = useExams(userKey);
+/** A failed request, with the status so a caller can tell "already gone" from a real failure. */
+class RequestError extends Error {
+  constructor(message: string, public status: number) { super(message); }
+}
+/** One JSON request to the exam API. Every route is same-origin and session-checked on the server. */
+async function send(url: string, method: "POST" | "PATCH" | "DELETE", body: unknown, fallback: string): Promise<Record<string, unknown>> {
+  const response = await fetch(url, {
+    method, signal: AbortSignal.timeout(30_000),
+    ...(body === undefined ? {} : { headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }),
+  });
+  const data = await jsonObject(response);
+  if (response.status === 401) throw new RequestError("Нэвтрэх хугацаа дууссан. Дахин нэвтэрнэ үү.", 401);
+  if (!response.ok) throw new RequestError(typeof data.error === "string" ? data.error : fallback, response.status);
+  return data;
+}
+/** The server's own message when it gave one; a dropped connection or a timeout gets the fallback. */
+const failure = (reason: unknown, fallback: string) => reason instanceof RequestError ? reason.message : fallback;
+
+export function MyExams({ userKey, limit: planLimit, initialExams }: { userKey: string; limit: number; initialExams: SavedExam[] }) {
+  // The exams live on the account: the page starts from the server's list and every change goes through the API.
+  const [exams, setExams] = useState(initialExams);
   const [view, setView] = useState<View>({ kind: "list" });
   const material = useMaterialPick({ extensions: ALLOWED, maxBytes: MY_EXAM_LIMITS.fileBytes, documentHint: "PDF, Word, PowerPoint, TXT, MD, CSV файл эсвэл хуудасны зураг сонгоно уу." });
   const picked = material.pick;
   const file = picked?.kind === "document" ? picked.file : null;
-  const [count, setCount] = useState<ExamCount>(10);
+  const [count, setCount] = useState<number>(EXAM_COUNT.default);
+  // The number box keeps what is being typed; the count only follows once it is a valid size.
+  const [countText, setCountText] = useState(String(EXAM_COUNT.default));
   const [language, setLanguage] = useState<ExamLanguage>("mn");
+  const [structure, setStructure] = useState("");
+  // The server sends the plan's current size with every exam; a plan bought or ended meanwhile shows at once.
+  const [limit, setLimit] = useState(planLimit);
   const [pending, setPending] = useState(false);
   const { apply } = useCredits();
   const [error, setError] = useState("");
   const [dragging, setDragging] = useState(false);
-  const [fresh, setFresh] = useState<{ id: string; result: StoredResult } | null>(null);
+  // A start or a delete is waiting for the server.
+  const [busy, setBusy] = useState(false);
+  const [moveNote, setMoveNote] = useState("");
   const input = useRef<HTMLInputElement>(null);
   const active = view.kind === "list" ? null : exams.find(exam => exam.id === view.id) ?? null;
+  const full = exams.length >= limit;
+  const pictures = picked?.kind === "images" ? picked.images.length : 0;
 
   useEffect(() => { window.scrollTo({ top: 0, behavior: "auto" }); }, [view]);
+
+  const put = useCallback((exam: SavedExam) => {
+    setExams(list => [exam, ...list.filter(item => item.id !== exam.id)].sort((a, b) => b.updatedAt - a.updatedAt));
+  }, []);
+  const show = (next: View) => { setError(""); setView(next); };
+
+  // Exams made before they moved to the account are still in this browser. Each one is sent to the account
+  // once and then forgotten here; one the server cannot take now stays for the next visit.
+  useEffect(() => {
+    const legacy = legacyExams(userKey);
+    if (!legacy.length) return;
+    let cancelled = false;
+    void (async () => {
+      let waiting = 0, overflow = 0, unreadable = 0;
+      for (const item of legacy) {
+        if (cancelled) return;
+        try {
+          const response = await fetch(EXAM_API + "/import", {
+            method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(item.body), signal: AbortSignal.timeout(30_000),
+          });
+          const data = await jsonObject(response);
+          const exam = response.ok ? readSavedExam(data.exam) : null;
+          if (exam) { put(exam); forgetLegacyExam(userKey, item.id); }
+          // Its sealed key no longer opens, so it could not be sat or graded here either.
+          else if (response.ok && data.exam === null && typeof data.refused === "string") { forgetLegacyExam(userKey, item.id); unreadable++; }
+          else if (response.status === 409) overflow++;
+          else waiting++;
+        } catch { waiting++; }
+      }
+      if (cancelled) return;
+      setMoveNote([
+        overflow ? `Бүртгэл дүүрсэн тул ${overflow} шалгалт энэ хөтөчид үлдлээ. Нэг шалгалтаа устгаад хуудсаа дахин нээхэд шилжинэ.` : "",
+        waiting ? `${waiting} шалгалтыг бүртгэл рүү шилжүүлж чадсангүй. Хуудсаа дараа дахин нээхэд шилжинэ.` : "",
+        unreadable ? `${unreadable} хуучин шалгалтын түлхүүр хүчингүй болсон тул шилжүүлээгүй.` : "",
+      ].filter(Boolean).join(" "));
+    })();
+    return () => { cancelled = true; };
+  }, [userKey, put]);
+
+  function chooseCount(value: number) {
+    const next = Math.max(EXAM_COUNT.min, Math.min(EXAM_COUNT.max, Math.round(value)));
+    setCount(next);
+    setCountText(String(next));
+  }
+  function typeCount(text: string) {
+    setCountText(text);
+    const value = Number(text);
+    if (/^\d{1,2}$/.test(text) && value >= EXAM_COUNT.min && value <= EXAM_COUNT.max) setCount(value);
+  }
+  // Leaving the box settles a half-typed or out-of-range number to the nearest allowed size.
+  function settleCount() {
+    const value = Number(countText);
+    chooseCount(countText.trim() && Number.isFinite(value) ? value : count);
+  }
 
   async function pick(next: ArrayLike<File> | null | undefined) {
     setError("");
@@ -59,66 +150,89 @@ export function MyExams({ userKey }: { userKey: string }) {
     if (!pending) void pick(event.dataTransfer.files);
   }
   async function generate() {
-    if (!picked || pending || material.preparing) return;
+    if (!picked || pending || material.preparing || full) return;
     setPending(true); setError("");
     try {
       const form = new FormData();
       material.append(form);
       form.append("count", String(count));
       form.append("language", language);
-      const response = await fetch("/api/workspace/my-exams", { method: "POST", body: form, signal: AbortSignal.timeout(175_000) });
+      form.append("structure", structure.trim());
+      // The server counts the exams on the account and decides from the plan whether one more fits.
+      const response = await fetch(EXAM_API, { method: "POST", body: form, signal: AbortSignal.timeout(175_000) });
       const data = await jsonObject(response);
       if (response.status === 401) throw new Error("Нэвтрэх хугацаа дууссан. Дахин нэвтэрнэ үү.");
       if (!response.ok) throw new Error(typeof data.error === "string" ? data.error : "Шалгалт үүсгэж чадсангүй. Дахин оролдоно уу.");
       apply(data);
-      const exam = createdExam(data);
-      if (!exam) throw new Error("AI шалгалт бүрэн ирсэнгүй. Дахин оролдоно уу.");
-      saveExam(userKey, exam);
+      if (typeof data.limit === "number" && Number.isInteger(data.limit) && data.limit >= 1 && data.limit <= MY_EXAM_LIMITS.exams) setLimit(data.limit);
+      // The exam is already saved on the account; the reply is checked before it is shown.
+      const exam = readSavedExam(data.exam);
+      if (!exam) throw new Error("AI шалгалт бүрэн ирсэнгүй. Хуудсаа дахин ачаална уу.");
+      put(exam);
       setView({ kind: "brief", id: exam.id });
       material.clear();
     } catch (reason) {
       setError(reason instanceof Error && reason.name !== "TimeoutError" ? reason.message : "Шалгалт үүсгэхэд хэт удлаа. Дахин оролдоно уу.");
     } finally { setPending(false); }
   }
-  function open(exam: StoredExam) {
-    setError(""); setFresh(null);
-    if (exam.draft) setView({ kind: "run", id: exam.id, mode: exam.draft.mode, startedAt: exam.draft.startedAt });
-    else setView({ kind: "brief", id: exam.id });
+  function open(exam: SavedExam) {
+    if (exam.draft) show({ kind: "run", id: exam.id, mode: exam.draft.mode, startedAt: exam.draft.startedAt });
+    else show({ kind: "brief", id: exam.id });
   }
-  function start(exam: StoredExam, mode: Draft["mode"]) {
-    const now = Date.now();
-    beginDraft(userKey, exam.id, mode, now);
-    setError(""); setFresh(null);
-    setView({ kind: "run", id: exam.id, mode, startedAt: now });
+  // The sitting is opened on the account first, so its answers have somewhere to be saved.
+  async function start(exam: SavedExam, mode: ExamDraft["mode"]) {
+    if (busy) return;
+    setBusy(true); setError("");
+    try {
+      const data = await send(`${EXAM_API}/${exam.id}`, "PATCH", { action: "start", mode, startedAt: Date.now() }, "Шалгалтыг эхлүүлж чадсангүй. Дахин оролдоно уу.");
+      const draft = readDraft(data.draft, exam.questions.map(question => question.id));
+      if (!draft) throw new RequestError("Шалгалтыг эхлүүлж чадсангүй. Дахин оролдоно уу.", 200);
+      put({ ...exam, draft, updatedAt: Date.now() });
+      setView({ kind: "run", id: exam.id, mode: draft.mode, startedAt: draft.startedAt });
+    } catch (reason) {
+      setError(failure(reason, "Шалгалтыг эхлүүлж чадсангүй. Холболтоо шалгаад дахин оролдоно уу."));
+    } finally { setBusy(false); }
   }
-  function graded(exam: StoredExam, grade: GradeReply, elapsedSeconds: number, timed: boolean) {
-    saveGrade(userKey, exam.id, grade, { elapsedSeconds, timed });
-    setFresh({ id: exam.id, result: { total: grade.total, correct: grade.correct, percent: grade.percent, finishedAt: grade.gradedAt, elapsedSeconds, timed, results: grade.results } });
-    setView({ kind: "result", id: exam.id });
+  // Keeps the list in step with the open sitting; the runner sends the same progress to the account.
+  function draftChanged(id: string, startedAt: number, patch: DraftPatch) {
+    setExams(list => list.map(item => item.id === id && item.draft?.startedAt === startedAt ? { ...item, draft: { ...item.draft, ...patch } } : item));
   }
-  function remove(exam: StoredExam) {
-    if (!window.confirm(`"${exam.title}" шалгалтыг устгах уу? Хариулт, дүн хамт устана.`)) return;
-    deleteExam(userKey, exam.id);
-    setFresh(null);
+  function graded(exam: SavedExam) {
+    put(exam);
+    show({ kind: "result", id: exam.id });
+  }
+  async function remove(exam: SavedExam) {
+    if (busy || !window.confirm(`"${exam.title}" шалгалтыг устгах уу? Хариулт, дүн хамт устана.`)) return;
+    setBusy(true); setError("");
+    try {
+      await send(`${EXAM_API}/${exam.id}`, "DELETE", undefined, "Шалгалтыг устгаж чадсангүй. Дахин оролдоно уу.");
+    } catch (reason) {
+      // Already deleted on another device: it is gone here too.
+      if (!(reason instanceof RequestError) || reason.status !== 404) {
+        setError(failure(reason, "Шалгалтыг устгаж чадсангүй. Холболтоо шалгаад дахин оролдоно уу."));
+        setBusy(false);
+        return;
+      }
+    }
+    setExams(list => list.filter(item => item.id !== exam.id));
+    setBusy(false);
     setView({ kind: "list" });
   }
 
-  if (view.kind === "run" && active) return <Runner key={view.id + ":" + view.startedAt} exam={active} userKey={userKey} mode={view.mode} startedAt={view.startedAt} onExit={() => setView({ kind: "brief", id: active.id })} onGraded={(grade, elapsed, timed) => graded(active, grade, elapsed, timed)} />;
-  if (view.kind === "brief" && active) return <Briefing exam={active} onBack={() => setView({ kind: "list" })} onStart={mode => start(active, mode)} onResume={() => active.draft && setView({ kind: "run", id: active.id, mode: active.draft.mode, startedAt: active.draft.startedAt })} onResult={() => setView({ kind: "result", id: active.id })} onDelete={() => remove(active)} />;
-  if (view.kind === "result" && active) {
-    const result = fresh?.id === active.id ? fresh.result : active.last;
-    if (result) return <Result exam={active} result={result} onBack={() => { setFresh(null); setView({ kind: "list" }); }} onRetake={() => { setFresh(null); setView({ kind: "brief", id: active.id }); }} onDelete={() => remove(active)} />;
-  }
+  if (view.kind === "run" && active) return <Runner key={view.id + ":" + view.startedAt} exam={active} mode={view.mode} startedAt={view.startedAt} onExit={() => show({ kind: "brief", id: active.id })} onDraft={patch => draftChanged(view.id, view.startedAt, patch)} onGraded={graded} />;
+  if (view.kind === "brief" && active) return <Briefing exam={active} busy={busy} error={error} onBack={() => show({ kind: "list" })} onStart={mode => void start(active, mode)} onResume={() => active.draft && show({ kind: "run", id: active.id, mode: active.draft.mode, startedAt: active.draft.startedAt })} onResult={() => show({ kind: "result", id: active.id })} onDelete={() => void remove(active)} />;
+  if (view.kind === "result" && active?.last) return <Result exam={active} result={active.last} busy={busy} error={error} onBack={() => show({ kind: "list" })} onRetake={() => show({ kind: "brief", id: active.id })} onDelete={() => void remove(active)} />;
 
   return <div className={`wsp-page ${styles.page}`}>
     <header className={styles.head}>
       <p className={styles.kicker}><Icon name="fileExam" size={17} />Файлаас шалгалт</p>
       <h1>Файлаа оруул.<br /><span>Шалгалт болго.</span></h1>
-      <p className={styles.lead}>Хичээлийн PDF, Word, текст эсвэл дэвтэр, номын хуудасны зургаас AI 10–20 асуулттай шалгалт үүсгэж, цагтай эсвэл цаггүй өгөөд дүнгээ харна.</p>
+      <p className={styles.lead}>Хичээлийн файл эсвэл хуудасны зургаас AI {EXAM_COUNT.min}–{EXAM_COUNT.max} асуулттай шалгалт үүсгэнэ.</p>
     </header>
 
     <section className={styles.uploadCard} aria-labelledby="mx-upload-heading">
       <h2 id="mx-upload-heading" className="sr-only">Шалгалт үүсгэх файл</h2>
+      <div className={styles.source}>
       <div className={`${styles.drop} ${dragging ? styles.dropActive : ""}`}
         onDragEnter={event => { event.preventDefault(); if (!pending) setDragging(true); }}
         onDragOver={event => event.preventDefault()}
@@ -137,36 +251,43 @@ export function MyExams({ userKey }: { userKey: string }) {
           <button type="button" className={styles.choose} onClick={() => input.current?.click()} disabled={pending}>Файл, зураг сонгох</button>
         </>}
       </div>
+      <label className={styles.structure}>
+        <span className={styles.settingLabel}>Шалгалтын бүтэц <em>сонголтоор · {structure.length}/{MY_EXAM_LIMITS.structure}</em></span>
+        <textarea value={structure} onChange={event => setStructure(event.target.value)} maxLength={MY_EXAM_LIMITS.structure} rows={2} placeholder="жишээ нь: 5 тодорхойлолт, 10 бодлого; хялбараас хүнд рүү." disabled={pending} />
+      </label>
+      </div>
 
       <div className={styles.settings}>
-        <div className={styles.setting} role="group" aria-label="Асуултын тоо">
-          <span className={styles.settingLabel}>Асуултын тоо</span>
-          <div className={styles.segmented}>{EXAM_COUNTS.map(value => <button key={value} type="button" aria-pressed={count === value} className={count === value ? styles.segmentActive : undefined} onClick={() => setCount(value)} disabled={pending}>{value}</button>)}</div>
-          <small className={styles.settingHint}>Асуулт бүр 4 сонголттой.</small>
+        <div className={styles.setting}>
+          <label className={styles.settingLabel} htmlFor="mx-count">Асуултын тоо</label>
+          <div className={styles.rangeRow}>
+            <input id="mx-count" type="range" min={EXAM_COUNT.min} max={EXAM_COUNT.max} step={1} value={count} onChange={event => chooseCount(Number(event.target.value))} disabled={pending} />
+            <input type="number" inputMode="numeric" min={EXAM_COUNT.min} max={EXAM_COUNT.max} step={1} value={countText} onChange={event => typeCount(event.target.value)} onBlur={settleCount} disabled={pending} aria-label="Асуултын тоог бичих" />
+          </div>
         </div>
         <div className={styles.setting} role="group" aria-label="Шалгалтын хэл">
           <span className={styles.settingLabel}>Хэл</span>
           <div className={styles.segmented}><button type="button" aria-pressed={language === "mn"} className={language === "mn" ? styles.segmentActive : undefined} onClick={() => setLanguage("mn")} disabled={pending}>Монгол</button><button type="button" aria-pressed={language === "en"} className={language === "en" ? styles.segmentActive : undefined} onClick={() => setLanguage("en")} disabled={pending}>English</button></div>
-          <small className={styles.settingHint}>Асуулт, тайлбар энэ хэлээр.</small>
         </div>
-        <button type="button" className={styles.generate} onClick={() => void generate()} disabled={!picked || pending || material.preparing} aria-busy={pending}>
+        <button type="button" className={styles.generate} onClick={() => void generate()} disabled={!picked || pending || material.preparing || full} aria-busy={pending}>
           {pending ? <><i className={styles.spinner} aria-hidden="true" />Шалгалт үүсгэж байна…</> : <><Icon name="spark" size={18} />Шалгалт үүсгэх</>}
         </button>
-        <p className={styles.cost}><CreditCost action={examCreditAction(count)} /></p>
+        {full ? <p className={styles.limitNote} role="status">{examsFullMessage(limit)}{limit < UPGRADE.exams ? <> <Link href="/workspace/plans">Багц харах</Link></> : null}</p>
+          : <p className={styles.cost}><CreditCost action="exam" cost={examHold(count, pictures)} upTo /></p>}
         {pending ? <p className={styles.status} role="status">Файлыг уншиж, AI асуулт үүсгэж байна. 20–60 секунд орно.</p> : null}
         {error ? <p className={styles.error} role="alert">{error}</p> : null}
-        <p className={styles.fine}>Файлын текст эсвэл хуудасны зураг AI руу илгээгдэж, зөвхөн түүнээс асуулт үүсгэнэ. Урт файлын эхний 45,000 тэмдэгтийг ашиглана. Файл серверт хадгалагдахгүй; шалгалт, хариулт зөвхөн энэ хөтөчид үлдэнэ. Хариултын түлхүүр шалгалт дуустал шифрлэгдэнэ. Хугацаатай шалгалтын үеэр хаалттай.</p>
       </div>
     </section>
 
     <section className={styles.library} aria-labelledby="mx-library-heading">
-      <div className={styles.sectionHead}><h2 id="mx-library-heading">Миний шалгалтууд</h2>{exams.length ? <span>{exams.length} шалгалт</span> : null}</div>
+      <div className={styles.sectionHead}><h2 id="mx-library-heading">Миний шалгалтууд</h2><span data-full={full ? "" : undefined} title="Шалгалтууд таны бүртгэлд хадгалагдаж, бүх төхөөрөмж дээр харагдана">{exams.length} / {limit} · бүртгэлд</span></div>
+      {moveNote ? <p className={styles.moveNote} role="status">{moveNote}</p> : null}
       {exams.length ? <div className={styles.exams}>{exams.map(exam => <article key={exam.id} className={styles.exam}>
         <button type="button" className={styles.examOpen} onClick={() => open(exam)}>
           <span className={styles.examMark} aria-hidden="true"><Icon name="fileExam" size={21} /></span>
           <span className={styles.examText}>
             <strong>{exam.title}</strong>
-            <small>{exam.questions.length} асуулт · {minutes(exam.suggestedSeconds)} · {dateLabel.format(new Date(exam.createdAt))}</small>
+            <small>{exam.questions.length} асуулт · {minutes(exam.suggestedSeconds)} · {dateLabel(exam.createdAt)}</small>
             <small className={styles.examSource}>{exam.sourceName}</small>
           </span>
           {exam.draft ? <span className={styles.examBadge}>Үргэлжилж байна</span>
@@ -174,26 +295,27 @@ export function MyExams({ userKey }: { userKey: string }) {
               : <span className={styles.examBadge}>Шинэ</span>}
           <Icon name="arrow" size={18} className={styles.examArrow} />
         </button>
-        <button type="button" className={styles.examDelete} onClick={() => remove(exam)} aria-label={`${exam.title} шалгалтыг устгах`} title="Устгах"><Icon name="trash" size={17} /></button>
+        <button type="button" className={styles.examDelete} onClick={() => void remove(exam)} disabled={busy} aria-label={`${exam.title} шалгалтыг устгах`} title="Устгах"><Icon name="trash" size={17} /></button>
       </article>)}</div> : <div className={styles.empty}>
         <span className={styles.emptyMark} aria-hidden="true"><Icon name="fileExam" size={30} /></span>
         <h3>Одоогоор шалгалт алга</h3>
-        <p>Дээрээс нэг файл оруулаад эхний шалгалтаа үүсгээрэй. Жишээ нь: лекцийн PDF, хичээлийн тэмдэглэл, бүлгийн хураангуй.</p>
       </div>}
     </section>
   </div>;
 }
 
-function Briefing({ exam, onBack, onStart, onResume, onResult, onDelete }: {
-  exam: StoredExam;
+function Briefing({ exam, busy, error, onBack, onStart, onResume, onResult, onDelete }: {
+  exam: SavedExam;
+  busy: boolean;
+  error: string;
   onBack: () => void;
-  onStart: (mode: Draft["mode"]) => void;
+  onStart: (mode: ExamDraft["mode"]) => void;
   onResume: () => void;
   onResult: () => void;
   onDelete: () => void;
 }) {
   const draft = exam.draft;
-  const restart = (mode: Draft["mode"]) => {
+  const restart = (mode: ExamDraft["mode"]) => {
     if (window.confirm("Одоогийн хариултууд устаж, шалгалт шинээр эхэлнэ. Үргэлжлүүлэх үү?")) onStart(mode);
   };
   return <div className={`wsp-page ${styles.page} ${styles.briefPage}`}>
@@ -217,13 +339,14 @@ function Briefing({ exam, onBack, onStart, onResume, onResult, onDelete }: {
           <i className={styles.track} aria-hidden="true"><b style={{ width: Math.round((Object.keys(draft.answers).length / Math.max(1, exam.questions.length)) * 100) + "%" }} /></i>
         </div>
         <div className={styles.draftActions}>
-          <button type="button" className={styles.primary} onClick={onResume}><Icon name="arrow" size={18} />Үргэлжлүүлэх</button>
-          <button type="button" className={styles.ghost} onClick={() => restart(draft.mode)}>Шинээр эхлэх</button>
+          <button type="button" className={styles.primary} onClick={onResume} disabled={busy}><Icon name="arrow" size={18} />Үргэлжлүүлэх</button>
+          <button type="button" className={styles.ghost} onClick={() => restart(draft.mode)} disabled={busy}>Шинээр эхлэх</button>
         </div>
       </div> : <div className={styles.briefActions}>
-        <button type="button" className={styles.primary} onClick={() => onStart("timed")}><Icon name="clock" size={18} />Цагтай эхлэх · {minutes(exam.suggestedSeconds)}</button>
-        <button type="button" className={styles.ghost} onClick={() => onStart("untimed")}>Цаггүй эхлэх</button>
+        <button type="button" className={styles.primary} onClick={() => onStart("timed")} disabled={busy}><Icon name="clock" size={18} />Цагтай эхлэх · {minutes(exam.suggestedSeconds)}</button>
+        <button type="button" className={styles.ghost} onClick={() => onStart("untimed")} disabled={busy}>Цаггүй эхлэх</button>
       </div>}
+      {error ? <p className={styles.error} role="alert">{error}</p> : null}
 
       {exam.last ? <div className={styles.lastBox}>
         <ScoreRing percent={exam.last.percent} size={38} />
@@ -231,25 +354,76 @@ function Briefing({ exam, onBack, onStart, onResume, onResult, onDelete }: {
         <button type="button" className={styles.lastLink} onClick={onResult}>Үр дүн харах <Icon name="arrow" size={16} /></button>
       </div> : null}
 
-      <p className={styles.fine}>Энэ нь таны файлаас AI үүсгэсэн дадлагын шалгалт. Албан ёсны шалгалт, багшийн хянасан материал биш. Цаг нь зөвлөмж; дүн зөвхөн энэ хөтөчид хадгалагдана.</p>
-      <button type="button" className={styles.briefDelete} onClick={onDelete}><Icon name="trash" size={16} />Шалгалтыг устгах</button>
+      <button type="button" className={styles.briefDelete} onClick={onDelete} disabled={busy}><Icon name="trash" size={16} />Шалгалтыг устгах</button>
     </section>
   </div>;
 }
 
-function Runner({ exam, userKey, mode, startedAt, onExit, onGraded }: {
-  exam: StoredExam;
-  userKey: string;
-  mode: Draft["mode"];
+/**
+ * Sends one sitting's progress to the account: one request at a time, the newest state wins, and a failed
+ * save is tried again. The server refuses a save for a sitting that was graded or restarted elsewhere (409);
+ * nothing more is sent after that.
+ */
+function createSaver(id: string, startedAt: number, onFailed: (failed: boolean) => void) {
+  let next: DraftPatch | null = null, timer = 0, running: Promise<void> | null = null, closed = false, attached = true;
+  function flush(keepalive = false): Promise<void> {
+    window.clearTimeout(timer);
+    timer = 0;
+    if (running) return running.then(() => flush(keepalive));
+    const patch = next;
+    if (!patch || closed) return Promise.resolve();
+    next = null;
+    running = fetch(`${EXAM_API}/${id}`, {
+      method: "PATCH", keepalive, headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "save", startedAt, ...patch }), signal: keepalive ? undefined : AbortSignal.timeout(15_000),
+    }).then(response => {
+      if (response.status === 409 || response.status === 404) { closed = true; return; }
+      if (!response.ok) throw new Error("save");
+      onFailed(false);
+    }).catch(() => {
+      next ??= patch;
+      onFailed(true);
+      if (!closed && attached) timer = window.setTimeout(() => void flush(), 5000);
+    }).finally(() => { running = null; });
+    return running;
+  }
+  return {
+    queue(patch: DraftPatch) {
+      next = patch;
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => void flush(), 600);
+    },
+    flush,
+    attach() { attached = true; },
+    /** Leaving the runner: the last progress goes out once, and nothing is retried behind the next sitting. */
+    detach() { attached = false; void flush(true); },
+    /** Before a submission: nothing more is saved, and the save in flight lands first. */
+    async close() {
+      closed = true;
+      next = null;
+      window.clearTimeout(timer);
+      await running;
+    },
+    reopen() { closed = false; },
+  };
+}
+
+function Runner({ exam, mode, startedAt, onExit, onDraft, onGraded }: {
+  exam: SavedExam;
+  mode: ExamDraft["mode"];
   startedAt: number;
   onExit: () => void;
-  onGraded: (grade: GradeReply, elapsedSeconds: number, timed: boolean) => void;
+  onDraft: (patch: DraftPatch) => void;
+  onGraded: (exam: SavedExam) => void;
 }) {
   // Ignore a stale snapshot from an earlier sitting: only a draft started at this timestamp is ours.
   const draft = exam.draft && exam.draft.startedAt === startedAt ? exam.draft : null;
   const [index, setIndex] = useState(() => draft?.index ?? 0);
   const [answers, setAnswers] = useState<Record<string, number>>(() => draft?.answers ?? {});
   const [flagged, setFlagged] = useState<string[]>(() => draft?.flagged ?? []);
+  const [saveFailed, setSaveFailed] = useState(false);
+  const [saver] = useState(() => createSaver(exam.id, startedAt, setSaveFailed));
+  const synced = useRef(JSON.stringify({ answers: draft?.answers ?? {}, index: draft?.index ?? 0, flagged: draft?.flagged ?? [] }));
   const [now, setNow] = useState(() => Date.now());
   const [submitting, setSubmitting] = useState(false);
   const [confirming, setConfirming] = useState(false);
@@ -263,13 +437,23 @@ function Runner({ exam, userKey, mode, startedAt, onExit, onGraded }: {
   const remaining = mode === "timed" ? Math.max(0, exam.suggestedSeconds - elapsed) : elapsed;
   const low = mode === "timed" && remaining <= 60;
 
-  // A stale parent snapshot must never lose the first answer: make sure this sitting has a draft.
+  // Every navigation and answer is saved on the account, so a reload or another device resumes the same sitting.
   useEffect(() => {
-    if (!draft) beginDraft(userKey, exam.id, mode, startedAt);
-  }, [draft, exam.id, mode, startedAt, userKey]);
+    const patch = { answers, index, flagged };
+    const text = JSON.stringify(patch);
+    if (text === synced.current) return;
+    synced.current = text;
+    onDraft(patch);
+    saver.queue(patch);
+  }, [answers, index, flagged, onDraft, saver]);
 
-  // Persist every navigation and answer so a reload resumes the same sitting.
-  useEffect(() => { updateDraft(userKey, exam.id, { answers, index, flagged }); }, [answers, index, flagged, exam.id, userKey]);
+  // Closing the tab or leaving the runner sends the last progress without waiting for the pause after typing.
+  useEffect(() => {
+    const leave = () => { void saver.flush(true); };
+    saver.attach();
+    addEventListener("pagehide", leave);
+    return () => { removeEventListener("pagehide", leave); saver.detach(); };
+  }, [saver]);
 
   useEffect(() => {
     const timer = window.setInterval(() => setNow(Date.now()), 1000);
@@ -281,20 +465,20 @@ function Runner({ exam, userKey, mode, startedAt, onExit, onGraded }: {
     submitted.current = true;
     setSubmitting(true); setConfirming(false); setError("");
     try {
-      const response = await fetch("/api/workspace/my-exams/grade", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token: exam.token, answers }), signal: AbortSignal.timeout(30_000),
-      });
-      const data = await jsonObject(response);
-      if (response.status === 401) throw new Error("Нэвтрэх хугацаа дууссан. Дахин нэвтэрнэ үү.");
-      if (!response.ok) throw new Error(typeof data.error === "string" ? data.error : "Дүн гаргаж чадсангүй. Дахин оролдоно уу.");
-      const grade = gradedReply(data);
-      if (!grade) throw new Error("Дүн бүрэн ирсэнгүй. Дахин оролдоно уу.");
-      onGraded(grade, Math.max(0, Math.round((Date.now() - startedAt) / 1000)), mode === "timed");
+      // Grading closes the sitting on the account, so a save still on its way must not land after it.
+      await saver.close();
+      // The server grades from the key it keeps and stores the result; the reply is the updated exam.
+      const data = await send(EXAM_API + "/grade", "POST", {
+        id: exam.id, answers, elapsedSeconds: Math.max(0, Math.round((Date.now() - startedAt) / 1000)), timed: mode === "timed",
+      }, "Дүн гаргаж чадсангүй. Дахин оролдоно уу.");
+      const graded = readSavedExam(data.exam);
+      if (!graded?.last) throw new RequestError("Дүн бүрэн ирсэнгүй. Дахин оролдоно уу.", 200);
+      onGraded(graded);
     } catch (reason) {
       submitted.current = false;
       setSubmitting(false);
-      setError(reason instanceof Error && reason.name !== "TimeoutError" ? reason.message : "Дүн гаргахад хэт удлаа. Дахин оролдоно уу.");
+      saver.reopen();
+      setError(failure(reason, "Дүн гаргаж чадсангүй. Холболтоо шалгаад дахин оролдоно уу."));
     }
   }
   // Keep the timer's callback fresh without touching a ref during render.
@@ -378,23 +562,26 @@ function Runner({ exam, userKey, mode, startedAt, onExit, onGraded }: {
 
       <aside className={styles.sheet} aria-labelledby="mx-sheet-title">
         <div className={styles.sheetHead}><h2 id="mx-sheet-title">Хариултын хуудас</h2><span>{answered} / {exam.questions.length}</span></div>
-        <p className={styles.sheetSub}>{flagged.length ? `${flagged.length} тэмдэглэсэн` : "Бүх асуулт энд байна"}</p>
+        {flagged.length ? <p className={styles.sheetSub}>{flagged.length} тэмдэглэсэн</p> : null}
         <div className={styles.sheetGrid}>{exam.questions.map((item, itemIndex) => <button key={item.id} type="button"
           className={[styles.sheetCell, Object.prototype.hasOwnProperty.call(answers, item.id) ? styles.sheetCellAnswered : "", flagged.includes(item.id) ? styles.sheetCellFlagged : "", itemIndex === index ? styles.sheetCellCurrent : ""].filter(Boolean).join(" ")}
           onClick={() => go(itemIndex)} aria-current={itemIndex === index ? "true" : undefined}
           aria-label={`Асуулт ${itemIndex + 1}${Object.prototype.hasOwnProperty.call(answers, item.id) ? ", хариулсан" : ", хариулаагүй"}${flagged.includes(item.id) ? ", тэмдэглэсэн" : ""}`}>{itemIndex + 1}</button>)}</div>
         <div className={styles.sheetLegend}><span><i className={styles.legendAnswered} />Хариулсан</span><span><i className={styles.legendFlagged} />Тэмдэглэсэн</span></div>
         <button type="button" className={styles.primary} onClick={() => setConfirming(true)} disabled={submitting}>Шалгалт дуусгах</button>
-        {submitting ? <p className={styles.sheetStatus} role="status">Дүн гаргаж байна…</p> : null}
-        <p className={styles.sheetHint}>{mode === "timed" ? "Хугацаа дуусахад хариултууд автоматаар илгээгдэнэ." : "Цаггүй горим: өөрийн хурдаар ажиллана."} Хариулт бүр шууд хадгалагдана.</p>
+        {submitting ? <p className={styles.sheetStatus} role="status">Дүн гаргаж байна…</p>
+          : saveFailed ? <p className={styles.sheetStatus} role="status" data-warn="">Хариулт хадгалагдсангүй. Холболтоо шалгана уу; дахин оролдож байна.</p> : null}
+        {mode === "timed" ? <p className={styles.sheetHint}>Хугацаа дуусахад хариултууд автоматаар илгээгдэнэ.</p> : null}
       </aside>
     </div>
   </div>;
 }
 
-function Result({ exam, result, onBack, onRetake, onDelete }: {
-  exam: StoredExam;
-  result: StoredResult;
+function Result({ exam, result, busy, error, onBack, onRetake, onDelete }: {
+  exam: SavedExam;
+  result: ExamResult;
+  busy: boolean;
+  error: string;
   onBack: () => void;
   onRetake: () => void;
   onDelete: () => void;
@@ -405,7 +592,7 @@ function Result({ exam, result, onBack, onRetake, onDelete }: {
   const wrong = entries.filter(entry => entry.result && entry.result.chosen !== null && !entry.result.correct);
   const blank = entries.filter(entry => !entry.result || entry.result.chosen === null);
   const shown = filter === "all" ? entries : filter === "wrong" ? wrong : blank;
-  const status = (item: StoredResultItem | undefined) => !item || item.chosen === null ? "blank" : item.correct ? "correct" : "wrong";
+  const status = (item: GradeItem | undefined) => !item || item.chosen === null ? "blank" : item.correct ? "correct" : "wrong";
   const statusLabel = (value: string) => value === "correct" ? "Зөв" : value === "wrong" ? "Алдсан" : "Хариулаагүй";
 
   return <div className={`wsp-page ${styles.page} ${styles.resultPage}`}>
@@ -414,7 +601,7 @@ function Result({ exam, result, onBack, onRetake, onDelete }: {
       <div>
         <p className={styles.kicker}>Шалгалтын дүн</p>
         <h1 id="mx-result-title">{exam.title}</h1>
-        <p className={styles.resultMeta}>{exam.sourceName} · {dateLabel.format(new Date(result.finishedAt))} · {result.timed ? "цагтай" : "цаггүй"}</p>
+        <p className={styles.resultMeta}>{exam.sourceName} · {dateLabel(result.finishedAt)} · {result.timed ? "цагтай" : "цаггүй"}</p>
       </div>
       <div className={styles.scoreWrap}>
         <ScoreRing percent={result.percent} size={82} />
@@ -433,8 +620,9 @@ function Result({ exam, result, onBack, onRetake, onDelete }: {
     <div className={styles.resultActions}>
       <button type="button" className={styles.primary} onClick={onRetake}><Icon name="repeat" size={18} />Дахин өгөх</button>
       <button type="button" className={styles.ghost} onClick={onBack}>Жагсаалт руу буцах</button>
-      <button type="button" className={styles.deleteLink} onClick={onDelete}><Icon name="trash" size={16} />Устгах</button>
+      <button type="button" className={styles.deleteLink} onClick={onDelete} disabled={busy}><Icon name="trash" size={16} />Устгах</button>
     </div>
+    {error ? <p className={styles.error} role="alert">{error}</p> : null}
 
     <section className={styles.reviewSection} aria-labelledby="mx-review-title">
       <div className={styles.sectionHead}><h2 id="mx-review-title">Хариултын задаргаа</h2><span>{result.results.length} асуулт</span></div>
@@ -466,59 +654,8 @@ function Result({ exam, result, onBack, onRetake, onDelete }: {
       })}</div> : <div className={styles.empty}><h3>Энэ шүүлтэд асуулт алга</h3><p>Бүгд гэсэн шүүлтээр бүх асуултаа харна уу.</p></div>}
     </section>
 
-    <p className={styles.fine}>AI үүсгэсэн дадлагын дүн. Албан ёсны шалгалтын оноо биш; хариулт, тайлбарыг багш хянаагүй. Дүн зөвхөн энэ хөтөчид хадгалагдана.</p>
+    <p className={styles.fine}>AI үүсгэсэн шалгалт: хариулт, тайлбарыг багш хянаагүй.</p>
   </div>;
-}
-
-/** Validate the generation reply before anything is written to this browser. */
-function createdExam(data: Record<string, unknown>): StoredExam | null {
-  const source = data.source && typeof data.source === "object" && !Array.isArray(data.source) ? data.source as Record<string, unknown> : null;
-  if (typeof data.title !== "string" || !data.title.trim() || data.title.length > 200) return null;
-  if (typeof data.token !== "string" || data.token.length < 40 || data.token.length > MY_EXAM_LIMITS.tokenChars) return null;
-  if (data.language !== "mn" && data.language !== "en") return null;
-  if (typeof data.suggestedSeconds !== "number" || !Number.isFinite(data.suggestedSeconds)) return null;
-  if (!source || typeof source.name !== "string" || !source.name.trim() || typeof source.kind !== "string") return null;
-  if (!Array.isArray(data.questions) || data.questions.length < 5 || data.questions.length > MY_EXAM_LIMITS.questions) return null;
-  const questions: StoredQuestion[] = [];
-  const seen = new Set<string>();
-  for (const item of data.questions) {
-    if (!item || typeof item !== "object" || Array.isArray(item)) continue;
-    const question = item as Record<string, unknown>;
-    if (typeof question.prompt !== "string" || !question.prompt.trim() || !Array.isArray(question.options) || question.options.length !== 4) continue;
-    const options = question.options.filter((option): option is string => typeof option === "string" && Boolean(option.trim())).map(option => option.slice(0, 400));
-    if (options.length !== 4) continue;
-    const id = typeof question.id === "string" ? question.id : "q" + (questions.length + 1);
-    if (!/^q\d{1,2}$/.test(id) || seen.has(id)) continue;
-    const topic = typeof question.topic === "string" && question.topic.trim() ? question.topic.trim().slice(0, 60) : undefined;
-    seen.add(id);
-    questions.push({ id, prompt: question.prompt.trim().slice(0, 900), options, ...(topic ? { topic } : {}) });
-  }
-  if (questions.length < 5) return null;
-  const now = Date.now();
-  return {
-    id: newExamId(), title: data.title.trim().slice(0, 200), sourceName: source.name.slice(0, 200), sourceKind: source.kind.slice(0, 20),
-    language: data.language, createdAt: now, updatedAt: now, questions, token: data.token,
-    suggestedSeconds: Math.min(3600, Math.max(600, Math.round(data.suggestedSeconds))),
-    draft: null, last: null, best: null, attempts: 0,
-  };
-}
-
-/** Validate the server's grade before storing or showing it. */
-function gradedReply(data: Record<string, unknown>): GradeReply | null {
-  if (typeof data.title !== "string" || typeof data.gradedAt !== "number" || !Number.isFinite(data.gradedAt) || typeof data.total !== "number" || typeof data.correct !== "number" || typeof data.percent !== "number") return null;
-  if (!Number.isInteger(data.total) || !Number.isInteger(data.correct) || !Number.isInteger(data.percent) || data.total < 1 || data.total > 20 || data.correct < 0 || data.correct > data.total || data.percent < 0 || data.percent > 100) return null;
-  if (!Array.isArray(data.results) || data.results.length !== data.total) return null;
-  const results: StoredResultItem[] = [];
-  for (const item of data.results) {
-    if (!item || typeof item !== "object" || Array.isArray(item)) return null;
-    const row = item as Record<string, unknown>;
-    if (typeof row.id !== "string" || typeof row.answer !== "number" || !Number.isInteger(row.answer) || row.answer < 0 || row.answer > 4) return null;
-    if (typeof row.correct !== "boolean" || typeof row.explanation !== "string") return null;
-    if (row.chosen !== null && (typeof row.chosen !== "number" || !Number.isInteger(row.chosen) || row.chosen < 0 || row.chosen > 4)) return null;
-    const topic = typeof row.topic === "string" && row.topic ? row.topic.slice(0, 60) : undefined;
-    results.push({ id: row.id, chosen: row.chosen as number | null, answer: row.answer, correct: row.correct, explanation: row.explanation.slice(0, 1200), ...(topic ? { topic } : {}) });
-  }
-  return { title: data.title, gradedAt: data.gradedAt, total: data.total, correct: data.correct, percent: data.percent, results };
 }
 
 async function jsonObject(response: Response): Promise<Record<string, unknown>> {

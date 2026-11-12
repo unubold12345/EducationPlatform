@@ -6,7 +6,7 @@ export async function POST(request: Request) {
   try {
     checkOrigin(request);
     const user = await apiUser(request);
-    return privateJson(gradeMyExam(user.id, await readJson(request, MY_EXAM_LIMITS.gradeBodyBytes)));
+    return privateJson(await gradeMyExam(user.id, await readJson(request, MY_EXAM_LIMITS.gradeBodyBytes)));
   } catch (error) {
     return apiFailure(error);
   }

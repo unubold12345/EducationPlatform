@@ -17,8 +17,16 @@ with sync_playwright() as p:
     page.goto(BASE+"/plans");page.wait_for_load_state("networkidle")
     expect(page).to_have_url(BASE+"/workspace/plans")
     expect(page.locator('.wsp-nav a[href="/workspace/plans"]')).to_have_attribute("aria-current","page")
-    expect(page.locator(".pricing-card")).to_have_count(3)
-    expect(page.locator(".pricing-price strong")).to_have_text(["₮40,000","₮60,000","₮60,000"])
+    # The free account is the first card, then the three monthly plans.
+    expect(page.locator(".pricing-card")).to_have_count(4)
+    expect(page.locator(".pricing-price strong")).to_have_text(["₮0","₮40,000","₮60,000","₮60,000"])
+    free=page.locator('.pricing-card[data-program="free"]')
+    expect(free.get_by_role("heading",name="Үнэгүй",exact=True)).to_be_visible()
+    expect(free).to_contain_text("AI кредит / сар")
+    expect(free).to_contain_text("Файлаас үүсгэсэн 5 шалгалт хадгална")
+    expect(free.get_by_role("link",name="Үнэгүй бүртгүүлэх",exact=False)).to_have_attribute("href","/register")
+    expect(page.locator('.pricing-card[data-program="ielts"]')).to_contain_text("файлаас 15 шалгалт")
+    expect(page.locator(".pricing-table thead th")).to_have_text(["Багц","Үнэгүй","University Prep","IELTS","SAT"])
     page.screenshot(path=str(ART/"plans-desktop-dark.png"),full_page=True)
     assert context.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"ielts-academic-01"}).status==401
     page.goto(BASE+"/workshops/ielts-writing-data")

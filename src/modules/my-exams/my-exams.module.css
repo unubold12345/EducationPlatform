@@ -26,9 +26,11 @@
   background: linear-gradient(180deg, var(--wsp-card), color-mix(in srgb, var(--wsp-accent-soft) 40%, var(--wsp-card)));
   box-shadow: var(--wsp-shadow-soft);
 }
+/* Left column: the material, then how the exam should be organised. */
+.source { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
 .drop {
   display: grid; place-items: center; align-content: center; gap: 7px;
-  min-height: 250px; padding: 26px 20px;
+  flex: 1; min-height: 210px; padding: 26px 20px;
   border: 1.5px dashed var(--wsp-line-strong); border-radius: 16px;
   background: color-mix(in srgb, var(--wsp-card) 80%, transparent);
   text-align: center; transition: border-color .18s, background .18s;
@@ -70,7 +72,26 @@
 }
 .setting { display: flex; flex-direction: column; gap: 6px; }
 .settingLabel { color: var(--wsp-muted); font-size: 11px; font-weight: 650; letter-spacing: .03em; text-transform: uppercase; }
-.settingHint { color: var(--wsp-soft); font-size: 11.5px; }
+.settingLabel em { color: var(--wsp-soft); font-style: normal; font-weight: 500; letter-spacing: 0; text-transform: none; }
+/* Question count: a slider for the quick pick and a number box for an exact size. */
+.rangeRow { display: flex; align-items: center; gap: 10px; }
+.rangeRow input[type="range"] { flex: 1; min-width: 0; height: 28px; accent-color: var(--wsp-accent); cursor: pointer; }
+.rangeRow input[type="number"] {
+  flex-shrink: 0; width: 62px; min-height: 36px; padding: 6px 8px;
+  border: 1px solid var(--wsp-line); border-radius: 10px; background: var(--wsp-card); color: var(--wsp-ink);
+  font: inherit; font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; text-align: center;
+}
+.rangeRow input[type="number"]:focus { outline: 0; border-color: var(--wsp-accent); box-shadow: 0 0 0 3px var(--wsp-accent-soft); }
+.rangeRow input:disabled { opacity: .55; cursor: not-allowed; }
+.structure { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.structure textarea {
+  width: 100%; min-height: 62px; padding: 9px 12px; resize: vertical;
+  border: 1px solid var(--wsp-line); border-radius: 12px; background: var(--wsp-card); color: var(--wsp-ink);
+  font: inherit; font-size: 13.5px; line-height: 1.5; transition: border-color .15s, box-shadow .15s;
+}
+.structure textarea::placeholder { color: var(--wsp-soft); }
+.structure textarea:focus { outline: 0; border-color: var(--wsp-accent); box-shadow: 0 0 0 3px var(--wsp-accent-soft); }
+.structure textarea:disabled { opacity: .6; }
 .segmented { display: inline-flex; padding: 3px; border: 1px solid var(--wsp-line); border-radius: 10px; background: var(--wsp-chip); }
 .segmented button {
   flex: 1; min-width: 52px; padding: 7px 11px; border: 0; border-radius: 7px;
@@ -99,13 +120,20 @@
   background: var(--wsp-bad-soft); color: var(--wsp-bad); font-size: 13px; line-height: 1.55;
 }
 .fine { margin: 0; color: var(--wsp-soft); font-size: 11.5px; line-height: 1.65; }
+/* Shown instead of the price when the library has no room for another exam. */
+.limitNote {
+  margin: 0; padding: 10px 12px; border: 1px solid color-mix(in srgb, var(--wsp-amber) 40%, var(--wsp-line));
+  border-radius: 10px; background: var(--wsp-amber-soft); color: var(--wsp-text); font-size: 12.5px; line-height: 1.55;
+}
+.limitNote a { color: var(--wsp-accent); font-weight: 650; white-space: nowrap; }
 
 /* ---------- Library ---------- */
 
 .library { margin-top: 38px; }
 .sectionHead { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
 .sectionHead h2 { margin: 0; font-size: 20px; font-weight: 700; }
-.sectionHead > span { color: var(--wsp-muted); font-size: 12px; }
+.sectionHead > span { color: var(--wsp-muted); font-size: 12px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.sectionHead > span[data-full] { color: var(--wsp-amber); font-weight: 650; }
 .exams { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .exam {
   position: relative; display: flex; align-items: stretch; min-width: 0;
@@ -213,7 +241,6 @@
 .lastLink:hover { background: var(--wsp-accent-soft); }
 .briefDelete { display: inline-flex; align-items: center; gap: 5px; margin-top: 18px; padding: 4px 6px; border: 0; background: transparent; color: var(--wsp-soft); font-size: 12px; cursor: pointer; }
 .briefDelete:hover { color: var(--wsp-bad); }
-.briefCard .fine { margin-top: 18px; }
 
 /* ---------- Runner ---------- */
 
@@ -296,8 +323,8 @@
 .sheetHead { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
 .sheetHead h2 { margin: 0; font-size: 14px; font-weight: 700; }
 .sheetHead span { color: var(--wsp-muted); font-size: 11.5px; }
-.sheetSub { margin: 3px 0 12px; color: var(--wsp-soft); font-size: 11.5px; }
-.sheetGrid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+.sheetSub { margin: 3px 0 0; color: var(--wsp-amber); font-size: 11.5px; }
+.sheetGrid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; margin-top: 12px; }
 .sheetCell {
   position: relative; display: grid; place-items: center;
   min-height: 36px; padding: 0; border: 1px solid var(--wsp-line); border-radius: 9px;
@@ -378,7 +405,7 @@
 @media (max-width: 980px) {
   .uploadCard { grid-template-columns: minmax(0, 1fr); }
   .settings { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
-  .generate, .status, .error, .fine { grid-column: 1 / -1; }
+  .generate, .status, .error, .cost, .limitNote { grid-column: 1 / -1; }
   .runnerGrid { grid-template-columns: minmax(0, 1fr); }
   .sheet { position: static; }
   .sheetGrid { grid-template-columns: repeat(10, minmax(0, 1fr)); }
@@ -423,4 +450,11 @@
 }
 
 /* The AI credit cost for the chosen question count, under the generate button. */
-.cost { display: flex; justify-content: center; margin: 8px 0 0; }
+.cost { display: flex; justify-content: center; margin: 0; }
+
+/* Keyboard shortcuts mean nothing on a touch screen. */
+@media (hover: none) { .keys { display: none; } }
+
+/* Exams still in this browser that could not be moved to the account. */
+.moveNote { margin: 0 0 12px; color: var(--wsp-muted); font-size: 12.5px; line-height: 1.55; }
+.sheetStatus[data-warn] { color: var(--wsp-bad); }

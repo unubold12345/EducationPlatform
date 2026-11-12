@@ -13,6 +13,8 @@ import { creditAllowances, creditSummary } from "@/modules/credits/service";
 import { creditPack } from "@/modules/credits/purchase";
 import { CreditTopUp } from "@/modules/credits/purchase-client";
 import { DEFAULT_CREDIT_PACK, defaultAllowances, formatCredits } from "@/modules/credits/pricing";
+import { VOCABULARY_LIMITS } from "@/modules/vocabulary/contracts";
+import { MY_EXAM_LIMITS } from "@/modules/my-exams/contracts";
 import "./plans.css";
 
 export const metadata: Metadata = { title: "Сарын багцууд" };
@@ -35,22 +37,48 @@ export default async function PlansPage() {
   const credits = session ? await creditSummary(session.user.id, now).catch(() => null) : null;
   const date = new Intl.DateTimeFormat("mn-MN", { timeZone: "Asia/Ulaanbaatar", dateStyle: "medium" });
   const totalMocks = examDefinitions.length + entranceTotal + jlptMocks.length + hskMocks.length;
+  const words = (value: number) => value.toLocaleString("en-US");
+  // What every verified account gets without a plan. The numbers are the ones the server enforces.
+  const freeFeatures = [
+    "Workspace: AI туслах, үгсийн сан, файлаас шалгалт",
+    `Үгсийн санд ${words(VOCABULARY_LIMITS.freeWords)} үг`,
+    `Файлаас үүсгэсэн ${MY_EXAM_LIMITS.freeExams} шалгалт хадгална`,
+    "Reading, Listening Lab-ийн жишээ дасгал",
+    `Бүтэн mock-ийг нэг бүрчлэн ${MOCK_PRICE_LABEL}-өөр авна`,
+  ];
+  // Columns: the free account first, then the plans in their card order.
   const comparison: { label: string; values: string[] }[] = [
-    { label: "Бүтэн mock", values: [`${entranceTotal}`, `${count("ielts")}`, `${count("sat")}`] },
-    { label: "Хичээл, чадвар", values: ["Математик, физик, хими, биологи, англи", "4 чадвар", "R&W + Math"] },
-    { label: "Writing & Speaking workshop", values: ["—", "4", "—"] },
-    { label: "Цаггүй дадлага + AI туслах", values: ["✓", "✓", "✓"] },
-    { label: "AI кредит / сар", values: plans.map(plan => "+" + formatCredits(allowances[plan.program])) },
-    { label: "Хадгалсан явц, үр дүн", values: ["✓", "✓", "✓"] },
+    { label: "Бүтэн mock", values: [`${MOCK_PRICE_LABEL} / mock`, `${entranceTotal}`, `${count("ielts")}`, `${count("sat")}`] },
+    { label: "Хичээл, чадвар", values: ["—", "Математик, физик, хими, биологи, англи", "4 чадвар", "R&W + Math"] },
+    { label: "Writing & Speaking workshop", values: ["—", "—", "4", "—"] },
+    { label: "Цаггүй дадлага + AI туслах", values: ["Авсан mock-д", "✓", "✓", "✓"] },
+    { label: "AI кредит / сар", values: [formatCredits(allowances.free), ...plans.map(plan => "+" + formatCredits(allowances[plan.program]))] },
+    { label: "Үгсийн сан", values: [VOCABULARY_LIMITS.freeWords, ...plans.map(plan => plan.vocabularyWords)].map(value => `${words(value)} үг`) },
+    { label: "Файлаас шалгалт хадгалах", values: [MY_EXAM_LIMITS.freeExams, ...plans.map(plan => plan.savedExams)].map(String) },
+    { label: "Хадгалсан явц, үр дүн", values: ["✓", "✓", "✓", "✓"] },
   ];
   return <div className="container page-space pricing-page">
     <header className="wsp-page-head">
-      <div><h1>Багцууд</h1><p>{totalMocks} бүтэн шалгалт · 5 хөтөлбөр. Сарын багцаар хөтөлбөрийн бүх mock-ийг нээх эсвэл нэг шалгалтын эрх авна. JLPT, HSK нь зөвхөн нэг шалгалтын эрхээр.</p></div>
+      <div><h1>Багцууд</h1><p>{totalMocks} бүтэн шалгалт · 5 хөтөлбөр. Үнэгүй эхлээд, сарын багцаар хөтөлбөрийн бүх mock-ийг нээх эсвэл нэг шалгалтын эрх авна. JLPT, HSK нь зөвхөн нэг шалгалтын эрхээр.</p></div>
     </header>
 
     <section className="pricing-plans" id="plans" aria-labelledby="pricing-plans-heading">
-      <h2 className="sr-only" id="pricing-plans-heading">Сарын эрх</h2>
+      <h2 className="sr-only" id="pricing-plans-heading">Үнэгүй ба сарын эрх</h2>
       <div className="pricing-grid">
+        {/* The free account is not a purchase: every verified account has it, with or without a plan. */}
+        <article className="pricing-card" data-program="free" data-active={session ? "" : undefined}>
+          <header className="pricing-card-top">
+            <span className="pricing-symbol" aria-hidden="true">✦</span>
+            <span className={session ? "status access-unlocked" : "status"}>{session ? "✓ Идэвхтэй" : "БҮРТГЭЛТЭЙ БҮХ ХҮНД"}</span>
+          </header>
+          <h3>Үнэгүй</h3>
+          <div className="pricing-price"><strong>₮0</strong><span>/ сар</span></div>
+          <p className="pricing-credits"><Bolt /><strong>{formatCredits(allowances.free)}</strong> AI кредит / сар</p>
+          <ul className="pricing-features">{freeFeatures.map(feature => <li key={feature}><span aria-hidden="true">✓</span>{feature}</li>)}</ul>
+          <div className="pricing-card-foot">
+            <Link className="button secondary" href={session ? "/workspace" : "/register"}>{session ? "Workspace нээх" : "Үнэгүй бүртгүүлэх"} <span aria-hidden="true">→</span></Link>
+          </div>
+        </article>
         {plans.map(plan => {
           const current = owned.get(plan.program);
           return <article key={plan.program} className="pricing-card" data-program={plan.program} data-featured={plan.program === "entrance" ? "" : undefined} data-active={current ? "" : undefined}>
@@ -61,7 +89,11 @@ export default async function PlansPage() {
             <h3>{plan.title}</h3>
             <div className="pricing-price"><strong>₮{plan.amountMnt.toLocaleString("en-US")}</strong><span>/ сар</span></div>
             <p className="pricing-credits"><Bolt /><strong>{formatCredits(allowances[plan.program])}</strong> AI кредит / сар</p>
-            <ul className="pricing-features">{plan.features.map(feature => <li key={feature}><span aria-hidden="true">✓</span>{feature}</li>)}</ul>
+            <ul className="pricing-features">
+              {plan.features.map(feature => <li key={feature}><span aria-hidden="true">✓</span>{feature}</li>)}
+              {plan.vocabularyWords > VOCABULARY_LIMITS.freeWords || plan.savedExams > MY_EXAM_LIMITS.freeExams
+                ? <li><span aria-hidden="true">✓</span>Үгсийн санд {words(plan.vocabularyWords)} үг, файлаас {plan.savedExams} шалгалт</li> : null}
+            </ul>
             <div className="pricing-card-foot">
               {current ? <p className="pricing-expiry">{date.format(current.endsAt)} хүртэл</p> : null}
               <Link className="button" href={"/subscribe/" + plan.program}>{current ? "Багцаа сунгах" : "Багц сонгох"} <span aria-hidden="true">→</span></Link>
@@ -75,10 +107,10 @@ export default async function PlansPage() {
       <div className="pricing-section-head"><h2 id="pricing-compare-heading">Харьцуулалт</h2></div>
       <div className="pricing-table-wrap">
         <table className="pricing-table">
-          <caption className="sr-only">SAT, IELTS болон University Prep багцуудын харьцуулалт</caption>
-          <thead><tr><th scope="col">Багц</th>{plans.map(plan => <th scope="col" key={plan.program}>{plan.shortTitle}</th>)}</tr></thead>
+          <caption className="sr-only">Үнэгүй бүртгэл болон SAT, IELTS, University Prep багцуудын харьцуулалт</caption>
+          <thead><tr><th scope="col">Багц</th><th scope="col">Үнэгүй</th>{plans.map(plan => <th scope="col" key={plan.program}>{plan.shortTitle}</th>)}</tr></thead>
           <tbody>{comparison.map(row => <tr key={row.label}><th scope="row">{row.label}</th>{row.values.map((value, index) => <td key={index} data-out={value === "—" ? "" : undefined}>{value === "✓" ? <span className="pricing-check" aria-label="Багтсан">✓</span> : value}</td>)}</tr>)}</tbody>
-          <tfoot><tr><th scope="row">Сарын үнэ</th>{plans.map(plan => <td key={plan.program}><strong>₮{plan.amountMnt.toLocaleString("en-US")}</strong></td>)}</tr></tfoot>
+          <tfoot><tr><th scope="row">Сарын үнэ</th><td><strong>₮0</strong></td>{plans.map(plan => <td key={plan.program}><strong>₮{plan.amountMnt.toLocaleString("en-US")}</strong></td>)}</tr></tfoot>
         </table>
       </div>
     </section>

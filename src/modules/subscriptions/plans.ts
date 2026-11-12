@@ -2,10 +2,12 @@ export type SubscriptionProgram = "entrance" | "ielts" | "sat";
 // aiCredits: monthly AI credits the plan adds to the free allowance (see src/modules/credits/pricing.ts).
 // vocabularyWords: the vocabulary bank size while the plan is active; the largest active plan wins and the
 // free bank is VOCABULARY_LIMITS.freeWords (see src/modules/vocabulary/contracts.ts).
+// savedExams: how many exams made from a file the student keeps while the plan is active; the largest active
+// plan wins and a free account keeps MY_EXAM_LIMITS.freeExams (see src/modules/my-exams/contracts.ts).
 export const subscriptionPlans = [
-  { program:"entrance", title:"Их сургуулийн бэлтгэл", shortTitle:"University Prep", amountMnt:40000, aiCredits:1500, vocabularyWords:100, symbol:"∑", description:"ЭЕШ-ийн бүх хичээлийн бүтэн mock шалгалтууд нэг эрхэд.", features:["Бүх 194 ЭЕШ mock: математик 55, физик 60, хими 18, биологи 21, англи 40", "Цагтай шалгалт ба цаггүй дадлага", "AI туслах, тайлбартай үр дүн", "Хадгалсан явц, дахин өгөх боломж"] },
-  { program:"ielts", title:"IELTS", shortTitle:"IELTS", amountMnt:60000, aiCredits:3000, vocabularyWords:3000, symbol:"Aa", description:"IELTS-ийн бүтэн mock шалгалт, workshop нэг эрхэд.", features:["12 бүтэн IELTS Academic mock", "4 Writing & Speaking workshop", "Listening audio, Reading, Writing, Speaking", "AI туслах, хадгалсан явц, үр дүн"] },
-  { program:"sat", title:"SAT", shortTitle:"SAT", amountMnt:60000, aiCredits:2000, vocabularyWords:3000, symbol:"x²", description:"Digital SAT-ийн бүтэн mock шалгалтууд нэг эрхэд.", features:["6 бүтэн Digital SAT mock", "98 асуулт · 4 модуль", "Reading & Writing + Math, тоон хариулт", "AI туслах, тайлбар, хадгалсан явц"] },
+  { program:"entrance", title:"Их сургуулийн бэлтгэл", shortTitle:"University Prep", amountMnt:40000, aiCredits:1500, vocabularyWords:100, savedExams:5, symbol:"∑", description:"ЭЕШ-ийн бүх хичээлийн бүтэн mock шалгалтууд нэг эрхэд.", features:["Бүх 194 ЭЕШ mock: математик 55, физик 60, хими 18, биологи 21, англи 40", "Цагтай шалгалт ба цаггүй дадлага", "AI туслах, тайлбартай үр дүн", "Хадгалсан явц, дахин өгөх боломж"] },
+  { program:"ielts", title:"IELTS", shortTitle:"IELTS", amountMnt:60000, aiCredits:3000, vocabularyWords:3000, savedExams:15, symbol:"Aa", description:"IELTS-ийн бүтэн mock шалгалт, workshop нэг эрхэд.", features:["12 бүтэн IELTS Academic mock", "4 Writing & Speaking workshop", "Listening audio, Reading, Writing, Speaking", "AI туслах, хадгалсан явц, үр дүн"] },
+  { program:"sat", title:"SAT", shortTitle:"SAT", amountMnt:60000, aiCredits:2000, vocabularyWords:3000, savedExams:15, symbol:"x²", description:"Digital SAT-ийн бүтэн mock шалгалтууд нэг эрхэд.", features:["6 бүтэн Digital SAT mock", "98 асуулт · 4 модуль", "Reading & Writing + Math, тоон хариулт", "AI туслах, тайлбар, хадгалсан явц"] },
 ] as const;
 export function findSubscriptionPlan(program:unknown) { return subscriptionPlans.find(plan=>plan.program===program); }
 export function addCalendarMonth(value:Date) {

@@ -20,6 +20,7 @@ model User {
   practiceSessions PracticeSession[]
   vocabularyWords VocabularyWord[]
   vocabularyDecks VocabularyDeck[]
+  myExams MyExam[]
   creditPeriods CreditPeriod[]
   creditCharges CreditCharge[]
   creditPlanTerms CreditPlanTerm[]
@@ -352,6 +353,36 @@ model VocabularyDeck {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   @@unique([userId, nameKey])
+}
+
+// An exam the student made from their own file (2026-11-12). It lives on the account, not in one
+// browser, so it survives cleared site data, follows the student between devices and is counted by
+// the server for the plan's saved-exam limit.
+model MyExam {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title String
+  sourceName String
+  sourceKind String
+  language String
+  // The questions WITH the answer key and explanations. Only the public part leaves the server
+  // before a submission.
+  questions Json
+  suggestedSeconds Int
+  // The open sitting ({ answers, index, flagged, startedAt, mode }), or null.
+  draft Json?
+  // The last graded sitting with its per-question results, and the best score across retakes.
+  last Json?
+  best Json?
+  attempts Int @default(0)
+  // SHA-256 of the sealed token for an exam moved here from browser storage (exams made before
+  // 2026-11-12), so one browser exam is imported once. Null for exams created on the server.
+  importKey String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([userId, importKey])
+  @@index([userId, updatedAt])
 }
 
 // AI credits (2026-11-09). One row per student per Ulaanbaatar month counts the credits used; the

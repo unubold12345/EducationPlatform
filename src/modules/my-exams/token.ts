@@ -1,9 +1,10 @@
 import { createCipheriv, createDecipheriv, hkdfSync, randomBytes } from "node:crypto";
 import type { ExamLanguage, FullQuestion } from "./contracts";
 
-// The answer key never travels to the browser in readable form: the generated exam is sealed in
-// an AES-256-GCM token bound to one student. Grading opens it on the server after submission.
-// This file intentionally has no "server-only" import so the round trip can be unit tested; it is
+// Until 2026-11-12 exams were kept in the browser, and the answer key travelled with them sealed in
+// an AES-256-GCM token bound to one student. Exams now live on the account, so no new token is
+// issued; this file remains to open the old ones when a browser's exams move to the account.
+// It intentionally has no "server-only" import so the round trip can be unit tested; it is
 // only imported by the server service and uses node:crypto.
 const PREFIX = "wxe1";
 const VERSION = 1;
@@ -57,8 +58,12 @@ export function sealExam(userId: string, exam: SealedExam, now = Date.now()): st
   return [PREFIX, iv.toString("base64url"), body.toString("base64url"), cipher.getAuthTag().toString("base64url")].join(".");
 }
 
-/** Open a token for the signed-in student, refusing tampered, expired and borrowed tokens. */
-export function openExam(token: string, userId: string, now = Date.now()): SealedExam {
+/**
+ * Open a token for the signed-in student, refusing tampered, expired and borrowed tokens.
+ * `allowExpired` is for moving an old exam to the account: its content is still authentic and the
+ * student's own, and once stored it no longer depends on the token.
+ */
+export function openExam(token: string, userId: string, now = Date.now(), options: { allowExpired?: boolean } = {}): SealedExam {
   if (typeof token !== "string" || token.length < 40 || token.length > 200_000) throw new ExamTokenError("invalid");
   const parts = token.split(".");
   if (parts.length !== 4 || parts[0] !== PREFIX) throw new ExamTokenError("invalid");
@@ -79,7 +84,7 @@ export function openExam(token: string, userId: string, now = Date.now()): Seale
   }
   if (!record(value) || value.v !== VERSION || !validText(value.userId, 200) || typeof value.expiresAt !== "number") throw new ExamTokenError("invalid");
   if (value.userId !== userId) throw new ExamTokenError("owner");
-  if (!Number.isFinite(value.expiresAt) || value.expiresAt <= now) throw new ExamTokenError("expired");
+  if (!Number.isFinite(value.expiresAt) || (value.expiresAt <= now && !options.allowExpired)) throw new ExamTokenError("expired");
   const exam = value.exam;
   if (!record(exam) || !validText(exam.title, 200) || (exam.language !== "mn" && exam.language !== "en")
     || !validText(exam.sourceName, 200) || !validText(exam.sourceKind, 20) || typeof exam.createdAt !== "number"

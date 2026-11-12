@@ -31,7 +31,7 @@ with sync_playwright() as p:
   password_change=context.request.post(BASE+'/api/auth/change-password',headers={'Origin':BASE},data={'currentPassword':account['password'],'newPassword':'Must-not-change-123!','revokeOtherSessions':True})
   assert password_change.status==403, {'accountIndex':index,'status':password_change.status,'code':password_change.json().get('code')}
   session=context.request.get(BASE+'/api/auth/get-session').json();assert session['user']['email']==account['email'] and not session['user']['emailVerified']
-  page.get_by_role('button',name='Гарах',exact=True).click();expect(page).to_have_url(BASE+'/login')
+  page.locator('.profile-heading').get_by_role('button',name='Гарах',exact=True).click();expect(page).to_have_url(BASE+'/login')
   context.close()
   # Allow Better Auth's 10-second idle window to reset between password-denial checks.
   time.sleep(11)

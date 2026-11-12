@@ -17,7 +17,7 @@ const themeScript = `(function(){var t;try{t=localStorage.getItem('education-the
 
 export const metadata: Metadata = {
   title: { default: "Education — Суралцах дараагийн алхам", template: "%s | Education" },
-  description: "SAT, IELTS, ЭЕШ, JLPT mock шалгалт, цаггүй дадлага, AI туслах, ярих, бичих, сонсох Workshop — нэг Workspace-д.",
+  description: "SAT, IELTS, ЭЕШ, JLPT, HSK mock шалгалт, цаггүй дадлага, AI туслах, ярих, бичих, сонсох Workshop — нэг Workspace-д.",
   robots: { index: false, follow: false },
 };
 

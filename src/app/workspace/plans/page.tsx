@@ -5,6 +5,8 @@ import { getDb } from "@/lib/db";
 import { pricedPlans } from "@/modules/subscriptions/prices";
 import { examDefinitions } from "@/modules/exams/definitions";
 import { entranceTotal } from "@/modules/exams/entrance/catalog";
+import { jlptMocks } from "@/modules/exams/jlpt/catalog";
+import { hskMocks } from "@/modules/exams/hsk/catalog";
 import { MOCK_PRICE_LABEL } from "@/modules/exams/pricing";
 import { mockPilotPaymentsEnabled } from "@/lib/local-pilot";
 import { creditAllowances, creditSummary } from "@/modules/credits/service";
@@ -15,10 +17,11 @@ import "./plans.css";
 
 export const metadata: Metadata = { title: "Сарын багцууд" };
 
+const count = (program: string) => examDefinitions.filter(exam => exam.program === program).length;
 const badges: Record<string, string> = {
   entrance: `${entranceTotal} MOCK`,
-  ielts: "6 MOCK + 4 WORKSHOP",
-  sat: "6 MOCK",
+  ielts: `${count("ielts")} MOCK + 4 WORKSHOP`,
+  sat: `${count("sat")} MOCK`,
 };
 
 // The plans page moved from /plans into the Workspace on 2026-11-08; /plans redirects here. Guests can still compare plans.
@@ -31,10 +34,10 @@ export default async function PlansPage() {
   // The credit tables may be missing on a database that has not run the latest migration; the page still renders.
   const credits = session ? await creditSummary(session.user.id, now).catch(() => null) : null;
   const date = new Intl.DateTimeFormat("mn-MN", { timeZone: "Asia/Ulaanbaatar", dateStyle: "medium" });
-  const totalMocks = examDefinitions.length + entranceTotal;
+  const totalMocks = examDefinitions.length + entranceTotal + jlptMocks.length + hskMocks.length;
   const comparison: { label: string; values: string[] }[] = [
-    { label: "Бүтэн mock", values: [`${entranceTotal}`, "6", "6"] },
-    { label: "Хичээл, чадвар", values: ["Математик, физик, англи", "4 чадвар", "R&W + Math"] },
+    { label: "Бүтэн mock", values: [`${entranceTotal}`, `${count("ielts")}`, `${count("sat")}`] },
+    { label: "Хичээл, чадвар", values: ["Математик, физик, хими, биологи, англи", "4 чадвар", "R&W + Math"] },
     { label: "Writing & Speaking workshop", values: ["—", "4", "—"] },
     { label: "Цаггүй дадлага + AI туслах", values: ["✓", "✓", "✓"] },
     { label: "AI кредит / сар", values: plans.map(plan => "+" + formatCredits(allowances[plan.program])) },
@@ -42,7 +45,7 @@ export default async function PlansPage() {
   ];
   return <div className="container page-space pricing-page">
     <header className="wsp-page-head">
-      <div><h1>Багцууд</h1><p>{totalMocks} бүтэн шалгалт · 3 хөтөлбөр. Сарын багцаар хөтөлбөрийн бүх mock-ийг нээх эсвэл нэг шалгалтын эрх авна.</p></div>
+      <div><h1>Багцууд</h1><p>{totalMocks} бүтэн шалгалт · 5 хөтөлбөр. Сарын багцаар хөтөлбөрийн бүх mock-ийг нээх эсвэл нэг шалгалтын эрх авна. JLPT, HSK нь зөвхөн нэг шалгалтын эрхээр.</p></div>
     </header>
 
     <section className="pricing-plans" id="plans" aria-labelledby="pricing-plans-heading">

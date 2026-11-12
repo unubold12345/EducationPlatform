@@ -31,7 +31,7 @@ with sync_playwright() as p:
     page.evaluate('(theme)=>document.documentElement.dataset.theme=theme', original_theme)
     page.get_by_role("link", name="Хөтөлбөрүүд", exact=True).click()
     expect(page).to_have_url(BASE + "/#programs")
-    expect(page.locator(".program-card")).to_have_count(4)
+    expect(page.locator(".program-card")).to_have_count(5)
     page.locator('a[href="#program-sat"]').click()
     expect(page).to_have_url(BASE + "/#program-sat")
     expect(page.locator('#program-sat a')).to_have_attribute("href", "/exams/sat")

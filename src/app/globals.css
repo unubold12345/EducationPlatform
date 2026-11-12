@@ -674,11 +674,13 @@ body:has(.sl-root) .education-backdrop { display: none; }
 .mood-listening .sl-live { box-shadow: 0 0 0 4px color-mix(in srgb,var(--sl-good) 25%,transparent); animation: sl-pulse 1.2s infinite; }
 @keyframes sl-pulse { 50% { box-shadow: 0 0 0 8px transparent; } }
 .sl-portrait { position: relative; flex: 1 1 auto; min-height: 0; display: grid; place-items: center; padding: 30px 20px 14px; }
-.speaking-avatar { width: clamp(170px,56%,270px); aspect-ratio: 1; }
-.phase-session .speaking-avatar { width: auto; height: 100%; max-height: 330px; max-width: 100%; }
-/* Two rings around the portrait: they swell with the partner's voice, and turn green and follow the student's voice while listening. */
-.speaking-avatar svg { --edge: inset 0 0 0 1.5px color-mix(in srgb,var(--partner) 24%,transparent); --drop: 0 22px 44px -22px color-mix(in srgb,var(--partner) 60%,transparent); display: block; width: 100%; height: 100%; border-radius: 50%; background: radial-gradient(70% 55% at 30% 16%,color-mix(in srgb,var(--surface) 70%,transparent),transparent 70%),linear-gradient(165deg,color-mix(in srgb,var(--partner) 34%,var(--surface)),color-mix(in srgb,var(--partner) 12%,var(--surface))); box-shadow: var(--edge),0 0 0 calc(5px + var(--voice,0) * 11px) color-mix(in srgb,var(--partner) 26%,transparent),0 0 0 calc(13px + var(--voice,0) * 28px) color-mix(in srgb,var(--partner) 10%,transparent),var(--drop); transition: box-shadow .1s linear; }
-.speaking-avatar.mood-listening svg { box-shadow: var(--edge),0 0 0 calc(5px + var(--level) * 11px) color-mix(in srgb,var(--sl-good) 38%,transparent),0 0 0 calc(13px + var(--level) * 26px) color-mix(in srgb,var(--sl-good) 13%,transparent),var(--drop); }
+/* The partner on stage is a live voice wave drawn on a canvas (avatar.tsx). The two hidden marks only carry its colours. */
+.speaking-avatar { position: relative; width: min(100%,480px); height: clamp(120px,22vh,180px); }
+.speaking-avatar canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.speaking-avatar i { display: none; }
+.speaking-avatar .sw-partner { color: var(--partner); }
+.speaking-avatar .sw-student { color: var(--sl-good,#1f9a6b); }
+.phase-session .speaking-avatar { height: 100%; max-height: 240px; }
 .sl-self { position: absolute; right: 16px; bottom: 6px; display: flex; align-items: center; gap: 8px; padding: 7px 11px; border: 1px solid var(--line); border-radius: 14px; background: var(--sl-card); font-size: 11px; font-weight: 600; color: var(--muted); transition: border-color .2s, color .2s; }
 .sl-self>div { display: flex; align-items: center; gap: 3px; height: 22px; }
 .sl-self i { width: 3px; height: calc(4px + var(--level) * var(--h) * 1px); max-height: 22px; border-radius: 3px; background: currentColor; opacity: .45; transition: height .08s linear; }
@@ -732,38 +734,6 @@ body:has(.sl-root) .education-backdrop { display: none; }
 .sl-elapsed small { font-size: 11px; color: var(--muted); }
 .sl-elapsed.good i { background: var(--sl-good); }
 
-/* Partner drawing (partner.tsx): moods and one-shot gestures are CSS only; avatar.tsx sets --voice and data-talking and redraws the mouth. */
-.sp-figure { transform-origin: 100px 200px; animation: sp-breathe 4.5s ease-in-out infinite; }
-@keyframes sp-breathe { 50% { transform: translateY(1.3px); } }
-[data-talking] .sp-figure { animation: sp-talk 3.2s ease-in-out infinite; }
-@keyframes sp-talk { 0%, 100% { transform: rotate(0); } 22% { transform: rotate(.9deg) translateY(1px); } 48% { transform: rotate(-.7deg); } 74% { transform: rotate(.5deg) translateY(1.2px); } }
-.sp-head { transform-origin: 100px 140px; transition: transform .5s cubic-bezier(.3,.7,.3,1); }
-.mood-listening .sp-head { transform: rotate(-3.5deg); }
-.mood-thinking .sp-head { transform: rotate(3deg); }
-/* A blink squashes the open eye and shows the closed lid line for a moment. */
-.sp-eye-open { transform-box: fill-box; transform-origin: center; animation: sp-blink 6.4s infinite; }
-.sp-eye-shut { opacity: 0; animation: sp-shut 6.4s infinite; }
-@keyframes sp-blink { 0%, 38%, 42%, 71%, 75%, 79%, 100% { transform: scaleY(1); } 40%, 73%, 77% { transform: scaleY(.06); } }
-@keyframes sp-shut { 0%, 38%, 42%, 71%, 75%, 79%, 100% { opacity: 0; } 40%, 73%, 77% { opacity: 1; } }
-/* Only the irises move, so the gaze stays inside the eye. Steady eye contact while the student talks; up and away while thinking. */
-.sp-iris { animation: sp-gaze 11s ease-in-out infinite; transition: translate .3s; }
-@keyframes sp-gaze { 0%, 24%, 38%, 62%, 74%, 100% { translate: 0 0; } 28%, 34% { translate: 1.5px .2px; } 66%, 70% { translate: -1.4px .3px; } }
-.mood-listening .sp-iris, .mood-thinking .sp-iris { animation: none; }
-.mood-thinking .sp-iris { translate: 1.8px -.7px; }
-.sp-brows, .sp-brow-l, .sp-brow-r { transition: translate .3s, rotate .3s; }
-.sp-brow-l, .sp-brow-r { transform-box: fill-box; transform-origin: center; }
-.mood-listening .sp-brows { translate: 0 -1.6px; }
-.mood-thinking .sp-brow-l { translate: 0 .5px; rotate: 3deg; }
-.mood-thinking .sp-brow-r { translate: 0 -2.4px; rotate: 5deg; }
-/* Brows lift with the emphasis of the voice. */
-[data-talking] .sp-brows { translate: 0 calc(-.5px - var(--voice,0) * 1.8px); transition: none; }
-.sp-hand { transform-origin: 152px 204px; opacity: 0; }
-.do-wave .sp-hand { animation: sp-wave 1.8s ease-in-out; }
-@keyframes sp-wave { 0% { opacity: 0; transform: rotate(25deg); } 15% { opacity: 1; transform: rotate(0); } 32% { transform: rotate(-12deg); } 48% { transform: rotate(6deg); } 64% { transform: rotate(-12deg); } 80% { opacity: 1; transform: rotate(0); } 100% { opacity: 0; transform: rotate(25deg); } }
-.do-nod .sp-head { animation: sp-nod .9s ease-in-out; }
-@keyframes sp-nod { 30% { transform: translateY(4px) rotate(0); } 60% { transform: translateY(-1px) rotate(0); } }
-.do-shake .sp-head { animation: sp-shake .8s ease-in-out; }
-@keyframes sp-shake { 20%, 60% { transform: translateX(-4px); } 40%, 80% { transform: translateX(4px); } }
 
 .sl-panel { min-width: 0; border: 1px solid var(--line); border-radius: 28px; background: var(--sl-card); overflow: hidden; }
 .sl-link { background: none; border: 0; padding: 4px 0; color: var(--sl-accent); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
@@ -945,9 +915,9 @@ body:has(.sl-root) .education-backdrop { display: none; }
 .sl-signin h1 { font-size: 32px; letter-spacing: -.02em; line-height: 1.1; }
 .sl-foot { margin-top: 20px; display: flex; justify-content: space-between; gap: 24px; font-size: 11px; color: var(--muted); }
 @media(max-width:1180px) { .sl-criteria { grid-template-columns: 1fr 1fr; } }
-@media(max-width:960px) { .sl-main, .phase-session .sl-main { grid-template-columns: minmax(0,1fr); } .sl-stage { position: relative; top: 0; } .phase-session .sl-stage { height: auto; } .phase-session .speaking-avatar { width: clamp(150px,44vw,210px); height: auto; max-height: none; } .sl-portrait { padding-top: 22px; } .sl-session { height: auto; } .sl-task { max-height: none; } .sl-transcript { flex: 0 1 auto; max-height: 56vh; } }
+@media(max-width:960px) { .sl-main, .phase-session .sl-main { grid-template-columns: minmax(0,1fr); } .sl-stage { position: relative; top: 0; } .phase-session .sl-stage { height: auto; } .phase-session .speaking-avatar { height: 140px; max-height: none; } .sl-portrait { padding-top: 22px; } .sl-session { height: auto; } .sl-task { max-height: none; } .sl-transcript { flex: 0 1 auto; max-height: 56vh; } }
 @media(max-width:560px) { .sl-top h1 { font-size: 26px; } .sl-steps { width: 100%; overflow-x: auto; border-radius: 16px; } .sl-steps li { padding-right: 9px; } .sl-setup, .sl-report { padding: 16px; } .sl-modes, .sl-toggles, .sl-criteria, .sl-report-grid { grid-template-columns: 1fr; } .sl-measured { grid-template-columns: repeat(3,1fr); } .sl-partners { grid-template-columns: repeat(3,minmax(0,1fr)); max-width: 300px; } .sl-caption { margin-inline: 16px; } .sl-caption p { font-size: 15px; } .sl-stage-top { flex-wrap: wrap; } .sl-controls { gap: 6px 8px; } .sl-ctl { min-width: 50px; } .sl-mic-wrap { width: 78px; height: 78px; margin: 0; } .sl-mic { width: 62px; height: 62px; } .sl-self { right: 10px; bottom: 0; } .sl-msg { max-width: 96%; } .sl-report-hero { grid-template-columns: 1fr; justify-items: start; } .sl-session-head { flex-wrap: wrap; } .sl-foot { flex-direction: column; } }
-@media(prefers-reduced-motion:reduce) { .sp-figure, [data-talking] .sp-figure, .sp-eye-open, .sp-eye-shut, .sp-iris, .do-wave .sp-hand, .do-nod .sp-head, .do-shake .sp-head, .sl-dots b, .mood-listening .sl-live, .sl-caption p { animation: none; } .sl-mic-wrap::before, .sp-head, .sp-iris, .sp-brows, .sp-brow-l, .sp-brow-r, .speaking-avatar svg, .sl-self i { transition: none; } }
+@media(prefers-reduced-motion:reduce) { .sl-dots b, .mood-listening .sl-live, .sl-caption p { animation: none; } .sl-mic-wrap::before, .sl-self i { transition: none; } }
 
 /* Account recovery uses the shared semantic form and theme tokens. */
 .auth-form .google-sign-in { width:48px; min-height:48px; padding:11px; margin-inline:auto; display:grid; place-items:center; border-radius:50%; }

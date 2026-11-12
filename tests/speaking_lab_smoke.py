@@ -45,7 +45,7 @@ with sync_playwright() as p:
  # outlast networkidle's default timeout; wait for the partner drawing instead.
  page.reload(wait_until='domcontentloaded')
  page.wait_for_selector('.speaking-avatar[data-ready="true"]',timeout=30000)
- expect(page.locator('.speaking-avatar svg')).to_be_visible()
+ expect(page.locator('.speaking-avatar canvas')).to_be_visible()
  # Partner picker: choosing a partner changes the drawing, name and voice preview.
  page.get_by_role('radio',name='Michael, American').click();expect(page.locator('.sl-stage-top strong')).to_have_text('Michael')
  expect(page.get_by_role('button',name='▶ Hear Michael')).to_be_visible()

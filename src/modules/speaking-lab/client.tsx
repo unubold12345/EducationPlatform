@@ -3,7 +3,7 @@ import {useEffect,useMemo,useRef,useState,useSyncExternalStore,type CSSPropertie
 import Link from "next/link";
 import {encodeSpeechWav} from "./pcm";
 import {SpeakingAvatar,type AvatarGesture,type AvatarMood} from "./avatar";
-import {PartnerPortrait,partnerLooks} from "./partner";
+import {PartnerMark,partnerColor} from "./partner";
 import {VoicePlayer,audibleSeconds,deviceVoice,startRecorder,type RecorderHandle} from "./audio";
 import {
  HISTORY_LIMIT,REPORT_HISTORY_LIMIT,countWords,isClarificationRequest,overallBand,speakingAcks,speakingSpeeds,speakingTargets,speakingTopics,speakingVoices,
@@ -435,7 +435,7 @@ export function SpeakingLab({signedIn}:{signedIn:boolean}) {
  const dockHint=status==="listening"?(settings.handsFree?"Pause when you finish · Esc to cancel":"Tap again when you finish")
   :status==="speaking"||status==="voicing"?(micReady?"Tap the mic to interrupt":"Esc to stop the voice"):prep!==null?"Your talk starts when the minute is up, or press I’m ready":micReady?"Tap the mic or press Space to answer":"Microphone is off — type your answer";
 
- if(!signedIn)return <div className="sl-root container page-space"><div className="sl-signin"><PartnerPortrait voice="af_heart" className="sl-signin-face"/><p className="sl-kicker">IELTS Speaking</p><h1>Sign in to practise speaking with your AI partner.</h1><p>Нэвтэрсний дараа ярианы бэлтгэлдээ шууд буцаж ирнэ.</p><Link className="button primary" href="/login?next=%2Flabs%2Fielts-speaking">Нэвтрэх →</Link></div></div>;
+ if(!signedIn)return <div className="sl-root container page-space"><div className="sl-signin"><PartnerMark voice="af_heart" className="sl-signin-face"/><p className="sl-kicker">IELTS Speaking</p><h1>Sign in to practise speaking with your AI partner.</h1><p>Нэвтэрсний дараа ярианы бэлтгэлдээ шууд буцаж ирнэ.</p><Link className="button primary" href="/login?next=%2Flabs%2Fielts-speaking">Нэвтрэх →</Link></div></div>;
 
  return <div className={`sl-root container page-space phase-${phase}`}>
   <header className="sl-top">
@@ -447,7 +447,7 @@ export function SpeakingLab({signedIn}:{signedIn:boolean}) {
   </header>
 
   <div className="sl-main">
-   <section ref={stage} className={`sl-stage mood-${mood}`} style={{"--partner":partnerLooks[settings.voice].top} as CSSProperties} aria-label="Your AI speaking partner">
+   <section ref={stage} className={`sl-stage mood-${mood}`} style={{"--partner":partnerColor[settings.voice]} as CSSProperties} aria-label="Your AI speaking partner">
     <div className="sl-stage-top">
      <span className="sl-live"/><strong>{name}</strong>
      <span>{phase==="setup"?`AI speaking partner · ${chosen.accent} accent`:phase==="report"?"Report ready":`${mock?"AI examiner":"AI partner"} · Part ${part} ${PART_NAMES[part]}`}</span>
@@ -460,7 +460,7 @@ export function SpeakingLab({signedIn}:{signedIn:boolean}) {
     <div className="sl-caption" aria-live="polite">{status==="speaking"&&caption&&settings.captions?<p>{caption}</p>:<p className="sl-status">{(working||status==="voicing")&&<i className="sl-dots"><b/><b/><b/></i>}{statusLine}</p>}</div>
     {phase==="setup"&&<div className="sl-pick">
      <div className="sl-partners" role="radiogroup" aria-label="Speaking partner">
-      {(Object.entries(speakingVoices) as [SpeakingVoice,(typeof speakingVoices)[SpeakingVoice]][]).map(([id,v])=><button type="button" role="radio" key={id} aria-checked={settings.voice===id} aria-label={`${v.label}, ${v.accent}`} onClick={()=>{update({voice:id});setGesture({name:"Wave",id:nextId()});}}><PartnerPortrait voice={id}/><span>{v.label}</span></button>)}
+      {(Object.entries(speakingVoices) as [SpeakingVoice,(typeof speakingVoices)[SpeakingVoice]][]).map(([id,v])=><button type="button" role="radio" key={id} aria-checked={settings.voice===id} aria-label={`${v.label}, ${v.accent}`} onClick={()=>{update({voice:id});setGesture({name:"Wave",id:nextId()});}}><PartnerMark voice={id}/><span>{v.label}</span></button>)}
      </div>
      <p>{manner}. <button type="button" className="sl-link" disabled={previewing} onClick={()=>void preview(settings.voice)}>{previewing?"Playing…":`▶ Hear ${name}`}</button></p>
      {notice&&<p className="sl-notice" role="status">{notice}</p>}

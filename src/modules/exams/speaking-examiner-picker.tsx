@@ -4,7 +4,7 @@
 import "./speaking-examiner.css";
 import {useSyncExternalStore} from "react";
 import {speakingVoices,type SpeakingVoice} from "@/modules/speaking-lab/contracts";
-import {PartnerPortrait} from "@/modules/speaking-lab/partner";
+import {PartnerMark} from "@/modules/speaking-lab/partner";
 import {EXAMINER_VOICE} from "./speaking-examiner";
 import {examinerVoice,setExaminerVoice,subscribeExaminer} from "./speaking-examiner-store";
 
@@ -18,7 +18,7 @@ export function ExaminerPicker() {
  const chosen=useExaminerVoice();
  return <div className="exam-examiner-pick" role="radiogroup" aria-label="AI шалгагч сонгох">
   {(Object.keys(speakingVoices) as SpeakingVoice[]).map(id=><button type="button" role="radio" key={id} aria-checked={chosen===id} aria-label={`${speakingVoices[id].label}, ${speakingVoices[id].accent}`} onClick={()=>setExaminerVoice(id)}>
-   <PartnerPortrait voice={id}/><span>{speakingVoices[id].label}</span>
+   <PartnerMark voice={id}/><span>{speakingVoices[id].label}</span>
   </button>)}
  </div>;
 }

@@ -624,8 +624,8 @@ Speaking invitation only when the studio is enabled: local pilot, or hosted pilo
 The studio stays separate from graded practice and exams (its examiner also runs inside the IELTS mocks; see the end of
 this section). It requires login and explicit transcript/microphone
 consent, uses DeepSeek for text conversation, Kokoro for local British English speech, Whisper for
-transcription and illustrated SVG speaking partners (one per voice, shaded portraits drawn in code in `partner.tsx`; no
-image files, 3D model or third-party artwork). It writes no attempts, scores,
+transcription. Since 2026-11-12 the partner is shown as sound, not a face: a live voice wave on stage (`avatar.tsx`, a canvas) and
+a small bar mark per partner in its own colour and pattern (`partner.tsx`; no image files or third-party artwork). It writes no attempts, scores,
 subscriptions or chat history. Bands shown are transcript-only AI estimates, not official IELTS
 scores; pronunciation is not assessed. Raw microphone recordings are not persisted.
 - Two modes, sent to the server as `mode` with the chosen partner as `voice` (both validated against fixed lists).
@@ -635,9 +635,8 @@ scores; pronunciation is not assessed. Raw microphone recordings are not persist
   was said, with live tips, ideas and retries. Both prompts keep the AI/not-an-examiner disclosure and forbid an invented human life.
 - Human touches are browser-side: after the first reply the page pre-loads three or four acknowledgement clips ("Okay.",
   "Thank you.") through the normal voice route and plays one the instant a spoken answer ends; the partner nods on pauses;
-  the portrait ring follows the voice level and the student's microphone while listening. The mouth is redrawn every frame
-  from `mouthShape()`: its opening follows the voice level and the lip width wanders between stretched and rounded, because
-  the page knows loudness, not phonemes (it is not true lip-sync). A short
+  the wave carries loudness from the centre outwards: the partner's colour while it speaks, green from the student's microphone
+  while listening, a ripple while thinking, a row of dots when quiet, and a small pulse for the nod after an answer. A short
   request to repeat or explain (`isClarificationRequest`) is answered but does not count as a mock question, and keeps the cue card.
 - The server drops a tip unless it quotes the answer it is attached to (`tipQuotesAnswer`); the model otherwise re-corrects earlier
   answers. Every answer sent to the model ends with a JSON-format cue, because a bare one-word answer returned an empty reply.

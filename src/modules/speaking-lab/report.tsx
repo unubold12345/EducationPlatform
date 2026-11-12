@@ -1,6 +1,6 @@
 "use client";
 import {overallBand,speakingVoices,type SpeakingCue,type SpeakingPart,type SpeakingReport,type SpeakingTip,type SpeakingVoice} from "./contracts";
-import {PartnerPortrait} from "./partner";
+import {PartnerMark} from "./partner";
 import type {ProgressEntry} from "./progress";
 
 export type ReviewTurn={id:number;role:"user"|"assistant";content:string;part:SpeakingPart;tip?:SpeakingTip|null;cue?:SpeakingCue|null};
@@ -38,7 +38,7 @@ export function SpeakingReportView({report,stats,target,language,entries,saved,v
   <header className="sl-report-hero">
    <div className="sl-score"><Ring value={overall}/><div><strong>{overall.toFixed(1)}</strong><span>indicative</span></div></div>
    <div>
-    <p className="sl-kicker sl-report-from"><PartnerPortrait voice={voice}/>{mn?`${name}-ийн тайлан`:mock?`Mock test report from ${name}`:`Feedback from ${name}`}</p>
+    <p className="sl-kicker sl-report-from"><PartnerMark voice={voice}/>{mn?`${name}-ийн тайлан`:mock?`Mock test report from ${name}`:`Feedback from ${name}`}</p>
     <h2>{gap<=0?(mn?"Зорилтот түвшиндээ хүрч байна!":"You’re performing at your target."):(mn?`Зорилт ${target} хүртэл ${gap} оноо`:`${gap} band${gap===1?"":"s"} from your ${target} target`)}</h2>
     <p>{report.summary}</p>
     <p className="sl-disclaimer">{mn?"Зөвхөн текстэд тулгуурласан AI тооцоолол. Албан ёсны IELTS оноо биш; дуудлагыг үнэлээгүй.":"AI estimate from your transcript and timing only — not an official IELTS score. Pronunciation is not assessed."}{report.confidence==="low"?(mn?" Хариулт цөөн тул итгэл бага.":" Low confidence: speak a little more for a firmer estimate."):""}</p>

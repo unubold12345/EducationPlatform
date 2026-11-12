@@ -4,7 +4,7 @@
 import "./speaking-examiner.css";
 import {useEffect,useRef,useState,useSyncExternalStore,type CSSProperties} from "react";
 import {SpeakingAvatar,type AvatarMood} from "@/modules/speaking-lab/avatar";
-import {PartnerPortrait,partnerLooks} from "@/modules/speaking-lab/partner";
+import {PartnerMark,partnerColor} from "@/modules/speaking-lab/partner";
 import {SpeakingReportView,type SessionStats} from "@/modules/speaking-lab/report";
 import {countWords,speakingTargets,type SpeakingReport} from "@/modules/speaking-lab/contracts";
 import {getProgress,getServerProgress,savePhrase,subscribeProgress} from "@/modules/speaking-lab/progress";
@@ -29,7 +29,7 @@ const PART_NAMES={1:"Interview",2:"Long turn",3:"Discussion"} as const;
 export function ExaminerInvitation({onChoose}:{onChoose:(choice:"on"|"off")=>void}) {
  const voice=useExaminerVoice();
  return <section className="exam-examiner-invite" aria-label="AI шалгагч">
-  <PartnerPortrait voice={voice} className="exam-examiner-face"/>
+  <PartnerMark voice={voice} className="exam-examiner-face"/>
   <div>
    <h2>Speaking-ийг AI шалгагчтай өгөх үү?</h2>
    <p>{examinerName(voice)} асуултуудыг чанга уншиж, таны хариуг сонсоно. Хариуг бичвэр болгохын тулд дууг манай сервер рүү илгээх (тэндээс яриа таних үйлчилгээнд дамжиж болно) бөгөөд бичвэр нь таны хариулт болж хадгалагдана. Цаг зогсохгүй. Шалгагчаа доороос сонгож болно.</p>
@@ -102,7 +102,7 @@ export function SpeakingExaminer({base,recordId,stage,remaining=Infinity,answers
  const restartIds=script.questions.map(question=>question.id);
 
  return <div className="sl-root exam-examiner" data-examiner-status={status}>
-  <section ref={host} className={`sl-stage mood-${mood}`} style={{"--partner":partnerLooks[voice].top} as CSSProperties} aria-label="AI шалгагч">
+  <section ref={host} className={`sl-stage mood-${mood}`} style={{"--partner":partnerColor[voice]} as CSSProperties} aria-label="AI шалгагч">
    <div className="sl-stage-top">
     <span className="sl-live"/><strong>{name}</strong>
     <span>AI examiner · Part {part} {PART_NAMES[part]}</span>
@@ -193,7 +193,7 @@ export function SpeakingReportCard({base,recordId,transcripts,note}:{base:string
  }
  return <section className="sl-root exam-speaking-report" aria-labelledby="exam-speaking-report-title">
   <div className="exam-speaking-report-head">
-   <PartnerPortrait voice={voice} className="exam-examiner-face"/>
+   <PartnerMark voice={voice} className="exam-examiner-face"/>
    <div>
     <h2 id="exam-speaking-report-title">Speaking · AI тайлан</h2>
     <p>{examinerName(voice)} таны {transcripts.length} хариултын бичвэрээс fluency, vocabulary, grammar-ийн ойролцоо band, засах зүйлс, жишээ хариулт гаргана. Бичвэр DeepSeek рүү илгээгдэнэ. Энэ нь AI-ийн тооцоолол бөгөөд албан ёсны оноо биш; дуудлагыг үнэлэхгүй, {note}.</p>

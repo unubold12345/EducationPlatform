@@ -66,22 +66,24 @@ test("images go first in the user message, then the text", () => {
 });
 
 test("workspace chat and the review coach accept images on the latest message only", () => {
-  const chat = { mode: "solve", subject: "eesh-math", language: "mn", message: "Бод", history: [{ role: "user", content: "x" }, { role: "assistant", content: "y" }], images: [jpeg] };
+  // A chat names its stored thread (2026-11-12); the server adds the earlier turns, text only.
+  const chat = { mode: "solve", subject: "eesh-math", language: "mn", message: "Бод", threadId: null, after: 0, images: [jpeg] };
   assert.equal(validChatInput(chat), true);
   assert.equal(validChatInput({ ...chat, images: [] }), true);
   assert.equal(validChatInput({ ...chat, images: "x" }), false);
   assert.equal(validChatInput({ ...chat, images: [jpeg, jpeg, jpeg, jpeg] }), false);
-  assert.equal(validChatInput({ ...chat, history: [{ role: "user", content: "x", images: [jpeg] }] }), false, "history turns stay text");
   const review = { mode: "mistake", target: { attemptId: "a1", questionId: "q1" }, language: "en", message: "Why?", history: [], images: [jpeg] };
   assert.equal(validChatInput(review), true);
-  const messages = chatMessages(chat);
+  assert.equal(validChatInput({ ...review, history: [{ role: "user", content: "x", images: [jpeg] }] }), false, "history turns stay text");
+  const input = { ...chat, history: [{ role: "user", content: "x" }, { role: "assistant", content: "y" }] };
+  const messages = chatMessages(input);
   const last = messages.at(-1);
   assert.equal(last.role, "user");
   assert.deepEqual(last.content, [{ type: "image_url", image_url: { url: jpeg } }, { type: "text", text: "Бод" }]);
   assert.ok(messages.some(item => item.role === "system" && item.content === imageRule(1)));
   assert.ok(messages.every(item => item.role === "user" || typeof item.content === "string"), "images only ever sit in a user message");
-  assert.equal(typeof chatMessages({ ...chat, images: undefined }).at(-1).content, "string");
-  assert.ok(!chatMessages({ ...chat, images: undefined }).some(item => item.content === imageRule(1)));
+  assert.equal(typeof chatMessages({ ...input, images: undefined }).at(-1).content, "string");
+  assert.ok(!chatMessages({ ...input, images: undefined }).some(item => item.content === imageRule(1)));
   for (const mode of CHAT_MODES) assert.ok(imageOnlyPrompts[mode]?.trim(), mode);
   assert.ok(CHAT_BODY_BYTES < 4_500_000);
 });
@@ -176,8 +178,9 @@ test("uploads, routes and pages keep images bounded, private and server-checked"
   assert.match(client, /canvas\.toBlob\(.*"image\/jpeg", quality\)/);
   assert.match(client, /imageOrientation: "from-image"/);
   assert.doesNotMatch(client, /dangerouslySetInnerHTML|localStorage/);
-  // History sent back to the server is text only; previews stay in the browser.
+  // History is text only. The tutor's comes from the browser; the Workspace chat's from its stored thread on the
+  // server, which keeps only small previews of the pictures.
   assert.match(text("src/modules/tutor/panel.tsx"), /turns\.slice\(-4\)\.map\(turn=>\(\{role:turn\.role,content:turn\.content\.slice\(0,1500\)\}\)\)/);
-  assert.match(text("src/modules/workspace/chat.tsx"), /map\(turn => \(\{ role: turn\.role, content: turn\.content\.slice\(0, CHAT_LIMITS\.turn\) \}\)\)/);
-  assert.match(text("src/modules/workspace/chat-store.ts"), /url\.length <= MAX_THUMB/);
+  assert.match(text("src/modules/workspace/chat-storage.ts"), /map\(turn => \(\{ role: turn\.role, content: turn\.content\.slice\(0, CHAT_LIMITS\.turn\) \}\)\)/);
+  assert.match(text("src/modules/workspace/chat-contract.ts"), /item\.length > CHAT_STORE_LIMITS\.previewChars/);
 });

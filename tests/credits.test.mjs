@@ -28,7 +28,7 @@ test("credit prices follow the DeepSeek peak list price", () => {
     "chat": 5, "review-coach": 6, "practice-assistant": 5, "math-tutor": 3,
     "writing-ideas": 3, "writing-grammar": 5, "writing-feedback": 6,
     "speaking-turn": 3, "speaking-report": 9,
-    "vocabulary-import": 47, "exam": 40, "exam-10": 13, "exam-20": 17, "reading-practice": 15,
+    "vocabulary-import": 47, "exam": 40, "exam-10": 13, "exam-20": 17, "reading-practice": 15, "roadmap": 8,
   });
   assert.deepEqual(MARGIN_ACTIONS, ["vocabulary-import", "exam"]);
   for (const action of AI_ACTION_IDS) {
@@ -334,6 +334,7 @@ test("every DeepSeek call is charged against credits, with its budget from the p
     "src/modules/vocabulary/service.ts": "\"vocabulary-import\"",
     "src/modules/my-exams/service.ts": "chargeCredits(userId, \"exam\",",
     "src/modules/reading-lab/service.ts": "\"reading-practice\"",
+    "src/modules/roadmap/service.ts": "chargeCredits(userId, \"roadmap\",",
   };
   for (const [path, action] of Object.entries(charged)) {
     const source = text(path);
@@ -348,6 +349,9 @@ test("every DeepSeek call is charged against credits, with its budget from the p
     assert.match(text(path), /AI_ACTIONS\[/, path);
     assert.doesNotMatch(text(path), /max_tokens:\s*\d/, path);
   }
+  // The roadmap planner's reply budget follows the plan's length, from the same price list.
+  assert.match(text("src/modules/roadmap/service.ts"), /roadmapOutputTokens\(weekCount\)/);
+  assert.doesNotMatch(text("src/modules/roadmap/service.ts"), /max_tokens:\s*\d/);
   assert.match(text("src/modules/tutor/provider.ts"), /meter\?\.add\(data\.usage\)/);
 });
 

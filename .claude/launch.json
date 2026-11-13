@@ -28,6 +28,15 @@
       "port": 3005
     },
     {
+      "name": "dev3008",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": [
+        "/c",
+        "set BETTER_AUTH_URL=http://localhost:3008&& npx next dev -p 3008"
+      ],
+      "port": 3008
+    },
+    {
       "name": "prod3006",
       "runtimeExecutable": "cmd",
       "runtimeArgs": [

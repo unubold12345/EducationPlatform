@@ -202,6 +202,37 @@ main:has(> .wsp) { isolation: auto; }
 .wsp-credits-bar b { display: block; height: 100%; background: currentColor; transform-origin: left; }
 .wsp-credits[data-low] { color: var(--wsp-warn); }
 
+/* Daily streak: rail row and the card on Home. Orange only when today is checked in. */
+.wsp-streak {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border: 1px solid var(--wsp-line); border-radius: 12px;
+  background: var(--wsp-card); color: var(--wsp-soft);
+}
+.wsp-streak:hover { border-color: var(--wsp-line-strong); }
+.wsp-streak[data-lit] { color: #f0700f; }
+.wsp-streak svg { flex-shrink: 0; fill: currentColor; stroke: none; }
+.wsp-streak-text { display: flex; flex: 1; align-items: baseline; justify-content: space-between; gap: 8px; min-width: 0; }
+.wsp-streak-text > span { color: var(--wsp-soft); font-size: 12px; font-weight: 600; }
+.wsp-streak-text strong { color: var(--wsp-ink); font-size: 14px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.wsp-streak-text small { color: var(--wsp-soft); font-size: 12px; font-weight: 500; }
+
+.wsp-streak-card { display: grid; gap: 14px; padding: 18px; border: 1px solid var(--wsp-line); border-radius: 18px; background: var(--wsp-card); }
+.wsp-streak-head { display: flex; align-items: center; gap: 12px; }
+.wsp-streak-head div { display: flex; flex-direction: column; min-width: 0; line-height: 1.2; }
+.wsp-streak-head strong { color: var(--wsp-ink); font-size: 28px; font-weight: 740; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.wsp-streak-head span { color: var(--wsp-muted); font-size: 13px; }
+.wsp-streak-flame { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 14px; background: var(--wsp-chip); color: var(--wsp-soft); }
+.wsp-streak-flame svg { fill: currentColor; stroke: none; }
+.wsp-streak-card[data-lit] .wsp-streak-flame { background: #fff1e6; color: #f0700f; }
+.wsp-streak-week { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; margin: 0; padding: 0; list-style: none; }
+.wsp-streak-week li { display: grid; justify-items: center; gap: 5px; color: var(--wsp-soft); font-size: 11.5px; font-weight: 600; }
+.wsp-streak-week i { display: grid; place-items: center; width: 26px; height: 26px; border: 1.5px dashed var(--wsp-line-strong); border-radius: 50%; color: #fff; }
+.wsp-streak-week li[data-active] i { border: 0; background: #f0700f; }
+.wsp-streak-week li:last-child span { color: var(--wsp-ink); }
+.wsp-streak-foot { margin: 0; color: var(--wsp-muted); font-size: 12.5px; }
+.wsp-streak-foot b { color: var(--wsp-ink); }
+:root[data-theme="dark"] .wsp-streak-card[data-lit] .wsp-streak-flame { background: #3a2412; }
+
 .wsp-side-links { display: grid; gap: 1px; }
 .wsp-side-links a, .wsp-side-links button { display: flex; align-items: center; gap: 10px; width: 100%; padding: 7px 12px; border: 0; border-radius: 10px; background: transparent; color: var(--wsp-muted); font-size: 13.5px; font-weight: 500; text-align: left; white-space: nowrap; cursor: pointer; }
 .wsp-side-links a:hover, .wsp-side-links button:hover { background: var(--wsp-hover); color: var(--wsp-ink); }
@@ -234,6 +265,7 @@ main:has(> .wsp) { isolation: auto; }
 :root[data-ws-rail="collapsed"] .wsp-recent,
 :root[data-ws-rail="collapsed"] .wsp-plan-card,
 :root[data-ws-rail="collapsed"] .wsp-credits-text,
+:root[data-ws-rail="collapsed"] .wsp-streak-text,
 :root[data-ws-rail="collapsed"] .wsp-account-text { display: none; }
 :root[data-ws-rail="collapsed"] .wsp-nav-item span,
 :root[data-ws-rail="collapsed"] .wsp-side-links span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
@@ -242,6 +274,7 @@ main:has(> .wsp) { isolation: auto; }
 :root[data-ws-rail="collapsed"] .wsp-side-links button { justify-content: center; padding-inline: 0; }
 :root[data-ws-rail="collapsed"] .wsp-cta { font-size: 0; gap: 0; }
 :root[data-ws-rail="collapsed"] .wsp-credits { justify-content: center; padding-inline: 0; }
+:root[data-ws-rail="collapsed"] .wsp-streak { justify-content: center; padding-inline: 0; }
 :root[data-ws-rail="collapsed"] .wsp-credits-bar { right: 8px; left: 8px; }
 :root[data-ws-rail="collapsed"] .wsp-account-row { flex-direction: column; margin-inline: -12px; padding-inline: 12px; }
 
@@ -406,6 +439,12 @@ main:has(> .wsp) { isolation: auto; }
 .wsp-resume p { margin: 0; color: var(--wsp-muted); font-size: 13px; }
 .wsp-resume h2 { margin: 2px 0 0; font-size: 17px; font-weight: 650; }
 .wsp-resume-icon { display: grid; place-items: center; flex-shrink: 0; width: 40px; height: 40px; border-radius: 12px; background: var(--wsp-card); color: var(--wsp-accent); box-shadow: var(--wsp-shadow-soft); }
+
+/* Home: the daily streak. */
+.wsp-today { margin-top: 28px; }
+.wsp-today:empty { display: none; }
+.wsp-today .wsp-streak-card { border-radius: 18px; }
+.wsp-home { container: wsp-home / inline-size; }
 
 .wsp-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 28px; }
 .wsp-stats > div { display: flex; flex-direction: column; gap: 2px; padding: 16px 18px; border: 1px solid var(--wsp-line); border-radius: 16px; background: var(--wsp-card); }

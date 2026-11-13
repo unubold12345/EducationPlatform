@@ -11,7 +11,8 @@ import { deepseekChat } from "@/modules/tutor/provider";
 import { chargeCredits } from "@/modules/credits/service";
 import { AI_ACTIONS } from "@/modules/credits/pricing";
 import { tutorDay } from "@/modules/tutor/contracts";
-import { chatMessages, validChatInput, WORKSPACE_AI_DAILY_LIMIT, type ChatSubject, type ChatTarget, type ReviewContext } from "./chat-contract";
+import { chatMessages, validChatInput, WORKSPACE_AI_DAILY_LIMIT, type ChatInput, type ChatSubject, type ChatTarget, type ReviewContext } from "./chat-contract";
+import { chatThreadContext, saveChatTurn } from "./chat-threads";
 
 const LEASE_MS = 90000;
 const clip = (text: string | undefined, max: number) => text ? (text.length > max ? text.slice(0, max) + "…" : text) : undefined;
@@ -57,7 +58,13 @@ export async function workspaceChatReply(userId: string, body: unknown) {
   if (!validChatInput(body)) throw new ApiError(400, "AI хүсэлтийн бүтэц буруу байна.");
   await ensureNoTimedExam(userId);
   const review = "target" in body ? await reviewContext(userId, body.target) : undefined;
+  // A chat continues the student's own thread on the account: its earlier turns are read here, never sent by the browser.
+  const stored = "target" in body ? null : await chatThreadContext(userId, body);
+  // The same message again after a lost response gets the answer already saved, without a second provider call or charge.
+  if (stored?.replay) return stored.replay;
   if (!process.env.DEEPSEEK_API_KEY?.trim()) throw new ApiError(503, "AI туслах одоогоор холбогдоогүй байна.");
+  const input: ChatInput = "target" in body ? body
+    : { mode: body.mode, subject: body.subject, language: body.language, message: body.message, history: stored?.history ?? [], ...(body.images?.length ? { images: body.images } : {}) };
   const db = getDb(), now = Date.now();
   const key = `education-workspace-ai:${userId}:${tutorDay(now)}`;
   const action = review ? "review-coach" : "chat";
@@ -69,10 +76,13 @@ export async function workspaceChatReply(userId: string, body: unknown) {
     const reserved = await db.rateLimit.updateMany({ where: { key, count: { lt: WORKSPACE_AI_DAILY_LIMIT }, lastRequest: { lte: BigInt(now) } }, data: { count: { increment: 1 }, lastRequest: BigInt(now + LEASE_MS) } });
     if (!reserved.count) throw new ApiError(429, `AI хүсэлт боловсруулж байна эсвэл өдрийн ${WORKSPACE_AI_DAILY_LIMIT} хүсэлтийн хязгаарт хүрсэн. Түр хүлээгээд дахин оролдоно уу.`);
     try {
-      const message = await deepseekChat(chatMessages(body, review), AI_ACTIONS[action].outputTokens, meter);
+      const message = await deepseekChat(chatMessages(input, review), AI_ACTIONS[action].outputTokens, meter);
       // Another tab may have started a timed exam while the provider was answering.
       await ensureNoTimedExam(userId);
-      return { message, provider: "DeepSeek" };
+      if ("target" in body) return { message, provider: "DeepSeek" as const };
+      // The question and its answer are saved only now, once the reply has arrived; if saving fails, the credits
+      // are refunded like any other failure, and a retry finds no half-saved turn.
+      return { message, provider: "DeepSeek" as const, ...await saveChatTurn(userId, body, message) };
     } finally {
       await db.rateLimit.update({ where: { key }, data: { lastRequest: BigInt(Date.now() + 3000) } });
     }

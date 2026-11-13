@@ -1,10 +1,12 @@
-import { createCipheriv, createDecipheriv, hkdfSync, randomBytes } from "node:crypto";
+import { createCipheriv, createDecipheriv, createHash, hkdfSync, randomBytes } from "node:crypto";
 import { READING_LIMITS, choiceCount, type FullGroup, type ReadingLanguage } from "./contracts.ts";
 
-// A generated practice's answer key never reaches the browser in readable form: it is sealed in an AES-256-GCM
-// token bound to one student, and the server opens it to mark the answers. Same design as the file-to-exam
-// token, with its own key and associated data so neither token opens the other. No "server-only" import, so the
-// round trip can be unit tested; only the server service imports it.
+// Until 2026-11-12 a generated practice lived in the student's browser with its answer key sealed in an
+// AES-256-GCM token bound to one student; the server opened it to mark the answers. Practices now live on the
+// account with the key in the database, and no new token is issued. This file remains so the page can move a
+// practice a browser still keeps to the account once (`openReading` with `allowExpired`), and for tests. Same
+// design as the file-to-exam token, with its own key and associated data so neither token opens the other. No
+// "server-only" import, so the round trip can be unit tested; only the server service imports it.
 const PREFIX = "wxr1";
 const VERSION = 1;
 const AAD = "education-reading-lab-v1:";
@@ -73,8 +75,12 @@ export function sealReading(userId: string, practice: SealedReading, now = Date.
   return [PREFIX, iv.toString("base64url"), body.toString("base64url"), cipher.getAuthTag().toString("base64url")].join(".");
 }
 
-/** Open a token for the signed-in student, refusing tampered, expired and borrowed tokens. */
-export function openReading(token: string, userId: string, now = Date.now()): SealedReading {
+/**
+ * Open a token for the signed-in student, refusing tampered, expired and borrowed tokens. `allowExpired` is for
+ * moving an old practice to the account: its content is still authentic and the student's own, and once stored
+ * it no longer depends on the token.
+ */
+export function openReading(token: string, userId: string, now = Date.now(), options: { allowExpired?: boolean } = {}): SealedReading {
   if (typeof token !== "string" || token.length < 40 || token.length > READING_LIMITS.tokenChars) throw new ReadingTokenError("invalid");
   const parts = token.split(".");
   if (parts.length !== 4 || parts[0] !== PREFIX) throw new ReadingTokenError("invalid");
@@ -92,10 +98,15 @@ export function openReading(token: string, userId: string, now = Date.now()): Se
   }
   if (!record(value) || value.v !== VERSION || !text(value.userId, 200) || typeof value.expiresAt !== "number") throw new ReadingTokenError("invalid");
   if (value.userId !== userId) throw new ReadingTokenError("owner");
-  if (!Number.isFinite(value.expiresAt) || value.expiresAt <= now) throw new ReadingTokenError("expired");
+  if (!Number.isFinite(value.expiresAt) || (value.expiresAt <= now && !options.allowExpired)) throw new ReadingTokenError("expired");
   const practice = value.practice;
   if (!record(practice) || !text(practice.title, 200) || (practice.language !== "mn" && practice.language !== "en")
     || !text(practice.sourceName, 200) || !text(practice.sourceKind, 20) || typeof practice.createdAt !== "number"
     || !index(practice.paragraphs, READING_LIMITS.paragraphs.max + 1) || !validGroups(practice.groups, practice.paragraphs as number)) throw new ReadingTokenError("invalid");
   return practice as SealedReading;
+}
+
+/** One sealed practice imports once: the account remembers the token by this hash, never the token itself. */
+export function readingImportKey(token: string) {
+  return createHash("sha256").update(token).digest("hex");
 }

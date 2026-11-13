@@ -1,15 +1,16 @@
 "use client";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { authClient } from "@/lib/auth-client";
 import { Icon, type IconName } from "./icons";
 import { inWorkspace, workspaceTab, type WorkspaceTab } from "./paths";
 import { useThreads } from "./chat-store";
 import type { ShellAccount } from "./data";
 import { CreditsProvider, useCredits } from "@/modules/credits/client";
 import { formatCredits } from "@/modules/credits/pricing";
+import { StreakChip, StreakProvider } from "@/modules/roadmap/streak-client";
+import type { StreakSummary } from "@/modules/roadmap/streak";
 
 const tabs: { id: WorkspaceTab; href: string; label: string; icon: IconName }[] = [
   { id: "home", href: "/workspace", label: "Нүүр", icon: "home" },
@@ -31,7 +32,7 @@ function initials(name: string) {
 }
 
 /** The Workspace frame: a left tab rail on desktop, a top bar with a slide-in menu on phones. */
-export function WorkspaceShell({ account, fontClass, children }: { account: ShellAccount; fontClass: string; children: ReactNode }) {
+export function WorkspaceShell({ account, streak, fontClass, children }: { account: ShellAccount; streak: StreakSummary | null; fontClass: string; children: ReactNode }) {
   const pathname = usePathname();
   const active = workspaceTab(pathname);
   const [open, setOpen] = useState(false);
@@ -57,10 +58,10 @@ export function WorkspaceShell({ account, fontClass, children }: { account: Shel
   // child redirect resolves, including the first render before browser hydration.
   const guestRedirect = !account && (active === "home" || active === "chat" || active === "vocabulary" || active === "myexams" || active === "review" || active === "profile");
   const credits = account?.credits ?? null;
-  if (!shown || guestRedirect) return <CreditsProvider initial={credits}>{children}</CreditsProvider>;
+  if (!shown || guestRedirect) return <CreditsProvider initial={credits}><StreakProvider initial={streak} signedIn={Boolean(account)}>{children}</StreakProvider></CreditsProvider>;
   const title = active === "profile" ? PROFILE_LABEL : tabs.find(tab => tab.id === active)?.label ?? "Workspace";
   const onProfile = active === "profile" ? "page" as const : undefined;
-  return <CreditsProvider initial={credits}><div className={"wsp " + fontClass} data-open={open ? "" : undefined}>
+  return <CreditsProvider initial={credits}><StreakProvider initial={streak} signedIn={Boolean(account)}><div className={"wsp " + fontClass} data-open={open ? "" : undefined}>
     <aside ref={side} className="wsp-side" id="wsp-side" aria-label="Workspace">
       <div className="wsp-side-head">
         <Link href="/workspace" className="wsp-logo" aria-label="Workspace нүүр"><span className="wsp-logo-mark" aria-hidden="true">e<span>·</span></span><span className="wsp-logo-word">Education<small>Workspace</small></span></Link>
@@ -74,14 +75,11 @@ export function WorkspaceShell({ account, fontClass, children }: { account: Shel
       </nav>
       {account ? <RecentChats userKey={account.userKey} /> : null}
       <div className="wsp-side-foot">
+        {account ? <StreakChip /> : null}
         {account ? <CreditMeter /> : null}
         {account ? account.plans.length ? <div className="wsp-plan-card"><span>Идэвхтэй багц</span>{account.plans.map(plan => <p key={plan.title}><strong>{plan.title}</strong><em className={plan.daysLeft <= 5 ? "is-warn" : undefined}>{plan.daysLeft} хоног</em></p>)}</div>
           : <Link className="wsp-cta" href="/workspace/plans"><Icon name="bolt" />Багц сонгох</Link>
           : <Link className="wsp-cta" href="/login?next=%2Fworkspace"><Icon name="profile" />Нэвтрэх</Link>}
-        <div className="wsp-side-links">
-          <Link href="/" title="Үндсэн сайт"><Icon name="site" size={18} /><span>Үндсэн сайт</span></Link>
-          {account ? <SignOutButton /> : null}
-        </div>
         <div className="wsp-account-row">
           {account ? <Link className="wsp-account" href="/workspace/profile" title={account.name} aria-current={onProfile}><span className="wsp-avatar" aria-hidden="true">{initials(account.name)}</span><span className="wsp-account-text"><strong>{account.name}</strong><small>{account.email}</small></span></Link>
             : <Link className="wsp-account" href="/register"><span className="wsp-avatar is-guest" aria-hidden="true"><Icon name="profile" size={16} /></span><span className="wsp-account-text"><strong>Бүртгүүлэх</strong><small>Үнэгүй бүртгэл</small></span></Link>}
@@ -100,7 +98,7 @@ export function WorkspaceShell({ account, fontClass, children }: { account: Shel
       </header>
       <div className="wsp-content">{children}</div>
     </div>
-  </div></CreditsProvider>;
+  </div></StreakProvider></CreditsProvider>;
 }
 
 // This month's AI credits; the figure follows each AI reply's receipt. Hidden when it could not be read.
@@ -126,21 +124,6 @@ function RailToggle() {
     try { localStorage.setItem(RAIL_KEY, collapsed ? "collapsed" : "open"); } catch { /* The choice then lasts for this page only. */ }
   }
   return <button type="button" className="wsp-icon-button wsp-rail-toggle" onClick={toggle} aria-label="Хажуу цэсийг хураах / дэлгэх" title="Хажуу цэсийг хураах / дэлгэх"><Icon name="rail" /></button>;
-}
-
-function SignOutButton() {
-  const router = useRouter();
-  const [pending, setPending] = useState(false);
-  const [failed, setFailed] = useState(false);
-  async function signOut() {
-    setPending(true); setFailed(false);
-    try {
-      const result = await authClient.signOut();
-      if (result.error) throw new Error("signout");
-      router.push("/login"); router.refresh();
-    } catch { setFailed(true); setPending(false); }
-  }
-  return <button type="button" onClick={() => void signOut()} disabled={pending} title="Гарах"><Icon name="logout" size={18} /><span>{pending ? "Гарч байна…" : failed ? "Дахин оролдох" : "Гарах"}</span></button>;
 }
 
 function RecentChats({ userKey }: { userKey: string }) {

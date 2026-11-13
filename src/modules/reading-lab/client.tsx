@@ -1,26 +1,35 @@
 "use client";
 import Link from "next/link";
-import { Fragment, useEffect, useMemo, useRef, useState, type DragEvent, type ReactNode } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type DragEvent, type ReactNode } from "react";
 import { Icon } from "@/modules/workspace/icons";
 import { CreditCost, useCredits } from "@/modules/credits/client";
 import { readReceipt, readingPracticeHold } from "@/modules/credits/pricing";
 import { MaterialImages, useMaterialPick } from "@/modules/ai-images/client";
 import {
-  GAP, READING_LIMITS, TFNG, allQuestions, gradeReading, groupType, isReadingLanguage, matchCount, matchLabel, optionLetter, paragraphLabel,
-  passageWords, publicGroups, type PublicGroup, type PublicQuestion, type ReadingAnswer, type ReadingAnswers, type ReadingGrade,
+  GAP, READING_LIMITS, TFNG, allQuestions, groupType, matchCount, matchLabel, optionLetter, paragraphLabel,
+  passageWords, publicGroups, type PublicGroup, type PublicQuestion, type ReadingAnswer,
   type ReadingLanguage, type ResultItem,
 } from "./contracts";
 import { readingSamples, type ReadingSample } from "./samples";
 import {
-  blankState, deleteOwn, newPracticeId, readState, saveOwn, setOwnState, setSampleState, updateLab, useReadingLab, validPublicGroups,
-  type OwnPractice, type PracticeState, type TextSize,
+  PRACTICES_FULL, applyProgress, blankState, readSampleStates, readSavedPractice, readState,
+  type PracticeState, type ProgressRequest, type SavedPractice,
+} from "./state";
+import {
+  forgetLegacyPractice, forgetLegacySamples, legacyReading, saveTextSize, setGuestSample, tidyLegacyReading, useGuestSamples, useTextSize, type TextSize,
 } from "./store";
 import styles from "./reading.module.css";
 
 const ACCEPT = ".pdf,.docx,.pptx,.txt,.md,.csv,image/*";
 const ALLOWED = new Set(["pdf", "docx", "pptx", "txt", "md", "csv"]);
 const SECONDS = READING_LIMITS.minutes * 60;
-const dateLabel = new Intl.DateTimeFormat("mn-MN", { timeZone: "Asia/Ulaanbaatar", month: "short", day: "numeric" });
+const API = "/api/labs/ielts-reading";
+// "11-р сарын 9" in Ulaanbaatar time (UTC+8 all year), written out by hand: the list is rendered on the server and
+// again in the browser, and a browser without Mongolian locale data would format the same date differently.
+const dateLabel = (time: number) => {
+  const date = new Date(time + 8 * 60 * 60 * 1000);
+  return `${date.getUTCMonth() + 1}-р сарын ${date.getUTCDate()}`;
+};
 const bytes = (size: number) => size >= 1024 * 1024 ? (size / 1024 / 1024).toFixed(1) + " MB" : Math.max(1, Math.round(size / 1024)) + " KB";
 const clock = (seconds: number) => {
   const safe = Math.max(0, Math.floor(seconds));
@@ -30,61 +39,181 @@ const filled = (value: ReadingAnswer | undefined) => typeof value === "number" |
 const range = (first: number, last: number) => first === last ? `Question ${first}` : `Questions ${first}–${last}`;
 const typesOf = (groups: readonly PublicGroup[]) => [...new Set(groups.map(group => groupType(group)).filter(Boolean))];
 
-/** One practice as the runner sees it: a passage, answer-free questions and how to mark them. */
+/** One practice as the runner sees it: a passage, answer-free questions and how its progress is kept. */
 type RunnerPractice = {
   title: string;
   paragraphs: string[];
   groups: PublicGroup[];
   meta: string[];
-  check: (answers: ReadingAnswers) => Promise<ReadingGrade>;
+  /** Where answers and the timer are saved on the account; null for a guest, whose sample progress stays in this browser. */
+  saveUrl: string | null;
+  /** Mark the answers; resolves to the checked state. */
+  check: (state: PracticeState, finishedSeconds: number | null) => Promise<PracticeState>;
+  /** Clear a checked practice for another attempt. */
+  retry: (state: PracticeState) => Promise<PracticeState>;
 };
 type View = { kind: "library" } | { kind: "sample"; id: string } | { kind: "own"; id: string };
 
+const record = (value: unknown): value is Record<string, unknown> => Boolean(value) && typeof value === "object" && !Array.isArray(value);
+/** A refused request, carrying the server's own message. */
+class RequestError extends Error {}
+/** A message the student can act on: the server's own words, or the fallback when the connection failed. */
+const failure = (reason: unknown, fallback: string) => reason instanceof RequestError ? reason.message : fallback;
+
+/** One progress request to the account; the reply is the stored state. Every route is same-origin and session-checked. */
+async function progress(url: string, method: "POST" | "PATCH", body: ProgressRequest | Record<string, unknown>, fallback: string): Promise<PracticeState> {
+  const response = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body), signal: AbortSignal.timeout(30_000) });
+  const data = await jsonObject(response);
+  if (response.status === 401) throw new RequestError("Нэвтрэх хугацаа дууссан. Дахин нэвтэрнэ үү.");
+  if (!response.ok) throw new RequestError(typeof data.error === "string" ? data.error : fallback);
+  if (!record(data.state)) throw new RequestError("Хариу бүрэн ирсэнгүй. Дахин оролдоно уу.");
+  return readState(data.state);
+}
+
 // Samples carry their key in the page bundle; the runner only ever gets the answer-free groups.
 const SAMPLE_GROUPS = new Map(readingSamples.map(sample => [sample.id, publicGroups(sample.groups)]));
-function samplePractice(sample: ReadingSample): RunnerPractice {
+function samplePractice(sample: ReadingSample, signedIn: boolean): RunnerPractice {
+  const url = `${API}/samples/${sample.id}`;
+  // A guest's answers are marked here and kept in this browser; the rules are the ones the server uses.
+  const local = (state: PracticeState, request: ProgressRequest) => {
+    const outcome = applyProgress(state, request, sample.groups);
+    return "stale" in outcome ? state : outcome.state;
+  };
   return {
     title: sample.title, paragraphs: sample.paragraphs, groups: SAMPLE_GROUPS.get(sample.id) ?? [],
     meta: [sample.topic, sample.level, `${passageWords(sample.paragraphs)} үг`],
-    check: async answers => gradeReading(sample.groups, answers),
-  };
-}
-function ownPractice(own: OwnPractice): RunnerPractice {
-  return {
-    title: own.title, paragraphs: own.paragraphs, groups: own.groups,
-    meta: ["Миний дасгал", `${passageWords(own.paragraphs)} үг`, own.sourceName],
-    check: async answers => {
-      const response = await fetch("/api/labs/ielts-reading/grade", {
-        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ token: own.token, answers }), signal: AbortSignal.timeout(30_000),
-      });
-      const data = await jsonObject(response);
-      if (response.status === 401) throw new Error("Нэвтрэх хугацаа дууссан. Дахин нэвтэрнэ үү.");
-      if (!response.ok) throw new Error(typeof data.error === "string" ? data.error : "Хариулт шалгаж чадсангүй. Дахин оролдоно уу.");
-      const grade = readState({ result: data }).result;
-      if (!grade) throw new Error("Дүн бүрэн ирсэнгүй. Дахин оролдоно уу.");
-      return grade;
+    saveUrl: signedIn ? url : null,
+    // A signed-in student's sample is marked on the server with the same built-in key and kept on the account.
+    check: async (state, finishedSeconds) => {
+      const request: ProgressRequest = { action: "check", attempts: state.attempts, answers: state.answers, finishedSeconds };
+      return signedIn ? progress(url, "PATCH", request, "Хариулт шалгаж чадсангүй. Дахин оролдоно уу.") : local(state, request);
+    },
+    retry: async state => {
+      const request: ProgressRequest = { action: "retry", attempts: state.attempts };
+      return signedIn ? progress(url, "PATCH", request, "Дасгалыг шинээр эхлүүлж чадсангүй. Дахин оролдоно уу.") : local(state, request);
     },
   };
 }
+function ownPractice(own: SavedPractice): RunnerPractice {
+  const url = `${API}/practices/${own.id}`;
+  return {
+    title: own.title, paragraphs: own.paragraphs, groups: own.groups,
+    meta: ["Миний дасгал", `${passageWords(own.paragraphs)} үг`, own.sourceName],
+    saveUrl: url,
+    // The key never leaves the server: it marks the answers by the practice's id and keeps the result on the account.
+    check: (state, finishedSeconds) => progress(`${API}/grade`, "POST", { id: own.id, attempts: state.attempts, answers: state.answers, finishedSeconds }, "Хариулт шалгаж чадсангүй. Дахин оролдоно уу."),
+    retry: state => progress(url, "PATCH", { action: "retry", attempts: state.attempts }, "Дасгалыг шинээр эхлүүлж чадсангүй. Дахин оролдоно уу."),
+  };
+}
 
-export function ReadingLab({ userKey }: { userKey: string | null }) {
-  const lab = useReadingLab(userKey);
+export function ReadingLab({ userKey, initialPractices = [], initialSamples = {} }: {
+  userKey: string | null;
+  /** A signed-in student's practices and sample progress, read from the account by the page. */
+  initialPractices?: SavedPractice[];
+  initialSamples?: Record<string, PracticeState>;
+}) {
+  const signedIn = userKey !== null;
+  // Signed in, everything lives on the account: the page starts from the server's copy and every change goes through
+  // the API. A guest's sample progress stays in this browser.
+  const [practices, setPractices] = useState(initialPractices);
+  const [accountSamples, setAccountSamples] = useState(initialSamples);
+  const guestSamples = useGuestSamples();
+  const samples = signedIn ? accountSamples : guestSamples;
+  const textSize = useTextSize();
   const [view, setView] = useState<View>({ kind: "library" });
   // What the last generation actually cost, shown once on the practice it made.
   const [notice, setNotice] = useState<{ id: string; text: string } | null>(null);
+  const [listError, setListError] = useState("");
+  const [moveNote, setMoveNote] = useState("");
+  const [deleting, setDeleting] = useState<string | null>(null);
   useEffect(() => { window.scrollTo({ top: 0, behavior: "auto" }); }, [view]);
   const back = () => { setNotice(null); setView({ kind: "library" }); };
-  const setTextSize = (size: TextSize) => updateLab(userKey, current => ({ ...current, textSize: size }));
+
+  const put = useCallback((practice: SavedPractice) => {
+    setPractices(list => [practice, ...list.filter(item => item.id !== practice.id)].sort((a, b) => b.updatedAt - a.updatedAt));
+  }, []);
+
+  // Practices and sample progress kept in this browser before they moved to the account are sent there once and
+  // then forgotten here. One the server cannot take now (a full library, a dropped connection) stays for the next visit.
+  useEffect(() => {
+    if (!userKey) return;
+    const legacy = legacyReading(userKey);
+    if (!legacy.practices.length && !legacy.samples) { tidyLegacyReading(userKey); return; }
+    let cancelled = false;
+    const send = (body: unknown) => fetch(`${API}/import`, {
+      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body), signal: AbortSignal.timeout(30_000),
+    });
+    void (async () => {
+      let waiting = 0, overflow = 0, unreadable = 0;
+      if (legacy.samples) {
+        try {
+          const response = await send({ kind: "samples", samples: legacy.samples });
+          const data = await jsonObject(response);
+          if (response.ok && record(data.samples)) {
+            const moved = readSampleStates(data.samples);
+            // Progress made on this page meanwhile is newer than what the account returned.
+            setAccountSamples(current => ({ ...moved, ...current }));
+            forgetLegacySamples(userKey);
+          }
+        } catch { /* Tried again on the next visit. */ }
+      }
+      for (const item of legacy.practices) {
+        if (cancelled) return;
+        // The account is full: the rest wait in this browser until a practice is deleted.
+        if (overflow) { overflow++; continue; }
+        try {
+          const response = await send(item.body);
+          const data = await jsonObject(response);
+          const practice = response.ok ? readSavedPractice(data.practice) : null;
+          if (practice) { put(practice); forgetLegacyPractice(userKey, item.id); }
+          // Its sealed key no longer opens, or its passage does not match it: it could not be checked here either.
+          else if (response.ok && data.practice === null && typeof data.refused === "string") { forgetLegacyPractice(userKey, item.id); unreadable++; }
+          else if (response.status === 409) overflow++;
+          else waiting++;
+        } catch { waiting++; }
+      }
+      if (cancelled) return;
+      setMoveNote([
+        overflow ? `Бүртгэл дүүрсэн тул ${overflow} дасгал энэ хөтөчид үлдлээ. Нэг дасгалаа устгаад хуудсаа дахин нээхэд шилжинэ.` : "",
+        waiting ? `${waiting} дасгалыг бүртгэл рүү шилжүүлж чадсангүй. Хуудсаа дараа дахин нээхэд шилжинэ.` : "",
+        unreadable ? `${unreadable} хуучин дасгалын мэдээлэл хүчингүй болсон тул шилжүүлээгүй.` : "",
+      ].filter(Boolean).join(" "));
+    })();
+    return () => { cancelled = true; };
+  }, [userKey, put]);
+
+  // Keeps the library in step with the open runner; the runner sends the same progress to the account.
+  const sampleChanged = (id: string, state: PracticeState) => {
+    if (signedIn) setAccountSamples(current => ({ ...current, [id]: state }));
+    else setGuestSample(id, state);
+  };
+  const ownChanged = (id: string, state: PracticeState) => {
+    setPractices(list => list.map(item => item.id === id ? { ...item, state } : item));
+  };
+  async function remove(own: SavedPractice) {
+    if (deleting || !window.confirm(`"${own.title}" дасгалыг устгах уу? Хариулт, дүн хамт устана.`)) return;
+    setDeleting(own.id); setListError("");
+    try {
+      const response = await fetch(`${API}/practices/${own.id}`, { method: "DELETE", signal: AbortSignal.timeout(30_000) });
+      const data = await jsonObject(response);
+      if (response.status === 401) throw new RequestError("Нэвтрэх хугацаа дууссан. Дахин нэвтэрнэ үү.");
+      // Already deleted on another device: it is gone here too.
+      if (!response.ok && response.status !== 404) throw new RequestError(typeof data.error === "string" ? data.error : "Дасгалыг устгаж чадсангүй. Дахин оролдоно уу.");
+      setPractices(list => list.filter(item => item.id !== own.id));
+    } catch (reason) {
+      setListError(failure(reason, "Дасгалыг устгаж чадсангүй. Холболтоо шалгаад дахин оролдоно уу."));
+    } finally { setDeleting(null); }
+  }
 
   if (view.kind === "sample") {
     const sample = readingSamples.find(item => item.id === view.id);
-    if (sample) return <Runner key={"sample:" + sample.id} practice={samplePractice(sample)} state={lab.samples[sample.id] ?? blankState()}
-      onState={state => setSampleState(userKey, sample.id, state)} textSize={lab.textSize} onTextSize={setTextSize} onBack={back} />;
+    if (sample) return <Runner key={"sample:" + sample.id} practice={samplePractice(sample, signedIn)} state={samples[sample.id] ?? blankState()}
+      onState={state => sampleChanged(sample.id, state)} textSize={textSize} onTextSize={saveTextSize} onBack={back} />;
   }
   if (view.kind === "own") {
-    const own = lab.own.find(item => item.id === view.id);
+    const own = practices.find(item => item.id === view.id);
     if (own) return <Runner key={"own:" + own.id} practice={ownPractice(own)} state={own.state} notice={notice?.id === own.id ? notice.text : null}
-      onState={state => setOwnState(userKey, own.id, state)} textSize={lab.textSize} onTextSize={setTextSize} onBack={back} />;
+      onState={state => ownChanged(own.id, state)} textSize={textSize} onTextSize={saveTextSize} onBack={back} />;
   }
 
   return <div className={`wsp-page ${styles.page}`}>
@@ -100,10 +229,10 @@ export function ReadingLab({ userKey }: { userKey: string | null }) {
     </header>
 
     <section className={styles.section} aria-labelledby="rl-samples">
-      <div className={styles.sectionHead}><h2 id="rl-samples">Жишээ дасгалууд</h2><span>Үнэгүй · амар хэцүүгийн дарааллаар</span></div>
+      <div className={styles.sectionHead}><h2 id="rl-samples">Жишээ дасгалууд</h2><span>Үнэгүй · амар хэцүүгийн дарааллаар{signedIn ? "" : " · явц энэ хөтөчид"}</span></div>
       <div className={styles.samples}>
         {readingSamples.map((sample, index) => {
-          const state = lab.samples[sample.id];
+          const state = samples[sample.id];
           const total = allQuestions(sample.groups).length;
           const started = state && Object.values(state.answers).some(filled);
           return <button key={sample.id} type="button" className={styles.sample} onClick={() => setView({ kind: "sample", id: sample.id })} data-sample={sample.id}>
@@ -124,40 +253,41 @@ export function ReadingLab({ userKey }: { userKey: string | null }) {
 
     <section className={styles.section} aria-labelledby="rl-create">
       <div className={styles.sectionHead}><h2 id="rl-create">Өөрийн дасгал үүсгэх</h2><span>Файл, зураг эсвэл текстээс</span></div>
-      {userKey ? <Creator userKey={userKey} onCreated={(id, text) => { setNotice({ id, text }); setView({ kind: "own", id }); }} />
+      {signedIn ? <Creator full={practices.length >= READING_LIMITS.practices} onCreated={(practice, text) => { put(practice); setNotice({ id: practice.id, text }); setView({ kind: "own", id: practice.id }); }} />
         : <div className={styles.signin}>
           <span className={styles.signinMark} aria-hidden="true"><Icon name="spark" size={22} /></span>
-          <div><strong>Өөрийн нийтлэл, хичээлээс IELTS дасгал</strong><p>Нэвтэрч ороод файл, хуудасны зураг эсвэл текстээ оруулбал AI түүнээс IELTS маягийн эх бичвэр, асуулт бэлдэнэ.</p></div>
+          <div><strong>Өөрийн нийтлэл, хичээлээс IELTS дасгал</strong><p>Нэвтэрч ороод файл, хуудасны зураг эсвэл текстээ оруулбал AI түүнээс IELTS маягийн эх бичвэр, асуулт бэлдэнэ. Дасгал, хариулт тань бүртгэлд хадгалагдана.</p></div>
           <Link className={styles.primary} href="/login?next=%2Flabs%2Fielts-reading">Нэвтрэх</Link>
         </div>}
     </section>
 
-    {userKey && lab.own.length ? <section className={styles.section} aria-labelledby="rl-own">
-      <div className={styles.sectionHead}><h2 id="rl-own">Миний дасгалууд</h2><span>{lab.own.length} дасгал · энэ хөтөчид</span></div>
-      <div className={styles.ownList}>{lab.own.map(own => {
+    {signedIn && (practices.length || moveNote || listError) ? <section className={styles.section} aria-labelledby="rl-own">
+      <div className={styles.sectionHead}><h2 id="rl-own">Миний дасгалууд</h2><span>{practices.length} / {READING_LIMITS.practices} · бүртгэлд</span></div>
+      {moveNote ? <p className={styles.notice} role="status">{moveNote}</p> : null}
+      {listError ? <p className={styles.error} role="alert">{listError}</p> : null}
+      <div className={styles.ownList}>{practices.map(own => {
         const total = allQuestions(own.groups).length;
         return <article key={own.id} className={styles.own}>
           <button type="button" className={styles.ownOpen} onClick={() => setView({ kind: "own", id: own.id })}>
             <span className={styles.ownMark} aria-hidden="true"><Icon name="book" size={20} /></span>
             <span className={styles.ownText}>
               <strong lang="en">{own.title}</strong>
-              <small>{total} асуулт · {passageWords(own.paragraphs)} үг · {dateLabel.format(new Date(own.createdAt))}</small>
+              <small>{total} асуулт · {passageWords(own.paragraphs)} үг · {dateLabel(own.createdAt)}</small>
               <small className={styles.ownSource}>{own.sourceName}</small>
             </span>
             {own.state.best != null ? <span className={styles.ownScore}><strong>{own.state.best}/{total}</strong><small>шилдэг</small></span>
               : <span className={styles.badge}>{Object.values(own.state.answers).some(filled) ? "Үргэлжилж байна" : "Шинэ"}</span>}
             <Icon name="arrow" size={18} className={styles.ownArrow} />
           </button>
-          <button type="button" className={styles.ownDelete} title="Устгах" aria-label={`${own.title} дасгалыг устгах`} onClick={() => {
-            if (window.confirm(`"${own.title}" дасгалыг устгах уу? Хариулт, дүн хамт устана.`)) deleteOwn(userKey, own.id);
-          }}><Icon name="trash" size={17} /></button>
+          <button type="button" className={styles.ownDelete} title="Устгах" aria-label={`${own.title} дасгалыг устгах`} disabled={deleting !== null} aria-busy={deleting === own.id}
+            onClick={() => void remove(own)}><Icon name="trash" size={17} /></button>
         </article>;
       })}</div>
     </section> : null}
   </div>;
 }
 
-function Creator({ userKey, onCreated }: { userKey: string; onCreated: (id: string, notice: string) => void }) {
+function Creator({ full, onCreated }: { full: boolean; onCreated: (practice: SavedPractice, notice: string) => void }) {
   const [mode, setMode] = useState<"file" | "text">("file");
   const material = useMaterialPick({ extensions: ALLOWED, maxBytes: READING_LIMITS.fileBytes, documentHint: "PDF, Word, PowerPoint, TXT, MD, CSV файл эсвэл хуудасны зураг сонгоно уу." });
   const picked = material.pick;
@@ -170,7 +300,7 @@ function Creator({ userKey, onCreated }: { userKey: string; onCreated: (id: stri
   const { apply } = useCredits();
   const input = useRef<HTMLInputElement>(null);
   const length = text.trim().length;
-  const ready = mode === "file" ? Boolean(picked) && !material.preparing : length >= READING_LIMITS.minSourceChars;
+  const ready = !full && (mode === "file" ? Boolean(picked) && !material.preparing : length >= READING_LIMITS.minSourceChars);
   // The most this material can cost, as the server holds it; the charge settles lower for shorter material.
   const hold = mode === "text" ? readingPracticeHold(Math.max(length, READING_LIMITS.minSourceChars))
     : picked?.kind === "images" ? readingPracticeHold(0, picked.images.length) : readingPracticeHold(READING_LIMITS.textChars);
@@ -191,17 +321,19 @@ function Creator({ userKey, onCreated }: { userKey: string; onCreated: (id: stri
       const form = new FormData();
       if (mode === "file") material.append(form); else form.append("text", text.trim());
       form.append("language", language);
-      const response = await fetch("/api/labs/ielts-reading", { method: "POST", body: form, signal: AbortSignal.timeout(175_000) });
+      // The practice is saved on the account; the server counts the account's practices before any credits are held.
+      form.append("store", "account");
+      const response = await fetch(API, { method: "POST", body: form, signal: AbortSignal.timeout(175_000) });
       const data = await jsonObject(response);
       if (response.status === 401) throw new Error("Нэвтрэх хугацаа дууссан. Дахин нэвтэрнэ үү.");
       if (!response.ok) throw new Error(typeof data.error === "string" ? data.error : "Дасгал үүсгэж чадсангүй. Дахин оролдоно уу.");
       apply(data);
-      const practice = createdPractice(data);
-      if (!practice) throw new Error("AI дасгал бүрэн ирсэнгүй. Дахин оролдоно уу.");
-      saveOwn(userKey, practice);
+      const practice = readSavedPractice(data.practice);
+      // Already saved on the account: a reload shows it.
+      if (!practice) throw new Error("AI дасгал бүрэн ирсэнгүй. Хуудсаа дахин ачаална уу.");
       material.clear(); setText("");
       const receipt = readReceipt(data);
-      onCreated(practice.id, receipt ? `Дасгал бэлэн боллоо. ${receipt.spent} кредит зарцууллаа${receipt.spent < hold ? ` (хамгийн ихдээ ${hold} кредит барьж, үлдсэнийг буцаалаа)` : ""}.` : "Дасгал бэлэн боллоо.");
+      onCreated(practice, receipt ? `Дасгал бэлэн боллоо. ${receipt.spent} кредит зарцууллаа${receipt.spent < hold ? ` (хамгийн ихдээ ${hold} кредит барьж, үлдсэнийг буцаалаа)` : ""}.` : "Дасгал бэлэн боллоо.");
     } catch (reason) {
       setError(reason instanceof Error && reason.name !== "TimeoutError" ? reason.message : "Дасгал үүсгэхэд хэт удлаа. Дахин оролдоно уу.");
     } finally { setPending(false); }
@@ -259,27 +391,12 @@ function Creator({ userKey, onCreated }: { userKey: string; onCreated: (id: stri
         {pending ? <><i className={styles.spinner} aria-hidden="true" />Дасгал бэлдэж байна…</> : <><Icon name="spark" size={18} />Дасгал үүсгэх</>}
       </button>
       <p className={styles.cost}><CreditCost action="reading-practice" cost={hold} upTo /></p>
+      {full ? <p className={styles.error} role="status">{PRACTICES_FULL}</p> : null}
       {pending ? <p className={styles.status} role="status">Материалыг уншиж, эх бичвэр болон асуулт бэлдэж байна. 30–90 секунд орно.</p> : null}
       {error ? <p className={styles.error} role="alert">{error}</p> : null}
-      <p className={styles.fine}>Үнэ нь материалын урт, бэлдсэн эх бичвэр, асуултын тоогоор тооцогдоно: богино текст хямд, барьсан кредитийн илүүг буцаана. Материалын текст эсвэл зураг AI руу илгээгдэнэ. Урт материалын эхний 45,000 тэмдэгтийг ашиглана. Файл, текст серверт хадгалагдахгүй; дасгал, хариулт зөвхөн энэ хөтөчид үлдэнэ, хариултын түлхүүр шалгах хүртэл шифрлэгдэнэ. AI-ийн бэлдсэн дасгал багшийн хяналтгүй. Хугацаатай шалгалтын үеэр хаалттай.</p>
+      <p className={styles.fine}>Үнэ нь материалын урт, бэлдсэн эх бичвэр, асуултын тоогоор тооцогдоно: богино текст хямд, барьсан кредитийн илүүг буцаана. Материалын текст эсвэл зураг AI руу илгээгдэнэ. Урт материалын эхний 45,000 тэмдэгтийг ашиглана. Файл, текст серверт хадгалагдахгүй. Дасгал, хариулт, дүн таны бүртгэлд хадгалагдаж, өөр төхөөрөмж дээр ч нээгдэнэ; хариултын түлхүүр шалгах хүртэл серверт үлдэнэ. Бүртгэлд {READING_LIMITS.practices} хүртэл дасгал хадгална. AI-ийн бэлдсэн дасгал багшийн хяналтгүй. Хугацаатай шалгалтын үеэр хаалттай.</p>
     </div>
   </div>;
-}
-
-/** Accept only a complete reply from the generator; anything malformed is treated as a failed generation. */
-function createdPractice(data: Record<string, unknown>): OwnPractice | null {
-  const { title, paragraphs, groups, token, language, source } = data;
-  if (typeof title !== "string" || !title || title.length > 200) return null;
-  if (!Array.isArray(paragraphs) || !paragraphs.length || paragraphs.length > READING_LIMITS.paragraphs.max || !paragraphs.every(item => typeof item === "string" && item.length > 0 && item.length <= READING_LIMITS.paragraph + 10)) return null;
-  if (!validPublicGroups(groups) || typeof token !== "string" || token.length < 40 || token.length > READING_LIMITS.tokenChars || !isReadingLanguage(language)) return null;
-  const info = source && typeof source === "object" ? source as Record<string, unknown> : {};
-  const now = Date.now();
-  return {
-    id: newPracticeId(), title, paragraphs: paragraphs as string[], groups, token, language,
-    sourceName: typeof info.name === "string" && info.name ? info.name.slice(0, 200) : "Материал",
-    sourceKind: typeof info.kind === "string" && info.kind ? info.kind.slice(0, 20) : "text",
-    createdAt: now, updatedAt: now, state: blankState(),
-  };
 }
 
 type Mark = { start: number; end: number; ids: string[]; labels: number[] };
@@ -297,6 +414,63 @@ function evidenceMarks(paragraphs: readonly string[], results: readonly ResultIt
     marks[index].push({ start, end, ids: [item.id], labels: [numbers.get(item.id) ?? 0] });
   }
   return marks.map(list => list.sort((a, b) => a.start - b.start));
+}
+
+type SaveStatus = "saved" | "failed" | "stale";
+type SaveBody = Extract<ProgressRequest, { action: "save" }>;
+const saveBody = (state: PracticeState): SaveBody => ({ action: "save", attempts: state.attempts, answers: state.answers, timerStartedAt: state.timerStartedAt });
+
+/**
+ * Sends one practice's answers and timer to the account: 0.6 s after the last change, one request at a time, the
+ * newest state wins and a failed save is tried again. A save from an out-of-date view (the practice was checked,
+ * cleared or deleted in another tab or on another device) is refused with 409 or 404; nothing more is sent after that.
+ */
+function createSaver(url: string, onStatus: (status: SaveStatus) => void) {
+  let next: SaveBody | null = null, timer = 0, running: Promise<void> | null = null, closed = false, stale = false, attached = true;
+  function flush(keepalive = false): Promise<void> {
+    window.clearTimeout(timer);
+    timer = 0;
+    if (running) return running.then(() => flush(keepalive));
+    const body = next;
+    if (!body || closed || stale) return Promise.resolve();
+    next = null;
+    running = fetch(url, {
+      method: "PATCH", keepalive, headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body), signal: keepalive ? undefined : AbortSignal.timeout(15_000),
+    }).then(response => {
+      if (response.status === 409 || response.status === 404) { stale = true; onStatus("stale"); return; }
+      if (!response.ok) throw new Error("save");
+      onStatus("saved");
+    }).catch(() => {
+      // While a check or a reset is on its way it carries the answers itself, so the failed save is not repeated.
+      if (closed) return;
+      next ??= body;
+      onStatus("failed");
+      if (attached) timer = window.setTimeout(() => void flush(), 5000);
+    }).finally(() => { running = null; });
+    return running;
+  }
+  return {
+    queue(body: SaveBody) {
+      // Nothing is queued behind a check or a reset; its reply is the new state.
+      if (closed) return;
+      next = body;
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => void flush(), 600);
+    },
+    flush,
+    attach() { attached = true; },
+    /** Leaving the runner: the last change goes out once, and nothing is retried behind the next practice. */
+    detach() { attached = false; void flush(true); },
+    /** Before a check or a reset: nothing more is saved, and the save in flight lands first. */
+    async close() {
+      closed = true;
+      next = null;
+      window.clearTimeout(timer);
+      await running;
+    },
+    reopen() { closed = false; },
+  };
 }
 
 function Runner({ practice, state, notice = null, onState, textSize, onTextSize, onBack }: {
@@ -319,6 +493,9 @@ function Runner({ practice, state, notice = null, onState, textSize, onTextSize,
   const [error, setError] = useState("");
   const [focus, setFocus] = useState<string | null>(null);
   const [now, setNow] = useState(() => Date.now());
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>("saved");
+  // Signed in, answers and the timer are saved on the account; a guest's sample progress is kept by `onState` in this browser.
+  const [saver] = useState(() => practice.saveUrl ? createSaver(practice.saveUrl, setSaveStatus) : null);
   const passage = useRef<HTMLElement>(null);
   const timing = state.timerStartedAt !== null && !checked;
   const left = timing ? SECONDS - Math.max(0, Math.round((now - state.timerStartedAt!) / 1000)) : SECONDS;
@@ -335,36 +512,61 @@ function Runner({ practice, state, notice = null, onState, textSize, onTextSize,
     const clear = window.setTimeout(() => setFocus(null), 2600);
     return () => { cancelAnimationFrame(frame); window.clearTimeout(clear); };
   }, [focus]);
+  // Closing the tab or leaving the runner sends the last change without waiting for the pause after typing.
+  useEffect(() => {
+    if (!saver) return;
+    const leave = () => { void saver.flush(true); };
+    saver.attach();
+    addEventListener("pagehide", leave);
+    return () => { removeEventListener("pagehide", leave); saver.detach(); };
+  }, [saver]);
 
+  /** Answers and the timer: shown at once, then saved. */
+  const change = (next: PracticeState) => {
+    onState(next);
+    saver?.queue(saveBody(next));
+  };
   const answer = (id: string, value: ReadingAnswer | null) => {
     if (locked) return;
     const answers = { ...state.answers };
     if (value === null || value === "") delete answers[id]; else answers[id] = value;
-    onState({ ...state, answers });
+    change({ ...state, answers });
   };
-  function startTimer() { setNow(Date.now()); onState({ ...state, timerStartedAt: Date.now() }); }
-  function stopTimer() { if (window.confirm("Цагийг зогсоох уу? Хариултууд хэвээр үлдэнэ.")) onState({ ...state, timerStartedAt: null }); }
+  function startTimer() { setNow(Date.now()); change({ ...state, timerStartedAt: Date.now() }); }
+  function stopTimer() { if (window.confirm("Цагийг зогсоох уу? Хариултууд хэвээр үлдэнэ.")) change({ ...state, timerStartedAt: null }); }
   async function check() {
     if (locked) return;
     const missing = questions.length - answered;
     if (missing > 0 && !window.confirm(`${missing} асуултад хариулаагүй байна. Хариултаа шалгах уу?`)) return;
     setBusy(true); setError("");
+    // The check carries the answers itself, so a save still on its way lands first and nothing is saved behind it.
+    await saver?.close();
     try {
-      const grade = await practice.check(state.answers);
-      const elapsed = state.timerStartedAt !== null ? Math.max(0, Math.round((Date.now() - state.timerStartedAt) / 1000)) : null;
-      onState({ ...state, result: grade, best: Math.max(state.best ?? 0, grade.correct), attempts: state.attempts + 1, timerStartedAt: null, finishedSeconds: elapsed });
+      const elapsed = state.timerStartedAt !== null ? Math.min(86_400, Math.max(0, Math.round((Date.now() - state.timerStartedAt) / 1000))) : null;
+      onState(await practice.check(state, elapsed));
+      saver?.reopen();
       setPane("questions");
       // The score card sits at the top of the questions; the passage pane keeps its own place.
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (reason) {
-      setError(reason instanceof Error && reason.name !== "TimeoutError" ? reason.message : "Хариулт шалгахад хэт удлаа. Дахин оролдоно уу.");
+      // Nothing was checked: the answers are saved again as they are.
+      saver?.reopen();
+      saver?.queue(saveBody(state));
+      setError(failure(reason, "Хариулт шалгаж чадсангүй. Холболтоо шалгаад дахин оролдоно уу."));
     } finally { setBusy(false); }
   }
-  function retry() {
-    if (!window.confirm("Хариултууд арилж, дасгал шинээр эхэлнэ. Үргэлжлүүлэх үү?")) return;
-    setFocus(null);
-    onState({ ...state, answers: {}, result: null, timerStartedAt: null, finishedSeconds: null });
-    setPane("passage");
+  async function retry() {
+    if (busy || !window.confirm("Хариултууд арилж, дасгал шинээр эхэлнэ. Үргэлжлүүлэх үү?")) return;
+    setBusy(true); setError("");
+    await saver?.close();
+    try {
+      const next = await practice.retry(state);
+      setFocus(null);
+      onState(next);
+      setPane("passage");
+    } catch (reason) {
+      setError(failure(reason, "Дасгалыг шинээр эхлүүлж чадсангүй. Холболтоо шалгаад дахин оролдоно уу."));
+    } finally { saver?.reopen(); setBusy(false); }
   }
   const show = (id: string) => { setPane("passage"); setFocus(id); };
 
@@ -375,17 +577,19 @@ function Runner({ practice, state, notice = null, onState, textSize, onTextSize,
       <div className={styles.barTools}>
         <button type="button" className={styles.tool} onClick={() => onTextSize(((textSize + 1) % 3) as TextSize)} title="Текстийн хэмжээ" aria-label={`Текстийн хэмжээ: ${["жижиг", "дунд", "том"][textSize]}`}><span aria-hidden="true">A<small>A</small></span></button>
         {checked ? state.finishedSeconds !== null ? <span className={styles.timeUsed}><Icon name="clock" size={16} />{clock(state.finishedSeconds)}</span> : null
-          : timing ? <button type="button" className={styles.timer} data-over={left < 0 ? "" : undefined} data-low={left >= 0 && left <= 120 ? "" : undefined} onClick={stopTimer} title="Цаг зогсоох">
+          : timing ? <button type="button" className={styles.timer} data-over={left < 0 ? "" : undefined} data-low={left >= 0 && left <= 120 ? "" : undefined} onClick={stopTimer} disabled={busy} title="Цаг зогсоох">
             <Icon name="clock" size={16} />{left < 0 ? "+" + clock(-left) : clock(left)}
           </button>
           : <button type="button" className={styles.tool} onClick={startTimer} disabled={busy}><Icon name="clock" size={16} /><span>{READING_LIMITS.minutes}:00</span></button>}
-        {checked ? <button type="button" className={styles.secondary} onClick={retry}>Дахин оролдох</button>
+        {checked ? <button type="button" className={styles.secondary} onClick={() => void retry()} disabled={busy} aria-busy={busy}>Дахин оролдох</button>
           : <button type="button" className={styles.primary} onClick={() => void check()} disabled={busy || !answered} aria-busy={busy}>{busy ? "Шалгаж байна…" : "Хариулт шалгах"}</button>}
       </div>
     </header>
     {notice && !checked ? <p className={styles.notice} role="status">{notice}</p> : null}
     {timing && left < 0 ? <p className={styles.overtime} role="status">{READING_LIMITS.minutes} минут дууслаа. Шалгалтад энэ үед дараагийн текст рүү шилжинэ. Хариултаа шалгаарай.</p> : null}
     {error ? <p className={styles.error} role="alert">{error}</p> : null}
+    {saveStatus === "stale" ? <p className={styles.overtime} role="status">Энэ дасгал өөр цонх эсвэл төхөөрөмж дээр өөрчлөгдсөн тул энд хийсэн өөрчлөлт хадгалагдсангүй. Хуудсаа дахин ачаална уу.</p>
+      : saveStatus === "failed" ? <p className={styles.overtime} role="status">Хариулт бүртгэлд хадгалагдсангүй. Холболтоо шалгана уу; дахин оролдож байна.</p> : null}
 
     <div className={styles.tabs} role="tablist" aria-label="Харагдац">
       <button type="button" role="tab" aria-selected={pane === "passage"} onClick={() => setPane("passage")}>Текст</button>
@@ -428,7 +632,7 @@ function Runner({ practice, state, notice = null, onState, textSize, onTextSize,
           </div>;
         })}
         <div className={styles.footer}>
-          {checked ? <button type="button" className={styles.secondary} onClick={retry}>Дахин оролдох</button>
+          {checked ? <button type="button" className={styles.secondary} onClick={() => void retry()} disabled={busy}>Дахин оролдох</button>
             : <><span>{answered}/{questions.length} хариулсан</span><button type="button" className={styles.primary} onClick={() => void check()} disabled={busy || !answered}>{busy ? "Шалгаж байна…" : "Хариулт шалгах"}</button></>}
           <button type="button" className={styles.linkButton} onClick={onBack}>Бусад дасгал</button>
         </div>

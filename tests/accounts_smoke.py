@@ -55,7 +55,10 @@ with sync_playwright() as p:
     page.screenshot(path=str(artifacts / "dashboard-desktop.png"), full_page=True)
     session = context.request.get(BASE + "/api/auth/get-session")
     assert session.json()["user"]["email"] == email and "no-store" in session.headers.get("cache-control", "no-store")
-    page.get_by_role("button", name="Гарах", exact=True).click()
+    # The Workspace rail has no sign-out; the profile page does.
+    expect(page.locator(".wsp-side").get_by_role("button", name="Гарах", exact=True)).to_have_count(0)
+    page.goto(BASE + "/workspace/profile")
+    page.locator(".profile-heading").get_by_role("button", name="Гарах", exact=True).click()
     expect(page).to_have_url(BASE + "/login")
     assert context.request.get(BASE + "/api/auth/get-session").json() is None
     assert context.request.post(BASE + "/api/mock-attempts", headers=ORIGIN, data={"slug": "sat-full-01"}).status == 401

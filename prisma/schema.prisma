@@ -21,6 +21,11 @@ model User {
   vocabularyWords VocabularyWord[]
   vocabularyDecks VocabularyDeck[]
   myExams MyExam[]
+  chatThreads ChatThread[]
+  readingPractices ReadingPractice[]
+  readingSampleStates ReadingSampleState[]
+  studyPlan StudyPlan?
+  studyDays StudyDay[]
   creditPeriods CreditPeriod[]
   creditCharges CreditCharge[]
   creditPlanTerms CreditPlanTerm[]
@@ -547,3 +552,99 @@ model PaperAttempt {
   @@index([userId,createdAt])
 }
 
+
+// Workspace AI chat threads, stored on the account (2026-11-12; before that they lived only in the browser).
+// Full photos are never stored: a message keeps at most three small JPEG previews as data URLs.
+model ChatThread {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title String
+  subject String
+  mode String
+  language String
+  // SHA-256 of a browser-stored thread moved here once, so it is imported only once. Null for new threads.
+  importKey String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  messages ChatMessage[]
+  @@unique([userId, importKey])
+  @@index([userId, updatedAt])
+}
+model ChatMessage {
+  id String @id @default(cuid())
+  threadId String
+  thread ChatThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  // Order within the thread, from 0.
+  position Int
+  role String
+  content String
+  // Up to three small preview data URLs of the photos sent with this message, or null.
+  images Json?
+  createdAt DateTime @default(now())
+  @@unique([threadId, position])
+}
+
+// Reading Lab practices made from the student's own material, stored on the account (2026-11-12).
+// `questions` holds the groups WITH the answer key, explanations and evidence; only the public part
+// leaves the server before a check.
+model ReadingPractice {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title String
+  language String
+  sourceName String
+  sourceKind String
+  paragraphs Json
+  questions Json
+  // The student's progress: answers, last result, best, attempts and timer ({ answers, result, ... }).
+  state Json?
+  // SHA-256 of the sealed token of a practice moved here from browser storage, so it is imported once.
+  importKey String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([userId, importKey])
+  @@index([userId, updatedAt])
+}
+// Progress on one of the built-in Reading Lab samples.
+model ReadingSampleState {
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sampleId String
+  state Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@id([userId, sampleId])
+}
+
+// A student's study roadmap toward one exam date (2026-11-12). The tasks are computed from these
+// settings on the server; `done` holds the ids of tasks the student ticked.
+model StudyPlan {
+  userId String @id
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // One of the fixed goals in src/modules/roadmap (for example "ielts", "sat", "eesh-math").
+  goal String
+  // Ulaanbaatar calendar date of the exam, YYYY-MM-DD.
+  examDate String
+  // Optional target as the student wrote it within the goal's rules (a band, a score).
+  target String?
+  daysPerWeek Int
+  minutesPerDay Int
+  done Json @default("[]")
+  // The AI-written structure of the plan (phases, weekly themes, study routines), read back through
+  // readStructure in src/modules/roadmap/structure.ts. Null for a plan built without the AI planner.
+  structure Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+// One row per Ulaanbaatar calendar day on which a signed-in student opened the Workspace: the daily
+// check-in behind the streak.
+model StudyDay {
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // YYYY-MM-DD in Ulaanbaatar time.
+  day String
+  createdAt DateTime @default(now())
+  @@id([userId, day])
+}

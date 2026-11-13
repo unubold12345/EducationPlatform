@@ -9,6 +9,7 @@ import { VOCABULARY_LIMITS } from "../vocabulary/contracts.ts";
 import { AI_IMAGE_LIMITS } from "../ai-images/contracts.ts";
 import { READING_LIMITS } from "../reading-lab/contracts.ts";
 import { MY_EXAM_LIMITS } from "../my-exams/contracts.ts";
+import { STRUCTURE_LIMITS } from "../roadmap/structure.ts";
 
 /**
  * DeepSeek list prices in USD per million tokens for the model every AI feature calls.
@@ -41,7 +42,7 @@ export type AiAction =
   | "chat" | "review-coach" | "practice-assistant" | "math-tutor"
   | "writing-ideas" | "writing-grammar" | "writing-feedback"
   | "speaking-turn" | "speaking-report"
-  | "vocabulary-import" | "exam" | "exam-10" | "exam-20" | "reading-practice";
+  | "vocabulary-import" | "exam" | "exam-10" | "exam-20" | "reading-practice" | "roadmap";
 
 type ActionBudget = { label: string; area: string; inputTokens: number; outputTokens: number };
 
@@ -69,6 +70,8 @@ export const AI_ACTIONS: Record<AiAction, ActionBudget> = {
   "exam-20": { label: "20 асуулттай шалгалт (хуучин үнэ)", area: "Файлаас шалгалт", inputTokens: 24000, outputTokens: 8000 },
   // Priced by length (`readingPracticeCredits` below); this budget is the most one practice can cost.
   "reading-practice": { label: "Унших дасгал үүсгэх", area: "Reading Lab", inputTokens: 24000, outputTokens: 6000 },
+  // Priced by the plan's length (`roadmapCredits` below); this budget is the longest plan, a year of weeks.
+  "roadmap": { label: "AI төлөвлөгөө зохиох", area: "Бэлтгэлийн төлөвлөгөө", inputTokens: 2500, outputTokens: 2800 + 55 * STRUCTURE_LIMITS.maxWeeks },
 };
 export const AI_ACTION_IDS = Object.keys(AI_ACTIONS) as AiAction[];
 
@@ -269,12 +272,37 @@ export function readingPracticeHold(textChars: number, images = 0) {
   return readingPracticeCredits(textChars, READING_LIMITS.passageWords.max, READING_LIMITS.questions.max, images);
 }
 
+/**
+ * What DeepSeek bills for a roadmap structure: the planner's rules and the plan's facts in, the phases with their
+ * routines plus one theme per week out. `roadmapOutputTokens` is also that call's `max_tokens`, so the price below
+ * is the most the call can cost. The length is known before the call (the weeks to the exam date), so the price is
+ * exact up front and nothing is settled afterwards.
+ */
+export const ROADMAP_RATE = {
+  /** The rules, the JSON shape, the plan's facts, the skill results and the student's note. */
+  promptTokens: AI_ACTIONS["roadmap"].inputTokens,
+  /** The headline, the diagnosis, the tactics and up to five phases with their routines. */
+  replyTokens: 2800,
+  /** One weekly theme. */
+  tokensPerWeek: 55,
+} as const;
+
+/** The reply budget, and the provider's `max_tokens`, for a plan of `weeks` weeks. */
+export function roadmapOutputTokens(weeks: number) {
+  return ROADMAP_RATE.replyTokens + Math.max(1, bounded(weeks, STRUCTURE_LIMITS.maxWeeks)) * ROADMAP_RATE.tokensPerWeek;
+}
+/** Credits for an AI-written structure of a plan `weeks` weeks long: 5 up to 13 weeks, 6 to 28, 7 to 43, 8 beyond. */
+export function roadmapCredits(weeks: number) {
+  return creditsForTokens(ROADMAP_RATE.promptTokens, roadmapOutputTokens(weeks));
+}
+
 /** The lowest and highest charge of an action; equal for every fixed-price action. */
 export function creditRange(action: AiAction) {
   const max = CREDIT_COSTS[action];
   if (action === "vocabulary-import") return { min: vocabularyImportCredits(0, 1), max };
   if (action === "exam") return { min: examCredits(0, MY_EXAM_LIMITS.minQuestions), max };
   if (action === "reading-practice") return { min: readingPracticeCredits(READING_LIMITS.minSourceChars, READING_LIMITS.passageWords.min, READING_LIMITS.questions.min), max };
+  if (action === "roadmap") return { min: roadmapCredits(1), max };
   return { min: max, max };
 }
 /** "5" for a fixed price, "1–17" for a priced-by-result action. */

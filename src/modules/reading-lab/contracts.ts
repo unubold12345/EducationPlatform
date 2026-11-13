@@ -20,13 +20,19 @@ export const READING_LIMITS = {
   explanation: 700,
   evidence: 400,
   questions: { min: 7, target: 12, max: 14 },
-  /** Practices kept per account in this browser. */
+  /** Practices kept per account; a full library refuses a new one before any credits are held. */
   practices: 20,
   daily: 15,
   /** A typed gap answer. */
   answerChars: 60,
+  /** A sealed key from before practices moved to the account (2026-11-12), still read by the one-time import. */
   tokenChars: 120_000,
+  /** Room for the sealed token a page loaded before the move still sends, so it can be told to reload. */
   gradeBodyBytes: 160 * 1024,
+  /** A progress save, a check or a reset: at most 14 answers of 60 characters. */
+  progressBodyBytes: 16 * 1024,
+  /** One practice moved from a browser: its sealed token, its passage and its progress. */
+  importBodyBytes: 320 * 1024,
   /** The IELTS pace: one passage in twenty minutes. A browser study aid, not a deadline. */
   minutes: 20,
 } as const;

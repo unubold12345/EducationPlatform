@@ -2,6 +2,7 @@ import "server-only";
 import { randomUUID } from "node:crypto";
 import { getDb } from "@/lib/db";
 import { ApiError } from "@/lib/api";
+import type { Prisma } from "@/generated/prisma/client";
 import { readingLabEnabled } from "@/lib/local-pilot";
 import { chargeCredits } from "@/modules/credits/service";
 import { AI_ACTIONS, readingPracticeCredits, readingPracticeHold, type UsageMeter } from "@/modules/credits/pricing";
@@ -11,10 +12,16 @@ import { cleanSourceText, fallbackTitle } from "@/modules/documents/text";
 import { extractDocument } from "@/modules/documents/extract";
 import { readUploadedSource } from "@/modules/documents/upload";
 import {
-  READING_LIMITS, allQuestions, choiceCount, gradeReading, isReadingLanguage, parseGeneratedReading, passageWords, publicGroups, readingMessages, validAnswerFor,
-  type FullGroup, type PublicGroup, type ReadingAnswers, type ReadingGrade, type ReadingLanguage,
+  READING_LIMITS, allQuestions, isReadingLanguage, parseGeneratedReading, passageWords, publicGroups, readingMessages,
+  type FullGroup, type ReadingLanguage,
 } from "./contracts";
-import { ReadingTokenError, openReading, sealReading } from "./token";
+import { findReadingSample } from "./samples";
+import {
+  PRACTICES_FULL, answersFit, applyProgress, blankState, importedParagraphs, importedState, isBlank, isPracticeId, isSampleId,
+  readGradeRequest, readImportRequest, readParagraphs, readProgressRequest, readState,
+  type PracticeState, type ProgressRequest, type SavedPractice,
+} from "./state";
+import { ReadingTokenError, openReading, readingImportKey, validGroups } from "./token";
 
 const ACTION = "reading-practice" as const;
 const LEASE_MS = 300_000;
@@ -23,26 +30,85 @@ const MAX_BODY = READING_LIMITS.fileBytes + BODY_SLACK;
 /** A retry only starts while there is time left for it inside the function's limit. */
 const RETRY_BEFORE_MS = 60_000;
 const PASTED = "Буулгасан текст";
+const RELOAD = "Хуудас шинэчлэгдсэн байна. Хуудсаа дахин ачаалаад оролдоно уу.";
+const STALE = "Энэ дасгал өөр цонх эсвэл төхөөрөмж дээр өөрчлөгдсөн байна. Хуудсаа дахин ачаална уу.";
+const NOT_FOUND = "Энэ дасгал олдсонгүй.";
+const BAD_SHAPE = "Хүсэлтийн бүтэц буруу байна.";
 
 export type ReadingReply = {
-  title: string;
-  paragraphs: string[];
-  groups: PublicGroup[];
-  token: string;
-  language: ReadingLanguage;
-  minutes: number;
+  /** The practice as saved on the account, without its key. */
+  practice: SavedPractice;
   /** `chars` is the material text DeepSeek read (0 for page photos); it prices the practice. */
   source: { name: string; kind: string; pages: number | null; truncated: boolean; chars: number };
   provider: "DeepSeek";
 };
+/** What a progress change returns: the stored state and when the row last changed. */
+export type ProgressReply = { state: PracticeState; updatedAt: number };
+
+const PRACTICE_SELECT = {
+  id: true, title: true, language: true, sourceName: true, sourceKind: true, paragraphs: true, questions: true, state: true, createdAt: true, updatedAt: true,
+} as const;
+type PracticeRow = {
+  id: string; title: string; language: string; sourceName: string; sourceKind: string; paragraphs: unknown; questions: unknown; state: unknown;
+  createdAt: Date; updatedAt: Date;
+};
 
 const record = (value: unknown): value is Record<string, unknown> => Boolean(value) && typeof value === "object" && !Array.isArray(value);
+const asJson = (value: unknown) => value as Prisma.InputJsonValue;
+const missing = (error: unknown) => (error as { code?: string }).code === "P2025";
+const duplicate = (error: unknown) => (error as { code?: string }).code === "P2002";
 
 function ensureEnabled() {
   if (!readingLabEnabled()) throw new ApiError(404, "Туршилтын хуудас идэвхгүй байна.");
 }
 async function ensureNoTimedExam(userId: string) {
   if (await activeTimedSitting(userId)) throw new ApiError(403, "Хугацаатай шалгалт нээлттэй байна. Шалгалтаа дуусгасны дараа унших дасгал үүсгэнэ үү.");
+}
+
+/** A stored practice with its key, and what the browser may see of it. A row that no longer reads is left out. */
+function storedPractice(row: PracticeRow): { practice: SavedPractice; groups: FullGroup[] } | null {
+  const paragraphs = readParagraphs(row.paragraphs);
+  if (!paragraphs || !isReadingLanguage(row.language) || !validGroups(row.questions, paragraphs.length)) return null;
+  const groups = row.questions;
+  return {
+    groups,
+    practice: {
+      id: row.id, title: row.title, paragraphs, groups: publicGroups(groups), language: row.language, sourceName: row.sourceName,
+      sourceKind: row.sourceKind, createdAt: row.createdAt.getTime(), updatedAt: row.updatedAt.getTime(), state: readState(row.state),
+    },
+  };
+}
+function shown(row: PracticeRow): SavedPractice {
+  const stored = storedPractice(row);
+  if (!stored) throw new ApiError(404, NOT_FOUND);
+  return stored.practice;
+}
+
+/** A practice id from a request is only ever used when the practice belongs to this student. */
+async function ownPractice(userId: string, id: string) {
+  if (!isPracticeId(id)) throw new ApiError(400, "Дасгалын түлхүүр буруу байна.");
+  const row = await getDb().readingPractice.findFirst({ where: { id, userId }, select: PRACTICE_SELECT });
+  const stored = row ? storedPractice(row) : null;
+  if (!row || !stored) throw new ApiError(404, NOT_FOUND);
+  return { row, ...stored };
+}
+
+/** The student's own practices, most recently changed first. */
+export async function listReadingPractices(userId: string): Promise<SavedPractice[]> {
+  const rows = await getDb().readingPractice.findMany({ where: { userId }, orderBy: { updatedAt: "desc" }, take: READING_LIMITS.practices, select: PRACTICE_SELECT });
+  return rows.flatMap(row => storedPractice(row)?.practice ?? []);
+}
+/** The student's progress on the built-in samples, keyed by sample id. */
+export async function listSampleStates(userId: string): Promise<Record<string, PracticeState>> {
+  const rows = await getDb().readingSampleState.findMany({ where: { userId }, select: { sampleId: true, state: true } });
+  const states: Record<string, PracticeState> = {};
+  for (const row of rows) if (findReadingSample(row.sampleId)) states[row.sampleId] = readState(row.state);
+  return states;
+}
+/** The page's first read for a signed-in student. */
+export async function readingLibrary(userId: string) {
+  const [practices, samples] = await Promise.all([listReadingPractices(userId), listSampleStates(userId)]);
+  return { practices, samples };
 }
 
 type Source = { kind: "text"; text: string } | Awaited<ReturnType<typeof readUploadedSource>>;
@@ -57,7 +123,10 @@ async function readSource(request: Request): Promise<{ source: Source; language:
   let form: FormData;
   try { form = await request.formData(); }
   catch { throw new ApiError(400, "Хүсэлтийг уншиж чадсангүй. Дахин оролдоно уу."); }
-  for (const key of form.keys()) if (!["file", "text", "language"].includes(key)) throw new ApiError(400, "Хүсэлтийн бүтэц буруу байна.");
+  for (const key of form.keys()) if (!["file", "text", "language", "store"].includes(key)) throw new ApiError(400, BAD_SHAPE);
+  // A page loaded before practices moved to the account would keep the reply in its browser and lose the
+  // practice; it does not send `store`, and is told to reload before any credits are held.
+  if (form.get("store") !== "account") throw new ApiError(409, RELOAD);
   const language = form.get("language") ?? "mn";
   if (!isReadingLanguage(language)) throw new ApiError(400, "Тайлбарын хэл буруу байна.");
   const texts = form.getAll("text");
@@ -72,15 +141,21 @@ async function readSource(request: Request): Promise<{ source: Source; language:
   return { source: await readUploadedSource(form, "Унших дасгал үүсгэх файл, зураг эсвэл текстээ оруулна уу."), language };
 }
 
-/** One upload or pasted text in, one passage with sealed questions out. Nothing is stored on the server. */
+/**
+ * One upload or pasted text in, one practice saved on the account out. The material is never stored; the key
+ * stays on the server and only the answer-free questions are returned.
+ */
 export async function createReadingPractice(userId: string, request: Request) {
   ensureEnabled();
   const { source, language } = await readSource(request);
   await ensureNoTimedExam(userId);
+  const db = getDb();
+  // Practices are counted on the account, whatever a browser holds. A full library is refused before any credits are held.
+  const saved = await db.readingPractice.count({ where: { userId } });
+  if (saved >= READING_LIMITS.practices) throw new ApiError(409, PRACTICES_FULL);
   if (!process.env.DEEPSEEK_API_KEY?.trim()) throw new ApiError(503, "AI дасгал үүсгэгч одоогоор холбогдоогүй байна.");
-  if (!process.env.BETTER_AUTH_SECRET?.trim()) throw new ApiError(503, "Хариулт хамгаалах түлхүүр тохируулаагүй байна.");
 
-  const db = getDb(), now = Date.now(), limitKey = `education-reading-lab:${userId}:${tutorDay(now)}`, lease = BigInt(now + LEASE_MS);
+  const now = Date.now(), limitKey = `education-reading-lab:${userId}:${tutorDay(now)}`, lease = BigInt(now + LEASE_MS);
   // Priced by length: hold the most this material can cost (pasted text and photos are measured now; a document's
   // text is only known after extraction, so it holds the full-file price), then settle to what was read and written.
   const hold = source.kind === "text" ? readingPracticeHold(source.text.length) : source.kind === "images" ? readingPracticeHold(0, source.images.length) : readingPracticeHold(READING_LIMITS.textChars);
@@ -118,18 +193,18 @@ export async function createReadingPractice(userId: string, request: Request) {
       if (!practice) throw new ApiError(503, source.kind === "images" ? "Зурагнаас унших дасгал хийх хангалттай текст уншиж чадсангүй. Илүү тод, бүрэн хуудасны зураг оруулна уу." : "AI унших дасгал үүсгэж чадсангүй. Дахин оролдоно уу.");
       // Another tab may start a timed exam while the provider is answering.
       await ensureNoTimedExam(userId);
-      const token = sealReading(userId, {
-        title: practice.title, language, paragraphs: practice.paragraphs.length, groups: practice.groups,
-        sourceName: info.name, sourceKind: info.kind, createdAt: Date.now(),
+      // A practice moved from another tab's browser may have taken the last place meanwhile; the hold is then refunded.
+      if (await db.readingPractice.count({ where: { userId } }) >= READING_LIMITS.practices) throw new ApiError(409, PRACTICES_FULL);
+      // Saved with its key on the account. A failure here refunds the credits like any other.
+      const row = await db.readingPractice.create({
+        data: {
+          userId, title: practice.title.slice(0, 200), language, sourceName: info.name.slice(0, 200) || "Материал", sourceKind: info.kind.slice(0, 20),
+          paragraphs: asJson(practice.paragraphs), questions: asJson(practice.groups), state: asJson(blankState()),
+        },
+        select: PRACTICE_SELECT,
       });
-      const reply: ReadingReply = {
-        title: practice.title, paragraphs: practice.paragraphs, groups: publicGroups(practice.groups), token, language,
-        minutes: READING_LIMITS.minutes, source: info, provider: "DeepSeek",
-      };
+      const reply: ReadingReply = { practice: shown(row), source: info, provider: "DeepSeek" };
       return reply;
-    } catch (error) {
-      if (error instanceof ReadingTokenError) throw new ApiError(error.code === "config" ? 503 : 500, "Хариултыг хамгаалж чадсангүй. Дахин оролдоно уу.");
-      throw error;
     } finally {
       // Only release the lease this request holds; never shorten another request's lease.
       await db.rateLimit.updateMany({ where: { key: limitKey, lastRequest: lease }, data: { lastRequest: BigInt(Date.now() + 3000) } });
@@ -137,52 +212,154 @@ export async function createReadingPractice(userId: string, request: Request) {
   }, {
     hold,
     // A retry after malformed output is not charged twice: the price follows the practice delivered.
-    settle: reply => readingPracticeCredits(reply.source.chars, passageWords(reply.paragraphs), allQuestions(reply.groups).length, reply.source.kind === "image" ? reply.source.pages ?? 0 : 0),
+    settle: reply => readingPracticeCredits(reply.source.chars, passageWords(reply.practice.paragraphs), allQuestions(reply.practice.groups).length, reply.source.kind === "image" ? reply.source.pages ?? 0 : 0),
   });
 }
 
-/** Read the exact grade request shape; unknown fields are rejected before any decryption. */
-function gradeInput(body: unknown): { token: string; answers: ReadingAnswers } {
-  if (!record(body) || Object.keys(body).some(key => key !== "token" && key !== "answers")) throw new ApiError(400, "Хүсэлтийн бүтэц буруу байна.");
-  if (typeof body.token !== "string" || body.token.length < 40 || body.token.length > READING_LIMITS.tokenChars) throw new ApiError(400, "Дасгалын мэдээлэл буруу байна.");
-  if (!record(body.answers)) throw new ApiError(400, "Хариултууд буруу байна.");
-  const entries = Object.entries(body.answers);
-  if (entries.length > READING_LIMITS.questions.max) throw new ApiError(400, "Хариултын тоо хэт олон байна.");
-  const answers: ReadingAnswers = {};
-  for (const [id, value] of entries) {
-    if (!/^q\d{1,2}$/.test(id)) throw new ApiError(400, "Хариултын түлхүүр буруу байна.");
-    if (!(typeof value === "string" && value.length <= READING_LIMITS.answerChars) && !(typeof value === "number" && Number.isInteger(value) && value >= 0 && value < 20)) throw new ApiError(400, "Хариултын утга буруу байна.");
-    answers[id] = value;
+/**
+ * Apply one progress request to the student's own practice. The row's last change is the version: a request that
+ * built on an older state is applied again to the newer one, and refused (409) when it no longer fits.
+ */
+async function changePractice(userId: string, id: string, input: ProgressRequest): Promise<ProgressReply> {
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const { row, groups, practice } = await ownPractice(userId, id);
+    if (input.action !== "retry" && !answersFit(groups, practice.paragraphs.length, input.answers)) throw new ApiError(400, "Хариулт энэ дасгалд хамаарахгүй байна.");
+    // Marking uses the key stored on the account, never anything the browser sends.
+    const outcome = applyProgress(practice.state, input, groups);
+    if ("stale" in outcome) throw new ApiError(409, STALE);
+    if (!outcome.changed) return { state: outcome.state, updatedAt: practice.updatedAt };
+    try {
+      const saved = await getDb().readingPractice.update({
+        where: { id: row.id, userId, updatedAt: row.updatedAt }, data: { state: asJson(outcome.state) }, select: { updatedAt: true },
+      });
+      return { state: outcome.state, updatedAt: saved.updatedAt.getTime() };
+    } catch (error) {
+      // Changed (or deleted) since it was read: read it again.
+      if (!missing(error)) throw error;
+    }
   }
-  return { token: body.token, answers };
+  throw new ApiError(409, STALE);
 }
 
-function tokenFailure(error: ReadingTokenError): ApiError {
-  if (error.code === "expired") return new ApiError(410, "Энэ дасгалын хариулт шалгах хугацаа дууссан. Материалаасаа шинэ дасгал үүсгэнэ үү.");
-  if (error.code === "owner") return new ApiError(403, "Энэ дасгал өөр бүртгэлийнх байна.");
-  if (error.code === "config") return new ApiError(503, "Хариулт хамгаалах түлхүүр тохируулаагүй байна.");
-  return new ApiError(400, "Дасгалын мэдээлэл хүчингүй байна. Дахин үүсгэнэ үү.");
-}
-
-/** Open the sealed practice and mark only the signed-in student's own answers. No AI, no credits. */
-export function gradeReadingPractice(userId: string, body: unknown): { title: string; gradedAt: number } & ReadingGrade {
+/** Save answers and the timer, or clear a checked practice for another attempt. */
+export async function updateReadingPractice(userId: string, id: string, body: unknown): Promise<ProgressReply> {
   ensureEnabled();
-  const input = gradeInput(body);
-  let practice;
-  try { practice = openReading(input.token, userId); }
+  const input = readProgressRequest(body);
+  // Marking goes through the grade route.
+  if (!input || input.action === "check") throw new ApiError(400, BAD_SHAPE);
+  return changePractice(userId, id, input);
+}
+
+/** Mark the signed-in student's own practice from the key stored on the account, and keep the result there. No AI, no credits. */
+export async function gradeReadingPractice(userId: string, body: unknown): Promise<ProgressReply> {
+  ensureEnabled();
+  // A page loaded before the move still sends the sealed token instead of the practice id.
+  if (record(body) && "token" in body) throw new ApiError(409, RELOAD);
+  const input = readGradeRequest(body);
+  if (!input) throw new ApiError(400, BAD_SHAPE);
+  return changePractice(userId, input.id, input.request);
+}
+
+/** Delete only the student's own practice, with its progress. */
+export async function deleteReadingPractice(userId: string, id: string) {
+  ensureEnabled();
+  if (!isPracticeId(id)) throw new ApiError(400, "Дасгалын түлхүүр буруу байна.");
+  const result = await getDb().readingPractice.deleteMany({ where: { id, userId } });
+  if (!result.count) throw new ApiError(404, NOT_FOUND);
+  return { ok: true };
+}
+
+/**
+ * Progress on a built-in sample. Samples use no AI and stay open during a timed mock; a check is marked here with
+ * the same rules and built-in key the browser uses for guests, so the stored score is never a browser claim.
+ */
+export async function updateSampleProgress(userId: string, sampleId: string, body: unknown): Promise<ProgressReply> {
+  ensureEnabled();
+  const sample = isSampleId(sampleId) ? findReadingSample(sampleId) : null;
+  if (!sample) throw new ApiError(404, "Энэ жишээ дасгал олдсонгүй.");
+  const input = readProgressRequest(body);
+  if (!input) throw new ApiError(400, BAD_SHAPE);
+  if (input.action !== "retry" && !answersFit(sample.groups, sample.paragraphs.length, input.answers)) throw new ApiError(400, "Хариулт энэ дасгалд хамаарахгүй байна.");
+  const db = getDb();
+  const where = { userId_sampleId: { userId, sampleId: sample.id } };
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const row = await db.readingSampleState.findUnique({ where, select: { state: true, updatedAt: true } });
+    const outcome = applyProgress(row ? readState(row.state) : blankState(), input, sample.groups);
+    if ("stale" in outcome) throw new ApiError(409, STALE);
+    if (!outcome.changed) return { state: outcome.state, updatedAt: row?.updatedAt.getTime() ?? Date.now() };
+    try {
+      const saved = row
+        ? await db.readingSampleState.update({ where: { ...where, updatedAt: row.updatedAt }, data: { state: asJson(outcome.state) }, select: { updatedAt: true } })
+        : await db.readingSampleState.create({ data: { userId, sampleId: sample.id, state: asJson(outcome.state) }, select: { updatedAt: true } });
+      return { state: outcome.state, updatedAt: saved.updatedAt.getTime() };
+    } catch (error) {
+      // Another tab changed or created the row since it was read: read it again.
+      if (!missing(error) && !duplicate(error)) throw error;
+    }
+  }
+  throw new ApiError(409, STALE);
+}
+
+type PracticeImport = { practice: SavedPractice; imported: boolean } | { practice: null; refused: "invalid" | "owner" };
+
+/**
+ * Move what a browser kept before 2026-11-12 to the account: one practice per request, or every sample state at
+ * once. For a practice only the sealed token is believed: the title, the key, the paragraph count and the source
+ * come out of it, the passage text from the browser is checked against it, any checked answers are marked again
+ * from the key (a score the browser claims is ignored), and one token never makes two practices. A token that
+ * cannot be opened is reported, not thrown, so the page can tell it from a busy server.
+ */
+export async function importReading(userId: string, body: unknown): Promise<PracticeImport | { samples: Record<string, PracticeState> }> {
+  ensureEnabled();
+  const input = readImportRequest(body);
+  if (!input) throw new ApiError(400, BAD_SHAPE);
+  const db = getDb();
+  if (input.kind === "samples") {
+    const rows = Object.entries(input.samples).flatMap(([sampleId, value]) => {
+      const sample = findReadingSample(sampleId);
+      const state = sample ? importedState(value, sample.groups, sample.paragraphs.length) : null;
+      return sample && state && !isBlank(state) ? [{ userId, sampleId: sample.id, state: asJson(state) }] : [];
+    });
+    // Progress the account already has on a sample is kept; the browser's copy only fills the gaps.
+    if (rows.length) await db.readingSampleState.createMany({ data: rows, skipDuplicates: true });
+    return { samples: await listSampleStates(userId) };
+  }
+
+  let sealed;
+  try { sealed = openReading(input.token, userId, Date.now(), { allowExpired: true }); }
   catch (error) {
-    if (error instanceof ReadingTokenError) throw tokenFailure(error);
+    if (!(error instanceof ReadingTokenError)) throw error;
+    if (error.code === "config") throw new ApiError(503, "Хариулт хамгаалах түлхүүр тохируулаагүй байна.");
+    return { practice: null, refused: error.code === "owner" ? "owner" : "invalid" };
+  }
+  const paragraphs = importedParagraphs(input.paragraphs, sealed.paragraphs, sealed.groups);
+  if (!paragraphs) return { practice: null, refused: "invalid" };
+  const importKey = readingImportKey(input.token);
+  const known = () => db.readingPractice.findUnique({ where: { userId_importKey: { userId, importKey } }, select: PRACTICE_SELECT });
+  const existing = await known();
+  if (existing) return { practice: shown(existing), imported: false };
+  if (await db.readingPractice.count({ where: { userId } }) >= READING_LIMITS.practices) {
+    throw new ApiError(409, `Бүртгэлд хамгийн ихдээ ${READING_LIMITS.practices} дасгал хадгална. Нэг дасгалаа устгасны дараа үлдсэн нь шилжинэ.`);
+  }
+  const now = Date.now();
+  const created = new Date(sealed.createdAt > 0 && sealed.createdAt <= now ? sealed.createdAt : now);
+  try {
+    const row = await db.readingPractice.create({
+      data: {
+        userId, importKey, title: sealed.title, language: sealed.language, sourceName: sealed.sourceName, sourceKind: sealed.sourceKind,
+        paragraphs: asJson(paragraphs), questions: asJson(sealed.groups), state: asJson(importedState(input.state, sealed.groups, paragraphs.length)),
+        // Ordered among the student's practices by when it was made, not by when it moved.
+        createdAt: created, updatedAt: created,
+      },
+      select: PRACTICE_SELECT,
+    });
+    return { practice: shown(row), imported: true };
+  } catch (error) {
+    // Two tabs moved the same practice at once: the first one's row is the practice.
+    const twin = duplicate(error) ? await known() : null;
+    if (twin) return { practice: shown(twin), imported: false };
     throw error;
   }
-  const groups: FullGroup[] = practice.groups;
-  const questions = new Map(groups.flatMap(group => group.questions.map(question => [question.id, { group, question }] as const)));
-  for (const [id, value] of Object.entries(input.answers)) {
-    const found = questions.get(id);
-    if (!found) throw new ApiError(400, "Хариулт энэ дасгалд хамаарахгүй байна.");
-    if (!validAnswerFor(found.question, value, choiceCount(found.group, found.question as { kind: typeof found.question.kind; options?: string[] }, practice.paragraphs))) throw new ApiError(400, "Хариултын утга буруу байна.");
-  }
-  if (allQuestions(groups).length < 1) throw new ApiError(400, "Дасгалын мэдээлэл хүчингүй байна. Дахин үүсгэнэ үү.");
-  return { title: practice.title, gradedAt: Date.now(), ...gradeReading(groups, input.answers) };
 }
 
 /** DeepSeek JSON mode, with this action's output budget from the price list. */

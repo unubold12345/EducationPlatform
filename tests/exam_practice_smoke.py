@@ -161,7 +161,7 @@ with sync_playwright() as p:
         assert context.request.delete(api(slug),headers=ORIGIN).status==403
     assert context.request.get(api("ielts-academic-02","/audio?part=1")).status==403
     # The Workspace AI chat is closed too, before any provider call.
-    assert context.request.post(BASE+"/api/workspace/chat",headers=ORIGIN,data={"mode":"ask","subject":"general","language":"mn","message":"Тусална уу","history":[]}).status==403
+    assert context.request.post(BASE+"/api/workspace/chat",headers=ORIGIN,data={"mode":"ask","subject":"general","language":"mn","message":"Тусална уу","threadId":None,"after":0}).status==403
 
     # The timed sitting's new tools: visible strip, keyboard, elimination, text size, lighter polling.
     page.goto(BASE+"/exams/attempts/"+attempt)

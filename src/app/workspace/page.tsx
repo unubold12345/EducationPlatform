@@ -14,6 +14,7 @@ import { ProgramArt } from "@/modules/workspace/art";
 import { ScoreRing } from "@/modules/workspace/score";
 import { Icon } from "@/modules/workspace/icons";
 import type { ExamProgram } from "@/modules/exams/types";
+import { StreakCard } from "@/modules/roadmap/streak-client";
 export const metadata: Metadata = { title: "Workspace" };
 
 const date = new Intl.DateTimeFormat("mn-MN", { timeZone: "Asia/Ulaanbaatar", month: "short", day: "numeric" });
@@ -35,7 +36,7 @@ export default async function WorkspaceHome() {
   const programs: (HomeProgram & { program: ExamProgram; tag: string })[] = [
     { program: "sat", href: "/exams/sat", label: "Digital SAT", detail: `${count("sat")} бүтэн mock · 98 асуулт`, tone: "tone-blue", tag: "Reading · Math" },
     { program: "ielts", href: "/exams/ielts", label: "IELTS Academic", detail: `${count("ielts")} бүтэн mock · 4 чадвар`, tone: "tone-violet", tag: "Listening · Speaking" },
-    { program: "entrance", href: "/exams/eesh", label: "ЭЕШ", detail: `${entranceTotal} mock · 3 хичээл`, tone: "tone-green", tag: "Математик · Физик · Англи" },
+    { program: "entrance", href: "/exams/eesh", label: "ЭЕШ", detail: `${entranceTotal} mock · 5 хичээл`, tone: "tone-green", tag: "Мат · Физик · Хими · Био · Англи" },
     { program: "jlpt", href: "/exams/jlpt", label: "JLPT N5・N4", detail: "6 бүтэн mock · япон audio", tone: "tone-amber", tag: "語彙 · 文法 · 聴解" },
     { program: "hsk", href: "/exams/hsk", label: "HSK 1", detail: `${hskMocks.length} бүтэн mock · хятад audio`, tone: "tone-amber", tag: "听力 · 阅读" },
   ];
@@ -51,6 +52,8 @@ export default async function WorkspaceHome() {
       <h1>Өнөөдөр юу сурах вэ?</h1>
     </header>
     <HomeSwitcher programs={programs} labs={labs} />
+
+    <section className="wsp-today" aria-label="Өдөр бүрийн идэвх"><StreakCard /></section>
 
     {resume ? <section className="wsp-resume resume-card" aria-label="Үргэлжлүүлэх">
       <span className="wsp-resume-icon" aria-hidden="true"><Icon name="clock" /></span>

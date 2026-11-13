@@ -210,7 +210,7 @@ test("making a practice is a guarded, credit-charged server action; samples need
   // Priced by length: the most this material can cost is held, then the charge settles to what was read and written.
   assert.match(service, /readingPracticeHold\(source\.text\.length\)/);
   assert.match(service, /readingPracticeHold\(READING_LIMITS\.textChars\)/);
-  assert.match(service, /settle: reply => readingPracticeCredits\(reply\.source\.chars, passageWords\(reply\.paragraphs\), allQuestions\(reply\.groups\)\.length/);
+  assert.match(service, /settle: reply => readingPracticeCredits\(reply\.source\.chars, passageWords\(reply\.practice\.paragraphs\), allQuestions\(reply\.practice\.groups\)\.length/);
   assert.match(text("src/modules/reading-lab/client.tsx"), /<CreditCost action="reading-practice" cost=\{hold\} upTo \/>/);
   assert.match(service, /readingLabEnabled\(\)/);
   // The open-sitting rule runs before credits are held and again after the provider answers.
@@ -218,7 +218,7 @@ test("making a practice is a guarded, credit-charged server action; samples need
   assert.ok(service.indexOf("await ensureNoTimedExam(userId);") < service.indexOf("return chargeCredits("));
   assert.match(service, /count: \{ lt: READING_LIMITS\.daily \}/);
   assert.match(service, /readUploadedSource\(form,/);
-  for (const path of ["src/app/api/labs/ielts-reading/route.ts", "src/app/api/labs/ielts-reading/grade/route.ts"]) {
+  for (const path of ["src/app/api/labs/ielts-reading/route.ts", "src/app/api/labs/ielts-reading/grade/route.ts", "src/app/api/labs/ielts-reading/practices/[id]/route.ts", "src/app/api/labs/ielts-reading/samples/[id]/route.ts", "src/app/api/labs/ielts-reading/import/route.ts"]) {
     const route = text(path);
     assert.match(route, /checkOrigin\(request\)/, path);
     assert.match(route, /await apiUser\(request\)/, path);
@@ -229,8 +229,9 @@ test("making a practice is a guarded, credit-charged server action; samples need
   assert.match(page, /robots: \{ index: false, follow: false \}/);
   assert.match(text("src/lib/return-path.ts"), /"\/labs\/ielts-reading"/);
   assert.match(text("src/app/workspace/workshop/page.tsx"), /href="\/labs\/ielts-reading"/);
-  // The browser never sees a generated key: it keeps the sealed token and asks the server to mark.
+  // The browser never sees a generated key: it sends the practice's id and the server marks from the key it keeps.
   const client = text("src/modules/reading-lab/client.tsx");
-  assert.match(client, /fetch\("\/api\/labs\/ielts-reading\/grade"/);
+  assert.match(client, /const API = "\/api\/labs\/ielts-reading";/);
+  assert.match(client, /progress\(`\$\{API\}\/grade`, "POST", \{ id: own\.id, attempts: state\.attempts, answers: state\.answers, finishedSeconds \}/);
   assert.match(client, /SAMPLE_GROUPS = new Map\(readingSamples\.map\(sample => \[sample\.id, publicGroups\(sample\.groups\)\]\)\)/);
 });

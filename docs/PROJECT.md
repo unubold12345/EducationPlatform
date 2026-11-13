@@ -36,6 +36,7 @@ authentication require provider configuration; see the actual hosted checkpoint 
 | Listening Lab | Two original IELTS Listening practice tests (Parts 1–4, mock-style recordings) at `/labs/ielts-listening` |
 | Reading Lab | Five original IELTS Academic passages (62 questions, seven question types) and credit-paid AI practices from the student's own file, page photos or pasted text at `/labs/ielts-reading` (section 7) |
 | Workspace | `/workspace`: the signed-in study app, separate from the marketing site, with left tabs for Home, AI chat, Vocabulary, Exams, Review, Workshop and Plans, plus the profile (section 7) |
+| Daily streak | A daily Workspace check-in keeps a streak, shown in the rail and on Home. The study roadmap page was removed on 2026-11-13 (section 7) |
 | Vocabulary | Add words and translations, organize them in decks, scan a document with AI and choose which words to keep, and study with an adaptive quiz that stores per-word progress at `/workspace/vocabulary`; the old `/workspace/flashcards` address redirects |
 | Exam from file | Upload a PDF, Word, PowerPoint or text file, or up to four page photos, and get an AI multiple-choice exam of 5–20 questions at `/workspace/my-exams` (5 saved exams free, 15 with IELTS or SAT); exams, sittings and scores are saved on the account and follow the student between devices |
 | Study tools | Light/dark theme and a browser-only mathematics scratchpad |
@@ -441,13 +442,14 @@ page already holds. Results add per-skill totals, review filters and a link to p
 - The owner asked for the dashboard, Workshop and exams to become one Workspace with its own look (left tabs, AI chat,
   review of finished mocks), modelled on solvely.ai's layout: a 260px light-grey tab rail (collapsible to icons, saved in
   `education-workspace-rail`), a white canvas, one blue accent and Inter. Phones get a top bar and a slide-in menu.
-- Routes: `/workspace` (home: composer, resume, stats, programmes, recent results, practice), `/workspace/chat`,
+- Routes: `/workspace` (home: composer, the streak, resume, stats, programmes, recent results, practice), `/workspace/chat`,
   `/workspace/vocabulary`, `/workspace/my-exams`, `/workspace/review` and `/workspace/review/[id]`, `/workspace/workshop`, plus the exam
   library pages above. `/dashboard`
   and `/workshop` redirect here; sign-in returns to `/workspace` by default. `/workspace/profile` and `/workspace/plans`
   (2026-11-08) replace `/profile` and `/plans`, which redirect (`/profile?error=` keeps its Google link error). The owner
   asked that the site header link only to Programmes and the Workspace: no Exams, Plans or profile button for members;
   guests still see Нэвтрэх. The rail's account row and the phone top-bar avatar open the profile; Plans is a rail tab.
+  Since 2026-11-13 (owner request) the rail has no main-site link and no sign-out; signing out is on the profile page.
   Monthly plan purchase and renewal keep their `/subscribe/<program>` address but render inside the Workspace under the
   Plans tab (`src/app/subscribe/layout.tsx`, readable-scale tweaks in `subscribe.css`). Single-mock `/checkout/<slug>`
   uses the Workspace's Exams tab. Guided `/workshops/<slug>` tasks and all three `/labs/ielts-*` studios use the Workshop
@@ -457,15 +459,82 @@ page already holds. Results add per-skill totals, review filters and a link to p
   so no sidebar is streamed before login. Guest-readable library, plans and Workshop pages keep their shell.
   The site header, footer and backdrop are hidden by CSS only while the shell is on the page (`body:has(.wsp)`), so 404s keep the
   site chrome. Embedded exam pages inherit the Workspace palette through the site tokens redefined on `.wsp`.
-- AI chat: `POST /api/workspace/chat` (same origin, verified session, 48 KB of text plus up to three images, `CHAT_BODY_BYTES`). Modes ask, solve, explain, quiz, writing
+- AI chat: `POST /api/workspace/chat` (same origin, verified session, text plus up to three images and their previews, `CHAT_BODY_BYTES`). Modes ask, solve, explain, quiz, writing
   and vocab; subjects general, SAT, IELTS, ЭЕШ Math/Physics/English and JLPT; Mongolian or English. Six prior turns of at most
   2,500 characters are sent. 50 requests per student per Ulaanbaatar day with one in flight (`education-workspace-ai:*`).
   Refused before and after the provider call while any timed sitting is open; the local practice override does not apply.
-  Threads live only in this browser (`education-workspace-chats-v1:<userId>`, 30 threads); nothing is stored on the server.
+  Threads live on the account (2026-11-13; `ChatThread`/`ChatMessage`, migration `20261112200000_chat_threads`): 30 threads per
+  account (the least recently used goes), 60 messages per thread (the oldest go), 12,000 characters per message. The request names
+  its thread (`threadId`, or null for a new one) and the position it has read (`after`); the browser sends no history, the server
+  reads the last six turns from the stored thread. The question and answer are saved together, in one transaction, only after the
+  reply arrives inside `chargeCredits`, so a failure leaves nothing and refunds; if the same question comes back after a lost
+  response, the saved answer is returned with no provider call or charge. Full photos are never stored: a message keeps at most three
+  small preview data URLs. Routes: `GET /api/workspace/chat/threads`, `GET`/`DELETE …/threads/[id]`, `POST …/threads/import`, all
+  scoped to the student. Threads made before the move are sent once from the browser's `education-workspace-chats-v1:<userId>`;
+  the server checks every field and keys the thread by SHA-256 of user and browser id, so it moves once (100 imports a day), and the
+  browser key is removed. The list can be read during a timed sitting; only the AI is closed. Other tabs refresh when they regain focus.
 - Review: finished mocks with scores (12 per page, programme filter), then per-question review with the snapshot's answer,
   key, explanation, printed choices, figures and transcripts, weakest skills, and an AI coach beside it (explain, my mistake,
   similar question, free questions). The server builds the coach's context from the student's own SUBMITTED snapshot via
   `ownMock`; the page sends only the attempt and question ids. Replies render as a small Markdown subset through React text.
+
+### Study roadmap (removed) and daily streak (2026-11-13)
+
+- **Roadmap removed 2026-11-13 (owner request).** The `/workspace/roadmap` page, `/api/workspace/roadmap`, the rail tab, Home's
+  today panel and the page's client and CSS module are gone (copies in ignored `artifacts/removed-roadmap-page-2026-11-13.tar`).
+  The streak below still works; the rail's streak chip opens Home. Left in place and now unused: `plan.ts`, `structure.ts`, the
+  planner functions in `service.ts`, the `roadmap` credit action and the `StudyPlan` table (its migrations stay; `StudyDay` is the
+  streak's). The bullets below describe the page as it was.
+
+- The owner asked for a roadmap page where students enter their exam date and get a plan, plus a daily login streak.
+  `/workspace/roadmap` is a Workspace rail tab ("Төлөвлөгөө") and a sign-in return path; Home shows today's tasks beside the streak.
+- Settings (`StudyPlan`, one per student, migration `20261112200200_study_plan_and_days`): a goal from a fixed list (IELTS, SAT, the
+  five ЭЕШ subjects, JLPT N5/N4, HSK 1), the exam date (tomorrow to a year ahead, Ulaanbaatar calendar), an optional target as a
+  percentage of mock points (the site reports raw scores, so no bands or scaled scores), study days a week (1–7) and minutes a day
+  (15–240). `readSettings` takes the exact shape only. Saving re-anchors the plan on today; ticks are kept only for the same goal.
+- Plan (`src/modules/roadmap/plan.ts`, pure and unit tested; the server builds it on every read, nothing is stored but the
+  settings and ticked ids): weeks from the save day to the eve of the exam, in phases (find your level, build, mock practice,
+  final week). Timed mocks: about 0.8 a week when studying 5+ days, 0.6 for 3–4, 0.4 below, never more than the goal has; the
+  first is a diagnostic in week 1, the last in the final week, the rest lean late. Untaken mocks are used first; mocks left over
+  go to untimed practice mode, so a timed mock is not spoiled first. Each mock has a review task linking to that sitting. The rest
+  of the week (about one task per study day) is practice mode, vocabulary review for language goals, the IELTS labs that are
+  switched on, AI chat and a my-exams task now and then; the final week adds an exam-day checklist and a rest day on the eve
+  (since 2026-11-13 the eve holds nothing but rest: that week's study days are spread over the days before it).
+- AI structure (2026-11-13, owner asked for DeepSeek to generate the roadmap's structure): `POST /api/workspace/roadmap` with
+  `{ settings?, note? }` has DeepSeek write a headline, a diagnosis, 1–5 phases (title, focus, weeks, 2–5 repeatable routines
+  each: tool, title, method with a finish line, minutes, skill), one theme per week and up to four exam-day tactics, and saves it
+  in `StudyPlan.structure` (nullable JSON, migration `20261113090000_study_plan_structure`) in the same write as the settings,
+  re-anchored on today. Without `settings` it rebuilds the saved plan. `src/modules/roadmap/structure.ts` (pure) holds the prompt
+  and the only reader: every field is bounded and cleaned (no links, control characters or Markdown marks), phase lengths are
+  fitted to the plan's real week count, a missing theme falls back to its phase, an unknown tool becomes self-study, and a stored
+  structure is re-read with the same checks on every request. The model never schedules anything real: timed mocks, reviews,
+  dates, the checklist, the rest day and every link come from `plan.ts`; a routine's tool (`practice`, `vocabulary`, `chat`,
+  `myexam`, the four IELTS labs, `self`) is mapped to a site page there, limited to what the goal and the pilot switches allow.
+  Each study day left after the mock gets one routine (ids `w<week>:ai<slot>`), repeating in turn. A structure written for
+  another start day or length is ignored; saving plain settings (`PUT`) drops it.
+- What the model receives: the exam, days and weeks left, study load, target, which weeks hold a mock, the student's own mock
+  percentages and per-skill results (`skillProfile`: latest five submitted sittings of the goal's mocks, grouped by question
+  domain, read from their snapshots), progress on the plan being replaced, and the optional note (300 characters) quoted as data.
+  No name, email or id. Same guards as other Workspace AI: same origin, verified session, exact body, no open timed sitting
+  before and after the call, 10 generations per Ulaanbaatar day with one in flight, one silent retry of a malformed reply,
+  credits held first and refunded on every failure, nothing saved unless a usable structure arrives. Ticks named by a mock
+  survive a new structure; ticks named by a week's position do not. An AI structure is a suggestion, not teacher-reviewed.
+- Page (2026-11-13 redesign): a countdown hero with the plan ring and pace (nothing late / 1–2 late / 3+ late / ahead), a
+  "journey" road with one point per week in its phase's colour, mock pins and the exam flag, phase cards, today's tasks beside
+  the streak, one week at a time (theme, day strip, tasks with skill and tool tags), the AI strategy card (or the offer to write
+  one, with the exact credit price), a score path (mock percentages, target line, the pace needed per week) and a skill map.
+  Scores and skills are computed on the server; the page is a size container (`wsp-page` gutters, container queries).
+- A mock task ticks itself when the student submits that mock after the plan started (read from their own snapshots through
+  `finishedAttempts`); other tasks are ticked by the student. `PATCH /api/workspace/roadmap` accepts only a task id the plan
+  currently contains. `PUT` saves settings, `DELETE` removes the plan; all three check same origin and a verified session.
+  Mocks still need a plan or purchase; the roadmap only links to them and says so.
+- Streak: `StudyDay` holds one row per Ulaanbaatar day on which a signed-in student opened a Workspace page. The shell posts
+  `POST /api/workspace/streak` (same origin, verified session, no body; the day comes from the server clock) once a day when
+  the server says today is not checked in yet; a repeat the same day changes nothing. The rail shows the current streak (orange
+  once today counts) and Home/roadmap show the last seven days, the longest run and the total. The current streak counts back
+  from yesterday until today's check-in arrives. Opening the Workspace counts; no AI, credits or rewards are attached.
+- Dates on these pages are written out in Mongolian (`mnDate`, `mnWeekday`), because browsers lack Mongolian date data and
+  `Intl` "mn-MN" falls back to English.
 
 ### Vocabulary (2026-11-09, reorganized 2026-11-11)
 
@@ -501,7 +570,9 @@ page already holds. Results add per-skill totals, review filters and a link to p
   provider `max_tokens` the service sends; input = a generous prompt estimate, all priced as cache misses); its fixed cost is
   the budget's cost rounded up: chat 5, review coach 6, practice assistant 5, SAT math tutor 3, Essay Studio ideas 3 /
   grammar 5 / feedback 6, Speaking Lab reply 3 / report 9, vocabulary import 4–47 (sold with a margin, below), file-to-exam 10–40 (two credits a question, sold with a margin, below),
-  Reading Lab practice 4–15 (priced by length, below).
+  Reading Lab practice 4–15 (priced by length, below), roadmap structure 5–8 (`roadmapCredits`: 2,500 prompt tokens plus a reply
+  budget of 2,800 + 55 per plan week, which is also that call's `max_tokens`; the length is known before the call, so the price
+  is exact up front: 5 up to 13 weeks, 6 to 28, 7 to 43, 8 beyond).
   Changing a price or budget there changes the charge, the badges and the plans page together.
 - Vocabulary import is sold with a margin (owner rule 2026-11-11: an AI action should earn, not only cover its DeepSeek cost),
   and priced by what the student receives rather than by tokens. `vocabularyImportCredits` = 3 credits + 0.5 per new word for
@@ -574,13 +645,13 @@ page already holds. Results add per-skill totals, review filters and a link to p
   Vision guide; at most 1,024 input tokens per image). Shared rules: `src/modules/ai-images` (pure `contracts.ts`, browser `client.tsx`).
 - Conversations: Workspace AI chat (and the home composer), the review coach, the practice assistant and the SAT math tutor (one shared
   drawer) accept up to three images on the student's latest message, by picker, paste or drop. Earlier turns stay text: the prompt asks
-  the model to restate what it read, and the browser keeps only 128px previews with the chat (threads in this browser only). An image-only
+  the model to restate what it read, and only 128px previews are kept with the chat (on the account since 2026-11-13). An image-only
   message sends a readable default request. A photo never unlocks an answer: the practice "not checked" rules are unchanged.
 - Study material: vocabulary import and exam-from-file accept one document or up to four page photos (4 MB together), sent as repeated
   `file` fields; `documents/upload.ts` proves every file by its signature before credits are held. Photos and documents cannot be mixed.
 - The browser decodes each picture, resizes the longer side to 1,600px and re-encodes it as JPEG under 900 KB, which also drops camera
   metadata such as location. The server accepts only base64 data URLs whose declared type matches the bytes (no GIF, SVG or remote URLs),
-  at most 3 MB decoded per message (body caps `CHAT_BODY_BYTES` / `ASSISTANT_BODY_BYTES`, under Vercel's 4.5 MB). Images are never stored.
+  at most 3 MB decoded per message (body caps `CHAT_BODY_BYTES` / `ASSISTANT_BODY_BYTES`, under Vercel's 4.5 MB). Full images are never stored; only the chat's small previews are.
 - Price: each image on a conversation adds `IMAGE_CREDITS` (2: 1,024 input tokens plus 600 output tokens for restating the picture,
   at the peak price; raised from 1 at the owner's request on 2026-11-09) to that reply, so chat is 5 → 7 with one photo; page photos
   replace document text, so imports and exams keep their listed maximum (vocabulary settles with 1,024 tokens per photo).
@@ -611,10 +682,17 @@ page already holds. Results add per-skill totals, review filters and a link to p
   three of TRUE/FALSE/NOT GIVEN, four-option choice and two-word gaps. `parseGeneratedReading` keeps only gap answers copied from the
   passage and evidence found in it, groups questions by type, and refuses thin or single-type sets (one silent retry, started only within
   60 seconds).
-- The key is sealed in an AES-256-GCM token (`reading-lab/token.ts`, its own HKDF key and AAD, bound to the student, valid 180 days);
-  the browser gets the passage, answer-free questions and the token. `POST /api/labs/ielts-reading/grade` opens it and marks the
-  answers (no AI, no credits). Practices, answers and scores live only in this browser (`education-reading-lab-v1:<userId>`, 20 own
-  practices; guests share a "guest" slot for sample progress); nothing is stored on the server.
+- Storage (2026-11-13; `ReadingPractice`, `ReadingSampleState`, migration `20261112200100_reading_lab_storage`): a generated practice
+  is saved on the account with its key (`questions`); the browser gets only the passage and answer-free questions. The account holds
+  20 practices; a full library is refused with 409 before credits are held, and counted again just before the row is written.
+  `POST …/grade` marks from the stored key by id; `PATCH …/practices/[id]` saves answers and the timer (0.6 s after a change, retried,
+  sent on leaving) or clears for a retry; `DELETE` removes one; `PATCH …/samples/[id]` saves, checks (marked on the server) or clears a
+  sample. Every request carries the number of checks the page has seen, so a stale tab gets 409 and a repeated check counts once.
+  Guests keep sample progress in the browser's "guest" slot; the text size is a device setting (`education-reading-lab-text-v1`).
+- Practices made before the move carry a sealed AES-256-GCM token (`reading-lab/token.ts`, bound to the student). On a signed-in
+  visit the browser sends them once to `POST …/import`: only the token is believed (expired tokens accepted, owner required, keyed by
+  its SHA-256 so it moves once), the paragraphs must match it, checked answers are marked again from the key and no browser score is
+  kept; sample states move too. Moved items leave the browser. A page loaded before the move gets 409 "reload". No new tokens are made.
 
 ### IELTS Speaking Lab
 
@@ -736,6 +814,10 @@ rounding), vocabulary upgrades, strengths, next steps and one rewritten passage.
   Artwork is selected by `HOME_ART_STYLE` in `src/components/home-art.ts`; the owner restored `editorial`.
   The `handdrawn` ink/watercolour alternative and both complete image sets remain available. Loops have no player controls;
   they stop offscreen, in hidden tabs and for reduced-motion preferences.
+  2026-11-13 refresh (owner request): ЭЕШ, HSK and Workshop got their own photos (FLUX-2-pro via DeepInfra, owner-approved),
+  so no picture repeats; slogan overlays, the hero seal and pill, filler eyebrows and side notes and the Workshop fine print are
+  gone; the closing call to action is one line; the Workspace features are AI chat, vocabulary, exams from a file and review;
+  a lone fifth programme card spans the row; the FAQ adds AI credits; the three loops were re-recorded on the current Workspace.
 
 - The header theme switch defaults to the browser preference and saves an explicit choice in
   `education-theme` localStorage. The public site now shares the Workspace's blue/neutral palette and self-hosted Inter (`next/font/google`, fetched at build) with
@@ -787,12 +869,13 @@ rounding), vocabulary upgrades, strengths, next steps and one rewritten passage.
 | `scripts/build-hsk-mocks.mjs`, `scripts/generate-hsk-audio.py` | HSK pack converter (definitions, pictures, catalogue) and local Mandarin audio generator |
 | `reference/official-papers` | Withdrawn official papers, kept as a format guide only; never served, built or deployed |
 | `reference/retired-site-mocks` | Retired site mocks (the first four Mathematics forms and the old English set); never built |
-| `src/modules/workspace` | Workspace shell, home, AI chat (contract, service, browser-stored threads), review and styles |
+| `src/modules/workspace` | Workspace shell, home, AI chat (contract, service, account-stored threads and their browser import), review and styles |
 | `src/modules/documents` | Shared bounded document extraction (PDF, DOCX, PPTX, TXT, MD, CSV), the upload reader for one document or page photos, and text helpers |
 | `src/modules/ai-images` | Image input for AI features: signature/size rules and prompt parts (pure), and the browser resize, attach button and previews |
 | `src/modules/vocabulary` | Vocabulary limits and request shapes, AI scan contract, server-stored word bank with decks and study progress, the Leitner schedule, quiz builder and UI |
 | `src/modules/my-exams` | Upload-to-exam contract, server generation, account-stored exams (`MyExam`), sittings and grading, the import of older browser-stored exams and the runner |
-| `src/modules/reading-lab` | Reading Lab: five sample passages, question contract and marking, AI generation and sealed key, browser store and the split-screen runner |
+| `src/modules/reading-lab` | Reading Lab: five sample passages, question contract and marking, AI generation, account storage and progress rules (`state.ts`), the one-time import of sealed browser practices and the split-screen runner |
+| `src/modules/roadmap` | Study roadmap rules (pure `plan.ts`, `streak.ts`), its server service, the planner page and the streak provider/widgets |
 | `src/modules/subscriptions` | Plans, purchases, entitlements and legacy grants |
 | `src/modules/credits` | AI credit price list from DeepSeek prices, free/plan-term/purchased credit buckets, hold/refund ledger, the credit pack purchase and cost badges |
 | `src/modules/admin` | Admin services, reporting, exports and audit |
@@ -917,7 +1000,8 @@ deadlines; they must never add a runtime bypass, shorten a public exam or change
   results and history are saved on the account, the timer runs on the student's device, the score is practice
   feedback rather than an official result, and scanned documents are refused because there is no OCR.
 - Reading Lab samples are original practice texts awaiting teacher review; generated practices are unreviewed AI drafts made only
-  from the student's material, and their scores are browser-local self-study feedback, not band scores.
+  from the student's material, and their scores are self-study feedback saved on the account, not band scores.
+- The study roadmap is a rule-based schedule, not an adaptive or teacher-made plan; it links to mocks the student may still need to buy.
 - Personal-data retention, account deletion policy, email deliverability and accessibility audits
   remain to be completed.
 - This is a hosted test pilot, not a production education service.

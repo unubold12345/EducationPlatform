@@ -115,7 +115,7 @@ with sync_playwright() as p:
     expect(page.get_by_role("radiogroup", name="Speaking partner")).to_be_visible()
     page.screenshot(path=str(ART / "workshop-poster.png")); hold(page, 2000)
     click(page, page.get_by_role("radiogroup", name="Speaking partner").get_by_role("radio").nth(2))
-    click(page, page.get_by_role("radio", name="Practise one part", exact=True))
+    click(page, page.get_by_role("radiogroup", name="Session type").get_by_role("radio", name="Practise one part"))
     click(page, page.get_by_role("button", name="2 · Long turn", exact=False))
     page.goto(BASE + "/labs/ielts-writing"); page.wait_for_load_state("networkidle"); hold(page, 1800)
     page.get_by_label("Автомат зөв бичиг", exact=True).select_option("off")

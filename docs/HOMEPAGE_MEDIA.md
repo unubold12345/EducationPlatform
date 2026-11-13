@@ -26,6 +26,14 @@ Asset: `public/home/japanese-cover.webp`
 
 Use case: stylized-concept. Asset type: wide editorial course cover for Japanese language JLPT N5/N4 on a study website. A refined tactile still-life of a small architectural vermilion torii gate model, folded cream paper fan, a few pale pink cherry blossom twigs, two simple notebooks and a cobalt blue pen on an ivory surface. Modern premium educational editorial art direction, realistic paper and painted wood, soft natural sunlight and sculptural shadows, warm cream backdrop, balanced asymmetrical composition, close-up photographic rendering, landscape 3:2. Sophisticated, calm and contemporary, no anime. No readable text, no symbols pretending to be Japanese writing, no watermark or logo.
 
+## eesh-cover, hsk-cover, workshop-cover · 2026-11-13
+
+Assets: `public/home/eesh-cover.webp`, `hsk-cover.webp`, `workshop-cover.webp` (1440 × 960, WebP quality 80). They replace the ЭЕШ card's reuse of `study-hero`, and the HSK card's and Workshop section's reuse of `language-cover`. Generated with DeepInfra `black-forest-labs/FLUX-2-pro` at 1440 × 960 (owner-approved; two candidates each, one kept), optimised with Sharp. Each prompt ended with the shared style line: premium education magazine photography, natural window light, ivory/oak/sage/cobalt palette, subject in the central band for a 2.2:1 crop, no readable text, letters, logos or watermark.
+
+- **eesh-cover:** a focused Mongolian high-school senior studying at a pale oak desk in the early morning with plain textbooks, a calculator, a molecule model and a beaker; Ulaanbaatar apartment blocks and hills out of focus through the window.
+- **hsk-cover:** still-life on ivory: bamboo brush on a ceramic rest, ink stone, blank rice paper, small red paper lantern, celadon tea cup, white plum blossom twig, blank cobalt notebook; no Chinese characters.
+- **workshop-cover:** a young Mongolian university student in a headset with a boom microphone, speaking with an open-hand gesture to a laptop in a bright study room.
+
 ## Product recordings
 
 Three silent, real local-browser recordings made with reserved QA data. MP4/H.264, 1440 × 900 at 24 fps, with WebP posters in `public/home/`. No real user data, microphone recordings, live AI calls or fabricated AI outputs. The review clip uses an explicitly labelled sample result. The current homepage uses silent, inline, autoplaying loops without player controls or click/keyboard interaction, with adjacent text descriptions. Playback pauses automatically offscreen, in a hidden tab or for a reduced-motion preference; posters remain available if autoplay is blocked.
@@ -36,7 +44,7 @@ Three silent, real local-browser recordings made with reserved QA data. MP4/H.26
 | `public/home/workspace-review.mp4` | 18.4 s | Open Workspace, open Review, select a completed sample, inspect questions and explanations |
 | `public/home/workshop.mp4` | 28.4 s | Open Workshop, choose a Speaking partner/part, open Essay Studio and type a sample paragraph |
 
-Regenerate with `python scripts/record-homepage-demos.py` while the local preview and database are running. The script creates a disposable `qa-exam-home-demo-…@example.invalid` account, uses simulated SAT payment and the existing guarded local QA deadline fixture to prepare a sample submitted result. It never changes an application timer or access check. Raw captures stay ignored under `artifacts/home-recordings/`; only compressed media is used by the page.
+Regenerate with `python scripts/record-homepage-demos.py` while the local preview and database are running (re-recorded 2026-11-13 on the current Workspace; the Speaking Lab session-type locator was loosened because the button's name now includes its description). The script creates a disposable `qa-exam-home-demo-…@example.invalid` account, uses simulated SAT payment and the existing guarded local QA deadline fixture to prepare a sample submitted result. It never changes an application timer or access check. Raw captures stay ignored under `artifacts/home-recordings/`; only compressed media is used by the page.
 
 The original click-to-play version was verified locally for decoding, seeking and deferred video requests. Videos and posters remain unchanged in the new autoplay version. Responsive artwork is served by Next Image. Original screenshots are in ignored `artifacts/home-final/`; hand-drawn variant screenshots are in `artifacts/home-handdrawn/`.
 

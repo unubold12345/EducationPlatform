@@ -133,7 +133,9 @@ def graph_frame(
     y0: float = 300,
     x1: float = 580,
     y1: float = 40,
+    ticks: bool = True,
 ):
+    """Axes, grid and (unless ticks=False) four evenly spaced value labels per axis."""
     if xmax == xmin:
         xmax = xmin + 1
     if ymax == ymin:
@@ -148,7 +150,7 @@ def graph_frame(
     body.append(arrow(x0, y0, x0, y1 - 8))
     body.append(text((x0 + x1) / 2, y0 + 42, xlabel, 13))
     body.append(text(x0 - 52, (y0 + y1) / 2, ylabel, 13, rotate=-90))
-    for i in range(5):
+    for i in range(5 if ticks else 0):
         value = xmin + (xmax - xmin) * i / 4
         px = x0 + (x1 - x0) * i / 4
         body.append(line(px, y0, px, y0 + 5, "s"))
@@ -222,7 +224,8 @@ def _table(columns: list[str], rows: list[list[str]], header_fill: str = "#e5e7e
 def _beaker(x: float, y: float, w: float, h: float, fill: float, label: str, temp: str) -> str:
     body = [rect(x, y, w, h, "s"), line(x + 8, y + h * (1 - fill), x + w - 8, y + h * (1 - fill), "sblue")]
     body.append(text(x + w / 2, y + h + 22, label, 13))
-    body.append(text(x + w / 2, y + h / 2, temp, 13))
+    # Below the water line, so the line never crosses the mass and temperature.
+    body.append(text(x + w / 2, y + h * 0.78, temp, 13))
     return "".join(body)
 
 
@@ -265,18 +268,38 @@ def _coil(x: float, y: float, w: float = 70) -> str:
 
 
 def _symbol(kind: str, x: float, y: float) -> str:
+    """Circuit-diagram symbols as the answer options describe them (a resistor is a rectangle, a cell two unequal lines)."""
+    leads = line(x - 38, y, x - 22, y, "s") + line(x + 22, y, x + 38, y, "s")
     if kind == "эсэргүүцэл":
-        return _resistor(x - 35, y)
+        return leads + rect(x - 22, y - 9, 44, 18, "s")
     if kind == "конденсатор":
-        return _capacitor(x, y)
+        return line(x - 38, y, x - 8, y, "s") + line(x + 8, y, x + 38, y, "s") + _capacitor(x, y, 8)
     if kind == "ороомог":
-        return _coil(x - 35, y)
+        return line(x - 38, y, x - 30, y, "s") + _coil(x - 30, y, 60) + line(x + 30, y, x + 38, y, "s")
     if kind == "гүйдлийн эх үүсвэр":
-        return circle(x, y, 24, "s") + arrow(x - 12, y, x + 13, y, head=6)
-    if kind == "амперметр":
-        return circle(x, y, 24, "s") + text(x, y + 5, "A", 16, weight="bold")
-    if kind == "вольтметр":
-        return circle(x, y, 24, "s") + text(x, y + 5, "V", 16, weight="bold")
+        return (line(x - 38, y, x - 6, y, "s") + line(x - 6, y - 20, x - 6, y + 20, "s")
+                + line(x + 6, y - 10, x + 6, y + 10, "s") + line(x + 6, y, x + 38, y, "s"))
+    if kind in ("амперметр", "вольтметр", "гальванометр"):
+        letter = {"амперметр": "A", "вольтметр": "V", "гальванометр": "G"}[kind]
+        return leads + circle(x, y, 22, "s") + text(x, y + 6, letter, 16, weight="bold")
+    if kind == "гэрлийн чийдэн":
+        return leads + circle(x, y, 22, "s") + line(x - 15, y - 15, x + 15, y + 15, "s") + line(x - 15, y + 15, x + 15, y - 15, "s")
+    if kind == "хувьсах гүйдлийн үүсвэр":
+        wave = polyline([(x - 13 + i * 26 / 12, y - 7 * math.sin(i / 12 * 2 * math.pi)) for i in range(13)])
+        return leads + circle(x, y, 22, "s") + wave
+    if kind == "түлхүүр":
+        return (line(x - 38, y, x - 14, y, "s") + circle(x - 14, y, 3, "s") + line(x - 14, y, x + 14, y - 16, "s")
+                + circle(x + 14, y, 3, "s") + line(x + 14, y, x + 38, y, "s"))
+    if kind == "диод":
+        return (line(x - 38, y, x - 12, y, "s") + poly([(x - 12, y - 14), (x - 12, y + 14), (x + 10, y)], "s")
+                + line(x + 10, y - 14, x + 10, y + 14, "s") + line(x + 10, y, x + 38, y, "s"))
+    if kind == "газардуулга":
+        return (line(x, y - 30, x, y, "s") + line(x - 22, y, x + 22, y, "s")
+                + line(x - 14, y + 8, x + 14, y + 8, "s") + line(x - 6, y + 16, x + 6, y + 16, "s"))
+    if kind == "реостат":
+        return leads + rect(x - 22, y - 9, 44, 18, "s") + arrow(x - 22, y + 20, x + 24, y - 22, head=6)
+    if kind == "хайлуур хамгаалагч":
+        return line(x - 38, y, x + 38, y, "s") + rect(x - 22, y - 9, 44, 18, "s")
     return rect(x - 30, y - 18, 60, 36, "s")
 
 
@@ -297,13 +320,14 @@ def _energy_levels(fig: dict) -> str:
     energies = fig.get("energies_ev")
     if energies is None:
         energies = [-13.6 / (n * n) for n in levels]
-    x0, x1 = 180, 470
     y_top, y_bottom = 55, 300
-    emin, emax = min(energies), max(energies)
-    span = emax - emin or 1
-    ypos = {n: y_bottom - (e - emin) / span * (y_bottom - y_top) for n, e in zip(levels, energies)}
-    body = [arrow(120, y_bottom + 10, 120, y_top - 10, head=7)]
-    body.append(text(104, y_top, "E", 13, "end"))
+    # Not to scale: the upper levels crowd within 1 эВ, so they are spread evenly above a wide first gap.
+    order = sorted(zip(levels, energies), key=lambda item: item[1])
+    upper = max(1, len(order) - 1)
+    ypos = {n: y_bottom if rank == 0 else 185 - (rank - 1) * (185 - y_top) / max(1, upper - 1)
+            for rank, (n, _) in enumerate(order)}
+    body = [arrow(92, y_bottom + 10, 92, y_top - 10, head=7)]
+    body.append(text(80, y_top, "E", 13, "end"))
     for n in levels:
         y = ypos[n]
         body.append(line(150, y, 540, y, "s"))
@@ -316,8 +340,15 @@ def _energy_levels(fig: dict) -> str:
         if a not in ypos or b not in ypos:
             continue
         y1, y2 = ypos[a], ypos[b]
-        lane = 290 + (index % 6) * 20
+        lane = 270 + (index % 6) * 34
         body.append(arrow(lane, y1, lane, y2, head=7))
+        # Numbered like the transitions listed in the question, clear of the level lines it crosses.
+        mid = (y1 + y2) / 2
+        for _ in range(3):
+            if all(abs(mid - level) >= 10 for level in ypos.values()):
+                break
+            mid += 14 if y2 > y1 else -14
+        body.append(text(lane + 9, mid + 4, index + 1, 12, "start", "bold", "#1d4ed8"))
     return "".join(body)
 
 
@@ -351,8 +382,9 @@ def _connected_masses(fig: dict) -> str:
     body.append(circle(470, 165, 4, "s"))
     body.append(line(470, 187, 470, 270, "s"))
     body.append(rect(430, 270, 80, 55, "sg"))
-    body.append(text(470, 300, f"m1 = {m1a:g}", 12))
-    body.append(arrow(120, 215, 190, 215, color="#b91c1c", head=7))
+    body.append(text(470, 300, f"m1 = {m1a:g} кг", 12))
+    # m2 is pulled toward the pulley, so friction on it points the other way.
+    body.append(arrow(190, 215, 120, 215, color="#b91c1c", head=7))
     body.append(text(155, 235, "үрэлт", 11, fill="#b91c1c"))
     body.append(text(300, 250, f"μс = {mus:.2f}", 12))
     body.append(text(300, 270, f"μ = {muk:.2f}", 12))
@@ -398,9 +430,26 @@ def render_svg(fig: dict) -> str:
     elif kind == "v_t_graph":
         points = [[float(p[0]), float(p[1])] for p in fig.get("points", [])]
         xs, ys = [p[0] for p in points], [p[1] for p in points]
-        xmax, ymax = max(xs) * 1.15 if xs else 1, max(ys) * 1.15 if ys else 1
-        frame, mapper = graph_frame("t, с", "v, м/с", 0, xmax, 0, ymax)
-        body = frame + _series(points, mapper) + _point_labels(points, mapper)
+        xmax = max(xs) * 1.15 if xs else 1
+        if ys and min(ys) < 0:
+            # Negative velocity (turning back) used to fall below the canvas: draw the time axis at v = 0 instead.
+            top, bottom = max(max(ys), 0), min(ys)
+            margin = 0.15 * (top - bottom)
+            body = ""
+            for i in range(1, 5):
+                gx = 80 + 500 * i / 5
+                body += line(gx, 300, gx, 40, "grid")
+            def mapper(x: float, y: float) -> tuple[float, float]:
+                return 80 + x / xmax * 500, 300 - (y - (bottom - margin)) / (top - bottom + 2 * margin) * 260
+            zero = mapper(0, 0)[1]
+            body += arrow(80, 300, 80, 32) + arrow(80, zero, 588, zero)
+            body += text(28, 170, "v, м/с", 13, rotate=-90) + text(596, zero + 4, "t, с", 13, "start")
+            body += text(72, zero + 4, "0", 11, "end")
+            body += _series(points, mapper) + _point_labels(points, mapper)
+        else:
+            ymax = max(ys) * 1.15 if ys and max(ys) > 0 else 1
+            frame, mapper = graph_frame("t, с", "v, м/с", 0, xmax, 0, ymax)
+            body = frame + _series(points, mapper) + _point_labels(points, mapper)
     elif kind == "f_t_graph":
         points = [[float(p[0]), float(p[1])] for p in fig.get("points", [])]
         xs, ys = [p[0] for p in points], [p[1] for p in points]
@@ -413,15 +462,31 @@ def render_svg(fig: dict) -> str:
         points = [[float(p[0]), float(p[1])] for p in fig.get("points", [])]
         xs, ys = [p[0] for p in points], [p[1] for p in points]
         xmax, ymax = max(xs) * 1.15 if xs else 1, max(ys) * 1.15 if ys else 1
-        frame, mapper = graph_frame("V, л", "p, кПа", 0, xmax, 0, ymax)
-        body = frame + _series(points, mapper)
+        # No generic ticks (7.17, 115 …): each state's V and p is marked on the axes, so V2 and p3 can be read.
+        frame, mapper = graph_frame("V, л", "p, кПа", 0, xmax, 0, ymax, ticks=False)
+        body = frame + text(80, 318, "0", 11)
+        for value in sorted(set(xs)):
+            px, top = mapper(value, max(p[1] for p in points if p[0] == value))
+            body += line(px, 300, px, top, "dash") + line(px, 300, px, 305, "s") + text(px, 318, _num(value), 11)
+        for value in sorted(set(ys)):
+            right, py = mapper(max(p[0] for p in points if p[1] == value), value)
+            body += line(80, py, right, py, "dash") + line(75, py, 80, py, "s") + text(71, py + 4, _num(value), 11, "end")
+        # Segment i is straight, or an isotherm (pV = const) when listed in "curves".
+        curves = set(fig.get("curves", []))
         labels = fig.get("labels", [])
+        for i in range(1, len(points)):
+            (va, pa), (vb, pb) = points[i - 1], points[i]
+            if i - 1 in curves:
+                track = [mapper(va + (vb - va) * j / 40, pa * va / (va + (vb - va) * j / 40)) for j in range(41)]
+                body += polyline(track)
+                body += arrow(*track[-6], *track[-1], color="#1d4ed8", head=6)
+            else:
+                body += line(*mapper(va, pa), *mapper(vb, pb), "s")
+                body += arrow(*mapper(va, pa), *mapper(vb, pb), color="#1d4ed8", head=6)
         for i, p in enumerate(points):
             px, py = mapper(*p)
             body += circle(px, py, 4, "s")
             body += text(px + 7, py - 7, labels[i] if i < len(labels) else str(i + 1), 12, "start")
-            if i:
-                body += arrow(*mapper(*points[i - 1]), px, py, color="#1d4ed8", head=6)
     elif kind == "rod_with_masses":
         length = float(fig.get("length_m", 1))
         masses = fig.get("masses_kg", [])
@@ -445,10 +510,11 @@ def render_svg(fig: dict) -> str:
         body += poly([(cx, y + 8), (cx - 22, y + 48), (cx + 22, y + 48)], "sb")
         left = cx - arm / max(arm, other, 0.1) * 180
         right = cx + other / max(arm, other, 0.1) * 180
+        # The load hangs on the first arm; the unknown force acts on the other.
         body += arrow(left, y - 70, left, y, color="#b91c1c", head=8)
-        body += text(left, y - 82, f"F = {force:g} Н", 12, fill="#b91c1c")
+        body += text(left, y - 82, f"ачаа {force:g} Н", 12, fill="#b91c1c")
         body += arrow(right, y - 70, right, y, color="#1d4ed8", head=8)
-        body += text(right, y - 82, "ачаа", 12, fill="#1d4ed8")
+        body += text(right, y - 82, "F = ?", 12, fill="#1d4ed8")
         body += text(cx - 28, y + 68, f"{arm:g} м", 11)
         body += text(cx + 28, y + 68, f"{other:g} м", 11)
     elif kind == "elevator":
@@ -461,8 +527,14 @@ def render_svg(fig: dict) -> str:
         body += line(320, 190, 355, 215, "s")
         body += line(320, 235, 295, 275, "s")
         body += line(320, 235, 345, 275, "s")
-        body += arrow(500, 120, 500, 250, color="#1d4ed8", head=9)
-        body += text(516, 190, f"a = {accel:g} м/с²", 12, fill="#1d4ed8")
+        if "moving_up" in fig:
+            # The arrow shows the direction of motion; whether the lift speeds up or slows down is in the text.
+            body += arrow(500, 250, 500, 120, color="#1d4ed8", head=9) if fig["moving_up"] else arrow(500, 120, 500, 250, color="#1d4ed8", head=9)
+            body += text(516, 190, "v", 13, "start", fill="#1d4ed8")
+            body += text(320, 345, f"|a| = {accel:g} м/с²", 12, fill="#1d4ed8")
+        else:
+            body += arrow(500, 120, 500, 250, color="#1d4ed8", head=9)
+            body += text(516, 190, f"a = {accel:g} м/с²", 12, fill="#1d4ed8")
         body += text(320, 320, f"m = {mass:g} кг", 13)
     elif kind == "spring_launcher":
         k = fig.get("stiffness_n_m", 0)
@@ -471,7 +543,7 @@ def render_svg(fig: dict) -> str:
         body = rect(60, 100, 22, 160, "sb")
         body += _spring(82, 180, 270, amplitude=16, coils=9)
         body += rect(275, 168, 28, 24, "sr")
-        body += text(290, 150, "сум", 11, fill="#b91c1c")
+        body += text(290, 150, fig.get("label", "сум"), 11, fill="#b91c1c")
         body += line(270, 130, 270, 230, "dash")
         body += text(170, 120, f"k = {k:g} Н/м", 12)
         body += text(190, 250, f"x = {comp:g} см", 12)
@@ -521,12 +593,14 @@ def render_svg(fig: dict) -> str:
             body += text(368, y + 4, f"{t}", 10, "start")
         body += text(250, 300, f"{celsius:g} °C", 14)
     elif kind == "calorimeter":
-        hot = float(fig.get("hot_mass_kg", 0))
         ht = float(fig.get("hot_temp_c", 0))
         ct = float(fig.get("cold_temp_c", 0))
         ft = float(fig.get("final_temp_c", 0))
-        body = _beaker(50, 150, 130, 120, 0.75, "халуун ус", f"{hot:g} кг, {ht:g} °C")
-        body = body + _beaker(460, 150, 130, 120, 0.55, "хүйтэн ус", f"{ct:g} °C")
+        # Only the given mass is printed; the unknown one is left as "?".
+        hot = f"{float(fig['hot_mass_kg']):g} кг" if fig.get("hot_mass_kg") is not None else "? кг"
+        cold = f"{float(fig['cold_mass_kg']):g} кг" if fig.get("cold_mass_kg") is not None else "? кг"
+        body = _beaker(50, 150, 130, 120, 0.75, "халуун ус", f"{hot}, {ht:g} °C")
+        body = body + _beaker(460, 150, 130, 120, 0.55, "хүйтэн ус", f"{cold}, {ct:g} °C")
         body = body + _beaker(255, 145, 130, 130, 0.65, "холимог", f"{ft:g} °C")
         body += arrow(185, 210, 245, 210, head=7)
         body += arrow(445, 210, 395, 210, head=7)
@@ -535,11 +609,11 @@ def render_svg(fig: dict) -> str:
         mass = float(fig.get("mass_kg", 0))
         dt = float(fig.get("delta_t", 0))
         total = float(fig.get("time_s", 0))
-        t1, t2, t3 = total * 0.3, total * 0.55, total
+        # The liquid warms steadily by ΔT in the stated time (seconds); there is no change of state.
         y0, y1 = 20, 20 + dt
-        frame, mapper = graph_frame("t, мин", "T, °C", 0, total, 0, max(y1 + 20, 60))
-        pts = [[0, y0], [t1, y1], [t2, y1], [t3, y1 + 20]]
-        body = frame + _series(pts, mapper)
+        frame, mapper = graph_frame("t, с", "T, °C", 0, total * 1.1, 0, max(y1 * 1.2, 60), ticks=False)
+        pts = [[0, y0], [total, y1]]
+        body = frame + _series(pts, mapper) + _point_labels(pts, mapper)
         body += text(320, 355, f"P = {power:g} Вт, m = {mass:g} кг", 11, fill="#4b5563")
     elif kind == "table":
         body = _table(fig.get("columns", []), fig.get("rows", []))
@@ -547,38 +621,46 @@ def render_svg(fig: dict) -> str:
         body = _table(fig.get("columns", []), fig.get("rows", []))
     elif kind == "circuit_symbols":
         target = fig.get("target", "")
-        all_symbols = ["эсэргүүцэл", "конденсатор", "ороомог", "гүйдлийн эх үүсвэр", "амперметр", "вольтметр"]
-        ordered = [target] + [s for s in all_symbols if s != target][:4]
-        shift = all_symbols.index(target) % 5 if target in all_symbols else 0
-        ordered = ordered[shift:] + ordered[:shift]
+        ordered = fig.get("symbols")
+        if not ordered:
+            all_symbols = ["эсэргүүцэл", "конденсатор", "ороомог", "гүйдлийн эх үүсвэр", "амперметр", "вольтметр"]
+            ordered = [target] + [s for s in all_symbols if s != target][:4]
+            shift = all_symbols.index(target) % 5 if target in all_symbols else 0
+            ordered = ordered[shift:] + ordered[:shift]
+        # Numbered 1–5 so the panels are not confused with the answer letters A–E.
         for i, symbol in enumerate(ordered):
             x = 110 + i * 105
-            body += rect(x - 42, 90, 84, 120, "s")
+            body += rect(x - 46, 90, 92, 120, "s")
             body += _symbol(symbol, x, 140)
-            body += text(x, 235, "ABCDE"[i], 14, weight="bold")
+            body += text(x, 235, str(i + 1), 14, weight="bold")
         body += text(320, 285, "Цахилгаан хэлхээний тэмдэглэгээ", 12, fill="#4b5563")
     elif kind == "parallel_wires":
+        # The wires are perpendicular to the page: drawn as cross-sections, ⊙ out of the page and ⊗ into it.
         left = fig.get("left_current", "out")
         right = fig.get("right_current", "in")
-        body = line(240, 50, 240, 310, "s") + line(400, 50, 400, 310, "s")
-        for x, direction in ((240, left), (400, right)):
-            body += circle(x, 90, 12, "s")
+        labels = fig.get("labels", ["I", "I"])
+        point = fig.get("point", "M")
+        y = 180
+        body = line(60, y, 580, y, "dash")
+        for x, direction, label in ((250, left, labels[0]), (390, right, labels[1])):
+            body += circle(x, y, 16, "s")
             if direction == "out":
-                body += circle(x, 90, 4, "s")
+                body += f'<circle cx="{x}" cy="{y}" r="4" fill="#111827"/>'
             else:
-                body += line(x - 8, 82, x + 8, 98, "s") + line(x - 8, 98, x + 8, 82, "s")
-            body += text(x + 24, 95, "I", 12, "start")
-        body += circle(320, 200, 4, "s")
-        body += text(320, 225, "M", 12)
-        body += text(320, 330, "хоёр параллель утас", 11, fill="#4b5563")
+                body += line(x - 10, y - 10, x + 10, y + 10, "s") + line(x - 10, y + 10, x + 10, y - 10, "s")
+            body += text(x, y - 28, label, 14, weight="bold")
+        px = {"M": 320, "K": 110, "N": 530}.get(point, 320)
+        body += f'<circle cx="{px}" cy="{y}" r="5" fill="#b91c1c"/>' + text(px, y + 26, point, 14, fill="#b91c1c")
+        body += arrow(610, 250, 610, 120, head=7) + text(600, 112, "дээш", 11, "end")
+        body += text(320, 300, "⊙ — хуудаснаас гарах, ⊗ — хуудас руу орох гүйдэл", 12, fill="#4b5563")
     elif kind == "capacitor_ac":
-        cap = float(fig.get("capacitance_uf", 0))
-        freq = float(fig.get("frequency_hz", 0))
+        cap = fig.get("capacitance_text") or f"{float(fig.get('capacitance_uf', 0)):g}"
+        freq = fig.get("frequency_text") or f"{float(fig.get('frequency_hz', 0)):g}"
         body = rect(150, 70, 340, 200, "s")
         body += _capacitor(320, 70)
         body += circle(320, 270, 24, "s")
         body += text(320, 275, "~", 22)
-        body += text(320, 320, f"C = {cap:g} мкФ, f = {freq:g} Гц", 12)
+        body += text(320, 320, f"C = {cap} мкФ, f = {freq} Гц", 12)
     elif kind == "capacitor_circuit":
         caps = fig.get("capacitances_uf", [])
         volts = float(fig.get("voltage_v", 0))
@@ -606,19 +688,31 @@ def render_svg(fig: dict) -> str:
         body += text(450, 275, f"R3 = {float(r3):g} Ом", 10)
     elif kind == "wave_reflection":
         end = fig.get("end", "бэхэлсэн")
+        pulse = fig.get("pulse")
         body = line(70, 190, 520, 190, "s")
-        if end == "бэхэлсэн":
-            body += rect(520, 130, 12, 120, "sb")
-            body += poly([(430, 190), (455, 145), (480, 190)], "sr")
-            body += text(455, 125, "бэхэлсэн үзүүр", 11, fill="#b91c1c")
+        if pulse:
+            # Only the incoming pulse is drawn; how it returns is what the question asks.
+            peak = 145 if pulse == "up" else 235
+            body += poly([(160, 190), (200, peak), (240, 190)], "sblue")
+            body += arrow(260, 120 if pulse == "up" else 260, 360, 120 if pulse == "up" else 260, color="#1d4ed8", head=7)
+            body += text(310, 105 if pulse == "up" else 285, "илгээсэн импульс", 11, fill="#1d4ed8")
+            if end == "бэхэлсэн":
+                body += rect(520, 120, 14, 140, "sb") + text(527, 108, "бэхэлсэн үзүүр", 11)
+            else:
+                body += line(545, 100, 545, 280, "s") + circle(545, 190, 10, "s") + text(545, 88, "чөлөөтэй цагираг", 11)
         else:
-            body += circle(530, 190, 14, "s")
-            body += poly([(430, 190), (455, 150), (480, 190)], "sblue")
-            body += text(455, 125, "сул үзүүр", 11, fill="#1d4ed8")
-        body += arrow(150, 140, 260, 140, color="#1d4ed8", head=7)
-        body += arrow(300, 240, 190, 240, color="#b91c1c", head=7)
-        body += text(205, 125, "тусгагдсан", 10, fill="#1d4ed8")
-        body += text(245, 260, "ойсон", 10, fill="#b91c1c")
+            if end == "бэхэлсэн":
+                body += rect(520, 130, 12, 120, "sb")
+                body += poly([(430, 190), (455, 145), (480, 190)], "sr")
+                body += text(455, 125, "бэхэлсэн үзүүр", 11, fill="#b91c1c")
+            else:
+                body += circle(530, 190, 14, "s")
+                body += poly([(430, 190), (455, 150), (480, 190)], "sblue")
+                body += text(455, 125, "сул үзүүр", 11, fill="#1d4ed8")
+            body += arrow(150, 140, 260, 140, color="#1d4ed8", head=7)
+            body += arrow(300, 240, 190, 240, color="#b91c1c", head=7)
+            body += text(205, 125, "тусгагдсан", 10, fill="#1d4ed8")
+            body += text(245, 260, "ойсон", 10, fill="#b91c1c")
     elif kind == "wave_profile":
         speed = float(fig.get("speed_m_s", 0))
         half = float(fig.get("half_wavelength_m", 0))
@@ -629,34 +723,73 @@ def render_svg(fig: dict) -> str:
             y = 200 - 45 * math.sin(i / 120 * 4 * math.pi)
             pts.append((x, y))
         body += polyline(pts, "sblue")
-        body += line(190, 200, 450, 200, "dash")
-        body += arrow(190, 225, 450, 225, head=7)
-        body += text(320, 245, f"λ/2 = {half:g} м", 12)
-        body += arrow(520, 80, 520, 150, color="#1d4ed8", head=7)
-        body += text(540, 115, f"v = {speed:g} м/с", 11, "start", fill="#1d4ed8")
+        # One period of the drawn wave is 260 px: mark the distance named in the question (half or full period).
+        if "span" in fig:
+            start, stop = (125, 255) if fig["span"] == "half" else (125, 385)
+            body += line(start, 140, start, 260, "dash") + line(stop, 140, stop, 260, "dash")
+            body += arrow(start, 265, stop, 265, head=7) + arrow(stop, 265, start, 265, head=7)
+            body += text((start + stop) / 2, 285, fig.get("label", ""), 12)
+        else:
+            body += line(190, 200, 450, 200, "dash")
+            body += arrow(190, 225, 450, 225, head=7)
+            body += text(320, 245, f"λ/2 = {half:g} м", 12)
+        # The wave travels along the rope, so its velocity arrow is horizontal.
+        body += arrow(470, 110, 570, 110, color="#1d4ed8", head=7)
+        body += text(520, 98, f"v = {speed:g} м/с", 11, fill="#1d4ed8")
     elif kind == "sound_speed_temperature":
         intercept = float(fig.get("intercept", 331))
         slope = float(fig.get("slope", 0.6))
-        temp = float(fig.get("temperature_c", 20))
-        vmax = intercept + slope * 45
-        frame, mapper = graph_frame("T, °C", "v, м/с", 0, 45, intercept - 5, vmax + 5)
-        pts = [[0, intercept], [45, intercept + slope * 45]]
-        body = frame + _series(pts, mapper)
+        if fig.get("ask") == "T":
+            temp = (float(fig["speed"]) - intercept) / slope
+        else:
+            temp = float(fig.get("temperature_c", 20))
+        # Cold days need negative temperatures on the axis. Marked points (with 0 °C) give the line's equation.
+        tmin = -40 if temp < 0 else 0
+        tmax = 40 if temp < 0 else 45
+        frame, mapper = graph_frame("T, °C", "v, м/с", tmin, tmax * 1.08, intercept + slope * tmin - 8, intercept + slope * tmax + 8, ticks=False)
+        pts = [[tmin, intercept + slope * tmin], [tmax, intercept + slope * tmax]]
+        marks = [[tmin, intercept + slope * tmin], [0, intercept], [tmax, intercept + slope * tmax]] if tmin < 0 else pts
+        body = frame + _series(pts, mapper) + _point_labels(marks, mapper)
         px, py = mapper(temp, intercept + slope * temp)
         body += line(px, 300, px, py, "dash") + line(80, py, px, py, "dash")
         body += circle(px, py, 4, "s")
-        body += text(px + 10, py - 10, "?", 12, "start")
+        if fig.get("ask") == "T":
+            body += text(84, py - 6, f"{float(fig['speed']):g} м/с", 11, "start") + text(px, 318, "?", 13, weight="bold")
+        else:
+            body += text(px + 10, py - 10, "?", 12, "start")
+    elif kind == "shm_displacement_time" and "amplitude_m" in fig:
+        # Task 2.4 passes x = A·sin(ωt + φ) in SI units (it was drawn as a flat line under the mm/Hz keys below).
+        # No numeric ticks: the period is one of the answers, so only A and T are marked.
+        amp = float(fig["amplitude_m"])
+        omega = float(fig.get("angular_frequency", 2 * math.pi))
+        phase = float(fig.get("initial_phase", 0))
+        period = 2 * math.pi / omega
+        frame, mapper = graph_frame("t, с", "x, м", 0, 2 * period, -amp * 1.25, amp * 1.25, ticks=False)
+        pts = [[2 * period * i / 200, amp * math.sin(omega * 2 * period * i / 200 + phase)] for i in range(201)]
+        body = frame + line(80, mapper(0, 0)[1], 580, mapper(0, 0)[1], "grid") + _series(pts, mapper)
+        peak = ((math.pi / 2 - phase) % (2 * math.pi)) / omega
+        top_x, top_y = mapper(peak, amp)
+        body += line(80, top_y, top_x, top_y, "dash") + text(71, top_y + 4, "A", 12, "end")
+        body += text(71, mapper(0, -amp)[1] + 4, "−A", 12, "end") + line(80, mapper(0, -amp)[1], mapper(peak + period / 2, -amp)[0], mapper(0, -amp)[1], "dash")
+        left, right = mapper(peak, amp)[0], mapper(peak + period, amp)[0]
+        body += arrow(left, top_y - 18, right, top_y - 18, head=6) + arrow(right, top_y - 18, left, top_y - 18, head=6)
+        body += text((left + right) / 2, top_y - 24, "T", 12)
+        body += text(80, mapper(0, 0)[1] + 16, "0", 11, "end")
     elif kind == "shm_displacement_time":
         amp = float(fig.get("amplitude_mm", 0))
         freq = float(fig.get("frequency_hz", 1))
-        frame, mapper = graph_frame("t, с", "x, мм", 0, 2 / max(freq, 0.01), -amp * 1.2, amp * 1.2)
-        pts = []
-        for i in range(161):
-            t = i / 160 * 2 / max(freq, 0.01)
-            pts.append([t, amp * math.sin(2 * math.pi * freq * t)])
-        body = frame + _series(pts, mapper)
-        body += text(mapper(1 / (4 * freq), amp)[0], mapper(1 / (4 * freq), amp)[1] - 10, "A", 12)
-        body += text(mapper(1 / (2 * freq), 0)[0], 355, "T", 12)
+        unit = fig.get("unit", "мм")
+        period = 1 / max(freq, 0.01)
+        # Ticks at ±A, ±A/2 and every half period, so both the amplitude and the period can be read.
+        frame, mapper = graph_frame("t, с", f"x, {unit}", 0, 2 * period * 1.06, -amp * 1.25, amp * 1.25, ticks=False)
+        pts = [[2 * period * i / 160, amp * math.sin(2 * math.pi * freq * 2 * period * i / 160)] for i in range(161)]
+        body = frame + line(80, mapper(0, 0)[1], 580, mapper(0, 0)[1], "grid") + _series(pts, mapper)
+        for value in (-amp, -amp / 2, 0, amp / 2, amp):
+            py = mapper(0, value)[1]
+            body += line(75, py, 80, py, "s") + text(71, py + 4, _num(value, 3), 11, "end")
+        for i in range(1, 5):
+            px = mapper(i * period / 2, 0)[0]
+            body += line(px, 300, px, 305, "s") + text(px, 318, _num(i * period / 2, 3), 11)
     elif kind == "water_waves":
         n = fig.get("oscillations", 0)
         t = fig.get("time_s", 0)
@@ -681,8 +814,8 @@ def render_svg(fig: dict) -> str:
         else:
             body += line(320, 200, 500, 320, "sblue")
             body += text(510, 320, "n2 < n1", 11, "start")
-        body += text(120, 185, "n1", 12, "start")
-        body += text(520, 185, "n2", 12, "start")
+        body += text(120, 185, f"n1 · {fig['from']}" if fig.get("from") else "n1", 12, "start")
+        body += text(520, 225, f"n2 · {fig['to']}" if fig.get("to") else "n2", 12, "end")
         body += text(320, 60, "хэвийн", 10)
     elif kind == "illuminance":
         i = float(fig.get("intensity_cd", 0))

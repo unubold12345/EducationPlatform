@@ -164,7 +164,7 @@ MOCKS.append({
         ("We arrived ___ the airport two hours early.", ["at", "in", "to", "on", "by"], "A"),
     ],
     "idioms": [
-        ("Don't <u>beat around the bush</u>. Just tell me what happened.", ["Speak directly without avoiding the main point.", "Cut the bushes in the garden.", "Hit someone.", "Go for a walk in the garden.", "Hide the truth carefully."], "A"),
+        ("<u>Don't beat around the bush</u>. Just tell me what happened.", ["Speak directly without avoiding the main point.", "Cut the bushes in the garden.", "Hit someone.", "Go for a walk in the garden.", "Hide the truth carefully."], "A"),
         ("My little brother is <u>the apple of my mother's eye</u>.", ["My mother loves him very much.", "He eats a lot of apples.", "He has problems with his eyes.", "My mother is angry with him.", "He looks like an apple."], "A"),
     ],
     "conversation": {
@@ -308,7 +308,7 @@ MOCKS.append({
                          (["exact", "exactly", "exactness", "exacting", "exacted"], 2),
                          (["use", "usage", "usefully", "useful", "user"], 4),
                          (["pollination", "pollinate", "pollinator", "pollinated", "pollinating"], 1),
-                         (["wide", "widely", "widespread", "widen", "width"], 3),
+                         (["wideness", "widely", "widespread", "widen", "width"], 3),
                          (["essence", "essentially", "essentials", "essential", "essentiality"], 4)]},
         "2.2": (["colony", "to lay", "to defend", "source", "direction", "pollen", "disease", "supply"],
                 ["the way in which something moves or points", "an illness", "to produce eggs from the body", "a fine yellow powder made by flowers", "a group of animals or insects living together", "an amount of something that is available to use", "a sweet liquid made by bees", "to protect someone or something from attack", "a place or thing that something comes from", "to fly from place to place without a plan"],

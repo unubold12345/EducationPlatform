@@ -183,10 +183,10 @@ export function PracticeWorkspace({initial,speakingLab,initialSection}:{initial:
   const passageTitle=question.passage&&form.passages.some(item=>item.title===question.passage)?question.passage:"Passage / Information";
   const value=responses[question.id]??"";
   const person=reviewedByPerson(question);
-  // Math and physics mocks are Mongolian; the English paper keeps its English questions and explanations.
+  // Math and physics mocks are Mongolian; the English paper keeps its English questions and answers. Every ЭЕШ explanation is Mongolian.
   const mathPaper=form.subject==="eesh-math",physicsPaper=form.subject==="eesh-physics",entrance=form.subject.startsWith("eesh-");
   const jlpt=form.subject==="jlpt",hsk=form.subject==="hsk",part=hsk?hskPart(question.section):undefined;
-  const answerLang=jlpt?"ja":hsk?"zh-CN":entrance&&form.subject!=="eesh-english"?"mn":"en",explainLang=form.subject==="eesh-english"?"en":entrance?"mn":"en";
+  const answerLang=jlpt?"ja":hsk?"zh-CN":entrance&&form.subject!=="eesh-english"?"mn":"en",explainLang=entrance?"mn":"en";
   const hasAnswer=Boolean(value.replace(/_/g,"").trim());
   const optionContent=(option:string)=>jlpt?<JapaneseText text={option} readings={readings}/>:mathPaper?<MathFormula text={option}/>:form.subject==="eesh-english"?<RichText text={option}/>:option;
 

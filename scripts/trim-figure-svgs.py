@@ -5,7 +5,9 @@ on the page. This measures each drawing in a headless browser (transforms includ
 viewBox/width/height to the drawing plus a margin, and updates the figure width/height in
 assets/entrance-mocks so layout keeps the right ratio. Idempotent: rerun after build-entrance-mocks.mjs.
 
-    python scripts/trim-figure-svgs.py [--dry-run]
+    python scripts/trim-figure-svgs.py [--dry-run] [subject ...]
+
+Name subjects (math physics …) to limit the run to them; the Biology and Chemistry figures have never been trimmed.
 """
 import json
 import re
@@ -52,7 +54,8 @@ def set_attr(tag, name, value):
 
 def main():
     dry = "--dry-run" in sys.argv
-    files = sorted(PUBLIC.glob("*/*/*.svg"))
+    subjects = {arg for arg in sys.argv[1:] if not arg.startswith("--")}
+    files = sorted(file for file in PUBLIC.glob("*/*/*.svg") if not subjects or file.parent.parent.name in subjects)
     sizes = {}
     with sync_playwright() as p:
         browser = p.chromium.launch()
@@ -85,7 +88,7 @@ def main():
         browser.close()
 
     changed_json = 0
-    for mock in sorted(MOCKS.glob("*/*.json")):
+    for mock in sorted(mock for mock in MOCKS.glob("*/*.json") if not subjects or mock.parent.name in subjects):
         raw = mock.read_text(encoding="utf-8")
         data = json.loads(raw)
         touched = False

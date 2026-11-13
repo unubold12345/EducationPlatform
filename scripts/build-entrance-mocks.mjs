@@ -130,15 +130,16 @@ function scientificValue(text) {
   value = value.replace(/10([⁻⁺]?)([⁰¹²³⁴⁵⁶⁷⁸⁹]+)/g, (_, sign, digits) => "10^" + (sign === "⁻" ? "-" : "") + [...digits].map(digit => superscriptDigits[digit]).join(""));
   const match = /^([\d.]+)(?:\*?pi)?(?:\*([\d.]+))?\*10\^(-?\d+)$/.exec(value.replace(/\s+/g, ""));
   if (!match) return null;
-  const coefficient = Number(match[1]) * (value.includes("pi") ? Math.PI : 1) * (match[2] ? Number(match[2]) : 1);
-  const number = coefficient * 10 ** Number(match[3]);
+  const mantissa = Number(match[1]) * (match[2] ? Number(match[2]) : 1);
+  // Without π the value is exact: 1.5·10⁻⁸ is stored as 1.5e-8, not 1.5 * 10 ** -8 = 1.5000000000000002e-8.
+  const number = value.includes("pi") ? mantissa * Math.PI * 10 ** Number(match[3]) : Number(`${mantissa}e${match[3]}`);
   return Number.isFinite(number) ? number : null;
 }
 function physicsAnswer(answer) {
   const text = clean(answer);
   if (numericAnswer(text)) return { kind: "number", matcher: "numeric", answers: [text], answerDisplay: text };
   const scientific = scientificValue(text);
-  if (scientific !== null) return { kind: "number", matcher: "numeric", answers: [String(scientific)], answerDisplay: `${text} ≈ ${scientific.toExponential(3)}` };
+  if (scientific !== null) return { kind: "number", matcher: "numeric", answers: [String(scientific)], answerDisplay: text.includes("π") ? `${text} ≈ ${scientific.toExponential(3)}` : text };
   const aliases = /төв.*рүү|рүү.*төв/i.test(text) ? [text, "төв рүү", "тойргийн төврүү", "төв рүү чиглэнэ"] : [text];
   return { kind: "short", matcher: "text", answers: [...new Set(aliases)], answerDisplay: text };
 }
@@ -199,11 +200,13 @@ function buildMath(mock, year, number) {
       questionIds.add(id);
       const answer = clean(item.answer);
       const numeric = numericAnswer(answer);
+      // `accept` lists other spellings; `exactForm` marks tasks whose written form is the point (factorise, rationalise).
       questions.push({
         id, number: `2.${taskNumber}${letter}`, groupId: taskId, kind: numeric ? "number" : "short",
         matcher: numeric ? "numeric" : "math", points: points[partIndex] ?? 0,
         domain: mathDomain(question.skill ?? ""), prompt: clean(item.prompt),
-        answers: [answer], answerDisplay: answer,
+        answers: [...new Set([answer, ...(item.accept ?? []).map(clean)])], answerDisplay: answer,
+        ...(item.exactForm ? { exactForm: true } : {}),
         explanation: clean(question.solution),
       });
     }
@@ -268,11 +271,13 @@ function buildPhysics(mock, year, number) {
       if (questionIds.has(id)) fail(`duplicate question ${id}`);
       questionIds.add(id);
       const parsed = physicsAnswer(item.answer);
+      // `accept` lists other accepted values, such as the exact work and its rounding (1.662, 1.66, 1.7 кЖ).
+      const answers = [...new Set([...parsed.answers, ...(item.accept ?? []).map(value => physicsAnswer(value).answers[0])])];
       questions.push({
         id, number: `2.${taskNumber}${letter}`, groupId: taskId, kind: parsed.kind,
         matcher: parsed.matcher, points: Number(item.points) || 0,
         domain: physicsDomain(question.skill ?? ""), prompt: clean(item.prompt),
-        answers: parsed.answers, answerDisplay: parsed.answerDisplay, explanation: clean(question.solution),
+        answers, answerDisplay: parsed.answerDisplay, explanation: clean(question.solution),
       });
     }
   }
@@ -282,7 +287,10 @@ function buildPhysics(mock, year, number) {
   return baseMock({
     slug, subject: "physics", year, form: variant,
     title: `ЭЕШ · Физик · ${year} · ${variant}`,
-    description: `${year} оны ЭЕШ-ийн физикийн бүтэцтэй, энэ сайтад зориулж зохиосон дадлагын шалгалт. 46 сонгох, 4 бодолт; g = 10 м/с².`,
+    // Only the 2026 A paper was available, so every year follows its item order with that year's point split (Physics README).
+    description: year === 2026
+      ? `2026 оны ЭЕШ-ийн физикийн бүтэцтэй, энэ сайтад зориулж зохиосон дадлагын шалгалт. 46 сонгох, 4 бодолт; g = 10 м/с².`
+      : `2026 оны ЭЕШ-ийн физикийн даалгаврын дараалал, ${year} оны онооны хуваарьтай, энэ сайтад зориулж зохиосон дадлагын шалгалт. 46 сонгох, 4 бодолт; g = 10 м/с².`,
     durationMinutes: 100, points: total, calculator: false,
     instructions: [
       "Нэгдүгээр хэсэгт 46 даалгаврын A–E сонголтоос нэгийг сонгоно.",
@@ -374,7 +382,8 @@ const biologyWords = {
   "хээр-д": "хээрт", "үндэс-д": "үндсэнд", "алим-ийн": "алимны", "хомсдол-д": "хомсдолд", "газар-д": "газарт",
   "нуур-аас": "нуураас", "рашаан-аас": "рашаанаас", "орчин-аас": "орчноос",
 };
-const hyphenCase = /([А-ЯӨҮЁа-яөүё]+)-(ийн|ын|ийг|ыг|д|т|аас|ээс|оос|өөс|тай|тэй|той|аар|ээр|оор|өөр)(?=[\s.,;:?!)]|$)/gu;
+// Also genitive -ны/-ний/-гийн/-н, accusative -г and dative -нд, which slipped through before 2026-11-13 ("Туулай-ны").
+const hyphenCase = /([А-ЯӨҮЁа-яөүё]+)-(ийн|ын|ийг|ыг|д|т|аас|ээс|оос|өөс|тай|тэй|той|аар|ээр|оор|өөр|ны|ний|гийн|н|г|нд)(?=[\s.,;:?!)]|$)/gu;
 const biologyWord = new RegExp(Object.keys(biologyWords).sort((a, b) => b.length - a.length).join("|"), "giu");
 function biologyText(text) {
   let out = text;
@@ -389,7 +398,8 @@ function biologyText(text) {
 function rewordBiology(value, slug) {
   if (typeof value === "string") {
     const out = biologyText(value);
-    for (const match of out.matchAll(hyphenCase)) if (!/^[А-ЯӨҮЁ]{2,}$/u.test(match[1]) && match[1] !== "мин") fail(`${slug}: unreviewed hyphenated form "${match[0]}"`);
+    // Abbreviations keep the hyphen, including a lowercase prefix (мРНХ-г); so do the unit мин and хи-квадрат.
+    for (const match of out.matchAll(hyphenCase)) if (!/^[а-яё]?[А-ЯӨҮЁ]{2,}$/u.test(match[1]) && match[1] !== "мин") fail(`${slug}: unreviewed hyphenated form "${match[0]}"`);
     return out;
   }
   if (Array.isArray(value)) return value.map(item => rewordBiology(item, slug));
@@ -491,6 +501,8 @@ function buildEnglish(mock, year) {
   const pushQuestion = (data) => {
     if (questionIds.has(data.id)) fail(`duplicate question ${data.id}`);
     questionIds.add(data.id);
+    // Each item's Mongolian explanation comes from MockExmps/English/_source/explanations via build.py.
+    if (!data.explanation) fail(`${data.id}: no explanation`);
     total += data.points;
     questions.push(data);
   };
@@ -534,8 +546,8 @@ function buildEnglish(mock, year) {
               pushQuestion({
                 id: `${slug}-q${question.number}`, number: String(question.number ?? questionIndex + 1), groupId,
                 kind: "choice", points: Number(question.points) || 1, domain: englishDomain(sectionTitle),
-                prompt: clean(question.stem), passage: title, options: values, optionLabels: ["A", "B", "C", "D", "E"],
-                answers: [answer], answerDisplay: answer, explanation: "",
+                prompt: clean(question.stem), passage: title, options: values, optionLabels: ["A", "B", "C", "D", "E"].slice(0, values.length),
+                answers: [answer], answerDisplay: answer, explanation: clean(question.explanation),
               });
             }
             continue;
@@ -553,8 +565,8 @@ function buildEnglish(mock, year) {
             pushQuestion({
               id: `${slug}-q${question.number}`, number: String(question.number ?? questionIndex + 1), groupId,
               kind: "choice", points: Number(question.points) || 1, domain: englishDomain(sectionTitle),
-              prompt: clean(question.stem), options: values, optionLabels: ["A", "B", "C", "D", "E"],
-              answers: [answer], answerDisplay: answer, explanation: "",
+              prompt: clean(question.stem), options: values, optionLabels: ["A", "B", "C", "D", "E"].slice(0, values.length),
+              answers: [answer], answerDisplay: answer, explanation: clean(question.explanation),
             });
           }
         }
@@ -590,7 +602,7 @@ function buildEnglish(mock, year) {
               id: `${slug}-${taskId.replace(/\./g, "-")}-${item.label}-${itemIndex}`, number: `${taskId}${item.label}`,
               groupId, kind: "choice", points: Number(task.pointsPerItem) || 1, domain: "Хэсэг II",
               prompt: clean(item.text), options, optionLabels: labels,
-              compactOptions: Boolean(subgroup.choices), answers: [answer], answerDisplay: answerLabel ? `${answerLabel}. ${answer}` : answer, explanation: "",
+              compactOptions: Boolean(subgroup.choices), answers: [answer], answerDisplay: answerLabel ? `${answerLabel}. ${answer}` : answer, explanation: clean(item.explanation),
             });
           }
         }
@@ -611,7 +623,7 @@ function buildEnglish(mock, year) {
             id: `${slug}-${taskId.replace(/\./g, "-")}-${item.label}-${itemIndex}`, number: `${taskId}${item.label}`,
             groupId, kind: "choice", points: Number(task.pointsPerItem) || 1, domain: "Хэсэг II",
             prompt: clean(item.text), options, optionLabels: labels, compactOptions: true,
-            answers: [answer], answerDisplay: `${labels.find((label, optionIndex) => Number(label) === answerIndex && options[optionIndex] === answer) ?? answerIndex}. ${answer}`, explanation: "",
+            answers: [answer], answerDisplay: `${labels.find((label, optionIndex) => Number(label) === answerIndex && options[optionIndex] === answer) ?? answerIndex}. ${answer}`, explanation: clean(item.explanation),
           });
         }
         continue;
@@ -629,7 +641,7 @@ function buildEnglish(mock, year) {
           pushQuestion({
             id: `${slug}-${taskId.replace(/\./g, "-")}-${gap.label}-${gapIndex}`, number: `${taskId}${gap.label}`,
             groupId, kind: "choice", points: Number(task.pointsPerItem) || 1, domain: "Хэсэг II",
-            prompt: "", options, optionLabels: labels, answers: [answer], answerDisplay: `${labels[Number(gap.answer) - 1] ?? gap.answer}. ${answer}`, explanation: "",
+            prompt: "", options, optionLabels: labels, answers: [answer], answerDisplay: `${labels[Number(gap.answer) - 1] ?? gap.answer}. ${answer}`, explanation: clean(gap.explanation),
           });
         }
         continue;

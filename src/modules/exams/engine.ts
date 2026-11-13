@@ -1,4 +1,5 @@
 import type { ExamDefinition, ExamState, ExamQuestion, ExamReport } from "./types.ts";
+import { sameMathValue } from "./math-value.ts";
 
 export function createExamState(definition:ExamDefinition, now:number):ExamState {
   return {version:1,definition:structuredClone(definition),stageIndex:0,stageStartedAt:new Date(now).toISOString(),deadline:new Date(now+definition.stages[0].seconds*1000).toISOString(),responses:{},flags:[],routes:{},completed:[],finishedAt:null};
@@ -9,14 +10,26 @@ export function stageFor(state:ExamState) {
   return stage.variants ? {...stage,questions:stage.variants[state.routes[stage.id] ?? "lower"]} : stage;
 }
 export function normalise(value:string) { return value.normalize("NFKC").trim().toLocaleLowerCase("en").replace(/[’]/g,"'").replace(/\s+/g," "); }
-function numeric(value:string) {
+const superscripts:Record<string,string>={"⁰":"0","¹":"1","²":"2","³":"3","⁴":"4","⁵":"5","⁶":"6","⁷":"7","⁸":"8","⁹":"9","⁻":"-","⁺":"+"};
+// A power of ten as the keys print it (3.2·10⁻¹³) or as it is typed (3.2*10^-13, 3.2 × 10^(-13), 10⁻¹⁴). The sign
+// before 10 and the ^ or superscript are required, so 3.2·1013 and 310^2 stay unreadable instead of becoming 3.2e13.
+const powerOfTen=/^(?:([+-]?(?:\d+(?:\.\d*)?|\.\d+))\s*[·*×xX]\s*)?10(?:(?:\^|\*\*)(?:\(([+-]?\d+)\)|([+-]?\d+))|([⁺⁻]?[⁰¹²³⁴⁵⁶⁷⁸⁹]+))$/;
+/** A typed number: a decimal, e-notation or a fraction, and with `powers` also a power of ten (numeric answers only:
+ * the math matcher reaches this before `exactForm`, where 10⁵ may be the very form a task asks for). */
+function numeric(value:string, powers=false) {
   const v=value.trim().replaceAll("−","-").replaceAll(",",".");
   if (/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/.test(v)) { const number=Number(v); return Number.isFinite(number) ? number : null; }
+  const power=powers ? powerOfTen.exec(v) : null;
+  if (power) {
+    const exponent=power[2] ?? power[3] ?? [...power[4]].map(char=>superscripts[char]).join("");
+    // Built as 3.2e-13, so the value is exactly the one the key's own e-notation gives.
+    const number=Number(`${power[1] ?? "1"}e${exponent}`);
+    return Number.isFinite(number) ? number : null;
+  }
   if (!/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)\/[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(v)) return null;
   const parts=v.split("/").map(Number); const number=parts[0]/parts[1];
   return Number.isFinite(number) ? number : null;
 }
-const superscripts:Record<string,string>={"⁰":"0","¹":"1","²":"2","³":"3","⁴":"4","⁵":"5","⁶":"6","⁷":"7","⁸":"8","⁹":"9","⁻":"-","⁺":"+"};
 /** Compare typed mathematics without demanding one exact spelling of the same expression. */
 export function normaliseMath(value:string) {
   let text=value.replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁻⁺]+/g,group=>"^"+[...group].map(char=>superscripts[char]??"").join(""));
@@ -48,8 +61,8 @@ export function isCorrect(question:ExamQuestion,response:string) {
   if (!response.trim()) return false;
   const matcher=question.matcher ?? (question.kind==="number"?"numeric":question.kind==="short"?"text":"choice");
   if (matcher==="numeric") {
-    const value=numeric(response);
-    return value!==null && question.answers.some(answer=>{const target=numeric(answer);return target!==null && close(value,target);});
+    const value=numeric(response,true);
+    return value!==null && question.answers.some(answer=>{const target=numeric(answer,true);return target!==null && close(value,target);});
   }
   if (matcher==="math") {
     const given=normaliseMath(response);
@@ -59,7 +72,10 @@ export function isCorrect(question:ExamQuestion,response:string) {
       // A decimal and the exact fraction it names are the same answer.
       const target=numeric(answer);
       const typed=numeric(response);
-      return target!==null&&typed!==null&&close(target,typed);
+      if (target!==null&&typed!==null&&close(target,typed)) return true;
+      // Equal values in any written form are right (π and 6π/6, x²−5x+4 and (x−1)(x−4)), unless the task
+      // asks for one form, such as factorising or rationalising, where the original expression has the same value.
+      return !question.exactForm&&sameMathValue(answer,response)===true;
     });
   }
   if (matcher==="text") {
@@ -67,8 +83,12 @@ export function isCorrect(question:ExamQuestion,response:string) {
     return question.answers.some(answer=>normaliseText(answer)===given);
   }
   if (question.maxWords && response.trim().split(/\s+/).length>question.maxWords) return false;
-  return question.answers.some(answer=>normalise(answer)===normalise(response));
+  // Choices keep their case: genotype options such as CcGg and ccGg differ only by it. A key that matches no
+  // option exactly (older content) keeps the earlier case-insensitive comparison.
+  const options=(question.options??[]).map(choiceText);
+  return question.answers.some(answer=>options.includes(choiceText(answer)) ? choiceText(answer)===choiceText(response) : normalise(answer)===normalise(response));
 }
+function choiceText(value:string) { return value.normalize("NFC").trim().replace(/[’]/g,"'").replace(/\s+/g," "); }
 export function expireStages(state:ExamState,now:number) {
   let changed=false;
   while (!state.finishedAt && now>=Date.parse(state.deadline)) {

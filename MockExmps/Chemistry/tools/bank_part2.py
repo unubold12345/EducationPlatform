@@ -86,6 +86,16 @@ def sci(x):
     return m, -e
 
 
+def sci_text(x, digits=3):
+    """Explanation notation for small values: 8.00 × 10⁻⁵ (never Python's 8.00e-05)."""
+    e = math.floor(math.log10(abs(x)))
+    mantissa = f'{x / 10 ** e:.{digits - 1}f}'
+    if float(mantissa) >= 10:
+        e += 1
+        mantissa = f'{x / 10 ** e:.{digits - 1}f}'
+    return mantissa if e == 0 else f'{mantissa} × 10{sup(e)}'
+
+
 COND = {
     'salt': ('{salt} нэмэхэд', 2, 'Ижил ион нэмэгдэж тэнцвэр зүүн тийш.'),
     'neutral': ('{neut} нэмэхэд', 1, '{ion} ион саармагжиж тэнцвэр баруун тийш.'),
@@ -121,8 +131,9 @@ def equilibrium_task(sysd, conds):
             f"2. {ion} ионы концентрац (e × 10{sup(sysd['exp'])} моль дм⁻³)-ыг тооцоолно уу.\n3. Тэнцвэрийн тогтмол Kc (f × 10⁻ᵍ)-г тооцоолно уу"
             + (' (усны концентрацыг тогтмол гэж үзнэ)' if sysd['kind'] == 'base' else '') + '.\n4. Уусмалын '
             + ('pH' if sysd['kind'] == 'acid' else 'pOH') + ' (h)-ийг бүхэл тоогоор тооцоолно уу.')
-    parts += [('e', f'[{ion}] = e × 10{sup(sysd["exp"])}', e, f'{c:g} × {a:g} = {x:.2e}.'),
-              ('f', 'Kc = f × 10⁻ᵍ: f', f, f'Kc = ({x:.2e})²/({c:g} − {x:.2e}) = {K:.3g}.'), ('g', 'Kc = f × 10⁻ᵍ: g', g, f'{f} × 10⁻{g}.'),
+    parts += [('e', f'[{ion}] = e × 10{sup(sysd["exp"])}', e, f'{c:g} × {a:g} = {sci_text(x)}.'),
+              ('f', 'Kc = f × 10⁻ᵍ: f', f, f'Kc = ({sci_text(x)})²/({c:g} − {sci_text(x)}) = {sci_text(K)}.'),
+              ('g', 'Kc = f × 10⁻ᵍ: g', g, f'{f} × 10{sup(-g)}.'),
               ('h', 'pH' if sysd['kind'] == 'acid' else 'pOH', ph, f'{"pH" if sysd["kind"] == "acid" else "pOH"} = {p:.2f} → бүхэлчилнэ.')]
     assert g <= 9 and 0 <= e <= 9, (sysd['name'], e, g)
     prompt = (f"Дараах тэнцвэрийг судалжээ.\n{sysd['eq']}   ∆H°урв = {sysd['dh']:+g} кЖ моль⁻¹\n"

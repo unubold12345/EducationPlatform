@@ -1,11 +1,14 @@
 "use client";
 import { Fragment, type ReactNode } from "react";
 
-// English paper markup: **bold**, *italic* and <u>underline</u> from the offline JSON.
+// English paper markup: **bold**, *italic* and <u>underline</u> from the offline JSON, also nested as
+// **<u>it</u>** or <u>**it**</u> (the 2020 papers mark a referenced pronoun that way).
 // Everything is rendered as React text, so no author string becomes HTML.
-const pattern = /(\*\*[^*]+\*\*|\*[^*]+\*|<u>[^<]+<\/u>)/g;
+const pattern = /(\*\*<u>[^<*]+<\/u>\*\*|<u>\*\*[^<*]+\*\*<\/u>|\*\*[^*]+\*\*|\*[^*]+\*|<u>[^<]+<\/u>)/g;
 function inline(text: string): ReactNode[] {
   return text.split(pattern).filter(Boolean).map((part, index) => {
+    if (/^\*\*<u>[^<*]+<\/u>\*\*$/.test(part)) return <strong key={index}><u>{part.slice(5, -6)}</u></strong>;
+    if (/^<u>\*\*[^<*]+\*\*<\/u>$/.test(part)) return <u key={index}><strong>{part.slice(5, -6)}</strong></u>;
     if (part.startsWith("**") && part.endsWith("**")) return <strong key={index}>{part.slice(2, -2)}</strong>;
     if (part.startsWith("<u>") && part.endsWith("</u>")) return <u key={index}>{part.slice(3, -4)}</u>;
     if (part.startsWith("*") && part.endsWith("*") && part.length > 2) return <em key={index}>{part.slice(1, -1)}</em>;

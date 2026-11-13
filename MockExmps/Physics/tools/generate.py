@@ -3,12 +3,24 @@
 This folder is never imported by the application.  The generator emits one
 JSON paper per variant, using the item count and point split of the reference
 year.  Answers are calculated from the same data used to write the question.
+
+Every Part I question draws on a pool of versions (contexts and numbers).  A
+paper takes version `slot % len(pool)`, where `slot` is the paper's place in a
+fixed per-question order of the 60 papers, so a pool of 20 or more puts any one
+version in at most three papers, and a pool of 60 in one (2026-11-13, finding
+H4 in docs/MOCK_REVIEW.md).  The Part II tasks 2.1–2.4 pick their scenario the
+same way, with orders 47–50 and 30 scenarios each, so each task is in two papers.
 """
 from __future__ import annotations
 
+import itertools
 import json
 import math
 import random
+import re
+from decimal import ROUND_HALF_UP, Decimal
+from fractions import Fraction
+from functools import lru_cache
 from pathlib import Path
 
 from figures import render_svg
@@ -17,7 +29,6 @@ ROOT = Path(__file__).resolve().parents[1]
 AUTHOR = "OpenCode (DeepSeek V4.1 Flash)"
 G = 10.0
 R = 8.31
-ALPHA_AL = 24e-6
 
 # 2015-2016: 46 MCQ / 80 points + 4 constructed / 20 points.
 # 2017-2026: 46 MCQ / 76 points + 4 constructed / 24 points.
@@ -36,6 +47,41 @@ def fmt(value: float, digits: int = 2) -> str:
         return str(int(round(value)))
     text = f"{value:.{digits}f}".rstrip("0").rstrip(".")
     return text.replace("-", "−")
+
+
+def exact(value: Decimal) -> str:
+    """A Decimal written plainly, without trailing zeros: 1.6620 -> 1.662, 2.0 -> 2."""
+    text = format(value.normalize(), "f")
+    return text.rstrip("0").rstrip(".") if "." in text else text
+
+
+def roundings(value: Decimal, places: tuple[int, ...] = (2, 1)) -> list[str]:
+    """Half-up roundings a student may reasonably give besides the exact value (accepted as well)."""
+    out: list[str] = []
+    for place in places:
+        text = exact(value.quantize(Decimal(1).scaleb(-place), rounding=ROUND_HALF_UP))
+        if text != exact(value) and text not in out:
+            out.append(text)
+    return out
+
+
+def num(value, places: int = 4) -> str:
+    """A number as printed: exact, rounded half up to `places` decimals, no trailing zeros, a real minus sign."""
+    value = Fraction(repr(value)) if isinstance(value, float) else Fraction(value)
+    quantum = Decimal(1).scaleb(-places)
+    decimal = (Decimal(value.numerator) / Decimal(value.denominator)).quantize(quantum, rounding=ROUND_HALF_UP)
+    text = format(decimal, "f")
+    if "." in text:
+        text = text.rstrip("0").rstrip(".")
+    if text in ("-0", ""):
+        text = "0"
+    return text.replace("-", "−")
+
+
+def ratio(value) -> str:
+    """4, 1/9 or 2/3: a ratio written exactly."""
+    value = Fraction(value)
+    return str(value.numerator) if value.denominator == 1 else f"{value.numerator}/{value.denominator}"
 
 
 def sci(value: float, digits: int = 2) -> str:
@@ -59,6 +105,40 @@ def option(value) -> str:
     return str(value)
 
 
+NUMBER_UNIT = re.compile(r"^(−?\d+(?:\.\d+)?)(?:\s+(\S.*))?$")
+
+
+def _number_unit(text: str):
+    match = NUMBER_UNIT.match(text)
+    return (float(match.group(1).replace("−", "-")), match.group(2) or "") if match else None
+
+
+def balance_rank(answer: str, wrongs: list[str], rng: random.Random) -> list[str]:
+    """Four distractors with the key at a random rank among the numbers.
+
+    The templates' ×2, ÷2, ×1.5 and ×0.75 distractors always bracketed the key, so it was never the smallest or
+    largest option (and was the middle one in most items). The template's own distractors are kept first."""
+    key = _number_unit(answer)
+    parsed = [_number_unit(wrong) for wrong in wrongs]
+    if key is None or key[0] <= 0 or any(item is None or item[1] != key[1] for item in parsed):
+        return wrongs
+    unit = key[1]
+    pool = list(wrongs) + [f"{fmt(key[0] * factor)} {unit}".strip() for factor in (2, 0.5, 4, 0.25, 3, 1 / 3, 1.5, 0.75)]
+    seen, values, lower, upper = {answer}, [key[0]], [], []
+    for candidate in pool:
+        value = _number_unit(candidate)[0]
+        # Skip repeats and near-repeats (2.66 beside 2.67), which would read as the same answer.
+        if candidate in seen or value <= 0 or any(abs(value - other) <= 0.02 * max(value, other) for other in values):
+            continue
+        seen.add(candidate)
+        values.append(value)
+        (lower if value < key[0] else upper).append(candidate)
+    under = min(rng.randrange(5), len(lower))
+    if 4 - under > len(upper):
+        under = 4 - len(upper)
+    return lower[:under] + upper[: 4 - under]
+
+
 def pick_wrongs(answer, candidates) -> list[str]:
     """Return four distinct wrong option strings."""
     correct = option(answer)
@@ -72,6 +152,24 @@ def pick_wrongs(answer, candidates) -> list[str]:
     raise ValueError(f"Could not build four distinct distractors for {correct!r}")
 
 
+def numeric_wrongs(answer: str, unit: str, candidates, places: int = 2) -> list[str]:
+    """Up to eight distractors in the key's unit, the template's own values first.
+
+    Paper.mc lets balance_rank choose four of them with the key at a random rank, so it seldom has to fall back
+    on bare ×4 and ÷4 multiples of the key."""
+    key = Fraction(_number_unit(answer)[0]) if _number_unit(answer) else Fraction(1)
+    values = [Fraction(value) for value in candidates if value is not None]
+    values += [key * 2, key / 2, key * 3, key / 3]
+    texts = []
+    for value in values:
+        text = f"{num(value, places)} {unit}".strip()
+        if value > 0 and text != answer and text not in texts:
+            texts.append(text)
+    if len(texts) < 4:
+        raise ValueError(f"Could not build four distinct distractors for {answer!r}")
+    return texts[:8]
+
+
 def combination_options(rng: random.Random, true_indices: list[int], total: int = 4):
     """Build a correct combination and four distinct wrong combinations."""
     answer = ", ".join(str(index) for index in sorted(true_indices))
@@ -83,6 +181,29 @@ def combination_options(rng: random.Random, true_indices: list[int], total: int 
     return answer, rng.sample(candidates, 4)
 
 
+def text_wrongs(answer: str, pool, rng: random.Random, count: int = 4) -> list[str]:
+    """`count` distractors from `pool`. One is at least as long as the key whenever the pool allows, so the key
+    is never the one uniquely longest option."""
+    candidates = [item for item in dict.fromkeys(pool) if item != answer]
+    if len(candidates) < count:
+        raise ValueError(f"too few distractors for {answer!r}")
+    long_enough = [item for item in candidates if len(item) >= len(answer)]
+    if not long_enough:
+        return rng.sample(candidates, count)
+    first = rng.choice(long_enough)
+    return [first] + rng.sample([item for item in candidates if item != first], count - 1)
+
+
+def spread_wrongs(key, below, above, rng: random.Random) -> list:
+    """Four distractor values with the key at a random rank among them."""
+    below = [value for value in dict.fromkeys(below) if value < key]
+    above = [value for value in dict.fromkeys(above) if value > key]
+    under = min(rng.randrange(5), len(below))
+    if 4 - under > len(above):
+        under = 4 - len(above)
+    return rng.sample(below, under) + rng.sample(above, 4 - under)
+
+
 class Paper:
     def __init__(self, year: int, variant: int):
         self.year = year
@@ -91,9 +212,12 @@ class Paper:
 
     def mc(self, number: int, data: dict, points: int) -> None:
         answer = option(data["answer"])
+        wrongs = [option(wrong) for wrong in data["wrong"]]
+        rank_rng = random.Random(self.year * 100_000 + self.variant * 1_000 + number + 50_000)
         options = [answer]
-        for wrong in data["wrong"]:
-            text = option(wrong)
+        # Labels such as transition numbers 1–5 are not quantities: their distractors stay as written.
+        chosen = balance_rank(answer, wrongs, rank_rng) if data.get("rank", True) else wrongs
+        for text in chosen[:4]:
             if text not in options:
                 options.append(text)
         if len(options) != 5:
@@ -122,14 +246,16 @@ class Paper:
     def structured(self, number: str, data: dict, part_points: list[int]) -> None:
         parts = []
         for index, part in enumerate(data["parts"]):
-            parts.append(
-                {
-                    "id": str(index + 1),
-                    "points": part_points[index],
-                    "prompt": part["prompt"],
-                    "answer": option(part["answer"]),
-                }
-            )
+            entry = {
+                "id": str(index + 1),
+                "points": part_points[index],
+                "prompt": part["prompt"],
+                "answer": option(part["answer"]),
+            }
+            # Other accepted answers, e.g. the exact work 1.662 кЖ and its roundings 1.66 and 1.7.
+            if part.get("accept"):
+                entry["accept"] = [option(value) for value in part["accept"]]
+            parts.append(entry)
         item = {
             "number": number,
             "referenceQuestion": number,
@@ -216,748 +342,1041 @@ class Paper:
 
 
 # ---------------------------------------------------------------------------
+# Version pools
+# ---------------------------------------------------------------------------
+
+PAPERS = 60
+
+
+def slot(year: int, variant: int, number: int) -> int:
+    """The paper's place (0–59) in a fixed order of the 60 papers, shuffled separately for each question."""
+    order = list(range(PAPERS))
+    random.Random(7_919 * number + 104_729).shuffle(order)
+    return order[(year - 2015) * 5 + (variant - 1)]
+
+
+def shuffled(seed: int, items) -> list:
+    items = list(items)
+    random.Random(seed).shuffle(items)
+    return items
+
+
+def distinct(items, key) -> list:
+    """Items in order, dropping any whose key (normally the prompt's data) was already seen."""
+    seen, out = set(), []
+    for item in items:
+        mark = key(item)
+        if mark not in seen:
+            seen.add(mark)
+            out.append(item)
+    return out
+
+
+def assign(combos, labels: list[str], total_of, count: int = PAPERS) -> list:
+    """Attach a context label to each combo so that no (label, total) pair repeats: the prompt names both."""
+    used, out = set(), []
+    for index, combo in enumerate(combos):
+        for shift in range(len(labels)):
+            label = labels[(index + shift) % len(labels)]
+            if (label, total_of(combo)) not in used:
+                used.add((label, total_of(combo)))
+                out.append((label,) + tuple(combo))
+                break
+        if len(out) == count:
+            break
+    return out
+
+
+# ---------------------------------------------------------------------------
 # Part I item generators
 # ---------------------------------------------------------------------------
 
-def q01(rng: random.Random, year: int) -> dict:
-    length = rng.choice([6.4, 7.2, 8.5, 9.1, 10.3, 11.6, 12.4])
-    answer = f"{length:.1f} ± 0.05 см"
-    wrong = [
-        f"{length:.1f} ± 0.1 см",
-        f"{length:.1f} ± 0.5 см",
-        f"{length:.1f} ± 0.01 см",
-        f"{length:.1f} ± 0.005 см",
-    ]
+RULER_OBJECTS = [
+    "Харандааны", "Баллуурын", "Хадаасны", "Түлхүүрийн", "Навчны",
+    "Өдний", "Шүдэнзний хайрцагны", "Модон савааны", "Шилэн хоолойн", "Зэс утасны",
+]
+
+
+def q01(rng: random.Random, year: int, k: int) -> dict:
+    lengths = shuffled(101, [Fraction(tenths, 10) for tenths in range(31, 150) if tenths % 10])
+    length = lengths[k % len(lengths)]
+    obj = RULER_OBJECTS[k % len(RULER_OBJECTS)]
+    if k % 2 == 0:
+        reading, unit, error = f"{float(length):.1f}", "см", Fraction(1, 20)
+        below = [Fraction(1, 1000), Fraction(1, 200), Fraction(1, 100), Fraction(1, 50)]
+        above = [Fraction(1, 10), Fraction(1, 5), Fraction(1, 2), Fraction(1)]
+        solution = (
+            "1 мм хуваалттай шугамчнаас уншихад үнэмлэхүй алдаа нь хуваалтын хагас, "
+            "өөрөөр хэлбэл 0.5 мм = 0.05 см байна."
+        )
+    else:
+        reading, unit, error = str(int(length * 10)), "мм", Fraction(1, 2)
+        below = [Fraction(1, 100), Fraction(1, 20), Fraction(1, 10), Fraction(1, 5)]
+        above = [Fraction(1), Fraction(2), Fraction(5), Fraction(10)]
+        solution = "1 мм хуваалттай шугамчнаас уншихад үнэмлэхүй алдаа нь хуваалтын хагас буюу 0.5 мм байна."
     return {
         "skill": "Хэмжилтийн үнэмлэхүй алдаа",
         "prompt": (
-            f"Шугамчны хуваалт 1 мм. Харандааны уртыг хэмжихэд "
-            f"{length:.1f} см болж уншив. Хэмжилтийн үр дүнг үнэмлэхүй "
-            f"алдаатай зөв бичсэн хувилбарыг сонго."
+            f"Шугамчны хуваалт 1 мм. {obj} уртыг хэмжихэд {reading} {unit} болж уншив. "
+            "Хэмжилтийн үр дүнг үнэмлэхүй алдаатай зөв бичсэн хувилбарыг сонго."
         ),
-        "answer": answer,
-        "wrong": wrong,
-        "solution": (
-            "1 мм хуваалттай шугамчнаас уншихад алдаа нь хуваалтын хагас, "
-            "өөрөөр хэлбэл 0.5 мм = 0.05 см байна."
-        ),
-        "figure": {"kind": "ruler", "length_cm": length, "division_mm": 1},
+        "answer": f"{reading} ± {num(error)} {unit}",
+        "wrong": [f"{reading} ± {num(value)} {unit}" for value in spread_wrongs(error, below, above, rng)],
+        "solution": solution,
+        "figure": {"kind": "ruler", "length_cm": float(length), "division_mm": 1},
     }
 
 
-def q02(rng: random.Random, year: int) -> dict:
-    patterns = [
-        {
-            "points": [[0, 0], [2, 12], [5, 12], [8, 0]],
-            "answer": "Эхлээд жигд хурдасч, дараа нь жигд хөдөлж, эцэст нь жигд саарна.",
-            "solution": (
-                "Графикийн налуу эерэг хэсэгт хурд өсөж, тэг налуутай хэсэгт "
-                "тогтмол, сөрөг налуутай хэсэгт хурд буурна."
-            ),
-        },
-        {
-            "points": [[0, 12], [2, 4], [5, 4], [8, 12]],
-            "answer": "Эхлээд жигд саарч, дараа нь жигд хөдөлж, эцэст нь жигд хурдасна.",
-            "solution": (
-                "Эхний хэсэгт налуу сөрөг тул хурд буурч, дунд хэсэгт тогтмол, "
-                "эцэст налуу эерэг тул хурд өснө."
-            ),
-        },
-        {
-            "points": [[0, 0], [3, 9], [8, 9]],
-            "answer": "Эхлээд жигд хурдасч, дараа нь жигд хөдөлнө.",
-            "solution": "Эхний хэсэгт хурд шугаман өсөж, дараа нь тогтмол байна.",
-        },
-        {
-            "points": [[0, 9], [8, 0]],
-            "answer": "Бүх хугацаанд жигд саарна.",
-            "solution": "График бүхэлдээ нэг шулуун бөгөөд налуу нь сөрөг байна.",
-        },
-        {
-            "points": [[0, 0], [8, 12]],
-            "answer": "Бүх хугацаанд жигд хурдасна.",
-            "solution": "График бүхэлдээ нэг шулуун бөгөөд налуу нь эерэг байна.",
-        },
-    ]
-    chosen = rng.choice(patterns)
+MOTION_OBJECTS = [
+    "Автомашины", "Дугуйчны", "Галт тэрэгний", "Автобусны", "Мотоциклийн", "Тэшүүрчний",
+    "Гүйгчийн", "Трамвайн", "Чарганы", "Завины", "Лифтний", "Троллейбусны",
+]
+MOTION_SHAPES = [
+    ("up_flat_down", "Эхлээд жигд хурдасч, дараа нь жигд хөдөлж, эцэст нь жигд саарна."),
+    ("down_flat_up", "Эхлээд жигд саарч, дараа нь жигд хөдөлж, эцэст нь жигд хурдасна."),
+    ("up_flat", "Эхлээд жигд хурдасч, дараа нь жигд хөдөлнө."),
+    ("flat_down", "Эхлээд жигд хөдөлж, дараа нь жигд саарна."),
+    ("flat_up", "Эхлээд жигд хөдөлж, дараа нь жигд хурдасна."),
+    ("down_flat", "Эхлээд жигд саарч, дараа нь жигд хөдөлнө."),
+    ("up_down", "Эхлээд жигд хурдасч, дараа нь жигд саарна."),
+    ("down", "Бүх хугацаанд жигд саарна."),
+    ("up", "Бүх хугацаанд жигд хурдасна."),
+    ("flat", "Бүх хугацаанд жигд хөдөлнө."),
+]
+
+
+def motion_points(shape: str, total: int, rng: random.Random) -> list[list[int]]:
+    t1 = rng.randint(1, total // 2)
+    t2 = rng.randint(t1 + 1, total - 1)
+    low = rng.choice([2, 3, 4, 5])
+    high = rng.choice([10, 12, 14, 15, 16, 18, 20])
+    start = rng.choice([0, low])
+    stop = rng.choice([0, low])
+    if shape == "up_flat_down":
+        return [[0, start], [t1, high], [t2, high], [total, stop]]
+    if shape == "down_flat_up":
+        return [[0, high], [t1, low], [t2, low], [total, high]]
+    if shape == "up_flat":
+        return [[0, start], [t1, high], [total, high]]
+    if shape == "flat_down":
+        return [[0, high], [t1, high], [total, stop]]
+    if shape == "flat_up":
+        return [[0, low], [t1, low], [total, high]]
+    if shape == "down_flat":
+        return [[0, high], [t1, low], [total, low]]
+    if shape == "up_down":
+        return [[0, start], [t2, high], [total, stop]]
+    if shape == "down":
+        return [[0, high], [total, stop]]
+    if shape == "up":
+        return [[0, start], [total, high]]
+    return [[0, high], [total, high]]
+
+
+@lru_cache(maxsize=None)
+def motion_versions() -> tuple:
+    versions = []
+    for index in range(PAPERS):
+        obj = MOTION_OBJECTS[index % len(MOTION_OBJECTS)]
+        total = (6, 8, 9, 10, 12)[index // len(MOTION_OBJECTS)]
+        shape, answer = MOTION_SHAPES[(7 * index + index // 10) % len(MOTION_SHAPES)]
+        versions.append((obj, total, answer, motion_points(shape, total, random.Random(2_000 + index))))
+    return tuple(versions)
+
+
+def q02(rng: random.Random, year: int, k: int) -> dict:
+    obj, total, answer, points = motion_versions()[k % PAPERS]
     return {
         "skill": "Хурд-хугацааны график",
         "prompt": (
-            "Хурд-хугацааны графикт үзүүлсэн хөдөлгөөнийг зөв "
-            "тодорхойлсон хувилбарыг сонго."
+            f"{obj} 0–{total} с хугацааны хурд-хугацааны графикийг үзүүлэв. "
+            "Хөдөлгөөнийг зөв тодорхойлсон хувилбарыг сонго."
         ),
-        "answer": chosen["answer"],
-        "wrong": [item["answer"] for item in patterns if item is not chosen],
-        "solution": chosen["solution"],
-        "figure": {"kind": "v_t_graph", "points": chosen["points"]},
+        "answer": answer,
+        "wrong": text_wrongs(answer, [text for _, text in MOTION_SHAPES], rng),
+        "solution": (
+            "Хурд-хугацааны графикийн налуу эерэг хэсэгт хурд жигд өсөж (жигд хурдсах), хэвтээ хэсэгт тогтмол "
+            f"(жигд хөдөлгөөн), налуу сөрөг хэсэгт жигд буурна (жигд саарах). Иймд: {answer}"
+        ),
+        "figure": {"kind": "v_t_graph", "points": points},
     }
 
 
-def q03(rng: random.Random, year: int) -> dict:
-    graphs = [
-        {
-            "points": [[0, 0], [4, 8], [8, 8], [12, -8]],
-            "distance": 64,
-            "displacement": 48,
-        },
-        {
-            "points": [[0, 0], [2, 10], [6, 10], [8, 0]],
-            "distance": 60,
-            "displacement": 60,
-        },
-        {
-            "points": [[0, 0], [3, 6], [7, 6], [10, -6]],
-            "distance": 42,
-            "displacement": 33,
-        },
-        {
-            "points": [[0, 0], [5, 10], [9, 10], [12, 0]],
-            "distance": 80,
-            "displacement": 80,
-        },
-        {
-            "points": [[0, 0], [4, 12], [8, 12], [12, -12]],
-            "distance": 96,
-            "displacement": 72,
-        },
-    ]
-    chosen = rng.choice(graphs)
-    answer = f"Зам {chosen['distance']} м, шилжилт {chosen['displacement']} м"
+ROUTE_OBJECTS = [
+    "тэрэгний", "вагоны", "тоглоомон машины", "робот тэрэгний", "автомашины", "завины",
+    "лифтний", "трамвайн", "галт тэрэгний", "мотоциклийн", "троллейбусны", "дугуйчны",
+]
+
+
+@lru_cache(maxsize=None)
+def route_versions() -> tuple:
+    combos = shuffled(303, [
+        (t1, plateau, descent, speed)
+        for t1 in (2, 3, 4) for plateau in (2, 3, 4, 5) for descent in (2, 4, 6) for speed in (4, 6, 8, 10, 12)
+    ])
+    return tuple(assign(combos, ROUTE_OBJECTS, lambda combo: sum(combo[:3])))
+
+
+def q03(rng: random.Random, year: int, k: int) -> dict:
+    obj, t1, plateau, descent, speed = route_versions()[k % PAPERS]
+    t2, total = t1 + plateau, t1 + plateau + descent
+    turn = Fraction(t2 + total, 2)
+    first, second, third = t1 * speed // 2, plateau * speed, descent * speed // 4
+    distance, displacement, forward = first + second + 2 * third, first + second, first + second + third
+    answer = f"Зам {distance} м, шилжилт {displacement} м"
     return {
         "skill": "Зам ба шилжилт",
         "prompt": (
-            f"Графикт үзүүлсэн хөдөлгөөний 0–{chosen['points'][-1][0]} с "
-            "хугацааны зам ба шилжилтийг ол."
+            f"Шулуун замаар хөдөлсөн {obj} хурд-хугацааны графикийг үзүүлэв. "
+            f"0–{total} с хугацааны зам ба шилжилтийг ол."
         ),
         "answer": answer,
         "wrong": [
-            f"Зам {item['distance']} м, шилжилт {item['displacement']} м"
-            for item in graphs
-            if item is not chosen
+            f"Зам {a} м, шилжилт {b} м"
+            for a, b in ((displacement, distance), (distance, distance), (forward, forward), (displacement, displacement))
         ],
         "solution": (
-            "Графикийн доорх талбайнуудыг нэмнэ. Зам нь бүх сегментийн "
-            "абсолют талбайн нийлбэр, шилжилт нь тэмдэгтэй талбайн нийлбэр: "
-            f"зам {chosen['distance']} м, шилжилт {chosen['displacement']} м."
+            f"Графикийн доорх талбайг хэсэг бүрээр олно: 0–{t1} с: {first} м, {t1}–{t2} с: {second} м, "
+            f"{t2}–{num(turn)} с: {third} м, {num(turn)}–{total} с: −{third} м (хурд сөрөг тул буцах хөдөлгөөн). "
+            f"Зам нь талбайн абсолют утгын нийлбэр: {distance} м; шилжилт нь тэмдэгтэй нийлбэр: {displacement} м."
         ),
-        "figure": {"kind": "v_t_graph", "points": chosen["points"]},
+        "figure": {"kind": "v_t_graph", "points": [[0, 0], [t1, speed], [t2, speed], [total, -speed]]},
     }
 
 
-def q04(rng: random.Random, year: int) -> dict:
-    masses = [1, 2, 3]
-    rng.shuffle(masses)
-    positions = [0.0, 0.5, 1.0]
-    centre = sum(m * x for m, x in zip(masses, positions)) / sum(masses)
-    answer = f"{centre:.2f} м"
-    candidates = [
-        f"{centre + 0.05:.2f} м",
-        f"{centre - 0.05:.2f} м",
-        f"{centre + 0.10:.2f} м",
-        f"{centre - 0.10:.2f} м",
-        "0.50 м",
-        "0.75 м",
-    ]
-    wrong = []
-    for candidate in candidates:
-        if candidate != answer and candidate not in wrong:
-            wrong.append(candidate)
-        if len(wrong) == 4:
-            break
+ROD_LENGTHS = [Fraction(3, 5), Fraction(4, 5), Fraction(1), Fraction(6, 5), Fraction(3, 2), Fraction(2), Fraction(12, 5), Fraction(3)]
+
+
+@lru_cache(maxsize=None)
+def rod_versions() -> tuple:
+    out = []
+    for length in ROD_LENGTHS:
+        for masses in itertools.product(range(1, 7), repeat=3):
+            if len(set(masses)) == 1:
+                continue
+            centre = length * (Fraction(masses[1], 2) + masses[2]) / sum(masses)
+            if (centre * 100).denominator == 1 and centre != length / 2:
+                out.append((length, masses))
+    return tuple(shuffled(404, out))
+
+
+def q04(rng: random.Random, year: int, k: int) -> dict:
+    length, (m1, m2, m3) = rod_versions()[k % len(rod_versions())]
+    total = m1 + m2 + m3
+    centre = length * (Fraction(m2, 2) + m3) / total
+    answer = f"{num(centre)} м"
     return {
         "skill": "Хүндийн төв",
         "prompt": (
-            "1 м урттай, массыг нь үл тоомсорлож болох саваа дээр "
-            f"{masses[0]} кг, {masses[1]} кг, {masses[2]} кг бөмбөлгүүдийг "
-            "0 м, 0.5 м, 1 м зайд бэхлэв. Хүндийн төвийн байрлалыг ол."
+            f"{num(length)} м урттай, массыг нь үл тоомсорлож болох саваа дээр {m1} кг, {m2} кг, {m3} кг "
+            f"бөмбөлгүүдийг зүүн үзүүрээс 0 м, {num(length / 2)} м, {num(length)} м зайд бэхлэв. "
+            "Хүндийн төв зүүн үзүүрээс ямар зайд байрлах вэ?"
         ),
         "answer": answer,
-        "wrong": wrong,
+        "wrong": numeric_wrongs(answer, "м", [
+            length / 2, length - centre, length * m3 / total, length * (m2 + m3) / total,
+            length * (Fraction(m1, 2) + m2) / total, centre + length / 10,
+        ]),
         "solution": (
-            "x_c = (m1x1 + m2x2 + m3x3) / (m1 + m2 + m3). "
-            f"Орлуулахад x_c = {centre:.2f} м."
+            "x_c = (m1x1 + m2x2 + m3x3)/(m1 + m2 + m3) = "
+            f"({m1}·0 + {m2}·{num(length / 2)} + {m3}·{num(length)})/{total} = {num(centre)} м."
         ),
         "figure": {
             "kind": "rod_with_masses",
-            "length_m": 1,
-            "masses_kg": masses,
-            "positions_m": positions,
+            "length_m": float(length),
+            "masses_kg": [m1, m2, m3],
+            "positions_m": [0.0, float(length / 2), float(length)],
         },
     }
 
 
-def q05(rng: random.Random, year: int) -> dict:
-    force1, arm1, arm2, force2 = rng.choice(
-        [
-            (40, 1.2, 0.8, 60),
-            (30, 1.0, 0.5, 60),
-            (20, 1.5, 1.0, 30),
-            (50, 0.8, 0.5, 80),
-            (60, 1.0, 0.6, 100),
-        ]
-    )
+ARMS = [Fraction(cm, 100) for cm in (20, 25, 30, 40, 50, 60, 75, 80, 90, 100, 120, 150, 180, 200)]
+
+
+@lru_cache(maxsize=None)
+def lever_versions() -> tuple:
+    out = []
+    for force in (10, 12, 15, 16, 18, 20, 24, 25, 30, 36, 40, 45, 48, 50, 60, 72, 75, 80, 90, 100, 120):
+        for arm in ARMS:
+            for other in ARMS:
+                balance = force * arm / other
+                if arm != other and balance.denominator == 1 and 5 <= balance <= 500:
+                    out.append((force, arm, other))
+    return tuple(shuffled(505, out))
+
+
+def q05(rng: random.Random, year: int, k: int) -> dict:
+    force1, arm1, arm2 = lever_versions()[k % len(lever_versions())]
+    force2 = force1 * arm1 / arm2
+    answer = f"{num(force2)} Н"
     return {
         "skill": "Хөшүүргийн тэнцвэр",
         "prompt": (
-            f"Хөшүүргийн нэг талд {force1} Н ачаа {arm1:g} м зайд өлгөв. "
-            f"Тэнцвэртэй байхын тулд нөгөө талд {arm2:g} м зайд ямар хүч "
-            "үйлчлэх вэ?"
+            f"Хөшүүргийн нэг талд {force1} Н ачаа {num(arm1)} м зайд өлгөв. Тэнцвэртэй байхын тулд "
+            f"нөгөө талд {num(arm2)} м зайд ямар хүч үйлчлэх вэ?"
         ),
-        "answer": f"{force2} Н",
-        "wrong": pick_wrongs(
-            f"{force2} Н",
-            [
-                f"{force1} Н",
-                f"{force2 // 2} Н",
-                f"{force2 * 2} Н",
-                f"{force2 - 10} Н",
-                f"{force2 + 10} Н",
-                f"{max(5, force2 // 3)} Н",
-            ],
-        ),
+        "answer": answer,
+        "wrong": numeric_wrongs(answer, "Н", [force1, force1 * arm2 / arm1, force2 / 2, force2 * 2, force2 + 10]),
         "solution": (
             "Хөшүүргийн тэнцвэрийн нөхцөл: F1·d1 = F2·d2. "
-            f"F2 = {force1}·{arm1:g}/{arm2:g} = {force2} Н."
+            f"F2 = {force1}·{num(arm1)}/{num(arm2)} = {num(force2)} Н."
         ),
-        "figure": {
-            "kind": "lever",
-            "force_n": force1,
-            "arm_m": arm1,
-            "other_arm_m": arm2,
-        },
+        "figure": {"kind": "lever", "force_n": force1, "arm_m": float(arm1), "other_arm_m": float(arm2)},
     }
 
 
-def q06(rng: random.Random, year: int) -> dict:
-    mass = rng.choice([50, 60, 70, 80])
-    acceleration = rng.choice([1, 2, 3])
-    direction = rng.choice(["дээш", "доош"])
-    normal = mass * (G + acceleration) if direction == "дээш" else mass * (G - acceleration)
-    other = mass * (G - acceleration) if direction == "дээш" else mass * (G + acceleration)
-    answer = f"{normal} Н"
-    wrong = [f"{mass * G} Н", f"{other} Н", f"{mass * acceleration} Н", f"{normal + 10} Н"]
+ELEVATOR_CASES = [
+    # motion, moving up, acceleration points up
+    ("дээш хөдлөхдөө хурдаа {a} м/с² хурдатгалтай нэмэгдүүлж буй", True, True),
+    ("доош хөдлөхдөө хурдаа {a} м/с² хурдатгалтай нэмэгдүүлж буй", False, False),
+    ("дээш хөдлөхдөө {a} м/с² хурдатгалтай саарч буй", True, False),
+    ("доош хөдлөхдөө {a} м/с² хурдатгалтай саарч буй", False, True),
+]
+
+
+@lru_cache(maxsize=None)
+def elevator_versions() -> tuple:
+    return tuple(shuffled(606, [
+        (mass, accel, case)
+        for mass in (45, 50, 55, 60, 65, 70, 75, 80, 85, 90)
+        for accel in (Fraction(1, 2), Fraction(1), Fraction(3, 2), Fraction(2), Fraction(5, 2), Fraction(3))
+        for case in range(len(ELEVATOR_CASES))
+    ]))
+
+
+def q06(rng: random.Random, year: int, k: int) -> dict:
+    mass, accel, case = elevator_versions()[k % len(elevator_versions())]
+    motion, moving_up, accel_up = ELEVATOR_CASES[case]
+    weight = mass * (10 + accel) if accel_up else mass * (10 - accel)
+    other = mass * (10 - accel) if accel_up else mass * (10 + accel)
+    sign = "+" if accel_up else "−"
+    reason = (
+        "хурдаа нэмэгдүүлж байгаа тул хурдатгал хөдөлгөөний чиглэлтэй ижил"
+        if case < 2 else "саарч байгаа тул хурдатгал хөдөлгөөний эсрэг"
+    )
+    answer = f"{num(weight)} Н"
     return {
         "skill": "Лифтэн дэх жин",
         "prompt": (
-            f"{mass} кг масстай хүн {acceleration} м/с² хурдатгалтай "
-            f"{direction} хөдөлж буй лифтэнд зогсож байна. Хүний жинг ол. "
-            "(g = 10 м/с²)"
+            f"{mass} кг масстай хүн {motion.format(a=num(accel))} лифтэнд зогсож байна. "
+            "Хүний жинг ол. (g = 10 м/с²)"
         ),
         "answer": answer,
-        "wrong": wrong,
+        "wrong": numeric_wrongs(answer, "Н", [mass * 10, other, mass * accel, weight + 10]),
         "solution": (
-            "Дээш хурдатгалтай үед N = m(g+a), доош хурдатгалтай үед "
-            f"N = m(g−a). Энд N = {normal} Н."
+            f"Лифт {reason}, өөрөөр хэлбэл {'дээш' if accel_up else 'доош'} чиглэнэ. "
+            f"Иймд N = m(g {sign} a) = {mass}·(10 {sign} {num(accel)}) = {num(weight)} Н."
         ),
-        "figure": {"kind": "elevator", "mass_kg": mass, "acceleration": acceleration},
+        "figure": {"kind": "elevator", "mass_kg": mass, "acceleration": float(accel), "moving_up": moving_up},
     }
 
 
-def q07(rng: random.Random, year: int) -> dict:
-    time = rng.choice([1, 3, 5])
-    force = 10 if time in (1, 5) else 20
+FORCE_TARGETS = [
+    "Тэргэнд", "Хайрцагт", "Чаргад", "Вагонд", "Завинд", "Тоглоомон машинд", "Робот тэргэнд", "Хөнгөн тэргэнд",
+]
+
+
+def force_at(rise: int, plateau: int, fall: int, force: int, moment: Fraction) -> Fraction:
+    if moment < rise:
+        return force * moment / rise
+    if moment <= rise + plateau:
+        return Fraction(force)
+    return force * (rise + plateau + fall - moment) / fall
+
+
+@lru_cache(maxsize=None)
+def force_reading_versions() -> tuple:
+    segments: tuple[list, list, list] = ([], [], [])
+    for rise in (1, 2, 3, 4):
+        for plateau in (1, 2, 3, 4):
+            for fall in (1, 2, 3, 4):
+                for force in (10, 12, 15, 16, 20, 24, 30, 40):
+                    total = rise + plateau + fall
+                    for half in range(1, 2 * total):
+                        moment = Fraction(half, 2)
+                        part = 0 if moment < rise else 1 if moment <= rise + plateau else 2
+                        value = force_at(rise, plateau, fall, force, moment)
+                        if value.denominator == 1 and value > 0:
+                            segments[part].append((rise, plateau, fall, force, moment))
+    pools = [shuffled(707 + part, items) for part, items in enumerate(segments)]
+    mixed = [pools[index % 3][index // 3] for index in range(3 * min(len(pool) for pool in pools))]
+    labelled = [(FORCE_TARGETS[index % len(FORCE_TARGETS)],) + item for index, item in enumerate(mixed)]
+    return tuple(distinct(labelled, lambda item: (item[0], sum(item[1:4]), item[5])))
+
+
+def q07(rng: random.Random, year: int, k: int) -> dict:
+    target, rise, plateau, fall, force, moment = force_reading_versions()[k % PAPERS]
+    total = rise + plateau + fall
+    value = force_at(rise, plateau, fall, force, moment)
+    answer = f"{num(value)} Н"
     return {
         "skill": "Хүч-хугацааны график",
         "prompt": (
-            f"Хүч-хугацааны графикт үзүүлсэн t = {time} с үеийн хүчийг ол."
+            f"{target} 0–{total} с хугацаанд үйлчилсэн хүчний графикийг үзүүлэв. "
+            f"t = {num(moment)} с үеийн хүчийг ол."
         ),
-        "answer": f"{force} Н",
-        "wrong": [f"{force + 10} Н", f"{force - 5} Н", "0 Н", "40 Н"],
+        "answer": answer,
+        "wrong": numeric_wrongs(answer, "Н", [
+            force if value != force else Fraction(force, 2), value * 2, value / 2,
+            force - value if force > value else value + Fraction(force, 4),
+        ]),
         "solution": (
-            "Графикийн 0–2 с хэсэгт хүч 0-ээс 20 Н хүртэл шугаман өсөж, "
-            "2–4 с хэсэгт 20 Н тогтмол, 4–6 с хэсэгт 20-оос 0 Н хүртэл буурна."
+            f"Графикт хүч 0–{rise} с хугацаанд 0-ээс {force} Н хүртэл жигд өсөж, {rise}–{rise + plateau} с хугацаанд "
+            f"{force} Н-д тогтмол, {rise + plateau}–{total} с хугацаанд {force} Н-оос 0 хүртэл жигд буурна. "
+            f"t = {num(moment)} с үед F = {num(value)} Н."
         ),
-        "figure": {
-            "kind": "f_t_graph",
-            "points": [[0, 0], [2, 20], [4, 20], [6, 0]],
-        },
+        "figure": {"kind": "f_t_graph", "points": [[0, 0], [rise, force], [rise + plateau, force], [total, 0]]},
     }
 
 
-def q08(rng: random.Random, year: int) -> dict:
-    ramp_up, ramp_down, force = rng.choice(
-        [(2, 4, 20), (1, 5, 20), (3, 5, 15), (1, 4, 20), (2, 6, 10), (3, 4, 20)]
-    )
-    impulse = force * (0.5 * ramp_up + (ramp_down - ramp_up) + 0.5 * (6 - ramp_down))
-    answer = f"{impulse:g} Н·с"
+@lru_cache(maxsize=None)
+def impulse_versions() -> tuple:
+    combos = shuffled(808, [
+        (rise, top, total, force)
+        for rise in (1, 2, 3, 4) for top in range(rise + 1, rise + 6) for total in range(top + 1, top + 5)
+        for force in (10, 12, 15, 16, 20, 24, 25, 30, 40, 50)
+        if force * (total + top - rise) % 2 == 0
+    ])
+    return tuple(assign(combos, FORCE_TARGETS, lambda combo: combo[2]))
+
+
+def q08(rng: random.Random, year: int, k: int) -> dict:
+    target, rise, top, total, force = impulse_versions()[k % PAPERS]
+    impulse = force * (total + top - rise) // 2
+    answer = f"{impulse} Н·с"
     return {
         "skill": "Импульс",
         "prompt": (
-            "Хүч-хугацааны графикт үзүүлсэн 0–6 с хугацааны импульсийг ол."
+            f"{target} үйлчилсэн хүч-хугацааны графикийг үзүүлэв. "
+            f"0–{total} с хугацааны хүчний импульсийг ол."
         ),
         "answer": answer,
-        "wrong": pick_wrongs(
-            answer,
-            [
-                f"{impulse - 20:g} Н·с",
-                f"{impulse + 20:g} Н·с",
-                f"{impulse * 2:g} Н·с",
-                f"{impulse / 2:g} Н·с",
-                f"{impulse + 10:g} Н·с",
-                f"{max(10, impulse - 10):g} Н·с",
-            ],
-        ),
+        "wrong": numeric_wrongs(answer, "Н·с", [
+            force * total, force * (top - rise), Fraction(impulse, 2), impulse * 2, impulse + force,
+        ]),
         "solution": (
             "Импульс нь F–t графикийн доорх талбай: "
-            f"0.5·{ramp_up}·{force} + ({ramp_down}−{ramp_up})·{force} + "
-            f"0.5·(6−{ramp_down})·{force} = {impulse:g} Н·с."
+            f"0.5·{rise}·{force} + ({top}−{rise})·{force} + 0.5·({total}−{top})·{force} = {impulse} Н·с."
         ),
-        "figure": {
-            "kind": "f_t_graph",
-            "points": [[0, 0], [ramp_up, force], [ramp_down, force], [6, 0]],
-        },
+        "figure": {"kind": "f_t_graph", "points": [[0, 0], [rise, force], [top, force], [total, 0]]},
     }
 
 
-def q09(rng: random.Random, year: int) -> dict:
-    mass_g, stiffness, compression_cm, speed = rng.choice(
-        [
-            (20, 200, 10, 10),
-            (40, 100, 10, 5),
-            (30, 300, 10, 10),
-            (10, 400, 10, 20),
-            (20, 200, 20, 20),
-        ]
-    )
+PROJECTILES = [("сум", "Сумны"), ("бөмбөлөг", "Бөмбөлгийн"), ("хуванцар бөмбөг", "Бөмбөгний")]
+
+
+@lru_cache(maxsize=None)
+def spring_versions() -> tuple:
+    out = []
+    for stiffness in (50, 80, 100, 120, 125, 160, 200, 250, 300, 320, 400, 450, 500, 600, 800, 1000):
+        for squeeze in (2, 3, 4, 5, 6, 8, 10, 12, 15, 20):
+            for grams in (5, 8, 10, 12, 16, 20, 25, 32, 40, 50, 80, 100, 125, 160, 200, 250):
+                # v² = x²k/m with x in metres and m in kilograms, i.e. x²k/(10m) with x in cm and m in g.
+                square = Fraction(squeeze * squeeze * stiffness, 10 * grams)
+                if square.denominator == 1:
+                    root = math.isqrt(square.numerator)
+                    if root * root == square.numerator and 2 <= root <= 40:
+                        out.append((stiffness, squeeze, grams, root))
+    return tuple(shuffled(909, out))
+
+
+def q09(rng: random.Random, year: int, k: int) -> dict:
+    stiffness, squeeze, grams, speed = spring_versions()[k % len(spring_versions())]
+    name, genitive = PROJECTILES[k % len(PROJECTILES)]
+    answer = f"{speed} м/с"
     return {
         "skill": "Пүршний энерги",
         "prompt": (
-            f"{stiffness} Н/м хатуулагтай пүршийг {compression_cm} см шахаж "
-            f"{mass_g} г сум харвав. Сумны хурдыг ол."
+            f"{stiffness} Н/м хатуулагтай пүршийг {squeeze} см шахаж {grams} г масстай {name} харвав. "
+            f"{genitive} хурдыг ол. Үрэлтийг тооцохгүй."
         ),
-        "answer": f"{speed} м/с",
-        "wrong": [f"{speed // 2} м/с", f"{speed * 2} м/с", f"{speed + 3} м/с", f"{max(1, speed - 2)} м/с"],
+        "answer": answer,
+        "wrong": numeric_wrongs(answer, "м/с", [2 * speed, Fraction(speed, 2), speed + 3, speed * 10]),
         "solution": (
-            "Пүршний потенциал энерги кинетик энергид шилжинэ: "
-            "½kx² = ½mv². Энд v = x·√(k/m)."
+            "Пүршний потенциал энерги кинетик энергид шилжинэ: ½kx² = ½mv². "
+            f"v = x·√(k/m) = {num(Fraction(squeeze, 100))}·√({stiffness}/{num(Fraction(grams, 1000))}) = {speed} м/с."
         ),
         "figure": {
             "kind": "spring_launcher",
             "stiffness_n_m": stiffness,
-            "compression_cm": compression_cm,
-            "mass_g": mass_g,
+            "compression_cm": squeeze,
+            "mass_g": grams,
+            "label": name,
         },
     }
 
 
-def q10(rng: random.Random, year: int) -> dict:
-    initial_speed, height, final_speed = rng.choice(
-        [(4, 0.45, 5), (3, 0.8, 5), (5, 1.2, 7), (0, 5, 10), (8, 1.8, 10)]
-    )
+SLOPE_OBJECTS = ["тоглоомон машины", "чарганы", "тэшүүрчний", "скейтбордчны", "цаначны", "гулгуурын тэрэгний"]
+
+
+@lru_cache(maxsize=None)
+def slope_versions() -> tuple:
+    out = []
+    for start in (0, 1, 2, 3, 4, 5, 6, 8):
+        for final in range(start + 2, 21):
+            height = Fraction(final * final - start * start, 20)
+            if Fraction(1, 5) <= height <= 15:
+                out.append((start, final, height))
+    return tuple(shuffled(1010, out))
+
+
+def q10(rng: random.Random, year: int, k: int) -> dict:
+    start, final, height = slope_versions()[k % len(slope_versions())]
+    obj = SLOPE_OBJECTS[k % len(SLOPE_OBJECTS)]
+    launch = "тайван байдлаас" if start == 0 else f"{start} м/с хурдтайгаар"
+    answer = f"{final} м/с"
     return {
         "skill": "Механик энергийн хадгалалт",
         "prompt": (
-            f"{height:g} м өндрөөс {initial_speed:g} м/с хурдтайгаар гулсаж "
-            "буй тоглоомон машины доод цэг дэх хурдыг ол. Үрэлтийг үл тоомсорло."
-        ),
-        "answer": f"{final_speed} м/с",
-        "wrong": pick_wrongs(
-            f"{final_speed} м/с",
-            [
-                f"{initial_speed} м/с",
-                f"{final_speed - 2} м/с",
-                f"{final_speed + 2} м/с",
-                f"{final_speed * 2} м/с",
-                f"{final_speed + 3} м/с",
-                f"{max(1, final_speed - 3)} м/с",
-            ],
-        ),
-        "solution": (
-            "mgh + ½mv0² = ½mv². Энд v = √(v0² + 2gh) = "
-            f"{final_speed} м/с."
-        ),
-        "figure": {
-            "kind": "inclined_track",
-            "height_m": height,
-            "initial_speed": initial_speed,
-        },
-    }
-
-
-def q11(rng: random.Random, year: int) -> dict:
-    mass_t, speed, efficiency, time = rng.choice(
-        [(2, 4, 0.5, 2), (3, 5, 0.6, 2), (4, 6, 0.75, 3), (2, 6, 0.8, 4), (5, 4, 0.5, 2)]
-    )
-    useful = mass_t * 1000 * G * speed * time
-    answer = f"{useful / 1000:.0f} кЖ"
-    wrong = pick_wrongs(
-        answer,
-        [
-            f"{useful / efficiency / 1000:.0f} кЖ",
-            f"{useful * 2 / 1000:.0f} кЖ",
-            f"{useful * 1.5 / 1000:.0f} кЖ",
-            f"{useful * 0.5 / 1000:.0f} кЖ",
-            f"{useful * 0.25 / 1000:.0f} кЖ",
-            f"{useful * (1 - efficiency) / 1000:.0f} кЖ",
-        ],
-    )
-    return {
-        "skill": "Чадал ба үр ашиг",
-        "prompt": (
-            f"{efficiency * 100:.0f}% үр ашигтай кран {mass_t} т ачааг "
-            f"{speed} м/с хурдтайгаар өргөж байна. Эхний {time} с-д "
-            "гүйцэтгэсэн ашигтай ажлыг ол."
+            f"{num(height)} м өндрөөс {launch} гулсаж эхэлсэн {obj} доод цэг дэх хурдыг ол. "
+            "Үрэлтийг үл тоомсорло."
         ),
         "answer": answer,
-        "wrong": wrong,
+        "wrong": numeric_wrongs(answer, "м/с", [start or final + 1, final + 2, final - 2, 2 * final]),
         "solution": (
-            "Ашигтай чадал P = mgv; ашигтай ажил A = P·t. "
-            f"A = {mass_t}000·10·{speed}·{time} = {useful / 1000:.0f} кЖ."
+            "mgh + ½mv0² = ½mv². v = √(v0² + 2gh) = "
+            f"√({start}² + 2·10·{num(height)}) = √{final * final} = {final} м/с."
         ),
+        "figure": {"kind": "inclined_track", "height_m": float(height), "initial_speed": start},
+    }
+
+
+@lru_cache(maxsize=None)
+def crane_versions() -> tuple:
+    out = []
+    for tonnes in (Fraction(1, 2), Fraction(1), Fraction(3, 2), Fraction(2), Fraction(5, 2), Fraction(3), Fraction(4), Fraction(5), Fraction(6)):
+        for speed in (Fraction(1, 2), Fraction(1), Fraction(3, 2), Fraction(2), Fraction(3), Fraction(4), Fraction(5), Fraction(6)):
+            for seconds in (2, 3, 4, 5, 6, 8, 10):
+                for efficiency in (Fraction(2, 5), Fraction(1, 2), Fraction(3, 5), Fraction(3, 4), Fraction(4, 5), Fraction(9, 10)):
+                    useful = tonnes * 10 * speed * seconds  # кЖ
+                    if useful.denominator == 1 and 20 <= useful <= 2000:
+                        out.append((tonnes, speed, seconds, efficiency, "useful"))
+                        if (useful / efficiency).denominator == 1:
+                            out.append((tonnes, speed, seconds, efficiency, "total"))
+    return tuple(shuffled(1111, out))
+
+
+def q11(rng: random.Random, year: int, k: int) -> dict:
+    tonnes, speed, seconds, efficiency, asked = crane_versions()[k % len(crane_versions())]
+    useful = tonnes * 10 * speed * seconds
+    total = useful / efficiency
+    percent = num(efficiency * 100)
+    lead = f"{percent}% үр ашигтай кран {num(tonnes)} т ачааг {num(speed)} м/с хурдтайгаар жигд өргөж байна. "
+    working = f"Ашигтай ажил A = mgvt = {num(tonnes * 1000)}·10·{num(speed)}·{seconds} Ж = {num(useful)} кЖ."
+    if asked == "useful":
+        answer = f"{num(useful)} кЖ"
+        prompt = lead + f"Эхний {seconds} с-д гүйцэтгэсэн ашигтай ажлыг ол."
+        wrong = numeric_wrongs(answer, "кЖ", [total, useful * efficiency, useful * 2, useful / 2, useful * (1 - efficiency)])
+        solution = "Ачааг жигд өргөх ашигтай чадал P = mgv. " + working
+    else:
+        answer = f"{num(total)} кЖ"
+        prompt = lead + f"Эхний {seconds} с-д краны хөдөлгүүрийн гүйцэтгэсэн бүрэн ажлыг ол."
+        wrong = numeric_wrongs(answer, "кЖ", [useful, useful * efficiency, total * 2, total / 2])
+        solution = working + f" Бүрэн ажил A_б = A/η = {num(useful)}/{num(efficiency)} = {num(total)} кЖ."
+    return {
+        "skill": "Чадал ба үр ашиг",
+        "prompt": prompt,
+        "answer": answer,
+        "wrong": wrong,
+        "solution": solution,
         "figure": {
             "kind": "crane",
-            "mass_t": mass_t,
-            "speed_m_s": speed,
-            "efficiency": efficiency,
-            "time_s": time,
+            "mass_t": float(tonnes),
+            "speed_m_s": float(speed),
+            "efficiency": float(efficiency),
+            "time_s": seconds,
         },
     }
 
 
-def q12(rng: random.Random, year: int) -> dict:
-    length, delta_t = rng.choice([(50, 20), (80, 25), (100, 25), (120, 30), (100, 40)])
-    change_cm = ALPHA_AL * length * delta_t * 100
-    answer = f"{change_cm:g} см"
-    wrong = [f"{change_cm / 2:g} см", f"{change_cm * 2:g} см", f"{change_cm / 10:g} см", f"{change_cm * 10:g} см"]
+EXPANSION_MATERIALS = [("хөнгөн цагаан", 24), ("зэс", 17), ("ган", 12), ("гууль", 19)]
+
+
+@lru_cache(maxsize=None)
+def expansion_versions() -> tuple:
+    out = []
+    for name, alpha in EXPANSION_MATERIALS:
+        for length in (10, 20, 25, 40, 50, 60, 80, 100, 120, 150, 200):
+            for change in (10, 15, 20, 25, 30, 40, 50):
+                millimetres = Fraction(alpha * length * change, 1000)
+                if (millimetres * 100).denominator == 1 and Fraction(1, 2) <= millimetres <= 300:
+                    out.append((name, alpha, length, change))
+    return tuple(shuffled(1212, out))
+
+
+def q12(rng: random.Random, year: int, k: int) -> dict:
+    name, alpha, length, change = expansion_versions()[k % len(expansion_versions())]
+    heating = k % 2 == 0
+    start = (0, 5, 10, 15, 20, 25)[k % 6] if heating else (20, 25, 30, 35, 15, 10)[k % 6]
+    end = start + change if heating else start - change
+    millimetres = Fraction(alpha * length * change, 1000)
+    unit, value = ("см", millimetres / 10) if millimetres >= 10 else ("мм", millimetres)
+    answer = f"{num(value)} {unit}"
     return {
         "skill": "Дулааны тэлэлт",
         "prompt": (
-            f"{length} м урттай хөнгөн цагаан утасны температур 15 °C-аас "
-            f"{15 - delta_t} °C хүртэл буурахад урт нь хэр их өөрчлөгдөх вэ? "
-            "α = 24·10⁻⁶ 1/°C."
+            f"{length} м урттай {name} утасны температур {num(start)} °C-аас {num(end)} °C хүртэл "
+            f"{'нэмэгдэхэд' if heating else 'буурахад'} урт нь хэр их өөрчлөгдөх вэ? α = {alpha}·10⁻⁶ 1/°C."
         ),
         "answer": answer,
-        "wrong": wrong,
+        "wrong": [f"{num(v)} {unit}" for v in (value / 2, value * 2, value / 10, value * 10)],
         "solution": (
-            "ΔL = αLΔT. ΔT = −"
-            f"{delta_t} °C тул |ΔL| = 24·10⁻⁶·{length}·{delta_t} м = "
-            f"{change_cm:g} см."
+            f"ΔL = αLΔT = {alpha}·10⁻⁶·{length}·{change} м = {num(millimetres)} мм"
+            + (f" = {num(value)} см." if unit == "см" else ".")
         ),
-        "figure": {
-            "kind": "thermal_expansion",
-            "length_m": length,
-            "delta_t": delta_t,
-        },
+        "figure": {"kind": "thermal_expansion", "length_m": length, "delta_t": change},
     }
 
 
-def q13(rng: random.Random, year: int) -> dict:
-    celsius = rng.choice([10, 15, 20, 25, 30, 35])
-    fahrenheit = 9 * celsius / 5 + 32
+@lru_cache(maxsize=None)
+def temperature_versions() -> tuple:
+    out = [("CF", c) for c in range(5, 105, 5)] + [("FC", c) for c in range(5, 105, 5)]
+    out += [("CK", c) for c in (-73, -50, -40, -20, -10, 15, 27, 37, 50, 77, 100, 127, 227, 327)]
+    return tuple(shuffled(1313, out))
+
+
+def q13(rng: random.Random, year: int, k: int) -> dict:
+    kind, celsius = temperature_versions()[k % len(temperature_versions())]
+    fahrenheit = 9 * celsius // 5 + 32
+    figure = {"kind": "thermometer", "celsius": celsius}
+    if kind == "CF":
+        prompt = f"Цельсийн {celsius} °C нь Фаренгейтийн хэдэн градус вэ?"
+        answer = f"{fahrenheit} °F"
+        wrong = numeric_wrongs(answer, "°F", [
+            fahrenheit - 18, fahrenheit + 18, 9 * celsius // 5, fahrenheit + 9, fahrenheit - 9, fahrenheit + 27, celsius + 32,
+        ])
+        solution = f"F = 9C/5 + 32 = 9·{celsius}/5 + 32 = {fahrenheit} °F."
+    elif kind == "FC":
+        prompt = f"Фаренгейтийн {fahrenheit} °F нь Цельсийн хэдэн градус вэ?"
+        answer = f"{celsius} °C"
+        wrong = numeric_wrongs(answer, "°C", [fahrenheit - 32, Fraction(5 * fahrenheit, 9), celsius + 5, celsius + 10, celsius - 5], 1)
+        solution = f"C = 5(F − 32)/9 = 5·({fahrenheit} − 32)/9 = {celsius} °C."
+        figure = None
+    else:
+        kelvin = celsius + 273
+        prompt = f"Цельсийн {num(celsius)} °C нь Кельвиний хуваариар хэдэн кельвин вэ?"
+        answer = f"{kelvin} К"
+        wrong = numeric_wrongs(answer, "К", [celsius + 237, kelvin + 10, kelvin - 10, kelvin + 100, 273 - celsius])
+        solution = f"T = t + 273 = {num(celsius)} + 273 = {kelvin} К."
     return {
         "skill": "Температурын хуваарь",
-        "prompt": f"Цельсийн {celsius} °C нь Фаренгейтийн хэдэн градус вэ?",
-        "answer": f"{fahrenheit:.0f} °F",
-        "wrong": [
-            f"{fahrenheit - 18:.0f} °F",
-            f"{fahrenheit + 18:.0f} °F",
-            f"{fahrenheit + 9:.0f} °F",
-            f"{fahrenheit - 9:.0f} °F",
-        ],
-        "solution": "F = 9C/5 + 32. Орлуулахад F = " + f"{fahrenheit:.0f} °F.",
-        "figure": {"kind": "thermometer", "celsius": celsius},
+        "prompt": prompt,
+        "answer": answer,
+        "wrong": wrong,
+        "solution": solution,
+        "figure": figure,
     }
 
 
-def q14(rng: random.Random, year: int) -> dict:
-    substances = [
-        ("Хөнгөн цагаан", 900),
-        ("Төмөр", 460),
-        ("Зэс", 390),
-        ("Хар тугалга", 130),
-        ("Мөнгө", 240),
-    ]
-    rows = []
-    for name, specific in substances:
-        mass = rng.choice([0.5, 1.0, 2.0])
-        delta_t = rng.choice([10, 20, 30])
-        heat = specific * mass * delta_t
-        rows.append(
-            {
-                "substance": name,
-                "mass_kg": mass,
-                "delta_t": delta_t,
-                "heat_j": heat,
-            }
+SPECIFIC_HEATS = [
+    ("Ус", 4200), ("Спирт", 2400), ("Мөс", 2100), ("Хөнгөн цагаан", 900), ("Тоосго", 880), ("Шил", 840),
+    ("Ган", 500), ("Төмөр", 460), ("Зэс", 390), ("Гууль", 380), ("Мөнгө", 240), ("Цагаан тугалга", 230),
+    ("Хар тугалга", 130),
+]
+
+
+@lru_cache(maxsize=None)
+def heat_table_versions() -> tuple:
+    rng = random.Random(1414)
+    versions, seen = [], set()
+    while len(versions) < PAPERS:
+        chosen = rng.sample(SPECIFIC_HEATS, 5)
+        high = len(versions) % 2 == 0
+        key = (max if high else min)(chosen, key=lambda item: item[1])[0]
+        names = tuple(name for name, _ in chosen)
+        # The key must not be the one uniquely longest name (Хөнгөн цагаан among Ус, Зэс, Шил …).
+        if (names, high) in seen or max(len(name) for name in names if name != key) < len(key):
+            continue
+        seen.add((names, high))
+        rows = tuple(
+            (name, heat, rng.choice([Fraction(1, 2), Fraction(1), Fraction(2)]), rng.choice([10, 20, 30]))
+            for name, heat in chosen
         )
-    ask_high = rng.choice([True, False])
-    if ask_high:
-        answer = "Хөнгөн цагаан"
-        prompt = (
-            "Хүснэгтэд таван бодисын масс, температурын өөрчлөлт ба "
-            "хүлээн авсан дулааны хэмжээг үзүүлэв. Аль бодисын хувийн "
-            "дулаан хамгийн их вэ?"
-        )
-    else:
-        answer = "Хар тугалга"
-        prompt = (
-            "Хүснэгтэд таван бодисын масс, температурын өөрчлөлт ба "
-            "хүлээн авсан дулааны хэмжээг үзүүлэв. Аль бодисын хувийн "
-            "дулаан хамгийн бага вэ?"
-        )
+        versions.append((rows, high, key))
+    return tuple(versions)
+
+
+def q14(rng: random.Random, year: int, k: int) -> dict:
+    rows, high, key = heat_table_versions()[k % PAPERS]
+    word = "их" if high else "бага"
+    listing = ", ".join(name.lower() for name, *_ in rows)
     return {
         "skill": "Хувийн дулаан",
-        "prompt": prompt,
-        "answer": answer,
-        "wrong": [name for name, _ in substances if name != answer],
+        "prompt": (
+            f"Хүснэгтэд {listing} гэсэн таван бодисын масс, температурын өөрчлөлт ба хүлээн авсан дулааны "
+            f"хэмжээг үзүүлэв. Аль бодисын хувийн дулаан хамгийн {word} вэ?"
+        ),
+        "answer": key,
+        "wrong": [name for name, *_ in rows if name != key],
         "solution": (
-            "c = Q/(mΔT). Хүснэгтийн мэдээллээр хамгийн "
-            f"{'их' if ask_high else 'бага'} утга нь {answer} бодист харгалзана."
+            "c = Q/(mΔT): "
+            + "; ".join(f"{name.lower()} {num(heat * mass * change)}/({num(mass)}·{change}) = {heat}" for name, heat, mass, change in rows)
+            + f" Ж/(кг·°C). Хамгийн {word} нь {key.lower()}."
         ),
         "figure": {
             "kind": "table",
             "columns": ["Бодис", "m, кг", "ΔT, °C", "Q, Ж"],
-            "rows": [
-                [
-                    row["substance"],
-                    f"{row['mass_kg']:g}",
-                    str(row["delta_t"]),
-                    str(row["heat_j"]),
-                ]
-                for row in rows
-            ],
+            "rows": [[name, num(mass), str(change), num(heat * mass * change)] for name, heat, mass, change in rows],
         },
     }
 
 
-def q15(rng: random.Random, year: int) -> dict:
-    mass1, temp1, final_temp, temp2, mass2 = rng.choice(
-        [
-            (20, 72, 36, 18, 40),
-            (10, 80, 40, 20, 20),
-            (30, 60, 30, 10, 45),
-            (25, 70, 40, 10, 25),
-            (15, 90, 50, 10, 15),
-        ]
-    )
+@lru_cache(maxsize=None)
+def mixing_versions() -> tuple:
+    out = []
+    for hot_mass in (5, 10, 15, 20, 25, 30, 40, 50):
+        for hot in range(40, 100, 5):
+            for cold in range(5, 30, 5):
+                for final in range(cold + 5, hot, 5):
+                    cold_mass = Fraction(hot_mass * (hot - final), final - cold)
+                    if cold_mass.denominator == 1 and 2 <= cold_mass <= 200 and cold_mass != hot_mass:
+                        out.append((hot_mass, hot, cold, final, int(cold_mass)))
+    return tuple(shuffled(1515, out))
+
+
+def q15(rng: random.Random, year: int, k: int) -> dict:
+    hot_mass, hot, cold, final, cold_mass = mixing_versions()[k % len(mixing_versions())]
+    if k % 2 == 0:
+        prompt = (
+            f"{hot} °C-ын {hot_mass} кг халуун усыг {cold} °C-ын хүйтэн устай холиход {final} °C болсон. "
+            "Хүйтэн усны массыг ол. Дулааны алдагдлыг тооцохгүй."
+        )
+        value, given = cold_mass, hot_mass
+        solution = f"m1c(T1−T) = m2c(T−T2). m2 = {hot_mass}·({hot}−{final})/({final}−{cold}) = {cold_mass} кг."
+        figure = {"kind": "calorimeter", "hot_mass_kg": hot_mass, "hot_temp_c": hot, "cold_temp_c": cold, "final_temp_c": final}
+    else:
+        prompt = (
+            f"{cold} °C-ын {cold_mass} кг хүйтэн усыг {hot} °C-ын халуун устай холиход {final} °C болсон. "
+            "Халуун усны массыг ол. Дулааны алдагдлыг тооцохгүй."
+        )
+        value, given = hot_mass, cold_mass
+        solution = f"m1c(T1−T) = m2c(T−T2). m1 = {cold_mass}·({final}−{cold})/({hot}−{final}) = {hot_mass} кг."
+        figure = {"kind": "calorimeter", "cold_mass_kg": cold_mass, "hot_temp_c": hot, "cold_temp_c": cold, "final_temp_c": final}
+    answer = f"{value} кг"
     return {
         "skill": "Дулааны тэнцвэр",
-        "prompt": (
-            f"{temp1} °C-ын {mass1} кг халуун усыг {temp2} °C-ын хүйтэн "
-            f"устай холиход {final_temp} °C болсон. Хүйтэн усны массыг ол."
-        ),
-        "answer": f"{mass2} кг",
-        "wrong": pick_wrongs(
-            f"{mass2} кг",
-            [
-                f"{mass1} кг",
-                f"{mass2 // 2} кг",
-                f"{mass2 + 10} кг",
-                f"{mass2 * 2} кг",
-                f"{mass2 + 5} кг",
-                f"{max(1, mass2 - 5)} кг",
-            ],
-        ),
-        "solution": (
-            "m1c(T1−T) = m2c(T−T2). "
-            f"m2 = {mass1}·({temp1}−{final_temp})/({final_temp}−{temp2}) = "
-            f"{mass2} кг."
-        ),
-        "figure": {
-            "kind": "calorimeter",
-            "hot_mass_kg": mass1,
-            "hot_temp_c": temp1,
-            "cold_temp_c": temp2,
-            "final_temp_c": final_temp,
-        },
+        "prompt": prompt,
+        "answer": answer,
+        "wrong": numeric_wrongs(answer, "кг", [given, Fraction(value, 2), value + 10, 2 * value, value + 5]),
+        "solution": solution,
+        "figure": figure,
     }
 
 
-def q16(rng: random.Random, year: int) -> dict:
-    interval = rng.choice(["0–2", "2–5", "5–8", "10–12"])
-    if interval == "2–5":
-        answer = "Хайлах"
-        explanation = "Температур 0 °C-д тогтмол байгаа нь хайлах процесс."
-    elif interval == "10–12":
-        answer = "Буцлах"
-        explanation = "Температур 100 °C-д тогтмол байгаа нь буцлах процесс."
+WATER_HEATING = ["Халах", "Хайлах", "Буцлах", "Шингэрэх", "Хөлдөх"]
+SOLID_HEATING = ["Халах", "Хайлах", "Буцлах", "Хатуурах", "Хөрөх"]
+WATER_COOLING = ["Хөрөх", "Хөлдөх", "Хайлах", "Буцлах", "Шингэрэх"]
+STEAM_COOLING = ["Хөрөх", "Шингэрэх", "Хөлдөх", "Хатуурах", "Буцлах"]
+MELT_COOLING = ["Хөрөх", "Хатуурах", "Хайлах", "Шингэрэх", "Халах"]
+PHASE_RUNS = [
+    # what is heated or cooled, heating?, start °C, [(process, end °C)], options
+    ("Мөсийг", True, -20, [("Халах", 0), ("Хайлах", 0), ("Халах", 100), ("Буцлах", 100)], WATER_HEATING),
+    ("Усыг", True, 20, [("Халах", 100), ("Буцлах", 100), ("Халах", 120)], WATER_HEATING),
+    ("Нафталиныг", True, 20, [("Халах", 80), ("Хайлах", 80), ("Халах", 120)], SOLID_HEATING),
+    ("Цагаан тугалгыг", True, 180, [("Халах", 232), ("Хайлах", 232), ("Халах", 280)], SOLID_HEATING),
+    ("Хар тугалгыг", True, 270, [("Халах", 327), ("Хайлах", 327), ("Халах", 380)], SOLID_HEATING),
+    ("Усны уурыг", False, 120, [("Хөрөх", 100), ("Шингэрэх", 100), ("Хөрөх", 40)], STEAM_COOLING),
+    ("Усыг", False, 30, [("Хөрөх", 0), ("Хөлдөх", 0), ("Хөрөх", -15)], WATER_COOLING),
+    ("Хайлсан нафталиныг", False, 110, [("Хөрөх", 80), ("Хатуурах", 80), ("Хөрөх", 40)], MELT_COOLING),
+    ("Хайлсан цагаан тугалгыг", False, 280, [("Хөрөх", 232), ("Хатуурах", 232), ("Хөрөх", 190)], MELT_COOLING),
+    ("Хайлсан хар тугалгыг", False, 380, [("Хөрөх", 327), ("Хатуурах", 327), ("Хөрөх", 280)], MELT_COOLING),
+]
+PHASE_TIMINGS = [(2, 3, 4, 2), (3, 4, 3, 3), (1, 5, 4, 3)]
+
+
+@lru_cache(maxsize=None)
+def phase_versions() -> tuple:
+    out = []
+    for run in range(len(PHASE_RUNS)):
+        for timing in range(len(PHASE_TIMINGS)):
+            for segment in range(len(PHASE_RUNS[run][3])):
+                out.append((run, timing, segment))
+    return tuple(shuffled(1616, out))
+
+
+def q16(rng: random.Random, year: int, k: int) -> dict:
+    run, timing, segment = phase_versions()[k % len(phase_versions())]
+    subject, heating, start, steps, options = PHASE_RUNS[run]
+    times = [0]
+    for duration in PHASE_TIMINGS[timing][: len(steps)]:
+        times.append(times[-1] + duration)
+    temperatures = [start] + [end for _, end in steps]
+    process = steps[segment][0]
+    a, b = times[segment], times[segment + 1]
+    t_a, t_b = temperatures[segment], temperatures[segment + 1]
+    if t_a == t_b:
+        solution = f"{a}–{b} мин хугацаанд температур {num(t_a)} °C-д тогтмол байгаа нь {process.lower()} процесс."
     else:
-        answer = "Халах"
-        explanation = "Температур тасралтгүй өсөж байгаа нь халах процесс."
+        change = "өссөн тул бодис халж" if t_b > t_a else "буурсан тул бодис хөрч"
+        solution = f"{a}–{b} мин хугацаанд температур {num(t_a)} °C-аас {num(t_b)} °C хүртэл {change} байна."
     return {
         "skill": "Халах муруй",
         "prompt": (
-            "Халаах процессын температур-хугацааны хүснэгтийг үзүүлэв. "
-            f"{interval} мин хугацаанд ямар процесс явагдаж байна?"
+            f"{subject} {'халаахад' if heating else 'хөргөхөд'} температур хугацаанаас хэрхэн хамаарч "
+            f"өөрчлөгдсөнийг хүснэгтэд үзүүлэв. {a}–{b} мин хугацаанд ямар процесс явагдаж байна?"
         ),
-        "answer": answer,
-        "wrong": [item for item in ["Хайлах", "Буцлах", "Халах", "Конденсац", "Хөлдөх"] if item != answer],
-        "solution": explanation,
+        "answer": process,
+        "wrong": [item for item in options if item != process],
+        "solution": solution,
         "figure": {
             "kind": "table",
             "columns": ["t, мин", "T, °C"],
-            "rows": [
-                ["0", "−10"],
-                ["2", "0"],
-                ["5", "0"],
-                ["8", "20"],
-                ["10", "100"],
-                ["12", "100"],
-            ],
+            "rows": [[str(time), num(temperature)] for time, temperature in zip(times, temperatures)],
         },
     }
 
 
-def q17(rng: random.Random, year: int) -> dict:
-    power, mass, delta_t, time, specific = rng.choice(
-        [
-            (500, 0.5, 20, 60, 3000),
-            (200, 0.2, 20, 60, 3000),
-            (400, 0.5, 20, 100, 4000),
-            (300, 0.3, 10, 50, 5000),
-            (600, 0.6, 20, 80, 4000),
-        ]
-    )
+@lru_cache(maxsize=None)
+def heater_versions() -> tuple:
+    out = []
+    masses = (Fraction(1, 10), Fraction(1, 5), Fraction(1, 4), Fraction(3, 10), Fraction(2, 5), Fraction(1, 2), Fraction(3, 5), Fraction(4, 5), Fraction(1), Fraction(3, 2), Fraction(2))
+    for heat in (900, 1700, 2000, 2100, 2400, 2500, 3000, 3600, 4000, 4200):
+        for mass in masses:
+            for change in (5, 10, 15, 20, 25, 30, 40, 50):
+                for power in (100, 200, 250, 300, 400, 500, 600, 750, 800, 1000, 1200, 1500, 2000):
+                    seconds = heat * mass * change / power
+                    if seconds.denominator == 1 and 10 <= seconds <= 900:
+                        out.append((power, mass, change, int(seconds), heat))
+    return tuple(shuffled(1717, out))
+
+
+def q17(rng: random.Random, year: int, k: int) -> dict:
+    power, mass, change, seconds, heat = heater_versions()[k % len(heater_versions())]
+    answer = f"{heat} Ж/(кг·°C)"
     return {
         "skill": "Хувийн дулаан",
         "prompt": (
-            f"{power} Вт халаагуур {mass:g} кг шингэнийг {delta_t} °C-аар "
-            f"халаахад {time} с зарцуулав. Шингэний хувийн дулааныг ол."
+            f"{power} Вт чадалтай халаагуур {num(mass)} кг шингэнийг {change} °C-аар халаахад {seconds} с зарцуулав. "
+            "Дулааны алдагдлыг тооцохгүй бол шингэний хувийн дулааныг ол."
         ),
-        "answer": f"{specific} Ж/(кг·°C)",
-        "wrong": [
-            f"{specific // 2} Ж/(кг·°C)",
-            f"{specific * 2} Ж/(кг·°C)",
-            f"{specific + 500} Ж/(кг·°C)",
-            f"{max(100, specific - 500)} Ж/(кг·°C)",
-        ],
+        "answer": answer,
+        "wrong": numeric_wrongs(answer, "Ж/(кг·°C)", [heat / 2, heat * 2, heat + 500, heat - 500]),
         "solution": (
             "Q = Pt = mcΔT, иймд c = Pt/(mΔT). "
-            f"c = {power}·{time}/({mass:g}·{delta_t}) = "
-            f"{specific} Ж/(кг·°C)."
+            f"c = {power}·{seconds}/({num(mass)}·{change}) = {heat} Ж/(кг·°C)."
         ),
-        "figure": {
-            "kind": "heating_curve",
-            "power_w": power,
-            "mass_kg": mass,
-            "delta_t": delta_t,
-            "time_s": time,
-        },
+        "figure": {"kind": "heating_curve", "power_w": power, "mass_kg": float(mass), "delta_t": change, "time_s": seconds},
     }
 
 
-def q18(rng: random.Random, year: int) -> dict:
-    segment = rng.choice(["1–2", "2–3"])
-    if segment == "1–2":
-        answer = "Изобар"
-        explanation = "1–2 хэсэгт даралт тогтмол, эзлэхүүн өсч байна."
+ISOTHERMS = {
+    600: [(2, 300), (3, 200), (4, 150), (6, 100)],
+    800: [(2, 400), (4, 200), (8, 100)],
+    1200: [(3, 400), (4, 300), (6, 200), (8, 150), (12, 100)],
+    1800: [(6, 300), (9, 200), (12, 150), (18, 100)],
+    2400: [(6, 400), (8, 300), (12, 200), (16, 150), (24, 100)],
+}
+PV_VOLUMES = (2, 3, 4, 5, 6, 8, 10, 12)
+PV_PRESSURES = (100, 150, 200, 250, 300, 400)
+PROCESS_NAMES = {"p": "Изобар", "V": "Изохор", "T": "Изотерм"}
+PROCESS_KINDS = ["pV", "Vp", "TV", "pT", "pVp", "Tp", "VpV", "VT"]
+
+
+def process_path(kind: str, rng: random.Random) -> list[tuple[int, int]]:
+    """States of a 1–2–3(–4) path; letter i of `kind` names segment i: p изобар, V изохор, T изотерм."""
+    def other(values, avoid):
+        return rng.choice([value for value in values if value != avoid])
+
+    product = rng.choice(sorted(ISOTHERMS))
+    (va, pa), (vb, pb) = rng.sample(ISOTHERMS[product], 2)
+    v1, p1 = rng.choice(PV_VOLUMES), rng.choice(PV_PRESSURES)
+    if kind == "pV":
+        v2 = other(PV_VOLUMES, v1)
+        return [(v1, p1), (v2, p1), (v2, other(PV_PRESSURES, p1))]
+    if kind == "Vp":
+        p2 = other(PV_PRESSURES, p1)
+        return [(v1, p1), (v1, p2), (other(PV_VOLUMES, v1), p2)]
+    if kind == "pVp":
+        v2 = other(PV_VOLUMES, v1)
+        p3 = other(PV_PRESSURES, p1)
+        return [(v1, p1), (v2, p1), (v2, p3), (other(PV_VOLUMES, v2), p3)]
+    if kind == "VpV":
+        p2 = other(PV_PRESSURES, p1)
+        v3 = other(PV_VOLUMES, v1)
+        return [(v1, p1), (v1, p2), (v3, p2), (v3, other(PV_PRESSURES, p2))]
+    if kind == "TV":
+        return [(va, pa), (vb, pb), (vb, other(PV_PRESSURES, pb))]
+    if kind == "Tp":
+        return [(va, pa), (vb, pb), (other(PV_VOLUMES, vb), pb)]
+    if kind == "pT":
+        return [(other(PV_VOLUMES, va), pa), (va, pa), (vb, pb)]
+    return [(va, other(PV_PRESSURES, pa)), (va, pa), (vb, pb)]  # "VT"
+
+
+@lru_cache(maxsize=None)
+def process_versions() -> tuple:
+    rng = random.Random(1818)
+    versions, seen, index = [], set(), 0
+    while len(versions) < PAPERS:
+        kind = PROCESS_KINDS[index % len(PROCESS_KINDS)]
+        segment = (index // len(PROCESS_KINDS)) % len(kind)
+        index += 1
+        states = tuple(process_path(kind, rng))
+        if (states, segment) in seen or len(set(states)) != len(states):
+            continue
+        seen.add((states, segment))
+        versions.append((kind, states, segment))
+    return tuple(versions)
+
+
+def q18(rng: random.Random, year: int, k: int) -> dict:
+    kind, states, segment = process_versions()[k % PAPERS]
+    letter = kind[segment]
+    (va, pa), (vb, pb) = states[segment], states[segment + 1]
+    label = f"{segment + 1}–{segment + 2}"
+    if letter == "p":
+        solution = f"{label} хэсэгт даралт {pa} кПа-д тогтмол, эзлэхүүн {va} л-ээс {vb} л болсон тул изобар процесс."
+    elif letter == "V":
+        solution = f"{label} хэсэгт эзлэхүүн {va} л-т тогтмол, даралт {pa} кПа-аас {pb} кПа болсон тул изохор процесс."
     else:
-        answer = "Изохор"
-        explanation = "2–3 хэсэгт эзлэхүүн тогтмол, даралт өсч байна."
+        solution = (
+            f"{label} хэсэг муруй бөгөөд pV = {pa}·{va} = {pb}·{vb} = {pa * va} тогтмол тул температур "
+            "тогтмол: изотерм процесс."
+        )
+    answer = PROCESS_NAMES[letter]
     return {
         "skill": "Идеал хийн процесс",
         "prompt": (
-            "Зурагт нэг моль идеал хийн 1–2–3 процессыг p–V диаграммаар "
-            f"үзүүлэв. {segment} процессын нэрийг тодорхойл."
+            f"Зурагт нэг моль идеал хийн {'–'.join(str(i + 1) for i in range(len(states)))} процессыг p–V "
+            f"диаграммаар үзүүлэв. 1-р төлөвт p1 = {states[0][1]} кПа, V1 = {states[0][0]} л. "
+            f"{label} процессын нэрийг тодорхойл."
         ),
         "answer": answer,
         "wrong": [item for item in ["Изобар", "Изохор", "Изотерм", "Адиабат", "Цикл"] if item != answer],
-        "solution": explanation,
+        "solution": solution,
         "figure": {
             "kind": "p_v_diagram",
-            "points": [[8.31, 200], [16.62, 200], [16.62, 300]],
-            "labels": ["1", "2", "3"],
+            "points": [[v, p] for v, p in states],
+            "labels": [str(i + 1) for i in range(len(states))],
+            "curves": [i for i, item in enumerate(kind) if item == "T"],
         },
     }
 
 
-def q19(rng: random.Random, year: int) -> dict:
-    pressure, volume = rng.choice([(100, 8.31), (150, 8.31), (200, 8.31), (200, 16.62), (250, 24.93)])
-    internal = 1.5 * pressure * 1000 * volume / 1000
-    answer = f"{internal / 1000:.2f} кЖ"
-    wrong = [
-        f"{internal / 2 / 1000:.2f} кЖ",
-        f"{internal * 2 / 1000:.2f} кЖ",
-        f"{internal * 1.5 / 1000:.2f} кЖ",
-        f"{internal * 0.75 / 1000:.2f} кЖ",
-    ]
+def energy_text(joules: Fraction, kilo: bool) -> str:
+    return f"{num(joules / 1000, 3)} кЖ" if kilo else f"{num(joules, 2)} Ж"
+
+
+def in_kilojoules(joules: Fraction) -> bool:
+    """Whole kilojoules or hundredths of one read better in кЖ; anything else stays in Ж."""
+    return joules >= 1000 and (joules / 10).denominator == 1
+
+
+@lru_cache(maxsize=None)
+def internal_energy_versions() -> tuple:
+    out = [("pV", p, v) for p in (50, 60, 80, 100, 120, 150, 200, 250, 300, 400, 500) for v in (2, 3, 4, 5, 6, 8, 10, 12, 15, 20, 25, 30)]
+    out += [("nRT", n, t) for n in (1, 2, 3, 4) for t in (200, 250, 300, 400, 500, 600, 800) if (n * t) % 200 == 0]
+    return tuple(shuffled(1919, out))
+
+
+def q19(rng: random.Random, year: int, k: int) -> dict:
+    kind, a, b = internal_energy_versions()[k % len(internal_energy_versions())]
+    if kind == "pV":
+        base = Fraction(a * b)  # pV in joules (кПа·л)
+        prompt = f"Нэг атомт идеал хий {a} кПа даралттай, {b} л эзлэхүүнтэй байна. Дотоод энергийг ол."
+        working = f"Нэг атомт идеал хийн дотоод энерги U = (3/2)pV = 1.5·{a}·10³·{b}·10⁻³ Ж"
+        figure = {"kind": "gas_state", "pressure_kpa": a, "volume_l": b}
+    else:
+        base = Fraction(a * b) * Fraction(831, 100)  # νRT
+        prompt = f"{a} моль нэг атомт идеал хийн температур {b} К. Дотоод энергийг ол. (R = 8.31 Ж/(моль·К))"
+        working = f"Нэг атомт идеал хийн дотоод энерги U = (3/2)νRT = 1.5·{a}·8.31·{b} Ж"
+        figure = None
+    energy = base * Fraction(3, 2)
+    kilo = in_kilojoules(energy)
+    answer = energy_text(energy, kilo)
     return {
         "skill": "Идеал хийн дотоод энерги",
-        "prompt": (
-            f"1 моль нэг атомт идеал хий {pressure} кПа даралттай, "
-            f"{volume:g} л эзлэхүүнтэй байна. Дотоод энергийг ол."
-        ),
+        "prompt": prompt,
         "answer": answer,
-        "wrong": wrong,
-        "solution": (
-            "Нэг атомт идеал хийн дотоод энерги U = (3/2)pV. "
-            f"U = 1.5·{pressure}·10³·{volume:g}·10⁻³ = "
-            f"{internal / 1000:.2f} кЖ."
-        ),
-        "figure": {
-            "kind": "gas_state",
-            "pressure_kpa": pressure,
-            "volume_l": volume,
-        },
+        "wrong": pick_wrongs(answer, [energy_text(base * factor, kilo) for factor in (1, Fraction(5, 2), 3, Fraction(3, 4), 2, Fraction(1, 2))]),
+        "solution": f"{working} = {answer}.",
+        "figure": figure,
     }
 
 
-def q20(rng: random.Random, year: int) -> dict:
-    pressure1 = rng.choice([100, 150, 200])
-    pressure2 = pressure1 + rng.choice([50, 100, 150])
-    volume = rng.choice([8.31, 16.62])
-    heat = 1.5 * (pressure2 - pressure1) * 1000 * volume / 1000
-    answer = f"{heat / 1000:.2f} кЖ"
-    wrong = [
-        f"{heat / 2 / 1000:.2f} кЖ",
-        f"{heat * 2 / 1000:.2f} кЖ",
-        f"{heat * 1.5 / 1000:.2f} кЖ",
-        f"{heat * 0.75 / 1000:.2f} кЖ",
+@lru_cache(maxsize=None)
+def isochoric_versions() -> tuple:
+    out = [
+        ("dp", v, p, p + dp)
+        for v in (2, 3, 4, 5, 6, 8, 10, 12, 15, 20) for p in (100, 120, 150, 180, 200, 250, 300)
+        for dp in (20, 30, 40, 50, 60, 80, 100, 150, 200)
     ]
+    out += [("dT", n, t, 0) for n in (1, 2, 3, 4, 5) for t in (10, 20, 40, 50, 80, 100, 200)]
+    return tuple(shuffled(2020, out))
+
+
+def q20(rng: random.Random, year: int, k: int) -> dict:
+    kind, a, b, c = isochoric_versions()[k % len(isochoric_versions())]
+    if kind == "dp":
+        base = Fraction(a * (c - b))  # VΔp in joules
+        prompt = (
+            f"Нэг атомт идеал хийн эзлэхүүн {a} л-т тогтмол байхад даралт {b} кПа-аас {c} кПа хүртэл өсөв. "
+            "Хийнд өгсөн дулааны хэмжээг ол."
+        )
+        working = f"Изохор процесст A = 0, иймд Q = ΔU = (3/2)VΔp = 1.5·{a}·10⁻³·{c - b}·10³ Ж"
+        figure = {"kind": "p_v_diagram", "points": [[a, b], [a, c]], "labels": ["1", "2"]}
+    else:
+        base = Fraction(a * b) * Fraction(831, 100)  # νRΔT
+        prompt = (
+            f"{a} моль нэг атомт идеал хийн эзлэхүүнийг тогтмол байлгаж температурыг {b} К-ээр нэмэгдүүлэв. "
+            "Хийнд өгсөн дулааны хэмжээг ол. (R = 8.31 Ж/(моль·К))"
+        )
+        working = f"Изохор процесст A = 0, иймд Q = ΔU = (3/2)νRΔT = 1.5·{a}·8.31·{b} Ж"
+        figure = None
+    heat = base * Fraction(3, 2)
+    kilo = in_kilojoules(heat)
+    answer = energy_text(heat, kilo)
     return {
         "skill": "Изохор процессын дулаан",
-        "prompt": (
-            f"1 моль нэг атомт идеал хийн эзлэхүүн тогтмол байхад даралт "
-            f"{pressure1} кПа-аас {pressure2} кПа хүртэл өсөв. Хийнд өгсөн "
-            "дулааны хэмжээг ол."
-        ),
+        "prompt": prompt,
         "answer": answer,
-        "wrong": wrong,
-        "solution": (
-            "Изохор процесст A = 0, иймд Q = ΔU = (3/2)VΔp. "
-            f"Q = 1.5·{volume:g}·10⁻³·({pressure2 - pressure1})·10³ = "
-            f"{heat / 1000:.2f} кЖ."
-        ),
-        "figure": {
-            "kind": "p_v_diagram",
-            "points": [[volume, pressure1], [volume, pressure2]],
-            "labels": ["1", "2"],
-        },
+        "wrong": pick_wrongs(answer, [energy_text(base * factor, kilo) for factor in (1, Fraction(5, 2), 3, Fraction(3, 4), 2, Fraction(1, 2))]),
+        "solution": f"{working} = {answer}.",
+        "figure": figure,
     }
 
 
-def q21(rng: random.Random, year: int) -> dict:
-    symbols = {
-        "конденсатор": ("конденсаторыг", "зэрэгцээ хоёр шугам"),
-        "гүйдлийн эх үүсвэр": (
-            "гүйдлийн эх үүсвэрийг",
-            "урт ба богино зэрэгцээ шугам",
-        ),
-        "эсэргүүцэл": ("эсэргүүцлийг", "тэгш өнцөгт"),
-        "ороомог": ("ороомгийг", "ороомог шугам"),
-        "амперметр": ("амперметрийг", "тойрог дотор A"),
-        "вольтметр": ("вольтметрийг", "тойрог дотор V"),
-    }
-    target = rng.choice(list(symbols))
-    accusative, answer = symbols[target]
-    wrong = rng.sample(
-        [description for name, (_, description) in symbols.items() if name != target],
-        4,
-    )
+CIRCUIT_SYMBOLS = {
+    # element: (accusative, how the circuit diagram draws it)
+    "конденсатор": ("конденсаторыг", "зэрэгцээ хоёр шугам"),
+    "гүйдлийн эх үүсвэр": ("гүйдлийн эх үүсвэрийг", "урт ба богино зэрэгцээ шугам"),
+    "эсэргүүцэл": ("эсэргүүцлийг", "тэгш өнцөгт"),
+    "ороомог": ("ороомгийг", "ороомог шугам"),
+    "амперметр": ("амперметрийг", "тойрог дотор A"),
+    "вольтметр": ("вольтметрийг", "тойрог дотор V"),
+    "гэрлийн чийдэн": ("гэрлийн чийдэнг", "тойрог дотор загалмай"),
+    "түлхүүр": ("түлхүүрийг", "налуу шугамаар тасарсан утас"),
+    "диод": ("диодыг", "хөндлөн шугамд тулсан гурвалжин"),
+    "газардуулга": ("газардуулгыг", "богиносох гурван хэвтээ шугам"),
+    "реостат": ("реостатыг", "сумаар огтолсон тэгш өнцөгт"),
+    "гальванометр": ("гальванометрийг", "тойрог дотор G"),
+    "хайлуур хамгаалагч": ("хайлуур хамгаалагчийг", "дундуураа шугамтай тэгш өнцөгт"),
+    "хувьсах гүйдлийн үүсвэр": ("хувьсах гүйдлийн үүсвэрийг", "тойрог дотор ~ тэмдэг"),
+}
+
+
+def q21(rng: random.Random, year: int, k: int) -> dict:
+    names = list(CIRCUIT_SYMBOLS)
+    target = names[k % len(names)]
+    accusative, answer = CIRCUIT_SYMBOLS[target]
+    if (k // len(names)) % 2 == 0:
+        prompt = f"Цахилгаан хэлхээний тэмдэглэгээнүүдээс {accusative} зөв дүрсэлсэн хувилбарыг сонго."
+    else:
+        prompt = f"Хэлхээний бүдүүвчид {accusative} ямар тэмдэглэгээгээр дүрсэлдэг вэ?"
+    wrong = text_wrongs(answer, [drawing for name, (_, drawing) in CIRCUIT_SYMBOLS.items() if name != target], rng)
+    shown = [target] + [name for name, (_, drawing) in CIRCUIT_SYMBOLS.items() if drawing in wrong]
+    rng.shuffle(shown)
     return {
         "skill": "Хэлхээний тэмдэглэгээ",
-        "prompt": (
-            f"Цахилгаан хэлхээний тэмдэглэгээнүүдээс {accusative} зөв "
-            "дүрсэлсэн хувилбарыг сонго."
-        ),
+        "prompt": prompt,
         "answer": answer,
         "wrong": wrong,
-        "solution": f"{accusative.capitalize()} {answer} гэж тэмдэглэнэ.",
-        "figure": {"kind": "circuit_symbols", "target": target},
+        "solution": f"{accusative.capitalize()} хэлхээний бүдүүвчид «{answer}» хэлбэрээр тэмдэглэнэ.",
+        "figure": {"kind": "circuit_symbols", "target": target, "symbols": shown},
     }
 
 
-def q22(rng: random.Random, year: int) -> dict:
+def q22(rng: random.Random, year: int, k: int) -> dict:
     statements = [
         ("Оролтын гүйдэл тэг.", True),
         ("Сөрөг холбоос үед оролтын хүчдэлийн ялгаа тэг.", True),
@@ -993,436 +1412,613 @@ def q22(rng: random.Random, year: int) -> dict:
     }
 
 
-def q23(rng: random.Random, year: int) -> dict:
-    tables = {
-        "AND": [("0", "0", "0"), ("0", "1", "0"), ("1", "0", "0"), ("1", "1", "1")],
-        "OR": [("0", "0", "0"), ("0", "1", "1"), ("1", "0", "1"), ("1", "1", "1")],
-        "NAND": [("0", "0", "1"), ("0", "1", "1"), ("1", "0", "1"), ("1", "1", "0")],
-        "NOR": [("0", "0", "1"), ("0", "1", "0"), ("1", "0", "0"), ("1", "1", "0")],
-        "XOR": [("0", "0", "0"), ("0", "1", "1"), ("1", "0", "1"), ("1", "1", "0")],
-    }
-    gate = rng.choice(list(tables))
+GATE_TABLES = {
+    "AND": [("0", "0", "0"), ("0", "1", "0"), ("1", "0", "0"), ("1", "1", "1")],
+    "OR": [("0", "0", "0"), ("0", "1", "1"), ("1", "0", "1"), ("1", "1", "1")],
+    "NAND": [("0", "0", "1"), ("0", "1", "1"), ("1", "0", "1"), ("1", "1", "0")],
+    "NOR": [("0", "0", "1"), ("0", "1", "0"), ("1", "0", "0"), ("1", "1", "0")],
+    "XOR": [("0", "0", "0"), ("0", "1", "1"), ("1", "0", "1"), ("1", "1", "0")],
+    "XNOR": [("0", "0", "1"), ("0", "1", "0"), ("1", "0", "0"), ("1", "1", "1")],
+}
+GATE_NAMES = ["AND", "OR", "NAND", "NOR", "XOR", "XNOR", "NOT"]
+GATE_TABLE_INTROS = {
+    "AND": "хоёр оролттой логик элементийн",
+    "OR": "дохиоллын хэлхээнд ашигласан логик элементийн",
+    "NAND": "роботын мэдрэгчийн хэлхээний логик элементийн",
+    "NOR": "хаалганы удирдлагын хэлхээний логик элементийн",
+    "XOR": "гэрэлтүүлгийн удирдлагын хэлхээний логик элементийн",
+    "XNOR": "тоглоомын самбарын хэлхээний логик элементийн",
+}
+GATE_SITUATIONS = [
+    ("AND", "Үйлдвэрийн хэрчих машин ажилтан хоёр товчлуурыг хоёр гараараа зэрэг дарж байх үед л ажилладаг.", "хоёр товчлуурын тус бүр дарагдсан эсэх", "машин ажиллах эсэх"),
+    ("AND", "Сейфийн хаалга хоёр өөр түлхүүрийг хоёуланг нь эргүүлсэн үед л нээгддэг.", "түлхүүр тус бүр эргүүлэгдсэн эсэх", "хаалга нээгдэх эсэх"),
+    ("AND", "Цахилгаан тэрэгний хөдөлгүүр хаалга хаалттай бөгөөд жолооч хамгаалах бүсээ зүүсэн үед л асдаг.", "хаалга хаалттай эсэх ба бүс зүүсэн эсэх", "хөдөлгүүр асах эсэх"),
+    ("AND", "Усалгааны насос хөрс хуурай бөгөөд өдөр байх үед л ажилладаг.", "хөрс хуурай эсэх ба өдөр эсэх", "насос ажиллах эсэх"),
+    ("OR", "Байшингийн хонх урд эсвэл хойд хаалганы товчлуурыг дарахад дуугардаг.", "хоёр товчлуурын тус бүр дарагдсан эсэх", "хонх дуугарах эсэх"),
+    ("OR", "Дохиолол цонхны эсвэл хаалганы мэдрэгчийн аль нэг нь идэвхжихэд дуугардаг.", "мэдрэгч тус бүр идэвхжсэн эсэх", "дохиолол дуугарах эсэх"),
+    ("OR", "Автобусны самбарын анхааруулах гэрэл хоёр хаалганы аль нэг нь нээлттэй үед асдаг.", "хаалга тус бүр нээлттэй эсэх", "анхааруулах гэрэл асах эсэх"),
+    ("OR", "Коридорын гэрэл хөдөлгөөний мэдрэгч эсвэл гар унтраалгын аль нэгээр асдаг.", "мэдрэгч идэвхжсэн эсэх ба унтраалга асаалттай эсэх", "гэрэл асах эсэх"),
+    ("NAND", "Хоёр мэдрэгч хоёулаа идэвхжсэн үед л ногоон гэрэл унтардаг; бусад бүх үед гэрэл асаалттай байдаг.", "мэдрэгч тус бүр идэвхжсэн эсэх", "ногоон гэрэл асах эсэх"),
+    ("NAND", "Хэвлэгч цаасны хоёр тавиур хоёулаа хоосон болсон үед л ажиллахаа зогсоодог.", "тавиур тус бүр хоосон эсэх", "хэвлэгч ажиллах эсэх"),
+    ("NAND", "Цахилгаан зуух хоёр мэдрэгч хоёулаа хэт халалт илрүүлсэн үед л унтардаг.", "мэдрэгч тус бүр хэт халалт илрүүлсэн эсэх", "зуух ажиллах эсэх"),
+    ("NAND", "Тоглоомон машин хоёр батерей хоёулаа суларсан үед л зогсдог.", "батерей тус бүр суларсан эсэх", "машин явах эсэх"),
+    ("NOR", "Хоёр хаалганы аль нь ч нээгдээгүй үед л ногоон «аюулгүй» гэрэл асдаг.", "хаалга тус бүр нээлттэй эсэх", "ногоон гэрэл асах эсэх"),
+    ("NOR", "Лифт хаалганы хоёр мэдрэгчийн аль нь ч саад илрүүлээгүй үед л хөдөлдөг.", "мэдрэгч тус бүр саад илрүүлсэн эсэх", "лифт хөдлөх эсэх"),
+    ("NOR", "Усны насос хоёр савны аль нь ч дүүрээгүй үед л ажилладаг.", "сав тус бүр дүүрсэн эсэх", "насос ажиллах эсэх"),
+    ("NOR", "Галт тэрэг хоёр семафорын аль нь ч улаан гэрэл асаагаагүй үед л хөдөлдөг.", "семафор тус бүр улаан гэрэл асаасан эсэх", "галт тэрэг хөдлөх эсэх"),
+    ("XOR", "Шатны гэрлийг доод ба дээд давхрын хоёр унтраалгын аль нэгийг шилжүүлэхэд гэрлийн төлөв солигддог; хоёр унтраалга ижил байрлалтай үед гэрэл унтраалттай.", "унтраалга тус бүр дээш байрлалтай эсэх", "гэрэл асах эсэх"),
+    ("XOR", "Хоёр тоглогчийн зөвхөн нэг нь товчлуураа дарсан үед л гэрэл асдаг; хоёулаа зэрэг дарвал асахгүй.", "тоглогч тус бүр товчлуур дарсан эсэх", "гэрэл асах эсэх"),
+    ("XOR", "Хоёр хоолойн зөвхөн нэгээр нь ус урсаж байх үед л анхааруулах дохио өгдөг.", "хоолой тус бүрээр ус урсаж байгаа эсэх", "дохио өгөх эсэх"),
+    ("XNOR", "Хоёр унтраалга хоёулаа асаалттай эсвэл хоёулаа унтраалттай үед л ногоон гэрэл асдаг.", "унтраалга тус бүр асаалттай эсэх", "ногоон гэрэл асах эсэх"),
+    ("XNOR", "Хоёр мэдрэгчийн заалт тохирч байх үед л систем «хэвийн» гэсэн дохио өгдөг.", "мэдрэгч тус бүр дохио өгсөн эсэх", "«хэвийн» дохио гарах эсэх"),
+]
+GATE_PLAIN = [
+    ("XOR", "Хоёр нэг оронтой хоёртын тоо A ба B-г нэмэхэд нийлбэрийн бага оронгийн цифр Y-г гаргадаг хэлхээ ямар логик элемент вэ?"),
+    ("XNOR", "Хоёр оролт A ба B ижил (хоёулаа 0 эсвэл хоёулаа 1) үед л Y = 1 гаргадаг тэнцүүг шалгагч хэлхээ ямар логик элемент вэ?"),
+]
+
+
+def gate_table_text(gate: str) -> str:
+    return "; ".join(f"A={a}, B={b} → Y={y}" for a, b, y in GATE_TABLES[gate])
+
+
+@lru_cache(maxsize=None)
+def gate_versions() -> tuple:
+    versions = [("table", gate, GATE_TABLE_INTROS[gate]) for gate in GATE_TABLES]
+    versions += [("situation", gate, (situation, inputs, output)) for gate, situation, inputs, output in GATE_SITUATIONS]
+    versions += [("plain", gate, text) for gate, text in GATE_PLAIN]
+    return tuple(shuffled(2323, versions))
+
+
+def q23(rng: random.Random, year: int, k: int) -> dict:
+    kind, gate, data = gate_versions()[k % len(gate_versions())]
+    figure = None
+    if kind == "table":
+        prompt = f"Хүснэгтэд {data} үнэний хүснэгтийг үзүүлэв. Энэ нь ямар логик элемент вэ?"
+        solution = f"Хүснэгтийн гаралтын утгууд нь {gate} элементийн үнэний хүснэгттэй тохирч байна: {gate_table_text(gate)}."
+        figure = {"kind": "truth_table", "columns": ["A", "B", "Y"], "rows": [list(row) for row in GATE_TABLES[gate]]}
+    elif kind == "situation":
+        situation, inputs, output = data
+        prompt = (
+            f"{situation} Оролт A ба B нь {inputs} (тийм бол 1), гаралт Y нь {output} (тийм бол 1) гэж үзвэл "
+            "энэ системийг ямар логик элементээр загварчлах вэ?"
+        )
+        solution = f"Нөхцөлийг үнэний хүснэгтээр бичвэл {gate} элементийн хүснэгт гарна: {gate_table_text(gate)}."
+    else:
+        prompt = data
+        solution = f"Үнэний хүснэгт нь {gate} элементийнх: {gate_table_text(gate)}."
     return {
         "skill": "Логик элемент",
-        "prompt": (
-            "Хүснэгтэд хоёр оролттой логик элементийн үнэний хүснэгтийг "
-            "үзүүлэв. Энэ нь ямар логик элемент вэ?"
-        ),
+        "prompt": prompt,
         "answer": gate,
-        "wrong": [name for name in tables if name != gate],
-        "solution": f"Хүснэгтийн гаралтын утгууд нь {gate} элементийн үнэний хүснэгттэй тохирч байна.",
-        "figure": {
-            "kind": "truth_table",
-            "columns": ["A", "B", "Y"],
-            "rows": [list(row) for row in tables[gate]],
-        },
+        "wrong": text_wrongs(gate, GATE_NAMES, rng),
+        "solution": solution,
+        "figure": figure,
     }
 
 
-def q24(rng: random.Random, year: int) -> dict:
-    identities = [
-        {
-            "prompt": "A⊕B илэрхийллийг зөв хувиргасан хувилбарыг сонго.",
-            "answer": "A·B̄ + Ā·B",
-            "wrong": ["A·B + Ā·B̄", "A + B", "A·B", "Ā + B̄"],
-            "solution": (
-                "XOR буюу онцгой эсрэг үйлдэл нь нэг оролт 1, нөгөө нь 0 "
-                "үед 1 болно: A·B̄ + Ā·B."
-            ),
-        },
-        {
-            "prompt": "A⊙B (XNOR) илэрхийллийг зөв хувиргасан хувилбарыг сонго.",
-            "answer": "A·B + Ā·B̄",
-            "wrong": ["A·B̄ + Ā·B", "A + B", "A·B", "Ā + B̄"],
-            "solution": (
-                "XNOR нь оролтууд ижил үед 1 болно: A·B + Ā·B̄."
-            ),
-        },
-        {
-            "prompt": "¬(A·B)-г зөв хувиргасан хувилбарыг сонго.",
-            "answer": "Ā + B̄",
-            "wrong": ["A + B", "Ā·B̄", "A·B", "A⊕B"],
-            "solution": "Де Морганы хуулиар ¬(A·B) = Ā + B̄.",
-        },
-        {
-            "prompt": "¬(A+B)-г зөв хувиргасан хувилбарыг сонго.",
-            "answer": "Ā·B̄",
-            "wrong": ["A·B", "Ā + B̄", "A+B", "A⊕B"],
-            "solution": "Де Морганы хуулиар ¬(A+B) = Ā·B̄.",
-        },
-        {
-            "prompt": "A + A·B илэрхийллийг зөв хялбарчилсан хувилбарыг сонго.",
-            "answer": "A",
-            "wrong": ["B", "A·B", "A+B", "Ā"],
-            "solution": "Шингээх хуулиар A + A·B = A·(1+B) = A.",
-        },
-    ]
-    chosen = rng.choice(identities)
+BOOLEAN_IDENTITIES = [
+    ("A⊕B илэрхийллийг зөв хувиргасан хувилбарыг сонго.", "A·B̄ + Ā·B", ["A·B + Ā·B̄", "A + B", "A·B", "Ā + B̄"],
+     "XOR буюу онцгой эсрэг үйлдэл нь нэг оролт 1, нөгөө нь 0 үед 1 болно: A·B̄ + Ā·B."),
+    ("A⊙B (XNOR) илэрхийллийг зөв хувиргасан хувилбарыг сонго.", "A·B + Ā·B̄", ["A·B̄ + Ā·B", "A + B", "A·B", "Ā + B̄"],
+     "XNOR нь оролтууд ижил үед 1 болно: A·B + Ā·B̄."),
+    ("¬(A·B)-г зөв хувиргасан хувилбарыг сонго.", "Ā + B̄", ["A + B", "Ā·B̄", "A·B", "A·B̄ + Ā·B"], "Де Морганы хуулиар ¬(A·B) = Ā + B̄."),
+    ("¬(A+B)-г зөв хувиргасан хувилбарыг сонго.", "Ā·B̄", ["A·B", "Ā + B̄", "A+B", "A⊕B"], "Де Морганы хуулиар ¬(A+B) = Ā·B̄."),
+    ("A + A·B илэрхийллийг зөв хялбарчилсан хувилбарыг сонго.", "A", ["B", "A·B", "A+B", "Ā"], "Шингээх хуулиар A + A·B = A·(1+B) = A."),
+    ("A·(A + B) илэрхийллийг хялбарчил.", "A", ["B", "A·B", "A + B", "1"], "A·(A + B) = A·A + A·B = A + A·B = A (шингээх хууль)."),
+    ("A + Ā·B илэрхийллийг хялбарчил.", "A + B", ["A·B", "A", "B", "Ā + B"], "A + Ā·B = (A + Ā)·(A + B) = 1·(A + B) = A + B."),
+    ("A·(Ā + B) илэрхийллийг хялбарчил.", "A·B", ["A + B", "A", "B", "0"], "A·(Ā + B) = A·Ā + A·B = 0 + A·B = A·B."),
+    ("A·B + A·B̄ илэрхийллийг хялбарчил.", "A", ["B", "1", "A·B", "A + B"], "A·B + A·B̄ = A·(B + B̄) = A·1 = A."),
+    ("(A + B)·(A + B̄) илэрхийллийг хялбарчил.", "A", ["B", "0", "A + B", "A·B"], "(A + B)·(A + B̄) = A + B·B̄ = A + 0 = A."),
+    ("A·B + A·C илэрхийллийг хаалтаар бүлэглэсэн хувилбарыг сонго.", "A·(B + C)", ["A + B·C", "A·B·C", "(A + B)·C", "A + B + C"],
+     "Тархалтын хуулиар A·B + A·C = A·(B + C)."),
+    ("(A + B)·(A + C) илэрхийллийг хялбарчил.", "A + B·C", ["A·(B + C)", "A·B·C", "A + B + C", "A·B + C"],
+     "(A + B)·(A + C) = A + A·C + A·B + B·C = A + B·C (шингээх хууль)."),
+    ("¬(Ā·B̄) илэрхийллийг хялбарчил.", "A + B", ["A·B", "Ā + B̄", "Ā·B̄", "A⊕B"], "Де Морганы хуулиар ¬(Ā·B̄) = A + B."),
+    ("¬(Ā + B̄) илэрхийллийг хялбарчил.", "A·B", ["A + B", "Ā·B̄", "Ā + B̄", "A⊕B"], "Де Морганы хуулиар ¬(Ā + B̄) = A·B."),
+    ("A·Ā + B илэрхийллийг хялбарчил.", "B", ["A", "0", "1", "A + B"], "A·Ā = 0 тул A·Ā + B = B."),
+    ("(A + Ā)·B илэрхийллийг хялбарчил.", "B", ["A", "0", "1", "A·B"], "A + Ā = 1 тул (A + Ā)·B = B."),
+    ("Ā·B̄ + Ā·B илэрхийллийг хялбарчил.", "Ā", ["B̄", "A", "Ā·B", "1"], "Ā·B̄ + Ā·B = Ā·(B̄ + B) = Ā."),
+    ("(A + B)·(Ā + B) илэрхийллийг хялбарчил.", "B", ["A", "A·B", "A + B", "0"], "(A + B)·(Ā + B) = A·Ā + B = B."),
+    ("A·B + Ā·B + A·B̄ илэрхийллийг хялбарчил.", "A + B", ["A·B", "A⊕B", "1", "Ā + B̄"],
+     "A·B + Ā·B = B, B + A·B̄ = (B + A)·(B + B̄) = A + B."),
+    ("¬(A⊕B) илэрхийллийг зөв хувиргасан хувилбарыг сонго.", "A·B + Ā·B̄", ["A·B̄ + Ā·B", "Ā + B̄", "A·B", "Ā·B̄"],
+     "XOR-ийн эсрэг нь XNOR: оролтууд ижил үед 1, иймд A·B + Ā·B̄."),
+    ("A·B·C + A·B·C̄ илэрхийллийг хялбарчил.", "A·B", ["A·C", "B·C", "A·B·C", "1"], "A·B·C + A·B·C̄ = A·B·(C + C̄) = A·B."),
+    ("Ā + A·B илэрхийллийг хялбарчил.", "Ā + B", ["A + B", "Ā·B", "Ā + B̄", "B"], "Ā + A·B = (Ā + A)·(Ā + B) = Ā + B."),
+]
+
+
+def q24(rng: random.Random, year: int, k: int) -> dict:
+    prompt, answer, wrong, solution = BOOLEAN_IDENTITIES[k % len(BOOLEAN_IDENTITIES)]
     return {
         "skill": "Булийн алгебр",
-        "prompt": chosen["prompt"],
-        "answer": chosen["answer"],
-        "wrong": chosen["wrong"],
-        "solution": chosen["solution"],
+        "prompt": prompt,
+        "answer": answer,
+        "wrong": wrong,
+        "solution": solution,
     }
 
 
-def q25(rng: random.Random, year: int) -> dict:
-    left = rng.choice(["out", "in"])
-    right = rng.choice(["out", "in"])
-    if left == right:
-        answer = "Тэг"
-    elif left == "out" and right == "in":
-        answer = "Дээш"
-    else:
-        answer = "Доош"
-    left_text = "хуудаснаас гарч" if left == "out" else "хуудас руу орж"
-    right_text = "хуудаснаас гарч" if right == "out" else "хуудас руу орж"
+WIRE_POINTS = {
+    # point: (where, x in units of half the wire spacing; the wires are at −1 and +1)
+    "M": ("Хоёр утасны яг дунд орших M цэгт", 0),
+    "K": ("Зүүн утаснаас зүүн тийш, утас хоорондын зайтай тэнцүү зайд орших K цэгт", -3),
+    "N": ("Баруун утаснаас баруун тийш, утас хоорондын зайтай тэнцүү зайд орших N цэгт", 3),
+}
+
+
+@lru_cache(maxsize=None)
+def wire_versions() -> tuple:
+    return tuple(shuffled(2525, [
+        (left, right, left_size, right_size, point)
+        for left in (1, -1) for right in (1, -1) for left_size in (1, 2) for right_size in (1, 2) for point in "MKN"
+    ]))
+
+
+def q25(rng: random.Random, year: int, k: int) -> dict:
+    left, right, left_size, right_size, point = wire_versions()[k % len(wire_versions())]
+    where, x = WIRE_POINTS[point]
+    # B_y ∝ s·I/(x − x_wire): a current out of the page (s = +1) gives an upward field on its right.
+    from_left = Fraction(left * left_size, x + 1)
+    from_right = Fraction(right * right_size, x - 1)
+    field = from_left + from_right
+    answer = "Дээш" if field > 0 else "Доош" if field < 0 else "Тэг"
+
+    def current(sign: int, size: int) -> str:
+        return f"{'I' if size == 1 else '2I'} хүчтэй гүйдэл {'хуудаснаас гарах' if sign > 0 else 'хуудас руу орох'} чиглэлд"
+
+    def part(value: Fraction) -> str:
+        return f"{'дээш' if value > 0 else 'доош'} (хэмжээ ∝ {ratio(abs(value))})"
+
     return {
         "skill": "Параллель утасны соронзон орон",
         "prompt": (
-            f"Хоёр параллель утасны зүүн утасны гүйдэл {left_text}, баруун "
-            f"утасны гүйдэл {right_text} чиглэлтэй байна. Хоёр утасны "
-            "дунд цэгт соронзон орны чиглэлийг ол."
+            "Хоёр урт параллель утас зургийн хавтгайд перпендикуляр байрлана. "
+            f"Зүүн утсаар {current(left, left_size)}, баруун утсаар {current(right, right_size)} гүйнэ. "
+            f"{where} үүсэх соронзон орны чиглэлийг (зургийн хавтгайд) ол."
         ),
         "answer": answer,
         "wrong": [item for item in ["Дээш", "Доош", "Зүүн", "Баруун", "Тэг"] if item != answer],
         "solution": (
-            "Баруун гарын дүрмээр утас бүрийн талбарын чиглэлийг тодорхойлно. "
-            "Гүйдэл ижил чиглэлтэй бол дунд цэгт талбарууд эсрэг чиглэж "
-            "нэгдэн тэг болно; эсрэг чиглэлтэй бол нэмэгдэнэ."
+            "Шулуун гүйдлийн соронзон орон I/r-тэй пропорциональ бөгөөд чиглэлийг баруун гарын дүрмээр олно: "
+            "хуудаснаас гарах гүйдлийн баруун талд орон дээш, зүүн талд доош; хуудас руу орох гүйдлийнх эсрэгээр. "
+            f"{point} цэгт зүүн утасны орон {part(from_left)}, баруун утасных {part(from_right)} тул "
+            f"нийлбэр орон: {answer.lower()}."
         ),
         "figure": {
             "kind": "parallel_wires",
-            "left_current": left,
-            "right_current": right,
+            "left_current": "out" if left > 0 else "in",
+            "right_current": "out" if right > 0 else "in",
+            "labels": ["I" if left_size == 1 else "2I", "I" if right_size == 1 else "2I"],
+            "point": point,
         },
     }
 
 
-def q26(rng: random.Random, year: int) -> dict:
-    frequency, capacitance = rng.choice([(50, 10), (50, 20), (50, 25), (60, 20), (100, 10)])
-    reactance = 1 / (2 * math.pi * frequency * capacitance * 1e-6)
-    answer = f"{reactance:.0f} Ом"
-    wrong = [
-        f"{reactance / 2:.0f} Ом",
-        f"{reactance * 2:.0f} Ом",
-        f"{reactance * 3:.0f} Ом",
-        f"{reactance / 3:.0f} Ом",
-    ]
+@lru_cache(maxsize=None)
+def reactance_versions() -> tuple:
+    out = []
+    for frequency in (50, 100, 200, 250, 400, 500, 1000):
+        for numerator in (10, 20, 25, 40, 50, 100, 125, 200, 250, 500, 1000):
+            reactance = Fraction(10 ** 6, 2 * frequency * numerator)
+            if reactance.denominator == 1 and 5 <= reactance <= 2000:
+                out.append(("pi", frequency, numerator, int(reactance)))
+                out.append(("pi-f", frequency, numerator, int(reactance)))
+    for frequency in (50, 60, 100):
+        for capacitance in (1, 2, 5, 10, 20, 25, 40, 50, 100):
+            exact_value = 1 / (2 * math.pi * frequency * capacitance * 1e-6)
+            rough = 1 / (2 * 3.14 * frequency * capacitance * 1e-6)
+            rounded = Decimal(repr(exact_value)).quantize(Decimal(1), rounding=ROUND_HALF_UP)
+            # Keep only values where π and 3.14 give the same whole number of ohms.
+            if rounded == Decimal(repr(rough)).quantize(Decimal(1), rounding=ROUND_HALF_UP) and 5 <= exact_value <= 2000:
+                out.append(("plain", frequency, capacitance, int(rounded)))
+    return tuple(shuffled(2626, out))
+
+
+def q26(rng: random.Random, year: int, k: int) -> dict:
+    kind, frequency, capacitance, reactance = reactance_versions()[k % len(reactance_versions())]
+    if kind == "plain":
+        prompt = (
+            f"{capacitance} мкФ багтаамжтай конденсаторыг {frequency} Гц давтамжтай хувьсах гүйдлийн хэлхээнд холбов. "
+            "Багтаамжийн эсэргүүцлийг ол."
+        )
+        answer, unit, value = f"{reactance} Ом", "Ом", reactance
+        solution = f"X_C = 1/(2πfC) = 1/(2·3.14·{frequency}·{capacitance}·10⁻⁶) ≈ {reactance} Ом."
+        figure = {"kind": "capacitor_ac", "capacitance_uf": capacitance, "frequency_hz": frequency}
+    elif kind == "pi":
+        prompt = (
+            f"{capacitance}/π мкФ багтаамжтай конденсаторыг {frequency} Гц давтамжтай хувьсах гүйдлийн хэлхээнд холбов. "
+            "Багтаамжийн эсэргүүцлийг ол."
+        )
+        answer, unit, value = f"{reactance} Ом", "Ом", reactance
+        solution = (
+            f"X_C = 1/(2πfC) = 1/(2π·{frequency}·({capacitance}/π)·10⁻⁶) = 10⁶/(2·{frequency}·{capacitance}) = "
+            f"{reactance} Ом."
+        )
+        figure = {"kind": "capacitor_ac", "capacitance_text": f"{capacitance}/π", "frequency_hz": frequency}
+    else:
+        prompt = (
+            f"{capacitance}/π мкФ багтаамжтай конденсаторын багтаамжийн эсэргүүцэл {reactance} Ом байхын тулд "
+            "хувьсах гүйдлийн давтамж ямар байх ёстой вэ?"
+        )
+        answer, unit, value = f"{frequency} Гц", "Гц", frequency
+        solution = (
+            f"X_C = 1/(2πfC) тул f = 1/(2πCX_C) = 1/(2π·({capacitance}/π)·10⁻⁶·{reactance}) = "
+            f"10⁶/(2·{capacitance}·{reactance}) = {frequency} Гц."
+        )
+        figure = {"kind": "capacitor_ac", "capacitance_text": f"{capacitance}/π", "frequency_text": "?"}
     return {
         "skill": "Багтаамжийн эсэргүүцэл",
-        "prompt": (
-            f"{capacitance} мкФ багтаамжтай конденсаторыг {frequency} Гц "
-            "давтамжтай хувьсах гүйдлийн хэлхээнд холбов. Багтаамжийн "
-            "эсэргүүцлийг ол."
-        ),
+        "prompt": prompt,
         "answer": answer,
-        "wrong": wrong,
-        "solution": (
-            "X_C = 1/(2πfC). "
-            f"X_C = 1/(2π·{frequency}·{capacitance}·10⁻⁶) = {reactance:.0f} Ом."
-        ),
-        "figure": {
-            "kind": "capacitor_ac",
-            "capacitance_uf": capacitance,
-            "frequency_hz": frequency,
-        },
+        "wrong": numeric_wrongs(answer, unit, [value * 2, Fraction(value, 2), value * 4, Fraction(value, 4)]),
+        "solution": solution,
+        "figure": figure,
     }
 
 
-def q27(rng: random.Random, year: int) -> dict:
-    distance_factor = rng.choice([2, 3])
-    charge_factor = rng.choice([2, 3])
-    force_factor = charge_factor * distance_factor ** 2
+def factor_text(factor: Fraction) -> str | None:
+    if factor == 1:
+        return "Өөрчлөгдөхгүй"
+    if factor > 1 and factor.denominator == 1:
+        return f"{factor} дахин ихэснэ"
+    if factor < 1 and factor.numerator == 1:
+        return f"{factor.denominator} дахин багасна"
+    return None
+
+
+@lru_cache(maxsize=None)
+def coulomb_versions() -> tuple:
+    distances = [(f"{n} дахин багасгаж", Fraction(n * n), Fraction(n)) for n in (2, 3, 4)]
+    distances += [(f"{n} дахин ихэсгэж", Fraction(1, n * n), Fraction(1, n)) for n in (2, 3)]
+    charges = [(f"нэг цэнэгийг {c} дахин ихэсгэвэл", Fraction(c)) for c in (2, 3, 4, 6, 8, 9)]
+    charges += [(f"хоёр цэнэгийг тус бүр {c} дахин ихэсгэвэл", Fraction(c * c)) for c in (2, 3)]
+    charges += [(f"нэг цэнэгийг {c} дахин багасгавал", Fraction(1, c)) for c in (2, 3, 4)]
+    out = []
+    for distance_text, distance_factor, linear in distances:
+        for charge_text, charge_factor in charges:
+            if factor_text(distance_factor * charge_factor):
+                out.append((distance_text, distance_factor, linear, charge_text, charge_factor))
+    return tuple(shuffled(2727, out))
+
+
+def q27(rng: random.Random, year: int, k: int) -> dict:
+    distance_text, distance_factor, linear, charge_text, charge_factor = coulomb_versions()[k % len(coulomb_versions())]
+    factor = distance_factor * charge_factor
+    answer = factor_text(factor)
+    candidates = [linear * charge_factor, charge_factor, distance_factor, 1 / factor, factor * 2, factor / 2, factor * 4,
+                  distance_factor / charge_factor, factor / 4, factor * 3]
+    wrong = []
+    for value in candidates:
+        text = factor_text(value)
+        if text and text != answer and text not in wrong:
+            wrong.append(text)
+    if len(wrong) < 4:
+        raise ValueError(f"Q27: too few distractors for {answer!r}")
     return {
         "skill": "Кулоны хууль",
-        "prompt": (
-            f"Хоёр цэгийн цэнэгийн хоорондох зайг {distance_factor} дахин "
-            f"багасгаж, нэг цэнэгийг {charge_factor} дахин ихэсгэвэл "
-            "Кулоны хүч хэрхэн өөрчлөгдөх вэ?"
-        ),
-        "answer": f"{force_factor} дахин ихэснэ",
-        "wrong": pick_wrongs(
-            f"{force_factor} дахин ихэснэ",
-            [
-                f"{distance_factor} дахин ихэснэ",
-                f"{charge_factor} дахин ихэснэ",
-                f"{force_factor // 2} дахин ихэснэ",
-                f"{force_factor * 2} дахин ихэснэ",
-                f"{max(2, force_factor // 3)} дахин ихэснэ",
-                f"{force_factor + 3} дахин ихэснэ",
-            ],
-        ),
+        "prompt": f"Хоёр цэгэн цэнэгийн хоорондох зайг {distance_text}, {charge_text} Кулоны хүч хэрхэн өөрчлөгдөх вэ?",
+        "answer": answer,
+        "wrong": wrong[:4],
         "solution": (
-            "F ∝ q1q2/r². Зай d дахин багасвал хүч d² дахин, цэнэг q дахин "
-            f"ихэсвэл q дахин нэмэгдэнэ. Иймд {distance_factor}²·{charge_factor} "
-            f"= {force_factor} дахин ихэснэ."
+            "F = kq1q2/r². Зайн өөрчлөлтөөс хүч "
+            f"{ratio(distance_factor)} дахин, цэнэгийн өөрчлөлтөөс {ratio(charge_factor)} дахин үржигдэнэ. "
+            f"Иймд F' = {ratio(factor)}·F: {answer.lower()}."
         ),
     }
 
 
-def q28(rng: random.Random, year: int) -> dict:
-    capacitance1, capacitance2, voltage = rng.choice(
-        [(2, 3, 10), (3, 4, 12), (4, 6, 20), (6, 12, 24), (2, 6, 12)]
-    )
-    equivalent = capacitance1 + capacitance2
-    charge = equivalent * voltage
-    answer = f"{charge} мкКл"
-    wrong = [
-        f"{capacitance1 * voltage} мкКл",
-        f"{capacitance2 * voltage} мкКл",
-        f"{charge // 2} мкКл",
-        f"{charge * 2} мкКл",
-    ]
+@lru_cache(maxsize=None)
+def capacitor_versions() -> tuple:
+    caps = (1, 2, 3, 4, 5, 6, 8, 10, 12, 15, 20)
+    volts = (5, 6, 9, 10, 12, 15, 20, 24, 30, 50)
+    return tuple(shuffled(2828, [(asked, c1, c2, u) for c1, c2 in itertools.combinations(caps, 2) for u in volts for asked in ("total", "one")]))
+
+
+def q28(rng: random.Random, year: int, k: int) -> dict:
+    asked, c1, c2, voltage = capacitor_versions()[k % len(capacitor_versions())]
+    lead = f"{c1} мкФ ба {c2} мкФ конденсаторуудыг параллель холбож {voltage} В хүчдэл өгөв. "
+    total = (c1 + c2) * voltage
+    if asked == "total":
+        prompt = lead + "Нийт цэнэгийг ол."
+        answer = f"{total} мкКл"
+        wrong = numeric_wrongs(answer, "мкКл", [c1 * voltage, c2 * voltage, Fraction(total, 2), total * 2, Fraction(c1 * c2 * voltage, c1 + c2)])
+        solution = f"Параллель холболтод C_экв = C1 + C2. Q = C_экв·U = ({c1}+{c2})·{voltage} = {total} мкКл."
+    else:
+        prompt = lead + f"{c2} мкФ конденсаторын цэнэгийг ол."
+        answer = f"{c2 * voltage} мкКл"
+        wrong = numeric_wrongs(answer, "мкКл", [c1 * voltage, total, Fraction(c2 * voltage, 2), c2 * voltage * 2])
+        solution = f"Параллель холбосон конденсатор бүрийн хүчдэл U = {voltage} В. Q2 = C2·U = {c2}·{voltage} = {c2 * voltage} мкКл."
     return {
         "skill": "Конденсаторын параллель холболт",
-        "prompt": (
-            f"{capacitance1} мкФ ба {capacitance2} мкФ конденсаторуудыг "
-            f"параллель холбож {voltage} В хүчдэл өгөв. Нийт цэнэгийг ол."
-        ),
+        "prompt": prompt,
         "answer": answer,
         "wrong": wrong,
-        "solution": (
-            "Параллель холболтод C_экв = C1 + C2. "
-            f"Q = C_экв·U = ({capacitance1}+{capacitance2})·{voltage} = {charge} мкКл."
-        ),
-        "figure": {
-            "kind": "capacitor_circuit",
-            "capacitances_uf": [capacitance1, capacitance2],
-            "voltage_v": voltage,
-        },
+        "solution": solution,
+        "figure": {"kind": "capacitor_circuit", "capacitances_uf": [c1, c2], "voltage_v": voltage},
     }
 
 
-CIRCUIT_SCENARIOS = [
-    (4, 12, 4, 16, 2.0, 1.5, 0.5),
-    (9, 18, 6, 36, 2.0, 1.5, 0.5),
-    (1, 6, 3, 4, 2.0, 4 / 3, 2 / 3),
-    (4, 6, 12, 16, 2.0, 2 / 3, 4 / 3),
-    (2, 9, 18, 8, 2.0, 2 / 3, 4 / 3),
+@lru_cache(maxsize=None)
+def circuit_versions(seed: int) -> tuple:
+    resistances = (2, 3, 4, 5, 6, 8, 9, 10, 12, 15, 18, 20, 24, 30)
+    out = []
+    for r1 in (1, 2, 3, 4, 5, 6, 8, 10):
+        for current in (Fraction(1), Fraction(3, 2), Fraction(2), Fraction(5, 2), Fraction(3), Fraction(4), Fraction(5), Fraction(6)):
+            power = current * current * r1
+            if power.denominator != 1 or power > 200:
+                continue
+            for r2 in resistances:
+                for r3 in resistances:
+                    if r2 == r3:
+                        continue
+                    i2, i3 = current * r3 / (r2 + r3), current * r2 / (r2 + r3)
+                    if (i2 * 100).denominator == 1 and (i3 * 100).denominator == 1:
+                        out.append((r1, r2, r3, int(power), current, i3, i2))
+    return tuple(shuffled(seed, out))
+
+
+def circuit_item(rng: random.Random, k: int, seed: int, branch: int) -> dict:
+    r1, r2, r3, power, current, i3, i2 = circuit_versions(seed)[k % len(circuit_versions(seed))]
+    value, other = (i3, i2) if branch == 3 else (i2, i3)
+    name = "R3-аар" if branch == 3 else "R2-оор"
+    answer = f"{num(value)} А"
+    return {
+        "skill": "Хэлхээний гүйдэл",
+        "prompt": (
+            f"R1 = {r1} Ом нь эх үүсвэртэй цуваа, R2 = {r2} Ом ба R3 = {r3} Ом нь хоорондоо параллель холбогдсон. "
+            f"R1 нь {power} Вт чадалтай бол {name} гүйх гүйдлийг ол."
+        ),
+        "answer": answer,
+        "wrong": numeric_wrongs(answer, "А", [other, current, value * 2, value / 2, other * 2, other / 2]),
+        "solution": (
+            f"R1-ийн гүйдэл I = √(P1/R1) = √({power}/{r1}) = {num(current)} А. "
+            f"Параллель хэсгийн эквивалент эсэргүүцэл R_p = {r2}·{r3}/({r2}+{r3}) Ом, түүний хүчдэл U_p = I·R_p. "
+            f"{name} гүйх гүйдэл I{branch} = U_p/R{branch} = {num(value)} А."
+        ),
+        "figure": {"kind": "resistor_network", "r1": r1, "r2": r2, "r3": r3, "power1_w": power},
+    }
+
+
+def q29(rng: random.Random, year: int, k: int) -> dict:
+    return circuit_item(rng, k, 2929, 3)
+
+
+def q30(rng: random.Random, year: int, k: int) -> dict:
+    return circuit_item(rng, k, 3030, 2)
+
+
+REFLECTION_MEDIA = ["Олсны", "Урт пүршний", "Резин хоолойн", "Сунгасан утасны"]
+REFLECTION_ENDS = [
+    ("хананд бат бэхэлж", "бэхэлсэн"),
+    ("хөдөлгөөнгүй шонд чанга уяж", "бэхэлсэн"),
+    ("гөлгөр шон дээгүүр чөлөөтэй гулсдаг хөнгөн цагирагт уяж", "сул"),
 ]
 
 
-def q29(rng: random.Random, year: int) -> dict:
-    r1, r2, r3, power1, total, current3, current2 = rng.choice(CIRCUIT_SCENARIOS)
-    answer = f"{fmt(current3)} А"
-    wrong = pick_wrongs(
-        answer,
-        [
-            f"{fmt(current2)} А",
-            f"{fmt(total)} А",
-            f"{fmt(current3 * 2)} А",
-            f"{fmt(current3 / 2)} А",
-            f"{fmt(current2 * 2)} А",
-            f"{fmt(current2 / 2)} А",
-        ],
-    )
-    return {
-        "skill": "Хэлхээний гүйдэл",
-        "prompt": (
-            f"R1 = {r1} Ом нь эх үүсвэртэй цуваа, R2 = {r2} Ом ба "
-            f"R3 = {r3} Ом нь хоорондоо параллель холбогдсон. R1 нь "
-            f"{power1} Вт чадалтай бол R3-аар гүйх гүйдлийг ол."
-        ),
-        "answer": answer,
-        "wrong": wrong,
-        "solution": (
-            f"R1-ийн гүйдэл I = √(P1/R1) = √({power1}/{r1}) = {fmt(total)} А. "
-            f"Параллель хэсгийн эквивалент эсэргүүцэл R_p = {r2}·{r3}/({r2}+{r3}) Ом, "
-            f"түүний хүчдэл U_p = I·R_p. R3-аар гүйх гүйдэл I3 = U_p/R3 = {fmt(current3)} А."
-        ),
-        "figure": {
-            "kind": "resistor_network",
-            "r1": r1,
-            "r2": r2,
-            "r3": r3,
-            "power1_w": power1,
-        },
-    }
-
-
-def q30(rng: random.Random, year: int) -> dict:
-    r1, r2, r3, power1, total, current3, current2 = rng.choice(CIRCUIT_SCENARIOS)
-    answer = f"{fmt(current2)} А"
-    wrong = pick_wrongs(
-        answer,
-        [
-            f"{fmt(current3)} А",
-            f"{fmt(total)} А",
-            f"{fmt(current2 * 2)} А",
-            f"{fmt(current2 / 2)} А",
-            f"{fmt(current3 * 2)} А",
-            f"{fmt(current3 / 2)} А",
-        ],
-    )
-    return {
-        "skill": "Хэлхээний гүйдэл",
-        "prompt": (
-            f"R1 = {r1} Ом нь эх үүсвэртэй цуваа, R2 = {r2} Ом ба "
-            f"R3 = {r3} Ом нь хоорондоо параллель холбогдсон. R1 нь "
-            f"{power1} Вт чадалтай бол R2-оор гүйх гүйдлийг ол."
-        ),
-        "answer": answer,
-        "wrong": wrong,
-        "solution": (
-            f"R1-ийн гүйдэл I = √(P1/R1) = {fmt(total)} А. Параллель хэсгийн "
-            f"эквивалент эсэргүүцэл R_p = {r2}·{r3}/({r2}+{r3}) Ом, "
-            f"U_p = I·R_p. R2-оор гүйх гүйдэл I2 = U_p/R2 = {fmt(current2)} А."
-        ),
-        "figure": {
-            "kind": "resistor_network",
-            "r1": r1,
-            "r2": r2,
-            "r3": r3,
-            "power1_w": power1,
-        },
-    }
-
-
-def q31(rng: random.Random, year: int) -> dict:
-    end = rng.choice(["бэхэлсэн", "сул"])
-    if end == "бэхэлсэн":
-        answer = "Фаз нь 180° өөрчлөгдөж, дээш чиглэсэн хэсэг нь доош болно."
-    else:
-        answer = "Фаз өөрчлөгдөхгүй, эсрэг чиглэлд ойно."
-    wrong = [
-        "Фаз нь 180° өөрчлөгдөж, дээш чиглэсэн хэсэг нь доош болно.",
-        "Фаз өөрчлөгдөхгүй, ижил чиглэлээр ойно.",
-        "Долгион ойхгүй, зөвхөн дамжина.",
-        "Давтамж нь хоёр дахин ихэснэ.",
-        "Долгионы урт нь хоёр дахин багасна.",
+def q31(rng: random.Random, year: int, k: int) -> dict:
+    combos = shuffled(3131, [(m, e, d) for m in range(len(REFLECTION_MEDIA)) for e in range(len(REFLECTION_ENDS)) for d in ("дээш", "доош")])
+    medium, end_index, pulse = combos[k % len(combos)]
+    end_text, end = REFLECTION_ENDS[end_index]
+    opposite = "доош" if pulse == "дээш" else "дээш"
+    inverted = f"Буцаж тархахдаа {opposite} чиглэсэн импульс болно (фаз 180°-аар өөрчлөгдөнө)."
+    upright = f"Буцаж тархахдаа {pulse} чиглэсэн хэвээр байна (фаз өөрчлөгдөхгүй)."
+    answer = inverted if end == "бэхэлсэн" else upright
+    pool = [
+        upright if end == "бэхэлсэн" else inverted,
+        f"Буцаж тархахдаа {opposite} чиглэсэн импульс болж, хурд нь хоёр дахин багасна.",
+        f"Ойхгүй; импульс {'бэхэлсэн цэгт' if end == 'бэхэлсэн' else 'цагирагт'} бүрэн шингэнэ.",
+        f"Буцаж тархахдаа {pulse} чиглэсэн импульс болж, далайц нь хоёр дахин ихэснэ.",
+        "Хоёр импульс болж хуваагдан, нэг нь дээш, нөгөө нь доош чиглэнэ.",
     ]
-    wrong = [item for item in wrong if item != answer][:4]
     return {
         "skill": "Долгионы ойлт",
         "prompt": (
-            f"Олсны нэг үзүүрийг {end} байхаар тогтоож, нөгөө үзүүрээс "
-            "долгион илгээв. Ойсон долгион хэрхэн харагдах вэ?"
+            f"{REFLECTION_MEDIA[medium]} нэг үзүүрийг {end_text}, нөгөө үзүүрээс {pulse} чиглэсэн ганц импульс "
+            "илгээв. Ойсон импульс ямар байх вэ?"
         ),
         "answer": answer,
-        "wrong": wrong,
+        "wrong": text_wrongs(answer, pool, rng),
         "solution": (
-            "Бэхэлсэн үзүүрээс ойход фазын өөрчлөлт 180° болж, долгион "
-            "урвуу харагдана. Сул үзүүрээс ойход фаз өөрчлөгдөхгүй, "
-            "ойсон долгион эсрэг чиглэлд тархана."
+            "Бэхэлсэн үзүүрээс ойход фаз 180°-аар өөрчлөгдөж, импульс урвуу харагдана. Чөлөөтэй (сул) үзүүрээс "
+            "ойход фаз өөрчлөгдөхгүй, импульс ижил талдаа үлдэнэ. Ойлтын үед тархах хурд, далайц өөрчлөгдөхгүй."
         ),
-        "figure": {"kind": "wave_reflection", "end": end},
+        "figure": {"kind": "wave_reflection", "end": end, "pulse": "up" if pulse == "дээш" else "down"},
     }
 
 
-def q32(rng: random.Random, year: int) -> dict:
-    speed, half_wavelength, frequency = rng.choice(
-        [(4, 0.1, 20), (2, 0.05, 20), (6, 0.1, 30), (8, 0.2, 20), (4, 0.2, 10)]
-    )
+SPACING_PHRASES = [
+    ("Хамгийн ойр орших эсрэг фазтай цэгүүдийн хоорондох зай", 2),
+    ("Хамгийн ойр орших ижил фазтай цэгүүдийн хоорондох зай", 1),
+    ("Зэргэлдээ хоёр оройн хоорондох зай", 1),
+    ("Орой ба түүнд хамгийн ойр хонхорын хоорондох хэвтээ зай", 2),
+]
+
+
+@lru_cache(maxsize=None)
+def wave_frequency_versions() -> tuple:
+    out = []
+    speeds = (Fraction(1), Fraction(3, 2), Fraction(2), Fraction(3), Fraction(4), Fraction(5), Fraction(6), Fraction(8), Fraction(10), Fraction(12), Fraction(15), Fraction(20))
+    distances = (Fraction(1, 20), Fraction(1, 10), Fraction(1, 5), Fraction(1, 4), Fraction(2, 5), Fraction(1, 2), Fraction(4, 5), Fraction(1), Fraction(3, 2), Fraction(2))
+    for speed in speeds:
+        for distance in distances:
+            for phrase, factor in SPACING_PHRASES:
+                frequency = speed / (factor * distance)
+                if frequency.denominator == 1 and 1 <= frequency <= 200:
+                    out.append((speed, distance, phrase, factor, int(frequency)))
+    return tuple(shuffled(3232, out))
+
+
+def q32(rng: random.Random, year: int, k: int) -> dict:
+    speed, distance, phrase, factor, frequency = wave_frequency_versions()[k % len(wave_frequency_versions())]
+    wavelength = factor * distance
+    answer = f"{frequency} Гц"
     return {
         "skill": "Долгионы хурд ба давтамж",
-        "prompt": (
-            f"Долгион {speed} м/с хурдтай тархана. Хамгийн ойр орших "
-            f"эсрэг фазтай цэгүүдийн хоорондох зай {half_wavelength:g} м бол "
-            "долгионы давтамжийг ол."
-        ),
-        "answer": f"{frequency} Гц",
-        "wrong": [f"{frequency // 2} Гц", f"{frequency * 2} Гц", f"{frequency * 10} Гц", f"{frequency // 10} Гц"],
+        "prompt": f"Долгион {num(speed)} м/с хурдтай тархана. {phrase} {num(distance)} м бол долгионы давтамжийг ол.",
+        "answer": answer,
+        "wrong": numeric_wrongs(answer, "Гц", [frequency * 2, Fraction(frequency, 2), frequency * 10, Fraction(frequency, 10)]),
         "solution": (
-            "Эсрэг фазтай хамгийн ойр цэгүүдийн зай нь λ/2. "
-            f"λ = 2·{half_wavelength:g} = {2 * half_wavelength:g} м; "
-            f"f = v/λ = {speed}/{2 * half_wavelength:g} = {frequency} Гц."
+            f"{phrase} нь {'λ/2' if factor == 2 else 'λ'}. λ = {num(wavelength)} м; "
+            f"f = v/λ = {num(speed)}/{num(wavelength)} = {frequency} Гц."
         ),
         "figure": {
             "kind": "wave_profile",
-            "speed_m_s": speed,
-            "half_wavelength_m": half_wavelength,
+            "speed_m_s": float(speed),
+            "half_wavelength_m": float(wavelength / 2),
+            "label": f"{num(distance)} м",
+            "span": "half" if factor == 2 else "full",
         },
     }
 
 
-def q33(rng: random.Random, year: int) -> dict:
-    ratio = rng.choice([2, 3, 4])
+TRANSMISSION_CONTEXTS = [
+    ("Дууны долгион нэг орчноос нөгөө орчин руу нэвтрэхэд", (Fraction(2), Fraction(3), Fraction(4), Fraction(3, 2)), ("ихэссэн", "багассан")),
+    ("Гэрэл нэг тунгалаг орчноос нөгөө тунгалаг орчин руу шилжихэд", (Fraction(3, 2), Fraction(2)), ("ихэссэн", "багассан")),
+    ("Усны гадаргын долгион гүн хэсгээс гүехэн хэсэг рүү шилжихэд", (Fraction(2), Fraction(3), Fraction(4), Fraction(3, 2)), ("багассан",)),
+]
+TRANSMISSION_GIVEN = {"length": "долгионы урт нь", "speed": "тархах хурд нь"}
+
+
+@lru_cache(maxsize=None)
+def transmission_versions() -> tuple:
+    out = []
+    for context, factors, directions in TRANSMISSION_CONTEXTS:
+        for factor in factors:
+            for direction in directions:
+                for given in ("length", "speed"):
+                    for asked in ("frequency", "other"):
+                        out.append((context, factor, direction, given, asked))
+    return tuple(shuffled(3333, out))
+
+
+def q33(rng: random.Random, year: int, k: int) -> dict:
+    context, factor, direction, given, asked = transmission_versions()[k % len(transmission_versions())]
+    change = f"{num(factor)} дахин {direction}"
+    if asked == "frequency":
+        question, answer = "давтамж нь", "Өөрчлөгдөхгүй."
+        solution = "Орчин солигдоход давтамж эх үүсвэрээр тодорхойлогдох тул өөрчлөгдөхгүй; зөвхөн долгионы урт ба хурд өөрчлөгдөнө."
+    else:
+        question = "тархах хурд нь" if given == "length" else "долгионы урт нь"
+        answer = f"{num(factor)} дахин {'ихэснэ' if direction == 'ихэссэн' else 'багасна'}."
+        solution = f"Давтамж өөрчлөгдөхгүй тул v = λf-ээс хурд ба долгионы урт ижил харьцаагаар өөрчлөгдөнө: {answer.lower()}"
+    pool = ["Өөрчлөгдөхгүй."] + [
+        f"{num(value)} дахин {verb}."
+        for value in (factor, factor * 2, factor * factor) for verb in ("ихэснэ", "багасна")
+    ]
     return {
         "skill": "Долгионы шилжилт",
-        "prompt": (
-            "Дууны долгион нэг орчноос нөгөө орчин руу нэвтрэхэд долгионы "
-            f"урт нь {ratio} дахин багассан бол дууны давтамж хэрхэн өөрчлөгдөх вэ?"
-        ),
-        "answer": "Өөрчлөгдөхгүй.",
-        "wrong": [
-            f"{ratio} дахин багасна.",
-            f"{ratio} дахин ихэснэ.",
-            f"{ratio * 2} дахин багасна.",
-            f"{ratio * 2} дахин ихэснэ.",
-        ],
-        "solution": (
-            "Орчин солигдоход давтамж өөрчлөгдөхгүй; зөвхөн долгионы урт "
-            "ба хурд өөрчлөгдөнө."
-        ),
+        "prompt": f"{context} {TRANSMISSION_GIVEN[given]} {change} бол {question} хэрхэн өөрчлөгдөх вэ?",
+        "answer": answer,
+        "wrong": text_wrongs(answer, pool, rng),
+        "solution": solution,
     }
 
 
-def q34(rng: random.Random, year: int) -> dict:
-    temperature = rng.choice([15, 20, 25, 30, 35])
-    speed = 331 + 0.6 * temperature
+@lru_cache(maxsize=None)
+def sound_speed_versions() -> tuple:
+    out = [("v1", t) for t in range(-30, 45, 5)] + [("v2", t) for t in range(-30, 45, 5)] + [("T", t) for t in range(5, 45, 5)]
+    return tuple(shuffled(3434, out))
+
+
+def q34(rng: random.Random, year: int, k: int) -> dict:
+    kind, temperature = sound_speed_versions()[k % len(sound_speed_versions())]
+    speed = 331 + Fraction(3, 5) * temperature
+    figure = {"kind": "sound_speed_temperature", "intercept": 331, "slope": 0.6, "temperature_c": temperature}
+    if kind == "v1":
+        prompt = (
+            "Агаарт тархах дууны хурд-температурын хамаарлын график өгөгджээ. "
+            f"Агаарын температур {num(temperature)} °C байх үед дуу тархах хурдыг ол."
+        )
+    elif kind == "v2":
+        prompt = (
+            "Графикт агаар дахь дууны хурд температураас хэрхэн хамаарахыг үзүүлэв. "
+            f"{num(temperature)} °C температуртай агаарт дуу ямар хурдтай тархах вэ?"
+        )
+    if kind in ("v1", "v2"):
+        answer = f"{num(speed)} м/с"
+        wrong = numeric_wrongs(answer, "м/с", [331 if temperature else 343, 331 + abs(temperature), speed + 6, speed - 6, 343])
+        solution = f"Графикийн шугаман хамаарлаас v ≈ 331 + 0.6T. T = {num(temperature)} °C үед v ≈ {num(speed)} м/с."
+    else:
+        prompt = (
+            "Агаарт тархах дууны хурд-температурын хамаарлын графикийг ашиглан дуу "
+            f"{num(speed)} м/с хурдтай тархах үеийн агаарын температурыг ол."
+        )
+        answer = f"{temperature} °C"
+        wrong = numeric_wrongs(answer, "°C", [temperature + 5, temperature - 5, speed - 331, temperature * 2, 20])
+        solution = f"v ≈ 331 + 0.6T тул T = (v − 331)/0.6 = ({num(speed)} − 331)/0.6 = {temperature} °C."
+        figure = {"kind": "sound_speed_temperature", "intercept": 331, "slope": 0.6, "speed": float(speed), "ask": "T"}
     return {
         "skill": "Дууны хурд ба температур",
-        "prompt": (
-            "Агаарт тархах дууны хурд-температурын хамаарлын график өгөгджээ. "
-            f"Агаарын температур {temperature} °C байх үед дуу тархах хурдыг ол."
-        ),
-        "answer": f"{speed:.0f} м/с",
-        "wrong": pick_wrongs(
-            f"{speed:.0f} м/с",
-            [
-                "331 м/с",
-                "343 м/с",
-                "345 м/с",
-                "541 м/с",
-                f"{speed - 6:.0f} м/с",
-                f"{speed + 6:.0f} м/с",
-            ],
-        ),
-        "solution": (
-            "Графикийн шугаман хамаарлаас v ≈ 331 + 0.6T. "
-            f"T = {temperature} °C үед v ≈ {speed:.0f} м/с."
-        ),
-        "figure": {
-            "kind": "sound_speed_temperature",
-            "intercept": 331,
-            "slope": 0.6,
-            "temperature_c": temperature,
-        },
+        "prompt": prompt,
+        "answer": answer,
+        "wrong": wrong,
+        "solution": solution,
+        "figure": figure,
     }
 
 
-def q35(rng: random.Random, year: int) -> dict:
-    amplitude, frequency = rng.choice([(10, 20), (15, 25), (20, 50), (10, 25), (15, 50)])
-    answer = f"{amplitude} мм, {frequency} Гц"
-    wrong = [
-        f"{amplitude} см, {frequency} Гц",
-        f"{amplitude} мм, {frequency * 2} Гц",
-        f"{amplitude} мм, {1 / frequency:.3f} Гц",
-        f"{amplitude} мм, {1 / (2 * frequency):.3f} Гц",
-    ]
+SHM_CONTEXTS = [
+    ("Пүршинд өлгөсөн ачааны", "см", (Fraction(1, 2), Fraction(1), Fraction(2), Fraction(5, 2)), (2, 3, 4, 5, 6, 8)),
+    ("Дүүжингийн", "см", (Fraction(1, 4), Fraction(1, 2), Fraction(1)), (3, 4, 5, 6, 8, 10, 12)),
+    ("Чичиргээт хавтангийн", "мм", (Fraction(10), Fraction(25), Fraction(50)), (2, 3, 4, 5, 6)),
+    ("Долгион дээрх хөвөгчийн", "см", (Fraction(1, 2), Fraction(1), Fraction(2)), (2, 3, 4, 5, 6)),
+    ("Машины пүршний", "см", (Fraction(1), Fraction(2), Fraction(5, 2)), (2, 3, 4, 5)),
+    ("Ширээнд хавчсан ган шугамын үзүүрийн", "мм", (Fraction(5), Fraction(10), Fraction(25)), (2, 3, 4, 5, 6, 8)),
+]
+
+
+@lru_cache(maxsize=None)
+def shm_versions() -> tuple:
+    out = []
+    for context in range(len(SHM_CONTEXTS)):
+        _, _, frequencies, amplitudes = SHM_CONTEXTS[context]
+        for index, frequency in enumerate(frequencies):
+            for asked in ("frequency", "period"):
+                # One amplitude per prompt (context, time span, quantity asked), so no two versions share a prompt.
+                out.append((context, frequency, amplitudes[(2 * index + (asked == "period")) % len(amplitudes)], asked))
+    return tuple(shuffled(3535, out))
+
+
+def q35(rng: random.Random, year: int, k: int) -> dict:
+    context, frequency, amplitude, asked = shm_versions()[k % len(shm_versions())]
+    name, unit, _, _ = SHM_CONTEXTS[context]
+    period = 1 / frequency
+    other_unit = "мм" if unit == "см" else "см"
+
+    def pair(a, value, value_unit):
+        return f"{num(a)} {unit}, {num(value)} {value_unit}"
+
+    if asked == "frequency":
+        answer = pair(amplitude, frequency, "Гц")
+        pool = [pair(2 * amplitude, frequency, "Гц"), pair(amplitude, 2 * frequency, "Гц"), pair(amplitude, frequency / 2, "Гц"),
+                pair(amplitude, period, "Гц"), f"{num(amplitude)} {other_unit}, {num(frequency)} Гц"]
+        question = "давтамжийг"
+        tail = f"давтамж f = 1/T = {num(frequency)} Гц"
+    else:
+        answer = pair(amplitude, period, "с")
+        pool = [pair(2 * amplitude, period, "с"), pair(amplitude, 2 * period, "с"), pair(amplitude, period / 2, "с"),
+                pair(amplitude, frequency, "с"), f"{num(amplitude)} {other_unit}, {num(period)} с"]
+        question = "үеийг"
+        tail = f"үе T = {num(period)} с"
     return {
         "skill": "Гармоник хэлбэлзэл",
         "prompt": (
-            "Гармоник хэлбэлзэл хийж буй биеийн шилжилт-хугацааны график "
-            "өгөгджээ. Хэлбэлзлийн далайц ба давтамжийг ол."
+            f"{name} шилжилт-хугацааны графикийг 0–{num(2 * period)} с хугацаанд үзүүлэв. "
+            f"Хэлбэлзлийн далайц ба {question} ол."
         ),
         "answer": answer,
-        "wrong": wrong,
+        "wrong": text_wrongs(answer, pool, rng),
         "solution": (
-            f"Графикийн хамгийн их шилжилт {amplitude} мм, нэг бүтэн "
-            f"хэлбэлзлийн хугацаа 1/{frequency} с тул давтамж {frequency} Гц."
+            f"Графикийн хамгийн их шилжилт буюу далайц {num(amplitude)} {unit}. Нэг бүтэн хэлбэлзэл "
+            f"{num(period)} с үргэлжилнэ, иймд {tail}."
         ),
-        "figure": {
-            "kind": "shm_displacement_time",
-            "amplitude_mm": amplitude,
-            "frequency_hz": frequency,
-        },
+        "figure": {"kind": "shm_displacement_time", "amplitude_mm": float(amplitude), "frequency_hz": float(frequency), "unit": unit},
     }
 
 
-def q36(rng: random.Random, year: int) -> dict:
+def q36(rng: random.Random, year: int, k: int) -> dict:
     statements = [
         ("Эсэргүүцлийн улмаас далайц буурахыг унтрах хэлбэлзэл гэнэ.", True),
         ("Гадны үечилсэн хүчний үйлчлэлээр явагдахыг албадмал хэлбэлзэл гэнэ.", True),
@@ -1462,106 +2058,175 @@ def q36(rng: random.Random, year: int) -> dict:
     }
 
 
-def q37(rng: random.Random, year: int) -> dict:
-    false_statements = {
-        "Зогсонги долгионоор энерги зөөгдөнө.": (
-            "Зогсонги долгион энергийг нэг цэгээс нөгөө рүү зөөдөггүй; "
-            "энерги зангилаа ба гүйлтийн цэгүүдийн хооронд тархана."
-        ),
-        "Долгионы давтамж орчин солигдоход өөрчлөгдөнө.": (
-            "Орчин солигдоход давтамж өөрчлөгдөхгүй; зөвхөн долгионы урт ба "
-            "хурд өөрчлөгдөнө."
-        ),
-        "Дууны хурд орчны нягтаас хамаарахгүй.": (
-            "Дууны хурд орчны уян хатан чанар ба нягтаас хамаарна."
-        ),
-    }
-    true_statements = [
-        "Агаарт дуу тархах хурд агаарын температураас хамаардаг.",
-        "Пүршийг түүний тэнхлэгийн дагуу хэлбэлзүүлэхэд үүсэх долгион тууш байна.",
-        "Долгион тархахад бодис зөөгдөхгүй.",
-        "Дууны өндөр нам нь хэлбэлзлийн давтамжаас хамаарна.",
-        "Долгионы хурд нь орчны шинж чанараас хамаарна.",
-        "Хөндлөн долгион нь хатуу биетийн гадаргуу болон шингэний гадаргуу дээгүүр тархаж болно.",
-    ]
-    answer = rng.choice(list(false_statements))
-    wrong = rng.sample(true_statements, 4)
+WAVE_TRUE = [
+    ("Агаарт дуу тархах хурд агаарын температураас хамаардаг.", "temperature"),
+    ("Пүршийг түүний тэнхлэгийн дагуу хэлбэлзүүлэхэд үүсэх долгион тууш байна.", "spring"),
+    ("Долгион тархахад бодис зөөгдөхгүй.", "matter"),
+    ("Дууны өндөр нам нь хэлбэлзлийн давтамжаас хамаарна.", "pitch"),
+    ("Долгионы хурд нь орчны шинж чанараас хамаарна.", "medium"),
+    ("Хөндлөн долгион нь хатуу биетийн гадаргуу болон шингэний гадаргуу дээгүүр тархаж болно.", "surface"),
+    ("Дуу вакуумд тархахгүй.", "vacuum"),
+    ("Дууны чанга сул нь голчлон хэлбэлзлийн далайцаас хамаарна.", "loudness"),
+    ("Долгион энергийг нэг цэгээс нөгөөд зөөдөг.", "energy"),
+    ("Хүний чих ойролцоогоор 20 Гц-ээс 20 кГц хүртэлх давтамжтай дууг сонсдог.", "hearing"),
+    ("Ультра авиа нь 20 кГц-ээс их давтамжтай механик долгион юм.", "hearing"),
+    ("Хоёр когерент долгион давхцахад интерференц ажиглагдана.", "interference"),
+    ("Долгион саадыг тойрон тархахыг дифракц гэнэ.", "diffraction"),
+    ("Зогсонги долгионы зэргэлдээ хоёр зангилааны хоорондох зай λ/2 байна.", "nodes"),
+    ("Ихэнх хатуу биетэд дуу агаараас хурдан тархдаг.", "sound speed"),
+    ("Тууш долгионд орчны хэсгүүд долгион тархах чиглэлийн дагуу хэлбэлзэнэ.", "longitudinal"),
+    ("Хөндлөн долгионд орчны хэсгүүд долгион тархах чиглэлд перпендикуляр хэлбэлзэнэ.", "transverse"),
+    ("Цуурай нь дуу саадаас ойсны улмаас сонсогддог.", "echo"),
+    ("Ижил орчинд давтамж ихсэхэд долгионы урт багасна.", "wavelength"),
+    ("Орчин солигдоход долгионы давтамж өөрчлөгдөхгүй.", "frequency"),
+]
+WAVE_FALSE = [
+    ("Зогсонги долгионоор энерги нэг цэгээс нөгөөд зөөгдөнө.", "energy",
+     "Зогсонги долгион энергийг нэг цэгээс нөгөө рүү зөөдөггүй; энерги зангилаа ба гүйлтийн цэгүүдийн хооронд хэлбэлзэнэ."),
+    ("Долгионы давтамж орчин солигдоход өөрчлөгдөнө.", "frequency",
+     "Орчин солигдоход давтамж өөрчлөгдөхгүй; зөвхөн долгионы урт ба хурд өөрчлөгдөнө."),
+    ("Дууны хурд орчны нягтаас хамаарахгүй.", "medium", "Дууны хурд орчны уян харимхай чанар ба нягтаас хамаарна."),
+    ("Дуу вакуумд хамгийн хурдан тархана.", "vacuum", "Дуу механик долгион тул вакуумд огт тархахгүй."),
+    ("Дууны өндөр нам нь зөвхөн хэлбэлзлийн далайцаас хамаарна.", "pitch",
+     "Дууны өндөр нам давтамжаас, чанга сул нь далайцаас хамаарна."),
+    ("Тууш долгион зөвхөн хатуу биетэд тархана.", "longitudinal", "Тууш долгион хий, шингэн, хатуу биеийн аль алинд нь тархана."),
+    ("Хөндлөн механик долгион хийн дотор чөлөөтэй тархана.", "transverse",
+     "Хийд шилжилтийн уян харимхай хүч бараг байхгүй тул хөндлөн механик долгион тархахгүй; хийд тууш долгион тархана."),
+    ("Долгион тархахад орчны бодис долгионтой хамт зөөгдөнө.", "matter",
+     "Долгион тархахад орчны хэсгүүд тэнцвэрийн байрлалынхаа орчим хэлбэлзэх ба бодис зөөгдөхгүй; зөвхөн энерги зөөгдөнө."),
+    ("Ультра авиаг хүний чих сайн сонсдог.", "hearing", "Ультра авиа 20 кГц-ээс их давтамжтай тул хүний чих сонсдоггүй."),
+    ("Гэрэл бол тууш механик долгион.", "light", "Гэрэл бол цахилгаан соронзон хөндлөн долгион."),
+    ("Зогсонги долгионы зэргэлдээ хоёр зангилааны хоорондох зай λ байна.", "nodes", "Зэргэлдээ хоёр зангилааны хоорондох зай λ/2."),
+    ("Дуу агаараас ус руу шилжихэд түүний хурд багасна.", "sound speed",
+     "Усанд дуу агаараас хэд дахин хурдан тархдаг тул ус руу шилжихэд хурд нь ихэснэ."),
+    ("Долгионы урт нь тархах хурдаас хамаарахгүй.", "wavelength", "λ = v/f тул долгионы урт хурдаас шууд хамаарна."),
+    ("Цуурай нь дууны хугарлаас үүсдэг.", "echo", "Цуурай нь дууны ойлтоос үүсдэг."),
+    ("Хоёр долгион давхцахад тэд үргэлж бие биеэ бүрэн унтраадаг.", "interference",
+     "Давхцах үед фазын ялгаанаас хамаарч далайц нэмэгдэх эсвэл багасна; үргэлж унтраадаггүй."),
+    ("Дифракц зөвхөн гэрлийн долгионд ажиглагдана.", "diffraction", "Дифракц дуу, усны долгион зэрэг бүх төрлийн долгионд ажиглагдана."),
+    ("Ижил орчинд давтамж ихсэхэд долгионы урт ихэснэ.", "wavelength",
+     "Ижил орчинд v тогтмол, λ = v/f тул давтамж ихсэхэд долгионы урт багасна."),
+    ("Инфра авиа нь 20 кГц-ээс их давтамжтай.", "hearing", "Инфра авиа 20 Гц-ээс бага давтамжтай; 20 кГц-ээс их нь ультра авиа."),
+    ("Дууны хурд бүх орчинд ижил байдаг.", "medium", "Дууны хурд орчноос хамаарна: агаарт ойролцоогоор 340 м/с, усанд 1500 м/с орчим."),
+    ("Пүршийг тэнхлэгийнх нь дагуу хэлбэлзүүлэхэд хөндлөн долгион үүснэ.", "spring",
+     "Пүршийг тэнхлэгийнх нь дагуу шахаж сунгахад тууш долгион үүснэ."),
+]
+
+
+@lru_cache(maxsize=None)
+def wave_statement_versions() -> tuple:
+    versions = [("false", index) for index in range(len(WAVE_FALSE))] + [("true", index) for index in range(len(WAVE_TRUE))]
+    return tuple(shuffled(3737, versions))
+
+
+def q37(rng: random.Random, year: int, k: int) -> dict:
+    polarity, index = wave_statement_versions()[k % len(wave_statement_versions())]
+    # The statements are the options; the lead-in only varies its wording.
+    if polarity == "false":
+        answer, topic, solution = WAVE_FALSE[index]
+        pool = [text for text, other in WAVE_TRUE if other != topic]
+        prompt = [
+            "Долгионы тухай дараах мэдэгдлүүдээс БУРУУГ ол.",
+            "Механик долгион ба дууны тухай дараах мэдэгдлүүдийн аль нь БУРУУ вэ?",
+            "Дараах мэдэгдлүүдийн аль нь долгионы шинж чанарыг БУРУУ тайлбарласан бэ?",
+            "Долгион, дууны тухай БУРУУ мэдэгдлийг сонго.",
+        ][index % 4]
+    else:
+        answer, topic = WAVE_TRUE[index]
+        pool = [text for text, other, _ in WAVE_FALSE if other != topic]
+        prompt = [
+            "Долгионы тухай дараах мэдэгдлүүдээс ЗӨВ-ийг ол.",
+            "Механик долгион ба дууны тухай дараах мэдэгдлүүдийн аль нь ЗӨВ вэ?",
+            "Дараах мэдэгдлүүдийн аль нь долгионы шинж чанарыг ЗӨВ тайлбарласан бэ?",
+            "Долгион, дууны тухай ЗӨВ мэдэгдлийг сонго.",
+        ][index % 4]
+    wrong = text_wrongs(answer, pool, rng)
+    if polarity == "true":
+        reasons = {text: reason for text, _, reason in WAVE_FALSE}
+        solution = f"«{answer}» гэдэг зөв. Бусад нь буруу: " + " ".join(reasons[text] for text in wrong)
     return {
         "skill": "Долгионы шинж чанар",
-        "prompt": "Долгионы тухай дараах мэдэгдлүүдээс БУРУУГИЙГ ол.",
+        "prompt": prompt,
         "answer": answer,
         "wrong": wrong,
-        "solution": false_statements[answer],
+        "solution": solution,
     }
 
 
-def q38(rng: random.Random, year: int) -> dict:
-    oscillations, time, wavelength, speed = rng.choice(
-        [(20, 10, 2, 4), (10, 5, 2, 4), (25, 5, 2, 10), (30, 10, 3, 9), (20, 5, 1, 4)]
-    )
+FLOAT_CONTEXTS = [
+    "Загасчин {t} с хугацаанд загасны уургын хөвөгч {n} удаа хэлбэлзэхийг ажиглав. Усны гадаргуугаар тархах "
+    "долгионуудын оройн хоорондох зай {lam} м бол долгион ямар хурдтай тархаж байсан бэ?",
+    "Нууран дээр хөвж буй нугас {t} с-д {n} удаа дээш доош хөдөлжээ. Зэргэлдээ хоёр долгионы оройн хоорондох "
+    "зай {lam} м бол долгионы тархах хурдыг ол.",
+    "Усан дээр хөвж буй навч {t} с-д {n} бүтэн хэлбэлзэл хийв. Долгионы урт {lam} м бол долгион ямар хурдтай "
+    "тархах вэ?",
+    "Эрэг дээр зогссон хүн {t} с-д эрэг мөргөх {n} долгион тоолжээ. Долгионы оройнуудын хоорондох зай {lam} м "
+    "бол долгионы хурдыг ол.",
+]
+
+
+@lru_cache(maxsize=None)
+def float_versions() -> tuple:
+    out = []
+    for count in (5, 6, 8, 10, 12, 15, 16, 18, 20, 24, 25, 30, 36, 40):
+        for seconds in (4, 5, 6, 8, 10, 12, 15, 20):
+            for wavelength in (Fraction(1, 2), Fraction(1), Fraction(3, 2), Fraction(2), Fraction(5, 2), Fraction(3), Fraction(4), Fraction(5)):
+                frequency = Fraction(count, seconds)
+                speed = frequency * wavelength
+                if (speed * 10).denominator == 1 and Fraction(1, 2) <= speed <= 20 and frequency <= 5:
+                    out.append((count, seconds, wavelength))
+    return tuple(shuffled(3838, out))
+
+
+def q38(rng: random.Random, year: int, k: int) -> dict:
+    count, seconds, wavelength = float_versions()[k % len(float_versions())]
+    frequency = Fraction(count, seconds)
+    speed = frequency * wavelength
+    answer = f"{num(speed)} м/с"
     return {
         "skill": "Долгионы хурд",
-        "prompt": (
-            f"Загасчин {time} с хугацаанд загасны уургын хөвөгч {oscillations} "
-            f"удаа хэлбэлзэхийг ажиглав. Усны гадаргуугаар тархах долгионуудын "
-            f"хоорондох зай {wavelength} м бол долгион ямар хурдтай тархаж байсан бэ?"
-        ),
-        "answer": f"{speed} м/с",
-        "wrong": pick_wrongs(
-            f"{speed} м/с",
-            [
-                f"{speed // 2} м/с",
-                f"{speed * 2} м/с",
-                f"{oscillations} м/с",
-                f"{wavelength} м/с",
-                f"{speed + 2} м/с",
-                f"{max(1, speed - 1)} м/с",
-            ],
-        ),
+        "prompt": FLOAT_CONTEXTS[k % len(FLOAT_CONTEXTS)].format(t=seconds, n=count, lam=num(wavelength)),
+        "answer": answer,
+        "wrong": numeric_wrongs(answer, "м/с", [speed * 2, speed / 2, Fraction(count), wavelength, wavelength / frequency]),
         "solution": (
-            f"f = N/t = {oscillations}/{time} = {oscillations / time:g} Гц; "
-            f"v = fλ = {oscillations / time:g}·{wavelength} = {speed} м/с."
+            f"f = N/t = {count}/{seconds} = {num(frequency)} Гц; "
+            f"v = fλ = {num(frequency)}·{num(wavelength)} = {num(speed)} м/с."
         ),
-        "figure": {
-            "kind": "water_waves",
-            "oscillations": oscillations,
-            "time_s": time,
-            "wavelength_m": wavelength,
-        },
+        "figure": {"kind": "water_waves", "oscillations": count, "time_s": seconds, "wavelength_m": float(wavelength)},
     }
 
 
-def q39(rng: random.Random, year: int) -> dict:
+def q39(rng: random.Random, year: int, k: int) -> dict:
     statements = [
         (
-            "Ойрын хараа муу хүн гүдгэр линз зүүдэг.",
+            "Ойрын хараатай (миопи) хүн гүдгэр линз зүүдэг.",
             False,
-            "Буруу: ойрын хараа муу хүн хүнхэр линз зүүдэг.",
+            "Буруу: ойрын хараатай (миопи) хүн хүнхэр линз зүүдэг.",
         ),
         (
-            "Холын хараа муу хүн хүнхэр линз зүүдэг.",
+            "Холын хараатай (гиперметропи) хүн хүнхэр линз зүүдэг.",
             False,
-            "Буруу: холын хараа муу хүн гүдгэр линз зүүдэг.",
+            "Буруу: холын хараатай (гиперметропи) хүн гүдгэр линз зүүдэг.",
         ),
         (
-            "Ойрын хараа муу хүний нүд дүрсийг торлог бүрхэвчийн өмнө үүсгэдэг.",
+            "Ойрын хараатай (миопи) хүний нүд дүрсийг торлог бүрхэвчийн өмнө үүсгэдэг.",
             True,
-            "Зөв: ойрын хараа муу үед фокус торлог бүрхэвчийн өмнө байна.",
+            "Зөв: ойрын хараатай (миопи) нүдэнд фокус торлог бүрхэвчийн өмнө байна.",
         ),
         (
-            "Холын хараа муу хүний нүд дүрсийг торлог бүрхэвчийн ард үүсгэдэг.",
+            "Холын хараатай (гиперметропи) хүний нүд дүрсийг торлог бүрхэвчийн ард үүсгэдэг.",
             True,
-            "Зөв: холын хараа муу үед фокус торлог бүрхэвчийн ард байна.",
+            "Зөв: холын хараатай (гиперметропи) нүдэнд фокус торлог бүрхэвчийн ард байна.",
         ),
         (
-            "Ойрын харааг гүдгэр линзээр засна.",
+            "Ойрын харааг (миопи) гүдгэр линзээр засна.",
             False,
-            "Буруу: ойрын харааг хүнхэр линзээр засна.",
+            "Буруу: ойрын харааг (миопи) хүнхэр линзээр засна.",
         ),
         (
-            "Холын харааг гүдгэр линзээр засна.",
+            "Холын харааг (гиперметропи) гүдгэр линзээр засна.",
             True,
-            "Зөв: холын харааг гүдгэр линзээр засна.",
+            "Зөв: холын харааг (гиперметропи) гүдгэр линзээр засна.",
         ),
     ]
     while True:
@@ -1598,312 +2263,346 @@ def q39(rng: random.Random, year: int) -> dict:
     }
 
 
-def q40(rng: random.Random, year: int) -> dict:
-    if rng.random() < 0.5:
-        prompt = "Агаараас ус руу гэрэл тусах үед n1 < n2 байна. Аль дүрслэл зөв вэ?"
-        answer = (
-            "Ойсон туяа тусах туяатай ижил өнцгөөр, хугарсан туяа нормаль руу ойртоно."
-        )
-        wrong = [
-            "Ойсон туяа тусах туяатай ижил өнцгөөр, хугарсан туяа нормалаас холдоно.",
-            "Ойсон туяа нормаль руу, хугарсан туяа нормалаас холдоно.",
-            "Ойсон туяа байхгүй.",
-            "Хугарсан туяа тусах туяатай параллель.",
-        ]
-        solution = (
-            "Ойлтын хууль: ойлтын өнцөг = тусах өнцөг. Оптик нягт орчин руу "
-            "нэвтрэхэд хугарсан туяа нормаль руу ойртоно."
-        )
-        figure = {"kind": "refraction", "from": "агаар", "to": "ус", "n1_less": True}
-    else:
-        prompt = "Уснаас агаар руу гэрэл тусах үед n1 > n2 байна. Аль дүрслэл зөв вэ?"
-        answer = (
-            "Ойсон туяа тусах туяатай ижил өнцгөөр, хугарсан туяа нормалаас холдоно."
-        )
-        wrong = [
-            "Ойсон туяа тусах туяатай ижил өнцгөөр, хугарсан туяа нормаль руу ойртоно.",
-            "Ойсон туяа нормаль руу, хугарсан туяа нормаль руу ойртоно.",
-            "Ойсон туяа байхгүй.",
-            "Хугарсан туяа тусах туяатай параллель.",
-        ]
-        solution = (
-            "Ойлтын хууль: ойлтын өнцөг = тусах өнцөг. Оптик бага нягт орчин "
-            "руу нэвтрэхэд хугарсан туяа нормалаас холдоно."
-        )
-        figure = {"kind": "refraction", "from": "ус", "to": "агаар", "n1_less": False}
-    return {
-        "skill": "Гэрлийн хугарал",
-        "prompt": prompt,
-        "answer": answer,
-        "wrong": wrong,
-        "solution": solution,
-        "figure": figure,
-    }
-
-
-def q41(rng: random.Random, year: int) -> dict:
-    intensity, distance = rng.choice([(50, 5), (100, 5), (150, 5), (200, 10), (100, 2)])
-    illuminance = intensity / distance ** 2
-    return {
-        "skill": "Гэрэлтүүлэг",
-        "prompt": (
-            f"{distance:g} м өндөртэй гэрлийн шонгийн оройд I = {intensity} кд "
-            "гэрлийн хүчтэй гэрэл үүсгэгч байрлана. Гэрэл үүсгэгчийн эгц "
-            "доор газар дээрх гэрэлтүүлгийг ол."
-        ),
-        "answer": f"{illuminance:g} лк",
-        "wrong": pick_wrongs(
-            f"{illuminance:g} лк",
-            [
-                f"{intensity / distance:g} лк",
-                f"{intensity * distance:g} лк",
-                f"{illuminance * 2:g} лк",
-                f"{illuminance / 2:g} лк",
-                f"{illuminance * 3:g} лк",
-                f"{illuminance + 5:g} лк",
-            ],
-        ),
-        "solution": (
-            "E = I/r². "
-            f"E = {intensity}/{distance:g}² = {illuminance:g} лк."
-        ),
-        "figure": {
-            "kind": "illuminance",
-            "intensity_cd": intensity,
-            "distance_m": distance,
-        },
-    }
-
-
-def q42(rng: random.Random, year: int) -> dict:
-    instruments = [
-        {
-            "name": "Интерферометрийг",
-            "answer": "Гэрлийн долгионы урт, хугарлын илтгэгч, шугаман хэмжээг хэмжих",
-            "wrong": [
-                "Зөвхөн биеийн температурыг хэмжих",
-                "Зөвхөн цахилгаан гүйдлийг хэмжих",
-                "Зөвхөн дууны давтамжийг хэмжих",
-                "Зөвхөн соронзон орны индукцийг хэмжих",
-            ],
-            "solution": (
-                "Интерферометр нь гэрлийн интерференцийн үзэгдэлд үндэслэж, "
-                "долгионы урт, хугарлын илтгэгч, шугаман хэмжээг нарийвчлан "
-                "хэмжихэд ашиглагдана."
-            ),
-        },
-        {
-            "name": "Спектрометрийг",
-            "answer": "Гэрлийн спектрийн бүрэлдэхүүн ба долгионы уртыг тодорхойлох",
-            "wrong": [
-                "Зөвхөн массыг хэмжих",
-                "Зөвхөн даралтыг хэмжих",
-                "Зөвхөн цахилгаан хүчдэлийг хэмжих",
-                "Зөвхөн дууны хүчийг хэмжих",
-            ],
-            "solution": (
-                "Спектрометр нь гэрлийг спектрд задалж, спектрийн шугамуудын "
-                "байрлалаар бодисын бүрэлдэхүүн ба долгионы уртыг тодорхойлно."
-            ),
-        },
-        {
-            "name": "Поляриметрийг",
-            "answer": "Гэрлийн поляризацийн чиглэл ба оптик идэвхийг хэмжих",
-            "wrong": [
-                "Зөвхөн гэрэлтүүлгийг хэмжих",
-                "Зөвхөн температурыг хэмжих",
-                "Зөвхөн соронзон орныг хэмжих",
-                "Зөвхөн цахилгаан гүйдлийг хэмжих",
-            ],
-            "solution": (
-                "Поляриметр нь гэрлийн поляризацийн чиглэл ба оптик идэвхт "
-                "бодисын эргэлтийн өнцгийг хэмжихэд ашиглагдана."
-            ),
-        },
-        {
-            "name": "Люксметрийг",
-            "answer": "Гэрэлтүүлгийг люксээр хэмжих",
-            "wrong": [
-                "Гэрлийн долгионы уртыг хэмжих",
-                "Дууны давтамжийг хэмжих",
-                "Хугарлын илтгэгчийг хэмжих",
-                "Соронзон индукцийг хэмжих",
-            ],
-            "solution": "Люксметр нь гадаргуу дээрх гэрэлтүүлгийг люксээр хэмждэг.",
-        },
-        {
-            "name": "Рефрактометрийг",
-            "answer": "Шингэний хугарлын илтгэгчийг хэмжих",
-            "wrong": [
-                "Гэрэлтүүлгийг хэмжих",
-                "Дууны хурдыг хэмжих",
-                "Цахилгаан эсэргүүцлийг хэмжих",
-                "Массыг хэмжих",
-            ],
-            "solution": (
-                "Рефрактометр нь гэрлийн хугарлын өнцгөөс хамааруулан "
-                "шингэний хугарлын илтгэгчийг хэмждэг."
-            ),
-        },
-    ]
-    chosen = rng.choice(instruments)
-    return {
-        "skill": "Оптик багаж",
-        "prompt": f"{chosen['name']} юунд ашигладаг вэ?",
-        "answer": chosen["answer"],
-        "wrong": chosen["wrong"],
-        "solution": chosen["solution"],
-    }
-
-
-TRANSITION_SETS = [
-    [(1, 2), (2, 1), (2, 3), (3, 1), (4, 2)],
-    [(1, 3), (3, 1), (2, 4), (4, 2), (3, 2)],
-    [(1, 4), (4, 1), (2, 3), (3, 2), (4, 3)],
-    [(1, 2), (2, 3), (3, 4), (4, 1), (1, 3)],
-    [(2, 4), (4, 2), (1, 3), (3, 1), (2, 3)],
-    [(1, 2), (2, 1), (3, 4), (4, 3), (2, 3)],
-    [(1, 3), (3, 2), (2, 4), (4, 1), (3, 4)],
-    [(1, 4), (4, 3), (3, 2), (2, 1), (1, 2)],
+REFRACTION_MEDIA = {
+    # medium: (refractive index, "from …", "into …")
+    "агаар": (Fraction(1), "агаараас", "агаар руу"),
+    "ус": (Fraction(133, 100), "уснаас", "ус руу"),
+    "мөс": (Fraction(131, 100), "мөснөөс", "мөс рүү"),
+    "глицерин": (Fraction(147, 100), "глицеринээс", "глицерин рүү"),
+    "шил": (Fraction(3, 2), "шилнээс", "шил рүү"),
+    "алмаз": (Fraction(121, 50), "алмазаас", "алмаз руу"),
+}
+INTO_DENSER = [
+    "Ойсон туяа тусах туяатай ижил өнцгөөр, хугарсан туяа нормаль руу ойртоно.",
+    "Ойсон туяа тусах туяатай ижил өнцгөөр, хугарсан туяа нормалаас холдоно.",
+    "Ойсон туяа нормаль руу, хугарсан туяа нормалаас холдоно.",
+    "Ойсон туяа байхгүй.",
+    "Хугарсан туяа тусах туяатай параллель.",
+]
+INTO_RARER = [
+    "Ойсон туяа тусах туяатай ижил өнцгөөр, хугарсан туяа нормалаас холдоно.",
+    "Ойсон туяа тусах туяатай ижил өнцгөөр, хугарсан туяа нормаль руу ойртоно.",
+    "Ойсон туяа нормаль руу, хугарсан туяа нормаль руу ойртоно.",
+    "Ойсон туяа байхгүй.",
+    "Хугарсан туяа тусах туяатай параллель.",
 ]
 
 
-def q43(rng: random.Random, year: int) -> dict:
-    transitions = rng.choice(TRANSITION_SETS)
-    absorbed = [str(index + 1) for index, (start, end) in enumerate(transitions) if end > start]
-    emitted = [str(index + 1) for index, (start, end) in enumerate(transitions) if end < start]
-    answer = f"{', '.join(absorbed)} шингээнэ; {', '.join(emitted)} цацаргана"
+@lru_cache(maxsize=None)
+def refraction_versions() -> tuple:
+    out = []
+    for first, second in itertools.permutations(REFRACTION_MEDIA, 2):
+        n1, n2 = REFRACTION_MEDIA[first][0], REFRACTION_MEDIA[second][0]
+        if abs(n1 - n2) < Fraction(3, 20):
+            continue
+        if n1 < n2:
+            angles = (20, 30, 40, 50, 60)
+        else:
+            # Stay well below the critical angle, so a refracted ray exists.
+            critical = math.degrees(math.asin(n2 / n1))
+            angles = tuple(angle for angle in (10, 15, 20, 25, 30, 35, 40) if angle <= critical - 4)
+        out += [(first, second, angle) for angle in angles]
+    return tuple(shuffled(4040, out))
+
+
+def q40(rng: random.Random, year: int, k: int) -> dict:
+    first, second, angle = refraction_versions()[k % len(refraction_versions())]
+    n1, origin, _ = REFRACTION_MEDIA[first]
+    n2, _, into = REFRACTION_MEDIA[second]
+    less = n1 < n2
+    options = INTO_DENSER if less else INTO_RARER
+    return {
+        "skill": "Гэрлийн хугарал",
+        "prompt": (
+            f"Гэрэл {origin} {into} {angle}° тусах өнцгөөр тусах үед n1 {'<' if less else '>'} n2 байна. "
+            "Аль дүрслэл зөв вэ?"
+        ),
+        "answer": options[0],
+        "wrong": options[1:],
+        "solution": (
+            "Ойлтын хууль: ойлтын өнцөг = тусах өнцөг. "
+            + ("Оптик нягт орчин руу нэвтрэхэд хугарсан туяа нормаль руу ойртоно."
+               if less else "Оптик сийрэг орчин руу нэвтрэхэд хугарсан туяа нормалаас холдоно (тусах өнцөг хязгаар өнцгөөс бага).")
+        ),
+        "figure": {"kind": "refraction", "from": first, "to": second, "n1_less": less},
+    }
+
+
+LIGHT_SETTINGS = [
+    # setting, heights or distances in metres, plausible luminous intensities in candela
+    ("pole", (3, 4, 5, 6, 8, 10, 12), (200, 250, 300, 320, 400, 450, 500, 600, 800, 900, 1000)),
+    ("ceiling", (Fraction(3, 2), Fraction(2), Fraction(5, 2), Fraction(3)), (50, 60, 75, 80, 90, 100, 120, 150, 160, 180, 200, 250)),
+    ("desk", (Fraction(1, 4), Fraction(2, 5), Fraction(1, 2), Fraction(3, 5), Fraction(4, 5), Fraction(1)), (20, 25, 30, 40, 50, 60, 75, 80, 90, 100)),
+]
+
+
+@lru_cache(maxsize=None)
+def illuminance_versions() -> tuple:
+    out = []
+    for setting, distances, intensities in LIGHT_SETTINGS:
+        for intensity in intensities:
+            for distance in distances:
+                lux = intensity / Fraction(distance) ** 2
+                if (lux * 100).denominator == 1 and 1 <= lux <= 5000:
+                    out.append((setting, intensity, Fraction(distance)))
+    return tuple(shuffled(4141, out))
+
+
+def q41(rng: random.Random, year: int, k: int) -> dict:
+    setting, intensity, distance = illuminance_versions()[k % len(illuminance_versions())]
+    lux = intensity / distance ** 2
+    if setting == "pole":
+        prompt = (
+            f"{num(distance)} м өндөртэй гэрлийн шонгийн оройд I = {intensity} кд гэрлийн хүчтэй гэрэл үүсгэгч "
+            "байрлана. Гэрэл үүсгэгчийн эгц доор газар дээрх гэрэлтүүлгийг ол."
+        )
+    elif setting == "ceiling":
+        prompt = (
+            f"Таазанд өлгөсөн I = {intensity} кд гэрлийн хүчтэй чийдэнгээс {num(distance)} м доор ширээ байрлана. "
+            "Чийдэнгийн эгц доорх ширээний гадаргуугийн гэрэлтүүлгийг ол."
+        )
+    else:
+        prompt = (
+            f"Ширээний чийдэнгийн гэрлийн хүч I = {intensity} кд. Чийдэнгийн эгц доор {num(distance)} м зайд "
+            "байгаа номын хуудасны гэрэлтүүлгийг ол."
+        )
+    answer = f"{num(lux)} лк"
+    return {
+        "skill": "Гэрэлтүүлэг",
+        "prompt": prompt,
+        "answer": answer,
+        "wrong": numeric_wrongs(answer, "лк", [intensity / distance, intensity * distance, lux * 2, lux / 2, lux * 3]),
+        "solution": f"E = I/r² = {intensity}/{num(distance)}² = {num(lux)} лк.",
+        "figure": {"kind": "illuminance", "intensity_cd": intensity, "distance_m": float(distance)},
+    }
+
+
+INSTRUMENTS = [
+    # name, accusative, what it does, "for doing that" (dative), group of instruments that do much the same
+    ("Микроскоп", "Микроскопыг", "Нүдэнд үл харагдах жижиг биетийг ихээр томруулж харах", "Нүдэнд үл харагдах жижиг биетийг ихээр томруулж харахад", "magnify"),
+    ("Луп", "Лупыг", "Ойрын биетийн нарийн хэсгийг бага зэрэг томруулж харах", "Ойрын биетийн нарийн хэсгийг бага зэрэг томруулж харахад", "magnify"),
+    ("Телескоп", "Телескопыг", "Сансрын алслагдсан биетийг ажиглах", "Сансрын алслагдсан биетийг ажиглахад", "far"),
+    ("Дуран", "Дураныг", "Газрын алсын биетийг хоёр нүдээр томруулж харах", "Газрын алсын биетийг хоёр нүдээр томруулж харахад", "far"),
+    ("Перископ", "Перископыг", "Саадын дээгүүр буюу цаанаас толиор харах", "Саадын дээгүүр буюу цаанаас толиор харахад", "periscope"),
+    ("Фотоаппарат", "Фотоаппаратыг", "Биетийн бодит дүрсийг мэдрэгч дээр буулгаж хадгалах", "Биетийн бодит дүрсийг мэдрэгч дээр буулгаж хадгалахад", "camera"),
+    ("Проектор", "Проекторыг", "Жижиг зургийг томруулж дэлгэцэнд тусгах", "Жижиг зургийг томруулж дэлгэцэнд тусгахад", "projector"),
+    ("Нүдний шил", "Нүдний шилийг", "Нүдний харааны согогийг засах", "Нүдний харааны согогийг засахад", "glasses"),
+    ("Оптик шилэн кабель", "Оптик шилэн кабелийг", "Бүрэн дотоод ойлтоор гэрлийн дохиог хол дамжуулах", "Бүрэн дотоод ойлтоор гэрлийн дохиог хол дамжуулахад", "fibre"),
+    ("Эндоскоп", "Эндоскопыг", "Биеийн хөндийн дотор талыг шилэн утсаар харах", "Биеийн хөндийн дотор талыг шилэн утсаар харахад", "fibre"),
+    ("Спектрометр", "Спектрометрийг", "Гэрлийн спектрийн бүрэлдэхүүн ба долгионы уртыг тодорхойлох", "Гэрлийн спектрийн бүрэлдэхүүн ба долгионы уртыг тодорхойлоход", "wavelength"),
+    ("Интерферометр", "Интерферометрийг", "Интерференцээр долгионы урт, маш бага шугаман хэмжээг хэмжих", "Интерференцээр долгионы урт, маш бага шугаман хэмжээг хэмжихэд", "wavelength"),
+    ("Люксметр", "Люксметрийг", "Гадаргуугийн гэрэлтүүлгийг люксээр хэмжих", "Гадаргуугийн гэрэлтүүлгийг люксээр хэмжихэд", "lux"),
+    ("Рефрактометр", "Рефрактометрийг", "Шингэний хугарлын илтгэгчийг хэмжих", "Шингэний хугарлын илтгэгчийг хэмжихэд", "index"),
+    ("Поляриметр", "Поляриметрийг", "Гэрлийн поляризацийн хавтгайн эргэлтийг хэмжих", "Гэрлийн поляризацийн хавтгайн эргэлтийг хэмжихэд", "polar"),
+]
+
+
+def q42(rng: random.Random, year: int, k: int) -> dict:
+    name, accusative, purpose, dative, group = INSTRUMENTS[k % len(INSTRUMENTS)]
+    others = [item for item in INSTRUMENTS if item[4] != group]
+    if (k // len(INSTRUMENTS)) % 2 == 0:
+        prompt = f"{accusative} юунд ашигладаг вэ?"
+        answer = purpose
+        wrong = text_wrongs(answer, [item[2] for item in others], rng)
+    else:
+        prompt = f"{dative} ашигладаг багаж аль вэ?"
+        answer = name
+        wrong = text_wrongs(answer, [item[0] for item in others], rng)
+    return {
+        "skill": "Оптик багаж",
+        "prompt": prompt,
+        "answer": answer,
+        "wrong": wrong,
+        "solution": f"{name} нь {dative[0].lower() + dative[1:]} ашиглагддаг.",
+    }
+
+
+HYDROGEN_EV = {1: Fraction(-136, 10), 2: Fraction(-34, 10), 3: Fraction(-151, 100), 4: Fraction(-85, 100), 5: Fraction(-54, 100)}
+
+
+def transition_listing(transitions) -> str:
+    return ", ".join(f"{index}) n={a} → n={b}" for index, (a, b) in enumerate(transitions, start=1))
+
+
+@lru_cache(maxsize=None)
+def transition_sets(seed: int) -> tuple:
+    rng = random.Random(seed)
+    out, seen = [], set()
+    while len(out) < 80:
+        top = rng.choice((4, 5))
+        pairs = [(a, b) for a in range(1, top + 1) for b in range(1, top + 1) if a != b]
+        chosen = tuple(rng.sample(pairs, 5))
+        ups = sum(b > a for a, b in chosen)
+        if ups < 2 or ups > 3 or chosen in seen:
+            continue
+        seen.add(chosen)
+        out.append((top, chosen))
+    return tuple(out)
+
+
+def level_figure(top: int, transitions) -> dict:
+    levels = list(range(1, top + 1))
+    return {
+        "kind": "energy_levels",
+        "levels": levels,
+        "energies_ev": [float(HYDROGEN_EV[n]) for n in levels],
+        "transitions": [list(pair) for pair in transitions],
+    }
+
+
+def q43(rng: random.Random, year: int, k: int) -> dict:
+    top, transitions = transition_sets(4343)[k % 80]
+    absorbed = [str(i) for i, (a, b) in enumerate(transitions, 1) if b > a]
+    emitted = [str(i) for i, (a, b) in enumerate(transitions, 1) if b < a]
+
+    def describe(up, down) -> str:
+        return f"{', '.join(sorted(up, key=int))} шингээнэ; {', '.join(sorted(down, key=int))} цацаргана"
+
+    answer = describe(absorbed, emitted)
+    pool = [
+        describe(emitted, absorbed),
+        describe(absorbed[:-1], emitted + absorbed[-1:]),
+        describe(absorbed + emitted[:1], emitted[1:]),
+        describe(absorbed[1:] + emitted[:1], emitted[1:] + absorbed[:1]),
+        "Бүх шилжилтэд фотон шингээгдэнэ",
+        "Бүх шилжилтэд фотон цацарна",
+    ]
     return {
         "skill": "Атомын энергийн шилжилт",
         "prompt": (
-            "Диаграммд атомын энергийн түвшний хоорондох электроны боломжит "
-            "шилжилтүүдийг үзүүлжээ. Аль шилжилтүүдэд фотон шингээгдэж, "
-            "аль нь цацаргах вэ?"
+            "Атомын энергийн түвшний хоорондох электроны таван шилжилтийг диаграммд үзүүлэв: "
+            f"{transition_listing(transitions)}. Аль шилжилтүүдэд фотон шингээгдэж, аль нь цацаргах вэ?"
         ),
         "answer": answer,
-        "wrong": [
-            f"{', '.join(emitted)} шингээнэ; {', '.join(absorbed)} цацаргана",
-            "Бүх тохиолдолд зөвхөн шингээнэ",
-            "Бүх тохиолдолд зөвхөн цацаргана",
-            "Эдгээр шилжилтүүдэд фотон шингээгдэхгүй, цацаргахгүй",
-        ],
+        "wrong": text_wrongs(answer, pool, rng),
         "solution": (
-            "Бага энергийн түвшнээс их энергийн түвшин рүү шилжихэд фотон "
-            "шингээгдэж, ихээс бага руу шилжихэд фотон цацарна."
+            "Бага энергийн түвшнээс их энергийн түвшин рүү (n ихсэх) шилжихэд фотон шингээгдэж, ихээс бага руу "
+            f"шилжихэд фотон цацарна. Иймд {answer}."
         ),
-        "figure": {
-            "kind": "energy_levels",
-            "levels": [1, 2, 3, 4],
-            "transitions": transitions,
-        },
+        "figure": level_figure(top, transitions),
     }
 
 
-def q44(rng: random.Random, year: int) -> dict:
-    transitions = rng.choice(TRANSITION_SETS)
+PHOTON_QUESTIONS = [
+    ("Аль шилжилтэд хамгийн их давтамжтай фотон цацарсан бэ?", "down", max),
+    ("Аль шилжилтэд хамгийн бага давтамжтай фотон цацарсан бэ?", "down", min),
+    ("Аль шилжилтэд цацарсан фотоны долгионы урт хамгийн их вэ?", "down", min),
+    ("Аль шилжилтэд цацарсан фотоны долгионы урт хамгийн бага вэ?", "down", max),
+    ("Аль шилжилтэд хамгийн их энергитэй фотон шингээгдсэн бэ?", "up", max),
+    ("Аль шилжилтэд хамгийн бага энергитэй фотон шингээгдсэн бэ?", "up", min),
+]
 
-    def energy_gap(start: int, end: int) -> float:
-        return abs(-13.6 / start ** 2 + 13.6 / end ** 2)
 
-    emitted = [
-        (index, transition)
-        for index, transition in enumerate(transitions)
-        if transition[1] < transition[0]
+def q44(rng: random.Random, year: int, k: int) -> dict:
+    top, transitions = transition_sets(4444)[k % 80]
+    question, direction, pick = PHOTON_QUESTIONS[k % len(PHOTON_QUESTIONS)]
+    candidates = [
+        (index, abs(HYDROGEN_EV[b] - HYDROGEN_EV[a]))
+        for index, (a, b) in enumerate(transitions, start=1)
+        if (b > a) == (direction == "up")
     ]
-    best, _ = max(emitted, key=lambda item: energy_gap(*item[1]))
+    best = pick(candidates, key=lambda item: item[1])[0]
+    kind = "Шингээх" if direction == "up" else "Цацаргах"
     return {
         "skill": "Фотоны давтамж",
         "prompt": (
-            "Устөрөгчийн атомын энергийн түвшин ба шилжилтүүдийг диаграммд "
-            "үзүүлэв. Аль шилжилтэд хамгийн их давтамжтай фотон цацаргасан бэ?"
+            "Устөрөгчийн атомын энергийн түвшин (E_n = −13.6/n² эВ) ба таван шилжилтийг диаграммд үзүүлэв: "
+            f"{transition_listing(transitions)}. {question}"
         ),
-        "answer": str(best + 1),
-        "wrong": [str(index + 1) for index in range(len(transitions)) if index != best],
+        "answer": str(best),
+        "wrong": [str(index) for index in range(1, 6) if index != best],
+        "rank": False,
         "solution": (
-            "Устөрөгчийн түвшний энерги E_n = −13.6/n² эВ. Фотоны энерги "
-            "E = hf, иймд хамгийн их энергийн ялгаатай цацаргах шилжилт нь "
-            f"хамгийн их давтамжтай фотон өгнө. Энэ нь {best + 1}-р шилжилт."
+            "Фотоны энерги hf = |E_эхний − E_эцсийн|; энерги их бол давтамж их, долгионы урт бага (λ = c/f). "
+            f"{kind} шилжилтүүдийн энерги: "
+            + "; ".join(f"{index}) {num(gap, 2)} эВ" for index, gap in candidates)
+            + f". Иймд {best}-р шилжилт."
         ),
-        "figure": {
-            "kind": "energy_levels",
-            "levels": [1, 2, 3, 4],
-            "energies_ev": [-13.6, -3.4, -1.51, -0.85],
-            "transitions": transitions,
-        },
+        "figure": level_figure(top, transitions),
     }
 
 
-def q45(rng: random.Random, year: int) -> dict:
-    isotope = rng.choice([("Тори", 232, 90), ("Уран", 235, 92), ("Уран", 238, 92), ("Радон", 220, 86)])
-    name, mass_number, protons = isotope
+ISOTOPES = [
+    ("Нүүрстөрөгч", 12, 6), ("Нүүрстөрөгч", 14, 6), ("Азот", 14, 7), ("Хүчилтөрөгч", 16, 8), ("Хүчилтөрөгч", 18, 8),
+    ("Натри", 23, 11), ("Магни", 24, 12), ("Хөнгөн цагаан", 27, 13), ("Фосфор", 31, 15), ("Хүхэр", 32, 16),
+    ("Хлор", 35, 17), ("Хлор", 37, 17), ("Кали", 39, 19), ("Кали", 40, 19), ("Кальци", 40, 20), ("Төмөр", 56, 26),
+    ("Кобальт", 60, 27), ("Зэс", 63, 29), ("Цайр", 65, 30), ("Стронци", 90, 38), ("Иод", 131, 53), ("Цези", 137, 55),
+    ("Алт", 197, 79), ("Хар тугалга", 206, 82), ("Хар тугалга", 208, 82), ("Висмут", 209, 83), ("Полони", 210, 84),
+    ("Радон", 220, 86), ("Радон", 222, 86), ("Ради", 226, 88), ("Тори", 232, 90), ("Уран", 235, 92), ("Уран", 238, 92),
+    ("Плутони", 239, 94),
+]
+
+
+def q45(rng: random.Random, year: int, k: int) -> dict:
+    name, mass_number, protons = ISOTOPES[k % len(ISOTOPES)]
     neutrons = mass_number - protons
-    answer = f"{protons} протон, {neutrons} нейтрон"
-    wrong = [
-        f"{protons} протон, {mass_number} нейтрон",
-        f"{mass_number} протон, {protons} нейтрон",
-        f"{neutrons} протон, {protons} нейтрон",
-        f"{neutrons} протон, {mass_number} нейтрон",
-    ]
+    if (k // len(ISOTOPES)) % 2 == 0:
+        word = "протон"
+        prompt = f"{name}-{mass_number} (Z = {protons}) изотопын цөмд хэдэн протон, хэдэн нейтрон байх вэ?"
+        solution = f"Протоны тоо Z = {protons}, нейтроны тоо N = A − Z = {mass_number} − {protons} = {neutrons}."
+    else:
+        word = "электрон"
+        prompt = f"Саармаг {name}-{mass_number} (Z = {protons}) атомд хэдэн электрон байх ба цөмд нь хэдэн нейтрон байх вэ?"
+        solution = (
+            f"Саармаг атомын электроны тоо протоны тоотой тэнцүү: {protons}. "
+            f"Нейтроны тоо N = A − Z = {mass_number} − {protons} = {neutrons}."
+        )
+    answer = f"{protons} {word}, {neutrons} нейтрон"
     return {
         "skill": "Изотопын бүтэц",
-        "prompt": (
-            f"{name}-{mass_number} (Z = {protons}) изотопын протон ба "
-            "нейтроны тоог ол."
-        ),
+        "prompt": prompt,
         "answer": answer,
-        "wrong": wrong,
-        "solution": (
-            f"Протоны тоо Z = {protons}, нейтроны тоо N = A − Z = "
-            f"{mass_number} − {protons} = {neutrons}."
-        ),
-        "figure": {
-            "kind": "nuclide",
-            "element": name,
-            "mass_number": mass_number,
-            "atomic_number": protons,
-        },
+        # Where Z = N (C-12, O-16, Ca-40 …) the swapped pair is the key itself; pick_wrongs then takes the next one.
+        "wrong": pick_wrongs(answer, [
+            f"{protons} {word}, {mass_number} нейтрон",
+            f"{mass_number} {word}, {protons} нейтрон",
+            f"{neutrons} {word}, {protons} нейтрон",
+            f"{neutrons} {word}, {mass_number} нейтрон",
+            f"{mass_number} {word}, {neutrons} нейтрон",
+            f"{protons} {word}, {neutrons + 2} нейтрон",
+            f"{protons + 1} {word}, {neutrons - 1} нейтрон",
+            f"{mass_number} {word}, {mass_number} нейтрон",
+        ]),
+        "solution": solution,
+        "figure": {"kind": "nuclide", "element": name, "mass_number": mass_number, "atomic_number": protons},
     }
 
 
-def q46(rng: random.Random, year: int) -> dict:
-    chains = [
-        ("Тори", 232, 90, "Радон", 220, 86),
-        ("Уран", 238, 92, "Хар тугалга", 206, 82),
-        ("Уран", 235, 92, "Хар тугалга", 207, 82),
-        ("Ради", 226, 88, "Радон", 222, 86),
-        ("Тори", 232, 90, "Хар тугалга", 208, 82),
-    ]
-    parent, parent_a, parent_z, daughter, daughter_a, daughter_z = rng.choice(chains)
+DECAY_CHAINS = [
+    ("Тори", 232, 90, "Радон", 220, 86), ("Уран", 238, 92, "Хар тугалга", 206, 82),
+    ("Уран", 235, 92, "Хар тугалга", 207, 82), ("Ради", 226, 88, "Радон", 222, 86),
+    ("Тори", 232, 90, "Хар тугалга", 208, 82), ("Уран", 238, 92, "Ради", 226, 88),
+    ("Уран", 238, 92, "Радон", 222, 86), ("Уран", 238, 92, "Полони", 218, 84),
+    ("Уран", 238, 92, "Хар тугалга", 214, 82), ("Уран", 238, 92, "Хар тугалга", 210, 82),
+    ("Уран", 238, 92, "Тори", 230, 90), ("Уран", 238, 92, "Уран", 234, 92),
+    ("Ради", 226, 88, "Хар тугалга", 206, 82), ("Ради", 226, 88, "Хар тугалга", 210, 82),
+    ("Тори", 232, 90, "Ради", 224, 88), ("Тори", 232, 90, "Полони", 216, 84),
+    ("Тори", 232, 90, "Хар тугалга", 212, 82), ("Уран", 235, 92, "Ради", 223, 88),
+    ("Уран", 235, 92, "Радон", 219, 86), ("Нептуни", 237, 93, "Висмут", 209, 83),
+    ("Радон", 222, 86, "Хар тугалга", 206, 82), ("Плутони", 239, 94, "Хар тугалга", 207, 82),
+    ("Ради", 228, 88, "Хар тугалга", 208, 82), ("Тори", 230, 90, "Ради", 226, 88),
+    ("Полони", 210, 84, "Хар тугалга", 206, 82), ("Хар тугалга", 210, 82, "Хар тугалга", 206, 82),
+]
+COUNT_WORDS = ["тэг", "нэг", "хоёр", "гурван", "дөрвөн", "таван", "зургаан", "долоон", "найман", "есөн", "арван", "арван нэг"]
+
+
+def q46(rng: random.Random, year: int, k: int) -> dict:
+    parent, parent_a, parent_z, daughter, daughter_a, daughter_z = DECAY_CHAINS[k % len(DECAY_CHAINS)]
     alpha_count = (parent_a - daughter_a) // 4
     beta_count = 2 * alpha_count - (parent_z - daughter_z)
 
-    numbers = [
-        "тэг",
-        "нэг",
-        "хоёр",
-        "гурван",
-        "дөрвөн",
-        "таван",
-        "зургаан",
-        "долоон",
-        "найман",
-        "есөн",
-        "арав",
-    ]
-
     def alpha_text(count: int) -> str:
-        return f"{numbers[count]} альфа"
+        return "альфагүй" if count == 0 else f"{COUNT_WORDS[count]} альфа"
 
     def beta_text(count: int) -> str:
-        return "бетагүй" if count == 0 else f"{numbers[count]} бета"
+        return "бетагүй" if count == 0 else f"{COUNT_WORDS[count]} бета"
 
     answer = f"{alpha_text(alpha_count)}, {beta_text(beta_count)}"
     return {
         "skill": "Цацраг идэвхт задрал",
         "prompt": (
-            f"{parent} {parent_a} (Z = {parent_z}) изотоп хэд хэдэн цацраг "
-            f"идэвхт задралын дараа {daughter} {daughter_a} (Z = {daughter_z}) "
-            "изотопын цөм болж хувирсан. Ямар задралууд явагдсан бэ?"
+            f"{parent} {parent_a} (Z = {parent_z}) изотоп хэд хэдэн цацраг идэвхт задралын дараа {daughter} "
+            f"{daughter_a} (Z = {daughter_z}) изотопын цөм болж хувирсан. Ямар задралууд явагдсан бэ?"
         ),
         "answer": answer,
         "wrong": pick_wrongs(
@@ -1911,42 +2610,99 @@ def q46(rng: random.Random, year: int) -> dict:
             [
                 f"{alpha_text(alpha_count + 1)}, {beta_text(beta_count)}",
                 f"{alpha_text(max(1, alpha_count - 1))}, {beta_text(beta_count)}",
-                f"{alpha_text(alpha_count + 2)}, {beta_text(beta_count)}",
                 f"{alpha_text(alpha_count)}, {beta_text(beta_count + 1)}",
                 f"{alpha_text(alpha_count)}, {beta_text(max(0, beta_count - 1))}",
                 f"{alpha_text(beta_count)}, {beta_text(alpha_count)}",
+                f"{alpha_text(alpha_count + 2)}, {beta_text(beta_count)}",
+                f"{alpha_text(alpha_count + 1)}, {beta_text(beta_count + 1)}",
+                f"{alpha_text(alpha_count)}, {beta_text(beta_count + 2)}",
             ],
         ),
         "solution": (
             "Альфа задралд A 4-өөр, Z 2-оор буурна; бета задралд A өөрчлөгдөхгүй, "
-            f"Z 1-ээр өснө. ΔA = {parent_a}−{daughter_a} = "
-            f"{parent_a - daughter_a} = 4a тул a = {alpha_count}. "
-            f"ΔZ = {parent_z}−{daughter_z} = {parent_z - daughter_z} = "
-            f"2a − b = {2 * alpha_count} − b тул b = {beta_count}."
+            f"Z 1-ээр өснө. ΔA = {parent_a}−{daughter_a} = {parent_a - daughter_a} = 4a тул a = {alpha_count}. "
+            f"ΔZ = {parent_z}−{daughter_z} = {parent_z - daughter_z} = 2a − b = {2 * alpha_count} − b тул b = {beta_count}."
         ),
-        "figure": {
-            "kind": "decay_chain",
-            "parent": [parent_a, parent_z],
-            "daughter": [daughter_a, daughter_z],
-        },
+        "figure": {"kind": "decay_chain", "parent": [parent_a, parent_z], "daughter": [daughter_a, daughter_z]},
     }
 
 
 # ---------------------------------------------------------------------------
 # Part II item generators
 # ---------------------------------------------------------------------------
+# Each task takes scenario `k % len(pool)`, where k is the paper's place in the task's own order (slot 47–50).
+# Thirty scenarios put each task text in two of the 60 papers; the first five of each pool are the earlier ones.
+# Keys are worked out in exact fractions, and a scenario that breaks a task's rule stops the generator.
+
+SUPERSCRIPT = str.maketrans("-0123456789", "⁻⁰¹²³⁴⁵⁶⁷⁸⁹")
+
+
+def given(value) -> Fraction:
+    """A scenario number as written (0.38, 2.5e-3, 8.31) as an exact fraction, free of binary float error."""
+    return Fraction(str(value))
+
+
+def places(value: Fraction, most: int, label: str) -> Fraction:
+    """`value` itself, after checking that it is a decimal ending within `most` places."""
+    if (Fraction(value) * 10 ** most).denominator != 1:
+        raise ValueError(f"{label} = {float(value)} does not end within {most} decimals")
+    return Fraction(value)
+
+
+def scientific(value: Fraction) -> tuple[Fraction, int]:
+    """The mantissa in [1, 10) and the power of ten of an exact positive value."""
+    mantissa, exponent = Fraction(value), 0
+    while mantissa >= 10:
+        mantissa, exponent = mantissa / 10, exponent + 1
+    while mantissa < 1:
+        mantissa, exponent = mantissa * 10, exponent - 1
+    return mantissa, exponent
+
+
+def sci_exact(value, label: str) -> str:
+    """Like `sci`, 1.5·10⁻⁸, for an exact value whose mantissa ends within two decimals."""
+    mantissa, exponent = scientific(given(value) if isinstance(value, float) else value)
+    return f"{num(places(mantissa, 2, label))}·10{str(exponent).translate(SUPERSCRIPT)}"
+
 
 CONNECTED_SCENARIOS = [
+    # m2 holds while m1_initial < μs·m2 and slides once m1_test > μs·m2; a = (m1_test − μ·m2)g/(m1_test + m2)
+    # ends within one decimal.
     dict(m2=10, mu_s=0.4, mu_k=0.2, m1_initial=2, m1_test=5),
-    dict(m2=15, mu_s=11 / 30, mu_k=0.23, m1_initial=3, m1_test=6),
+    dict(m2=15, mu_s=0.38, mu_k=0.26, m1_initial=3, m1_test=6),
     dict(m2=20, mu_s=0.3, mu_k=0.12, m1_initial=3, m1_test=8),
-    dict(m2=12, mu_s=0.5, mu_k=1 / 3, m1_initial=4, m1_test=8),
+    dict(m2=12, mu_s=0.5, mu_k=0.25, m1_initial=4, m1_test=8),
     dict(m2=8, mu_s=0.5, mu_k=0.4, m1_initial=2, m1_test=6),
+    dict(m2=5, mu_s=0.4, mu_k=0.21, m1_initial=1, m1_test=6),
+    dict(m2=6, mu_s=0.45, mu_k=0.3, m1_initial=2, m1_test=7),
+    dict(m2=7, mu_s=0.4, mu_k=0.22, m1_initial=2, m1_test=7),
+    dict(m2=8, mu_s=0.25, mu_k=0.17, m1_initial=1, m1_test=4),
+    dict(m2=9, mu_s=0.6, mu_k=0.46, m1_initial=4, m1_test=9),
+    dict(m2=10, mu_s=0.48, mu_k=0.33, m1_initial=3, m1_test=9),
+    dict(m2=11, mu_s=0.6, mu_k=0.34, m1_initial=4, m1_test=11),
+    dict(m2=12, mu_s=0.25, mu_k=0.1, m1_initial=2, m1_test=8),
+    dict(m2=13, mu_s=0.3, mu_k=0.14, m1_initial=3, m1_test=6),
+    dict(m2=14, mu_s=0.55, mu_k=0.38, m1_initial=7, m1_test=9),
+    dict(m2=14, mu_s=0.6, mu_k=0.43, m1_initial=6, m1_test=12),
+    dict(m2=15, mu_s=0.36, mu_k=0.15, m1_initial=4, m1_test=10),
+    dict(m2=16, mu_s=0.25, mu_k=0.11, m1_initial=3, m1_test=8),
+    dict(m2=17, mu_s=0.5, mu_k=0.2, m1_initial=6, m1_test=13),
+    dict(m2=18, mu_s=0.55, mu_k=0.28, m1_initial=8, m1_test=14),
+    dict(m2=19, mu_s=0.6, mu_k=0.36, m1_initial=6, m1_test=15),
+    dict(m2=20, mu_s=0.42, mu_k=0.29, m1_initial=5, m1_test=10),
+    dict(m2=21, mu_s=0.3, mu_k=0.16, m1_initial=5, m1_test=7),
+    dict(m2=22, mu_s=0.45, mu_k=0.32, m1_initial=7, m1_test=11),
+    dict(m2=23, mu_s=0.5, mu_k=0.4, m1_initial=8, m1_test=12),
+    dict(m2=24, mu_s=0.35, mu_k=0.23, m1_initial=7, m1_test=12),
+    dict(m2=24, mu_s=0.5, mu_k=0.35, m1_initial=8, m1_test=16),
+    dict(m2=25, mu_s=0.32, mu_k=0.19, m1_initial=5, m1_test=10),
+    dict(m2=26, mu_s=0.35, mu_k=0.2, m1_initial=6, m1_test=14),
+    dict(m2=30, mu_s=0.4, mu_k=0.23, m1_initial=9, m1_test=15),
 ]
 
 
-def s21(rng: random.Random, year: int) -> dict:
-    scenario = rng.choice(CONNECTED_SCENARIOS)
+def s21(rng: random.Random, year: int, k: int) -> dict:
+    scenario = CONNECTED_SCENARIOS[k % len(CONNECTED_SCENARIOS)]
     m2 = scenario["m2"]
     mu_s = scenario["mu_s"]
     mu_k = scenario["mu_k"]
@@ -1954,8 +2710,11 @@ def s21(rng: random.Random, year: int) -> dict:
     m1_test = scenario["m1_test"]
     weight = m2 * G
     friction = m1_initial * G
-    threshold = mu_s * m2
-    acceleration = (m1_test * G - mu_k * m2 * G) / (m1_test + m2)
+    threshold = places(given(mu_s) * m2, 2, "μс·m2")
+    acceleration = places((m1_test - given(mu_k) * m2) * 10 / (m1_test + m2), 1, "a")
+    # [b] is the static friction m1g only while m2 stays put, and [d] needs m2 to slide.
+    if not m1_initial < threshold < m1_test:
+        raise ValueError(f"2.1 {scenario}: needs m1_initial < μс·m2 < m1_test")
     return {
         "skill": "Холбосон бие ба үрэлт",
         "prompt": (
@@ -1974,20 +2733,20 @@ def s21(rng: random.Random, year: int) -> dict:
             },
             {
                 "prompt": f"m1 масстай биеийн массыг [c] кг хүртэл нэмэгдүүлэхэд m2 масстай бие гадаргуу дээгүүр гулсаж эхэлнэ.",
-                "answer": f"{threshold:g}",
+                "answer": num(threshold),
             },
             {
                 "prompt": f"m2 масстай бие m1 = {m1_test:g} кг үед [d] м/с² хурдатгалтай гулсана.",
-                "answer": fmt(acceleration),
+                "answer": num(acceleration),
             },
         ],
         "solution": (
             f"1) P2 = m2g = {m2}·10 = {weight:g} Н. "
             f"2) m1 = {m1_initial} кг үед тайвны үрэлт m1g = {friction:g} Н; "
-            f"хязгаар μс·m2g = {mu_s * m2 * G:g} Н тул хөдлөхгүй. "
-            f"3) Гулсаж эхлэх нөхцөл m1g = μс·m2g, иймд m1 = μс·m2 = {threshold:g} кг. "
+            f"хязгаар μс·m2g = {num(threshold * 10)} Н тул хөдлөхгүй. "
+            f"3) Гулсаж эхлэх нөхцөл m1g = μс·m2g, иймд m1 = μс·m2 = {num(threshold)} кг. "
             f"4) m1 = {m1_test:g} кг үед a = (m1g − μ·m2g)/(m1+m2) = "
-            f"{fmt(acceleration)} м/с²."
+            f"{num(acceleration)} м/с²."
         ),
         "figure": {
             "kind": "connected_masses",
@@ -2001,23 +2760,70 @@ def s21(rng: random.Random, year: int) -> dict:
 
 
 GAS_SCENARIOS = [
+    # V1 is a whole multiple of 8.31 л, so T1 = p1V1/R is whole. 1–2 is a straight line on the diagram (isobaric
+    # where p2 is left out) and 2–3 is isochoric. One state alone has the highest pressure, and each state is that
+    # one in ten scenarios, so [a] is 1, 2 or 3 in a third of the papers each. The work in 1–2, the area under the
+    # line, comes out in whole joules except in the third and fifth scenarios. The prompt names only p1 and V1
+    # (V2, p2 and p3 are read off the figure), so no two scenarios share that pair.
+    # State 3 highest: isobaric 1–2, then the pressure rises at constant volume.
     dict(p1=200, v1=8.31, v2=16.62, p3=300),
     dict(p1=100, v1=8.31, v2=24.93, p3=200),
     dict(p1=150, v1=8.31, v2=16.62, p3=250),
-    dict(p1=200, v1=8.31, v2=24.93, p3=400),
+    dict(p1=250, v1=8.31, v2=24.93, p3=400),  # p1 was 200 kPa, the first scenario's prompt
     dict(p1=120, v1=8.31, v2=16.62, p3=180),
+    dict(p1=100, v1=24.93, v2=33.24, p3=140),
+    dict(p1=150, v1=16.62, v2=49.86, p3=220),
+    dict(p1=260, v1=8.31, v2=49.86, p3=400),
+    dict(p1=300, v1=16.62, v2=24.93, p3=420),
+    dict(p1=400, v1=16.62, v2=41.55, p3=600),
+    # State 2 highest: the pressure rises along 1–2 and falls at constant volume.
+    dict(p1=100, v1=16.62, v2=24.93, p2=300, p3=200),
+    dict(p1=120, v1=16.62, v2=33.24, p2=180, p3=80),
+    dict(p1=150, v1=24.93, v2=41.55, p2=350, p3=250),
+    dict(p1=160, v1=16.62, v2=33.24, p2=240, p3=100),
+    dict(p1=180, v1=8.31, v2=33.24, p2=220, p3=120),
+    dict(p1=200, v1=16.62, v2=33.24, p2=400, p3=300),
+    dict(p1=250, v1=16.62, v2=24.93, p2=350, p3=150),
+    dict(p1=300, v1=8.31, v2=16.62, p2=500, p3=200),
+    dict(p1=350, v1=8.31, v2=41.55, p2=450, p3=250),
+    dict(p1=400, v1=8.31, v2=24.93, p2=600, p3=300),
+    # State 1 highest: the pressure falls along 1–2 and stays below p1 at constant volume.
+    dict(p1=200, v1=24.93, v2=41.55, p2=100, p3=150),
+    dict(p1=220, v1=16.62, v2=24.93, p2=180, p3=120),
+    dict(p1=250, v1=24.93, v2=33.24, p2=150, p3=200),
+    dict(p1=280, v1=8.31, v2=49.86, p2=120, p3=200),
+    dict(p1=300, v1=24.93, v2=41.55, p2=100, p3=200),
+    dict(p1=350, v1=16.62, v2=33.24, p2=150, p3=250),
+    dict(p1=360, v1=8.31, v2=24.93, p2=240, p3=120),
+    dict(p1=450, v1=8.31, v2=16.62, p2=150, p3=300),
+    dict(p1=500, v1=8.31, v2=24.93, p2=300, p3=100),
+    dict(p1=600, v1=8.31, v2=33.24, p2=200, p3=400),
 ]
 
 
-def s22(rng: random.Random, year: int) -> dict:
-    scenario = rng.choice(GAS_SCENARIOS)
+def s22(rng: random.Random, year: int, k: int) -> dict:
+    scenario = GAS_SCENARIOS[k % len(GAS_SCENARIOS)]
     p1 = scenario["p1"]
     v1 = scenario["v1"]
     v2 = scenario["v2"]
+    p2 = scenario.get("p2", p1)
     p3 = scenario["p3"]
-    temperature1 = p1 * v1 / R
-    work = p1 * (v2 - v1) / 1000
-    max_state = "3" if p3 > p1 else "1"
+    pressures = [p1, p2, p3]
+    highest = pressures.index(max(pressures)) + 1
+    temperature1 = places(p1 * given(v1) / given(R), 0, "T1")
+    # The area under the straight 1–2 line: p1(V2 − V1) when it is isobaric, (p1 + p2)(V2 − V1)/2 when it slopes.
+    work = Decimal(p1 + p2) * (Decimal(str(v2)) - Decimal(str(v1))) / 2000
+    places(Fraction(work), 4, "A")
+    # [a] has one answer only when one state alone is the highest; 2–3 must change the pressure to be a process.
+    if not v2 > v1 or pressures.count(max(pressures)) != 1 or p3 == p2:
+        raise ValueError(f"2.2 {scenario}: needs V2 > V1, a single highest pressure and p3 ≠ p2")
+    if p2 == p1:
+        work_step = f"4) 1–2 изобар процесс: A = p1(V2−V1) = {p1}·10³·({v2:g}−{v1:g})·10⁻³ Ж = {exact(work)} кЖ."
+    else:
+        work_step = (
+            "4) 1–2 процессын график шулуун тул хийн ажил нь түүний доорх трапецийн талбайтай тэнцүү: "
+            f"A = (p1+p2)(V2−V1)/2 = ({p1}+{p2})·10³·({v2:g}−{v1:g})·10⁻³/2 Ж = {exact(work)} кЖ."
+        )
     return {
         "skill": "Идеал хийн процесс",
         "prompt": (
@@ -2026,64 +2832,94 @@ def s22(rng: random.Random, year: int) -> dict:
             f"{p1} кПа, эзлэхүүн V1 = {v1:g} л, R = 8.31 Ж/(моль·К)."
         ),
         "parts": [
-            {"prompt": "[a] төлөвт даралт хамгийн их байна.", "answer": max_state},
-            {"prompt": "1-р төлөвийн температур [b] К.", "answer": f"{temperature1:.0f}"},
+            {"prompt": "[a] төлөвт даралт хамгийн их байна.", "answer": str(highest)},
+            {"prompt": "1-р төлөвийн температур [b] К.", "answer": num(temperature1)},
             {"prompt": "3-р төлөвт даралт [c] кПа.", "answer": f"{p3:g}"},
-            {"prompt": "1–2 процесст хийн хийсэн ажил [d] кЖ.", "answer": f"{work:.1f}"},
+            {"prompt": "1–2 процесст хийн хийсэн ажил [d] кЖ.", "answer": exact(work), "accept": roundings(work, (3, 2, 1))},
         ],
         "solution": (
-            f"1) p3 = {p3} кПа > p1 = {p1} кПа тул 3-р төлөвт даралт хамгийн их. "
-            f"2) T1 = p1V1/(νR) = {p1}·10³·{v1:g}·10⁻³/(1·8.31) = {temperature1:.0f} К. "
-            f"3) 2–3 изохор процесс тул p3 = {p3} кПа. "
-            f"4) 1–2 изобар процесс: A = p1(V2−V1) = {p1}·10³·({v2:g}−{v1:g})·10⁻³ = {work:.1f} кЖ."
+            f"1) p1 = {p1} кПа, p2 = {p2} кПа, p3 = {p3} кПа тул {highest}-р төлөвт даралт хамгийн их. "
+            f"2) T1 = p1V1/(νR) = {p1}·10³·{v1:g}·10⁻³/(1·8.31) = {num(temperature1)} К. "
+            # An isochoric 2–3 fixes V3 = V2; p3 itself is read off the graph (it was "isochoric, so p3 = …").
+            f"3) 2–3 изохор процесс тул V3 = V2 = {v2:g} л; графикаас харахад 3-р төлөвийн даралт p3 = {p3} кПа. "
+            + work_step
         ),
         "figure": {
             "kind": "p_v_diagram",
-            "points": [[v1, p1], [v2, p1], [v2, p3]],
+            "points": [[v1, p1], [v2, p2], [v2, p3]],
             "labels": ["1", "2", "3"],
         },
     }
 
 
 CHARGE_SCENARIOS = [
+    # Givens with at most two decimals in scientific notation; F = qvB, r = mv/(qB) and T = 2πm/(qB) = [d]·π·10ⁿ
+    # come out exact, with [d] whole. The added particles carry whole multiples of e = 1.6·10⁻¹⁹ Кл and about one
+    # proton mass or more per unit charge (two or more when the charge is 2e or larger).
     dict(B=2.5e-3, v=3e6, m=5e-23, q=2e-12),
     dict(B=0.1, v=1e6, m=1e-26, q=1e-19),
     dict(B=0.2, v=2e6, m=4e-26, q=2e-19),
     dict(B=0.02, v=5e6, m=2e-26, q=1e-19),
     dict(B=0.05, v=4e6, m=3e-26, q=2e-19),
+    dict(B=0.01, v=1e4, m=2.4e-25, q=1.6e-19),
+    dict(B=0.01, v=6e4, m=6.4e-27, q=1.6e-19),
+    dict(B=0.04, v=1e5, m=3.2e-27, q=1.6e-19),
+    dict(B=0.05, v=8e4, m=2e-26, q=1.6e-19),
+    dict(B=0.05, v=6e5, m=8e-27, q=1.6e-19),
+    dict(B=0.08, v=5e4, m=9.6e-26, q=1.6e-19),
+    dict(B=0.15, v=2.5e6, m=6e-27, q=1.6e-19),
+    dict(B=0.2, v=2e5, m=8e-26, q=1.6e-19),
+    dict(B=0.2, v=1.5e5, m=9.6e-27, q=1.6e-19),
+    dict(B=0.25, v=3e5, m=1e-26, q=1.6e-19),
+    dict(B=0.4, v=1.5e6, m=4.8e-26, q=1.6e-19),
+    dict(B=0.5, v=2e6, m=4e-27, q=1.6e-19),
+    dict(B=0.5, v=8e5, m=4.8e-27, q=1.6e-19),
+    dict(B=0.5, v=4e6, m=1.6e-27, q=1.6e-19),
+    dict(B=0.5, v=6e6, m=6e-27, q=1.6e-19),
+    dict(B=0.02, v=1.5e4, m=6.4e-26, q=3.2e-19),
+    dict(B=0.05, v=2.5e5, m=1.6e-26, q=3.2e-19),
+    dict(B=0.1, v=3e4, m=9.6e-26, q=3.2e-19),
+    dict(B=0.1, v=2e4, m=4.8e-25, q=3.2e-19),
+    dict(B=0.3, v=5e5, m=2.4e-26, q=3.2e-19),
+    dict(B=0.025, v=4e5, m=9.6e-27, q=4.8e-19),
+    dict(B=0.25, v=3e6, m=3e-26, q=4.8e-19),
+    dict(B=0.25, v=5e6, m=9.6e-27, q=4.8e-19),
+    dict(B=0.025, v=4e4, m=3.2e-25, q=6.4e-19),
+    dict(B=0.025, v=2.5e4, m=6.4e-25, q=6.4e-19),
 ]
 
 
-def s23(rng: random.Random, year: int) -> dict:
-    scenario = rng.choice(CHARGE_SCENARIOS)
+def s23(rng: random.Random, year: int, k: int) -> dict:
+    scenario = CHARGE_SCENARIOS[k % len(CHARGE_SCENARIOS)]
     B = scenario["B"]
     v = scenario["v"]
     m = scenario["m"]
     q = scenario["q"]
-    force = q * v * B
-    radius = m * v / (q * B)
-    period = 2 * math.pi * m / (q * B)
-    radius_cm = radius * 100
+    force = given(q) * given(v) * given(B)
+    radius_cm = places(100 * given(m) * given(v) / (given(q) * given(B)), 2, "r")
+    mantissa, exponent = scientific(given(m) / (given(q) * given(B)))
+    coefficient = num(places(2 * mantissa, 0, "T/π"))
+    power = "10" + str(exponent).translate(SUPERSCRIPT)
     return {
         "skill": "Соронзон орон дахь цэнэгт бөөм",
         "prompt": (
             "Зургийн хавтгайд перпендикуляр цааш чиглэсэн "
-            f"B = {sci(B)} Тл индукцтэй нэгэн төрлийн соронзон орон байв. "
+            f"B = {sci_exact(B, 'B')} Тл индукцтэй нэгэн төрлийн соронзон орон байв. "
             "Энэ орны соронзон индукцийн векторт перпендикуляраар "
-            f"v = {sci(v)} м/с хурдтай, m = {sci(m)} кг масстай, эерэг "
-            f"q = {sci(q)} Кл цэнэгтэй бөөм оруулахад R радиустай тойргоор хөдлөв."
+            f"v = {sci_exact(v, 'v')} м/с хурдтай, m = {sci_exact(m, 'm')} кг масстай, эерэг "
+            f"q = {sci_exact(q, 'q')} Кл цэнэгтэй бөөм оруулахад R радиустай тойргоор хөдлөв."
         ),
         "parts": [
             {"prompt": "Соронзон орны зүгээс энэ цэнэгт бөөмд үйлчлэх Лоренцын хүч [a] чиглэлд үйлчилнэ.", "answer": "тойргийн төв рүү"},
-            {"prompt": "Лоренцын хүчний хэмжээ [b] Н.", "answer": sci(force)},
-            {"prompt": "Цэнэгт бөөм соронзон орон дотор [c] см радиустай тойргоор хөдөлнө.", "answer": fmt(radius_cm)},
-            {"prompt": "Бөөмийн тойргоор нэг бүтэн эргэх хугацаа [d] с болно.", "answer": f"2π·{sci(period / (2 * math.pi))}"},
+            {"prompt": "Лоренцын хүчний хэмжээ [b] Н.", "answer": sci_exact(force, "F")},
+            {"prompt": "Цэнэгт бөөм соронзон орон дотор [c] см радиустай тойргоор хөдөлнө.", "answer": num(radius_cm)},
+            {"prompt": f"Бөөмийн тойргоор нэг бүтэн эргэх хугацаа T = [d]·π·{power} с болно.", "answer": coefficient},
         ],
         "solution": (
             "Лоренцын хүч F = qvB, чиглэл нь эерэг цэнэгийн хувьд хурд ба "
             "соронзон орны векторт перпендикуляр, тойргийн төв рүү. "
-            f"F = {sci(force)} Н. Радиус r = mv/(qB) = {fmt(radius_cm)} см. "
-            f"Үе T = 2πm/(qB) = 2π·{sci(period / (2 * math.pi))} с."
+            f"F = {sci_exact(force, 'F')} Н. Радиус r = mv/(qB) = {num(radius_cm)} см. "
+            f"Үе T = 2πm/(qB) = {coefficient}π·{power} с, тиймээс [d] = {coefficient}."
         ),
         "figure": {
             "kind": "charged_particle_in_b",
@@ -2096,41 +2932,74 @@ def s23(rng: random.Random, year: int) -> dict:
 
 
 SHM_SCENARIOS = [
+    # x = A·sin(nπt + φ): T = 2/n ends within two decimals, A·n² within one, and E = ½·m·n²·A² (times π²)
+    # within four, at least 0.01.
     dict(m=0.2, A=0.5, omega=2 * math.pi, phi=math.pi / 3),
     dict(m=0.1, A=0.4, omega=4 * math.pi, phi=math.pi / 6),
     dict(m=0.5, A=0.3, omega=math.pi, phi=math.pi / 4),
     dict(m=0.2, A=0.2, omega=5 * math.pi, phi=math.pi / 2),
     dict(m=0.4, A=0.6, omega=2 * math.pi, phi=math.pi / 6),
+    dict(m=0.1, A=0.5, omega=2 * math.pi, phi=math.pi / 2),
+    dict(m=0.2, A=0.1, omega=8 * math.pi, phi=math.pi / 4),
+    dict(m=0.25, A=0.08, omega=5 * math.pi, phi=math.pi / 6),
+    dict(m=0.25, A=0.6, omega=math.pi, phi=math.pi / 2),
+    dict(m=0.3, A=0.04, omega=10 * math.pi, phi=math.pi / 2),
+    dict(m=0.3, A=0.15, omega=8 * math.pi, phi=math.pi / 3),
+    dict(m=0.4, A=0.12, omega=5 * math.pi, phi=math.pi / 3),
+    dict(m=0.5, A=0.1, omega=4 * math.pi, phi=math.pi / 4),
+    dict(m=0.6, A=0.04, omega=10 * math.pi, phi=math.pi / 3),
+    dict(m=0.6, A=0.08, omega=10 * math.pi, phi=math.pi / 4),
+    dict(m=0.6, A=0.6, omega=2 * math.pi, phi=math.pi / 3),
+    dict(m=0.8, A=0.12, omega=5 * math.pi, phi=math.pi / 2),
+    dict(m=0.8, A=0.2, omega=4 * math.pi, phi=math.pi / 6),
+    dict(m=0.8, A=0.3, omega=math.pi, phi=math.pi / 4),
+    dict(m=1, A=0.05, omega=10 * math.pi, phi=math.pi / 4),
+    dict(m=1, A=0.15, omega=8 * math.pi, phi=math.pi / 6),
+    dict(m=1, A=0.4, omega=math.pi, phi=math.pi / 2),
+    dict(m=1.2, A=0.05, omega=10 * math.pi, phi=math.pi / 6),
+    dict(m=1.2, A=0.1, omega=4 * math.pi, phi=math.pi / 3),
+    dict(m=1.2, A=0.5, omega=2 * math.pi, phi=math.pi / 6),
+    dict(m=1.5, A=0.2, omega=math.pi, phi=math.pi / 3),
+    dict(m=1.5, A=0.2, omega=5 * math.pi, phi=math.pi / 4),
+    dict(m=1.5, A=0.4, omega=4 * math.pi, phi=math.pi / 6),
+    dict(m=2, A=0.12, omega=5 * math.pi, phi=math.pi / 6),
+    dict(m=2, A=0.25, omega=4 * math.pi, phi=math.pi / 2),
 ]
 
 
-def s24(rng: random.Random, year: int) -> dict:
-    scenario = rng.choice(SHM_SCENARIOS)
+def s24(rng: random.Random, year: int, k: int) -> dict:
+    scenario = SHM_SCENARIOS[k % len(SHM_SCENARIOS)]
     m = scenario["m"]
     A = scenario["A"]
     omega = scenario["omega"]
     phi = scenario["phi"]
     phase_denominator = round(math.pi / phi)
-    period = 2 * math.pi / omega
-    acceleration_coefficient = A * omega ** 2 / math.pi ** 2
-    energy_coefficient = 0.5 * m * omega ** 2 * A ** 2 / math.pi ** 2
+    n = round(omega / math.pi)
+    period = Decimal(2) / n
+    acceleration_coefficient = Decimal(str(A)) * n * n
+    energy_coefficient = Decimal(str(m)) * n * n * Decimal(str(A)) ** 2 / 2
+    places(Fraction(2, n), 2, "T")
+    places(Fraction(acceleration_coefficient), 1, "Aω²/π²")
+    # Roundings of the energy are accepted too, so it must not round to 0.
+    if places(Fraction(energy_coefficient), 4, "E/π²") < Fraction(1, 100):
+        raise ValueError(f"2.4 {scenario}: E/π² below 0.01")
     return {
         "skill": "Гармоник хэлбэлзэл",
         "prompt": (
-            f"{m:g} кг масстай бие x = {A:g} sin({fmt(omega / math.pi)}πt + "
+            f"{m:g} кг масстай бие x = {A:g} sin({'' if n == 1 else n}πt + "
             f"π/{phase_denominator}) хуулиар хэлбэлзэж байна (СИ)."
         ),
         "parts": [
             {"prompt": "Хэлбэлзлийн анхны фаз π/[a] рад.", "answer": str(phase_denominator)},
-            {"prompt": "Хэлбэлзлийн үе [b] с.", "answer": fmt(period)},
-            {"prompt": "Хурдатгалын далайц [c]·π² м/с².", "answer": fmt(acceleration_coefficient)},
-            {"prompt": "Хэлбэлзлийн бүрэн энерги [d]·π² Ж.", "answer": fmt(energy_coefficient)},
+            {"prompt": "Хэлбэлзлийн үе [b] с.", "answer": exact(period)},
+            {"prompt": "Хурдатгалын далайц [c]·π² м/с².", "answer": exact(acceleration_coefficient)},
+            {"prompt": "Хэлбэлзлийн бүрэн энерги [d]·π² Ж.", "answer": exact(energy_coefficient), "accept": roundings(energy_coefficient, (3, 2))},
         ],
         "solution": (
             f"1) Анхны фаз π/{phase_denominator} тул [a] = {phase_denominator}. "
-            f"2) T = 2π/ω = {fmt(period)} с. "
-            f"3) a_max = Aω² = {fmt(acceleration_coefficient)}π² м/с². "
-            f"4) E = ½mω²A² = {fmt(energy_coefficient)}π² Ж."
+            f"2) T = 2π/ω = {exact(period)} с. "
+            f"3) a_max = Aω² = {exact(acceleration_coefficient)}π² м/с². "
+            f"4) E = ½mω²A² = {exact(energy_coefficient)}π² Ж."
         ),
         "figure": {
             "kind": "shm_displacement_time",
@@ -2175,12 +3044,15 @@ def build(year: int, variant: int) -> None:
         data = generator(
             random.Random(year * 100_000 + variant * 1_000 + number),
             year,
+            slot(year, variant, number),
         )
         paper.mc(number, data, 1 if one_point(year, number) else 2)
     for index, generator in enumerate(STRUCTURED_GENERATORS, start=1):
+        # Part II follows its own per-task paper orders, numbered on from the 46 choice questions (47–50).
         data = generator(
             random.Random(year * 100_000 + variant * 1_000 + 100 + index),
             year,
+            slot(year, variant, 46 + index),
         )
         paper.structured(f"2.{index}", data, part_points(year))
     paper.save()

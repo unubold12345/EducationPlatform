@@ -42,16 +42,17 @@ function readingSection(paper:number) {
     const passage=passages[index].title;
     const mc=(prompt:string,answer:string,wrong:string[],explanation:string)=>questions.push(choice(`ir-${paper}-${questions.length+1}-v1`,"Academic Reading",passage,prompt,answer,wrong,explanation));
     c.completions.forEach(([prompt,answer])=>questions.push({...short(`ir-${paper}-${questions.length+1}-v1`,"Academic Reading",`Complete the summary using ONE WORD from the passage. ${prompt}`,[answer],`The passage explicitly uses “${answer}” in the described context.`,1),passage}));
+    const review=readingReview[(paper-2)*3+index];
+    // Each explanation quotes the sentence that decides the answer (or says what the passage leaves out).
     const statements = [
-      [c.trueStatement,"TRUE","The statement agrees with the information given in the passage."],
-      [c.falseStatement,"FALSE","The passage explicitly contradicts this statement; it describes the opposite policy, limitation or finding."],
-      [c.absentStatement,"NOT GIVEN","The passage provides no information establishing or contradicting this specific claim."],
+      [c.trueStatement,"TRUE",review.statements.true],
+      [c.falseStatement,"FALSE",review.statements.false],
+      [c.absentStatement,"NOT GIVEN",review.statements.notGiven],
     ];
     for(const [statement,answer,explanation] of statements.slice((paper+index)%3).concat(statements.slice(0,(paper+index)%3))) {
       mc(`Do the following statements agree with the information in the passage? Choose TRUE, FALSE or NOT GIVEN.\n${statement}`,answer,["TRUE","FALSE","NOT GIVEN"].filter(v=>v!==answer),explanation);
       questions[questions.length-1].options=["TRUE","FALSE","NOT GIVEN"];
     }
-    const review=readingReview[(paper-2)*3+index];
     for(const [letter,detail] of review.matches) {
       // Fixed paragraph labels allow reuse, as in an IELTS matching-information task.
       questions.push({id:`ir-${paper}-${questions.length+1}-v2`,domain:"Academic Reading",passage,kind:"choice",

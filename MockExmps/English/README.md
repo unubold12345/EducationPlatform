@@ -1,8 +1,9 @@
-# ЭЕШ English mocks (not on the website)
+# ЭЕШ English mocks
 
 Forty practice mocks for the ЭЕШ / ЭШ English test, five per official year (2018, 2019, 2020, 2022, 2023, 2024,
 2025, 2026), plus one official variant of each year for comparison (Variant A, except 2023 D and 2025 B). Written by
-Claude Code (Opus 5.5) on 2026-11-06. **Nothing here is used by the website.**
+Claude Code (Opus 5.5) on 2026-11-06. The website does not read this folder: `scripts/build-entrance-mocks.mjs english`
+copies the mock JSON into `assets/entrance-mocks/english/`, which the site serves.
 
 ## Which official years exist
 
@@ -128,16 +129,23 @@ duration, so `durationMinutes` is null.
   turned into audio.
 - Correct letters are spread evenly (6–12 per letter per mock). Error-spotting and shared-bank items keep their printed
   option order, because their letters are fixed in the sentence or word bank.
+- Every question, Part II item and gap has an `explanation`: one or two Mongolian sentences on why the key is right,
+  quoting the English as “…” and never naming an option letter (letters are reassigned when an item changes). The
+  text is kept in `_source/explanations/<year>-mock-<n>.json`, keyed by item number (`"17"`) or task and label
+  (`"2.1a"`), and merged in by `build.py` (added 2026-11-13).
 
 ## Editing
 
-Edit `_source/data_<year>.py`, then run `python -I MockExmps/English/_source/build.py .` from the repository root
-(add years, for example `. 2024 2025`, to rebuild only those). The script rewrites all 40 files and refuses to write if
-numbering, distinct options, answer letters, `[A …]` markers, Part II answers or the 100-point total are wrong.
+Edit `_source/data_<year>.py` (items) or `_source/explanations/` (explanations; rewrite an item's explanation when you
+change the item), then run `python -I MockExmps/English/_source/build.py .` from the repository root (add years, for
+example `. 2024 2025`, to rebuild only those), then `node scripts/build-entrance-mocks.mjs english` for the site copy.
+`build.py` rewrites the 40 files and refuses to write if numbering, distinct options, answer letters, `[A …]` markers,
+Part II answers, the 100-point total or an item's explanation (missing, or a key for no item) are wrong.
 
 ## Notes
 
-- The answers were prepared by Claude and have not had teacher review yet; read them before students use them.
+- The answers and explanations were prepared by Claude and have not had teacher review yet; read them before students
+  use them.
 - Reading passages in 2022–2025 are generic stories or summaries of well-documented events (the 2019 lost-wallet
   study, Hachikō, the Mars Climate Orbiter, the 1957 spaghetti hoax, Apollo 13 and others); check figures before reuse.
 - 2019's `official-key.json` gives the listening items 0 marks because that is how `keys.json` recorded them; the

@@ -39,6 +39,8 @@ export type ExamQuestion = {
   compactOptions?: boolean;
   /** How a typed answer is compared. Defaults from `kind`. */
   matcher?: "numeric" | "text" | "math";
+  /** The written form is the task (factorise, simplify, rationalise): a `math` answer must match a listed spelling, not just its value. */
+  exactForm?: boolean;
   /** The answer as it should be shown in review (e.g. a Unicode formula). */
   answerDisplay?: string;
   /** Per-question context when it is not shared through the group. */

@@ -11,10 +11,11 @@ def make(v):
     p.mc('Polynomial derivative',f'y=x⁴−{k}x²+6 функцийн уламжлалыг ол.',f'4x³−{2*k}x','Зэргийн дүрэм хэрэглэ.',[f'4x³−{k}x',f'x³−{2*k}x',f'4x⁴−{2*k}x',f'4x³+{2*k}x'])
     p.mc('Rational exponents',f'8^(2/3)+⁵√{(k+1)**5} утгыг ол.',k+5,'8^(1/3)=2 тул эхний гишүүн 4; тавдугаар язгуур k+1.')
     angle=[15,30,45,60,75][v-1];ans=S.simplify(S.cos(2*S.pi*angle/180))
-    p.mc('Double angle',f'2cos²{angle}°−1 утгыг ол.',ans,'cos2θ=2cos²θ−1.',[ans+d for d in [-2,-1,1,2]])
+    theta=S.pi*angle/180
+    p.mc('Double angle',f'2cos²{angle}°−1 утгыг ол.',ans,'cos2θ=2cos²θ−1.',distinct_from(ans,[S.sin(2*theta),S.cos(theta),-ans,1+ans,S.Rational(1,2),S.Rational(-1,2),1,-1,S.sqrt(2)/2,0]))
     p.mc('Factoring limit',f'lim[x→{k}] (x−{k})/(x²−{k*k})-г ол.',F(1,2*k),'Хуваарь=(x−k)(x+k); хураагаад x=k орлуул.')
     p.mc('Dot product from lengths and sine',f'|a|=√{2*13*k}, |b|=√{13*k}, хоорондох өнцөг arcsin(5/13). a·b-г ол.',f'{12*k}√2','Өнцөг хурц тул cos=12/13. Уртнуудын үржвэр 13k√2.',[f'{5*k}√2',f'{13*k}√2',f'{12*k}',f'{5*k}'])
-    p.mc('Power difference',f'({k+2}⁸−{k+2}⁷)/{k+1} илэрхийллийг хялбарчил.',(k+2)**7,'a⁸−a⁷=a⁷(a−1).')
+    p.mc('Power difference',f'({k+2}⁸−{k+2}⁷)/{k+1} илэрхийллийг хялбарчил.',f'{k+2}⁷','a⁸−a⁷=a⁷(a−1).',[f'{k+2}⁸',f'{k+2}⁶',f'{k+1}·{k+2}⁷',f'{k+2}⁷/{k+1}'])
     # sqrt(x+1)=x-1 has only x=3; translate both appearances.
     p.mc('Radical equation',f'√(x−{k-1})=x−{k+1} тэгшитгэлийг бод.',k+3,'u=x−k гэвэл √(u+1)=u−1; u≥1. Квадратлаад u=0,3; зөвхөн 3.')
     p.mc('Cone lateral area',f'Байгуулагч {13*k}, өндөр {12*k} конусын хажуу гадаргуугийн талбайг ол.',f'{65*k*k}π','r=√(l²−h²)=5k; S=πrl.',[f'{60*k*k}π',f'{156*k*k}π',f'{25*k*k}π',f'{169*k*k}π'])
@@ -46,11 +47,11 @@ def make(v):
     p.mc('Quadratic log inequality',f'(log_(1/{b})x)²−3log_(1/{b})x+2≤0-г бод.',f'[{F(1,b*b)}; {F(1,b)}]','t²−3t+2≤0 →1≤t≤2. Суурь<1 тул x=b^(−t).',[f'({F(1,b*b)}; {F(1,b)})',f'[{b}; {b*b}]',f'(0; {F(1,b*b)}]','R'])
     p.mc('Triangle heights',f'ABC хурц өнцөгт гурвалжны B-ээс AC-д буулгасан өндөр {F(16*k,5)}, A-аас BC-д буулгасан AE={4*k}. BE:EC=1:3. AC-г ол.',5*k,'BE=t, EC=3t. AB²=t²+16k², AC²=9t²+16k². Талбайгаас BC·4k=AC·(16k/5) → AC=5t. 25t²=9t²+16k²→t=k.')
     p.mc('Common tangent trapezoid area',f'{2*k}, {18*k} радиустай хоёр тойрог гадаад байдлаар шүргэлцэнэ. Ерөнхий гадна шүргэгчийн шүргэлтийн цэгүүд ба төвүүдээр үүссэн дөрвөн өнцөгтийн талбайг ол.',120*k*k,'Төвүүдийн зай 20k, радиусын зөрүү 16k; шүргэгчийн завсар 12k. Параллель талууд 2k,18k тул S=(20k)·12k/2.')
-    p.mc('Regular triangular frustum volume',f'Зөв гурвалжин огтлогдсон пирамидын суурийн талууд {4*k}, {6*k}; хажуу ирмэг суурьтай 30° өнцөг үүсгэнэ. Эзлэхүүнийг ол.',f'{38*k**3}√3/9','Оройнуудын проекцын зай (6k−4k)/√3. Өндөр=2k/3. Суурийн талбайнууд 4k²√3,9k²√3. V=h(S₁+S₂+√S₁S₂)/3=38k³√3/9.',wrong=[f'{38*k**3}√3/3',f'{19*k**3}√3/9',f'{38*k**3}/9',f'{76*k**3}√3/9'])
+    p.mc('Regular triangular frustum volume',f'Зөв гурвалжин огтлогдсон пирамидын суурийн талууд {4*k}, {6*k}; хажуу ирмэг суурьтай 30° өнцөг үүсгэнэ. Эзлэхүүнийг ол.',simplest(S.Rational(38*k**3,9)*S.sqrt(3)),'Оройнуудын проекцын зай (6k−4k)/√3. Өндөр=2k/3. Суурийн талбайнууд 4k²√3,9k²√3. V=h(S₁+S₂+√S₁S₂)/3=38k³√3/9.',wrong=[simplest(S.Rational(38*k**3,3)*S.sqrt(3)),simplest(S.Rational(19*k**3,9)*S.sqrt(3)),simplest(S.Rational(38*k**3,9)),simplest(S.Rational(76*k**3,9)*S.sqrt(3))])
     m=k
     p.multi('2.1','Induction divisibility proof',f'n≥1 үед F(n)=4^n+{9*m+6}n+{9*m+8} нь 9-д хуваагдахыг индукцээр батал.', [('F(1)',18*m+18),('F(n+1)−4F(n)',f'−{3*(9*m+6)}n−{18*m+18}'),('9-өөр хуваасан шилжилтийн илэрхийлэл',f'−{3*m+2}n−{2*m+2}')],'F(1)=18m+18 нь 9-д хуваагдана. F(n+1)−4F(n)=−3(9m+6)n−18m−18=−9[(3m+2)n+2m+2]. Индукцийн таамагтай нэгтгэвэл F(n+1) ч хуваагдана.')
     a=k+4
-    p.multi('2.2','Product to sum trig equation',f'sin({a}x)cos({a+1}x)=sin({a-2}x)cos({a-1}x) тэгшитгэлийг бод.', [('Үржвэрийн ялгаврын хувиргасан хэлбэр',f'sin({2*a+1}x)−sin({2*a-3}x)=0'),('Үржвэрт задаргаа',f'2cos({2*a-1}x)sin(2x)=0'),('Шийдийн нэгдэл',f'x=πn/2 эсвэл x=(π/2+πn)/{2*a-1}, n∈Z')],'2sin u cos v=sin(u+v)+sin(u−v). Хоёр талын −sinx хасагдана. Нийлбэрийг үржвэрт хувирга.')
+    p.multi('2.2','Product to sum trig equation',f'sin({a}x)cos({a+1}x)=sin({a-2}x)cos({a-1}x) тэгшитгэлийг бод.', [('Үржвэрийн ялгаврын хувиргасан хэлбэр',f'sin({2*a+1}x)−sin({2*a-3}x)=0',{'exactForm':True,'accept':[f'sin{2*a+1}x−sin{2*a-3}x=0',f'sin({2*a+1}x)=sin({2*a-3}x)',f'sin{2*a+1}x=sin{2*a-3}x']}),('Үржвэрт задаргаа',f'2cos({2*a-1}x)sin(2x)=0',{'exactForm':True,'accept':[f'2sin(2x)cos({2*a-1}x)=0',f'cos({2*a-1}x)sin(2x)=0',f'sin(2x)cos({2*a-1}x)=0',f'2cos{2*a-1}xsin2x=0',f'2sin2xcos{2*a-1}x=0']}),('Шийдийн нэгдэл',f'x=πn/2 эсвэл x=(π/2+πn)/{2*a-1}, n∈Z')],'2sin u cos v=sin(u+v)+sin(u−v). Хоёр талын −sinx хасагдана. Нийлбэрийг үржвэрт хувирга.')
     shift=v
     outcomes=[a+b+shift for a in range(1,7) for b in range(1,7)]
     p.multi('2.3','Two dice distribution',f'Хоёр шударга шооны нүдний нийлбэр дээр {shift} нэмснийг X гэв.', [(f'X={6+shift} давтамж',5),(f'X={7+shift} давтамж',6),(f'P(X={7+shift})',F(1,6)),(f'P({3+shift}≤X≤{7+shift})',F(20,36)),(f'P(X≤{6+shift})',F(5,12))],'36 тэнцүү боломжийг хүснэгтэл. Нийлбэрүүдийн давтамж 1,2,3,4,5,6,5,4,3,2,1.')

@@ -52,13 +52,16 @@ def make(v):
     p.mc('Triangle median length',f'A(0,1),B(1,{k+1}),C({2*k+2},1) гурвалжны B оройн медианы уртыг ол.',f'{k}√2','AC-ийн дундаж (k+1,1); B-ээс зөрөө (k,−k).',[f'{k}√3',f'{2*k}',f'√{2*k}',f'{k}'])
     p.mc('Derivative definition limit',f'f(x)=2x²+{k}x+1. lim[x→1](f(x)−f(1))/(x−1)-г ол.',k+4,'Уламжлалын тодорхойлолт f′(1)=4+k.')
     coefficient=f'792·{k}^5·6^7'
-    p.mc('Binomial coefficient',f'({k}x+6)¹² задаргааны x⁵-ийн коэффициентийг ол.',coefficient,'C(12,5)=792; x⁵ үүсэхэд kx-ийг 5, 6-г 7 удаа сонгоно.',[f'792·{k}^7·6^5',f'792·{k}^5·6^5',f'12·{k}^5·6^7',f'792·{k}^12·6^7'])
+    # With k=6 the swapped powers 6^7·6^5 equal the key, so that form uses the wrong coefficient C(12,4) instead.
+    p.mc('Binomial coefficient',f'({k}x+6)¹² задаргааны x⁵-ийн коэффициентийг ол.',coefficient,'C(12,5)=792; x⁵ үүсэхэд kx-ийг 5, 6-г 7 удаа сонгоно.',[f'792·{k}^7·6^5' if k!=6 else f'495·{k}^5·6^7',f'792·{k}^5·6^5',f'12·{k}^5·6^7',f'792·{k}^12·6^7'])
     # Original trig quadratic in sin; translate angle by k*pi.
     p.mc('Trig quadratic equation',f'2cos²(x−{k}π)−5sin(x−{k}π)+1=0 тэгшитгэлийг бод. n∈Z.',f'x={k}π+π/6+2πn эсвэл x={k}π+5π/6+2πn','s=sin(x−kπ): 2s²+5s−3=0; s=1/2 эсвэл −3. Зөвхөн 1/2 зөвшөөрөгдөнө.',[f'x={k}π−π/6+2πn',f'x={k}π+π/2+2πn',f'x={k}π+π/6+πn','Шийдгүй'])
     p.mc('Polynomial and trig integral',f'∫(x²+sin({k}x))dx-г ол.',f'x³/3−cos({k}x)/{k}+C','Зэрэгт функц ба sin-ийн интегралыг тус тус ол.',[f'x³/3+cos({k}x)/{k}+C',f'x³−cos({k}x)/{k}+C',f'2x+{k}cos({k}x)+C',f'x³/3−{k}cos({k}x)+C'])
     p.multi('2.1','Trapezoid metric geometry',f'Трапецийн сууриуд {30*k}, {5*k}, хажуу талууд {20*k}, {15*k}.', [('Дундаж шугам',F(35*k,2)),('Өндөр',12*k),('Талбай',210*k*k)],'Суурийн зөрүү 25k. Хөлийн проекц t: t²+h²=(15k)², (25k−t)²+h²=(20k)². t=9k,h=12k. S=дундаж·өндөр.')
     m=v;n=m*m+2;a=m*m+1
-    p.multi('2.2','Conjugate radicals and cubes',f'X=(√{n}−{m})/(√{n}+{m}), Y={a}+{m}√{n}.', [('X-ийн хураасан хэлбэр',f'{a}−{m}√{n}'),('X+Y',2*a),('XY',1),('X³+Y³',8*a**3-6*a)],'Хуваарийг рационалчил; X,Y хосмог, үржвэр 1. X³+Y³=(X+Y)³−3XY(X+Y).')
+    coef='' if m==1 else str(m)
+    # Simplifying X is the task, so its value alone (the original fraction) must not pass: exact form.
+    p.multi('2.2','Conjugate radicals and cubes',f'X=(√{n}−{m})/(√{n}+{m}), Y={a}+{coef}√{n}.', [('X-ийн хураасан хэлбэр',simplest(a-m*S.sqrt(n)),{'exactForm':True,'accept':[f'{a}−{coef}√{n}',f'−{coef}√{n}+{a}']}),('X+Y',2*a),('XY',1),('X³+Y³',8*a**3-6*a)],'Хуваарийг рационалчил; X,Y хосмог, үржвэр 1. X³+Y³=(X+Y)³−3XY(X+Y).')
     h=k
     p.multi('2.3','Rational curve calculus and line geometry',f'f(x)=(x−{h})/(x−{h+1}). x>{h+1} салбарыг авч үз.', [(f'x={h+2} дээрх шүргэгч',f'y=−x+{h+4}'),(f'x={h+2},x={h+4},y=0-той хүрээлсэн талбай','2+ln3'),(f'y=2x+5-д перпендикуляр, ({h+1},1)-ийг дайрсан шулуун',f'x+2y−{h+3}=0'),(f'f(x) ба (x−{h})+5y−12=0 шулууны огтлолцлын хоорондох зай','4√26/5')],'u=x−h. f=1+1/(u−1); f′(2)=−1. Интеграл [u+ln(u−1)]₂⁴=2+ln3. Огтлолцлын u=2,6; y=2,6/5 тул зай √(16+16/25).')
     d=v+2;e=v+3;nums=list(range(10,100))

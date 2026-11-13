@@ -49,7 +49,7 @@ MOCKS.append({
     "v3": [
         ("In which of the following sentences does \"to take off\" mean \"to remove a piece of clothing\"?", ["The plane took off on time.", "Please take off your shoes before you come in.", "Her business really took off last year.", "He took off our teacher's voice perfectly, and everyone laughed.", "I'm taking a day off tomorrow."], "B"),
         ("Choose the particle that best fits in the gap.\nThe police are looking ___ the robbery at the bank.", ["into", "after", "up", "out", "on"], "A"),
-        ("I need to ___ up on my French before the trip to Paris.", ["brush", "clean", "wash", "wipe", "polish"], "A"),
+        ("I need to ___ up on my French before the trip to Paris.", ["brush", "clean", "wash", "wipe", "sweep"], "A"),
     ],
     "c1": [
         ("Woman: I'd like to send this parcel to Germany.\nMan: Put it on the scales, please. Would you like it to go by airmail?\nQuestion: Where does this conversation take place?", ["At a post office", "At a bank", "At a hospital", "At a library", "At a restaurant"], "A"),
@@ -237,7 +237,7 @@ MOCKS.append({
         ("I'll ___ you a call tomorrow.", ["give", "make", "do", "take", "have"], "A"),
         ("It was raining heavily, with thunder and lightning.", ["There was a thunderstorm.", "It was foggy.", "It was sunny.", "There was a light drizzle.", "It was frosty."], "A"),
         ("The museum guard was very ___; he noticed every small movement.", ["alert", "sleepy", "careless", "lazy", "rude"], "A"),
-        ("One hundred and three.", ["the emergency number for an ambulance in Mongolia", "a year", "a football score", "a body temperature", "the time"], "A"),
+        ("Quick, call one-oh-three! He's badly hurt.", ["the emergency number for an ambulance in Mongolia", "a year", "a football score", "a body temperature", "the time"], "A"),
     ],
     "story": {
         "bank": ["arrested", "broke", "noticed", "returned", "stole"],

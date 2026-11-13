@@ -110,7 +110,7 @@ MOCKS.append({
     "g1": [
         ("___ Mount Everest lies on the border between Nepal and ___ China.", ["– / –", "The / the", "– / the", "The / –", "A / –"], "A"),
         ("Tom: Is there any coffee left?\nAnna: Only ___. Shall I make some more?", ["a little", "a few", "few", "many", "little"], "A"),
-        ("Is there ___ in the class who speaks Chinese?", ["anyone", "no one", "everyone", "each one", "nothing"], "A"),
+        ("Is there ___ in the class who speaks Chinese?", ["anyone", "anything", "everyone", "each one", "nothing"], "A"),
         ("The more you practise, ___ you become.", ["the more confident", "more confident", "the most confident", "confident", "most confident"], "A"),
         ("Could you speak a bit ___? I can't hear you.", ["louder", "more loud", "loudlier", "the loudest", "loudest"], "A"),
         ("The cat jumped ___ the table and knocked over a glass.", ["onto", "into", "at", "through", "under"], "A"),
@@ -152,7 +152,7 @@ MOCKS.append({
     "solution": {"instructions": "Choose the most likely solution to the problem.",
                  "item": ("Problem: **too much plastic waste**", ["reusable shopping bags", "more plastic bottles", "plastic straws", "disposable cups", "extra packaging"], "A")},
     "idioms": [
-        ("Don't <u>count your chickens before they hatch</u>; the match isn't over yet.", ["Don't be too sure of success before it happens.", "Count the players carefully.", "Don't eat chicken before the match.", "Wait until the eggs are cooked.", "Celebrate as early as possible."], "A"),
+        ("<u>Don't count your chickens before they hatch</u>; the match isn't over yet.", ["Don't be too sure of success before it happens.", "Count the players carefully.", "Don't eat chicken before the match.", "Wait until the eggs are cooked.", "Celebrate as early as possible."], "A"),
         ("Our coach <u>gave us the green light</u> to try a new strategy.", ["He gave us permission.", "He refused our idea.", "He turned on the lights.", "He gave us green shirts.", "He told us to stop."], "A"),
     ],
     "c1": [
@@ -306,7 +306,7 @@ MOCKS.append({
     "g1": [
         ("We stayed at ___ small hotel near ___ Lake Khövsgöl.", ["a / –", "the / the", "a / the", "– / –", "an / –"], "A"),
         ("Saraa: How much homework do you have tonight?\nBold: Not much, just ___.", ["a little", "a few", "few", "many", "little"], "A"),
-        ("Has ___ seen my keys? I can't find them anywhere.", ["anyone", "no one", "nobody", "none", "each"], "A"),
+        ("Has ___ seen my keys? I can't find them anywhere.", ["anyone", "anything", "somewhere", "none", "each"], "A"),
         ("The more expensive the dress, ___ people buy it.", ["the fewer", "fewer", "the fewest", "less", "the least"], "A"),
         ("The chef cuts vegetables ___ than anyone else in the kitchen.", ["more carefully", "carefuller", "careful", "most carefully", "more careful"], "A"),
         ("There is a small wooden bridge ___ the river.", ["across", "among", "between", "into", "within"], "A"),
@@ -404,7 +404,7 @@ MOCKS.append({
     "g1": [
         ("My cousin plays ___ violin in ___ orchestra.", ["the / an", "an / the", "– / a", "the / a", "a / an"], "A"),
         ("Anna: Did you understand the lecture?\nTom: Only ___ of it. It was very difficult.", ["a little", "a few", "few", "many", "much"], "A"),
-        ("I'm so hungry. Is there ___ to eat?", ["anything", "nothing", "everything", "none", "nobody"], "A"),
+        ("I'm so hungry. Is there ___ to eat?", ["anything", "every", "everything", "none", "nobody"], "A"),
         ("The faster you run, ___ you get.", ["the more tired", "more tired", "the most tired", "tired", "most tired"], "A"),
         ("My sister learns languages ___ than I do.", ["more easily", "easilier", "more easy", "easy", "the most easily"], "A"),
         ("The runners ran ___ the bridge and into the park.", ["across", "between", "among", "at", "of"], "A"),

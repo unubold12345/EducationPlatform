@@ -482,6 +482,30 @@ NOTES = {
 }
 
 
+def explain(year, i, parts):
+    """Attach each item's Mongolian explanation from explanations/<year>-mock-<i>.json. Keys are the printed item
+    number ("17") or the Part II task and label ("2.1a"); every item needs one and no key may be left over."""
+    notes = json.loads((HERE / "explanations" / f"{year}-mock-{i}.json").read_text(encoding="utf-8"))
+    used = set()
+
+    def take(key):
+        text = notes.get(key)
+        assert isinstance(text, str) and text.strip(), ("missing explanation", year, i, key)
+        used.add(key)
+        return text.strip()
+
+    for part in parts:
+        for section in part.get("sections", []):
+            for t in section["tasks"]:
+                for q in t["questions"]:
+                    q["explanation"] = take(str(q["number"]))
+        for t in part.get("tasks", []):
+            rows = t.get("items", []) + t.get("gaps", []) + [row for g in t.get("groups", []) for row in g["items"]]
+            for row in rows:
+                row["explanation"] = take(t["id"] + row["label"])
+    assert used == set(notes), ("explanations for unknown items", year, i, sorted(set(notes) - used))
+
+
 def main(root, years=None):
     root = pathlib.Path(root)
     for year, builder in BUILDERS.items():
@@ -493,6 +517,7 @@ def main(root, years=None):
             N, parts, minutes = builder(m)
             assert N.five == EXPECTED[year] and N.n == ITEMS.get(year, EXPECTED[year]), (year, i, N.five, N.n)
             assert N.points == 100, (year, i, N.points)
+            explain(year, i, parts)
             doc = collections.OrderedDict()
             doc["title"] = f"ЭЕШ English mock {year} · Mock {i}"
             doc["subject"] = "English"

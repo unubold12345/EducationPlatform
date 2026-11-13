@@ -43,7 +43,7 @@ test("every ЭЕШ mock has a practice form, graded by its own answers", () => {
     for (const question of definition.stages[0].questions) {
       assert.equal(source.grade(question.id, question.answers[0]).correct, true, question.id);
       assert.equal(source.grade(question.id, "").correct, false, question.id);
-      if (definition.subject !== "english") assert.ok(source.reveal(question.id, { correct: true }).explanation, question.id);
+      assert.ok(source.reveal(question.id, { correct: true }).explanation, question.id);
     }
   }
 });

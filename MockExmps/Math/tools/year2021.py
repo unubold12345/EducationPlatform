@@ -28,11 +28,11 @@ def make(v):
     p.mc('Set cardinality',f'|A|={k+5}, |A∩B|={k}, |A∪B|={2*k+8}. |B|-г ол.',2*k+3,'|B|=|A∪B|−|A|+|A∩B|.')
     p.mc('Stars and bars',f'x+y+z={k+5} тэгшитгэл эерэг бүхэл тоон хэдэн шийдтэй вэ?',math.comb(k+4,2),'Эерэг шийдийн тоо C(N−1,2).')
     p.mc('Cone net angle',f'Конусын байгуулагч {3*k}, радиус {2*k}. Дэлгээсний секторын төв өнцгийг ол.','240°','Нумын урт 2πr тул θ=360r/l=240°.', ['120°','180°','270°','540°'])
-    poly=S.expand((x+1)*(x-k)*(x-k-2));ans=str(poly)
-    p.mc('Polynomial roots',f'−1, {k}, {k+2} язгууруудтай нэгж ахлах коэффициенттой куб олон гишүүнтийг ол.',ans,'(x+1)(x−k)(x−k−2)-г үржүүл.',[str(poly+j) for j in [-2,-1,1,2]])
+    poly=S.expand((x+1)*(x-k)*(x-k-2));ans=poly
+    p.mc('Polynomial roots',f'−1, {k}, {k+2} язгууруудтай нэгж ахлах коэффициенттой куб олон гишүүнтийг ол.',ans,'(x+1)(x−k)(x−k−2)-г үржүүл.',[S.expand((x-1)*(x-k)*(x-k-2)),S.expand((x+1)*(x+k)*(x+k+2)),S.expand((x+1)*(x+k)*(x-k-2)),S.expand((x+1)*(x-k)*(x+k+2))])
     # Translate official piecewise-linear equation.
     p.mc('Sum of absolute values',f'|2(x−{k})+1|+|x−{k}−3|=5 тэгшитгэлийн шийдүүдийг ол.',f'{{{k-1}; {k+1}}}','u=x−k. u<−1/2 үед 2−3u=5→u=−1; −1/2≤u<3 үед u+4=5→u=1.',[f'{{{k-1}; {F(3*k+7,3)}}}',f'{{{k+1}}}',f'{{{k-1}}}',f'{{{k+1}; {F(3*k+7,3)}}}'])
-    p.mc('Differential equation initial value',f'dy/dx=2x−{k}, муруй P(−1,2)-ийг дайрна. y-г ол.',f'x²−{k}x+{1-k}','y=x²−kx+C; 2=1+k+C.',[f'x²+{k}x+{1-k}',f'2x²−{k}x+{1-k}',f'x²−{k}x+{k+1}',f'x²−{k}x−{k+1}'])
+    p.mc('Differential equation initial value',f'dy/dx=2x−{k}, муруй P(−1,2)-ийг дайрна. y-г ол.',f'x²−{k}x{signed(1-k)}','y=x²−kx+C; 2=1+k+C.',[f'x²+{k}x{signed(1-k)}',f'2x²−{k}x{signed(1-k)}',f'x²−{k}x{signed(k+1)}',f'x²−{k}x{signed(-k-1)}'])
     p.mc('Normal line',f'f(x)=x²−{2*k}x+{k*k-1}. x={k-1} дээрх нормалын тэгшитгэлийг ол.',f'y=(x−{k-1})/2','Шүргэгчийн налалт −2, нормалынх 1/2; цэг дээр y=0.',[f'y=2(x−{k-1})',f'y=−(x−{k-1})/2',f'y=(x+{k-1})/2',f'y=−2(x−{k-1})'])
     p.mc('Vector internal division',f'AC:CB={k}:1, OA=a, OB=b. OC-г a,b-ээр илэрхийл.',f'(a+{k}b)/{k+1}','C=A+k(B−A)/(k+1).',[f'({k}a+b)/{k+1}',f'(a−{k}b)/{k+1}',f'(b−{k}a)/{k+1}',f'(a+b)/{k+1}'])
     n=10+k
@@ -56,7 +56,7 @@ def make(v):
     P=S.Matrix([k+2,1]);a=3;b=-1;c=k-2;d=(a*P[0]+b*P[1]+c)/10;out=P-2*d*S.Matrix([a,b])
     p.mc('Reflection in oblique line',f'({k+2},1) цэгийг y=3x+{k-2} шулууны хувьд тэгш хэмээр хувирга. Дүрс цэгийг ол.',tuple(out),'3x−y+k−2=0. d=(3x−y+k−2)/10; дүрс=(x−6d,y+2d).',[tuple(out+S.Matrix(t)) for t in [(1,0),(0,1),(-1,0),(0,-1)]])
     p.mc('Positive quadratic for all real x',f'x²−2ax+a+{k*(k+1)}>0 бүх бодит x-д биелэх a мужийг ол.',f'(−{k}; {k+1})','Хамгийн бага утга a+k(k+1)−a²>0 ⇔ (a+k)(a−k−1)<0.',[f'[−{k}; {k+1}]',f'(−∞; −{k}) ∪ ({k+1}; +∞)',f'(−{k+1}; {k})','R'])
-    p.multi('2.1','Cyclic quadrilateral radius and area',f'Тойрогт багтсан PQRS дөрвөн өнцөгтийн PQ={3*k}, QR={8*k}, RS={5*k}, ∠PQR=60°. Радиус ба талбайг ол.', [('PR',7*k),('Тойргийн радиус',f'{7*k}√3/3'),('PS',3*k),('Талбай',f'{39*k*k}√3/4')],'PR²=(3k)²+(8k)²−2·3k·8k·1/2=49k². R=PR/(2sin60°). ∠PSR=120°; PS=3k. Талбай=(3·8/4+3·5/4)k²√3=39k²√3/4.')
+    p.multi('2.1','Cyclic quadrilateral radius and area',f'Тойрогт багтсан PQRS дөрвөн өнцөгтийн PQ={3*k}, QR={8*k}, RS={5*k}, ∠PQR=60°. Радиус ба талбайг ол.', [('PR',7*k),('Тойргийн радиус',simplest(7*k*S.sqrt(3)/3)),('PS',3*k),('Талбай',simplest(S.Rational(39*k*k,4)*S.sqrt(3)))],'PR²=(3k)²+(8k)²−2·3k·8k·1/2=49k². R=PR/(2sin60°). ∠PSR=120°; PS=3k. Талбай=(3·8/4+3·5/4)k²√3=39k²√3/4.')
     balls=[k,k+1,k+2,k,k+1];sums=[a+b for a,b in combinations(balls,2)]
     p.multi('2.2','Sampling without replacement distribution',f'Таван ялгаатай бөмбөлөг дээр {balls} тоонууд бичжээ. Хоёрыг зэрэг жигд сонгож, дугааруудын нийлбэрийг X гэв.', [(f'X={2*k+1} байх боломжийн тоо',sums.count(2*k+1)),(f'P(X={2*k+2})',F(sums.count(2*k+2),10)),('X-ийн ялгаатай боломжит утгууд',tuple(sorted(set(sums)))),('E(X)',F(sum(sums),10))],'Тэнцүү магадлалтай C(5,2)=10 хосыг жагсаана. Нийлбэрийн давтамжийг 10-д хувааж тархалт, дундажийг олно.')
     hi=S.Rational(v+3);lo=S.Rational(2*v-3,2)

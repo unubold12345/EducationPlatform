@@ -54,7 +54,7 @@ test("every imported paper loads as a 100-point entrance exam with unique, compl
         assert.equal(new Set(question.options).size, question.options.length, question.id);
         assert.ok(question.options.includes(question.answers[0]), question.id);
       }
-      if (meta.subject !== "english") assert.ok(question.explanation.trim().length > 3, question.id);
+      assert.ok(question.explanation.trim().length > 3, question.id);
       if (question.figure) {
         assert.equal(question.figure.kind, "image", question.id);
         assert.ok(question.figure.src.startsWith("/exam-assets/eesh/"), question.id);

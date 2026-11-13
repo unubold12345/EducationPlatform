@@ -52,7 +52,11 @@ test("new SAT banks have 147 distinct IDs per form, valid options, numeric keys 
 test("new SAT numeric answers agree with independent arithmetic and reject extraneous radical roots",()=>{
   for(const p of papers)for(const [route,r] of [['lower',0],['first',1],['higher',2]]){
     const qs=additionalMath(p,route),a=p*3+r+2,b=a+3;
-    const expected=route==='higher'?{3:b,7:a+b,12:2*a-1,17:a/(a+b),20:4*p,21:8*a}:{3:p+r+2,7:b+2*p,12:((2*p+1)**2-1)/2,17:a/(a+b),20:4*p,21:2*(a+b)};
+    // Module 2 has its own items since 2026-11-13: the lower route is a separate bank (phone plan, 2(x − p), √(x − p),
+    // spinner, 5-12-13 triangle, garden perimeter), the higher route ends with a conditional probability and a 30° side.
+    const expected=route==='higher'?{3:b,7:a+b,12:2*a-1,17:a/(a+b),20:4*p,21:8*a}
+      :route==='lower'?{3:p+2,7:b,12:(p+1)**2+p,17:a/(a+b),20:13*p,21:2*(a+b)}
+      :{3:p+r+2,7:b+2*p,12:((2*p+1)**2-1)/2,17:a/(a+b),20:4*p,21:2*(a+b)};
     for(const [i,value] of Object.entries(expected))assert.equal(isCorrect(qs[i],String(value)),true,`${p}/${route}/${i}`);
     if(route==='higher'){
       const root=Number(qs[12].answers[0]);assert.equal(Math.sqrt(root+(a-1)**2),root-(a-1));assert.equal(isCorrect(qs[12],'0'),false);

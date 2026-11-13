@@ -207,7 +207,7 @@ MOCKS.append({
         ("By the time you arrive, we ___ dinner.", ["will finish", "would finish", "will have finished", "are finishing", "would have finished"], "C"),
         ("If I ___ a car, I ___ you to the airport.", ["have / would drive", "had / will drive", "would have / drove", "had / would drive", "have had / would drive"], "D"),
         ("Tourist: Where ___ this carpet made?\nSeller: It ___ by hand in a small village near Kharkhorin.", ["is / made", "was / was made", "did / made", "was / has made", "has / is made"], "B"),
-        ("We sat at a ___ table.", ["wooden, old, round, nice", "round, nice, wooden, old", "nice, round, old, wooden", "old, nice, wooden, round", "nice, wooden, round, old"], "C"),
+        ("We sat at a ___ table.", ["wooden, old, big, nice", "big, nice, wooden, old", "nice, big, old, wooden", "old, nice, wooden, big", "nice, wooden, big, old"], "C"),
         ("He failed the exam ___ he had studied very hard.", ["because", "so", "because of", "although", "despite"], "D"),
     ],
     "vocab1": [

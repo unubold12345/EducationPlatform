@@ -16,7 +16,7 @@ MOCKS.append({
         ("Mother: You ___ leave the door open. The cat might run out.\nSon: Sorry, I'll close it.", ["mustn't", "needn't", "could", "may", "would"], "A"),
     ],
     "g2": [
-        ("Anna: Can I call you at eight tonight?\nBen: Better not. I ___ dinner with my parents then.", ["have", "will be having", "was having", "will have had", "am had"], "B"),
+        ("Anna: Can I call you at eight tonight?\nBen: Better not. I ___ dinner with my parents then.", ["had", "will be having", "was having", "will have had", "am had"], "B"),
         ("Saraa said: \"I am meeting my friends today.\"", ["Saraa said that she is meet her friends today.", "Saraa said that she was meeting her friends that day.", "Saraa said that she was meeting my friends that day.", "Saraa said that she is meeting her friends that day.", "Saraa said that she was meeting her friends tomorrow."], "B"),
         ("The children seem ___ their new teacher very much.", ["liking", "to like", "liked", "to liking", "like"], "B"),
         ("This knife is used ___ bread.", ["for cut", "to cutting", "for cutting", "cut", "cuts"], "C"),
@@ -38,7 +38,7 @@ MOCKS.append({
         ("A large boat that carries people and cars across water is a ___.", ["ferry", "van", "tram", "truck", "lorry"], "A"),
         ("You should wear ___ to protect your eyes when you go skiing.", ["gloves", "goggles", "boots", "scarves", "helmets"], "B"),
         ("A ___ person always arrives on time.", ["punctual", "cautious", "generous", "stubborn", "talkative"], "A"),
-        ("Match the verb \"to purchase\" with the synonym.", ["to sell", "to borrow", "to buy", "to rent", "to lend"], "C"),
+        ("Match the verb \"to loan\" with the synonym.", ["to sell", "to borrow", "to buy", "to rent", "to lend"], "E"),
         ("Choose the opposite of the word \"temporary\".", ["permanent", "short", "sudden", "modern", "brief"], "A"),
         ("Doctors warn that the ___ of sugar in fizzy drinks is too high.", ["amount", "number", "many", "size", "few"], "A"),
         ("Her ideas were very ___; nobody had thought of them before.", ["ordinary", "original", "typical", "common", "usual"], "B"),
@@ -125,7 +125,7 @@ MOCKS.append({
         ("By the end of this year, the company ___ more than a thousand new homes.", ["will build", "builds", "would build", "will have built", "will be built"], "D"),
     ],
     "g3": [
-        ("Tuya: If only I ___ more carefully. I wouldn't have lost my phone.\nBat: Let's go and look for it together.", ["was", "am", "had been", "have been", "will be"], "C"),
+        ("Tuya: If only I ___ more careful yesterday. I wouldn't have lost my phone.\nBat: Let's go and look for it together.", ["was", "am", "had been", "have been", "will be"], "C"),
         ("We went for a walk ___ the cold weather.", ["although", "because of", "despite", "even though", "so that"], "C"),
         ("The woman ___ car was stolen called the police.", ["who", "which", "whom", "whose", "that"], "D"),
     ],
@@ -150,7 +150,7 @@ MOCKS.append({
     ],
     "v3": [
         ("a ___ of grapes / of flowers / of keys", ["bunch", "loaf", "slice", "bar", "carton"], "A"),
-        ("to pay ___ / to draw ___ / to attract ___", ["attention", "money", "interest", "a visit", "care"], "A"),
+        ("to pay ___ / to draw ___ / to attract ___", ["attention", "a crowd", "a conclusion", "a visit", "care"], "A"),
     ],
     "v4": [
         ("Situation: Gerel was planning a surprise party for her sister. Her brother accidentally told the sister about it the day before.\nWhich idiom best describes what the brother did?", ["to let the cat out of the bag", "to break the ice", "to feel under the weather", "to hit the nail on the head", "to be over the moon"], "A"),
@@ -216,7 +216,7 @@ MOCKS.append({
         ("Nurse: You ___ eat anything before the blood test tomorrow.\nPatient: OK, I'll have breakfast after it.", ["mustn't", "needn't", "should", "could", "may"], "A"),
     ],
     "g2": [
-        ("Bat: Can we talk at three o'clock?\nNomin: Sorry, at three I ___ my driving lesson.", ["have", "will be having", "had", "will have had", "am had"], "B"),
+        ("Bat: Can we talk at three o'clock?\nNomin: Sorry, at three I ___ my driving lesson.", ["have had", "will be having", "had", "will have had", "am had"], "B"),
         ("Gerel said: \"I have lost my keys.\"", ["Gerel said that she have lost her keys.", "Gerel said that she had lost her keys.", "Gerel said that I had lost my keys.", "Gerel said that she lost my keys.", "Gerel said that she has lost my keys."], "B"),
         ("Bold promised ___ me with my homework.", ["helping", "to help", "helped", "to helping", "help"], "B"),
         ("Would you mind ___ the window? It's very hot.", ["to open", "opening", "open", "opened", "to opening"], "B"),
@@ -492,7 +492,7 @@ MOCKS.append({
                          (["positive", "positively", "positivity", "positives", "position"], 1)]},
         "2.2": {"definitions": (["souvenir", "itinerary", "accommodation", "destination"],
                                 ["a place to stay, such as a hotel", "a plan of a journey showing places and times", "the place you are travelling to", "something you buy to remember a place", "a document for travelling abroad"], "4213"),
-                "synonyms": (["to explore", "to postpone", "to reserve", "to journey"],
+                "synonyms": (["to find out", "to postpone", "to reserve", "to journey"],
                              ["to travel", "to book", "to delay", "to discover", "to complain"], "4321")},
         "2.3": {"text": "Street food is one of the best ways to (a) _________ a new country. In many Asian cities, small stalls sell fresh, cheap meals from early morning until late at night. Locals often (b) _________ these stalls to restaurants because the food is fast and tasty. For tourists, street food can be a little (c) _________ at first, especially if they cannot read the menu. A good tip is to choose stalls with long (d) _________ of local people, because this usually means the food is fresh and good. It is also wise to (e) _________ water from a sealed bottle. Above all, be brave and (f) _________ something new!",
                 "gaps": [(["experience", "forget", "avoid", "leave", "sell"], 1),

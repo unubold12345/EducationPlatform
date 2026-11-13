@@ -15,7 +15,7 @@ def make(v):
  p.mc('Fraction arithmetic',f'({k}/30) ÷ (7/6−7/8)-ын утгыг ол.',F(4*k,35),'7/6−7/8=7/24. Ноогдвор k/30·24/7.')
  p.mc('Ratio substitution',f'a/{k}=b/{k+1}, a,b≠0. (3a−b)/(a+2b)-г ол.',F(2*k-1,3*k+2),'a=kt,b=(k+1)t гэж орлуулж t-г хураа.')
  p.mc('Radical product equation',f'({k}x+{3*k})√(x−{k})=0-г бод.',k,'x≥k тул шугаман үржигдэхүүний x=−3 язгуур тохирохгүй. Язгуурт үржигдэхүүнээс x=k.')
- p.mc('Median length',f'A(2,−2),B(3,−2),C({2*k-6},{2*k}) гурвалжны B оройн медианы уртыг ол.',S.sqrt((k-5)**2+(k+1)**2),'AC-ийн дундаж (k−2,k−1). B-ээс координатын зөрөө (k−5,k+1).')
+ p.mc('Median length',f'A(2,−2),B(3,−2),C({2*k-6},{2*k}) гурвалжны B оройн медианы уртыг ол.',S.sqrt((k-5)**2+(k+1)**2),'AC-ийн дундаж (k−2,k−1). B-ээс координатын зөрөө (k−5,k+1).',distinct_from(S.sqrt((k-5)**2+(k+1)**2),[S.sqrt((k-5)**2+(k-1)**2),S.sqrt((k-2)**2+(k+1)**2),abs(k-5)+abs(k+1),S.sqrt((k-5)**2+(k+3)**2),2*S.sqrt((k-5)**2+(k+1)**2)]))
  N=60+15*v;count=sum(n%3==0 or n%5==0 for n in range(1,N+1))
  p.mc('Union probability',f'1-ээс {N} хүртэлх натурал тооноос нэгийг сонгов. 3 эсвэл 5-д хуваагдах магадлалыг ол.',F(count,N),'3 ба 5-ын үржвэрүүдийг нэмж, 15-ын үржвэрийг нэг удаа хас.')
  p.mc('Cylinder square axial section',f'Цилиндрийн суурийн талбай {k*k}π. Тэнхлэг огтлол квадрат бол өндрийг ол.',2*k,'Суурийн радиус k; квадрат огтлолын өндөр диаметртэй тэнцүү.')
@@ -40,7 +40,7 @@ def make(v):
  a=k;b=k-1
  p.mc('Transform triangle area',f'A({a},{b})-г төв O, коэффициент −2 гомотетоор B, харин Oy тэнхлэгээр тольдоход C цэг үүсэв. ABC талбайг ол.',3*a*b,'B=(−2a,−2b), C=(−a,b). AC=2a, түүнд буусан өндөр 3b.')
  values1=[k,k+1,k+2,k+3,k+4];values2=[k-1,k+1,k+2,k+3,k+5];vals=values1+values2;mean=S.Rational(sum(vals),10);sd=S.sqrt(sum(S.Rational(t*t) for t in vals)/10-mean**2)
- p.mc('Combined standard deviation',f'Хоёр баг тус бүр 5 тоглогчтой. Эхний багийн Σx={sum(values1)},Σx²={sum(t*t for t in values1)}; нөгөөгийн Σy={sum(values2)},Σy²={sum(t*t for t in values2)}. Арван тоглогчийн стандарт хазайлтыг ол.',sd,'Нийлбэр ба квадратуудын нийлбэрийг нэгтгэ. σ²=Σz²/10−(Σz/10)².')
+ p.mc('Combined standard deviation',f'Хоёр баг тус бүр 5 тоглогчтой. Эхний багийн Σx={sum(values1)},Σx²={sum(t*t for t in values1)}; нөгөөгийн Σy={sum(values2)},Σy²={sum(t*t for t in values2)}. Арван тоглогчийн стандарт хазайлтыг ол.',sd,'Нийлбэр ба квадратуудын нийлбэрийг нэгтгэ. σ²=Σz²/10−(Σz/10)².',distinct_from(sd,[sd**2,S.sqrt(sum(S.Rational(t*t) for t in vals)/10),sd*S.sqrt(S.Rational(10,9)),sd/2,2*sd]))
  p.mc('Area between parabolas',f'y=−(x−{v}+1)²+{k+3}, y=(x−{v}−1)²+{k-7} параболуудын хоорондох талбайг ол.',S.Rational(64,3),'u=x−v. Дээд−доод=8−2u²; огтлол u=±2. Интеграл 64/3.')
  p.mc('Exactly three integer solutions',f'a>0. (x−{v})²−(a−1)(x−{v})−a<0 яг гурван бүхэл шийдтэй байх a мужийг ол.','(2; 3]','u=x−v: (u+1)(u−a)<0 →−1<u<a. Бүхэл u=0,1,2 л байхын тулд 2<a≤3.', ['[2; 3)','[2; 3]','(3; 4]','(1; 2]'])
  p.mc('Circle tangent to line',f'Төв O(0,0), 2x+√5y−{2*k}√5=0 шулууныг шүргэх тойргийн тэгшитгэлийг ол.',f'x²+y²={F(20*k*k,9)}','Төвөөс шулуунд хүртэлх зай 2k√5/3 радиустай.',[f'x²+y²={20*k*k}',f'x²+y²={F(4*k*k,9)}',f'x²+y²={F(10*k*k,9)}',f'x²+y²={F(20*k*k,3)}'])
@@ -52,7 +52,7 @@ def make(v):
  # CRT remainder with a shifted desired remainder; all degrees preserved.
  R=x*x+v*x+k
  a=S.expand(R).subs(x,-1);rem=S.rem(R,x*x-x+1)
- p.mc('Polynomial remainder reconstruction',f'P(x)-ийг x+1-д хуваахад {a}, x²−x+1-д хуваахад {rem} үлдэнэ. Үржвэр (x+1)(x²−x+1)-д хуваах үлдэгдлийг ол.',str(R),'R=A(x²−x+1)+(өгсөн шугаман үлдэгдэл) гэж тавь. R(−1)-ээр A-г ол.',[str(R+j) for j in [-2,-1,1,2]])
+ p.mc('Polynomial remainder reconstruction',f'P(x)-ийг x+1-д хуваахад {a}, x²−x+1-д хуваахад {val(rem)} үлдэнэ. Үржвэр (x+1)(x²−x+1)-д хуваах үлдэгдлийг ол.',S.expand(R),'R=A(x²−x+1)+(өгсөн шугаман үлдэгдэл) гэж тавь. R(−1)-ээр A-г ол.',distinct_from(S.expand(R),[S.expand(rem),S.expand(x*x-v*x+k),S.expand(x*x+v*x-k),S.expand(2*x*x+v*x+k),S.expand(x*x+(v+1)*x+k)]))
  C=v+3;t=-v-1;center=v+2;K=center+3
  p.multi('2.1','Parametric quadratic vertex extrema and translation',f'f(x)=x²−2tx+t²−t+{C}. Параметрийг t гэе.',[(f't={t} үеийн орой',(t,C-t)),(f't={t} үед [{t-2};{t+1}] дээрх хамгийн бага,их утга',(C-t,C-t+4)),('Ox тэнхлэгийг шүргэх t',C),(f'Графикийг 3 нэгж зүүн, 1 нэгж дээш зөөхөд y=(x−{center})²−1 болох t',K)],'f=(x−t)²+C−t. Тэнхлэг шүргэхэд C−t=0. Сүүлийн нөхцөлд шинэ оройн x=t−3=center, y=C−t+1=−1.')
  scale=v+1;L=9*scale

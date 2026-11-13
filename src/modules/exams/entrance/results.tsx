@@ -87,7 +87,8 @@ export function EntranceResults({ attempt }: { attempt: PublicExamAttempt }) {
             <div><dt>Таны хариу</dt><dd>{review.selected ? math ? <MathFormula text={review.selected} /> : <RichText text={review.selected} /> : "Хариулаагүй"}</dd></div>
             <div><dt>Зөв хариу</dt><dd>{math ? <MathFormula text={review.answer} /> : <RichText text={review.answer} />}</dd></div>
           </dl>
-          {review.explanation ? <p className="eesh-explanation" lang={mongolian ? "mn" : "en"}>{math ? <MathText text={review.explanation} /> : <RichText text={review.explanation} />}</p> : null}
+          {/* Every ЭЕШ explanation is Mongolian, the English paper's too; its questions and answers stay English. */}
+          {review.explanation ? <p className="eesh-explanation" lang="mn">{math ? <MathText text={review.explanation} /> : <RichText text={review.explanation} />}</p> : null}
         </div>
       </details>)}
     </div>

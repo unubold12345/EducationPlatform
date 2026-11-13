@@ -60,7 +60,7 @@ def make(v):
  t=k+2;ratio=F(t-4,2*t-3);A=2-ratio;cos=S.Rational(ratio.numerator,ratio.denominator)/S.sqrt(S.Rational(A.numerator,A.denominator))
  p.mc('Vector orthogonality angle',f'a+2b ⟂ a−b, 2a−b ⟂ a+{t}b. a,b нь тэгээс ялгаатай. cos∠(a,b)-г ол.',S.simplify(cos),'U=|a|²,V=|b|²,W=a·b. U+W−2V=0,2U+(2t−1)W−tV=0. W/V=(t−4)/(2t−3), U/V=(3t−2)/(2t−3); cos=W/√UV.',wrong=[S.simplify(-cos),S.simplify(2*cos),S.simplify(cos/2),S.simplify(1-cos)])
  h=v
- p.multi('2.1','Rational inverse range fixed points',f'u=x−{h},f(x)={h}+(3u−4)/(u−2).', [('Мужаас хасагдах x',h+2),(f'f({h+3})',h+5),(f'f⁻¹({h+5})',h+3),('Урвуу функц',f'{h}+(2(x−{h})−4)/(x−{h}−3)'),('Утгын мужаас хасагдах y',h+3),('f ба f⁻¹ графикийн огтлолцлын x',(h+1,h+4))],'Суурь функц v=(3u−4)/(u−2). Урвуу u=(2v−4)/(v−3). Тогтмол цэгүүд u²−5u+4=0→u=1,4.')
+ p.multi('2.1','Rational inverse range fixed points',f'u=x−{h},f(x)={h}+(3u−4)/(u−2).', [('Мужаас хасагдах x',h+2),(f'f({h+3})',h+5),(f'f⁻¹({h+5})',h+3),('Урвуу функц',simplest(h+(2*(x-h)-4)/(x-h-3))),('Утгын мужаас хасагдах y',h+3),('f ба f⁻¹ графикийн огтлолцлын x',(h+1,h+4))],'Суурь функц v=(3u−4)/(u−2). Урвуу u=(2v−4)/(v−3). Тогтмол цэгүүд u²−5u+4=0→u=1,4.')
  scale=v+1
  p.multi('2.2','Cube plane section and angle',f'ABCDA₁B₁C₁D₁ кубийн B₁C₁-ийн дундаж N;CC₁ дээр C₁M=2MC. MN={5*scale}.', [('Кубийн ирмэг',6*scale),('AMN огтлолын өнцгийн тоо',5),('AN',9*scale),('AM²',76*scale*scale),('cos∠NAM','11√19/57')],'Ирмэг a гэвэл MN²=(a/2)²+(2a/3)²=25a²/36. Координат A=0,N=(6s,3s,6s),M=(6s,6s,2s). AN=9s,AM²=76s²,скаляр үржвэр66s². Хавтгай −5x+4y+3z=0 кубийг таван оройд огтолно.')
  a=v+4;alpha=3*a;lo=alpha-8;hi=alpha-5

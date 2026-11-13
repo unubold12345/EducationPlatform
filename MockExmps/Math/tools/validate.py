@@ -12,11 +12,14 @@ from sympy.parsing.sympy_parser import parse_expr, standard_transformations, imp
 root=Path(__file__).resolve().parents[1]
 years=[2015,2016,2017,2018,2019,2021]
 checked=0
+SUP={'⁰':'0','¹':'1','²':'2','³':'3','⁴':'4','⁵':'5','⁶':'6','⁷':'7','⁸':'8','⁹':'9','⁻':'-'}
 def num(value):
-    t=str(value).replace('−','-').replace('π','*pi').replace('^','**').replace('·','*')
-    t=re.sub(r'√(\d+)',r'*sqrt(\1)',t)
-    t=t.lstrip('*')
-    return parse_expr(t,transformations=standard_transformations+(implicit_multiplication_application,))
+    # Reads both the older Python spellings and the notation students see: x², 5⁷, 6!, √(x−3), 256π/3.
+    t=str(value).replace('−','-').replace('^','**').replace('·','*')
+    t=re.sub(r'[⁰¹²³⁴⁵⁶⁷⁸⁹⁻]+',lambda m:'**('+''.join(SUP[c] for c in m.group(0))+')',t)
+    t=re.sub(r'(\d+)!',r'factorial(\1)',t).replace('π',' pi ')
+    t=re.sub(r'√(\d+)',r' sqrt(\1)',t).replace('√(',' sqrt(')
+    return parse_expr(t.strip(),transformations=standard_transformations+(implicit_multiplication_application,))
 def equal(value,expected):
     global checked
     assert s.simplify(num(value)-expected)==0,(value,str(expected))

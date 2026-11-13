@@ -13,14 +13,14 @@ def make(v):
     stems={}
     for a in data:stems.setdefault(str(a//10),[]).append(a%10)
     p.mc('Stem and leaf range','Иш нь аравт, навч нь нэгжийн орон. Дараах иш-навч өгөгдлийн далайцыг ол.',57,'Хамгийн ихээс хамгийн багыг хас: (69+k)−(12+k)=57.',figure={'kind':'stem_leaf','stems':stems,'key':'1|2 = 12'})
-    p.mc('Algebra expansion',f'a(√a−{k})(√a+{k})−({k*k//2 if k%2==0 else k*k}−a)²-г хялбарчил.',str(S.expand(x*(x-k*k)-( (k*k//2 if k%2==0 else k*k)-x)**2)).replace('x','a'),'Эхний үржвэр a(a−k²); хоёр дахь квадратыг задла.',[f'a²−{k*k}',f'−{k*k}a',f'{k*k}a+{k**4}',f'2a²−{k*k}a'])
+    p.mc('Algebra expansion',f'a(√a−{k})(√a+{k})−({k*k//2 if k%2==0 else k*k}−a)²-г хялбарчил.',val(S.expand(x*(x-k*k)-( (k*k//2 if k%2==0 else k*k)-x)**2)).replace('x','a'),'Эхний үржвэр a(a−k²); хоёр дахь квадратыг задла.',[f'a²−{k*k}',f'−{k*k}a',f'{k*k}a+{k**4}',f'2a²−{k*k}a'])
     p.mc('Fractional powers',f't={F((k+1)**2,100)} үед ∛t·⁶√t утгыг ол.',F(k+1,10),'1/3+1/6=1/2 тул √t.')
     p.mc('Complex quadrant',f'z=i^{4*k+2}+{k}i^{4*k+3} комплекс тоо аль мөчид орших вэ?','III','i^(4k+2)=−1, i^(4k+3)=−i; хоёр координат сөрөг.', ['I','II','IV','Тэнхлэг дээр'])
     a=k+4;b=F(3*k+1,k)
     p.mc('Radical rational simplification',f'a={a}, b={b} үед (√a/(√a−√b)−√b/(√a+√b))·(a−b)/(a²+ab) утгыг ол.',F(1,a),'Хаалт дотор (a+b)/(a−b). Нийт үржвэр 1/a.')
     angle=15*v
     ans=S.simplify(S.cos(S.pi*angle/180))
-    p.mc('Trig determinant',f'[[sin({90-angle}°), cos({90-angle}°)], [sin({angle}°), cos({angle}°)]] матрицын тодорхойлогчийг ол.',S.cos(2*S.pi*angle/180),'sin(90−θ)cosθ−cos(90−θ)sinθ=cos²θ−sin²θ=cos2θ.',wrong=[S.cos(2*S.pi*angle/180)+j for j in [-2,-1,1,2]])
+    p.mc('Trig determinant',f'[[sin({90-angle}°), cos({90-angle}°)], [sin({angle}°), cos({angle}°)]] матрицын тодорхойлогчийг ол.',S.cos(2*S.pi*angle/180),'sin(90−θ)cosθ−cos(90−θ)sinθ=cos²θ−sin²θ=cos2θ.',wrong=distinct_from(S.cos(2*S.pi*angle/180),[S.sin(2*S.pi*angle/180),-S.cos(2*S.pi*angle/180),1,S.cos(S.pi*angle/180),S.Rational(1,2),S.Rational(-1,2),-1,S.sqrt(2)/2,0]))
     p.mc('Radical rational domain',f'y=√(({k}x+2)/({k+4}−x)) функцийн тодорхойлогдох мужийг ол.',f'[{F(-2,k)}; {k+4})','Бутархай≥0; хуваарь тэг биш. Тэмдгийн хүснэгт хэрэглэ.',[f'({F(-2,k)}; {k+4}]',f'({k+4}; +∞)',f'(−∞; {F(-2,k)}]',f'[{F(-2,k)}; +∞)'])
     p.mc('Geometric progression',f'∛{k}, ∛({k}x), {4*k} нь өсөх геометр прогресс. q-г ол.',f'2∛{k}','q²=(4k)/∛k=4(∛k)² тул q=2∛k>1.',[f'4∛{k}',f'∛{k}',f'2/∛{k}',f'{4*k}'])
     poly=4*x**3-6*x**2+2*k*x-(k+4)
@@ -40,13 +40,13 @@ def make(v):
     w=[k+2,2*k+7,k+3];mean=F(3*w[0]+9*w[1]+15*w[2],2*sum(w))
     p.mc('Grouped mean',f'0≤x<3, 3≤x<6, 6≤x<9 завсруудын давтамж {w}. Ангийн төвөөр дундажийг тооц (яг утга).',mean,'Ангийн төвүүд 1.5,4.5,7.5; жигнэсэн нийлбэрийг нийт давтамжид хуваана.')
     n=2*k+2
-    p.mc('Combinations and factorials',f'C(n,{k})=C(n,{k+2}), n≥{k+2}. Pₙ/Aₙ²-ыг ол.',math.factorial(n-2),'Биномиал коэффициентүүдийн тэгш хэмээс n=2k+2; n!/[n(n−1)]=(n−2)!.')
+    p.mc('Combinations and factorials',f'C(n,{k})=C(n,{k+2}), n≥{k+2}. Pₙ/Aₙ²-ыг ол.',f'{n-2}!','Биномиал коэффициентүүдийн тэгш хэмээс n=2k+2; n!/[n(n−1)]=(n−2)!.',[f'{n}!',f'{n-1}!',f'{n-3}!',f'{n}!/2'])
     probs=[F(4,10),F(2,10),F(3,10),F(1,10)];xs=[k,k+3,k+1,k-1]
     p.mc('Expectation',f'X утгууд {xs}, харгалзах магадлалууд {list(map(str,probs))}. E(X)-г ол.',sum(a*b for a,b in zip(xs,probs)),'E(X)=Σxp.')
     p.mc('Area bounded by three lines',f'y=(x+{k})/2, y=−2x+{4*k}, y=0 шулуунуудаар үүсэх гурвалжны талбайг ол.',F(9*k*k,5),'x огтлолууд −k,2k; хоёр налуу шулууны уулзварын өндөр 6k/5; S=3k·(6k/5)/2.')
     p.mc('Quartic coefficient comparison',f'x⁴−{(k+1)**2-2}x²+1=(x²+px+1)(x²−qx+1), p>0 бол p+q-г ол.',2*(k+1),'x³ гишүүнээс p=q; x²-оос 2−p²=2−(k+1)².')
     data=[k,k,k+1,k+3,k+6];mean=S.Rational(sum(data),5);sd=S.sqrt(sum((a-mean)**2 for a in data)/5)
-    p.mc('Population standard deviation',f'{data} өгөгдлийн стандарт хазайлтыг ол (нийт олонлогийн томьёо).',sd,'Дундаж k+2, квадрат хазайлтын нийлбэр 26; σ=√(26/5).')
+    p.mc('Population standard deviation',f'{data} өгөгдлийн стандарт хазайлтыг ол (нийт олонлогийн томьёо).',sd,'Дундаж k+2, квадрат хазайлтын нийлбэр 26; σ=√(26/5).',distinct_from(sd,[S.Rational(26,5),S.sqrt(26)/2,S.sqrt(26)/5,S.sqrt(S.Rational(13,5)),S.sqrt(S.Rational(26,4))]))
     p.mc('3D vector angle',f'a=(0,−{k},−{k}), b=({k},−{k},−{2*k}) векторуудын өнцгийг ол.','30°','cosθ=3k²/(k√2·k√6)=√3/2.', ['45°','60°','90°','150°'])
     # Shift x by k in the official absolute-exponent structure.
     p.mc('Exponential absolute inequality',f'(1/2)^((x−{k})²−7)<2^(3|x−{k}−1|) тэнцэтгэл бишийг бод.',f'(−∞; {k-1}) ∪ ({k+2}; +∞)','u=x−k гэвэл u²+3|u−1|−7>0; u<−1 эсвэл u>2.',[f'({k-1}; {k+2})',f'(−∞; {k-1}]',f'[{k+2}; +∞)','R'])

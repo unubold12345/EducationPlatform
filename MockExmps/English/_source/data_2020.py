@@ -14,7 +14,7 @@ MOCKS.append({
     "theme": "Everyday life, storms and a summer camp interview",
     "grammar1": [
         ("I need ___ advice about choosing a university.", ["an", "many", "some", "a", "few"], "C"),
-        ("We always have a big family dinner ___ New Year's Eve.", ["in", "on", "at", "for", "to"], "B"),
+        ("We always have a big family dinner ___ New Year's Eve.", ["in", "on", "at", "since", "to"], "B"),
         ("My father goes to work ___ bus every day.", ["on", "in", "with", "by", "at"], "D"),
         ("You ___ smoke in the hospital. It is forbidden.", ["don't have to", "mustn't", "needn't", "may", "would"], "B"),
         ("Bataa is ___ at drawing than his brother.", ["good", "the best", "much better", "well", "the better"], "C"),
@@ -51,7 +51,7 @@ MOCKS.append({
     "phrasal": [
         ("Our car ran ___ petrol in the middle of the desert.", ["away", "over", "out of", "into", "off"], "C"),
         ("The match was called ___ because of the snow.", ["on", "off", "up", "down", "out"], "B"),
-        ("I'll look ___ the word in the dictionary.", ["after", "for", "at", "up", "into"], "D"),
+        ("I don't know this word, so I'll look it ___ in the dictionary.", ["after", "for", "at", "up", "into"], "D"),
         ("He always comes ___ interesting solutions to difficult problems.", ["up", "across", "up with", "back", "round"], "C"),
     ],
     "idioms": [
@@ -99,11 +99,11 @@ MOCKS.append({
     "theme": "Environment, school clubs and getting lost outdoors",
     "grammar1": [
         ("There isn't ___ milk left in the fridge.", ["many", "any", "some", "a", "few"], "B"),
-        ("The shops are closed ___ Christmas Day.", ["in", "at", "on", "for", "to"], "C"),
+        ("The shops are closed ___ Christmas Day.", ["in", "at", "on", "since", "to"], "C"),
         ("I prefer travelling ___ train because I can read on the way.", ["in", "on", "with", "at", "by"], "E"),
         ("You ___ bring your passport. A student card is enough.", ["must", "don't have to", "mustn't", "have to", "should"], "B"),
         ("This is ___ film I have ever seen.", ["the worse", "bad", "the worst", "worse", "badly"], "C"),
-        ("Every evening my mother ___ dinner while my father ___ the news.", ["cooks / reads", "is cooking / reads", "cooks / is reading", "cooked / is reading", "is cooking / read"], "A"),
+        ("Every evening my mother ___ dinner while my father ___ the news.", ["cooks / reads", "is cooking / reads", "cook / reads", "cooked / is reading", "is cooking / read"], "A"),
         ("When I was a child, I ___ like vegetables, but now I love them.", ["used to", "didn't use to", "use to", "am used to", "wasn't used"], "B"),
         ("___ Moon goes around ___ Earth.", ["The / the", "A / the", "___ / ___", "The / a", "A / a"], "A"),
         ("My brother keeps ___ my clothes without asking!", ["borrow", "borrowing", "to borrow", "borrowed", "borrows"], "B"),

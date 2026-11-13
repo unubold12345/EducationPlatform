@@ -7,6 +7,7 @@ import collections
 import hashlib
 import importlib
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -31,6 +32,20 @@ def describe_points(points):
             groups.append(f'{start}–{n - 1}: {points[start - 1]} оноо' if n - 1 > start else f'{start}: {points[start - 1]} оноо')
             start = n
     return '; '.join(groups)
+
+
+def list_lines(text):
+    """One list item per line. The paper sets short lists on one line with wide gaps
+    ('I. Хлор  II. Устөрөгч'); the site collapses double spaces, so the items would run together."""
+    out = []
+    for line in text.split('\n'):
+        if re.search(r'\S  \S', line):
+            head, sep, rest = line.partition(': ')
+            if sep and '  ' not in head:
+                line = head + ':\n' + rest  # 'Хий: 1 NH₃  2 H₂' → the label on its own line
+            line = re.sub(r',?  (?=\S)', '\n', line)
+        out.append(line)
+    return '\n'.join(out)
 
 
 def norm_options(o):
@@ -84,7 +99,7 @@ def build_year(year):
             q = {
                 'id': str(n), 'type': 'multiple-choice', 'points': mcq_points(n, getattr(mod, 'POINTS', None)),
                 'skill': it['skill'], 'referenceItem': str(it.get('ref', n)),
-                'prompt': it['q'],
+                'prompt': list_lines(it['q']),
             }
             if it.get('cols'):
                 q['optionColumns'] = it['cols']

@@ -32,6 +32,8 @@ model User {
   creditWallet CreditWallet?
   creditOrders CreditOrder[]
   mockPurchases MockPurchase[]
+  mockPicks MockPick[]
+  vocabularyExpansions VocabularyExpansion[]
   subscriptions Subscription[]
   subscriptionOrders SubscriptionOrder[]
   adminMembership AdminMembership?
@@ -384,6 +386,14 @@ model MyExam {
   // SHA-256 of the sealed token for an exam moved here from browser storage (exams made before
   // 2026-11-12), so one browser exam is imported once. Null for exams created on the server.
   importKey String?
+  // The text read from the uploaded document (at most 45,000 characters), its length, the question count the
+  // student asked for and their structure request, kept so the same account can pay a lower price for new
+  // questions from the same material (owner decision 2026-11-15). Null for exams from page photos, exams moved
+  // from a browser and exams made before this. Never sent to the browser; deleted with the exam.
+  sourceText String?
+  sourceChars Int?
+  sourceCount Int?
+  sourceStructure String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   @@unique([userId, importKey])
@@ -505,6 +515,38 @@ model MockPurchase {
   createdAt DateTime @default(now())
   paidAt DateTime?
   @@unique([userId, examSlug])
+}
+
+// A mock chosen under the Гадаад хэл plan (owner rule 2026-11-13): up to the plan's monthly picks (15) in each
+// plan month, any mock the plan covers (not ЭЕШ). A pick opens the timed sitting (retakes too) and practice mode for
+// that plan month only; the next plan month the mock must be picked again. `monthStart`/`monthEnd` are the plan month
+// on the subscription's billing calendar (Subscription.startsAt stepped by calendar months).
+model MockPick {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  program String
+  slug String
+  monthStart DateTime
+  monthEnd DateTime
+  createdAt DateTime @default(now())
+  @@unique([userId, program, monthStart, slug])
+  @@index([userId, monthEnd])
+}
+
+// Permanent vocabulary space bought with purchased ("yellow") credits (owner rule 2026-11-13: 200 credits per
+// 100 words). One row per purchase; the bank's permanent extra is their sum. `requestId` comes from the page, so
+// a repeated request (double click, retry) buys once.
+model VocabularyExpansion {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  requestId String
+  words Int
+  credits Int
+  createdAt DateTime @default(now())
+  @@unique([userId, requestId])
+  @@index([userId, createdAt])
 }
 
 model Subscription {

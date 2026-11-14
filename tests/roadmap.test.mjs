@@ -9,7 +9,6 @@ import {
   AI_TOOLS, STRUCTURE_LIMITS, allowedTools, cleanLine, cleanNote, fitWeeks, parseStructure, phaseOfWeeks, readGenerate, readStructure, structureMessages,
 } from "../src/modules/roadmap/structure.ts";
 import { AI_ACTIONS, CREDIT_USD, DEEPSEEK_PRICE, creditCost, creditRangeLabel, roadmapCredits, roadmapOutputTokens } from "../src/modules/credits/pricing.ts";
-import { summarizeStreak, streakLine } from "../src/modules/roadmap/streak.ts";
 import { workspaceTab } from "../src/modules/workspace/paths.ts";
 
 const text = path => readFileSync(new URL("../" + path, import.meta.url), "utf8");
@@ -142,36 +141,16 @@ test("a passed exam and a one-week plan", () => {
   assert.equal(short.mockCount, 1);
 });
 
-test("streak: consecutive Ulaanbaatar days", () => {
-  const days = ["2026-11-12", "2026-11-11", "2026-11-10", "2026-11-08", "2026-11-01", "2026-11-02", "2026-11-03", "2026-11-04"];
-  const summary = summarizeStreak(days, today);
-  assert.equal(summary.current, 3);
-  assert.equal(summary.longest, 4);
-  assert.equal(summary.total, 8);
-  assert.equal(summary.today, true);
-  assert.equal(summary.week.length, 7);
-  assert.equal(summary.week.at(-1).day, today);
-  assert.deepEqual(summary.week.map(day => day.active), [false, false, true, false, true, true, true]);
-  // Before today's check-in, yesterday's run still counts.
-  const pending = summarizeStreak(days.slice(1), today);
-  assert.equal(pending.current, 2);
-  assert.equal(pending.today, false);
-  assert.equal(summarizeStreak(["2026-11-09"], today).current, 0, "a missed day breaks the streak");
-  assert.equal(summarizeStreak([], today).current, 0);
-  assert.equal(summarizeStreak(["bad"], today, 1).current, 0);
-  assert.equal(streakLine({ current: 0, today: false }), "Өнөөдрөөс эхэл");
-});
-
-test("the roadmap page is removed; the streak route keeps the server checks", () => {
+test("the roadmap page and the daily streak are removed", () => {
   assert.equal(existsSync(new URL("../src/app/workspace/roadmap", import.meta.url)), false, "no roadmap page");
   assert.equal(existsSync(new URL("../src/app/api/workspace/roadmap", import.meta.url)), false, "no roadmap route");
-  const streakRoute = text("src/app/api/workspace/streak/route.ts");
-  assert.match(streakRoute, /checkOrigin\(request\)/);
-  assert.match(streakRoute, /apiUser\(request\)/);
-  assert.doesNotMatch(streakRoute, /readJson/, "the day comes from the server clock, not the browser");
+  // Owner request 2026-11-14: no streak route, rail row or Home card.
+  assert.equal(existsSync(new URL("../src/app/api/workspace/streak", import.meta.url)), false, "no streak route");
+  assert.equal(existsSync(new URL("../src/modules/roadmap/streak.ts", import.meta.url)), false, "no streak rules");
+  assert.doesNotMatch(text("src/modules/workspace/shell.tsx"), /Streak/);
+  assert.doesNotMatch(text("src/app/workspace/page.tsx"), /Streak/);
   const service = text("src/modules/roadmap/service.ts");
   assert.match(service, /taskIds\(roadmap\)\.has\(toggle\.task\)/, "only tasks of the plan can be ticked");
-  assert.match(service, /skipDuplicates: true/, "a second check-in the same day changes nothing");
   assert.match(service, /finishedAttempts\(userId/, "scores come from the student's own snapshots");
   assert.equal(workspaceTab("/workspace/roadmap"), null);
   assert.doesNotMatch(text("src/lib/return-path.ts"), /\/workspace\/roadmap/);

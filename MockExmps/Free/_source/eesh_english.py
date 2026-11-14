@@ -43,10 +43,10 @@ def build(program_dir):
     q("1", g, 1, GR, "My sister ___ to school by bus every day.", ["go", "goes", "going", "is go", "gone"], "B",
       "Every day — байнгын үйлдэл, Present Simple. Ганц тооны 3-р бие (my sister) тул goes.")
     q("2", g, 1, GR, "There isn't ___ milk left in the fridge.", ["some", "many", "any", "a few", "few"], "C",
-      "Үгүйсгэх өгүүлбэрт тоолж болохгүй нэр үгтэй any хэрэглэнэ. Many, a few, few нь тоолох нэртэй.")
+      "Үгүйсгэх өгүүлбэрт тоолж болохгүй нэр үгтэй any хэрэглэнэ. Many, a few, few нь тоолж болох нэр үгтэй хэрэглэгддэг.")
     q("3", g, 1, GR, "This is the ___ film I have ever seen.", ["most interesting", "more interesting", "interestingest", "much interesting", "interesting"], "A",
       "The ... I have ever seen — оргил зэрэг. Урт тэмдэг нэрт the most нэмнэ.")
-    q("4", g, 1, GR, "We ___ dinner when the lights went out.", ["have", "were having", "had had", "are having", "will have"], "B",
+    q("4", g, 1, GR, "We ___ dinner when the lights went out.", ["have", "were having", "have had", "are having", "will have"], "B",
       "Үргэлжилж байсан үйлдлийг (Past Continuous) богино үйлдэл (went out) тасалсан.")
 
     g = p.group("p1-t2", "Task 2", "SECTION 1. GRAMMAR", "Choose the correct answers. /4x2=8 points/", pageMode="single")
@@ -56,7 +56,7 @@ def build(program_dir):
       "Гүүр өөрөө бариагүй — идэвхгүй хэв. Тодорхой өнгөрсөн цаг (in 1998) тул Past Simple Passive: was built.")
     q("7", g, 2, GR, "She asked me where ___.", ["did I live", "do I live", "lived I", "I lived", "have I lived"], "D",
       "Шууд бус асуултад үгийн дараалал энгийн өгүүлбэрийнх (I lived) болж, asked-ийн дагуу цаг нь хойшилно.")
-    q("8", g, 2, GR, "By the time we arrived at the station, the train ___.", ["already left", "has already left", "had already left", "was already leaving", "already leaves"], "C",
+    q("8", g, 2, GR, "By the time we arrived at the station, the train ___.", ["already left", "has already left", "had already left", "is already leaving", "already leaves"], "C",
       "Өнгөрсөн өөр үйлдлээс (arrived) өмнө дууссан үйлдэл — Past Perfect: had already left.")
 
     g = p.group("p1-t3", "Task 3", "SECTION 1. GRAMMAR",
@@ -82,9 +82,9 @@ def build(program_dir):
       "Never tells lies — худал хэлдэггүй, үнэнч (honest).")
 
     g = p.group("p2-t2", "Task 2", "SECTION 2. VOCABULARY", "Choose the most suitable word to complete each collocation. /2x2=4 points/", pageMode="single")
-    q("16", g, 2, VO, "Students should ___ attention to the teacher's instructions.", ["pay", "give", "make", "take", "do"], "A",
+    q("16", g, 2, VO, "Students should ___ attention to the teacher's instructions.", ["pay", "put", "make", "take", "do"], "A",
       "Тогтвортой хэллэг: pay attention to — анхаарал хандуулах.")
-    q("17", g, 2, VO, "Can you ___ a photo of us in front of the monument?", ["make", "take", "do", "get", "have"], "B",
+    q("17", g, 2, VO, "Can you ___ a photo of us in front of the monument?", ["make", "take", "do", "draw", "have"], "B",
       "Тогтвортой хэллэг: take a photo — зураг авах.")
 
     g = p.group("p3-t1", "Task 1", "SECTION 3. COMMUNICATION", "Read the conversations and choose the most appropriate responses. /2x2=4 points/", pageMode="single")
@@ -99,7 +99,7 @@ def build(program_dir):
     read = dict(passage=PASSAGE)
     q("20", g, 1, RE, "What is the passage mainly about?",
       ["A travelling library started by a former teacher", "A new school in the capital", "A bus company in the countryside", "How to repair old buses", "A national writing competition"], "A",
-      "Бүх догол мөр Оюунагийн эхлүүлсэн автобус-номын сангийн тухай.", **read)
+      "Бүх догол мөр Оюунагийн эхлүүлсэн автобусан номын сангийн тухай.", **read)
     q("21", g, 1, RE, "Why did Oyuna start the project?",
       ["She wanted to sell books.", "The town library had closed.", "Her students asked her to drive a bus.", "Children had too few books to read.", "She wanted to become a bus driver."], "D",
       "2-р догол мөр: families had very few books at home; they had simply run out of things to read.", **read)
@@ -110,8 +110,8 @@ def build(program_dir):
       ["The bus visits six towns.", "Readers can keep books for two weeks.", "Some reviews are put inside the books.", "The bus is painted orange.", "Readers pay a small fee for each book."], "E",
       "4-р догол мөр: there is no charge — төлбөргүй.", **read)
     q("24", g, 1, RE, "The phrase \"run out of\" in paragraph 2 is closest in meaning to",
-      ["found", "have no more", "written", "lost interest in", "borrowed"], "B",
-      "Run out of — дуусах, үлдэхгүй болох. Lost interest биш: they were not bored with reading.", **read)
+      ["find", "have no more", "write", "lose interest in", "borrow"], "B",
+      "Run out of — дуусах, үлдэхгүй болох. Lose interest in биш: they were not bored with reading.", **read)
 
     summary = ("Oyuna turned an old bus into a library because children in the countryside had 25. _________ books at home. "
                "Readers borrow books for free, but each reader must 26. _________ one book they have finished.")

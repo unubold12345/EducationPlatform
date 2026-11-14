@@ -11,7 +11,7 @@
   border-radius: 26px;
   background:
     radial-gradient(700px 300px at 88% 0%, color-mix(in srgb, var(--blue) 16%, transparent), transparent 70%),
-    radial-gradient(600px 300px at 8% 100%, color-mix(in srgb, #a27acb 12%, transparent), transparent 70%),
+    radial-gradient(600px 300px at 8% 100%, color-mix(in srgb, var(--blue) 12%, transparent), transparent 70%),
     color-mix(in srgb, var(--surface) 92%, transparent);
   box-shadow: var(--shadow-lift);
 }
@@ -81,9 +81,9 @@
   align-items: center;
   gap: 6px;
   padding: 5px 10px;
-  border: 1px solid color-mix(in srgb, #42a97c 34%, var(--line));
+  border: 1px solid color-mix(in srgb, var(--blue) 34%, var(--line));
   border-radius: 999px;
-  background: color-mix(in srgb, #42a97c 8%, transparent);
+  background: color-mix(in srgb, var(--blue) 8%, transparent);
   font-family: var(--font-mono);
   font-size: 8.5px;
   letter-spacing: .06em;
@@ -164,7 +164,7 @@
   border-radius: 50%;
 }
 .lexlab-orbit-one { width: 128px; height: 128px; }
-.lexlab-orbit-two { width: 94px; height: 94px; border-style: solid; border-color: color-mix(in srgb, #a27acb 18%, transparent); }
+.lexlab-orbit-two { width: 94px; height: 94px; border-style: solid; border-color: color-mix(in srgb, var(--blue) 18%, transparent); }
 .lexlab-chip {
   --r: 0deg;
   position: absolute;
@@ -248,7 +248,7 @@
 :root[data-theme="dark"] .lawtest.lawtest-detailed {
   background:
     radial-gradient(700px 300px at 88% 0%, color-mix(in srgb, var(--blue) 22%, transparent), transparent 70%),
-    radial-gradient(600px 300px at 8% 100%, color-mix(in srgb, #a27acb 16%, transparent), transparent 70%),
+    radial-gradient(600px 300px at 8% 100%, color-mix(in srgb, var(--blue) 16%, transparent), transparent 70%),
     color-mix(in srgb, var(--surface) 94%, transparent);
 }
 :root[data-theme="dark"] .lawtest-mark { opacity: .07; }

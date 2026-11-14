@@ -161,9 +161,10 @@ test("uploads, routes and pages keep images bounded, private and server-checked"
   assert.match(upload, /imageType\(file\.bytes\)/, "a photo is proven by its signature");
   assert.match(upload, /detectSource\(read\[0\]\.name, read\[0\]\.bytes\)/, "a document is still proven before credits are held");
   assert.doesNotMatch(upload, /writeFile|getDb|vocabularyWord|create\(/, "uploads are never stored");
-  for (const service of ["src/modules/vocabulary/service.ts", "src/modules/my-exams/service.ts"]) {
+  // Before and after the provider call; the exam service does both again for a retry (new questions from its kept text).
+  for (const [service, checks] of [["src/modules/vocabulary/service.ts", 2], ["src/modules/my-exams/service.ts", 4]]) {
     const source = text(service);
-    assert.equal(source.match(/await ensureNoTimedExam\(userId\)/g)?.length, 2, service);
+    assert.equal(source.match(/await ensureNoTimedExam\(userId\)/g)?.length, checks, service);
     assert.ok(source.indexOf("readUploadedSource(form, ") < source.indexOf("return chargeCredits("), service);
   }
   for (const service of ["src/modules/workspace/chat-service.ts", "src/modules/exam-practice/service.ts"]) {

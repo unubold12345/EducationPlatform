@@ -30,7 +30,11 @@ export function appendTranscript(response:string|undefined,answer:string):string
 /** All the examiner needs of a stage: a timed mock stage, or a practice-mode Speaking section (same ids). */
 export type ExaminerStage={id:string;kind:string;questions:{id:string;prompt:string}[]};
 type StageLike=ExaminerStage;
-const PARTS:Record<string,SpeakingPart>={"ielts-speaking-1":1,"ielts-speaking-prep":2,"ielts-speaking-2":2,"ielts-speaking-3":3};
+// "ielts-speaking-2-final" is Part 2 of a mock with no Part 3 (the free half mock): the Speaking test ends there.
+const PARTS:Record<string,SpeakingPart>={"ielts-speaking-1":1,"ielts-speaking-prep":2,"ielts-speaking-2":2,"ielts-speaking-2-final":2,"ielts-speaking-3":3};
+const FINAL_STAGES=new Set(["ielts-speaking-3","ielts-speaking-2-final"]);
+/** Whether the Speaking test ends with this stage (Part 3, or Part 2 of a mock without Part 3). */
+export const endsSpeaking=(stage:{id:string})=>FINAL_STAGES.has(stage.id);
 /** The Speaking part a mock stage belongs to, or null for any other stage. */
 export function speakingPart(stage:{id:string;kind:string}):SpeakingPart|null {
  return stage.kind==="speaking"||stage.kind==="preparation"?PARTS[stage.id]??null:null;
@@ -74,7 +78,7 @@ export function examinerScript(stage:StageLike,voice:SpeakingVoice=EXAMINER_VOIC
   }
   return {id:question.id,text,long:false};
  });
- return {part,preparation:false,intro:intro(part,voice),questions,closing:CLOSING[part]};
+ return {part,preparation:false,intro:intro(part,voice),questions,closing:endsSpeaking(stage)?CLOSING[3]:CLOSING[part]};
 }
 
 /**

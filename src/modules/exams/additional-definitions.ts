@@ -67,16 +67,24 @@ function readingSection(paper:number) {
   return {questions,passages};
 }
 
+function satForm(base: ExamDefinition[], paper:number):ExamDefinition {
+  const number=String(paper).padStart(2,"0");
+  const sat=structuredClone(base.find(e=>e.program==="sat")!);
+  sat.slug=`sat-full-${number}`;sat.title=`Digital SAT · Full Mock ${number}`;
+  sat.description=`Original parallel practice form ${number}: new contexts and numerical problems across all four domains, with separate lower and higher practice routes. 98 delivered questions; standard-time modules.`;
+  sat.stages[0].questions=additionalReading(paper,"first");
+  sat.stages[1].variants={lower:additionalReading(paper,"lower"),higher:additionalReading(paper,"higher")};
+  sat.stages[3].questions=additionalMath(paper,"first");
+  sat.stages[4].variants={lower:additionalMath(paper,"lower"),higher:additionalMath(paper,"higher")};
+  return sat;
+}
+
+// SAT has site-authored Mocks 02–09; IELTS keeps 02–06 here (its 07–12 come from the offline pack in ielts-forms.ts).
+// Mocks 02–06 keep their original order (SAT, IELTS per paper); SAT 07–09 follow them.
 export function createAdditionalExams(base: ExamDefinition[]):ExamDefinition[] {
-  return [2,3,4,5,6].flatMap(paper=>{
+  return [...[2,3,4,5,6].flatMap(paper=>{
     const number=String(paper).padStart(2,"0");
-    const sat=structuredClone(base.find(e=>e.program==="sat")!);
-    sat.slug=`sat-full-${number}`;sat.title=`Digital SAT · Full Mock ${number}`;
-    sat.description=`Original parallel practice form ${number}: new contexts and numerical problems across all four domains, with separate lower and higher practice routes. 98 delivered questions; standard-time modules.`;
-    sat.stages[0].questions=additionalReading(paper,"first");
-    sat.stages[1].variants={lower:additionalReading(paper,"lower"),higher:additionalReading(paper,"higher")};
-    sat.stages[3].questions=additionalMath(paper,"first");
-    sat.stages[4].variants={lower:additionalMath(paper,"lower"),higher:additionalMath(paper,"higher")};
+    const sat=satForm(base,paper);
     const ielts=structuredClone(base.find(e=>e.program==="ielts")!);
     ielts.version=2;ielts.slug=`ielts-academic-${number}`;ielts.title=`IELTS Academic · Full Mock ${number}`;
     const listening=additionalListening(paper),reading=readingSection(paper),w=writingSets[paper-2],s=speakingTopics[paper-2];
@@ -94,5 +102,5 @@ export function createAdditionalExams(base: ExamDefinition[]):ExamDefinition[] {
     ielts.stages[7].questions=s.follow.map((p,i)=>speak(`part3-${i}`,p));
     ielts.stages[7].instructions="Five minutes. Develop your answers with reasons, examples and qualifications. These broader questions follow your Part 2 topic. The test ends automatically after this part.";
     return [sat,ielts];
-  });
+  }),...[7,8,9].map(paper=>satForm(base,paper))];
 }

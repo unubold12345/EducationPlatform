@@ -65,7 +65,7 @@ test("stored progress is read back with the same bounds, and anything unusable r
     result: { total: 1, correct: 2, percent: 100, results: [] },
   });
   assert.deepEqual(state, { answers: { q1: 0, q4: "ok" }, result: null, best: null, attempts: 0, timerStartedAt: null, finishedSeconds: null });
-  const many = readState({ answers: Object.fromEntries(Array.from({ length: 20 }, (_, index) => ["q" + (index + 1), 0])) });
+  const many = readState({ answers: Object.fromEntries(Array.from({ length: 30 }, (_, index) => ["q" + (index + 1), 0])) });
   assert.equal(Object.keys(many.answers).length, READING_LIMITS.questions.max);
   const graded = gradeReading(groups, perfect(groups));
   assert.deepEqual(readState({ answers: {}, result: graded, best: total, attempts: 1, timerStartedAt: null, finishedSeconds: 30 }).result, graded);
@@ -259,9 +259,9 @@ test("the routes are same-origin, session-checked and bounded; the page reads th
   assert.match(page, /if \(!readingLabEnabled\(\)\) notFound\(\);/);
   assert.match(page, /const library = userId \? await readingLibrary\(userId\) : null;/);
   assert.match(page, /initialPractices=\{library\?\.practices \?\? \[\]\} initialSamples=\{library\?\.samples \?\? \{\}\}/);
-  // The samples stay open during a timed mock; only generation checks for an open sitting.
+  // The samples stay open during a timed mock; only generation (a new practice or a retry) checks for an open sitting.
   const service = text("src/modules/reading-lab/service.ts");
-  assert.equal(service.match(/ensureNoTimedExam\(userId\)/g).length, 2);
+  assert.equal(service.match(/await ensureNoTimedExam\(userId\)/g).length, 4);
   // Nothing about a signed-in student's work is kept in the browser by the page itself.
   assert.doesNotMatch(text("src/modules/reading-lab/client.tsx"), /localStorage/);
 });

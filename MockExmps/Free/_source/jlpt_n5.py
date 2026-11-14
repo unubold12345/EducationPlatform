@@ -38,22 +38,22 @@ def build(program_dir):
       "くらい (dark) means the same as あかるくない (not bright).")
 
     m.group("G", "grammar-form")
-    w("G", "えき（　） バスに のります。", ["を", "で", "が", "の"], 2, "で marks the place where an action happens: you board the bus at the station.")
+    w("G", "えき（　） バスに のります。", ["を", "で", "が", "と"], 2, "で marks the place where an action happens: you board the bus at the station.")
     w("G", "A「この りんごは （　）ですか。」 B「ひとつ １００えんです。」", ["いくら", "どこ", "だれ", "いつ"], 1, "The answer is a price, so the question word is いくら (how much).")
     w("G", "ごはんを たべた （　）、はを みがきます。", ["まえに", "ても", "ながら", "あとで"], 4, "た-form + あとで means after doing. まえに follows the dictionary form (たべる まえに).")
     w("G", "A「いっしょに おちゃを のみませんか。」 B「ええ、（　）。」", ["のみません", "のみました", "のみましょう", "のんで います"], 3, "ええ accepts the invitation, so B answers with ～ましょう (let's).")
 
     m.group("G", "sentence-order")
-    w("G", "わたしは ____  ____  ★  ____ かいました。", ["かさを", "あかい", "きのう", "デパートで"], 2,
-      "わたしは きのう デパートで あかい かさを かいました。The third blank is あかい.")
+    w("G", "これは ____  ____  ★  ____ です。", ["デパートで", "かった", "きのう", "かさ"], 2,
+      "これは きのう デパートで かった かさです。かった describes かさ, so it comes just before it; the third blank is かった in either order of きのう and デパートで.")
     w("G", "____  ____  ★  ____ わたしの あねです。", ["ひとは", "あそこで", "ほんを", "よんで いる"], 4,
       "あそこで ほんを よんで いる ひとは わたしの あねです。The third blank is よんで いる.")
 
     passage = ("わたしは まいしゅう どようびに プールへ いきます。プールは うちから とおいですから、バス【1】 いきます。"
-               "きのうも いきましたが、ひとが おおくて、あまり およげませんでした。【2】、らいしゅうは にちようびの あさ いきたいです。")
+               "きのうも いきましたが、ひとが おおくて、あまり およげませんでした。にちようびの あさは ひとが すくないです。【2】、らいしゅうは にちようびの あさ いきたいです。")
     m.group("G", "text-grammar", "文を 読んで、【1】と【2】に 入る ものを えらんでください。")
     w("G", "【1】", ["に", "で", "を", "と"], 2, "で marks the means of transport: バスで いきます.", passage=passage)
-    w("G", "【2】", ["ですから", "でも", "それから", "そして"], 1, "The crowd yesterday is the reason for going on Sunday morning, so ですから (therefore).", passage=passage)
+    w("G", "【2】", ["ですから", "でも", "それから", "そして"], 1, "Sunday mornings are quiet, and that is the reason for going then, so ですから (therefore). でも would set up a contrast.", passage=passage)
 
     m.group("G", "short-reading")
     w("G", "ジョンさんは あした どう しますか。",

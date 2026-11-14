@@ -36,7 +36,7 @@ export function AdminUserActions({ target, suspended, protectedUser }: { target:
     finally { setBusy(false); }
   }}>
     <label>Юу хийх вэ<select name="action" value={available.includes(action) ? action : "add-note"} onChange={event => { setAction(event.target.value as Action); setMessage(""); }}>{available.map(key => <option key={key} value={key}>{actions[key].label}</option>)}</select></label>
-    {plan && <label>Хөтөлбөр<select name="program"><option value="sat">SAT</option><option value="ielts">IELTS</option><option value="entrance">University Prep</option></select></label>}
+    {plan && <label>Хөтөлбөр<select name="program"><option value="entrance">ЭЕШ</option><option value="language">Гадаад хэл</option><option value="ielts">IELTS (хуучин, зөвхөн дуусгах)</option><option value="sat">SAT (хуучин, зөвхөн дуусгах)</option></select></label>}
     {credits && <label>Кредитийн тоо<input name="amount" type="number" required min={CREDIT_GRANT_LIMITS.min} max={CREDIT_GRANT_LIMITS.max} step={1} defaultValue={50}/></label>}
     <label>{actions[action].field}<textarea name="reason" required minLength={5} maxLength={1000} rows={3}/></label>
     <button className={"button " + (action === "suspend" ? "danger" : "primary")} disabled={busy}>{busy ? "Хадгалж байна…" : actions[action].label}</button>

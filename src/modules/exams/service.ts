@@ -6,7 +6,7 @@ import { getExam } from "@/modules/content/published";
 import { createExamState, editExam, expireStages, makeReport, stageFor, validateExamEdit } from "./engine";
 import type { ExamState, PublicExamAttempt } from "./types";
 import { MockAccessRequired } from "./payments";
-import { hasSubscription } from "@/modules/subscriptions/access";
+import { mayUseMock, mockAccess, opensMock } from "@/modules/subscriptions/mock-access";
 
 const withRecordings={recordings:{select:{stageId:true,mime:true}}};
 type Row=Prisma.MockAttemptGetPayload<{include:typeof withRecordings}>;
@@ -29,10 +29,13 @@ export async function startMock(slug:string,userId:string) {
   const db=getDb();const activeKey=userId+":"+slug;
   const old=await db.mockAttempt.findUnique({where:{activeKey},select:{id:true,subscriptionAccess:true}});
   if(old?.subscriptionAccess)return {id:old.id};
-  const subscribed=await hasSubscription(userId,definition.program);
-  if (!subscribed&&!await db.mockPurchase.findFirst({where:{userId,examSlug:slug,status:"PAID"},select:{id:true}})) throw new MockAccessRequired(slug);
+  // Free, bought, an unlimited plan or this plan month's pick (mock-access.ts). Picking is a separate, explicit step.
+  const access=await mockAccess(userId,slug,definition.program);
+  if (!opensMock(access)) throw new MockAccessRequired(slug);
   if (old) return {id:old.id};
-  try {return await db.mockAttempt.create({data:{userId,slug,activeKey,subscriptionAccess:subscribed,state:json(createExamState(definition,Date.now()))},select:{id:true}});}
+  // A sitting started under a plan (or a plan month's pick) may be finished and reviewed after the plan or month ends.
+  const subscriptionAccess=access.kind==="plan"||access.kind==="picked";
+  try {return await db.mockAttempt.create({data:{userId,slug,activeKey,subscriptionAccess,state:json(createExamState(definition,Date.now()))},select:{id:true}});}
   catch(error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code==="P2002") {
       const winner=await db.mockAttempt.findUnique({where:{activeKey},select:{id:true}});if(winner)return winner;
@@ -44,7 +47,7 @@ export async function accessMock(id:string,userId:string,input?:unknown,knownSta
   return getDb().$transaction(async tx=>{
     let row=await tx.mockAttempt.findFirst({where:{id,userId},include:withRecordings});
     if(!row)throw new ApiError(404,"Шалгалт олдсонгүй.");
-    if (!row.subscriptionAccess&&!await tx.mockPurchase.findFirst({where:{userId,examSlug:row.slug,status:"PAID"},select:{id:true}})&&!await hasSubscription(userId,(row.state as unknown as ExamState).definition.program,tx)) throw new MockAccessRequired(row.slug);
+    if (!row.subscriptionAccess&&!await mayUseMock(userId,row.slug,(row.state as unknown as ExamState).definition.program,tx)) throw new MockAccessRequired(row.slug);
     const state=row.state as unknown as ExamState;const now=Date.now();
     const expired=expireStages(state,now);
     if(input!==undefined&&!expired) {
@@ -64,6 +67,6 @@ export async function accessMock(id:string,userId:string,input?:unknown,knownSta
 export async function ownMock(id:string,userId:string) {
   const row=await getDb().mockAttempt.findFirst({where:{id,userId}});
   if(!row)throw new ApiError(404,"Шалгалт олдсонгүй.");
-  if (!row.subscriptionAccess&&!await getDb().mockPurchase.findFirst({where:{userId,examSlug:row.slug,status:"PAID"},select:{id:true}})&&!await hasSubscription(userId,(row.state as unknown as ExamState).definition.program)) throw new MockAccessRequired(row.slug);
+  if (!row.subscriptionAccess&&!await mayUseMock(userId,row.slug,(row.state as unknown as ExamState).definition.program)) throw new MockAccessRequired(row.slug);
   return row;
 }

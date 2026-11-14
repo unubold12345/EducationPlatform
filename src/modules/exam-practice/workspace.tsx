@@ -3,7 +3,7 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { MathScratchpad } from "@/components/math-scratchpad";
-import { AnswerOptions, MathTools, PassagePane, QuestionStrip, shortcutHint, useEliminations, usePassageScale, useQuestionShortcuts, type StripItem } from "@/modules/exams/session-tools";
+import { AnswerOptions, MathTools, PassagePane, QuestionStrip, useEliminations, usePassageScale, useQuestionShortcuts, type StripItem } from "@/modules/exams/session-tools";
 import { RichText } from "@/modules/exams/rich-text";
 import { ExamFigureView } from "@/modules/exams/figure";
 import { AssistantButton, type AssistantConfig, type AssistantTurn } from "@/modules/tutor/panel";
@@ -220,7 +220,7 @@ export function PracticeWorkspace({initial,speakingLab,initialSection}:{initial:
         const list=form.questions.filter(q=>q.section===item.id);
         return <button key={item.id} type="button" aria-current={item.id===section.id?"true":undefined} onClick={()=>openSection(item.id)}><span>{item.title}</span><small>{list.filter(q=>reveals[q.id]).length} / {list.length}</small></button>;
       })}</nav>
-      <p className="practice-hint">{section.hint}{section.kind==="speaking"&&speakingLab?<> <Link className="text-link" href="/labs/ielts-speaking">Speaking Lab-д чанга ярьж дасгал хийх →</Link></>:null}</p>
+      {section.hint||(section.kind==="speaking"&&speakingLab)?<p className="practice-hint">{section.hint}{section.kind==="speaking"&&speakingLab?<> <Link className="text-link" href="/labs/ielts-speaking">Speaking Lab-д чанга ярьж дасгал хийх →</Link></>:null}</p>:null}
       {examinerOffered&&!examining?<div className="practice-examiner-offer"><div><strong>AI шалгагчтай ярих</strong><p>{examinerName(examinerVoice)} энэ хэсгийн асуултуудыг чанга уншиж, таны хариуг сонсоод бичвэр болгон хадгална. Цаггүй; хэсгийг дахин хийж болно. Хариуг бичвэр болгохын тулд дууг манай сервер рүү илгээнэ (тэндээс яриа таних үйлчилгээнд дамжиж болно).</p><ExaminerPicker/></div><button type="button" className="button" onClick={()=>setExaminer(true)}>AI шалгагчтай эхлэх →</button></div>:null}
       {examining?<SpeakingExaminer base={url} recordId={"practice:"+form.slug} stage={examinerStage} answers={responses} disabled={false}
         onChange={(id,value)=>{const target=sectionQuestions.find(item=>item.id===id);if(target)changeFor(target,value);}}
@@ -240,7 +240,7 @@ export function PracticeWorkspace({initial,speakingLab,initialSection}:{initial:
       {tools?<MathTools/>:null}
       {jlpt&&question.audioPart?<JlptPracticeAudio key={question.id} slug={form.slug} questionId={question.id} part={question.audioPart}/>:null}
       {hsk&&question.audioPart?<HskPracticeAudio key={question.id} slug={form.slug} questionId={question.id} part={question.audioPart}/>:null}
-      {!jlpt&&!hsk&&question.audioPart?<section className="listening-player practice-audio"><div><strong>Listening · Part {question.audioPart} / 4</strong></div><audio key={question.audioPart} controls preload="none" src={url+audioPath(form.slug)+"?part="+question.audioPart} aria-label={"Listening recording part "+question.audioPart}/></section>:null}
+      {!jlpt&&!hsk&&question.audioPart?<section className="listening-player practice-audio"><div><strong>Listening · Part {question.audioPart} / {Math.max(...form.questions.map(item=>item.audioPart??0))}</strong></div><audio key={question.audioPart} controls preload="none" src={url+audioPath(form.slug)+"?part="+question.audioPart} aria-label={"Listening recording part "+question.audioPart}/></section>:null}
       <div className={"exam-question-layout "+(passage?"with-passage":"")}>
         {passage&&jlpt?<aside className="jlpt-passage" aria-label="Унших эх"><JapaneseText text={passage} readings={readings}/></aside>:null}
         {passage&&!jlpt?<PassagePane title={passageTitle} text={passage} caption={question.kind==="essay"?"Academic Writing · Task 1 data":undefined} controls={controls} scale={scale}/>:null}
@@ -250,7 +250,7 @@ export function PracticeWorkspace({initial,speakingLab,initialSection}:{initial:
           {question.groupFigure?<ExamFigureView figure={question.groupFigure}/>:null}
           {question.context?<section className="practice-context"><p className="eyebrow">{question.contextTitle??"Өгөгдөл"}</p><div lang="en"><RichText text={question.context}/></div></section>:null}
           {question.wordBank?.length?<section className="practice-bank" aria-label="Сонголтын сан"><p className="eyebrow">СОНГОЛТУУД</p><ol>{question.wordBank.map(item=><li key={item.label}><span>{item.label}</span><RichText text={item.text}/></li>)}</ol></section>:null}
-          {hsk&&part?<div className="practice-hsk"><HskMaterial group={question.hskGroup} readings={readings}/><HskQuestion question={question} part={part} value={value} disabled={Boolean(reveal)} readings={readings} correct={reveal?.answerValue} onChange={change}/></div>:null}
+          {hsk&&part?<div className="practice-hsk"><HskMaterial group={question.hskGroup} readings={readings} example={false}/><HskQuestion question={question} part={part} value={value} disabled={Boolean(reveal)} readings={readings} correct={reveal?.answerValue} onChange={change}/></div>:null}
           {!hsk&&question.prompt?<h2 lang={answerLang}>{mathPaper||physicsPaper?<MathText text={question.prompt}/>:jlpt?<JapaneseText text={question.prompt} readings={readings}/>:form.subject==="eesh-english"?<RichText text={question.prompt}/>:question.prompt}</h2>:null}
           {!hsk&&question.figure?<ExamFigureView figure={question.figure}/>:null}
           {!hsk&&choices.length?<AnswerOptions name={question.id} selected={value} disabled={Boolean(reveal)} lang={answerLang} labels={question.optionLabels} onSelect={change} struck={struck[question.id]} onStrike={option=>toggle(question.id,option)} correctValue={reveal?.answerValue??reveal?.answer} options={choices.map(option=>({value:option,content:optionContent(option)}))}/>:null}
@@ -270,7 +270,6 @@ export function PracticeWorkspace({initial,speakingLab,initialSection}:{initial:
             <AssistantButton config={assistant} turns={conversations[question.id]??[]} setTurns={update=>setConversations(current=>({...current,[question.id]:update(current[question.id]??[])}))}/>
           </div>
           <div className="question-actions"><button className="button secondary" disabled={!previous} onClick={()=>previous&&go(previous.id)}>← Өмнөх</button>{next?<button className="button" onClick={()=>go(next.id)}>Дараах →</button>:nextSection?<button className="button" onClick={()=>openSection(nextSection.id)}>Дараагийн хэсэг →</button>:<Link className="button" href="/workspace">Дуусгах →</Link>}</div>
-          <p className="shortcut-hint">{entrance?null:<>{shortcutHint} · Enter шалгах</>}</p>
         </section>
       </div>
       </>}

@@ -3,11 +3,12 @@ import Link from "next/link";
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type DragEvent, type ReactNode } from "react";
 import { Icon } from "@/modules/workspace/icons";
 import { CreditCost, useCredits } from "@/modules/credits/client";
-import { readReceipt, readingPracticeHold } from "@/modules/credits/pricing";
+import { readReceipt, readingPracticeHold, readingRetryPrice } from "@/modules/credits/pricing";
 import { MaterialImages, useMaterialPick } from "@/modules/ai-images/client";
+import { ProcessingOverlay } from "@/modules/workspace/processing";
 import {
-  GAP, READING_LIMITS, TFNG, allQuestions, groupType, matchCount, matchLabel, optionLetter, paragraphLabel,
-  passageWords, publicGroups, type PublicGroup, type PublicQuestion, type ReadingAnswer,
+  GAP, READING_COUNT, READING_LIMITS, TFNG, allQuestions, groupType, matchCount, matchLabel, optionLetter, paragraphLabel,
+  passageWords, publicGroups, retryCount, type PublicGroup, type PublicQuestion, type ReadingAnswer,
   type ReadingLanguage, type ResultItem,
 } from "./contracts";
 import { readingSamples, type ReadingSample } from "./samples";
@@ -51,6 +52,11 @@ type RunnerPractice = {
   check: (state: PracticeState, finishedSeconds: number | null) => Promise<PracticeState>;
   /** Clear a checked practice for another attempt. */
   retry: (state: PracticeState) => Promise<PracticeState>;
+  /**
+   * A paid retry on the student's own practice: new questions on the same passage replace these. `credits` is the
+   * most it can cost, the figure the server holds; `run` resolves once the page shows the new questions.
+   */
+  renew?: { credits: number; run: () => Promise<void> };
 };
 type View = { kind: "library" } | { kind: "sample"; id: string } | { kind: "own"; id: string };
 
@@ -94,9 +100,10 @@ function samplePractice(sample: ReadingSample, signedIn: boolean): RunnerPractic
     },
   };
 }
-function ownPractice(own: SavedPractice): RunnerPractice {
+function ownPractice(own: SavedPractice, renew: (own: SavedPractice) => Promise<void>): RunnerPractice {
   const url = `${API}/practices/${own.id}`;
   return {
+    renew: { credits: readingRetryPrice(own.paragraphs, retryCount(allQuestions(own.groups).length)), run: () => renew(own) },
     title: own.title, paragraphs: own.paragraphs, groups: own.groups,
     meta: ["Миний дасгал", `${passageWords(own.paragraphs)} үг`, own.sourceName],
     saveUrl: url,
@@ -126,6 +133,7 @@ export function ReadingLab({ userKey, initialPractices = [], initialSamples = {}
   const [listError, setListError] = useState("");
   const [moveNote, setMoveNote] = useState("");
   const [deleting, setDeleting] = useState<string | null>(null);
+  const { apply } = useCredits();
   useEffect(() => { window.scrollTo({ top: 0, behavior: "auto" }); }, [view]);
   const back = () => { setNotice(null); setView({ kind: "library" }); };
 
@@ -190,6 +198,23 @@ export function ReadingLab({ userKey, initialPractices = [], initialSamples = {}
   const ownChanged = (id: string, state: PracticeState) => {
     setPractices(list => list.map(item => item.id === id ? { ...item, state } : item));
   };
+  // A retry: new questions on the passage kept with the practice, at the retry price. The server reads the
+  // passage, the count and the price from the account; the request names only the practice.
+  async function renew(own: SavedPractice) {
+    const response = await fetch(`${API}/practices/${own.id}/regenerate`, {
+      method: "POST", headers: { "Content-Type": "application/json" }, body: "{}", signal: AbortSignal.timeout(175_000),
+    });
+    const data = await jsonObject(response);
+    if (response.status === 401) throw new RequestError("Нэвтрэх хугацаа дууссан. Дахин нэвтэрнэ үү.");
+    if (!response.ok) throw new RequestError(typeof data.error === "string" ? data.error : "Шинэ асуулт үүсгэж чадсангүй. Дахин оролдоно уу.");
+    apply(data);
+    // The new questions are already on the account; the reply is checked before it is shown.
+    const practice = readSavedPractice(data.practice);
+    if (!practice) throw new RequestError("Шинэ асуулт бүрэн ирсэнгүй. Хуудсаа дахин ачаална уу.");
+    const receipt = readReceipt(data);
+    put(practice);
+    setNotice({ id: practice.id, text: receipt ? `Шинэ асуулт бэлэн боллоо. ${receipt.spent} кредит зарцууллаа.` : "Шинэ асуулт бэлэн боллоо." });
+  }
   async function remove(own: SavedPractice) {
     if (deleting || !window.confirm(`"${own.title}" дасгалыг устгах уу? Хариулт, дүн хамт устана.`)) return;
     setDeleting(own.id); setListError("");
@@ -212,7 +237,8 @@ export function ReadingLab({ userKey, initialPractices = [], initialSamples = {}
   }
   if (view.kind === "own") {
     const own = practices.find(item => item.id === view.id);
-    if (own) return <Runner key={"own:" + own.id} practice={ownPractice(own)} state={own.state} notice={notice?.id === own.id ? notice.text : null}
+    // A retry replaces the questions, so the runner starts over with the new set.
+    if (own) return <Runner key={"own:" + own.id + ":" + (allQuestions(own.groups)[0]?.id ?? "")} practice={ownPractice(own, renew)} state={own.state} notice={notice?.id === own.id ? notice.text : null}
       onState={state => ownChanged(own.id, state)} textSize={textSize} onTextSize={saveTextSize} onBack={back} />;
   }
 
@@ -294,6 +320,7 @@ function Creator({ full, onCreated }: { full: boolean; onCreated: (practice: Sav
   const file = picked?.kind === "document" ? picked.file : null;
   const [text, setText] = useState("");
   const [language, setLanguage] = useState<ReadingLanguage>("mn");
+  const [count, setCount] = useState<number>(READING_COUNT.default);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
   const [dragging, setDragging] = useState(false);
@@ -302,8 +329,8 @@ function Creator({ full, onCreated }: { full: boolean; onCreated: (practice: Sav
   const length = text.trim().length;
   const ready = !full && (mode === "file" ? Boolean(picked) && !material.preparing : length >= READING_LIMITS.minSourceChars);
   // The most this material can cost, as the server holds it; the charge settles lower for shorter material.
-  const hold = mode === "text" ? readingPracticeHold(Math.max(length, READING_LIMITS.minSourceChars))
-    : picked?.kind === "images" ? readingPracticeHold(0, picked.images.length) : readingPracticeHold(READING_LIMITS.textChars);
+  const hold = mode === "text" ? readingPracticeHold(Math.max(length, READING_LIMITS.minSourceChars), 0, count)
+    : picked?.kind === "images" ? readingPracticeHold(0, picked.images.length, count) : readingPracticeHold(READING_LIMITS.textChars, 0, count);
 
   async function pick(next: ArrayLike<File> | null | undefined) {
     setError("");
@@ -321,6 +348,7 @@ function Creator({ full, onCreated }: { full: boolean; onCreated: (practice: Sav
       const form = new FormData();
       if (mode === "file") material.append(form); else form.append("text", text.trim());
       form.append("language", language);
+      form.append("count", String(count));
       // The practice is saved on the account; the server counts the account's practices before any credits are held.
       form.append("store", "account");
       const response = await fetch(API, { method: "POST", body: form, signal: AbortSignal.timeout(175_000) });
@@ -340,6 +368,8 @@ function Creator({ full, onCreated }: { full: boolean; onCreated: (practice: Sav
   }
 
   return <div className={styles.create}>
+    {/* While the practice is being made the whole page waits; `pending` is cleared on success, error and timeout. */}
+    <ProcessingOverlay open={pending} title="Унших дасгал бэлдэж байна…" detail="Материалыг уншиж, эх бичвэр болон асуулт бэлдэж байна. 30–90 секунд орно." />
     <div className={styles.source}>
       <div className={styles.segmented} role="tablist" aria-label="Материалын төрөл">
         <button type="button" role="tab" aria-selected={mode === "file"} onClick={() => { setMode("file"); setError(""); }} disabled={pending}><Icon name="fileExam" size={16} />Файл, зураг</button>
@@ -382,9 +412,16 @@ function Creator({ full, onCreated }: { full: boolean; onCreated: (practice: Sav
         </div>
         <small>Эх бичвэр, асуулт англиар; тайлбар энэ хэлээр.</small>
       </div>
+      <div className={styles.setting}>
+        <label className={styles.settingLabel} htmlFor="rl-count">Асуултын тоо</label>
+        <div className={styles.rangeRow}>
+          <input id="rl-count" type="range" min={READING_COUNT.min} max={READING_COUNT.max} step={1} value={count} onChange={event => setCount(Number(event.currentTarget.value))} disabled={pending} />
+          <output htmlFor="rl-count">{count}</output>
+        </div>
+      </div>
       <ul className={styles.will}>
         <li>450–900 үгийн IELTS маягийн эх бичвэр</li>
-        <li>12 орчим асуулт: T/F/NG, сонголттой, нөхөх</li>
+        <li>{count} асуулт: T/F/NG, сонголттой, нөхөх</li>
         <li>Хариулт бүрийн нотолгоо, тайлбар</li>
       </ul>
       <button type="button" className={styles.generate} onClick={() => void generate()} disabled={!ready || pending} aria-busy={pending}>
@@ -392,7 +429,6 @@ function Creator({ full, onCreated }: { full: boolean; onCreated: (practice: Sav
       </button>
       <p className={styles.cost}><CreditCost action="reading-practice" cost={hold} upTo /></p>
       {full ? <p className={styles.error} role="status">{PRACTICES_FULL}</p> : null}
-      {pending ? <p className={styles.status} role="status">Материалыг уншиж, эх бичвэр болон асуулт бэлдэж байна. 30–90 секунд орно.</p> : null}
       {error ? <p className={styles.error} role="alert">{error}</p> : null}
       <p className={styles.fine}>Үнэ нь материалын урт, бэлдсэн эх бичвэр, асуултын тоогоор тооцогдоно: богино текст хямд, барьсан кредитийн илүүг буцаана. Материалын текст эсвэл зураг AI руу илгээгдэнэ. Урт материалын эхний 45,000 тэмдэгтийг ашиглана. Файл, текст серверт хадгалагдахгүй. Дасгал, хариулт, дүн таны бүртгэлд хадгалагдаж, өөр төхөөрөмж дээр ч нээгдэнэ; хариултын түлхүүр шалгах хүртэл серверт үлдэнэ. Бүртгэлд {READING_LIMITS.practices} хүртэл дасгал хадгална. AI-ийн бэлдсэн дасгал багшийн хяналтгүй. Хугацаатай шалгалтын үеэр хаалттай.</p>
     </div>
@@ -490,6 +526,8 @@ function Runner({ practice, state, notice = null, onState, textSize, onTextSize,
   const answered = questions.filter(question => filled(state.answers[question.id])).length;
   const [pane, setPane] = useState<"passage" | "questions">("passage");
   const [busy, setBusy] = useState(false);
+  // A paid retry is writing new questions for this passage.
+  const [renewing, setRenewing] = useState(false);
   const [error, setError] = useState("");
   const [focus, setFocus] = useState<string | null>(null);
   const [now, setNow] = useState(() => Date.now());
@@ -568,9 +606,27 @@ function Runner({ practice, state, notice = null, onState, textSize, onTextSize,
       setError(failure(reason, "Дасгалыг шинээр эхлүүлж чадсангүй. Холболтоо шалгаад дахин оролдоно уу."));
     } finally { saver?.reopen(); setBusy(false); }
   }
+  async function renew() {
+    const paid = practice.renew;
+    if (busy || !paid) return;
+    if (!window.confirm(`Энэ эх бичвэрт шинэ асуулт үүсгэнэ. Одоогийн асуулт, хариулт, дүн устана. Хамгийн ихдээ ${paid.credits} кредит. Үргэлжлүүлэх үү?`)) return;
+    setBusy(true); setRenewing(true); setError("");
+    // Nothing typed for the old questions is saved behind the new ones.
+    await saver?.close();
+    try {
+      // The page swaps in the new questions and this runner is replaced by a fresh one.
+      await paid.run();
+    } catch (reason) {
+      saver?.reopen();
+      setError(failure(reason, "Шинэ асуулт үүсгэж чадсангүй. Холболтоо шалгаад дахин оролдоно уу."));
+      setBusy(false); setRenewing(false);
+    }
+  }
   const show = (id: string) => { setPane("passage"); setFocus(id); };
 
   return <div className={`wsp-page ${styles.runnerPage}`} data-pane={pane}>
+    {/* A paid retry is writing new questions: the whole page waits until they arrive or the request fails. */}
+    <ProcessingOverlay open={renewing} title="Шинэ асуулт бэлдэж байна…" detail="Энэ эх бичвэрт шинэ асуулт бэлдэж байна. 20–60 секунд орно." />
     <header className={styles.bar}>
       <button type="button" className={styles.back} onClick={onBack}><Icon name="back" size={18} /><span>Унших лаб</span></button>
       <div className={styles.barTitle}><strong lang="en">{practice.title}</strong><small>{checked ? `${result.correct}/${result.total} зөв` : `${answered}/${questions.length} хариулсан`}</small></div>
@@ -634,6 +690,9 @@ function Runner({ practice, state, notice = null, onState, textSize, onTextSize,
         <div className={styles.footer}>
           {checked ? <button type="button" className={styles.secondary} onClick={() => void retry()} disabled={busy}>Дахин оролдох</button>
             : <><span>{answered}/{questions.length} хариулсан</span><button type="button" className={styles.primary} onClick={() => void check()} disabled={busy || !answered}>{busy ? "Шалгаж байна…" : "Хариулт шалгах"}</button></>}
+          {practice.renew ? <button type="button" className={styles.secondary} onClick={() => void renew()} disabled={busy} aria-busy={renewing} data-renew="">
+            {renewing ? "Шинэ асуулт бэлдэж байна…" : <>Шинэ асуулт <CreditCost action="reading-retry" cost={practice.renew.credits} upTo compact /></>}
+          </button> : null}
           <button type="button" className={styles.linkButton} onClick={onBack}>Бусад дасгал</button>
         </div>
       </section>

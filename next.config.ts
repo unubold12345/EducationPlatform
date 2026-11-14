@@ -3,7 +3,7 @@ const nextConfig: NextConfig = {
  poweredByHeader: false,
  serverExternalPackages: ["kokoro-js", "@huggingface/transformers", "onnxruntime-node", "phonemizer", "nodemailer"],
  outputFileTracingIncludes:{
-  "/*":["./assets/entrance-mocks/**/*.json","./assets/jlpt/*.json","./assets/hsk/*.json"],
+  "/*":["./assets/entrance-mocks/**/*.json","./assets/jlpt/*.json","./assets/hsk/*.json","./assets/free-mocks/*.json"],
   // The IELTS mock's AI examiner uses the same local voice and transcription from its own routes.
   "/api/mock-attempts/*/speaking/*":[
    "./node_modules/kokoro-js/voices/bm_george.bin",
@@ -26,6 +26,9 @@ const nextConfig: NextConfig = {
   // `/audio/hsk` reads assets/hsk-audio (HSK 1, about 12 MB) through audio-response-hsk.ts:
   "/api/mock-attempts/*/audio/hsk":["./assets/hsk-audio/*.mp3"],
   "/api/exam-practice/*/audio/hsk":["./assets/hsk-audio/*.mp3"],
+  // `/audio/free` reads assets/free-audio (the free half-length mocks) through audio-response-free.ts:
+  "/api/mock-attempts/*/audio/free":["./assets/free-audio/*.mp3"],
+  "/api/exam-practice/*/audio/free":["./assets/free-audio/*.mp3"],
   "/api/exams/audio-check":["./assets/exams/audio-check.mp3"],
  },
 };

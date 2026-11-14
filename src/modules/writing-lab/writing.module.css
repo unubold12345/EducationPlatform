@@ -98,7 +98,7 @@
 .coachHead > div { flex: 1; min-width: 0; }
 .coachHead h2 { margin: 0; font-size: 15px; letter-spacing: -.005em; }
 .coachHead p { margin: 2px 0 0; color: var(--muted); font-size: 12px; }
-.spark { display: grid; place-items: center; width: 34px; height: 34px; flex-shrink: 0; border-radius: 11px; background: linear-gradient(135deg, var(--blue), #a78bfa); color: #fff; font-size: 14px; }
+.spark { display: grid; place-items: center; width: 34px; height: 34px; flex-shrink: 0; border-radius: 11px; background: var(--blue); color: #fff; font-size: 14px; }
 .coachBody { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 16px; }
 .error { margin: 12px 16px 0; padding: 10px 12px; border-radius: 10px; background: color-mix(in srgb, var(--bad) 12%, transparent); color: var(--bad); font-size: 13px; }
 .note { margin: 0; padding: 10px 16px 12px; border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; line-height: 1.5; }

@@ -104,7 +104,7 @@ def build(program_dir):
 
     # Listening Part 3: two dialogues, three shared pictures (one extra).
     shared_l3 = [pic("listening-picture-a", "shop_scene", "A shop counter with fruit", 3, "A"),
-                 pic("listening-picture-b", "taxi_scene", "A person getting into a taxi", 3, "B"),
+                 pic("listening-picture-b", "taxi_scene", "Two people riding in a taxi", 3, "B"),
                  pic("listening-picture-c", "hospital", "A hospital building", 3, "C")]
     question(listening, 7, "hsk-l-3", L3, "Сонссон яриад тохирох зургийг сонгоно уу.", abc, "C",
              "The man says he is going to the hospital; C shows a hospital.",
@@ -136,13 +136,14 @@ def build(program_dir):
         printed = line(word, pinyin)
         question(reading, n, "hsk-r-1", R1, word, tick, answer, why, figure=figure(f"reading-{n}", scene, alt, 3), hsk={"line": printed})
 
-    # Reading Part 2: sentence to one of three shared pictures (one extra).
+    # Reading Part 2: sentence to one of three shared pictures (one extra). The phone_call scene always draws a
+    # woman (long hair) and the eating scene one person, so the sentences say 她 and 我.
     shared_r2 = [pic("reading-picture-a", "eating", "A person eating at a table", 2, "A"),
-                 pic("reading-picture-b", "phone_call", "A person making a phone call", 2, "B"),
+                 pic("reading-picture-b", "phone_call", "A woman making a phone call", 2, "B"),
                  pic("reading-picture-c", "school_scene", "Children at school", 2, "C")]
     for n, text, pinyin, answer, why in [
-        (14, "他在打电话呢。", "Tā zài dǎ diànhuà ne.", "B", "“打电话” (make a phone call) matches B."),
-        (15, "我们中午在家吃米饭。", "Wǒmen zhōngwǔ zài jiā chī mǐfàn.", "A", "“吃米饭” (eat rice) matches A. C (school) is not used."),
+        (14, "她在打电话呢。", "Tā zài dǎ diànhuà ne.", "B", "“打电话” (make a phone call) matches B."),
+        (15, "我中午在家吃米饭。", "Wǒ zhōngwǔ zài jiā chī mǐfàn.", "A", "“吃米饭” (eat rice) matches A. C (school) is not used."),
     ]:
         question(reading, n, "hsk-r-2", R2, text, abc, answer, why, hsk={"line": line(text, pinyin)})
 
@@ -205,7 +206,7 @@ def build(program_dir):
         "description": "免费试卷 · Үнэгүй хагас mock · Гэр, хоол, сургууль, дэлгүүр",
         "points": len(listening) + len(reading),
         "notes": ["Үнэгүй, хагас хэмжээний дадлагын mock: HSK 1-ийн найман хэсэг бүгд, асуулт цөөн.",
-                  "Албан бус, эх зохиомжтой. Хятад хэлний багшийн хяналт хүлээгдэж байна. Сонсох хэсгийн дуу хараахан бичигдээгүй.",
+                  "Албан бус, эх зохиомжтой. Хятад хэлний багшийн хяналт хүлээгдэж байна. Сонсох хэсгийн дуу хиймэл хятад дуу хоолойгоор бичигдсэн; хүний сонсголын шалгалт хүлээгдэж байна.",
                   "Raw зөв хариултын тоо ба ×10 дадлагын оноо (200-аас); HSK-ийн албан оноо, тэнцсэн эсэх биш."],
         "sources": [{"label": "Chinese Testing International · HSK 1", "url": "https://www.chinesetest.cn/HSK/1"},
                     {"label": "HSK 1 албан жишиг материал (бүтэц)", "url": "https://www.chinesetest.cn/userfiles/file/HSK1.pdf"}],

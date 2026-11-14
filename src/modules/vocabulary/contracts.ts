@@ -1,15 +1,18 @@
 // Vocabulary: limits, input validation, the import prompt and the tolerant JSON reader. Pure, so
 // the rules can be tested without an upload, a database or a provider. This file is imported by
 // both the server and the browser, so it must stay free of server-only modules.
-import { subscriptionPlans } from "../subscriptions/plans.ts";
+import { allPlans, subscriptionPlans } from "../subscriptions/plans.ts";
 import { isStudyGrade, type StudyGrade } from "./study.ts";
 import { PAGE_IMAGES_RULE, withImages, type MessageContent } from "../ai-images/contracts.ts";
 
 export const VOCABULARY_LIMITS = {
   /** A free account's bank. An active plan raises it (`vocabularyWords` in subscriptions/plans.ts). */
   freeWords: 100,
-  /** The largest bank any plan gives; the word list is read up to this many rows. */
-  maxWords: 3_000,
+  /**
+   * The largest bank an account can have (a plan's bank plus permanent space bought with yellow credits); the word
+   * list is read up to this many rows.
+   */
+  maxWords: 5_000,
   /** A single file import; enough for a chapter glossary without an unbounded model reply. */
   importWords: 120,
   term: 160,
@@ -90,29 +93,57 @@ export function isImportLanguage(value: unknown): value is ImportLanguage {
 }
 
 /**
- * How many words a student may keep: the largest bank among their active plans, otherwise the free
- * bank. Plans do not stack. Words above the size (after a plan ends) are kept but no new ones fit.
+ * Permanent vocabulary space bought with purchased ("yellow") credits (owner rule 2026-11-13): 200 credits per 100
+ * words, never lapsing, on top of the free or plan bank. Only yellow credits pay for it. `maxPacks` bounds one purchase.
  */
-export function vocabularyCapacity(programs: readonly string[]) {
+export const VOCABULARY_SPACE = { words: 100, credits: 200, maxPacks: 20 } as const;
+/** The most permanent space an account can hold, so even a free bank stays within `maxWords`. */
+export const MAX_EXTRA_WORDS = VOCABULARY_LIMITS.maxWords - VOCABULARY_LIMITS.freeWords;
+
+/**
+ * How many words a student may keep: the largest bank among their active plans (a retired plan counts until it ends),
+ * otherwise the free bank, plus the permanent space they bought, at most `maxWords`. Plans do not stack. Words above
+ * the size (after a plan ends) are kept but no new ones fit.
+ */
+export function vocabularyCapacity(programs: readonly string[], extraWords = 0) {
   let words: number = VOCABULARY_LIMITS.freeWords;
-  for (const plan of subscriptionPlans) if (programs.includes(plan.program)) words = Math.max(words, plan.vocabularyWords);
-  return words;
+  for (const plan of allPlans) if (programs.includes(plan.program)) words = Math.max(words, plan.vocabularyWords);
+  const extra = Number.isSafeInteger(extraWords) && extraWords > 0 ? Math.min(extraWords, MAX_EXTRA_WORDS) : 0;
+  return Math.min(VOCABULARY_LIMITS.maxWords, words + extra);
 }
 
-/** The plans that make the bank bigger than the free one, for the upgrade hint. */
+/** The plans on sale that make the bank bigger than the free one, for the upgrade hint. */
 export function vocabularyUpgrade() {
   const plans = subscriptionPlans.filter(plan => plan.vocabularyWords > VOCABULARY_LIMITS.freeWords);
   return { words: Math.max(VOCABULARY_LIMITS.freeWords, ...plans.map(plan => plan.vocabularyWords)), plans: plans.map(plan => plan.shortTitle) };
 }
 
-/** The readable "bank is full" message, with the upgrade path while one exists. */
+/** The readable "bank is full" message, with the plan and the yellow-credit space as ways to grow it. */
 export function bankFullMessage(limit: number) {
   const upgrade = vocabularyUpgrade();
   const more = limit < upgrade.words && upgrade.plans.length
     ? ` ${upgrade.plans.join(" эсвэл ")} багцтай бол ${upgrade.words.toLocaleString("en-US")} үг хадгална.`
     : "";
-  return `Үгсийн сан ${limit.toLocaleString("en-US")} үгийн хязгаартаа хүрсэн. Хэрэггүй үгээ устгаад дахин нэмнэ үү.${more}`;
+  const space = limit < VOCABULARY_LIMITS.maxWords
+    ? ` Кредитээр байнгын багтаамж нэмж болно: ${VOCABULARY_SPACE.words} үг = ${VOCABULARY_SPACE.credits} кредит.`
+    : "";
+  return `Үгсийн сан ${limit.toLocaleString("en-US")} үгийн хязгаартаа хүрсэн. Хэрэггүй үгээ устгаад дахин нэмнэ үү.${more}${space}`;
 }
+
+/** A space purchase: how many 100-word packs and the page's id for this purchase (so a retry buys once). */
+export type SpaceRequest = { packs: number; requestId: string };
+const REQUEST_ID = /^[A-Za-z0-9_-]{8,64}$/;
+export function readSpaceRequest(value: unknown): SpaceRequest | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const body = value as Record<string, unknown>;
+  if (Object.keys(body).length !== 2) return null;
+  const { packs, requestId } = body;
+  if (typeof packs !== "number" || !Number.isInteger(packs) || packs < 1 || packs > VOCABULARY_SPACE.maxPacks) return null;
+  if (typeof requestId !== "string" || !REQUEST_ID.test(requestId)) return null;
+  return { packs, requestId };
+}
+/** What the vocabulary page shows about the bank size and the space a student can still buy. */
+export type VocabularySpace = { limit: number; base: number; extra: number; yellow: number; room: number };
 
 /**
  * A student sets the most words one scan may return, anywhere from 1 to the import bound, instead of

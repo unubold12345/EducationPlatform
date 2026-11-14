@@ -3,9 +3,9 @@
 export type EntranceSubject = "math" | "physics" | "chemistry" | "biology" | "english";
 export const ENTRANCE_SUBJECT_ORDER: EntranceSubject[] = ["math", "physics", "chemistry", "biology", "english"];
 export const isEntranceSubject = (value: string): value is EntranceSubject => (ENTRANCE_SUBJECT_ORDER as string[]).includes(value);
-/** `eesh-<subject>-<year>-<form>` names its subject. */
+/** `eesh-<subject>-<year>-<form>` (or the free paper `eesh-<subject>-free`) names its subject. */
 export function subjectFromSlug(slug: string): EntranceSubject | null {
-  const subject = /^eesh-([a-z]+)-\d{4}-/.exec(slug)?.[1];
+  const subject = /^eesh-([a-z]+)-(?:\d{4}-|free$)/.exec(slug)?.[1];
   return subject && isEntranceSubject(subject) ? subject : null;
 }
 export const entranceSubjectLabels: Record<EntranceSubject, string> = {

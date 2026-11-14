@@ -48,7 +48,7 @@ with sync_playwright() as p:
     page.locator(".admin-questions > li").first.get_by_role("button",name="Хаах").click()
     page.goto(BASE+"/admin/content/sat-full-02");expect(page.locator(".admin-fixer-bar span")).to_contain_text("асуулт")
     expect(page.locator(".admin-questions > li")).to_have_count(15);expect(page.locator(".admin-fixer .admin-pager button[aria-current=page]")).to_have_text("1")
-    for key in ["sat-full-01","ielts-academic-01","ielts-writing-data"]+[f"{prefix}-{n:02}" for n in range(2,7) for prefix in ["sat-full","ielts-academic"]]:
+    for key in ["sat-full-01","ielts-academic-01","ielts-writing-data"]+[f"sat-full-{n:02}" for n in range(2,10)]+[f"ielts-academic-{n:02}" for n in range(2,7)]:
         page.goto(BASE+"/admin/content/"+key);expect(page.locator(".admin-main")).to_be_visible()
     # The ЭЕШ mocks are ordinary editable mocks; the withdrawn official papers have no admin page.
     for key in ["eesh-math-2024-m1","eesh-math-2025-m5"]:
@@ -64,16 +64,19 @@ with sync_playwright() as p:
     for body in [{"action":"drop-db","target":target,"reason":"Invalid operation"},{"action":"grant-month","target":target,"program":"all","reason":"Unknown program"},{"action":"grant-month","target":target,"program":"sat","reason":"bad"},{"action":"grant-month","target":target,"program":"sat","reason":"Unknown fields","amountMnt":1}]:
         assert admin.request.post(BASE+"/api/admin",headers=ORIGIN,data=body).status==400
     assert admin.request.post(BASE+"/api/admin",headers={**ORIGIN,"Content-Type":"application/json"},data="x"*9000).status==413
-    assert admin.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":"grant-month","target":"missing-user","program":"sat","reason":"Missing user test"}).status==404
+    assert admin.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":"grant-month","target":"missing-user","program":"language","reason":"Missing user test"}).status==404
+    # The retired IELTS and SAT plans are not sold or granted any more; an admin can still end one.
+    assert admin.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":"grant-month","target":target,"program":"sat","reason":"Retired plan grant"}).status==400
+    assert admin.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":"expire-plan","target":target,"program":"ielts","reason":"No retired plan to end"}).status==404
     def mutate(action,**kwargs):
-        response=admin.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":action,"target":target,"program":"sat","reason":"Local admin browser verification",**kwargs})
+        response=admin.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":action,"target":target,"program":"entrance","reason":"Local admin browser verification",**kwargs})
         assert response.ok,(response.status,response.text())
-    assert student.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"sat-full-01"}).status==402
+    assert student.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"eesh-math-2023-m1"}).status==402
     mutate("grant-month")
-    assert student.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"sat-full-01"}).ok
-    assert student.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"eesh-math-2024-m1"}).status==402
+    assert student.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"eesh-math-2023-m1"}).ok
+    assert student.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"sat-full-01"}).status==402
     mutate("expire-plan")
-    assert student.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"sat-full-02"}).status==402
+    assert student.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"eesh-math-2023-m2"}).status==402
     page.goto(BASE+"/admin?tab=users&data=test&q="+response.json()["user"]["email"])
     expect(page.locator("tbody tr")).to_have_count(1)
     page.locator("tbody tr a").first.click();page.wait_for_url("**/admin/users/"+target)
@@ -133,24 +136,25 @@ with sync_playwright() as p:
     page.goto(BASE+"/admin/users/"+target+"?view=admin");expect(page.locator(".admin-table-wrap tbody")).to_contain_text("unsuspend")
     # Prices: validated, audited, shown on /workspace/plans and used for new orders; restored afterwards.
     for bad in [{"amount":999},{"amount":45050},{"amount":"45000"},{"amount":45000,"target":"all"}]:
-        assert admin.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":"set-price","target":"sat","reason":"Invalid price check",**bad}).status==400,bad
+        assert admin.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":"set-price","target":"language","reason":"Invalid price check",**bad}).status==400,bad
+    assert admin.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":"set-price","target":"sat","amount":45000,"reason":"Retired plan price"}).status==400
     def price(value,reason):
-        r=admin.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":"set-price","target":"sat","amount":value,"reason":reason});assert r.ok,(r.status,r.text())
+        r=admin.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":"set-price","target":"language","amount":value,"reason":reason});assert r.ok,(r.status,r.text())
     price(45500,"Local price change verification")
     page.goto(BASE+"/workspace/plans");expect(page.locator("main")).to_contain_text("45,500")
     page.goto(BASE+"/admin?tab=pricing");expect(page.locator(".admin-table-wrap tbody tr").first).to_contain_text("₮45,500")
     price(60000,"Local price restored after verification")
     # Monthly AI credit amounts: validated, audited, shown on /workspace/plans; restored afterwards.
-    for bad in [{"target":"jlpt","amount":100},{"target":"ielts","amount":-1},{"target":"ielts","amount":100001},{"target":"ielts","amount":"3500"}]:
+    for bad in [{"target":"jlpt","amount":100},{"target":"language","amount":-1},{"target":"language","amount":100001},{"target":"language","amount":"3500"}]:
         assert admin.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":"set-credits","reason":"Invalid credit amount check",**bad}).status==400,bad
     def credits(value,reason):
-        r=admin.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":"set-credits","target":"ielts","amount":value,"reason":reason});assert r.ok,(r.status,r.text())
+        r=admin.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":"set-credits","target":"language","amount":value,"reason":reason});assert r.ok,(r.status,r.text())
     credits(3500,"Local credit amount verification")
-    page.goto(BASE+"/workspace/plans");expect(page.locator('.pricing-card[data-program="ielts"] .pricing-credits')).to_contain_text("3,500")
-    page.goto(BASE+"/admin?tab=pricing");expect(page.locator('.admin-credit-allowances [data-credit-key="ielts"]')).to_contain_text("Одоо 3,500")
+    page.goto(BASE+"/workspace/plans");expect(page.locator('.pricing-card[data-program="language"] .pricing-credits')).to_contain_text("3,500")
+    page.goto(BASE+"/admin?tab=pricing");expect(page.locator('.admin-credit-allowances [data-credit-key="language"]')).to_contain_text("Одоо 3,500")
     expect(page.locator(".admin-table-wrap tbody tr").first).to_contain_text("₮60,000")
     credits(3000,"Local credit amount restored after verification")
-    page.goto(BASE+"/workspace/plans");expect(page.locator('.pricing-card[data-program="ielts"] .pricing-credits')).to_contain_text("3,000")
+    page.goto(BASE+"/workspace/plans");expect(page.locator('.pricing-card[data-program="language"] .pricing-credits')).to_contain_text("3,000")
     page.goto(BASE+"/workspace/plans");expect(page.locator("main")).to_contain_text("60,000")
     # Single-question fix publishes a new version through validation; invalid fixes are refused.
     detail=admin.request.get(BASE+"/api/admin/content/sat-full-01").json()

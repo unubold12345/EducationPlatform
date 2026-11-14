@@ -5,10 +5,11 @@ import { strToU8, zipSync } from "fflate";
 import {
   DECK_COLORS, IMPORT_COUNT, IMPORT_KINDS, IMPORT_LEVELS, VOCABULARY_LIMITS, bankFullMessage, cleanDeckName, cleanUserRequest, deckNameFromSource,
   isImportKind, isImportLanguage, isImportLevel, isVocabularyId,
-  parseGeneratedWords, readBulkRequest, readDeckFields, readImportCount, readReview, readWordFields, readWordsJson, termKey, vocabularyCapacity,
+  parseGeneratedWords, readBulkRequest, readDeckFields, readImportCount, readReview, readSpaceRequest, readWordFields, readWordsJson, termKey, vocabularyCapacity,
+  MAX_EXTRA_WORDS, VOCABULARY_SPACE,
   vocabularyMessages, vocabularyUpgrade,
 } from "../src/modules/vocabulary/contracts.ts";
-import { subscriptionPlans } from "../src/modules/subscriptions/plans.ts";
+import { allPlans, subscriptionPlans } from "../src/modules/subscriptions/plans.ts";
 import {
   acceptedAnswers, buildQuiz, checkTyped, clozeText, fiftyFifty, questionLead, quizPool, retryOf, speechFor, typingHint,
   QUIZ_COUNTS, QUIZ_KINDS, QUIZ_MIN_WORDS, QUIZ_SCOPES, TRUE_FALSE_OPTIONS,
@@ -152,18 +153,23 @@ test("model JSON is read through fences and prose, then cleaned and deduplicated
 
 test("the bank size follows the student's plans, and one import asks for a bounded count", () => {
   assert.equal(VOCABULARY_LIMITS.freeWords, 100);
-  assert.deepEqual(subscriptionPlans.map(plan => [plan.program, plan.vocabularyWords]), [["entrance", 100], ["ielts", 3000], ["sat", 3000]]);
-  assert.equal(VOCABULARY_LIMITS.maxWords, Math.max(...subscriptionPlans.map(plan => plan.vocabularyWords)), "the list reads the largest bank");
+  assert.deepEqual(subscriptionPlans.map(plan => [plan.program, plan.vocabularyWords]), [["entrance", 100], ["language", 3000]]);
+  // The list reads the largest bank an account can reach: a plan's bank plus permanent space, within maxWords.
+  assert.equal(VOCABULARY_LIMITS.maxWords, 5000);
+  assert.ok(VOCABULARY_LIMITS.maxWords >= Math.max(...allPlans.map(plan => plan.vocabularyWords)));
   assert.equal(vocabularyCapacity([]), 100);
-  assert.equal(vocabularyCapacity(["ielts"]), 3000);
+  assert.equal(vocabularyCapacity(["language"]), 3000);
+  assert.equal(vocabularyCapacity(["ielts"]), 3000, "a retired plan keeps its bank until it ends");
   assert.equal(vocabularyCapacity(["sat"]), 3000);
   assert.equal(vocabularyCapacity(["entrance"]), 100);
-  assert.equal(vocabularyCapacity(["ielts", "sat"]), 3000, "plans do not stack");
+  assert.equal(vocabularyCapacity(["language", "sat"]), 3000, "plans do not stack");
   assert.equal(vocabularyCapacity(["unknown", "free"]), 100);
-  assert.deepEqual(vocabularyUpgrade(), { words: 3000, plans: ["IELTS", "SAT"] });
+  assert.deepEqual(vocabularyUpgrade(), { words: 3000, plans: ["Гадаад хэл"] });
   assert.match(bankFullMessage(100), /100 үгийн хязгаартаа хүрсэн/);
-  assert.match(bankFullMessage(100), /IELTS эсвэл SAT багцтай бол 3,000 үг хадгална/);
-  assert.doesNotMatch(bankFullMessage(3000), /багцтай бол/, "no upgrade hint once on the largest bank");
+  assert.match(bankFullMessage(100), /Гадаад хэл багцтай бол 3,000 үг хадгална/);
+  assert.match(bankFullMessage(100), /Кредитээр байнгын багтаамж нэмж болно: 100 үг = 200 кредит/);
+  assert.doesNotMatch(bankFullMessage(3000), /багцтай бол/, "no upgrade hint once on the largest plan bank");
+  assert.doesNotMatch(bankFullMessage(5000), /Кредитээр/, "no space offer at the ceiling");
   // Any count from one word to the import bound, not a few fixed sizes.
   assert.deepEqual(IMPORT_COUNT, { min: 1, max: 120, step: 5, default: 40 });
   assert.equal(IMPORT_COUNT.max, VOCABULARY_LIMITS.importWords);
@@ -523,7 +529,7 @@ test("vocabulary stays behind the server's checks and limits", () => {
   assert.match(service, /const wanted = Math\.min\(requested, limit - stored\)/, "an import asks only for the room left");
   assert.match(service, /if \(total >= limit\) throw new ApiError\(409, bankFullMessage\(limit\)\)/);
   assert.match(service, /take: VOCABULARY_LIMITS\.maxWords/);
-  assert.match(service, /vocabularyCapacity\(rows\.map\(row => row\.program\)\)/);
+  assert.match(service, /vocabularyCapacity\(rows\.map\(row => row\.program\), extra\)/, "the bank adds the permanent space bought");
   assert.match(service, /endsAt: \{ gt: now \}/, "only active plans raise the bank size");
   assert.match(service, /rawRequest\.length > VOCABULARY_LIMITS\.prompt/);
   assert.match(service, /request: selectionRequest/);
@@ -577,4 +583,33 @@ test("vocabulary stays behind the server's checks and limits", () => {
   assert.match(decks, /ADD COLUMN "starred" BOOLEAN NOT NULL DEFAULT false/);
   assert.match(decks, /FOREIGN KEY \("deckId"\) REFERENCES "VocabularyDeck"\("id"\) ON DELETE SET NULL/);
   assert.doesNotMatch(decks, /\bDROP\b|^\s*(?:DELETE|UPDATE)\b|\bALTER TABLE "(?!Vocabulary)/m);
+});
+
+test("permanent bank space is bought with yellow credits only, at 200 credits per 100 words (owner rule 2026-11-13)", () => {
+  assert.deepEqual(VOCABULARY_SPACE, { words: 100, credits: 200, maxPacks: 20 });
+  assert.equal(MAX_EXTRA_WORDS, 4900, "even a free bank stays within maxWords");
+  // Bought space adds to the free or plan bank, never past the ceiling, and a bad figure adds nothing.
+  assert.equal(vocabularyCapacity([], 300), 400);
+  assert.equal(vocabularyCapacity(["language"], 300), 3300);
+  assert.equal(vocabularyCapacity(["language"], 4900), 5000);
+  assert.equal(vocabularyCapacity([], 4900), 5000);
+  assert.equal(vocabularyCapacity([], 99999), 5000);
+  for (const bad of [-100, 1.5, Number.NaN]) assert.equal(vocabularyCapacity([], bad), 100, String(bad));
+  // The request is exact: a whole number of packs within bounds and the page's own id for this purchase.
+  assert.deepEqual(readSpaceRequest({ packs: 3, requestId: "8f1c2b7e-4d1a" }), { packs: 3, requestId: "8f1c2b7e-4d1a" });
+  for (const bad of [null, [], {}, { packs: 0, requestId: "abcdefgh" }, { packs: 21, requestId: "abcdefgh" }, { packs: 1.5, requestId: "abcdefgh" }, { packs: "2", requestId: "abcdefgh" },
+    { packs: 1, requestId: "short" }, { packs: 1, requestId: "has spaces in it" }, { packs: 1, requestId: "x".repeat(65) }, { packs: 1, requestId: "abcdefgh", credits: 0 }, { packs: 1 }]) {
+    assert.equal(readSpaceRequest(bad), null, JSON.stringify(bad));
+  }
+  // The purchase takes yellow (purchased) credits only, under the wallet lock, once per request id, and never past the cap.
+  const service = readFileSync(new URL("../src/modules/vocabulary/service.ts", import.meta.url), "utf8");
+  const buy = service.slice(service.indexOf("export async function buyVocabularySpace"), service.indexOf("/** The signed-in student's own bank"));
+  assert.match(buy, /SELECT "userId" FROM "CreditWallet" WHERE "userId" = \$\{userId\} FOR UPDATE/);
+  assert.match(buy, /UPDATE "CreditWallet" SET "used" = "used" \+ \$\{credits\}, "updatedAt" = NOW\(\) WHERE "userId" = \$\{userId\} AND "used" \+ \$\{credits\} <= "purchased"/);
+  assert.match(buy, /userId_requestId: \{ userId, requestId: input\.requestId \}/);
+  assert.match(buy, /if \(extra \+ words > MAX_EXTRA_WORDS\) throw new ApiError\(409/);
+  assert.doesNotMatch(buy, /CreditPeriod|CreditPlanTerm|chargeCredits/, "the month's and plan's credits are never used");
+  const route = readFileSync(new URL("../src/app/api/workspace/vocabulary/space/route.ts", import.meta.url), "utf8");
+  assert.ok(route.indexOf("checkOrigin(request)") < route.indexOf("apiUser(request)"));
+  assert.match(route, /readJson\(request, 1024\)/);
 });

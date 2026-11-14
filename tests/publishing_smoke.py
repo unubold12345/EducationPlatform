@@ -18,8 +18,9 @@ with sync_playwright() as p:
             result=getattr(context.request,method)(BASE+"/api/admin/content/sat-full-01",**({"headers":ORIGIN,"data":{}} if method=="post" else {}))
             assert result.status==(403 if context==student else 401)
     for user in ids:
-        for program in ["sat","ielts"]:
-            assert admin.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":"grant-month","target":user,"program":program,"reason":"Isolated publishing regression access"}).ok
+        assert admin.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":"grant-month","target":user,"program":"language","reason":"Isolated publishing regression access"}).ok
+    for context in [student,other]:
+        assert context.request.post(BASE+"/api/mock-picks",headers=ORIGIN,data={"slug":"sat-full-01"}).ok
     page=admin.new_page();errors=[];page.on("pageerror",lambda error:errors.append(str(error)))
     page.goto(BASE+"/admin?tab=users");assert "@example.invalid" not in page.locator(".admin-main tbody").inner_text() if page.locator(".admin-main tbody").count() else True
     page.goto(BASE+"/admin?tab=payments");assert page.locator(".admin-test-banner").count()==0 and "@example.invalid" not in page.locator(".admin-main").inner_text()

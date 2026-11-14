@@ -9,9 +9,9 @@ export const programs: Program[] = [
   {
     slug: "sat", title: "SAT", subtitle: "Унших, бичих ба математик",
     description: "Бүтэн Digital SAT mock-оор хугацаатай бэлдэж, хариугаа тайлбартай нь шалгаарай.",
-    color: "blue", symbol: "x²", status: "6 бүтэн mock",
+    color: "blue", symbol: "x²", status: "9 бүтэн mock",
     audience: "Гадаад их сургуульд орох бол",
-    highlights: ["6 бүтэн Digital SAT mock", "Reading & Writing + Math", "Хариу, тайлбартай үр дүн"],
+    highlights: ["9 бүтэн Digital SAT mock", "Reading & Writing + Math", "Хариу, тайлбартай үр дүн"],
     topics: ["Reading and Writing", "Algebra", "Advanced Math", "Problem-Solving and Data Analysis", "Geometry and Trigonometry"],
     available: true,
   },

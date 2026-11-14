@@ -2,12 +2,14 @@ import Link from "next/link";
 import { examDefinitions } from "./definitions";
 import { getExam } from "@/modules/content/published";
 import { MOCK_PRICE_LABEL } from "./pricing";
+import { freeMocksOf } from "./free/catalog";
+import { FreeMockTile } from "./free/tile";
 import styles from "./collection.module.css";
 
 export type MockCollectionKey = "sat" | "ielts";
 const copy: Record<MockCollectionKey, { title: string; eyebrow: string; summary: string; card: string; plan: string }> = {
-  sat: { title: "Digital SAT шалгалтууд", eyebrow: "Digital SAT · БҮТЭН MOCK", summary: "98 асуулт · 2ц 14м + 10м завсарлага", card: "54 Reading & Writing · 44 Math", plan: "SAT" },
-  ielts: { title: "IELTS Academic шалгалтууд", eyebrow: "IELTS Academic · БҮТЭН MOCK", summary: "Listening, Reading, Writing, Speaking · 2ц 44м", card: "40 Listening · 40 Reading + Writing, Speaking", plan: "IELTS" },
+  sat: { title: "Digital SAT шалгалтууд", eyebrow: "Digital SAT · БҮТЭН MOCK", summary: "98 асуулт · 2ц 14м + 10м завсарлага", card: "54 Reading & Writing · 44 Math", plan: "Гадаад хэл" },
+  ielts: { title: "IELTS Academic шалгалтууд", eyebrow: "IELTS Academic · БҮТЭН MOCK", summary: "Listening, Reading, Writing, Speaking · 2ц 44м", card: "40 Listening · 40 Reading + Writing, Speaking", plan: "Гадаад хэл" },
 };
 
 export async function MockCollection({collection}:{collection:MockCollectionKey}) {
@@ -21,6 +23,7 @@ export async function MockCollection({collection}:{collection:MockCollectionKey}
       <h1>{text.title}</h1>
       <p>{exams.length} бүтэн mock · {text.summary}</p>
     </div>
+    {freeMocksOf(collection).map(mock=><FreeMockTile key={mock.slug} mock={mock}/>)}
     <section className="english-year" aria-labelledby="mock-choices">
       <div className="section-heading"><h2 id="mock-choices">Шалгалтаа сонгох</h2><p>Хугацаа, хадгалалт, хувийн үр дүн</p></div>
       <div className={"english-variation-grid "+styles.grid}>{exams.map(exam=><Link key={exam.slug} href={"/exams/"+exam.slug} className="english-variation mock-variant" aria-label={exam.title}>
@@ -29,6 +32,6 @@ export async function MockCollection({collection}:{collection:MockCollectionKey}
         <span className="text-link">Танилцах →</span>
       </Link>)}</div>
     </section>
-    <p className="fine-print">Нэг mock-ийн эрх {MOCK_PRICE_LABEL} · Эсвэл {text.plan} сарын багц. Эрхэд цагтай шалгалт болон цаггүй, AI туслахтай дадлагын горим хоёул багтана.</p>
+    <p className="fine-print">Нэг mock-ийн эрх {MOCK_PRICE_LABEL} · Эсвэл {text.plan} сарын багцаар сард 15 mock сонгоно. Эрхэд цагтай шалгалт болон цаггүй, AI туслахтай дадлагын горим хоёул багтана.</p>
   </div>;
 }

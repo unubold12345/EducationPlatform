@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { ENTRANCE_SUBJECT_ORDER, entranceCounts, entranceSubjectFormats, entranceSubjectHrefs, entranceSubjectLabels, entranceTotal, entranceYears, mocksForYear, type EntranceSubject } from "./catalog";
+import { freeMocksOf } from "../free/catalog";
+import { FreeMockTile } from "../free/tile";
 import "./entrance.css";
 
 
@@ -36,6 +38,8 @@ export function EntranceHub({ subject }: { subject: EntranceSubject }) {
       </Link>)}
     </nav>
 
+    {freeMocksOf("entrance").filter(mock => mock.subject === subject).map(mock => <FreeMockTile key={mock.slug} mock={mock} />)}
+
     <section className="eesh-year-list" aria-label={entranceSubjectLabels[subject] + " шалгалтууд"}>
       {years.map(year => {
         const mocks = mocksForYear(subject, year);
@@ -56,6 +60,6 @@ export function EntranceHub({ subject }: { subject: EntranceSubject }) {
       })}
     </section>
 
-    <p className="fine-print eesh-hub-note">Нэг mock-ийн эрх ₮10,000 · University Prep сарын багцад бүх ЭЕШ mock багтана. Бүх даалгаврыг энэ сайтад зориулж зохиосон; БҮТ-ийн албан материал биш.</p>
+    <p className="fine-print eesh-hub-note">Нэг mock-ийн эрх ₮10,000 · ЭЕШ сарын багцад бүх ЭЕШ mock хязгааргүй багтана. Бүх даалгаврыг энэ сайтад зориулж зохиосон; БҮТ-ийн албан материал биш.</p>
   </div>;
 }

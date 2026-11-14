@@ -1,0 +1,11 @@
+/* Free half-length mocks: the site's one accent (blue), so it follows light and dark themes. */
+.tile { --free: var(--blue); --free-soft: color-mix(in srgb, var(--blue) 8%, transparent); --free-line: color-mix(in srgb, var(--blue) 34%, var(--line)); }
+.tile {
+  display: grid; gap: 6px; min-width: 0; margin: 0 0 18px; padding: 16px 18px; border: 1px solid var(--free-line); border-radius: 16px;
+  background: var(--free-soft); color: var(--ink); text-decoration: none;
+}
+.tile:hover { border-color: var(--free); }
+.tile strong { font-size: 18px; letter-spacing: -.01em; }
+.badge { margin: 0; color: var(--free); font-size: 11px; font-weight: 700; letter-spacing: .08em; }
+.meta { color: var(--ink); font-size: 13px; font-variant-numeric: tabular-nums; }
+.go { color: var(--free); font-size: 13px; font-weight: 700; }

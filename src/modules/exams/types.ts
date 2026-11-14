@@ -1,4 +1,4 @@
-/** University Prep covers the "entrance" mocks: original ЭЕШ-style Mathematics, Physics, Chemistry, Biology and English. */
+/** The ЭЕШ plan covers the "entrance" mocks: original ЭЕШ-style Mathematics, Physics, Chemistry, Biology and English. */
 export type ExamProgram = "sat" | "ielts" | "entrance" | "jlpt" | "hsk";
 /** HSK picture and pinyin display data (answer-free). Words the student hears stay in `listening.script`. */
 export type HskPicture = { label?: string; src: string; alt: string };

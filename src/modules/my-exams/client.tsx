@@ -13,6 +13,7 @@ import styles from "./my-exams.module.css";
 import { CreditCost, useCredits } from "@/modules/credits/client";
 import { examHold } from "@/modules/credits/pricing";
 import { MaterialImages, useMaterialPick } from "@/modules/ai-images/client";
+import { ProcessingOverlay } from "@/modules/workspace/processing";
 
 const ACCEPT = ".pdf,.docx,.pptx,.txt,.md,.csv,image/*";
 const ALLOWED = new Set(["pdf", "docx", "pptx", "txt", "md", "csv"]);
@@ -76,8 +77,10 @@ export function MyExams({ userKey, limit: planLimit, initialExams }: { userKey: 
   const { apply } = useCredits();
   const [error, setError] = useState("");
   const [dragging, setDragging] = useState(false);
-  // A start or a delete is waiting for the server.
+  // A start, a delete or a retry is waiting for the server.
   const [busy, setBusy] = useState(false);
+  // The exam whose questions are being replaced by a retry.
+  const [renewing, setRenewing] = useState<string | null>(null);
   const [moveNote, setMoveNote] = useState("");
   const input = useRef<HTMLInputElement>(null);
   const active = view.kind === "list" ? null : exams.find(exam => exam.id === view.id) ?? null;
@@ -201,6 +204,29 @@ export function MyExams({ userKey, limit: planLimit, initialExams }: { userKey: 
     put(exam);
     show({ kind: "result", id: exam.id });
   }
+  // A retry: new questions from the material kept with the exam, at the retry price. The server reads the
+  // material, the count and the price from the account; the request names only the exam.
+  async function renew(exam: SavedExam) {
+    if (busy || !exam.retryCredits) return;
+    if (!window.confirm(`"${exam.title}" шалгалтад ижил материалаас шинэ асуулт үүсгэнэ. Одоогийн асуулт, хариулт, дүн, оролдлогын тоо устана. Хамгийн ихдээ ${exam.retryCredits} кредит. Үргэлжлүүлэх үү?`)) return;
+    setBusy(true); setRenewing(exam.id); setError("");
+    try {
+      const response = await fetch(`${EXAM_API}/${exam.id}/regenerate`, {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: "{}", signal: AbortSignal.timeout(175_000),
+      });
+      const data = await jsonObject(response);
+      if (response.status === 401) throw new Error("Нэвтрэх хугацаа дууссан. Дахин нэвтэрнэ үү.");
+      if (!response.ok) throw new Error(typeof data.error === "string" ? data.error : "Шинэ асуулт үүсгэж чадсангүй. Дахин оролдоно уу.");
+      apply(data);
+      // The new questions are already on the account; the reply is checked before it is shown.
+      const next = readSavedExam(data.exam);
+      if (!next) throw new Error("Шинэ асуулт бүрэн ирсэнгүй. Хуудсаа дахин ачаална уу.");
+      put(next);
+      setView({ kind: "brief", id: next.id });
+    } catch (reason) {
+      setError(reason instanceof Error && reason.name !== "TimeoutError" ? reason.message : "Шинэ асуулт үүсгэхэд хэт удлаа. Дахин оролдоно уу.");
+    } finally { setBusy(false); setRenewing(null); }
+  }
   async function remove(exam: SavedExam) {
     if (busy || !window.confirm(`"${exam.title}" шалгалтыг устгах уу? Хариулт, дүн хамт устана.`)) return;
     setBusy(true); setError("");
@@ -219,11 +245,18 @@ export function MyExams({ userKey, limit: planLimit, initialExams }: { userKey: 
     setView({ kind: "list" });
   }
 
+  // While an exam or new questions are being made the whole page waits: nothing behind this screen can be used.
+  // It follows `pending` and `renewing`, which every success, error and timeout clears.
+  const processing = <ProcessingOverlay open={pending || renewing !== null}
+    title={renewing !== null ? "Шинэ асуулт үүсгэж байна…" : "Шалгалт үүсгэж байна…"}
+    detail={renewing !== null ? "Хадгалсан материалаас шинэ асуулт бэлдэж байна. 20–90 секунд орно." : "Файлыг уншиж, AI асуулт үүсгэж байна. 20–90 секунд орно."} />;
+
   if (view.kind === "run" && active) return <Runner key={view.id + ":" + view.startedAt} exam={active} mode={view.mode} startedAt={view.startedAt} onExit={() => show({ kind: "brief", id: active.id })} onDraft={patch => draftChanged(view.id, view.startedAt, patch)} onGraded={graded} />;
-  if (view.kind === "brief" && active) return <Briefing exam={active} busy={busy} error={error} onBack={() => show({ kind: "list" })} onStart={mode => void start(active, mode)} onResume={() => active.draft && show({ kind: "run", id: active.id, mode: active.draft.mode, startedAt: active.draft.startedAt })} onResult={() => show({ kind: "result", id: active.id })} onDelete={() => void remove(active)} />;
-  if (view.kind === "result" && active?.last) return <Result exam={active} result={active.last} busy={busy} error={error} onBack={() => show({ kind: "list" })} onRetake={() => show({ kind: "brief", id: active.id })} onDelete={() => void remove(active)} />;
+  if (view.kind === "brief" && active) return <>{processing}<Briefing exam={active} busy={busy} error={error} onBack={() => show({ kind: "list" })} onStart={mode => void start(active, mode)} onResume={() => active.draft && show({ kind: "run", id: active.id, mode: active.draft.mode, startedAt: active.draft.startedAt })} onResult={() => show({ kind: "result", id: active.id })} onDelete={() => void remove(active)} renewing={renewing === active.id} onRenew={() => void renew(active)} /></>;
+  if (view.kind === "result" && active?.last) return <>{processing}<Result exam={active} result={active.last} busy={busy} error={error} onBack={() => show({ kind: "list" })} onRetake={() => show({ kind: "brief", id: active.id })} onDelete={() => void remove(active)} renewing={renewing === active.id} onRenew={() => void renew(active)} /></>;
 
   return <div className={`wsp-page ${styles.page}`}>
+    {processing}
     <header className={styles.head}>
       <p className={styles.kicker}><Icon name="fileExam" size={17} />Файлаас шалгалт</p>
       <h1>Файлаа оруул.<br /><span>Шалгалт болго.</span></h1>
@@ -274,7 +307,6 @@ export function MyExams({ userKey, limit: planLimit, initialExams }: { userKey: 
         </button>
         {full ? <p className={styles.limitNote} role="status">{examsFullMessage(limit)}{limit < UPGRADE.exams ? <> <Link href="/workspace/plans">Багц харах</Link></> : null}</p>
           : <p className={styles.cost}><CreditCost action="exam" cost={examHold(count, pictures)} upTo /></p>}
-        {pending ? <p className={styles.status} role="status">Файлыг уншиж, AI асуулт үүсгэж байна. 20–60 секунд орно.</p> : null}
         {error ? <p className={styles.error} role="alert">{error}</p> : null}
       </div>
     </section>
@@ -304,10 +336,23 @@ export function MyExams({ userKey, limit: planLimit, initialExams }: { userKey: 
   </div>;
 }
 
-function Briefing({ exam, busy, error, onBack, onStart, onResume, onResult, onDelete }: {
+/** The retry control: new questions from the kept material, with the most it can cost. Shown only when the server offers it. */
+function Renew({ exam, busy, renewing, onRenew }: { exam: SavedExam; busy: boolean; renewing: boolean; onRenew: () => void }) {
+  if (!exam.retryCredits) return null;
+  return <div className={styles.renew}>
+    <button type="button" className={styles.ghost} onClick={onRenew} disabled={busy} aria-busy={renewing}>
+      {renewing ? <><i className={styles.spinner} aria-hidden="true" />Шинэ асуулт үүсгэж байна…</> : <><Icon name="spark" size={17} />Шинэ асуулт үүсгэх</>}
+    </button>
+    <CreditCost action="exam-retry" cost={exam.retryCredits} upTo />
+  </div>;
+}
+
+function Briefing({ exam, busy, error, onBack, onStart, onResume, onResult, onDelete, renewing, onRenew }: {
   exam: SavedExam;
   busy: boolean;
   error: string;
+  renewing: boolean;
+  onRenew: () => void;
   onBack: () => void;
   onStart: (mode: ExamDraft["mode"]) => void;
   onResume: () => void;
@@ -354,6 +399,7 @@ function Briefing({ exam, busy, error, onBack, onStart, onResume, onResult, onDe
         <button type="button" className={styles.lastLink} onClick={onResult}>Үр дүн харах <Icon name="arrow" size={16} /></button>
       </div> : null}
 
+      <Renew exam={exam} busy={busy} renewing={renewing} onRenew={onRenew} />
       <button type="button" className={styles.briefDelete} onClick={onDelete} disabled={busy}><Icon name="trash" size={16} />Шалгалтыг устгах</button>
     </section>
   </div>;
@@ -577,11 +623,13 @@ function Runner({ exam, mode, startedAt, onExit, onDraft, onGraded }: {
   </div>;
 }
 
-function Result({ exam, result, busy, error, onBack, onRetake, onDelete }: {
+function Result({ exam, result, busy, error, onBack, onRetake, onDelete, renewing, onRenew }: {
   exam: SavedExam;
   result: ExamResult;
   busy: boolean;
   error: string;
+  renewing: boolean;
+  onRenew: () => void;
   onBack: () => void;
   onRetake: () => void;
   onDelete: () => void;
@@ -622,6 +670,7 @@ function Result({ exam, result, busy, error, onBack, onRetake, onDelete }: {
       <button type="button" className={styles.ghost} onClick={onBack}>Жагсаалт руу буцах</button>
       <button type="button" className={styles.deleteLink} onClick={onDelete} disabled={busy}><Icon name="trash" size={16} />Устгах</button>
     </div>
+    <Renew exam={exam} busy={busy} renewing={renewing} onRenew={onRenew} />
     {error ? <p className={styles.error} role="alert">{error}</p> : null}
 
     <section className={styles.reviewSection} aria-labelledby="mx-review-title">

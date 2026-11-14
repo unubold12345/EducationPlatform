@@ -16,9 +16,9 @@ ART.mkdir(parents=True,exist_ok=True)
 def fixture(action,attempt_id,*args):
     return json.loads(subprocess.check_output(["node","tests/mock_fixture.mjs",action,attempt_id,*args],cwd=ROOT,text=True,encoding="utf-8"))
 
-# Mocks 02–06 come from the site's revised authoring; 07–12 from the offline IELTS pack.
-FORMS=[("sat","sat-full",n) for n in range(2,7)]+[("ielts","ielts-academic",n) for n in range(2,13)]
-LAST={"sat":6,"ielts":12}
+# SAT 02–09 and IELTS 02–06 come from the site's revised authoring; IELTS 07–12 from the offline IELTS pack.
+FORMS=[("sat","sat-full",n) for n in range(2,10)]+[("ielts","ielts-academic",n) for n in range(2,13)]
+LAST={"sat":9,"ielts":12}
 # Each audio route bundles only its own recordings (next.config.ts): Mocks 07–12 use /audio/forms.
 def audio_path(program,n):
     return "/audio/forms" if program=="ielts" and n>6 else "/audio"
@@ -118,12 +118,15 @@ with sync_playwright() as p:
                         diagram=page.locator('img[src="/ielts-mocks/bottle-recycling.svg"]')
                         expect(diagram).to_be_visible()
                         expect(page.get_by_role("link",name="View full-size diagram")).to_have_attribute("target","_blank")
-                        assert diagram.evaluate("image=>image.complete && image.naturalWidth>0")
+                        # Lazy images start loading a frame after they appear: wait for the load, then require real pixels.
+                        expect(diagram).to_have_js_property("complete",True)
+                        assert diagram.evaluate("image=>image.naturalWidth>0")
                     if n==7 and stage["id"]=="ielts-listening":
                         page.locator('[data-part="2"]').click()
                         plan=page.locator('img[src="/ielts-mocks/mock-07-listening-plan.svg"]')
                         expect(plan).to_be_visible()
-                        assert plan.evaluate("image=>image.complete && image.naturalWidth>0")
+                        expect(plan).to_have_js_property("complete",True)
+                        assert plan.evaluate("image=>image.naturalWidth>0")
                         expect(page.locator("#listening-part-title")).to_contain_text("riverside craft fair")
                     if n==7 and stage["id"]=="ielts-reading":
                         page.locator(".exam-question-map button, .question-strip button").filter(has_text="27").first.click()
@@ -171,18 +174,31 @@ with sync_playwright() as p:
             page.goto(BASE+"/exams/attempts/"+attempt_id)
             expect(page.locator(".exam-results")).to_be_visible()
             print(slug+": lifecycle, access, save/resume, exact report and media passed",flush=True)
-    # A matching monthly plan covers each new form; a SAT plan does not grant IELTS.
-    for program,prefix in [("sat","sat-full"),("ielts","ielts-academic")]:
-        order=other.request.post(BASE+"/api/subscriptions/orders",headers=ORIGIN,data={"program":program})
-        assert order.status==200,order.text()
-        assert other.request.post(BASE+"/api/subscriptions/orders/"+order.json()["id"]+"/confirm",headers=ORIGIN,data={"decision":"success"}).status==200
-        for n in range(2,LAST[program]+1):
-            entitled=other.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":f"{prefix}-{n:02}"})
-            assert entitled.status==200,entitled.text()
-            assert state(other,BASE+"/api/mock-attempts/"+entitled.json()["id"])["program"]==program
-            if program=="sat":
-                assert other.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":f"ielts-academic-{n:02}"}).status==402
-                assert other.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":f"ielts-academic-{n+6:02}"}).status==402
+    # The retired SAT and IELTS plans are not sold. The Гадаад хэл plan opens a mock once it is picked, 15 a plan month.
+    for program in ["sat","ielts"]:
+        assert other.request.post(BASE+"/api/subscriptions/orders",headers=ORIGIN,data={"program":program}).status==404
+    order=other.request.post(BASE+"/api/subscriptions/orders",headers=ORIGIN,data={"program":"language"})
+    assert order.status==200,order.text()
+    assert other.request.post(BASE+"/api/subscriptions/orders/"+order.json()["id"]+"/confirm",headers=ORIGIN,data={"decision":"success"}).status==200
+    def pick(slug):
+        return other.request.post(BASE+"/api/mock-picks",headers=ORIGIN,data={"slug":slug})
+    assert other.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"sat-full-02"}).status==402,"a plan mock opens only once picked"
+    assert pick("eesh-math-2024-m1").status==402,"Гадаад хэл never opens ЭЕШ"
+    picked=[f"sat-full-{n:02}" for n in range(2,LAST["sat"]+1)]+[f"ielts-academic-{n:02}" for n in range(2,9)]
+    assert len(picked)==15
+    for index,slug in enumerate(picked):
+        chosen=pick(slug)
+        assert chosen.status==200 and chosen.json()["kind"]=="picked" and chosen.json()["month"]["used"]==index+1,(slug,chosen.text())
+        entitled=other.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":slug})
+        assert entitled.status==200,entitled.text()
+        assert state(other,BASE+"/api/mock-attempts/"+entitled.json()["id"])["program"]==slug.split("-")[0]
+    # Picking a picked mock again uses nothing; the sixteenth new mock this plan month is refused.
+    again=pick("sat-full-02")
+    assert again.status==200 and again.json()["month"]["used"]==15,again.text()
+    full=pick("ielts-academic-12")
+    assert full.status==409 and "15 mock-ийн сонголт дууссан" in full.json()["error"],full.text()
+    assert other.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"ielts-academic-12"}).status==402
+    assert other.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"eesh-math-2024-m1"}).status==402
     page.goto(BASE+"/exams")
     for theme in ["light","dark"]:
         page.evaluate("theme=>document.documentElement.dataset.theme=theme",theme)
@@ -192,4 +208,4 @@ with sync_playwright() as p:
             page.screenshot(path=str(ART/f"catalog-{theme}-{width}.png"),full_page=True)
     assert not errors,errors
     browser.close()
-print("Additional exams: all sixteen full lifecycles and all forty-four matching audio assets passed.")
+print("Additional exams: all nineteen full lifecycles and all forty-four matching audio assets passed.")

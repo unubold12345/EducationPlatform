@@ -5,7 +5,7 @@ import { getDb } from "@/lib/db";
 import { makeReport } from "@/modules/exams/engine";
 import { findExam } from "@/modules/exams/definitions";
 import type { ExamProgram, ExamState } from "@/modules/exams/types";
-import { findSubscriptionPlan } from "@/modules/subscriptions/plans";
+import { findAnyPlan } from "@/modules/subscriptions/plans";
 import { programOf, programPrefixes } from "./programs";
 import { creditSummary } from "@/modules/credits/service";
 import type { CreditBalance } from "@/modules/credits/client";
@@ -26,11 +26,11 @@ export const shellAccount = cache(async (): Promise<ShellAccount> => {
   const now = new Date();
   const [plans, credits] = await Promise.all([
     getDb().subscription.findMany({ where: { userId: session.user.id, startsAt: { lte: now }, endsAt: { gt: now } }, orderBy: { endsAt: "asc" }, select: { program: true, endsAt: true } }),
-    creditSummary(session.user.id, now).then(summary => ({ balance: summary.balance, allowance: summary.allowance }), () => null),
+    creditSummary(session.user.id, now).then(summary => ({ balance: summary.balance, allowance: summary.allowance, yellow: summary.yellow }), () => null),
   ]);
   return {
     name: session.user.name, email: session.user.email, userKey: session.user.id,
-    plans: plans.map(plan => ({ title: findSubscriptionPlan(plan.program)?.shortTitle ?? plan.program, daysLeft: Math.ceil((plan.endsAt.getTime() - now.getTime()) / DAY_MS) })),
+    plans: plans.map(plan => ({ title: findAnyPlan(plan.program)?.shortTitle ?? plan.program, daysLeft: Math.ceil((plan.endsAt.getTime() - now.getTime()) / DAY_MS) })),
     credits,
   };
 });

@@ -9,18 +9,22 @@ import { getDb } from "@/lib/db";
 import { MockCheckout } from "@/modules/exams/checkout-client";
 import { mockPaymentsEnabled } from "@/modules/exams/payments";
 import { MOCK_PRICE_LABEL } from "@/modules/exams/pricing";
-import { hasSubscription } from "@/modules/subscriptions/access";
+import { mockAccess } from "@/modules/subscriptions/mock-access";
+import { isFreeMock } from "@/modules/exams/free/catalog";
 
 export const metadata:Metadata={title:"Шалгалтын эрх авах"};
 export default async function CheckoutPage({params}:{params:Promise<{slug:string}>}) {
   const exam=await getExam((await params).slug); if(!exam)notFound();
   const user=await requireUser(`/checkout/${exam.slug}`);
+  // A free mock is never sold: every signed-in account sits it at no cost.
+  if(isFreeMock(exam.slug))return <div className="container page-space checkout-page"><div className="settings-card checkout-success"><span className="success-seal" aria-hidden="true">✓</span><h1>Үнэгүй шалгалт.</h1><p>{exam.title} бүртгэлтэй бүх хүнд үнэгүй. Төлбөр шаардлагагүй.</p><Link className="button" href={"/exams/"+exam.slug}>Шалгалтаа нээх →</Link></div></div>;
   const order=await getDb().mockPurchase.findUnique({where:{userId_examSlug:{userId:user.id,examSlug:exam.slug}}});
-  const subscribed=await hasSubscription(user.id,exam.program);
-  if(subscribed&&order?.status!=="PAID")return <div className="container page-space checkout-page"><div className="settings-card checkout-success"><span className="success-seal" aria-hidden="true">✓</span><h1>Сарын багцад багтсан.</h1><p>{exam.title} шалгалтад тусдаа төлбөр шаардлагагүй.</p><Link className="button" href={"/exams/"+exam.slug}>Шалгалтаа нээх →</Link><Link className="text-link" href="/workspace/profile">Миний сарын багцууд ↗</Link></div></div>;
+  const access=await mockAccess(user.id,exam.slug,exam.program);
+  if((access.kind==="plan"||access.kind==="picked")&&order?.status!=="PAID")return <div className="container page-space checkout-page"><div className="settings-card checkout-success"><span className="success-seal" aria-hidden="true">✓</span><h1>Сарын багцад багтсан.</h1><p>{exam.title} шалгалтад тусдаа төлбөр шаардлагагүй{access.kind==="picked"?" — энэ сард сонгосон":""}.</p><Link className="button" href={"/exams/"+exam.slug}>Шалгалтаа нээх →</Link><Link className="text-link" href="/workspace/profile">Миний сарын багцууд ↗</Link></div></div>;
   return <div className="container page-space checkout-page"><Link className="text-link" href={"/exams/"+exam.slug}>← Шалгалт руу буцах</Link><div className="account-page-heading"><div><p className="eyebrow">ШАЛГАЛТЫН ЭРХ</p><h1>{order?.status==="PAID"?"Шалгалтын эрх нээлттэй.":"Дараагийн алхамдаа бэлэн үү?"}</h1><p>Нэг шалгалт. Бүх хэсэг. Хадгалагдах явц.</p></div></div><div className="checkout-layout">
     <section className="checkout-summary"><span className="status">{exam.program==="hsk"?"HSK 1 · ХЯТАД ХЭЛ":exam.program==="jlpt"?"JLPT · N5/N4":exam.program==="entrance"?"ЭЕШ · MOCK":exam.program==="sat"?"DIGITAL SAT":"IELTS ACADEMIC"}</span><h2>{exam.title}</h2><p>{exam.program==="hsk"?"40 асуулт · Хятад audio-той сонсох · Унших · 32 минут":exam.program==="jlpt"?"Үгийн сан · Хэлзүй, унших · Япон Listening audio":exam.program==="entrance"?entranceSubjectFormats[exam.subject??"math"]:exam.program==="sat"?"98 асуулт · Reading & Writing, Math · Стандарт цаг, завсарлага":"40 Listening + 40 Reading · 2 Writing task · Speaking бичлэг"}</p><dl><div><dt>Шалгалтын эрх</dt><dd>{MOCK_PRICE_LABEL}</dd></div><div><dt>Валют</dt><dd>MNT · Төгрөг</dd></div><div><dt>Хамрах хүрээ</dt><dd>Зөвхөн энэ шалгалт</dd></div></dl><div className="checkout-total"><span>Нийт</span><strong>{MOCK_PRICE_LABEL}</strong></div><p className="fine-print">Хариу хадгалах, түлхүүртэй үр дүн, дахин өгөх боломж багтана. Шалгалтын цаг төлбөр төлөхөд эхлэхгүй.</p></section>
     <section className="checkout-panel">{order?.status==="PAID"?<div className="checkout-success"><span className="success-seal" aria-hidden="true">✓</span><h2>Эрх нээгдсэн</h2><p>{order.provider==="LEGACY"?"Өмнө хадгалсан шалгалтын эрхийг тань хадгаллаа. Дахин төлөх шаардлагагүй.":"Туршилтын төлбөр баталгаажлаа. Бодит мөнгө суутгаагүй."}</p><dl><div><dt>Төлбөрийн дүн</dt><dd>{order.amountMnt.toLocaleString("en-US")} MNT</dd></div><div><dt>Захиалгын дугаар</dt><dd>{order.id}</dd></div></dl><Link className="button" href={"/exams/"+exam.slug}>Шалгалтаа нээх →</Link><p className="fine-print">Эхлэхийн өмнө тоног төхөөрөмж, заавраа шалгаарай.</p></div>:<MockCheckout slug={exam.slug} declined={order?.status==="DECLINED"} enabled={mockPaymentsEnabled()}/>}
+    {access.kind==="pickable"&&order?.status!=="PAID"?<p className="fine-print checkout-pick-note">Гадаад хэл багцаараа энэ сард {access.month.limit-access.month.used} mock үнэгүй сонгох боломжтой. <Link className="text-link" href={"/exams/"+exam.slug}>Шалгалтын хуудаснаас сонгох ↗</Link></p>:null}
     <Link className="checkout-cancel" href={"/exams/"+exam.slug}>← {order?.status==="PAID"?"Заавар руу буцах":"Одоохондоо болих"}</Link></section>
   </div></div>;
 }

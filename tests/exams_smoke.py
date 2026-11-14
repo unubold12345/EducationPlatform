@@ -37,7 +37,7 @@ with sync_playwright() as p:
     page.wait_for_load_state("networkidle")
     expect(page.locator(".library-list .exam-card")).to_have_count(5)
     expect(page.locator(".library-list .exam-card.entrance")).to_have_count(1)
-    expect(page.locator(".library-list .exam-card.entrance").first).to_contain_text("Элсэлтийн ерөнхий шалгалт")
+    expect(page.locator(".library-list .exam-card.entrance").first).to_contain_text("ЭЕШ")
     page.screenshot(path=str(ART/"exams-grid-desktop.png"),full_page=True)
     assert context.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"sat-full-01"}).status==401
     assert page.goto(BASE+"/exams/not-an-exam").status==404

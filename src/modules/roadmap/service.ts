@@ -16,14 +16,13 @@ import { chargeCredits } from "@/modules/credits/service";
 import { roadmapCredits, roadmapOutputTokens, type UsageMeter } from "@/modules/credits/pricing";
 import { tutorDay } from "@/modules/tutor/contracts";
 import {
-  addDays, buildRoadmap, findGoal, keepsAcrossPlans, readDone, readSettings, readToggle, taskIds, ubDay,
+  buildRoadmap, findGoal, keepsAcrossPlans, readDone, readSettings, readToggle, taskIds, ubDay,
   type FinishedRef, type GoalId, type Lab, type MockRef, type PlanSettings, type Roadmap,
 } from "./plan";
 import {
   STRUCTURE_LIMITS, allowedTools, parseStructure, readGenerate, readStructure, structureMessages,
   type AiStructure, type PlannerMessage, type SkillStat,
 } from "./structure";
-import { STREAK_WINDOW_DAYS, summarizeStreak, type StreakSummary } from "./streak";
 
 /** The goal's mocks in the order a plan uses them: forms in number order, ЭЕШ papers newest year first. */
 export function goalMocks(goal: GoalId): MockRef[] {
@@ -276,27 +275,4 @@ export async function toggleRoadmapTask(userId: string, body: unknown, now = Dat
 export async function deleteRoadmap(userId: string) {
   await getDb().studyPlan.deleteMany({ where: { userId } });
   return { roadmap: null };
-}
-
-// ---- Streak ----
-
-async function readStreak(userId: string, now: number): Promise<StreakSummary> {
-  const today = ubDay(now);
-  const db = getDb();
-  const [rows, total] = await Promise.all([
-    db.studyDay.findMany({ where: { userId, day: { gte: addDays(today, -STREAK_WINDOW_DAYS) } }, select: { day: true }, orderBy: { day: "desc" } }),
-    db.studyDay.count({ where: { userId } }),
-  ]);
-  return summarizeStreak(rows.map(row => row.day), today, total);
-}
-
-/** The streak figures without checking in; null when the table cannot be read, so pages still render. */
-export async function streakSummary(userId: string, now = Date.now()): Promise<StreakSummary | null> {
-  try { return await readStreak(userId, now); } catch { return null; }
-}
-
-/** Today's check-in for a signed-in student opening the Workspace. Repeats on the same day change nothing. */
-export async function checkIn(userId: string, now = Date.now()) {
-  await getDb().studyDay.createMany({ data: [{ userId, day: ubDay(now) }], skipDuplicates: true });
-  return { streak: await readStreak(userId, now) };
 }

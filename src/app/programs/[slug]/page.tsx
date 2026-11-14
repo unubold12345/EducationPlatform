@@ -1,5 +1,6 @@
 export const dynamic = "force-dynamic";
 import { pricedPlan } from "@/modules/subscriptions/prices";
+import { salePlanFor } from "@/modules/subscriptions/plans";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -22,19 +23,20 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
   if (!program) notFound();
   const workshops = await Promise.all(guidedTasks.map(task => getWorkshop(task.slug).then(value => value!)));
   const mockCount = slug === "entrance" ? entranceTotal : examDefinitions.filter(exam => exam.program === slug).length;
-  const plan = (await pricedPlan(slug))!;
+  // SAT and IELTS come with the Гадаад хэл plan (15 mocks a month); ЭЕШ has its own plan (owner rule 2026-11-13).
+  const plan = (await pricedPlan(salePlanFor(slug)?.program))!;
   const mock = slug === "sat" ? {
     eyebrow: "БҮТЭН ШАЛГАЛТ · DIGITAL SAT",
     title: "98 асуулт. Бодит хугацаа.",
     copy: "Reading & Writing 2 модуль, Math 2 модуль. Серверийн цаг, хадгалагдах хариулт, эцсийн дүн.",
-    facts: ["98 асуулт", "2ц 14м + 10м завсарлага", "₮10,000 эсвэл SAT эрх"],
+    facts: ["98 асуулт", "2ц 14м + 10м завсарлага", "₮10,000 эсвэл Гадаад хэл багц"],
     href: "/exams/sat",
     cta: "Бүтэн шалгалт үзэх",
   } : slug === "ielts" ? {
     eyebrow: "БҮТЭН ШАЛГАЛТ · IELTS ACADEMIC",
     title: "Дөрвөн чадвар. Нэг бүтэн оролдлого.",
     copy: "Listening, Reading, Writing, Speaking. Бүтэн Academic mock, серверийн цаг, хадгалагдах хариулт.",
-    facts: ["4 чадвар", "Listening 40 · Reading 40", "₮10,000 эсвэл IELTS эрх"],
+    facts: ["4 чадвар", "Listening 40 · Reading 40", "₮10,000 эсвэл Гадаад хэл багц"],
     href: "/exams/ielts",
     cta: "Бүтэн шалгалт үзэх",
   } : null;
@@ -60,7 +62,7 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
         <dl>
           <div><dt>Бүтэн mock</dt><dd>{mockCount}</dd></div>
           {slug === "ielts" ? <div><dt>Workshop</dt><dd>{workshops.length}</dd></div> : null}
-          <div><dt>Сарын эрх</dt><dd>₮{plan.amountMnt.toLocaleString("en-US")}</dd></div>
+          <div><dt>{plan.title} багц</dt><dd>₮{plan.amountMnt.toLocaleString("en-US")}{plan.mockPicks ? <small> · сард {plan.mockPicks} mock</small> : null}</dd></div>
         </dl>
         <Link className="button" href={mock?.href ?? "/exams/eesh"}>Шалгалт эхлэх <span aria-hidden="true">→</span></Link>
       </aside>

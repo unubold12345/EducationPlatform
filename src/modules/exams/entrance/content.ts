@@ -8,7 +8,7 @@ import { entranceSubjectLabels, findEntranceMeta } from "./catalog.ts";
 
 type StoredQuestion = ExamQuestion;
 type StoredGroup = NonNullable<ExamStage["groups"]>[number];
-type StoredMock = {
+export type StoredMock = {
   slug: string; subject: EntranceSubject; year: number; form: string; title: string; description: string;
   durationMinutes: number; points: number; calculator: boolean; language: "mn" | "en";
   instructions: string[]; groups: StoredGroup[]; questions: StoredQuestion[];
@@ -28,9 +28,16 @@ export function entranceDefinition(slug: string): ExamDefinition | undefined {
   const meta = findEntranceMeta(slug);
   if (!meta) return undefined;
   const stored = JSON.parse(readFileSync(storedPath(slug, meta.subject), "utf8")) as StoredMock;
+  const definition = storedEntranceDefinition(slug, stored, `${entranceSubjectLabels[meta.subject]} · ${stored.year} · ${stored.form}`);
+  cache.set(slug, definition);
+  return definition;
+}
+
+/** Wraps a stored ЭЕШ paper (one timed stage) as an exam definition; the free papers use it too. */
+export function storedEntranceDefinition(slug: string, stored: StoredMock, stageTitle: string): ExamDefinition {
   const stage: ExamStage = {
     id: `${slug}-stage`,
-    title: `${entranceSubjectLabels[meta.subject]} · ${stored.year} · ${stored.form}`,
+    title: stageTitle,
     seconds: stored.durationMinutes * 60,
     kind: "questions",
     instructions: stored.instructions.join(" "),
@@ -44,6 +51,5 @@ export function entranceDefinition(slug: string): ExamDefinition | undefined {
     points: stored.points, calculator: stored.calculator,
     notes: stored.instructions, ...(stored.sourceNote ? { sourceNote: stored.sourceNote } : {}),
   };
-  cache.set(slug, definition);
   return definition;
 }

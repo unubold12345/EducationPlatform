@@ -87,7 +87,7 @@ body:has(.eesh-sit) .home-atmosphere { display: none; }
 .eesh-sheet-open span { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
 .eesh-sheet-open:hover { border-color: var(--blue); }
 .eesh-sit-progress { height: 2px; background: color-mix(in srgb, var(--ink) 9%, transparent); }
-.eesh-sit-progress i { display: block; height: 100%; background: linear-gradient(90deg, #7c6cff, #b49cff); transition: width .25s; }
+.eesh-sit-progress i { display: block; height: 100%; background: var(--blue); transition: width .25s; }
 .eesh-sit-status { display: flex; justify-content: space-between; gap: 20px; max-width: 1120px; margin: 0 auto; padding: 9px 18px 0; font-family: var(--font-mono); font-size: 9px; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); }
 .eesh-sit-error { max-width: 1120px; margin: 14px auto 0; padding: 14px 18px; border: 1px solid color-mix(in srgb, #d9534f 55%, var(--line)); border-radius: 14px; background: color-mix(in srgb, #d9534f 8%, var(--surface)); }
 .eesh-sit-error p { margin: 0 0 10px; font-size: 12.5px; }
@@ -171,9 +171,9 @@ body:has(.eesh-sit) .home-atmosphere { display: none; }
 
 /* ---------- Context, bank, figures ---------- */
 .eesh-context { padding: 18px 20px; border: 1px solid var(--line); border-left: 3px solid color-mix(in srgb, var(--blue) 60%, transparent); border-radius: 0 14px 14px 0; background: color-mix(in srgb, var(--paper) 60%, transparent); max-height: 360px; overflow: auto; }
-.eesh-context.is-listening { border-left-color: #e6a23c; }
+.eesh-context.is-listening { border-left-color: var(--blue); }
 .eesh-context .eyebrow { margin: 0 0 9px; }
-.eesh-context-note { margin: 0 0 10px; font-size: 11px; color: #e6a23c; }
+.eesh-context-note { margin: 0 0 10px; font-size: 11px; color: var(--muted); }
 .eesh-context-text { font-size: 14px; line-height: 1.85; color: var(--ink); }
 .eesh-context-text .rich-text { white-space: pre-line; }
 .eesh-bank { padding: 16px 18px; border: 1px solid var(--line); border-radius: 14px; background: color-mix(in srgb, var(--surface) 55%, transparent); }
@@ -228,7 +228,7 @@ body:has(.eesh-sit) .home-atmosphere { display: none; }
 .eesh-score strong { font-size: clamp(54px, 8vw, 78px); line-height: .9; letter-spacing: -.05em; font-variant-numeric: tabular-nums; }
 .eesh-score > span { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
 .eesh-score-bar { width: 100%; height: 5px; margin-top: 12px; border-radius: 99px; background: color-mix(in srgb, var(--ink) 10%, transparent); overflow: hidden; }
-.eesh-score-bar i { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, #7c6cff, #b49cff); }
+.eesh-score-bar i { display: block; height: 100%; border-radius: 99px; background: var(--blue); }
 .eesh-score small { font-family: var(--font-mono); font-size: 10px; color: var(--muted); }
 .eesh-skills { display: grid; gap: 10px; margin: 28px 0; padding: 20px 22px; border: 1px solid var(--line); border-radius: 18px; background: color-mix(in srgb, var(--surface) 66%, transparent); }
 .eesh-skill { display: grid; grid-template-columns: minmax(0, 1fr) minmax(80px, 1.5fr) auto; align-items: center; gap: 14px; }

@@ -6,7 +6,7 @@ import { notFound } from "next/navigation";
 import { guidedTasks } from "@/modules/workshops/guided";
 import { WorkshopClient } from "@/modules/workshops/workshop-client";
 import { getSession } from "@/lib/session";
-import { hasSubscription } from "@/modules/subscriptions/access";
+import { hasWorkshops } from "@/modules/subscriptions/mock-access";
 import { ProgramGate } from "@/components/program-gate";
 export function generateStaticParams() { return guidedTasks.map(({ slug }) => ({ slug })); }
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
@@ -18,7 +18,7 @@ export default async function WorkshopPage({ params }: { params: Promise<{ slug:
   const task = await getWorkshop(slug);
   if (!task) notFound();
   const session=await getSession();
-  if(!session||!await hasSubscription(session.user.id,"ielts"))return <ProgramGate program="ielts" title={task.title}/>;
+  if(!session||!await hasWorkshops(session.user.id))return <ProgramGate program="language" title={task.title}/>;
   return <div className="container practice-page workshop-page"><Link className="text-link" href="/workspace/workshop">← Workshop</Link>
     <div className="practice-heading"><p className="eyebrow">IELTS Academic · {task.skill}</p><h1>{task.title}</h1><p>Санал болгох хугацаа {task.minutes} минут · Өөрийгөө шалгах даалгавар</p></div>
     <div className="notice">Өөрсдийн зохиосон бэлтгэлийн даалгавар. Жишиг хариу болон шалгах жагсаалттай. Албан ёсны IELTS материал, band үнэлгээ биш.</div>

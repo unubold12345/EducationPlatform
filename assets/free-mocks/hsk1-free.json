@@ -1,0 +1,1033 @@
+{
+ "slug": "hsk1-free",
+ "version": 1,
+ "program": "hsk",
+ "title": "HSK 1 · Free Half Mock",
+ "description": "免费试卷 · Үнэгүй хагас mock · Гэр, хоол, сургууль, дэлгүүр",
+ "points": 20,
+ "notes": [
+  "Үнэгүй, хагас хэмжээний дадлагын mock: HSK 1-ийн найман хэсэг бүгд, асуулт цөөн.",
+  "Албан бус, эх зохиомжтой. Хятад хэлний багшийн хяналт хүлээгдэж байна. Сонсох хэсгийн дуу хиймэл хятад дуу хоолойгоор бичигдсэн; хүний сонсголын шалгалт хүлээгдэж байна.",
+  "Raw зөв хариултын тоо ба ×10 дадлагын оноо (200-аас); HSK-ийн албан оноо, тэнцсэн эсэх биш."
+ ],
+ "sources": [
+  {
+   "label": "Chinese Testing International · HSK 1",
+   "url": "https://www.chinesetest.cn/HSK/1"
+  },
+  {
+   "label": "HSK 1 албан жишиг материал (бүтэц)",
+   "url": "https://www.chinesetest.cn/userfiles/file/HSK1.pdf"
+  }
+ ],
+ "stages": [
+  {
+   "id": "hsk-l",
+   "title": "听力 · Сонсох",
+   "kind": "listening",
+   "seconds": 480,
+   "instructions": "Бичлэг нэг удаа, серверийн цагтай зэрэг тоглоно; асуулт бүрийг хоёр удаа уншина. Дөрвөн хэсэг дараалан тоглоно. Цаг дуусахад Унших хэсэг автоматаар эхэлнэ.",
+   "groups": [
+    {
+     "id": "hsk-l-1",
+     "title": "第一部分 · Зураг ба хэллэг",
+     "section": "听力 · Сонсох",
+     "pageMode": "group",
+     "instructions": "听录音，判断对错。\nХэллэгийг хоёр удаа сонсоно. Зурагтай таарч байвал √, таарахгүй бол × сонгоно.",
+     "hsk": {
+      "example": {
+       "pictures": [
+        {
+         "src": "/exam-assets/hsk/examples/listening-1.svg",
+         "alt": "Two people watching a film in a cinema"
+        }
+       ],
+       "answer": "√"
+      }
+     }
+    },
+    {
+     "id": "hsk-l-2",
+     "title": "第二部分 · Зураг сонгох",
+     "section": "听力 · Сонсох",
+     "pageMode": "group",
+     "instructions": "听录音，选择相应的图片。\nӨгүүлбэрийг хоёр удаа сонсоно. Гурван зургаас тохирохыг сонгоно.",
+     "hsk": {
+      "example": {
+       "pictures": [
+        {
+         "label": "A",
+         "src": "/exam-assets/hsk/examples/listening-2-a.svg",
+         "alt": "An open book"
+        },
+        {
+         "label": "B",
+         "src": "/exam-assets/hsk/examples/listening-2-b.svg",
+         "alt": "A computer"
+        },
+        {
+         "label": "C",
+         "src": "/exam-assets/hsk/examples/listening-2-c.svg",
+         "alt": "A cat"
+        }
+       ],
+       "answer": "A"
+      }
+     }
+    },
+    {
+     "id": "hsk-l-3",
+     "title": "第三部分 · Яриа ба зураг",
+     "section": "听力 · Сонсох",
+     "pageMode": "group",
+     "instructions": "听录音，选择相应的图片。\nХоёр хүний богино яриаг хоёр удаа сонсоно. Гурван зургаас тохирохыг сонгоно; нэг зураг илүү.",
+     "hsk": {
+      "pictures": [
+       {
+        "label": "A",
+        "src": "/exam-assets/free/hsk1-free/listening-picture-a.svg",
+        "alt": "A shop counter with fruit"
+       },
+       {
+        "label": "B",
+        "src": "/exam-assets/free/hsk1-free/listening-picture-b.svg",
+        "alt": "Two people riding in a taxi"
+       },
+       {
+        "label": "C",
+        "src": "/exam-assets/free/hsk1-free/listening-picture-c.svg",
+        "alt": "A hospital building"
+       }
+      ],
+      "example": {
+       "pictures": [
+        {
+         "label": "A",
+         "src": "/exam-assets/hsk/examples/listening-3-a.svg",
+         "alt": "Two people shaking hands"
+        }
+       ],
+       "answer": "A"
+      }
+     }
+    },
+    {
+     "id": "hsk-l-4",
+     "title": "第四部分 · Хариулт сонгох",
+     "section": "听力 · Сонсох",
+     "pageMode": "group",
+     "instructions": "听录音，选择答案。\nӨгүүлбэр ба асуултыг хоёр удаа сонсоно. Асуулт бичигдээгүй; гурван хариултаас зөвийг сонгоно.",
+     "hsk": {
+      "example": {
+       "choices": [
+        {
+         "label": "A",
+         "text": "商店",
+         "pinyin": "shāngdiàn"
+        },
+        {
+         "label": "B",
+         "text": "医院",
+         "pinyin": "yīyuàn"
+        },
+        {
+         "label": "C",
+         "text": "学校",
+         "pinyin": "xuéxiào"
+        }
+       ],
+       "answer": "A"
+      }
+     }
+    }
+   ],
+   "questions": [
+    {
+     "id": "hsk1-free-01",
+     "number": "1",
+     "domain": "听力一 · Зураг, хэллэг (√/×)",
+     "kind": "choice",
+     "points": 1,
+     "groupId": "hsk-l-1",
+     "prompt": "Сонссон хэллэг зурагтай таарч байна уу?",
+     "options": [
+      "√",
+      "×"
+     ],
+     "optionLabels": [
+      "√",
+      "×"
+     ],
+     "answers": [
+      "√"
+     ],
+     "answerDisplay": "√",
+     "explanation": "The phrase says “little cat”; the picture shows a cat.",
+     "figure": {
+      "kind": "image",
+      "src": "/exam-assets/free/hsk1-free/listening-01.svg",
+      "alt": "A cat",
+      "width": 480,
+      "height": 360
+     },
+     "listening": {
+      "part": 1,
+      "script": "小猫。\nXiǎo māo."
+     }
+    },
+    {
+     "id": "hsk1-free-02",
+     "number": "2",
+     "domain": "听力一 · Зураг, хэллэг (√/×)",
+     "kind": "choice",
+     "points": 1,
+     "groupId": "hsk-l-1",
+     "prompt": "Сонссон хэллэг зурагтай таарч байна уу?",
+     "options": [
+      "√",
+      "×"
+     ],
+     "optionLabels": [
+      "√",
+      "×"
+     ],
+     "answers": [
+      "×"
+     ],
+     "answerDisplay": "×",
+     "explanation": "The phrase says “watch TV”, but the person is sleeping.",
+     "figure": {
+      "kind": "image",
+      "src": "/exam-assets/free/hsk1-free/listening-02.svg",
+      "alt": "A person asleep in bed",
+      "width": 480,
+      "height": 360
+     },
+     "listening": {
+      "part": 1,
+      "script": "看电视。\nKàn diànshì."
+     }
+    },
+    {
+     "id": "hsk1-free-03",
+     "number": "3",
+     "domain": "听力一 · Зураг, хэллэг (√/×)",
+     "kind": "choice",
+     "points": 1,
+     "groupId": "hsk-l-1",
+     "prompt": "Сонссон хэллэг зурагтай таарч байна уу?",
+     "options": [
+      "√",
+      "×"
+     ],
+     "optionLabels": [
+      "√",
+      "×"
+     ],
+     "answers": [
+      "√"
+     ],
+     "answerDisplay": "√",
+     "explanation": "The phrase says the weather is very cold; the picture shows cold weather.",
+     "figure": {
+      "kind": "image",
+      "src": "/exam-assets/free/hsk1-free/listening-03.svg",
+      "alt": "A person shivering in cold weather",
+      "width": 480,
+      "height": 360
+     },
+     "listening": {
+      "part": 1,
+      "script": "天气很冷。\nTiānqì hěn lěng."
+     }
+    },
+    {
+     "id": "hsk1-free-04",
+     "number": "4",
+     "domain": "听力二 · Өгүүлбэр, зураг",
+     "kind": "choice",
+     "points": 1,
+     "groupId": "hsk-l-2",
+     "prompt": "Сонссон өгүүлбэрт тохирох зургийг сонгоно уу.",
+     "options": [
+      "A",
+      "B",
+      "C"
+     ],
+     "optionLabels": [
+      "A",
+      "B",
+      "C"
+     ],
+     "answers": [
+      "B"
+     ],
+     "answerDisplay": "B",
+     "explanation": "The sentence says “I want to drink water”; B shows water.",
+     "hsk": {
+      "pictures": [
+       {
+        "label": "A",
+        "src": "/exam-assets/free/hsk1-free/listening-04-a.svg",
+        "alt": "A cup of tea"
+       },
+       {
+        "label": "B",
+        "src": "/exam-assets/free/hsk1-free/listening-04-b.svg",
+        "alt": "A glass of water"
+       },
+       {
+        "label": "C",
+        "src": "/exam-assets/free/hsk1-free/listening-04-c.svg",
+        "alt": "A bowl of rice"
+       }
+      ]
+     },
+     "listening": {
+      "part": 2,
+      "script": "我想喝水。\nWǒ xiǎng hē shuǐ."
+     }
+    },
+    {
+     "id": "hsk1-free-05",
+     "number": "5",
+     "domain": "听力二 · Өгүүлбэр, зураг",
+     "kind": "choice",
+     "points": 1,
+     "groupId": "hsk-l-2",
+     "prompt": "Сонссон өгүүлбэрт тохирох зургийг сонгоно уу.",
+     "options": [
+      "A",
+      "B",
+      "C"
+     ],
+     "optionLabels": [
+      "A",
+      "B",
+      "C"
+     ],
+     "answers": [
+      "C"
+     ],
+     "answerDisplay": "C",
+     "explanation": "The sentence says “my father is a doctor”; C shows a doctor.",
+     "hsk": {
+      "pictures": [
+       {
+        "label": "A",
+        "src": "/exam-assets/free/hsk1-free/listening-05-a.svg",
+        "alt": "A teacher at the board"
+       },
+       {
+        "label": "B",
+        "src": "/exam-assets/free/hsk1-free/listening-05-b.svg",
+        "alt": "A student with a school bag"
+       },
+       {
+        "label": "C",
+        "src": "/exam-assets/free/hsk1-free/listening-05-c.svg",
+        "alt": "A doctor in a white coat"
+       }
+      ]
+     },
+     "listening": {
+      "part": 2,
+      "script": "我爸爸是医生。\nWǒ bàba shì yīshēng."
+     }
+    },
+    {
+     "id": "hsk1-free-06",
+     "number": "6",
+     "domain": "听力二 · Өгүүлбэр, зураг",
+     "kind": "choice",
+     "points": 1,
+     "groupId": "hsk-l-2",
+     "prompt": "Сонссон өгүүлбэрт тохирох зургийг сонгоно уу.",
+     "options": [
+      "A",
+      "B",
+      "C"
+     ],
+     "optionLabels": [
+      "A",
+      "B",
+      "C"
+     ],
+     "answers": [
+      "A"
+     ],
+     "answerDisplay": "A",
+     "explanation": "The sentence says “she is reading”; A shows reading.",
+     "hsk": {
+      "pictures": [
+       {
+        "label": "A",
+        "src": "/exam-assets/free/hsk1-free/listening-06-a.svg",
+        "alt": "A person reading a book"
+       },
+       {
+        "label": "B",
+        "src": "/exam-assets/free/hsk1-free/listening-06-b.svg",
+        "alt": "A person writing"
+       },
+       {
+        "label": "C",
+        "src": "/exam-assets/free/hsk1-free/listening-06-c.svg",
+        "alt": "A person eating"
+       }
+      ]
+     },
+     "listening": {
+      "part": 2,
+      "script": "她在读书。\nTā zài dú shū."
+     }
+    },
+    {
+     "id": "hsk1-free-07",
+     "number": "7",
+     "domain": "听力三 · Яриа, зураг",
+     "kind": "choice",
+     "points": 1,
+     "groupId": "hsk-l-3",
+     "prompt": "Сонссон яриад тохирох зургийг сонгоно уу.",
+     "options": [
+      "A",
+      "B",
+      "C"
+     ],
+     "optionLabels": [
+      "A",
+      "B",
+      "C"
+     ],
+     "answers": [
+      "C"
+     ],
+     "answerDisplay": "C",
+     "explanation": "The man says he is going to the hospital; C shows a hospital.",
+     "listening": {
+      "part": 3,
+      "script": "女：你去哪儿？\nNǐ qù nǎr?\n男：我去医院。\nWǒ qù yīyuàn."
+     }
+    },
+    {
+     "id": "hsk1-free-08",
+     "number": "8",
+     "domain": "听力三 · Яриа, зураг",
+     "kind": "choice",
+     "points": 1,
+     "groupId": "hsk-l-3",
+     "prompt": "Сонссон яриад тохирох зургийг сонгоно уу.",
+     "options": [
+      "A",
+      "B",
+      "C"
+     ],
+     "optionLabels": [
+      "A",
+      "B",
+      "C"
+     ],
+     "answers": [
+      "A"
+     ],
+     "answerDisplay": "A",
+     "explanation": "The woman wants to buy some fruit; A shows a shop counter with fruit. B (taxi) is not used.",
+     "listening": {
+      "part": 3,
+      "script": "男：你想买什么？\nNǐ xiǎng mǎi shénme?\n女：我想买一些水果。\nWǒ xiǎng mǎi yìxiē shuǐguǒ."
+     }
+    },
+    {
+     "id": "hsk1-free-09",
+     "number": "9",
+     "domain": "听力四 · Богино асуулт",
+     "kind": "choice",
+     "points": 1,
+     "groupId": "hsk-l-4",
+     "prompt": "Сонссон асуултын хариултыг сонгоно уу.",
+     "options": [
+      "A",
+      "B",
+      "C"
+     ],
+     "optionLabels": [
+      "A",
+      "B",
+      "C"
+     ],
+     "answers": [
+      "C"
+     ],
+     "answerDisplay": "C · 十岁 (shí suì)",
+     "explanation": "The speaker's daughter is ten; C is 十岁.",
+     "hsk": {
+      "choices": [
+       {
+        "label": "A",
+        "text": "六岁",
+        "pinyin": "liù suì"
+       },
+       {
+        "label": "B",
+        "text": "八岁",
+        "pinyin": "bā suì"
+       },
+       {
+        "label": "C",
+        "text": "十岁",
+        "pinyin": "shí suì"
+       }
+      ]
+     },
+     "listening": {
+      "part": 4,
+      "script": "我女儿十岁了。\nWǒ nǚ'ér shí suì le.\n问：他女儿几岁了？\nWèn: Tā nǚ'ér jǐ suì le?"
+     }
+    },
+    {
+     "id": "hsk1-free-10",
+     "number": "10",
+     "domain": "听力四 · Богино асуулт",
+     "kind": "choice",
+     "points": 1,
+     "groupId": "hsk-l-4",
+     "prompt": "Сонссон асуултын хариултыг сонгоно уу.",
+     "options": [
+      "A",
+      "B",
+      "C"
+     ],
+     "optionLabels": [
+      "A",
+      "B",
+      "C"
+     ],
+     "answers": [
+      "B"
+     ],
+     "answerDisplay": "B · 四点 (sì diǎn)",
+     "explanation": "It is three now; they will go to the film at four. B is 四点.",
+     "hsk": {
+      "choices": [
+       {
+        "label": "A",
+        "text": "三点",
+        "pinyin": "sān diǎn"
+       },
+       {
+        "label": "B",
+        "text": "四点",
+        "pinyin": "sì diǎn"
+       },
+       {
+        "label": "C",
+        "text": "十点",
+        "pinyin": "shí diǎn"
+       }
+      ]
+     },
+     "listening": {
+      "part": 4,
+      "script": "现在是下午三点，我们四点去看电影。\nXiànzài shì xiàwǔ sān diǎn, wǒmen sì diǎn qù kàn diànyǐng.\n问：他几点去看电影？\nWèn: Tā jǐ diǎn qù kàn diànyǐng?"
+     }
+    }
+   ]
+  },
+  {
+   "id": "hsk-r",
+   "title": "阅读 · Унших",
+   "kind": "questions",
+   "seconds": 540,
+   "instructions": "Дөрвөн хэсэг, 10 асуулт, 9 минут. Хэсгүүдийн хооронд чөлөөтэй шилжинэ. Цаг дуусахад шалгалт дуусна.",
+   "groups": [
+    {
+     "id": "hsk-r-1",
+     "title": "第一部分 · Зураг ба үг",
+     "section": "阅读 · Унших",
+     "pageMode": "group",
+     "instructions": "判断对错。\nҮг зурагтай таарч байвал √, таарахгүй бол × сонгоно.",
+     "hsk": {
+      "example": {
+       "pictures": [
+        {
+         "src": "/exam-assets/hsk/examples/reading-1.svg",
+         "alt": "A passenger plane"
+        }
+       ],
+       "line": {
+        "text": "飞机",
+        "pinyin": "fēijī"
+       },
+       "answer": "√"
+      }
+     }
+    },
+    {
+     "id": "hsk-r-2",
+     "title": "第二部分 · Өгүүлбэр ба зураг",
+     "section": "阅读 · Унших",
+     "pageMode": "group",
+     "instructions": "选择相应的图片。\nӨгүүлбэр бүрт тохирох зургийг A–C-ээс сонгоно; нэг зураг илүү.",
+     "hsk": {
+      "pictures": [
+       {
+        "label": "A",
+        "src": "/exam-assets/free/hsk1-free/reading-picture-a.svg",
+        "alt": "A person eating at a table"
+       },
+       {
+        "label": "B",
+        "src": "/exam-assets/free/hsk1-free/reading-picture-b.svg",
+        "alt": "A woman making a phone call"
+       },
+       {
+        "label": "C",
+        "src": "/exam-assets/free/hsk1-free/reading-picture-c.svg",
+        "alt": "Children at school"
+       }
+      ],
+      "example": {
+       "pictures": [
+        {
+         "label": "A",
+         "src": "/exam-assets/hsk/examples/reading-2-a.svg",
+         "alt": "An open book"
+        }
+       ],
+       "line": {
+        "text": "我很喜欢这本书。",
+        "pinyin": "Wǒ hěn xǐhuan zhè běn shū."
+       },
+       "answer": "A"
+      }
+     }
+    },
+    {
+     "id": "hsk-r-3",
+     "title": "第三部分 · Асуулт ба хариулт",
+     "section": "阅读 · Унших",
+     "pageMode": "group",
+     "instructions": "选择相应的回答。\nАсуулт бүрт тохирох хариултыг A–E-ээс сонгоно. E нь жишээний хариулт; нэг хариулт илүү.",
+     "hsk": {
+      "choices": [
+       {
+        "label": "A",
+        "text": "我不认识他。",
+        "pinyin": "Wǒ bú rènshi tā."
+       },
+       {
+        "label": "B",
+        "text": "在桌子上。",
+        "pinyin": "Zài zhuōzi shang."
+       },
+       {
+        "label": "C",
+        "text": "星期六。",
+        "pinyin": "Xīngqīliù."
+       },
+       {
+        "label": "D",
+        "text": "我很高兴。",
+        "pinyin": "Wǒ hěn gāoxìng."
+       },
+       {
+        "label": "E",
+        "text": "好的，谢谢！",
+        "pinyin": "Hǎo de, xièxie!"
+       }
+      ],
+      "example": {
+       "line": {
+        "text": "你喝茶吗？",
+        "pinyin": "Nǐ hē chá ma?"
+       },
+       "answerLine": {
+        "label": "E",
+        "text": "好的，谢谢！",
+        "pinyin": "Hǎo de, xièxie!"
+       },
+       "answer": "E"
+      }
+     }
+    },
+    {
+     "id": "hsk-r-4",
+     "title": "第四部分 · Хоосон зай нөхөх",
+     "section": "阅读 · Унших",
+     "pageMode": "group",
+     "instructions": "选词填空。\nХоосон зайд тохирох үгийг A–D-ээс сонгоно. D нь жишээнд орсон; нэг үг илүү.",
+     "hsk": {
+      "choices": [
+       {
+        "label": "A",
+        "text": "坐",
+        "pinyin": "zuò"
+       },
+       {
+        "label": "B",
+        "text": "漂亮",
+        "pinyin": "piàoliang"
+       },
+       {
+        "label": "C",
+        "text": "多少",
+        "pinyin": "duōshao"
+       },
+       {
+        "label": "D",
+        "text": "喜欢",
+        "pinyin": "xǐhuan"
+       }
+      ],
+      "example": {
+       "line": {
+        "text": "我很（　）吃苹果。",
+        "pinyin": "Wǒ hěn (　) chī píngguǒ."
+       },
+       "answerLine": {
+        "label": "D",
+        "text": "喜欢",
+        "pinyin": "xǐhuan"
+       },
+       "answer": "D"
+      }
+     }
+    }
+   ],
+   "questions": [
+    {
+     "id": "hsk1-free-11",
+     "number": "11",
+     "domain": "阅读一 · Зураг, үг (√/×)",
+     "kind": "choice",
+     "points": 1,
+     "groupId": "hsk-r-1",
+     "prompt": "狗",
+     "options": [
+      "√",
+      "×"
+     ],
+     "optionLabels": [
+      "√",
+      "×"
+     ],
+     "answers": [
+      "√"
+     ],
+     "answerDisplay": "√",
+     "explanation": "The picture shows a dog; 狗 means “dog”.",
+     "figure": {
+      "kind": "image",
+      "src": "/exam-assets/free/hsk1-free/reading-11.svg",
+      "alt": "A dog",
+      "width": 480,
+      "height": 360
+     },
+     "hsk": {
+      "line": {
+       "text": "狗",
+       "pinyin": "gǒu"
+      }
+     }
+    },
+    {
+     "id": "hsk1-free-12",
+     "number": "12",
+     "domain": "阅读一 · Зураг, үг (√/×)",
+     "kind": "choice",
+     "points": 1,
+     "groupId": "hsk-r-1",
+     "prompt": "米饭",
+     "options": [
+      "√",
+      "×"
+     ],
+     "optionLabels": [
+      "√",
+      "×"
+     ],
+     "answers": [
+      "×"
+     ],
+     "answerDisplay": "×",
+     "explanation": "The picture shows an apple, but 米饭 means “cooked rice”.",
+     "figure": {
+      "kind": "image",
+      "src": "/exam-assets/free/hsk1-free/reading-12.svg",
+      "alt": "An apple",
+      "width": 480,
+      "height": 360
+     },
+     "hsk": {
+      "line": {
+       "text": "米饭",
+       "pinyin": "mǐfàn"
+      }
+     }
+    },
+    {
+     "id": "hsk1-free-13",
+     "number": "13",
+     "domain": "阅读一 · Зураг, үг (√/×)",
+     "kind": "choice",
+     "points": 1,
+     "groupId": "hsk-r-1",
+     "prompt": "书",
+     "options": [
+      "√",
+      "×"
+     ],
+     "optionLabels": [
+      "√",
+      "×"
+     ],
+     "answers": [
+      "√"
+     ],
+     "answerDisplay": "√",
+     "explanation": "The picture shows a book; 书 means “book”.",
+     "figure": {
+      "kind": "image",
+      "src": "/exam-assets/free/hsk1-free/reading-13.svg",
+      "alt": "An open book",
+      "width": 480,
+      "height": 360
+     },
+     "hsk": {
+      "line": {
+       "text": "书",
+       "pinyin": "shū"
+      }
+     }
+    },
+    {
+     "id": "hsk1-free-14",
+     "number": "14",
+     "domain": "阅读二 · Өгүүлбэр, зураг",
+     "kind": "choice",
+     "points": 1,
+     "groupId": "hsk-r-2",
+     "prompt": "她在打电话呢。",
+     "options": [
+      "A",
+      "B",
+      "C"
+     ],
+     "optionLabels": [
+      "A",
+      "B",
+      "C"
+     ],
+     "answers": [
+      "B"
+     ],
+     "answerDisplay": "B",
+     "explanation": "“打电话” (make a phone call) matches B.",
+     "hsk": {
+      "line": {
+       "text": "她在打电话呢。",
+       "pinyin": "Tā zài dǎ diànhuà ne."
+      }
+     }
+    },
+    {
+     "id": "hsk1-free-15",
+     "number": "15",
+     "domain": "阅读二 · Өгүүлбэр, зураг",
+     "kind": "choice",
+     "points": 1,
+     "groupId": "hsk-r-2",
+     "prompt": "我中午在家吃米饭。",
+     "options": [
+      "A",
+      "B",
+      "C"
+     ],
+     "optionLabels": [
+      "A",
+      "B",
+      "C"
+     ],
+     "answers": [
+      "A"
+     ],
+     "answerDisplay": "A",
+     "explanation": "“吃米饭” (eat rice) matches A. C (school) is not used.",
+     "hsk": {
+      "line": {
+       "text": "我中午在家吃米饭。",
+       "pinyin": "Wǒ zhōngwǔ zài jiā chī mǐfàn."
+      }
+     }
+    },
+    {
+     "id": "hsk1-free-16",
+     "number": "16",
+     "domain": "阅读三 · Асуулт, хариулт",
+     "kind": "choice",
+     "points": 1,
+     "groupId": "hsk-r-3",
+     "prompt": "你的书在哪儿？",
+     "options": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E"
+     ],
+     "optionLabels": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E"
+     ],
+     "answers": [
+      "B"
+     ],
+     "answerDisplay": "B · 在桌子上。",
+     "explanation": "The question asks where the book is; B says “on the table”.",
+     "hsk": {
+      "line": {
+       "text": "你的书在哪儿？",
+       "pinyin": "Nǐ de shū zài nǎr?"
+      }
+     }
+    },
+    {
+     "id": "hsk1-free-17",
+     "number": "17",
+     "domain": "阅读三 · Асуулт, хариулт",
+     "kind": "choice",
+     "points": 1,
+     "groupId": "hsk-r-3",
+     "prompt": "那个人是谁？",
+     "options": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E"
+     ],
+     "optionLabels": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E"
+     ],
+     "answers": [
+      "A"
+     ],
+     "answerDisplay": "A · 我不认识他。",
+     "explanation": "The question asks who that person is; A says “I don't know him”.",
+     "hsk": {
+      "line": {
+       "text": "那个人是谁？",
+       "pinyin": "Nà ge rén shì shéi?"
+      }
+     }
+    },
+    {
+     "id": "hsk1-free-18",
+     "number": "18",
+     "domain": "阅读三 · Асуулт, хариулт",
+     "kind": "choice",
+     "points": 1,
+     "groupId": "hsk-r-3",
+     "prompt": "你什么时候回北京？",
+     "options": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E"
+     ],
+     "optionLabels": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E"
+     ],
+     "answers": [
+      "C"
+     ],
+     "answerDisplay": "C · 星期六。",
+     "explanation": "The question asks when; C gives a day, Saturday. D is not used.",
+     "hsk": {
+      "line": {
+       "text": "你什么时候回北京？",
+       "pinyin": "Nǐ shénme shíhou huí Běijīng?"
+      }
+     }
+    },
+    {
+     "id": "hsk1-free-19",
+     "number": "19",
+     "domain": "阅读四 · Үг нөхөх",
+     "kind": "choice",
+     "points": 1,
+     "groupId": "hsk-r-4",
+     "prompt": "这些衣服很（　）。",
+     "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+     ],
+     "optionLabels": [
+      "A",
+      "B",
+      "C",
+      "D"
+     ],
+     "answers": [
+      "B"
+     ],
+     "answerDisplay": "B · 漂亮",
+     "explanation": "“这些衣服很漂亮” — these clothes are very pretty; B is 漂亮.",
+     "hsk": {
+      "line": {
+       "text": "这些衣服很（　）。",
+       "pinyin": "Zhèxiē yīfu hěn (　)."
+      }
+     }
+    },
+    {
+     "id": "hsk1-free-20",
+     "number": "20",
+     "domain": "阅读四 · Үг нөхөх",
+     "kind": "choice",
+     "points": 1,
+     "groupId": "hsk-r-4",
+     "prompt": "这个杯子（　）钱？",
+     "options": [
+      "A",
+      "B",
+      "C",
+      "D"
+     ],
+     "optionLabels": [
+      "A",
+      "B",
+      "C",
+      "D"
+     ],
+     "answers": [
+      "C"
+     ],
+     "answerDisplay": "C · 多少",
+     "explanation": "“多少钱” asks the price; C is 多少. A (坐) is not used.",
+     "hsk": {
+      "line": {
+       "text": "这个杯子（　）钱？",
+       "pinyin": "Zhège bēizi (　) qián?"
+      }
+     }
+    }
+   ]
+  }
+ ]
+}

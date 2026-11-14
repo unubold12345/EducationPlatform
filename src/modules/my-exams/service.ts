@@ -3,7 +3,7 @@ import { createHash, randomUUID } from "node:crypto";
 import { getDb } from "@/lib/db";
 import { Prisma } from "@/generated/prisma/client";
 import { chargeCredits } from "@/modules/credits/service";
-import { AI_ACTIONS, examCredits, examHold, examOutputTokens, type UsageMeter } from "@/modules/credits/pricing";
+import { AI_ACTIONS, examCredits, examHold, examOutputTokens, examRetryCredits, type UsageMeter } from "@/modules/credits/pricing";
 import { ApiError } from "@/lib/api";
 import { activeTimedSitting } from "@/modules/exams/active-sitting";
 import { tutorDay } from "@/modules/tutor/contracts";
@@ -11,9 +11,9 @@ import { cleanSourceText, displayFileName } from "@/modules/documents/text";
 import { extractDocument } from "@/modules/documents/extract";
 import { readUploadedSource } from "@/modules/documents/upload";
 import {
-  EXAM_COUNT, MY_EXAM_LIMITS, cleanStructureRequest, examCapacity, examMessages, examsFullMessage, gradeExam, isExamId, isExamLanguage,
-  parseGeneratedExam, publicExam, readBest, readDraft, readExamCount, readFullQuestions, readGradeRequest, readImportRequest, readResult,
-  readSittingRequest, suggestedSeconds,
+  EXAM_COUNT, MY_EXAM_LIMITS, cleanStructureRequest, examCapacity, examMessages, examParts, examsFullMessage, gradeExam, isExamId, isExamLanguage,
+  mergeExamParts, nextQuestionStart, parseGeneratedExam, promptKey, publicExam, readBest, readDraft, readExamCount, readFullQuestions, readGradeRequest,
+  readImportRequest, readResult, readSittingRequest, suggestedSeconds,
   type ExamBest, type ExamDraft, type ExamLanguage, type ExamResult, type GeneratedExam, type SavedExam,
 } from "./contracts";
 import { ExamTokenError, openExam } from "./token";
@@ -24,6 +24,9 @@ const BODY_SLACK = 256 * 1024;
 const MAX_BODY = MY_EXAM_LIMITS.fileBytes + BODY_SLACK;
 const MIN_TEXT = 80;
 const DAY_MS = 24 * 60 * 60 * 1000;
+/** A malformed part is written again only while that still fits inside the route's time limit. */
+const RETRY_BEFORE_MS = 50_000;
+const NO_SOURCE = "Энэ шалгалтын материал хадгалагдаагүй тул шинэ асуулт үүсгэх боломжгүй. Файлаа дахин оруулж шинэ шалгалт үүсгэнэ үү.";
 
 type ExamReply = {
   exam: SavedExam;
@@ -33,14 +36,19 @@ type ExamReply = {
   provider: "DeepSeek";
 };
 
+// The kept text itself is read only by a retry; every other read takes its length and the count asked for.
 const EXAM_SELECT = {
   id: true, title: true, sourceName: true, sourceKind: true, language: true, questions: true, suggestedSeconds: true,
-  draft: true, last: true, best: true, attempts: true, createdAt: true, updatedAt: true,
+  draft: true, last: true, best: true, attempts: true, createdAt: true, updatedAt: true, sourceChars: true, sourceCount: true,
 } as const;
 type ExamRow = {
   id: string; title: string; sourceName: string; sourceKind: string; language: string; questions: unknown; suggestedSeconds: number;
-  draft: unknown; last: unknown; best: unknown; attempts: number; createdAt: Date; updatedAt: Date;
+  draft: unknown; last: unknown; best: unknown; attempts: number; createdAt: Date; updatedAt: Date; sourceChars: number | null; sourceCount: number | null;
 };
+/** How many questions a retry of this exam asks for: the count the student first asked for. */
+function retryCount(row: Pick<ExamRow, "sourceCount">, questions: number) {
+  return Math.min(EXAM_COUNT.max, Math.max(EXAM_COUNT.min, row.sourceCount ?? questions));
+}
 const asJson = (value: unknown) => value as Prisma.InputJsonValue;
 const missing = (error: unknown) => (error as { code?: string }).code === "P2025";
 const duplicate = (error: unknown) => (error as { code?: string }).code === "P2002";
@@ -55,6 +63,8 @@ function savedExam(row: ExamRow): SavedExam | null {
   const ids = questions.map(question => question.id);
   return {
     id: row.id, title: row.title, sourceName: row.sourceName, sourceKind: row.sourceKind, language: row.language,
+    // Priced here, from the length of the text the account keeps; the page only shows it.
+    retryCredits: row.sourceChars ? examRetryCredits(row.sourceChars, retryCount(row, questions.length)) : null,
     createdAt: row.createdAt.getTime(), updatedAt: row.updatedAt.getTime(),
     questions: publicExam({ title: row.title, questions }).questions, suggestedSeconds: row.suggestedSeconds,
     draft: readDraft(row.draft, ids), last: readResult(row.last), best: readBest(row.best), attempts: row.attempts,
@@ -108,7 +118,59 @@ function titleFromFile(name: string) {
   return base ? base.slice(0, 80) : "Шинэ шалгалт";
 }
 
-/** One upload in, one saved exam out. The file is never stored; the key stays on the server until a sitting is graded. */
+type ExamInput = { text?: string; images?: readonly string[]; count: number; language: ExamLanguage; truncated: boolean; structure: string; avoid?: readonly string[] };
+
+/**
+ * Ask the model for the exam: one reply up to 20 questions, otherwise parallel parts of at most 20 that each read
+ * the whole material and write about their own portion of it, so a 40-question exam takes no longer than a
+ * 20-question one. A malformed or too-short part is written once more. Null when the exam is still unusable.
+ */
+async function writeExam(input: ExamInput, fallbackTitle: string, start: number, meter: UsageMeter): Promise<GeneratedExam | null> {
+  const sizes = examParts(input.count);
+  const skip = new Set((input.avoid ?? []).map(promptKey));
+  const started = Date.now();
+  const settled = await Promise.allSettled(sizes.map(async (size, index) => {
+    const messages = examMessages({ ...input, count: size, ...(sizes.length > 1 ? { part: { index, of: sizes.length } } : {}) });
+    // One silent retry when the model returns a malformed or too-short part; the daily count is charged once.
+    for (let attempt = 0; attempt < 2; attempt++) {
+      if (attempt && Date.now() - started > RETRY_BEFORE_MS) break;
+      const part = parseGeneratedExam(await deepseekExam(messages, size, meter), { count: size, fallbackTitle, skip });
+      if (part) return part;
+    }
+    return null;
+  }));
+  // Every part has finished, so the meter holds all the usage before a failure refunds the hold.
+  const parts: GeneratedExam[] = [];
+  for (const result of settled) {
+    if (result.status === "rejected") throw result.reason;
+    if (!result.value) return null;
+    parts.push(result.value);
+  }
+  return mergeExamParts(parts, input.count, start);
+}
+
+/** The daily budget and the one-request-in-flight lease shared by a new exam and a retry. */
+async function withGenerationSlot<T>(userId: string, work: () => Promise<T>): Promise<T> {
+  const db = getDb();
+  const now = Date.now(), limitKey = `education-my-exams:${userId}:${tutorDay(now)}`, lease = BigInt(now + LEASE_MS);
+  await db.rateLimit.upsert({ where: { key: limitKey }, create: { id: randomUUID(), key: limitKey, count: 0, lastRequest: BigInt(0) }, update: {} });
+  // Database CAS enforces a daily budget and one request in flight across every server instance.
+  const reserved = await db.rateLimit.updateMany({
+    where: { key: limitKey, count: { lt: DAILY_LIMIT }, lastRequest: { lte: BigInt(now) } },
+    data: { count: { increment: 1 }, lastRequest: lease },
+  });
+  if (!reserved.count) throw new ApiError(429, `Шалгалт үүсгэж байна эсвэл өдрийн ${DAILY_LIMIT} хүсэлтийн хязгаарт хүрсэн. Түр хүлээгээд дахин оролдоно уу.`);
+  try { return await work(); }
+  finally {
+    // Only release the lease this request holds; never shorten another request's lease.
+    await db.rateLimit.updateMany({ where: { key: limitKey, lastRequest: lease }, data: { lastRequest: BigInt(Date.now() + 3000) } });
+  }
+}
+
+/**
+ * One upload in, one saved exam out. The file is never stored; the text read from a document is kept with the
+ * exam for a retry (`regenerateMyExam`). The key stays on the server until a sitting is graded.
+ */
 export async function createMyExam(userId: string, request: Request): Promise<ExamReply> {
   const contentType = request.headers.get("content-type")?.toLowerCase() ?? "";
   if (!contentType.startsWith("multipart/form-data")) throw new ApiError(415, "Файлтай хүсэлт шаардлагатай.");
@@ -143,44 +205,30 @@ export async function createMyExam(userId: string, request: Request): Promise<Ex
   if (saved >= limit) throw new ApiError(409, examsFullMessage(limit));
   if (!process.env.DEEPSEEK_API_KEY?.trim()) throw new ApiError(503, "AI шалгалт үүсгэгч одоогоор холбогдоогүй байна.");
 
-  const now = Date.now(), limitKey = `education-my-exams:${userId}:${tutorDay(now)}`, lease = BigInt(now + LEASE_MS);
   // The price depends on the text actually read; until extraction, assume the longest document.
   let readChars: number = MY_EXAM_LIMITS.textChars;
   // Page photos are priced as DeepSeek bills them (at most 1,024 tokens each) instead of by text length.
   const pictures = upload.kind === "images" ? upload.images.length : 0;
   // The most this exam can cost is held first and refunded on any failure, including a file with too
   // little text; on success the charge settles to the questions delivered.
-  return chargeCredits(userId, "exam", async meter => {
-  await db.rateLimit.upsert({ where: { key: limitKey }, create: { id: randomUUID(), key: limitKey, count: 0, lastRequest: BigInt(0) }, update: {} });
-  // Database CAS enforces a daily budget and one request in flight across every server instance.
-  const reserved = await db.rateLimit.updateMany({
-    where: { key: limitKey, count: { lt: DAILY_LIMIT }, lastRequest: { lte: BigInt(now) } },
-    data: { count: { increment: 1 }, lastRequest: lease },
-  });
-  if (!reserved.count) throw new ApiError(429, `Шалгалт үүсгэж байна эсвэл өдрийн ${DAILY_LIMIT} хүсэлтийн хязгаарт хүрсэн. Түр хүлээгээд дахин оролдоно уу.`);
-
-  try {
-    let messages: ReturnType<typeof examMessages>;
+  return chargeCredits(userId, "exam", meter => withGenerationSlot<ExamReply>(userId, async () => {
+    let input: ExamInput;
     let source: ExamReply["source"];
     if (upload.kind === "images") {
-      // Photos of pages: the model reads them directly, so there is no text to measure first.
+      // Photos of pages: the model reads them directly, so there is no text to measure first (or to keep for a retry).
       readChars = 0;
-      messages = examMessages({ images: upload.images, count, language, truncated: false, structure });
+      input = { images: upload.images, count, language, truncated: false, structure };
       source = { name, kind: "image", pages: upload.images.length, truncated: false };
     } else {
       const extracted = await extractDocument(name, upload.bytes);
       const cleaned = cleanSourceText(extracted.text);
       if (cleaned.text.length < MIN_TEXT) throw new ApiError(422, "Файлаас шалгалт үүсгэх хангалттай текст олдсонгүй. Илүү бүрэн файл оруулна уу.");
       readChars = cleaned.text.length;
-      messages = examMessages({ text: cleaned.text, count, language, truncated: cleaned.truncated, structure });
+      input = { text: cleaned.text, count, language, truncated: cleaned.truncated, structure };
       source = { name, kind: extracted.kind, pages: extracted.pages ?? null, truncated: cleaned.truncated };
     }
     const fallbackTitle = upload.kind === "images" ? "Зурагнаас үүсгэсэн шалгалт" : titleFromFile(name);
-    let exam: GeneratedExam | null = null;
-    // One silent retry when the model returns a malformed or too-short exam; the daily count is charged once.
-    for (let attempt = 0; attempt < 2 && !exam; attempt++) {
-      exam = parseGeneratedExam(await deepseekExam(messages, count, meter), { count, fallbackTitle });
-    }
+    const exam = await writeExam(input, fallbackTitle, 1, meter);
     if (!exam) throw new ApiError(503, upload.kind === "images" ? "Зурагнаас шалгалт үүсгэх хангалттай материал уншиж чадсангүй. Илүү тод, бүрэн хуудасны зураг оруулна уу." : "AI шалгалт үүсгэж чадсангүй. Дахин оролдоно уу.");
     // Another tab may start a timed exam while the provider is answering.
     await ensureNoTimedExam(userId);
@@ -189,15 +237,64 @@ export async function createMyExam(userId: string, request: Request): Promise<Ex
       data: {
         userId, title: exam.title.slice(0, 200), sourceName: name.slice(0, 200) || fallbackTitle, sourceKind: source.kind.slice(0, 20), language,
         questions: asJson(exam.questions), suggestedSeconds: suggestedSeconds(exam.questions.length),
+        // The text a retry reads; page photos are not kept, so an exam made from them has no retry.
+        ...(input.text ? { sourceText: input.text, sourceChars: input.text.length, sourceCount: count, sourceStructure: structure || null } : {}),
       },
       select: EXAM_SELECT,
     });
     return { exam: shown(row), limit, source, provider: "DeepSeek" };
-  } finally {
-    // Only release the lease this request holds; never shorten another request's lease.
-    await db.rateLimit.updateMany({ where: { key: limitKey, lastRequest: lease }, data: { lastRequest: BigInt(Date.now() + 3000) } });
-  }
-  }, { hold: examHold(count, pictures), settle: reply => examCredits(readChars, reply.exam.questions.length, pictures) });
+  }), { hold: examHold(count, pictures), settle: reply => examCredits(readChars, reply.exam.questions.length, pictures) });
+}
+
+/**
+ * A retry: new questions for the student's own saved exam, written from the text the account kept when the exam
+ * was first made and paid for, at the retry price (`examRetryCredits`, half the first price). The new questions
+ * replace the old ones in place; the open sitting, the results and the attempt count are cleared. The request
+ * carries nothing but the exam's id: the material, the question count, the language and the price are the
+ * account's own. An exam without kept text (page photos, moved from a browser, made earlier) is refused before
+ * any credits are held.
+ */
+export async function regenerateMyExam(userId: string, id: string, body: unknown): Promise<{ exam: SavedExam; provider: "DeepSeek" }> {
+  if (!body || typeof body !== "object" || Array.isArray(body) || Object.keys(body).length) throw new ApiError(400, "Хүсэлтийн бүтэц буруу байна.");
+  if (!isExamId(id)) throw new ApiError(400, "Шалгалтын түлхүүр буруу байна.");
+  const db = getDb();
+  const row = await db.myExam.findFirst({ where: { id, userId }, select: { ...EXAM_SELECT, sourceText: true, sourceStructure: true } });
+  const questions = row ? readFullQuestions(row.questions) : null;
+  if (!row || !questions || !isExamLanguage(row.language)) throw new ApiError(404, "Энэ шалгалт олдсонгүй.");
+  const text = row.sourceText ?? "";
+  if (text.length < MIN_TEXT) throw new ApiError(409, NO_SOURCE);
+  const language: ExamLanguage = row.language;
+  await ensureNoTimedExam(userId);
+  if (!process.env.DEEPSEEK_API_KEY?.trim()) throw new ApiError(503, "AI шалгалт үүсгэгч одоогоор холбогдоогүй байна.");
+
+  const count = retryCount(row, questions.length);
+  // The kept text and the count are known, so the hold is the retry's price; it settles to the questions delivered.
+  return chargeCredits(userId, "exam-retry", meter => withGenerationSlot(userId, async () => {
+    const ids = questions.map(question => question.id);
+    const exam = await writeExam({
+      text, count, language, truncated: text.length >= MY_EXAM_LIMITS.textChars, structure: row.sourceStructure ?? "",
+      avoid: questions.map(question => question.prompt),
+    }, row.title, nextQuestionStart(ids, count), meter);
+    if (!exam) throw new ApiError(503, "AI шинэ асуулт үүсгэж чадсангүй. Дахин оролдоно уу.");
+    // Another tab may start a timed exam while the provider is answering.
+    await ensureNoTimedExam(userId);
+    try {
+      // The same exam, new questions: its title and material stay, everything answered so far goes.
+      const updated = await db.myExam.update({
+        where: { id: row.id, userId },
+        data: {
+          questions: asJson(exam.questions), suggestedSeconds: suggestedSeconds(exam.questions.length),
+          draft: Prisma.DbNull, last: Prisma.DbNull, best: Prisma.DbNull, attempts: 0,
+        },
+        select: EXAM_SELECT,
+      });
+      return { exam: shown(updated), provider: "DeepSeek" as const };
+    } catch (error) {
+      // Deleted while the provider was answering: the hold is refunded.
+      if (missing(error)) throw new ApiError(404, "Энэ шалгалт олдсонгүй.");
+      throw error;
+    }
+  }), { hold: examRetryCredits(text.length, count), settle: reply => examRetryCredits(text.length, reply.exam.questions.length) });
 }
 
 /**
@@ -325,7 +422,7 @@ async function deepseekExam(messages: ReturnType<typeof examMessages>, count: nu
         model: process.env.DEEPSEEK_MODEL || "deepseek-flash",
         messages,
         thinking: { type: "disabled" },
-        // The reply budget follows the question count and never passes the action's listed budget.
+        // The reply budget follows this reply's question count (one part of at most 20) and never passes the action's listed budget.
         max_tokens: Math.min(AI_ACTIONS["exam"].outputTokens, examOutputTokens(count)),
         temperature: 0.35,
         response_format: { type: "json_object" },

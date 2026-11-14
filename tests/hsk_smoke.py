@@ -38,9 +38,9 @@ with sync_playwright() as p:
     page.on('pageerror',lambda error:errors.append(str(error)))
     page.goto(BASE+'/exams')
     expect(page.locator('.exam-card.hsk')).to_be_visible()
-    # Desktop shows three programmes per row; narrower canvases fall back to two, then one.
-    assert columns(page)==3
-    page.set_viewport_size({'width':1024,'height':950});assert columns(page)==2
+    # Each programme is one full-width row at every width (owner request 2026-11-15).
+    assert columns(page)==1
+    page.set_viewport_size({'width':1024,'height':950});assert columns(page)==1
     page.set_viewport_size({'width':390,'height':950});assert columns(page)==1
     fits(page,'library',(1440,1280,390,320))
     page.goto(BASE+'/exams/hsk')

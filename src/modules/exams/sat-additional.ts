@@ -130,6 +130,23 @@ const contexts: Context[][] = [
     {subject:"a community gardening club",object:"vegetable plots",place:"Maple Gardens",intervention:"covering soil with mulch",measure:"days between watering",limitation:"rainfall increased during the observation period",benefit:"less frequent watering"},
     {subject:"an agricultural engineering group",object:"greenhouse compartments",place:"Wren Research Farm",intervention:"linking ventilation to humidity measurements",measure:"marketable crop yield",limitation:"disease pressure varied before the intervention",benefit:"more precise environmental control"},
   ],
+  // Mocks 07–09 (2026-11-14). Module 2 lower measures are singular counts ("Saturday turnout … it fell again"), and
+  // higher limitations are differences between units that existed before the trial, as those templates assume.
+  [
+    {subject:"an urban climate research team",object:"residential rooftops",place:"Marlow Heights",intervention:"applying reflective coatings",measure:"indoor thermal comfort",limitation:"the summer was also milder than usual",benefit:"cooler homes during heat waves"},
+    {subject:"a student sustainability club",object:"seating areas",place:"Fernbrook School",intervention:"installing shade sails",measure:"lunchtime courtyard attendance",limitation:"the school also lengthened the lunch break",benefit:"more comfortable outdoor spaces"},
+    {subject:"a building physics laboratory",object:"office buildings",place:"Calder Business Park",intervention:"night-time ventilation",measure:"indoor air quality",limitation:"the buildings differed in airtightness before the trial",benefit:"healthier workplaces"},
+  ],
+  [
+    {subject:"a sports science team",object:"youth training groups",place:"Redfern",intervention:"adding structured warm-up routines",measure:"sprint performance",limitation:"the groups also began a new strength programme during the trial",benefit:"fewer muscle injuries"},
+    {subject:"a community running club",object:"running routes",place:"Hillcrest Park",intervention:"offering free beginner coaching",measure:"Saturday turnout",limitation:"a nearby school also launched a running challenge",benefit:"a more active neighbourhood"},
+    {subject:"a sports engineering laboratory",object:"artificial pitches",place:"Hartwell Sports Park",intervention:"shock-pad installation",measure:"surface playability",limitation:"the pitches had been laid in different years",benefit:"fewer impact injuries among players"},
+  ],
+  [
+    {subject:"a municipal waste research team",object:"collection routes",place:"Brayford",intervention:"introducing separate food-waste bins",measure:"recycling quality",limitation:"national packaging rules also changed during the trial",benefit:"less waste sent to landfill"},
+    {subject:"a neighbourhood recycling group",object:"recycling points",place:"Oakfield Estate",intervention:"adding clearer sorting signs",measure:"recycling-point use",limitation:"the council also reduced general-waste collections",benefit:"more household recycling"},
+    {subject:"a waste processing laboratory",object:"compost batches",place:"Greyhill Recovery Centre",intervention:"forced aeration",measure:"compost maturity",limitation:"the batches began with different moisture levels",benefit:"a saleable product from food waste"},
+  ],
 ];
 
 type Add = (domain: string, passage: string, prompt: string, answer: string, wrong: string[], explanation: string) => void;

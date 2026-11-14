@@ -3,32 +3,39 @@ import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { Icon } from "@/modules/workspace/icons";
 import {
-  bankFullMessage, VOCABULARY_LIMITS, vocabularyUpgrade,
-  type DeckColor, type StudyUpdate, type VocabularyDeck, type VocabularyWord,
+  bankFullMessage, VOCABULARY_LIMITS, VOCABULARY_SPACE, vocabularyUpgrade,
+  type DeckColor, type StudyUpdate, type VocabularyDeck, type VocabularySpace, type VocabularyWord,
 } from "./contracts";
+import { SpacePanel } from "./space-panel";
 import { isDue, reviewedToday, studyStatus } from "./study";
-import { QUIZ_MIN_WORDS } from "./quiz";
 import { failure, readStored, request, sendJson, VOCABULARY_API, type Notice } from "./api";
 import { useVoices } from "./speech";
 import { Library, type LibraryActions, type QuizLaunch, type WordEdit } from "./library";
 import { ImportPanel, scanKey, type SavedImport } from "./import-panel";
 import { Quiz } from "./quiz-view";
+import { StudyCard } from "./study-card";
+import { ConfirmModal, Modal, type Confirm, type ConfirmRequest } from "./modal";
 import styles from "./vocabulary.module.css";
 
 const UPGRADE = vocabularyUpgrade();
 const number = (value: number) => value.toLocaleString("en-US");
 
-export function Vocabulary({ userId, initialWords, initialDecks, limit, now: loadedAt }: {
-  userId: string; initialWords: VocabularyWord[]; initialDecks: VocabularyDeck[]; limit: number; now: number;
+export function Vocabulary({ userId, initialWords, initialDecks, space: initialSpace, now: loadedAt }: {
+  userId: string; initialWords: VocabularyWord[]; initialDecks: VocabularyDeck[]; space: VocabularySpace; now: number;
 }) {
   const [words, setWords] = useState(initialWords);
   const [decks, setDecks] = useState(initialDecks);
   const [now, setNow] = useState(loadedAt);
-  const [panel, setPanel] = useState<null | "add" | "import">(null);
+  // The bank size (free or plan bank plus permanent space bought with yellow credits); it grows after a purchase.
+  const [space, setSpace] = useState(initialSpace);
+  const limit = space.limit;
+  const [panel, setPanel] = useState<null | "add" | "import" | "space">(null);
   const [notice, setNotice] = useState<Notice | null>(null);
   const [quiz, setQuiz] = useState<QuizLaunch | null>(null);
+  // Deletes and other steps that cannot be undone ask in a modal; the answer resolves the waiting action.
+  const [asking, setAsking] = useState<{ request: ConfirmRequest; answer: (value: string | null) => void } | null>(null);
+  const confirm: Confirm = request => new Promise(resolve => setAsking({ request, answer: resolve }));
   const { canSpeak } = useVoices();
-  const panelArea = useRef<HTMLDivElement>(null);
 
   // A file scan that was not saved yet reopens its review list.
   useEffect(() => {
@@ -36,9 +43,6 @@ export function Vocabulary({ userId, initialWords, initialDecks, limit, now: loa
     const timer = setTimeout(() => { if (waiting) setPanel("import"); }, 0);
     return () => clearTimeout(timer);
   }, [userId]);
-  useEffect(() => {
-    if (panel) panelArea.current?.scrollIntoView({ block: "nearest", behavior: "smooth" });
-  }, [panel]);
 
   const stats = useMemo(() => {
     const tally = { due: 0, fresh: 0, learning: 0, familiar: 0, mastered: 0, today: 0 };
@@ -53,11 +57,10 @@ export function Vocabulary({ userId, initialWords, initialDecks, limit, now: loa
   // The bank size comes from the server (free or the student's plan); the server enforces it again.
   const room = Math.max(0, limit - words.length);
   const full = room === 0;
-  const canQuiz = words.length >= QUIZ_MIN_WORDS;
   const share = (count: number) => words.length ? (count / words.length) * 100 + "%" : "0%";
 
   const ok = (text: string) => setNotice({ tone: "ok", text });
-  function toggle(next: "add" | "import") {
+  function toggle(next: "add" | "import" | "space") {
     setNotice(null);
     setPanel(current => current === next ? null : next);
   }
@@ -93,7 +96,8 @@ export function Vocabulary({ userId, initialWords, initialDecks, limit, now: loa
       }
     },
     async deleteWord(word: VocabularyWord) {
-      if (!window.confirm(`"${word.term}" үгийг устгах уу? Буцаах боломжгүй.`)) return null;
+      const answer = await confirm({ title: `“${word.term}” үгийг устгах уу?`, text: "Үг болон түүний давталтын явц устана. Буцаах боломжгүй.", choices: [{ value: "delete", label: "Устгах", tone: "danger" }] });
+      if (answer !== "delete") return null;
       try {
         await request<{ ok: true }>(`${VOCABULARY_API}/words/${encodeURIComponent(word.id)}`, { method: "DELETE" });
         setWords(current => current.filter(item => item.id !== word.id));
@@ -153,6 +157,7 @@ export function Vocabulary({ userId, initialWords, initialDecks, limit, now: loa
       }
     },
     quiz: openQuiz,
+    confirm,
   };
 
   function imported(saved: SavedImport) {
@@ -167,22 +172,20 @@ export function Vocabulary({ userId, initialWords, initialDecks, limit, now: loa
   if (quiz) return <Quiz userId={userId} words={words} decks={decks} launch={quiz} now={now}
     onExit={() => { setQuiz(null); setNow(Date.now()); }} onStudied={applyStudy} onStar={ids => actions.star(ids, true)} />;
 
-  const studyLine = !canQuiz ? `Дор хаяж ${QUIZ_MIN_WORDS} үг хадгалаад quiz эхлүүлээрэй.`
-    : stats.due ? `${stats.due} үг давтах цаг болсон${stats.fresh ? `, ${stats.fresh} шинэ үг хүлээж байна` : ""}.`
-      : stats.fresh ? `${stats.fresh} шинэ үг сурахад бэлэн байна.`
-        : "Өнөөдөр давтах ёстой үг алга. Хүсвэл бүх үгээрээ чөлөөт quiz хийж болно.";
-
   return <div className={`wsp-page ${styles.page}`}>
     <header className={styles.head}>
-      <p className={styles.kicker}><Icon name="book" size={17} />Үгсийн сан</p>
-      <h1>Үгээ цуглуул. <span>Ухаалгаар давт.</span></h1>
-      <p className={styles.lead}>Үгээ багцлан эмхэлж, давтах цаг нь болсон үгсээ quiz-ээр бататга.</p>
+      <h1>Үгээ цуглуул. Ухаалгаар давт.</h1>
     </header>
 
+    {/* Study first (owner request 2026-11-15): the card to turn over leads the page, the figures sit beside it. */}
+    <div className={styles.top}>
+    <StudyCard words={words} now={now} canSpeak={canSpeak} onStudied={applyStudy} onQuiz={openQuiz} />
     <div className={styles.stats}>
       <div className={`${styles.stat} ${full ? styles.statFull : ""}`} data-stat="total" aria-label={`${words.length} / ${limit} хадгалсан үг`}>
         <span>Хадгалсан үг</span><strong>{number(words.length)}</strong><small>{number(limit)} хүртэл</small>
         <i className={styles.meter} aria-hidden="true"><b style={{ width: Math.min(100, Math.round((words.length / Math.max(1, limit)) * 100)) + "%" }} /></i>
+        {space.extra ? <em className={styles.statNote}>Үүнээс байнгын +{number(space.extra)} үг</em> : null}
+        {space.room >= VOCABULARY_SPACE.words ? <button type="button" className={styles.spaceButton} onClick={() => toggle("space")} aria-haspopup="dialog"><b aria-hidden="true" />Багтаамж нэмэх</button> : null}
       </div>
       <div className={styles.stat} data-stat="due"><span>Давтах цаг болсон</span><strong>{number(stats.due)}</strong><small>{number(stats.fresh)} шинэ үг</small></div>
       <div className={styles.stat} data-stat="mastered">
@@ -193,31 +196,22 @@ export function Vocabulary({ userId, initialWords, initialDecks, limit, now: loa
       </div>
       <div className={styles.stat} data-stat="today"><span>Өнөөдөр давтсан</span><strong>{number(stats.today)}</strong><small>үг</small></div>
     </div>
+    </div>
 
     {full ? <p className={styles.full} role="status">
       <Icon name="info" size={16} />
       <span>{bankFullMessage(limit)}{limit < UPGRADE.words ? <> <Link href="/workspace/plans">Багцууд үзэх</Link></> : null}</span>
     </p> : null}
 
-    <section className={styles.studyBanner} aria-labelledby="voc-study-heading">
-      <span className={styles.quizMark} aria-hidden="true"><Icon name="bolt" size={22} /></span>
-      <div className={styles.quizCopy}>
-        <h2 id="voc-study-heading">Өнөөдрийн давталт</h2>
-        <p>{studyLine}</p>
-      </div>
-      <div className={styles.studyActions}>
-        <button type="button" className={styles.ghost} onClick={() => openQuiz({})} disabled={!canQuiz}>Quiz тохируулах</button>
-        <button type="button" className={styles.primary} onClick={() => openQuiz({ scope: "smart", start: true })} disabled={!canQuiz}><Icon name="bolt" size={17} />Ухаалаг давталт</button>
-      </div>
-    </section>
-
     {notice ? <p className={`${styles.notice} ${notice.tone === "bad" ? styles.noticeBad : ""}`} role={notice.tone === "bad" ? "alert" : "status"}>{notice.text}</p> : null}
 
-    <div ref={panelArea} className={styles.panelArea}>
-      {panel === "add" ? <AddPanel decks={decks} full={full} limit={limit} onClose={() => setPanel(null)}
-        onAdded={(word, total) => { setWords(current => [word, ...current.filter(item => item.id !== word.id)]); ok(`"${word.term}" үг хадгалагдлаа. Одоо ${total} үг байна.`); }} /> : null}
-      {panel === "import" ? <ImportPanel userId={userId} decks={decks} room={room} full={full} onSaved={imported} onClose={() => setPanel(null)} /> : null}
-    </div>
+    {/* Adding words, the file scan, the bank space and every delete open as modals (owner request 2026-11-15). */}
+    {panel === "add" ? <AddPanel decks={decks} full={full} limit={limit} onClose={() => setPanel(null)}
+      onAdded={(word, total) => { setWords(current => [word, ...current.filter(item => item.id !== word.id)]); ok(`"${word.term}" үг хадгалагдлаа. Одоо ${total} үг байна.`); }} /> : null}
+    {panel === "import" ? <ImportPanel userId={userId} decks={decks} room={room} full={full} onSaved={imported} onClose={() => setPanel(null)} confirm={confirm} /> : null}
+    {panel === "space" ? <SpacePanel space={space} onClose={() => setPanel(null)}
+      onBought={(next, added) => { setSpace(next); setPanel(null); ok(added ? `Үгсийн сангийн багтаамж ${number(added)} үгээр нэмэгдлээ. Одоо ${number(next.limit)} үг хадгална.` : `Энэ худалдан авалт аль хэдийн хийгдсэн. Багтаамж ${number(next.limit)} үг.`); }} /> : null}
+    {asking ? <ConfirmModal request={asking.request} onAnswer={value => { asking.answer(value); setAsking(null); }} /> : null}
 
     <Library words={words} decks={decks} now={now} canSpeak={canSpeak} actions={actions} onAdd={() => toggle("add")} onImport={() => toggle("import")} />
   </div>;
@@ -232,6 +226,8 @@ function AddPanel({ decks, full, limit, onAdded, onClose }: {
   const [deckId, setDeckId] = useState("");
   const [adding, setAdding] = useState(false);
   const [error, setError] = useState("");
+  // The page notice sits behind the backdrop, so the modal says what was saved while the student keeps adding.
+  const [saved, setSaved] = useState("");
   const termInput = useRef<HTMLInputElement>(null);
 
   async function add(event: FormEvent) {
@@ -239,12 +235,13 @@ function AddPanel({ decks, full, limit, onAdded, onClose }: {
     if (adding) return;
     const cleanTerm = term.trim(), cleanTranslation = translation.trim();
     if (!cleanTerm || !cleanTranslation) return;
-    setAdding(true); setError("");
+    setAdding(true); setError(""); setSaved("");
     try {
       const data = await sendJson<{ word: VocabularyWord; total: number }>(VOCABULARY_API, {
         term: cleanTerm, translation: cleanTranslation, example: example.trim(), ...(deckId ? { deckId } : {}),
       });
       onAdded(data.word, data.total);
+      setSaved(`“${data.word.term}” хадгалагдлаа · одоо ${number(data.total)} үг.`);
       setTerm(""); setTranslation(""); setExample("");
       termInput.current?.focus();
     } catch (reason) {
@@ -252,7 +249,7 @@ function AddPanel({ decks, full, limit, onAdded, onClose }: {
     } finally { setAdding(false); }
   }
 
-  return <section className={styles.panel} aria-labelledby="voc-add-heading" data-panel="add">
+  return <Modal labelledBy="voc-add-heading" onClose={onClose} busy={adding} size="narrow"><section className={styles.panel} aria-labelledby="voc-add-heading" data-panel="add">
     <div className={styles.panelHead}>
       <span className={styles.panelIcon} aria-hidden="true"><Icon name="plus" size={19} /></span>
       <div><h2 id="voc-add-heading">Шинэ үг</h2><p>Үг, орчуулгаа бичээд сандаа нэмээрэй. Нэмсний дараа дараагийн үгээ шууд бичиж болно.</p></div>
@@ -260,7 +257,7 @@ function AddPanel({ decks, full, limit, onAdded, onClose }: {
     </div>
     <form className={styles.form} onSubmit={add}>
       <label className={styles.field}><span>Үг эсвэл хэллэг</span>
-        <input ref={termInput} value={term} onChange={event => setTerm(event.target.value)} maxLength={VOCABULARY_LIMITS.term} placeholder="жишээ нь: resilient" autoComplete="off" required disabled={adding} autoFocus />
+        <input ref={termInput} value={term} onChange={event => setTerm(event.target.value)} maxLength={VOCABULARY_LIMITS.term} placeholder="жишээ нь: resilient" autoComplete="off" required disabled={adding} data-autofocus="" />
       </label>
       <label className={styles.field}><span>Орчуулга</span>
         <input value={translation} onChange={event => setTranslation(event.target.value)} maxLength={VOCABULARY_LIMITS.translation} placeholder="жишээ нь: тэсвэртэй, уян хатан" autoComplete="off" required disabled={adding} />
@@ -272,6 +269,7 @@ function AddPanel({ decks, full, limit, onAdded, onClose }: {
         <select value={deckId} onChange={event => setDeckId(event.target.value)} disabled={adding}><option value="">Багцгүй</option>{decks.map(deck => <option key={deck.id} value={deck.id}>{deck.name}</option>)}</select>
       </label>
       {error ? <p className={styles.error} role="alert">{error}</p> : null}
+      {saved ? <p className={`${styles.status} ${styles.addSaved}`} role="status">{saved}</p> : null}
       <div className={styles.formFoot}>
         <p className={styles.fine}>Үнэгүй бүртгэлд {number(VOCABULARY_LIMITS.freeWords)} үг{UPGRADE.plans.length && limit < UPGRADE.words ? `, ${UPGRADE.plans.join(" эсвэл ")} багцтай бол ${number(UPGRADE.words)} үг` : ""} хадгална.</p>
         <button type="submit" className={styles.primary} disabled={adding || full || !term.trim() || !translation.trim()} aria-busy={adding}>
@@ -279,5 +277,5 @@ function AddPanel({ decks, full, limit, onAdded, onClose }: {
         </button>
       </div>
     </form>
-  </section>;
+  </section></Modal>;
 }

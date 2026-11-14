@@ -6,7 +6,7 @@
  * - plan: one active plan's credits for its current subscription term. Each month of the term adds the
  *   plan's credits when that month begins; unused credits carry over while the plan is renewed and lapse
  *   only when the subscription ends (owner rule, 2026-11-09).
- * - wallet: purchased credits; they never lapse.
+ * - wallet: purchased ("yellow") credits; they never lapse. Only they buy permanent vocabulary space.
  *
  * Credits are taken from whatever lapses first, purchased credits last, and a refund returns them to the
  * place they came from.
@@ -88,21 +88,22 @@ export function returnParts(parts: readonly ChargePart[], amount: number) {
 /**
  * The figures the page shows: `balance` is every credit available now; `allowance` is what the month and
  * the plan terms hold plus the purchased credits still unspent (so buying more fills the meter rather than
- * stretching it), and `used` is what the month and plan terms have spent.
+ * stretching it), and `used` is what the month and plan terms have spent. `yellow` is the purchased ("yellow")
+ * credits still unspent, shown apart from the normal ones (owner rule 2026-11-13); they are part of `balance`.
  */
 export function creditTotals(buckets: readonly Bucket[]) {
-  let balance = 0, allowance = 0, used = 0;
+  let balance = 0, allowance = 0, used = 0, yellow = 0;
   for (const bucket of buckets) {
     balance += available(bucket);
-    if (bucket.kind === "wallet") allowance += available(bucket);
+    if (bucket.kind === "wallet") { allowance += available(bucket); yellow += available(bucket); }
     else { allowance += Math.max(0, bucket.capacity); used += Math.max(0, bucket.used); }
   }
-  return { balance, allowance, used };
+  return { balance, allowance, used, yellow };
 }
 
-/** The meter after a charge keeps `parts`: spent credits leave the balance; spent purchased credits also leave the allowance. */
-export function totalsAfter(before: { balance: number; allowance: number }, parts: readonly ChargePart[]) {
+/** The meter after a charge keeps `parts`: spent credits leave the balance; spent purchased credits also leave the allowance and the yellow credits. */
+export function totalsAfter(before: { balance: number; allowance: number; yellow: number }, parts: readonly ChargePart[]) {
   const spent = parts.reduce((sum, part) => sum + part.credits, 0);
   const wallet = parts.reduce((sum, part) => sum + (part.kind === "wallet" ? part.credits : 0), 0);
-  return { balance: Math.max(0, before.balance - spent), allowance: Math.max(0, before.allowance - wallet) };
+  return { balance: Math.max(0, before.balance - spent), allowance: Math.max(0, before.allowance - wallet), yellow: Math.max(0, before.yellow - wallet) };
 }

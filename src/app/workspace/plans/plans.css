@@ -1,6 +1,5 @@
 /* /workspace/plans: a comparison-first pricing page inside the Workspace (its page header is .wsp-page-head).
    Scoped under .pricing-*; text stays at the Workspace's readable scale (12px and up). */
-.pricing-terms-note { max-width: 78ch; margin: 30px 0 0; padding-top: 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12.5px; line-height: 1.75; }
 
 /* Compact pricing layout kept when the rest of the site returned to the rich scale. */
 .pricing-page .pricing-card { padding: 20px; border-radius: 18px; }
@@ -33,20 +32,18 @@
 .pricing-section-head > p { max-width: 40ch; margin: 0; font-size: 12px; line-height: 1.75; color: var(--muted); text-align: right; }
 
 /* Four cards: the free account, then the three plans. Two per row once four no longer fit beside the rail. */
-.pricing-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; align-items: stretch; }
-@media (max-width: 1320px) { .pricing-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.pricing-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; align-items: stretch; }
+@media (max-width: 1100px) { .pricing-grid { grid-template-columns: minmax(0, 1fr); } }
 .pricing-card[data-program="free"] .pricing-symbol { background: color-mix(in srgb, var(--ink) 7%, transparent); color: var(--ink); font-size: 21px; }
 .pricing-card { position: relative; display: flex; flex-direction: column; min-width: 0; padding: 26px; border: 1px solid var(--line); border-radius: 22px; background: color-mix(in srgb, var(--surface) 82%, transparent); overflow: hidden; }
-.pricing-card[data-featured] { border-color: color-mix(in srgb, #42a97c 48%, var(--line)); background: linear-gradient(165deg, color-mix(in srgb, var(--surface) 88%, #42a97c 12%), var(--surface) 54%); }
-.pricing-card[data-active] { border-color: color-mix(in srgb, #42a97c 65%, var(--line)); box-shadow: inset 0 0 0 1px color-mix(in srgb, #42a97c 30%, transparent); }
+.pricing-card[data-featured] { border-color: color-mix(in srgb, var(--blue) 48%, var(--line)); background: linear-gradient(165deg, color-mix(in srgb, var(--surface) 92%, var(--blue) 8%), var(--surface) 54%); }
+.pricing-card[data-active] { border-color: color-mix(in srgb, var(--blue) 65%, var(--line)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--blue) 30%, transparent); }
 .pricing-card-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-bottom: 20px; border-bottom: 1px solid var(--line); }
 .pricing-symbol { display: grid; place-items: center; width: 45px; height: 45px; border-radius: 13px; background: var(--sky); color: var(--blue); font-family: Georgia, serif; font-size: 25px; line-height: 1; }
-.pricing-card[data-featured] .pricing-symbol { background: color-mix(in srgb, #42a97c 16%, transparent); color: #6fd3a9; }
-.pricing-card[data-program="ielts"] .pricing-symbol { background: var(--purple); color: #c8a8ef; }
+.pricing-card[data-featured] .pricing-symbol { background: color-mix(in srgb, var(--blue) 16%, transparent); color: var(--blue); }
+.pricing-card[data-program="ielts"] .pricing-symbol { background: color-mix(in srgb, var(--blue) 16%, transparent); color: var(--blue); }
 .pricing-card .status { text-align: right; line-height: 1.5; border: 1px solid var(--line); background: color-mix(in srgb, var(--ink) 4%, transparent); color: var(--ink); }
-.pricing-card[data-active] .status { border-color: color-mix(in srgb, #42a97c 45%, var(--line)); background: color-mix(in srgb, #42a97c 12%, transparent); color: var(--ink); }
-:root[data-theme="light"] .pricing-card[data-featured] .pricing-symbol { background: #e6f5ee; color: #176a4b; }
-:root[data-theme="light"] .pricing-card[data-program="ielts"] .pricing-symbol { background: #f1ecff; color: #7052a0; }
+.pricing-card[data-active] .status { border-color: color-mix(in srgb, var(--blue) 45%, var(--line)); background: color-mix(in srgb, var(--blue) 12%, transparent); color: var(--ink); }
 .pricing-eyebrow { margin: 22px 0 8px; font-family: var(--font-mono); font-size: 9px; letter-spacing: .11em; text-transform: uppercase; color: var(--muted); }
 .pricing-card h3 { margin: 0; min-height: 2.16em; font-size: clamp(24px, 2.4vw, 31px); letter-spacing: -.03em; line-height: 1.08; }
 .pricing-audience { min-height: 38px; margin: 9px 0 0; font-size: 12px; line-height: 1.6; color: var(--muted); }
@@ -55,8 +52,7 @@
 .pricing-price span { font-size: 13px; color: var(--muted); }
 .pricing-features { display: grid; gap: 10px; flex: 1; margin: 0; padding: 0; list-style: none; }
 .pricing-features li { display: flex; align-items: flex-start; gap: 9px; font-size: 12px; line-height: 1.65; }
-.pricing-features li > span { flex: 0 0 16px; color: #6fd3a9; font-size: 11px; }
-:root[data-theme="light"] .pricing-features li > span { color: #176a4b; }
+.pricing-features li > span { flex: 0 0 16px; color: var(--blue); font-size: 11px; }
 .pricing-card-foot { display: grid; gap: 10px; margin-top: 24px; }
 .pricing-expiry { min-height: 16px; margin: 0; font-size: 12.5px; color: var(--muted); }
 .pricing-card .button { width: 100%; justify-content: space-between; }
@@ -67,12 +63,13 @@
 .pricing-table th, .pricing-table td { padding: 13px 18px; border-top: 1px solid var(--line); font-size: 13.5px; vertical-align: middle; }
 .pricing-table thead th { border-top: 0; background: color-mix(in srgb, var(--paper) 44%, transparent); font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
 .pricing-table thead th:first-child { width: 26%; }
+/* Plan names sit over their centred values. */
+.pricing-table thead th:not(:first-child) { text-align: center; }
 .pricing-table tbody th { font-weight: 500; color: var(--muted); }
 .pricing-table tbody td { text-align: center; color: var(--ink); }
 .pricing-table tbody td:first-of-type { color: var(--ink); }
 .pricing-table td[data-out] { color: var(--muted); }
-.pricing-check { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: color-mix(in srgb, #42a97c 18%, transparent); color: #6fd3a9; font-size: 12px; }
-:root[data-theme="light"] .pricing-check { color: #176a4b; }
+.pricing-check { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: color-mix(in srgb, var(--blue) 16%, transparent); color: var(--blue); font-size: 12px; }
 .pricing-table tfoot th, .pricing-table tfoot td { border-top: 1px solid var(--line); background: color-mix(in srgb, var(--paper) 30%, transparent); font-size: 14px; }
 .pricing-table tfoot td { text-align: center; }
 
@@ -143,3 +140,17 @@
   .pricing-single-price { justify-items: start; padding: 16px 0 0; border-left: 0; border-top: 1px solid var(--line); }
   .pricing-terms { grid-template-columns: minmax(0, 1fr); gap: 24px; }
 }
+
+/* Three plans (2026-11-13): the Гадаад хэл plan's monthly picks, a retired plan still running, and purchased
+   "yellow" credits shown apart from the month's and plan's credits. */
+.pricing-page { --pricing-yellow-dot: #f5c518; --pricing-yellow-ink: #ffd95e; --pricing-yellow-soft: color-mix(in srgb, #f5c518 12%, transparent); --pricing-yellow-line: color-mix(in srgb, #f5c518 42%, var(--line)); }
+:root[data-theme="light"] .pricing-page { --pricing-yellow-ink: #8a6500; --pricing-yellow-soft: #fff7d6; --pricing-yellow-line: #f3dd8a; }
+.pricing-card[data-program="language"] .pricing-symbol { background: color-mix(in srgb, var(--blue) 16%, transparent); color: var(--blue); }
+.pricing-picks { margin: 16px 0 0; padding: 9px 12px; border: 1px solid var(--line); border-radius: 12px; color: var(--ink); font-size: 12.5px; line-height: 1.5; }
+.pricing-picks[data-full] { border-color: var(--pricing-yellow-line); background: var(--pricing-yellow-soft); }
+.pricing-yellow { border-color: var(--pricing-yellow-line); }
+.pricing-yellow h2 { display: flex; align-items: center; gap: 9px; }
+.pricing-yellow-dot { display: inline-block; flex-shrink: 0; width: 11px; height: 11px; border-radius: 50%; background: var(--pricing-yellow-dot); box-shadow: 0 0 0 3px var(--pricing-yellow-soft); }
+.pricing-yellow-balance { display: inline-flex; align-items: center; gap: 6px; margin-left: 10px; padding: 2px 10px; border: 1px solid var(--pricing-yellow-line); border-radius: 999px; background: var(--pricing-yellow-soft); color: var(--pricing-yellow-ink); }
+.pricing-yellow-balance strong { color: var(--pricing-yellow-ink); }
+.pricing-yellow-balance .pricing-yellow-dot { width: 8px; height: 8px; box-shadow: none; }

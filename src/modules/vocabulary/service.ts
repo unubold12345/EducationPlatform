@@ -11,8 +11,8 @@ import { extractDocument } from "@/modules/documents/extract";
 import { readUploadedSource } from "@/modules/documents/upload";
 import {
   bankFullMessage, cleanUserRequest, isDeckColor, isImportKind, isImportLanguage, isImportLevel, isVocabularyId, parseGeneratedWords,
-  readBulkRequest, readDeckFields, readImportCount, readReview, readWordFields, termKey, vocabularyCapacity, vocabularyMessages,
-  VOCABULARY_LIMITS, type ChatMessage, type GeneratedWord, type ImportKind, type ImportLanguage, type ImportLevel, type ImportReply,
+  readBulkRequest, readDeckFields, readImportCount, readReview, readSpaceRequest, readWordFields, termKey, vocabularyCapacity, vocabularyMessages,
+  MAX_EXTRA_WORDS, VOCABULARY_LIMITS, VOCABULARY_SPACE, type VocabularySpace, type ChatMessage, type GeneratedWord, type ImportKind, type ImportLanguage, type ImportLevel, type ImportReply,
   type StudyUpdate, type VocabularyDeck, type VocabularyWord, type WordFields,
 } from "./contracts";
 import { nextStudy, type StudyGrade } from "./study";
@@ -67,10 +67,62 @@ const field = (form: FormData, name: string) => {
   return typeof value === "string" ? value : null;
 };
 
-/** The student's bank size from their active plans (free bank without one). */
+type SpaceReader = Pick<ReturnType<typeof getDb>, "vocabularyExpansion">;
+/** Permanent space the student bought with yellow credits (the sum of their purchases). */
+async function extraWords(userId: string, db: SpaceReader = getDb()) {
+  return (await db.vocabularyExpansion.aggregate({ where: { userId }, _sum: { words: true } }))._sum.words ?? 0;
+}
+/** The student's bank size: their active plans' bank (free bank without one) plus the permanent space they bought. */
 export async function vocabularyLimit(userId: string, now = new Date()) {
-  const rows = await getDb().subscription.findMany({ where: { userId, startsAt: { lte: now }, endsAt: { gt: now } }, select: { program: true } });
-  return vocabularyCapacity(rows.map(row => row.program));
+  const [rows, extra] = await Promise.all([
+    getDb().subscription.findMany({ where: { userId, startsAt: { lte: now }, endsAt: { gt: now } }, select: { program: true } }),
+    extraWords(userId),
+  ]);
+  return vocabularyCapacity(rows.map(row => row.program), extra);
+}
+
+/** The bank's size and its parts, the yellow credits left and how much more space can still be bought. */
+export async function vocabularySpace(userId: string, now = new Date()): Promise<VocabularySpace> {
+  const db = getDb();
+  const [rows, extra, wallet] = await Promise.all([
+    db.subscription.findMany({ where: { userId, startsAt: { lte: now }, endsAt: { gt: now } }, select: { program: true } }),
+    extraWords(userId),
+    db.creditWallet.findUnique({ where: { userId }, select: { purchased: true, used: true } }),
+  ]);
+  const programs = rows.map(row => row.program);
+  return {
+    limit: vocabularyCapacity(programs, extra), base: vocabularyCapacity(programs), extra,
+    yellow: Math.max(0, (wallet?.purchased ?? 0) - (wallet?.used ?? 0)), room: Math.max(0, MAX_EXTRA_WORDS - extra),
+  };
+}
+
+/**
+ * Buys permanent vocabulary space with yellow (purchased) credits only: `packs` × 100 words for `packs` × 200 credits.
+ * It runs under the same per-student wallet lock as AI charges, takes the credits with a compare-and-set, and records
+ * the purchase by the page's `requestId`, so a repeated request buys once. Nothing is spent when it fails.
+ */
+export async function buyVocabularySpace(userId: string, body: unknown) {
+  const input = readSpaceRequest(body);
+  if (!input) throw new ApiError(400, `1–${VOCABULARY_SPACE.maxPacks} багц (${VOCABULARY_SPACE.words} үг тус бүр) сонгоно уу.`);
+  const words = input.packs * VOCABULARY_SPACE.words, credits = input.packs * VOCABULARY_SPACE.credits;
+  const db = getDb();
+  // ON CONFLICT DO NOTHING: the wallet row is the lock, so it must exist first.
+  await db.creditWallet.createMany({ data: [{ userId }], skipDuplicates: true });
+  const bought = await db.$transaction(async tx => {
+    await tx.$queryRaw`SELECT "userId" FROM "CreditWallet" WHERE "userId" = ${userId} FOR UPDATE`;
+    if (await tx.vocabularyExpansion.findUnique({ where: { userId_requestId: { userId, requestId: input.requestId } }, select: { id: true } })) return false;
+    const extra = await extraWords(userId, tx);
+    if (extra + words > MAX_EXTRA_WORDS) throw new ApiError(409, `Байнгын багтаамж хамгийн ихдээ ${MAX_EXTRA_WORDS.toLocaleString("en-US")} үг. Танд ${Math.max(0, MAX_EXTRA_WORDS - extra).toLocaleString("en-US")} үгийн зай нэмэх боломж үлдсэн.`);
+    const taken = await tx.$executeRaw`UPDATE "CreditWallet" SET "used" = "used" + ${credits}, "updatedAt" = NOW() WHERE "userId" = ${userId} AND "used" + ${credits} <= "purchased"`;
+    if (!taken) {
+      const wallet = await tx.creditWallet.findUnique({ where: { userId }, select: { purchased: true, used: true } });
+      const left = Math.max(0, (wallet?.purchased ?? 0) - (wallet?.used ?? 0));
+      throw new ApiError(402, `Кредит хүрэлцэхгүй байна: ${credits.toLocaleString("en-US")} кредит хэрэгтэй, танд ${left.toLocaleString("en-US")} байна. Багцууд хуудаснаас кредит авна уу.`);
+    }
+    await tx.vocabularyExpansion.create({ data: { userId, requestId: input.requestId, words, credits } });
+    return true;
+  });
+  return { ...await vocabularySpace(userId), added: bought ? words : 0, spent: bought ? credits : 0, repeated: !bought };
 }
 
 /** The signed-in student's own bank, newest first. Words above a lapsed plan's size are still listed. */
@@ -87,10 +139,10 @@ export async function listDecks(userId: string): Promise<VocabularyDeck[]> {
   return rows.map(publicDeck);
 }
 
-/** The page's first read: the words, their decks, the bank size and the moment "due" is measured from. */
+/** The page's first read: the words, their decks, the bank size (with its bought space) and the moment "due" is measured from. */
 export async function vocabularyBank(userId: string) {
-  const [words, decks, limit] = await Promise.all([listVocabulary(userId), listDecks(userId), vocabularyLimit(userId)]);
-  return { words, decks, limit, now: Date.now() };
+  const [words, decks, space] = await Promise.all([listVocabulary(userId), listDecks(userId), vocabularySpace(userId)]);
+  return { words, decks, limit: space.limit, space, now: Date.now() };
 }
 
 /** A deck id from a request is only ever used when the deck belongs to this student. */

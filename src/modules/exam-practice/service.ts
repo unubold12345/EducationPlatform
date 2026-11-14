@@ -6,7 +6,7 @@ import { Prisma } from "@/generated/prisma/client";
 import { getExam } from "@/modules/content/published";
 import { activeTimedSitting } from "@/modules/exams/active-sitting";
 import { practiceDuringMockAllowed } from "@/lib/local-pilot";
-import { hasSubscription } from "@/modules/subscriptions/access";
+import { mayUseMock } from "@/modules/subscriptions/mock-access";
 import { deepseekChat } from "@/modules/tutor/provider";
 import { chargeCredits } from "@/modules/credits/service";
 import { AI_ACTIONS } from "@/modules/credits/pricing";
@@ -27,13 +27,14 @@ async function sourceFor(slug: string): Promise<PracticeSource | null> {
 export async function practiceAllowed(userId: string, slug: string) {
   const definition = await getExam(slug);
   if (!definition) return false;
-  return Boolean(await getDb().mockPurchase.findFirst({ where: { userId, examSlug: slug, status: "PAID" }, select: { id: true } })) || await hasSubscription(userId, definition.program);
+  // Free, bought, an unlimited plan, or picked this Гадаад хэл plan month (mock-access.ts).
+  return mayUseMock(userId, slug, definition.program);
 }
 // Entitlement and the open-sitting block are checked on every read, save, check, audio and AI request.
 export async function requirePractice(userId: string, slug: string): Promise<PracticeSource> {
   const source = await sourceFor(slug);
   if (!source) throw new ApiError(404, "Шалгалт олдсонгүй.");
-  if (!await practiceAllowed(userId, slug)) throw new ApiError(402, "Энэ шалгалтын эрх эсвэл сарын багц шаардлагатай.");
+  if (!await practiceAllowed(userId, slug)) throw new ApiError(402, "Энэ шалгалтын эрх, сарын багц эсвэл энэ сарын сонголт шаардлагатай.");
   // A local developer can switch this block off (DEV_PRACTICE_DURING_MOCK); a hosted server never can.
   const sitting = practiceDuringMockAllowed() ? null : await activeTimedSitting(userId);
   if (sitting) throw new TimedSittingOpen(sitting.href);

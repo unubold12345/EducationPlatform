@@ -32,4 +32,3 @@ repository at the same time. The permanent record stays in [OPERATIONS.md](./OPE
 
 | Agent | Started (UB) | Task | Files / areas | Shared resources | Status |
 | --- | --- | --- | --- | --- | --- |
-| Claude Code (Claude Opus 5.5), mock fix session (push) | 2026-11-13 22:40 | Owner asked to push and deploy the mock fixes and all other uncommitted work | every uncommitted file except ignored ones; `docs/OPERATIONS.md` entry at the end | `git` (commit and push, which deploys to Vercel production); `build + 3001` and `database` only for the pre-push check, after the owner's OK (nothing was listening on 3001/3005/3006 or 51214 at 22:35) | check:all passed 22:54; committing and pushing |

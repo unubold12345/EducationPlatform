@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState, type DragEvent } from "react";
+import { useEffect, useRef, useState, type DragEvent, type ReactNode } from "react";
 import { Icon } from "@/modules/workspace/icons";
 import {
   deckNameFromSource, IMPORT_COUNT, IMPORT_KINDS, IMPORT_LANGUAGES, IMPORT_LEVELS, VOCABULARY_LIMITS,
@@ -7,10 +7,12 @@ import {
 } from "./contracts";
 import { failure, readStored, request, sendJson, VOCABULARY_API, writeStored } from "./api";
 import { Glyph } from "./glyphs";
+import { Modal, type Confirm } from "./modal";
 import styles from "./vocabulary.module.css";
 import { CreditCost, useCredits } from "@/modules/credits/client";
 import { readReceipt, vocabularyImportHold } from "@/modules/credits/pricing";
 import { MaterialImages, useMaterialPick } from "@/modules/ai-images/client";
+import { ProcessingOverlay } from "@/modules/workspace/processing";
 
 const ACCEPT = ".pdf,.docx,.pptx,.txt,.md,.csv,image/*";
 const ALLOWED = new Set(["pdf", "docx", "pptx", "txt", "md", "csv"]);
@@ -31,8 +33,9 @@ function validDraft(value: Draft | null): value is Draft {
     && value!.items.every(item => item && typeof item.term === "string" && typeof item.translation === "string" && typeof item.example === "string" && typeof item.key === "string");
 }
 
-export function ImportPanel({ userId, decks, room, full, onSaved, onClose }: {
-  userId: string; decks: VocabularyDeck[]; room: number; full: boolean; onSaved: (saved: SavedImport) => void; onClose: () => void;
+/** The file scan and its review list, in a modal over the vocabulary page; an unsaved list survives closing it. */
+export function ImportPanel({ userId, decks, room, full, onSaved, onClose, confirm }: {
+  userId: string; decks: VocabularyDeck[]; room: number; full: boolean; onSaved: (saved: SavedImport) => void; onClose: () => void; confirm: Confirm;
 }) {
   const material = useMaterialPick({ extensions: ALLOWED, maxBytes: VOCABULARY_LIMITS.fileBytes, documentHint: "PDF, Word, PowerPoint, TXT, MD, CSV файл эсвэл хуудасны зураг сонгоно уу." });
   const picked = material.pick;
@@ -125,21 +128,24 @@ export function ImportPanel({ userId, decks, room, full, onSaved, onClose }: {
       setError(failure(reason, "Үгсийг хадгалж чадсангүй. Дахин оролдоно уу."));
     } finally { setSaving(false); }
   }
-  function discard() {
+  async function discard() {
     if (!draft || saving) return;
-    if (!window.confirm("Олдсон үгсийн жагсаалтыг хаях уу? Хадгалаагүй үгс устана.")) return;
+    const answer = await confirm({ title: "Олдсон үгсийн жагсаалтыг хаях уу?", text: "Хадгалаагүй үгс устана. Буцаах боломжгүй.", choices: [{ value: "discard", label: "Жагсаалтыг хаях", tone: "danger" }] });
+    if (answer !== "discard") return;
     keep(null); setReceipt(""); setError("");
   }
+  const modal = (content: ReactNode) => <Modal labelledBy={draft ? "voc-review-heading" : "voc-import-heading"} onClose={onClose} busy={pending || saving}>{content}</Modal>;
 
   if (draft) {
     const allPicked = draft.items.every(item => item.picked);
-    return <section className={`${styles.panel} ${styles.reviewPanel}`} aria-labelledby="voc-review-heading" data-panel="review">
+    return modal(<section className={`${styles.panel} ${styles.reviewPanel}`} aria-labelledby="voc-review-heading" data-panel="review">
       <div className={styles.panelHead}>
         <span className={styles.panelIcon} aria-hidden="true"><Icon name="check" size={19} /></span>
         <div>
           <h2 id="voc-review-heading">{draft.items.length} шинэ үг олдлоо</h2>
           <p>{draft.source}{draft.duplicates ? ` · ${draft.duplicates} үг аль хэдийн санд байсан тул орхилоо` : ""}{receipt ? ` · ${receipt}` : ""}</p>
         </div>
+        <button type="button" className={styles.rowAction} onClick={onClose} aria-label="Хаах" title="Хаах" disabled={saving}><Icon name="close" size={18} /></button>
       </div>
       <p className={styles.reviewLead}>Хадгалах үгээ сонгоод, орчуулгыг нь шалгаж засаарай. AI-ийн орчуулга үргэлж зөв байдаггүй.</p>
       <div className={styles.reviewBar}>
@@ -167,15 +173,17 @@ export function ImportPanel({ userId, decks, room, full, onSaved, onClose }: {
       {error ? <p className={styles.error} role="alert">{error}</p> : null}
       <div className={styles.reviewFoot}>
         <span>{chosen.length} / {draft.items.length} үг сонгосон</span>
-        <button type="button" className={styles.ghost} onClick={discard} disabled={saving}>Жагсаалтыг хаях</button>
+        <button type="button" className={styles.ghost} onClick={() => void discard()} disabled={saving}>Жагсаалтыг хаях</button>
         <button type="button" className={styles.primary} onClick={() => void save()} disabled={saving || !chosen.length || over > 0} aria-busy={saving}>
           {saving ? <><i className={styles.spinner} aria-hidden="true" />Хадгалж байна…</> : <><Icon name="check" size={17} />{chosen.length} үг хадгалах</>}
         </button>
       </div>
-    </section>;
+    </section>);
   }
 
-  return <section className={`${styles.panel} ${styles.importPanel}`} aria-labelledby="voc-import-heading" data-panel="import">
+  return modal(<section className={`${styles.panel} ${styles.importPanel}`} aria-labelledby="voc-import-heading" data-panel="import">
+    {/* While the file is being scanned the whole page waits (owner request 2026-11-15); `pending` clears on success, error and timeout. */}
+    <ProcessingOverlay open={pending} title="Үгсийг түүж байна…" detail="Файлыг уншиж, AI үгсийг түүж байна. 10–40 секунд орно." />
     <div className={styles.panelHead}>
       <span className={styles.panelIcon} aria-hidden="true"><Icon name="spark" size={19} /></span>
       <div><h2 id="voc-import-heading">Файлаас үг түүх</h2><p>AI файл эсвэл хуудасны зургаас үгсийг орчуулгын хамт олно. Та жагсаалтыг үзээд, хадгалах үгээ өөрөө сонгоно.</p></div>
@@ -228,7 +236,6 @@ export function ImportPanel({ userId, decks, room, full, onSaved, onClose }: {
         </label>
       </div>
     </div>
-    {pending ? <p className={styles.status} role="status">Файлыг уншиж, AI үгсийг түүж байна. 10–40 секунд орно.</p> : null}
     {error ? <p className={styles.error} role="alert">{error}</p> : null}
     <div className={styles.importFoot}>
       <p className={styles.hint}><Icon name="info" size={15} /><span>Файлд өөрийн орчуулга байвал түүнийг ашиглана. Бусад үгийг AI орчуулах тул хадгалахаасаа өмнө шалгаарай. Хугацаатай шалгалтын үеэр хаалттай.</span></p>
@@ -239,5 +246,5 @@ export function ImportPanel({ userId, decks, room, full, onSaved, onClose }: {
         </button>
       </div>
     </div>
-  </section>;
+  </section>);
 }

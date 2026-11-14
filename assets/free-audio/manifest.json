@@ -1,0 +1,276 @@
+{
+  "generator": "scripts/generate-free-audio.py",
+  "source": "Original synthetic practice audio for the free half-length mocks; Kokoro-82M v1.0, Apache-2.0",
+  "modelUrl": "https://huggingface.co/hexgrad/Kokoro-82M",
+  "model": {
+    "name": "onnx-community/Kokoro-82M-v1.0-ONNX",
+    "file": "onnx/model.onnx",
+    "sha256": "8fbea51ea711f2af382e88c833d9e288c6dc82ce5e98421ea61c058ce21a34cb"
+  },
+  "voiceTables": "node_modules/kokoro-js/voices/<voice>.bin",
+  "packs": {
+    "MockExmps/Free/ielts/ielts-academic-free-listening.json": "93a4f7c144eb4e92a7689e0d1e104ab536d457960625301f28fb54098d70a0d6",
+    "MockExmps/Free/ielts/ielts-academic-free.json": "f5c875791f1649b74894af5a8606da5a276cb8195a17d0b5b0dd6bd2d33c6a6d",
+    "MockExmps/Free/jlpt/jlpt-n5-free.json": "c3ce5dcb2dbf097ef87e953a1084e9f951f52147cb5c5843ad9a1cac3fcd6608",
+    "MockExmps/Free/jlpt/jlpt-n4-free.json": "eb4d5110390020219edcc10297c46be44124b0dc30cf29abd06165126ac51313",
+    "MockExmps/Free/hsk/hsk1-free.json": "751e39d89724ae9d79018d0a22c242e28f48fc5e8a161211e47791f1f559d5fa",
+    "MockExmps/HSK/mock-01/mock.json": "95f399fa3c9e5ec6c023b8cc37cc4f696f8221a84bc7b0f19882cd6cca3c1461"
+  },
+  "delivery": {
+    "ielts-academic-free": "One pace (1.0); 0.45 s after a turn, 1.0 s after narration; the script file's pause rows; spelled names read letter by letter, \"in 1987\" as a year.",
+    "jlpt": "Per mondai: 問題n and its instructions; per item n番, an 8-s preview (task, key points), the talk and question, then 12/12/8/6 s to answer; kana readings for 何を/何が/何で/何時/n時/曜日/誕生日.",
+    "hsk1-free": "Per part: task, worked example read twice; every item twice, 5 s after the first reading, 10 s after the second."
+  },
+  "mocks": {
+    "ielts-academic-free": {
+      "stage": "ielts-listening",
+      "stageSeconds": 900,
+      "audioSeconds": 566.686,
+      "checkSeconds": 333.314,
+      "questionTiming": "Each question from the first turn after the previous answer (or the start of its stretch of dialogue) to the end of the turn holding its evidence quote"
+    },
+    "jlpt-n5-free": {
+      "stage": "jlpt-l",
+      "stageSeconds": 900,
+      "audioSeconds": 443.763,
+      "checkSeconds": 456.237,
+      "questionTiming": "Each item from its number to the end of its closing question or last spoken answer"
+    },
+    "jlpt-n4-free": {
+      "stage": "jlpt-l",
+      "stageSeconds": 1080,
+      "audioSeconds": 561.023,
+      "checkSeconds": 518.977,
+      "questionTiming": "Each item from its number to the end of its closing question or last spoken answer"
+    },
+    "hsk1-free": {
+      "stage": "hsk-l",
+      "stageSeconds": 480,
+      "audioSeconds": 386.875,
+      "checkSeconds": 93.125,
+      "questionTiming": "Each item from its number to the end of its second reading"
+    }
+  },
+  "tracks": {
+    "ielts-academic-free-part-1.mp3": {
+      "slug": "ielts-academic-free",
+      "part": 1,
+      "seconds": 293.249,
+      "bytes": 1760060,
+      "sha256": "3c032744d110a2b98cea38678b99d15ac6cd316b3ef4ef8413dc875ac01a0486",
+      "scriptSha256": "7709f881d70a0a72c7a9ffcbd7d3bbb26a200029a92afcdd869fda0ba0c56220",
+      "voices": {
+        "Narrator": "bf_emma",
+        "Receptionist": "af_heart",
+        "Caller": "am_michael"
+      },
+      "speed": 1.0,
+      "generator": "scripts/generate-free-audio.py",
+      "date": "2026-11-14"
+    },
+    "ielts-academic-free-part-2.mp3": {
+      "slug": "ielts-academic-free",
+      "part": 2,
+      "seconds": 273.437,
+      "bytes": 1641260,
+      "sha256": "0725d8685e8f2072bdef91a1599626feafcddb129c5220c8e6bd1536138a4ac7",
+      "scriptSha256": "ab8d54a32bbe95442294296a7c339a7846e0c3e1d4f06ac14e47e5932a3dfed9",
+      "voices": {
+        "Narrator": "bf_emma",
+        "Coordinator": "bf_isabella"
+      },
+      "speed": 1.0,
+      "generator": "scripts/generate-free-audio.py",
+      "date": "2026-11-14"
+    },
+    "jlpt-n5-free-part-1.mp3": {
+      "slug": "jlpt-n5-free",
+      "part": 1,
+      "seconds": 159.915,
+      "bytes": 960140,
+      "sha256": "ad5cfba8d7da905e307e117545893f789f5d1b7d505fa2b3ce65f7bcd26efe77",
+      "scriptSha256": "650a888c5196c8b1f7b033226789cf7ec32681cb95d02894dd863d945f32c019",
+      "voices": {
+        "narrator": "jf_alpha",
+        "woman": "jf_tebukuro",
+        "man": "jm_kumo"
+      },
+      "speed": 0.9,
+      "generator": "scripts/generate-free-audio.py",
+      "date": "2026-11-14"
+    },
+    "jlpt-n5-free-part-2.mp3": {
+      "slug": "jlpt-n5-free",
+      "part": 2,
+      "seconds": 146.783,
+      "bytes": 881228,
+      "sha256": "d66ec6243fdab753b3d84f805da3383a056442039760ef7710105827f67c5ca5",
+      "scriptSha256": "e26589d33d06c09c3d785b072e9e7c61ff8d80e53fe2abcf0b6c8b51bcd86a21",
+      "voices": {
+        "narrator": "jf_alpha",
+        "man": "jm_kumo",
+        "woman": "jf_tebukuro"
+      },
+      "speed": 0.9,
+      "generator": "scripts/generate-free-audio.py",
+      "date": "2026-11-14"
+    },
+    "jlpt-n5-free-part-3.mp3": {
+      "slug": "jlpt-n5-free",
+      "part": 3,
+      "seconds": 62.199,
+      "bytes": 373772,
+      "sha256": "6f6663cf3c6ccd8cdd40b4d9800af72bb91a88b757d7df0fbea8104c2f70248f",
+      "scriptSha256": "ade556edfc4b4ac773dfe17851d231eb61d9cad5efae0380e5a7f75ff8d8ba90",
+      "voices": {
+        "narrator": "jf_alpha"
+      },
+      "speed": 0.9,
+      "generator": "scripts/generate-free-audio.py",
+      "date": "2026-11-14"
+    },
+    "jlpt-n5-free-part-4.mp3": {
+      "slug": "jlpt-n5-free",
+      "part": 4,
+      "seconds": 74.866,
+      "bytes": 449804,
+      "sha256": "0626a2e28ec8dd2973cbd7ef9d09be71abed846987e29fd1691af7c34ce282d3",
+      "scriptSha256": "f2aa39ac738986e16aefc1dc298b96ec34cd51c6ef788afd91e38343f5a0f028",
+      "voices": {
+        "narrator": "jf_alpha",
+        "man": "jm_kumo",
+        "woman": "jf_tebukuro"
+      },
+      "speed": 0.9,
+      "generator": "scripts/generate-free-audio.py",
+      "date": "2026-11-14"
+    },
+    "jlpt-n4-free-part-1.mp3": {
+      "slug": "jlpt-n4-free",
+      "part": 1,
+      "seconds": 218.749,
+      "bytes": 1313084,
+      "sha256": "d7e9145b8759bd3f491ac20280cb384ca27a11136d214a04b87411dff7175078",
+      "scriptSha256": "a70ce5aee676694ad5465fba128c4890caf205135d4bf799a35c9a10bb2397a7",
+      "voices": {
+        "narrator": "jf_alpha",
+        "woman": "jf_tebukuro",
+        "man": "jm_kumo"
+      },
+      "speed": 1.0,
+      "generator": "scripts/generate-free-audio.py",
+      "date": "2026-11-14"
+    },
+    "jlpt-n4-free-part-2.mp3": {
+      "slug": "jlpt-n4-free",
+      "part": 2,
+      "seconds": 190.484,
+      "bytes": 1143452,
+      "sha256": "b655a06eaf90c7d07612e0e58c10907915358e9898b6654cf9da6ec5f1e48301",
+      "scriptSha256": "9c952f67a83616e9d05d738910fa4dd61fb81a2de7cd6e6e28bacce58a12d615",
+      "voices": {
+        "narrator": "jf_alpha",
+        "man": "jm_kumo",
+        "woman": "jf_tebukuro"
+      },
+      "speed": 1.0,
+      "generator": "scripts/generate-free-audio.py",
+      "date": "2026-11-14"
+    },
+    "jlpt-n4-free-part-3.mp3": {
+      "slug": "jlpt-n4-free",
+      "part": 3,
+      "seconds": 60.641,
+      "bytes": 364412,
+      "sha256": "07173939acd7ee9ba71d7e81fbba1247750e1b3ffa1e89e52a6174562987b424",
+      "scriptSha256": "642b00b67c183128979a30b719e59f279deed548a7f2d878b3c7aebd52be59c0",
+      "voices": {
+        "narrator": "jf_alpha"
+      },
+      "speed": 1.0,
+      "generator": "scripts/generate-free-audio.py",
+      "date": "2026-11-14"
+    },
+    "jlpt-n4-free-part-4.mp3": {
+      "slug": "jlpt-n4-free",
+      "part": 4,
+      "seconds": 91.149,
+      "bytes": 547436,
+      "sha256": "4fe0555c9793ed250af44b8f77eb4ee76003af4af5623072275bd70d1c80ff2a",
+      "scriptSha256": "05aedd59d2b4ed87690e9f7d7f5c99162898ea316f364d1bfdd06eb6a1e94e9b",
+      "voices": {
+        "narrator": "jf_alpha",
+        "woman": "jf_tebukuro",
+        "man": "jm_kumo"
+      },
+      "speed": 1.0,
+      "generator": "scripts/generate-free-audio.py",
+      "date": "2026-11-14"
+    },
+    "hsk1-free-part-1.mp3": {
+      "slug": "hsk1-free",
+      "part": 1,
+      "seconds": 99.955,
+      "bytes": 600284,
+      "sha256": "7c826b0c4d1463bba8359f47d196ee5203edf0244eaf1c7785335764ad2acc12",
+      "scriptSha256": "aa8e6b474128cf56215a21bb8bfb1345c025e156120afb9b5f331b2a8a25c2c8",
+      "voices": {
+        "narrator": "zm_yunxia",
+        "woman": "zf_xiaoyi",
+        "man": "zm_yunxi"
+      },
+      "speed": 0.9,
+      "generator": "scripts/generate-free-audio.py",
+      "date": "2026-11-14"
+    },
+    "hsk1-free-part-2.mp3": {
+      "slug": "hsk1-free",
+      "part": 2,
+      "seconds": 93.63,
+      "bytes": 562412,
+      "sha256": "4cf27ab2b7383a53d82d16dcb9ff59418d418a56ed2d796dcf3309de1256d9d8",
+      "scriptSha256": "b978eabd90b50df03736302feb0b59eb6ebac96b221612dbc1c14328df10b6b9",
+      "voices": {
+        "narrator": "zm_yunxia",
+        "woman": "zf_xiaoyi",
+        "man": "zm_yunxi"
+      },
+      "speed": 0.9,
+      "generator": "scripts/generate-free-audio.py",
+      "date": "2026-11-14"
+    },
+    "hsk1-free-part-3.mp3": {
+      "slug": "hsk1-free",
+      "part": 3,
+      "seconds": 89.07,
+      "bytes": 535052,
+      "sha256": "3a2bf9ee19da56160bc9b9711a2f2d8a29fcc9b34b4e949f369d748558c4cac7",
+      "scriptSha256": "7a0542d69eb9ba0c154233b5737867191cf955b1908c123045f19975129f66a2",
+      "voices": {
+        "narrator": "zm_yunxia",
+        "woman": "zf_xiaoyi",
+        "man": "zm_yunxi"
+      },
+      "speed": 0.9,
+      "generator": "scripts/generate-free-audio.py",
+      "date": "2026-11-14"
+    },
+    "hsk1-free-part-4.mp3": {
+      "slug": "hsk1-free",
+      "part": 4,
+      "seconds": 104.22,
+      "bytes": 625916,
+      "sha256": "65a2e40c737db623fac734f4d5a92e906271b97f5c8f4d4a976902c058bce7c7",
+      "scriptSha256": "7262331530e2a35d5a51e72f107793bee757b5a1cf4a8e5b4e5e4dcf0f9fe671",
+      "voices": {
+        "narrator": "zm_yunxia",
+        "woman": "zf_xiaoyi",
+        "man": "zm_yunxi"
+      },
+      "speed": 0.9,
+      "generator": "scripts/generate-free-audio.py",
+      "date": "2026-11-14"
+    }
+  },
+  "humanListeningReview": false
+}

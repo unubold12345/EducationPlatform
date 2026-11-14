@@ -3,10 +3,11 @@ import { getDb } from "@/lib/db";
 import { ApiError } from "@/lib/api";
 import { examDefinitions } from "@/modules/exams/definitions";
 import { entranceMocks } from "@/modules/exams/entrance/catalog";
+import { freeMocks } from "@/modules/exams/free/catalog";
 import { jlptMocks } from "@/modules/exams/jlpt/catalog";
 import { hskMocks } from "@/modules/exams/hsk/catalog";
 import { guidedTasks } from "@/modules/workshops/guided";
-import { addCalendarMonth, findSubscriptionPlan, validPlanPrice } from "@/modules/subscriptions/plans";
+import { addCalendarMonth, findAnyPlan, findSubscriptionPlan, validPlanPrice } from "@/modules/subscriptions/plans";
 import { revalidatePath } from "next/cache";
 import { authFeatures, isDemoEmail } from "@/lib/auth-features";
 import { CREDIT_ALLOWANCE_LIMITS, CREDIT_GRANT_LIMITS, CREDIT_PACK_LIMITS, creditPeriod, defaultAllowances, isAllowanceKey, validAllowance, validCreditPack, validGrant } from "@/modules/credits/pricing";
@@ -25,6 +26,8 @@ export function contentCatalog() {
     ...entranceMocks.map(exam=>({key:exam.slug,title:exam.title,program:"entrance" as const,kind:"ЭЕШ mock",count:exam.questionCount,href:"/exams/"+exam.slug})),
     ...jlptMocks.map(exam=>({key:exam.slug,title:exam.title,program:"jlpt" as const,kind:"JLPT mock",count:exam.questions,href:"/exams/"+exam.slug})),
     ...hskMocks.map(exam=>({key:exam.slug,title:exam.title,program:"hsk" as const,kind:"HSK mock",count:exam.questions,href:"/exams/"+exam.slug})),
+    // The free half-length mocks can be fixed like any other mock (published versions, exact-version grading).
+    ...freeMocks.map(exam=>({key:exam.slug,title:exam.title,program:exam.program,kind:"Үнэгүй хагас mock",count:exam.questions,href:"/exams/"+exam.slug})),
     ...guidedTasks.map(task=>({key:task.slug,title:task.title,program:"ielts",kind:"Workshop",count:1,href:"/workshops/"+task.slug})),
   ];
 }
@@ -42,7 +45,9 @@ export async function adminMutation(actorId:string, input:unknown) {
   if(action!=="set-credit-pack"&&credits!==undefined)throw new ApiError(400,"Танигдаагүй талбар.");
   if(action==="set-price"&&(!findSubscriptionPlan(target)||!validPlanPrice(amount)))throw new ApiError(400,"Үнэ ₮1,000–₮1,000,000 хооронд, 100-д хуваагдах бүхэл тоо байна.");
   if(action==="review-content" && (!contentCatalog().some(item=>item.key===target)||!["PENDING","IN_REVIEW","REVIEWED","CHANGES_NEEDED"].includes(String(status))))throw new ApiError(400,"Контент эсвэл төлөв буруу.");
-  if(["grant-month","expire-plan"].includes(action)&&!findSubscriptionPlan(program))throw new ApiError(400,"Багц буруу.");
+  // A month is granted only on a plan that is on sale; a retired plan (IELTS, SAT) can still be ended early.
+  if(action==="grant-month"&&!findSubscriptionPlan(program))throw new ApiError(400,"Багц буруу.");
+  if(action==="expire-plan"&&!findAnyPlan(program))throw new ApiError(400,"Багц буруу.");
   const result=await getDb().$transaction(async tx=>{
     // Recheck membership inside the same transaction as every privileged write.
     const membership = await tx.adminMembership.findUnique({where:{userId:actorId},select:{userId:true,user:{select:{email:true}}}});

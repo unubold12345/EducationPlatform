@@ -8,18 +8,19 @@ import { additionalMath } from "../src/modules/exams/sat-additional.ts";
 import { listeningFile,listeningParts } from "../src/modules/exams/audio-files.ts";
 import { createExamState,stageFor,expireStages,editExam,validateExamEdit,makeReport,isCorrect } from "../src/modules/exams/engine.ts";
 
-const papers=[2,3,4,5,6];
+// SAT has site-authored Mocks 02–09; IELTS 02–06 are site-authored and 07–12 come from the offline pack.
+const satPapers=[2,3,4,5,6,7,8,9],ieltsPapers=[2,3,4,5,6];
 const slug=(program,n)=>`${program==='sat'?'sat-full':'ielts-academic'}-${String(n).padStart(2,'0')}`;
 
-test("SAT keeps six forms and IELTS twelve; Mocks 02–06 preserve existing slugs and timing",()=>{
+test("SAT keeps nine forms and IELTS twelve; additional mocks preserve existing slugs and timing",()=>{
   // The ten ЭЕШ mocks (program "entrance") are tested in entrance-mocks.test.mjs.
-  assert.equal(examDefinitions.filter(e=>e.program==="sat"||e.program==="ielts").length,18);
+  assert.equal(examDefinitions.filter(e=>e.program==="sat"||e.program==="ielts").length,21);
   assert.equal(new Set(examDefinitions.map(e=>e.slug)).size,examDefinitions.length);
   for(const program of ['sat','ielts']){
     // IELTS 07–12 come from the offline pack and are covered by ielts-forms.test.mjs.
-    assert.equal(examDefinitions.filter(e=>e.program===program).length,program==='sat'?6:12);
+    assert.equal(examDefinitions.filter(e=>e.program===program).length,program==='sat'?9:12);
     const original=findExam(slug(program,1));
-    for(const n of papers){
+    for(const n of program==='sat'?satPapers:ieltsPapers){
       const exam=findExam(slug(program,n));assert.ok(exam);assert.equal(exam.version,program==='ielts'?2:1);
       assert.deepEqual(exam.stages.map(s=>[s.id,s.seconds,s.kind]),original.stages.map(s=>[s.id,s.seconds,s.kind]));
       assert.notEqual(exam.stages[0].questions[0].id,original.stages[0].questions[0].id);
@@ -29,11 +30,13 @@ test("SAT keeps six forms and IELTS twelve; Mocks 02–06 preserve existing slug
 });
 
 test("new SAT banks have 147 distinct IDs per form, valid options, numeric keys and all four domains",()=>{
-  const ids=new Set();
-  for(const n of papers){
+  const ids=new Set(),openings=new Set();
+  for(const n of satPapers){
     const exam=findExam(slug('sat',n));
     const rw=[exam.stages[0].questions,...Object.values(exam.stages[1].variants)];
     const math=[exam.stages[3].questions,...Object.values(exam.stages[4].variants)];
+    // Every form opens with its own context, so no Module 1 passage repeats another form's.
+    openings.add(exam.stages[0].questions[0].passage);
     for(const bank of rw){assert.equal(bank.length,27);assert.equal(new Set(bank.map(q=>q.domain)).size,4);}
     for(const [i,bank] of math.entries()){assert.equal(bank.length,22);assert.equal(new Set(bank.map(q=>q.domain)).size,4);assert.equal(bank.filter(q=>q.kind==='number').length,i===0?5:6);}
     for(const bank of [...rw,...math]){
@@ -46,11 +49,11 @@ test("new SAT banks have 147 distinct IDs per form, valid options, numeric keys 
       }
     }
   }
-  assert.equal(ids.size,735);
+  assert.equal(ids.size,1176);assert.equal(openings.size,satPapers.length);
 });
 
 test("new SAT numeric answers agree with independent arithmetic and reject extraneous radical roots",()=>{
-  for(const p of papers)for(const [route,r] of [['lower',0],['first',1],['higher',2]]){
+  for(const p of satPapers)for(const [route,r] of [['lower',0],['first',1],['higher',2]]){
     const qs=additionalMath(p,route),a=p*3+r+2,b=a+3;
     // Module 2 has its own items since 2026-11-13: the lower route is a separate bank (phone plan, 2(x − p), √(x − p),
     // spinner, 5-12-13 triangle, garden perimeter), the higher route ends with a conditional probability and a 30° side.
@@ -66,7 +69,7 @@ test("new SAT numeric answers agree with independent arithmetic and reject extra
 });
 
 test("every additional SAT form completes both routes with exactly 98 reviews and 90 operational marks",()=>{
-  for(const p of papers)for(const route of ['lower','higher']){
+  for(const p of satPapers)for(const route of ['lower','higher']){
     const state=createExamState(findExam(slug('sat',p)),0);
     while(!state.finishedAt){
       const stage=stageFor(state);
@@ -86,7 +89,7 @@ test("every additional SAT form completes both routes with exactly 98 reviews an
 
 test("new IELTS forms have distinct full-length readings, evidence-based completions and 40+40 scored items",()=>{
   const texts=new Set(),writing=new Set(),cues=new Set();
-  for(const p of papers){
+  for(const p of ieltsPapers){
     const e=findExam(slug('ielts',p)),[listen,check,read,write,,prep,long]=e.stages;
     assert.equal(listen.questions.length,40);assert.deepEqual(listen.questions,check.questions);assert.equal(read.questions.length,40);
     assert.equal(read.passages.length,3);
@@ -110,7 +113,7 @@ test("new IELTS forms have distinct full-length readings, evidence-based complet
 
 test("new Listening recordings match their own scripts, file hashes and fit the 30-minute stage",()=>{
   const hashes=new Set();
-  for(const p of papers){
+  for(const p of ieltsPapers){
     const number=String(p).padStart(2,'0'),{questions,scripts}=additionalListening(p);
     const manifest=JSON.parse(readFileSync(new URL(`../assets/exams/manifest-v2-${number}.json`,import.meta.url),'utf8').replace(/^\uFEFF/,''));
     assert.equal(manifest.scriptsSha256,createHash('sha256').update(JSON.stringify(scripts)).digest('hex'));assert.equal(manifest.parts.length,4);

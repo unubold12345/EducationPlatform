@@ -1,6 +1,7 @@
 import { MOCK_PRICE_LABEL } from "./pricing.ts";
 import type { ExamDefinition, ExamStage } from "./types.ts";
 import { entranceSubjectLabels, subjectFromSlug } from "./entrance/subjects.ts";
+import { isFreeMock } from "./free/catalog.ts";
 
 export type BriefingFact = { label: string; value: string };
 
@@ -37,19 +38,23 @@ export function mockBriefingSummary(exam: ExamDefinition): MockBriefingSummary {
   const breakSeconds = exam.stages.filter(stage => stage.kind === "break").reduce((sum, stage) => sum + stage.seconds, 0);
   const activeSeconds = totalSeconds - breakSeconds;
 
+  // A free half mock is open to every signed-in account; SAT and IELTS mocks otherwise come with the Гадаад хэл plan.
+  const free = isFreeMock(exam.slug);
+  const priceNote = free ? "Үнэгүй · бүртгэлтэй бүх хүнд" : `${MOCK_PRICE_LABEL} эсвэл Гадаад хэл багц`;
   if (exam.program === "sat") {
     const deliveredQuestions = exam.stages.reduce((sum, stage) => sum + questionsFor(stage), 0);
     const modules = exam.stages.filter(stage => stage.kind === "questions").length;
+    const pause = breakSeconds ? ` + ${breakSeconds / 60}м завсарлага` : "";
     return {
-      eyebrow: "FULL MOCK · DIGITAL SAT",
-      chips: [`${deliveredQuestions} асуулт`, `${modules} модуль`, `${formatExamDuration(activeSeconds)} + ${breakSeconds / 60}м завсарлага`, "Raw оноо"],
+      eyebrow: free ? "ҮНЭГҮЙ ХАГАС MOCK · DIGITAL SAT" : "FULL MOCK · DIGITAL SAT",
+      chips: [`${deliveredQuestions} асуулт`, `${modules} модуль`, `${formatExamDuration(activeSeconds)}${pause}`, "Raw оноо"],
       facts: [
         { label: "Асуулт", value: `${deliveredQuestions}` },
-        { label: "Модуль", value: `${modules} + ${breakSeconds / 60}м завсарлага` },
+        { label: "Модуль", value: `${modules}${pause}` },
         { label: "Хугацаа", value: `${formatExamDuration(totalSeconds)} нийт` },
         { label: "Үр дүн", value: "Raw оноо" },
       ],
-      priceNote: `${MOCK_PRICE_LABEL} эсвэл SAT эрх`,
+      priceNote,
       scoreNote: "SAT raw оноо; 1600 хөрвүүлэлтгүй.",
       totalSeconds,
       breakSeconds,
@@ -73,7 +78,7 @@ export function mockBriefingSummary(exam: ExamDefinition): MockBriefingSummary {
         { label: "Хугацаа", value: `${formatExamDuration(totalSeconds)}` },
         { label: "Оноо", value: `${exam.points ?? 100}` },
       ],
-      priceNote: `${MOCK_PRICE_LABEL} эсвэл University Prep эрх`,
+      priceNote: `${MOCK_PRICE_LABEL} эсвэл ЭЕШ багц`,
       scoreNote: "Зөв хариултын оноо; албан ЭЕШ-ийн оноо биш.",
       totalSeconds,
       breakSeconds,
@@ -85,7 +90,7 @@ export function mockBriefingSummary(exam: ExamDefinition): MockBriefingSummary {
   const writingTasks = exam.stages.filter(stage => stage.kind === "writing").reduce((sum, stage) => sum + stage.questions.length, 0);
   const speakingStages = exam.stages.filter(stage => stage.kind === "speaking").length;
   return {
-    eyebrow: "FULL MOCK · IELTS ACADEMIC",
+    eyebrow: free ? "ҮНЭГҮЙ ХАГАС MOCK · IELTS ACADEMIC" : "FULL MOCK · IELTS ACADEMIC",
     chips: [`${readingListening} асуулт`, `${writingTasks} бичих даалгавар`, `${speakingStages} Speaking хэсэг`, "Band биш"],
     facts: [
       { label: "Асуулт", value: `${readingListening} + ${writingTasks} даалгавар` },
@@ -93,7 +98,7 @@ export function mockBriefingSummary(exam: ExamDefinition): MockBriefingSummary {
       { label: "Хугацаа", value: formatExamDuration(totalSeconds) },
       { label: "Үр дүн", value: "Listen/Read оноо" },
     ],
-    priceNote: `${MOCK_PRICE_LABEL} эсвэл IELTS эрх`,
+    priceNote,
     scoreNote: "Writing, Speaking-д автомат band өгөхгүй.",
     totalSeconds,
     breakSeconds,

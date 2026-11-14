@@ -14,7 +14,6 @@ import { ProgramArt } from "@/modules/workspace/art";
 import { ScoreRing } from "@/modules/workspace/score";
 import { Icon } from "@/modules/workspace/icons";
 import type { ExamProgram } from "@/modules/exams/types";
-import { StreakCard } from "@/modules/roadmap/streak-client";
 export const metadata: Metadata = { title: "Workspace" };
 
 const date = new Intl.DateTimeFormat("mn-MN", { timeZone: "Asia/Ulaanbaatar", month: "short", day: "numeric" });
@@ -52,8 +51,6 @@ export default async function WorkspaceHome() {
       <h1>Өнөөдөр юу сурах вэ?</h1>
     </header>
     <HomeSwitcher programs={programs} labs={labs} />
-
-    <section className="wsp-today" aria-label="Өдөр бүрийн идэвх"><StreakCard /></section>
 
     {resume ? <section className="wsp-resume resume-card" aria-label="Үргэлжлүүлэх">
       <span className="wsp-resume-icon" aria-hidden="true"><Icon name="clock" /></span>

@@ -93,17 +93,19 @@ with sync_playwright() as p:
     assert context.request.post(API, headers=ORIGIN, multipart={
         "file": {"name": "notes.exe", "mimeType": "application/octet-stream", "buffer": b"MZ not a document"},
     }).status == 415, "unsupported extension"
-    for bad_count in ("4", "21", "7.5", "ten"):
+    for bad_count in ("4", "41", "7.5", "ten"):
         assert upload(context.request, count=bad_count).status == 400, "question count " + bad_count
     assert upload(context.request, structure="x" * 501).status == 400, "structure request too long"
     assert upload(context.request, language="ru").status == 400, "exam language"
     # A page loaded before exams moved to the account still sends its own count: it is told to reload, before any credits.
     stale = upload(context.request, saved="0")
     assert stale.status == 409 and "дахин ачаалаад" in stale.json()["error"], stale.text()
-    # Any count from 5 to 20 with a structure request passes validation; the tiny file is refused after it.
+    # Any count from 5 to 40 with a structure request passes validation; the tiny file is refused after it.
     tiny = upload(context.request, name="tiny.pdf", count="7", structure="Эхний 3 нь тодорхойлолт, дараагийнх нь бодлого.")
     assert tiny.status == 422, tiny.status
     assert "хангалттай текст" in tiny.json()["error"], tiny.json()
+    page.wait_for_timeout(3200)
+    assert upload(context.request, name="tiny.pdf", count="40").status == 422, "forty questions pass validation"
     huge = context.request.post(API, headers=ORIGIN, multipart={
         "file": {"name": "huge.txt", "mimeType": "text/plain", "buffer": b"x" * (4 * 1024 * 1024 + 1)}, "count": "10", "language": "mn",
     })
@@ -135,6 +137,14 @@ with sync_playwright() as p:
     assert context.request.post(GRADE_API, headers=ORIGIN, data={**grade_body, "percent": 100}).status == 400, "a score is never accepted"
     assert context.request.post(GRADE_API, headers=ORIGIN, data={"id": UNKNOWN_ID}).status == 400, "answers are required"
     assert context.request.post(GRADE_API, headers=ORIGIN, data={"token": "x" * 100, "answers": {}}).status == 400, "the old token request"
+    # A retry (new questions at the retry price) is behind the same checks, and its body carries nothing.
+    retry_api = API + "/" + UNKNOWN_ID + "/regenerate"
+    assert anonymous.post(retry_api, headers=ORIGIN, data={}).status == 401, "a retry needs a session"
+    assert context.request.post(retry_api, headers=ELSEWHERE, data={}).status == 403, "cross-origin retry"
+    assert context.request.post(retry_api, headers=ORIGIN, data="not json").status == 415, "JSON body"
+    assert context.request.post(retry_api, headers=ORIGIN, data={}).status == 404, "a retry of an exam that does not exist"
+    for extra in ({"count": 40}, {"credits": 1}, {"userId": "other"}, {"text": "material"}):
+        assert context.request.post(retry_api, headers=ORIGIN, data=extra).status == 400, "a retry takes no count, price, user or text: " + str(extra)
     assert context.request.delete(API + "/" + UNKNOWN_ID, headers=ORIGIN).status == 404, "delete of an unknown exam"
     assert context.request.patch(API + "/" + UNKNOWN_ID, headers=ORIGIN, data={"action": "finish"}).status == 400, "unknown sitting action"
     assert context.request.post(IMPORT_API, headers=ORIGIN, data={"token": "x" * 100, "title": "Injected"}).status == 400, "extra import field"
@@ -153,7 +163,7 @@ with sync_playwright() as p:
     expect(page.get_by_text("0 / 5 · бүртгэлд")).to_be_visible()
     page.screenshot(path=str(ART / "my-exams-list-desktop.png"), full_page=True)
 
-    # Question count: the slider and the number box move together, and a typed size settles into 5–20.
+    # Question count: the slider and the number box move together, and a typed size settles into 5–40.
     slider, box = page.get_by_label("Асуултын тоо", exact=True), page.get_by_label("Асуултын тоог бичих")
     cost = page.locator("[data-credit-action='exam']")
     expect(slider).to_have_value("10")
@@ -166,14 +176,20 @@ with sync_playwright() as p:
     box.blur()
     expect(box).to_have_value("5")
     expect(slider).to_have_value("5")
+    box.fill("20")
+    expect(cost).to_have_attribute("data-credit-cost", "40")
+    # Above twenty a second reply reads the file again, so a full-length file holds a little more than two a question.
+    box.fill("21")
+    expect(cost).to_have_attribute("data-credit-cost", "51")
     box.fill("99")
     box.blur()
-    expect(box).to_have_value("20")
-    expect(cost).to_have_attribute("data-credit-cost", "40")
-    expect(cost).to_contain_text("хамгийн ихдээ 40 кредит")
+    expect(box).to_have_value("40")
+    expect(slider).to_have_attribute("max", "40")
+    expect(cost).to_have_attribute("data-credit-cost", "80")
+    expect(cost).to_contain_text("хамгийн ихдээ 80 кредит")
     slider.focus()
     page.keyboard.press("ArrowLeft")
-    expect(box).to_have_value("19")
+    expect(box).to_have_value("39")
     box.fill("10")
     expect(page.get_by_text("Асуулт бүр 4 сонголттой")).to_have_count(0)
     expect(page.get_by_text("Хариултын түлхүүр шалгалт дуустал шифрлэгдэнэ")).to_have_count(0)
@@ -212,6 +228,10 @@ with sync_playwright() as p:
     old = move(context.request, tokens(user_id, 2, 40)[1])
     assert old.status == 200 and old.json()["imported"] is True, old.text()
     old_id = old.json()["exam"]["id"]
+    # An exam moved from a browser has no kept material: it offers no retry and the server refuses one before any credits.
+    assert old.json()["exam"]["retryCredits"] is None, old.json()["exam"]
+    no_source = context.request.post(API + "/" + old_id + "/regenerate", headers=ORIGIN, data={})
+    assert no_source.status == 409 and "материал хадгалагдаагүй" in no_source.json()["error"], no_source.text()
 
     # Sitting rules on the old exam, straight on the API: a start, a save that must name the open sitting,
     # server grading from the stored key, and no saving into a sitting that was graded.
@@ -239,6 +259,7 @@ with sync_playwright() as p:
     assert other.request.patch(sitting, headers=ORIGIN, data={"action": "start", "mode": "timed", "startedAt": opened_at}).status == 404
     assert other.request.post(GRADE_API, headers=ORIGIN, data={"id": old_id, "answers": {}, "elapsedSeconds": 1, "timed": False}).status == 404
     assert other.request.delete(sitting, headers=ORIGIN).status == 404
+    assert other.request.post(sitting + "/regenerate", headers=ORIGIN, data={}).status == 404, "another student's exam is never retried"
     assert move(other.request, first_token).json()["exam"] is None, "a token sealed for someone else"
     other_page = other.new_page()
     other_page.goto(BASE + "/workspace/my-exams", wait_until="domcontentloaded")
@@ -272,8 +293,72 @@ with sync_playwright() as p:
     assert b'name="saved"' not in generation_calls[0], "the browser no longer reports its own count"
     expect(page.get_by_text("10", exact=True).first).to_be_visible()
     expect(page.get_by_text("15 мин").first).to_be_visible()
+    # This exam has no kept material, so the page offers no retry.
+    expect(page.get_by_role("button", name="Шинэ асуулт үүсгэх")).to_have_count(0)
     page.screenshot(path=str(ART / "my-exams-briefing-desktop.png"), full_page=True)
     page.unroute(generation_route)
+
+    # A retry through the page, with only the server's reply mocked: an exam whose material was kept shows the
+    # button with the server's price, asks first, sends an empty body and shows the exam the server returns.
+    page.route(generation_route, lambda route: route.fulfill(status=200, content_type="application/json", body=json.dumps({
+        "exam": {**made, "retryCredits": 10}, "limit": 5, "provider": "DeepSeek", "source": {"name": "notes.pdf", "kind": "pdf", "pages": 1, "truncated": False},
+    })))
+    page.get_by_role("button", name="Миний шалгалтууд").click()
+    page.set_input_files('input[type="file"]', {"name": "notes.pdf", "mimeType": "application/pdf", "buffer": TINY_PDF.read_bytes()})
+    page.get_by_role("button", name="Шалгалт үүсгэх", exact=True).click()
+    retry_button = page.get_by_role("button", name="Шинэ асуулт үүсгэх")
+    expect(retry_button).to_be_visible(timeout=20000)
+    page.unroute(generation_route)
+    retry_cost = page.locator("[data-credit-action='exam-retry']")
+    expect(retry_cost).to_have_attribute("data-credit-cost", "10")
+    expect(retry_cost).to_contain_text("хамгийн ихдээ 10 кредит")
+    retry_calls, asked, held_retry = [], [], []
+    retry_route = re.compile(r"/api/workspace/my-exams/[a-z0-9]+/regenerate$")
+    def mock_retry(route):
+        retry_calls.append((route.request.url, route.request.post_data))
+        held_retry.append(route)
+    page.route(retry_route, mock_retry)
+    def refuse(dialog):
+        asked.append(dialog.message)
+        dialog.dismiss()
+    page.once("dialog", refuse)
+    retry_button.click()
+    page.wait_for_timeout(300)
+    assert len(asked) == 1 and "10 кредит" in asked[0] and "устана" in asked[0], asked
+    assert not retry_calls, "declining the question sends nothing"
+    page.once("dialog", lambda dialog: dialog.accept())
+    retry_button.click()
+    # While the reply is on its way the whole page waits behind the processing screen: it is a modal dialog over
+    # the rail and the page, Escape does not close it, the page cannot scroll, and nothing behind it takes a click.
+    processing = page.locator("dialog[data-processing]")
+    expect(processing).to_be_visible()
+    expect(processing.get_by_role("heading", name="Шинэ асуулт үүсгэж байна…")).to_be_visible()
+    expect(processing).to_have_attribute("aria-busy", "true")
+    page.keyboard.press("Escape")
+    page.keyboard.press("Escape")
+    covered = page.evaluate("""() => {
+      const dialog = document.querySelector('dialog[data-processing]');
+      const inside = (x, y) => dialog.contains(document.elementFromPoint(x, y));
+      return { open: dialog.open, modal: dialog.matches(':modal'), locked: document.documentElement.style.overflow === 'hidden',
+        corners: [inside(8, 8), inside(innerWidth - 8, 8), inside(8, innerHeight - 8), inside(innerWidth - 8, innerHeight - 8)] };
+    }""")
+    assert covered == {"open": True, "modal": True, "locked": True, "corners": [True, True, True, True]}, covered
+    page.screenshot(path=str(ART / "my-exams-processing-desktop.png"))
+    with page.expect_response(retry_route) as retried:
+        held_retry[0].fulfill(status=200, content_type="application/json", body=json.dumps({"exam": {**made, "retryCredits": 10}, "provider": "DeepSeek"}))
+    assert retried.value.status == 200, retried.value.status
+    # The reply gives the page back.
+    expect(processing).to_be_hidden()
+    assert page.evaluate("document.documentElement.style.overflow") == "", "page scroll is restored"
+    expect(page.get_by_role("heading", name="Cell biology exam 2")).to_be_visible(timeout=20000)
+    assert len(retry_calls) == 1 and retry_calls[0][0].endswith("/" + made["id"] + "/regenerate") and retry_calls[0][1] == "{}", retry_calls
+    expect(retry_button).to_be_enabled()
+    page.screenshot(path=str(ART / "my-exams-retry-desktop.png"), full_page=True)
+    page.unroute(retry_route)
+    # Back to what the account really holds for the rest of the run: this exam has no kept material.
+    page.reload(wait_until="domcontentloaded")
+    page.get_by_text("Cell biology exam 2").first.click()
+    expect(page.get_by_role("button", name="Шинэ асуулт үүсгэх")).to_have_count(0)
 
     # A timed sitting on the new exam. Every answer is saved on the account.
     page.get_by_role("button", name=re.compile("Цагтай эхлэх")).click()
@@ -416,14 +501,14 @@ with sync_playwright() as p:
     clock_page.screenshot(path=str(ART / "my-exams-limit-desktop.png"), full_page=True)
     full = upload(clock_context.request)
     assert full.status == 409, full.status
-    assert "5 шалгалтын хязгаарт" in full.json()["error"] and "IELTS эсвэл SAT" in full.json()["error"], full.json()
+    assert "5 шалгалтын хязгаарт" in full.json()["error"] and "Гадаад хэл багцтай бол 15" in full.json()["error"], full.json()
     # Clearing the browser changes nothing: the exams and the limit are on the account.
     clock_page.evaluate("() => { localStorage.clear(); sessionStorage.clear(); }")
     clock_page.reload(wait_until="domcontentloaded")
     expect(clock_page.get_by_text("5 / 5 · бүртгэлд")).to_be_visible()
     assert upload(clock_context.request).status == 409, "a cleared browser is still full"
-    # An IELTS plan raises the limit to fifteen, on the page and on the server.
-    order = clock_context.request.post(BASE + "/api/subscriptions/orders", headers=ORIGIN, data={"program": "ielts"}).json()
+    # The Гадаад хэл plan raises the limit to fifteen, on the page and on the server.
+    order = clock_context.request.post(BASE + "/api/subscriptions/orders", headers=ORIGIN, data={"program": "language"}).json()
     assert clock_context.request.post(BASE + "/api/subscriptions/orders/" + order["id"] + "/confirm", headers=ORIGIN, data={"decision": "success"}).ok
     clock_page.reload(wait_until="domcontentloaded")
     expect(clock_page.get_by_text("5 / 15 · бүртгэлд")).to_be_visible()
@@ -431,7 +516,7 @@ with sync_playwright() as p:
     expect(clock_page.get_by_role("button", name="Шалгалт үүсгэх", exact=True)).to_be_enabled()
     expect(clock_page.get_by_text("Хадгалах 5 шалгалтын хязгаарт хүрсэн")).to_have_count(0)
     # With five saved the plan lets the request through to the file check; fifteen is the new ceiling.
-    assert upload(clock_context.request, name="tiny.pdf").status == 422, "an IELTS plan keeps more than five exams"
+    assert upload(clock_context.request, name="tiny.pdf").status == 422, "a Гадаад хэл plan keeps more than five exams"
     for token in clock_tokens[5:15]:
         assert move(clock_context.request, token).json()["imported"] is True
     plan_full = upload(clock_context.request, name="tiny.pdf")
@@ -464,4 +549,4 @@ with sync_playwright() as p:
     expect(page.get_by_text("Одоогоор шалгалт алга")).to_be_visible()
     assert not errors, errors
     browser.close()
-print("PASS: my-exams guest redirect, signed-in/origin/multipart/file/count 5-20/structure/language/Office/oversize generation guards and the stale-page refusal (no provider call), session/origin/shape/ownership guards on grade, sitting, delete and import, a browser exam moved to the account once with its claimed score re-graded from the sealed key, an expired token moved, question-count slider and per-question price badge, generation UI with only the provider reply mocked, briefing, timed runner, keyboard answers, flag, answer sheet, autosave to the account, reload and second-device resume, server grading from the stored key, result stats/review filters, score persistence, untimed retake saved on leaving, timed auto-submit on a fake clock, free 5 and IELTS 15 saved-exam limits counted on the account (cleared browser still full), 20-exam account ceiling, mobile drawer and no horizontal scroll, client file checks, delete from the account; no DeepSeek request made.")
+print("PASS: my-exams guest redirect, signed-in/origin/multipart/file/count 5-40/structure/language/Office/oversize generation guards and the stale-page refusal (no provider call), session/origin/shape/ownership guards on grade, sitting, delete and import, a browser exam moved to the account once with its claimed score re-graded from the sealed key, an expired token moved, question-count slider up to 40 and per-question price badge, retry guards (session, origin, empty body, ownership, no kept material) and the retry button with only the server reply mocked, the whole-page processing screen while that reply is held (modal, covers the rail, Escape and scroll blocked, released by the reply), generation UI with only the provider reply mocked, briefing, timed runner, keyboard answers, flag, answer sheet, autosave to the account, reload and second-device resume, server grading from the stored key, result stats/review filters, score persistence, untimed retake saved on leaving, timed auto-submit on a fake clock, free 5 and IELTS 15 saved-exam limits counted on the account (cleared browser still full), 20-exam account ceiling, mobile drawer and no horizontal scroll, client file checks, delete from the account; no DeepSeek request made.")

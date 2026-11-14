@@ -4,6 +4,8 @@ import { isCorrect } from "../exams/engine.ts";
 import { listeningScripts } from "../exams/ielts-listening.ts";
 import { additionalListeningScripts } from "../exams/ielts-additional-listening.ts";
 import { ieltsFormScripts } from "../exams/ielts-forms.ts";
+import { isFreeMock } from "../exams/free/catalog.ts";
+import { freeListeningScripts } from "../exams/free/content.ts";
 import { entranceSubjectOf } from "../exams/entrance/catalog.ts";
 import { hskChoices, hskDescription } from "../exams/hsk/describe.ts";
 import type { ExamDefinition, ExamGroup, ExamQuestion, ExamStage } from "../exams/types.ts";
@@ -27,14 +29,14 @@ const hints = {
 } as const;
 const subjectOf = (definition: ExamDefinition): PracticeSubject => {
   if (definition.program !== "entrance") return definition.program;
-  const subject = entranceSubjectOf(definition.slug);
+  const subject = definition.subject ?? entranceSubjectOf(definition.slug);
   return `eesh-${subject ?? "math"}`;
 };
 
 const listeningPartSize = 10;
 function transcriptsFor(slug: string,revision:number) {
   const form = /^ielts-academic-0([1-6])$/.exec(slug)?.[1];
-  if (!form) return ieltsFormScripts(slug);
+  if (!form) return isFreeMock(slug) ? freeListeningScripts(slug) : ieltsFormScripts(slug);
   const scripts = form === "1" ? listeningScripts : additionalListeningScripts(Number(form),revision);
   return scripts.map(script => script.title + "\n\n" + script.halves.flat().map(turn => turn.text).join("\n\n"));
 }
@@ -98,7 +100,7 @@ export function mockPractice(definition: ExamDefinition): PracticeSource {
     for (const stage of definition.stages) for (const group of stage.groups ?? []) {
       const listening = stage.kind === "listening";
       sections.push({id:group.id,title:`${listening?"听力":"阅读"} · ${group.title}`,kind:listening?"listening":"questions",math:false,
-        hint:listening?"Хятад бичлэгийг дахин сонсож болно. Шалгасны дараа текст нээгдэнэ.":"Хариугаа сонгоод «Шалгах» дарна уу. Pinyin-ийг нууж, ханзаар уншиж дасгал хийгээрэй."});
+        hint:""});
       for (const question of stage.questions.filter(item=>item.groupId===group.id)) {
         authored.set(question.id,question);
         const {id,number,domain,prompt,options,kind,optionLabels,figure,hsk}=question;
@@ -110,7 +112,7 @@ export function mockPractice(definition: ExamDefinition): PracticeSource {
     for (const stage of definition.stages) for (const group of stage.groups ?? []) {
       const list = stage.questions.filter(question=>question.groupId===group.id);
       sections.push({id:group.id,title:group.title,kind:stage.kind==="listening"?"listening":"questions",math:false,
-        hint:stage.kind==="listening"?"Япон бичлэгийг дахин сонсож болно. Шалгасны дараа текст нээгдэнэ.":"1–4 сонгох · Enter шалгах · Алдсан асуултаа шүүж дахин ажиллаарай."});
+        hint:""});
       for (const question of list) {
         authored.set(question.id,question);
         const {id,number,domain,prompt,passage,options,kind,optionLabels}=question;

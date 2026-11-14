@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ExamDefinition } from "../types";
 import { entranceSubjectHrefs, entranceSubjectLabels, findEntranceMeta } from "./catalog";
 import { EntranceStart } from "./start-client";
+import { findFreeMock } from "../free/catalog";
 import "./entrance.css";
 
 const structure: Record<string, string> = {
@@ -12,8 +13,11 @@ const structure: Record<string, string> = {
   english: "Part I + Part II",
 };
 
-export function EntranceBriefing({ exam, hasAccess, loggedIn, activeAttemptId }: { exam: ExamDefinition; hasAccess: boolean; loggedIn: boolean; activeAttemptId?: string }) {
-  const meta = findEntranceMeta(exam.slug);
+/** `practice`: practice mode opens (the API's rule); `free`: a free half-length paper for every signed-in account. */
+export function EntranceBriefing({ exam, hasAccess, practice, free, loggedIn, activeAttemptId }: { exam: ExamDefinition; hasAccess: boolean; practice: boolean; free: boolean; loggedIn: boolean; activeAttemptId?: string }) {
+  const sample = findFreeMock(exam.slug);
+  // A free paper is not one of a year's forms, so it reads as "Үнэгүй туршилт" instead of a year and form.
+  const meta = findEntranceMeta(exam.slug) ?? (sample ? { year: "Үнэгүй", form: "хагас хэмжээ", durationMinutes: sample.minutes, points: sample.points } : undefined);
   if (!meta || !exam.subject) return null;
   const stage = exam.stages[0];
   const choice = stage.questions.filter(question => question.kind === "choice").length;
@@ -41,8 +45,8 @@ export function EntranceBriefing({ exam, hasAccess, loggedIn, activeAttemptId }:
         </ul>
         {tasks ? <p className="eesh-brief-structure">{structure[exam.subject] ?? ""}{typed ? ` · ${typed} дэд асуулт` : ""}</p> : null}
         <div className="eesh-brief-actions">
-          <EntranceStart slug={exam.slug} hasAccess={hasAccess} loggedIn={loggedIn} activeAttemptId={activeAttemptId} />
-          {hasAccess ? <Link className="eesh-practice-link" href={"/exams/" + exam.slug + "/practice"}>
+          <EntranceStart slug={exam.slug} hasAccess={hasAccess} loggedIn={loggedIn} activeAttemptId={activeAttemptId} free={free} />
+          {practice ? <Link className="eesh-practice-link" href={"/exams/" + exam.slug + "/practice"}>
             <strong>Цаггүй дадлага</strong>
             <span>Хариу бүрийг шууд шалгаж, тайлбар уншина · AI туслахтай</span>
             <span aria-hidden="true">→</span>
@@ -63,7 +67,7 @@ export function EntranceBriefing({ exam, hasAccess, loggedIn, activeAttemptId }:
           <div><dt>Оноо</dt><dd>{meta.points}</dd></div>
           <div><dt>Тооцоолуур</dt><dd>{exam.subject === "english" ? "Шаардлагагүй" : "Хэрэглэхгүй"}</dd></div>
         </dl>
-        <p className="eesh-rail-price">₮10,000 эсвэл University Prep</p>
+        <p className="eesh-rail-price">{free ? "Үнэгүй · бүртгэлтэй бүх хүнд" : "₮10,000 эсвэл ЭЕШ багц"}</p>
         {exam.notes?.length ? <details className="eesh-instructions"><summary>Заавар</summary><ul>{exam.notes.map(note => <li key={note}>{note}</li>)}</ul></details> : null}
         <p className="eesh-rail-note">Зөв хариултын оноо; албан ЭЕШ-ийн оноо биш.</p>
       </aside>

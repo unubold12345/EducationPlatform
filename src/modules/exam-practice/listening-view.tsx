@@ -21,29 +21,46 @@ type Props = {
   assistant: ReactNode;
 };
 
-function Player({ src }: { src: string }) {
+/**
+ * The practice player (IELTS, JLPT, HSK): play/pause, a seek bar, the time, back 5 s and speed. With `start`/`end`
+ * (a JLPT or HSK question's slice of its part's track) the bar and clock cover that slice only, playback stops at
+ * its end, and pressing play again starts the slice over.
+ */
+export function PracticePlayer({ src, start = 0, end, label = "Бичлэг" }: { src: string; start?: number; end?: number; label?: string }) {
   const audio = useRef<HTMLAudioElement>(null);
-  const [playing, setPlaying] = useState(false), [time, setTime] = useState(0), [duration, setDuration] = useState(0), [speed, setSpeed] = useState(1);
+  const [playing, setPlaying] = useState(false), [time, setTime] = useState(start), [duration, setDuration] = useState(0), [speed, setSpeed] = useState(1);
   useEffect(() => { if (audio.current) audio.current.playbackRate = speed; }, [speed, src]);
-  const seek = (seconds: number) => { const a = audio.current; if (!a) return; a.currentTime = Math.max(0, Math.min(duration || a.duration || 0, seconds)); setTime(a.currentTime); };
-  const toggle = () => { const a = audio.current; if (!a) return; if (a.paused) void a.play().catch(() => {}); else a.pause(); };
+  const stop = end ?? duration, length = Math.max(0, stop - start), at = Math.min(length, Math.max(0, time - start));
+  const seek = (seconds: number) => { const a = audio.current; if (!a) return; a.currentTime = start + Math.max(0, Math.min(length || a.duration || 0, seconds)); setTime(a.currentTime); };
+  const toggle = () => {
+    const a = audio.current; if (!a) return;
+    if (!a.paused) { a.pause(); return; }
+    if (end !== undefined && a.currentTime >= end - 0.05) a.currentTime = start;
+    void a.play().catch(() => {});
+  };
   return <div className={styles.player} data-practice-audio="">
-    <audio ref={audio} key={src} src={src} preload="metadata" onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} onEnded={() => setPlaying(false)}
-      onLoadedMetadata={e => { setDuration(e.currentTarget.duration); e.currentTarget.playbackRate = speed; }} onTimeUpdate={e => setTime(e.currentTarget.currentTime)} />
+    <audio ref={audio} key={src} src={src} preload="metadata" aria-label={label} onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} onEnded={() => setPlaying(false)}
+      onLoadedMetadata={e => { setDuration(e.currentTarget.duration); e.currentTarget.playbackRate = speed; if (start) { e.currentTarget.currentTime = start; setTime(start); } }}
+      onTimeUpdate={e => { const a = e.currentTarget; if (end !== undefined && a.currentTime >= end + 0.1) { a.pause(); a.currentTime = end; } setTime(a.currentTime); }} />
     <button type="button" className={styles.play} onClick={toggle} aria-label={playing ? "Түр зогсоох" : "Тоглуулах"}>
       {playing ? <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1" /><rect x="14" y="5" width="4" height="14" rx="1" /></svg>
         : <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.6-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z" /></svg>}
     </button>
     <div className={styles.track}>
-      <input type="range" min={0} max={duration || 1} step={0.1} value={Math.min(time, duration || 0)} aria-label="Бичлэгийн байрлал" onChange={e => seek(Number(e.currentTarget.value))}
-        style={{ "--progress": `${duration ? Math.min(100, time / duration * 100) : 0}%` } as CSSProperties} />
-      <span className={styles.time}>{clock(time)} / {clock(duration)}</span>
+      <input type="range" min={0} max={length || 1} step={0.1} value={at} aria-label="Бичлэгийн байрлал" onChange={e => seek(Number(e.currentTarget.value))}
+        style={{ "--progress": `${length ? Math.min(100, at / length * 100) : 0}%` } as CSSProperties} />
+      <span className={styles.time}>{clock(at)} / {clock(length)}</span>
     </div>
     <div className={styles.tools}>
-      <button type="button" onClick={() => seek(time - 5)} aria-label="5 секунд буцах">↺ 5с</button>
+      <button type="button" onClick={() => seek(at - 5)} aria-label="5 секунд буцах">↺ 5с</button>
       <select value={speed} aria-label="Хурд" onChange={e => setSpeed(Number(e.currentTarget.value))}>{SPEEDS.map(s => <option key={s} value={s}>{s}×</option>)}</select>
     </div>
   </div>;
+}
+
+/** A JLPT or HSK practice question's player, outside the IELTS part layout; `className` keeps each exam's hook. */
+export function QuestionPlayer({ className, ...player }: { className: string; src: string; start?: number; end?: number; label: string }) {
+  return <section className={`${styles.root} ${styles.inline} ${className}`}><PracticePlayer {...player} /></section>;
 }
 
 export function ListeningPracticeView({ audio, questions, currentId, responses, reveals, flags, checking, onSelect, onChange, onFlag, onCheck, onRetry, assistant }: Props) {
@@ -81,7 +98,7 @@ export function ListeningPracticeView({ audio, questions, currentId, responses, 
       </nav>
 
       <section className={styles.work} aria-labelledby="practice-part-title">
-        <Player src={`${audio}?part=${part}`} />
+        <PracticePlayer src={`${audio}?part=${part}`} />
 
         <div className={styles.questions}>
           <div className={styles.qhead}>

@@ -2,22 +2,55 @@
 /* The grid follows the canvas width (the Workspace rail can be open or collapsed), not the window. */
 .library-page { padding-top: 34px; container-type: inline-size; }
 .library-topline { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding-bottom: 22px; border-bottom: 1px solid var(--line); }
-.library-list { display: grid; margin-top: 26px; }
-.library-list .exam-price { margin-top: auto; }
-.library-list .exam-card > .button { margin-top: 0; }
-.library-list .exam-card.jlpt { --accent: #c9879a; }
-.library-list .exam-card.hsk { --accent: #c8553d; }
-.library-list { grid-template-columns: minmax(0, 1fr); }
-@container (min-width: 640px) { .library-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-/* Desktop: three programmes per row. */
-@container (min-width: 900px) { .library-list { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-.library-subjects { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 6px; margin-bottom: 20px; }
-/* Subject name on its own line, then the count, so a narrow (three-column) card never overlaps them. */
-.library-subjects a { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: baseline; gap: 4px 6px; padding: 9px 11px; border: 1px solid var(--line); border-radius: 10px; background: color-mix(in srgb, var(--paper) 32%, transparent); }
-.library-subjects a:hover { border-color: #42a97c; background: color-mix(in srgb, #42a97c 7%, transparent); }
-.library-subjects span { grid-column: 1 / -1; font-size: 12px; font-weight: 600; overflow-wrap: anywhere; }
-.library-subjects strong { font-size: 17px; line-height: 1; letter-spacing: -.03em; }
-.library-subjects small { font-family: var(--font-mono); font-size: 8px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+/* One row per programme (owner request 2026-11-15): the name and what it covers, how a sitting runs, then the price
+   and the way in. The extra classes outrank the shared .exam-card look, which the hubs and briefings keep. */
+.library-list { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; margin-top: 22px; }
+.library-list .exam-card.library-row {
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr) 200px; align-items: center; gap: 14px 30px;
+  padding: 20px 24px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); box-shadow: none;
+}
+.library-list .exam-card.library-row:hover { transform: none; border-color: color-mix(in srgb, var(--blue) 50%, var(--line)); box-shadow: none; }
+.library-list .exam-card.library-row::after { display: none; }
+.library-row-name, .library-row-plan, .library-row-buy { min-width: 0; }
+.library-page .library-list .exam-card.library-row h2 { margin: 0; font-size: 22px; font-weight: 720; line-height: 1.2; letter-spacing: -.02em; }
+.library-row-count { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; margin: 4px 0 0; font-size: 12.5px; line-height: 1.5; }
+.library-row-count strong { color: var(--blue); font-weight: 650; }
+.library-row-count span { color: var(--muted); }
+.library-row-copy { max-width: 52ch; margin: 8px 0 0; color: var(--muted); font-size: 12.5px; line-height: 1.6; }
+
+/* The parts of a sitting, in the order they run. */
+.library-steps { display: flex; flex-wrap: wrap; gap: 6px 0; margin: 0; padding: 0; list-style: none; }
+.library-steps li { display: inline-flex; align-items: center; color: var(--ink); font-size: 13px; font-weight: 600; white-space: nowrap; }
+.library-steps li + li::before { content: ""; width: 14px; height: 1px; margin: 0 9px; background: color-mix(in srgb, var(--ink) 30%, transparent); }
+.library-row-facts { display: grid; gap: 4px; margin: 12px 0 0; }
+.library-row-facts > div { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 10px; align-items: baseline; }
+.library-row-facts dt { color: var(--muted); font-size: 12px; }
+.library-row-facts dd { margin: 0; color: var(--ink); font-size: 12.5px; line-height: 1.5; }
+
+.library-row-buy { display: grid; gap: 10px; }
+.library-list .library-row .exam-price { display: grid; gap: 2px; margin: 0; padding: 0; border: 0; }
+.library-list .library-row .exam-price strong { font-size: 21px; font-weight: 700; letter-spacing: -.02em; }
+.library-list .library-row .exam-price span { max-width: none; color: var(--muted); font-family: inherit; font-size: 11.5px; letter-spacing: 0; line-height: 1.45; text-align: left; }
+.library-row-buy .button { width: 100%; min-height: 42px; padding: 9px 16px; justify-content: space-between; font-size: 13.5px; }
+
+/* Narrower canvases: the price moves up beside the name, then everything stacks. */
+@container (max-width: 880px) {
+  .library-list .exam-card.library-row { grid-template-columns: minmax(0, 1fr) 190px; grid-template-areas: "name buy" "plan plan"; align-items: start; }
+  .library-row-name { grid-area: name; }
+  .library-row-buy { grid-area: buy; }
+  .library-row-plan { grid-area: plan; padding-top: 14px; border-top: 1px solid var(--line); }
+}
+@container (max-width: 540px) {
+  .library-list .exam-card.library-row { grid-template-columns: minmax(0, 1fr); grid-template-areas: "name" "plan" "buy"; padding: 18px; }
+  .library-steps li { white-space: normal; }
+}
+
+/* ЭЕШ subjects as compact chips (name + count) in the place the other rows show their parts. */
+.library-subjects { display: flex; flex-wrap: wrap; gap: 6px; }
+.library-subjects a { display: inline-flex; align-items: baseline; gap: 6px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 999px; background: color-mix(in srgb, var(--paper) 32%, transparent); }
+.library-subjects a:hover { border-color: var(--blue); background: color-mix(in srgb, var(--blue) 7%, transparent); }
+.library-subjects span { font-size: 12px; font-weight: 600; }
+.library-subjects strong { font-size: 12px; font-variant-numeric: tabular-nums; color: var(--blue); }
 
 .library-note { display: flex; align-items: flex-start; justify-content: space-between; gap: 34px; margin-top: 36px; padding-top: 20px; border-top: 1px solid var(--line); }
 .library-note p { max-width: 76ch; margin: 0; font-size: 10.5px; line-height: 1.8; color: var(--muted); }
@@ -26,9 +59,5 @@
 
 @media (max-width: 700px) {
   .library-page { padding-top: 24px; }
-  .library-subjects { grid-template-columns: minmax(0, 1fr); gap: 5px; }
-  .library-subjects a { grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; }
-  .library-subjects span { grid-column: auto; }
-  .library-subjects small { grid-column: auto; }
   .library-note { display: grid; gap: 16px; }
 }

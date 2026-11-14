@@ -20,7 +20,7 @@ export default function WorkspaceWorkshop() {
     </div> : <div className="admin-empty"><p>Workshop одоогоор идэвхгүй байна.</p></div>}
 
     <section className="wsp-section" aria-labelledby="guided-heading">
-      <div className="wsp-section-head"><h2 id="guided-heading">IELTS даалгавар</h2><span className="wsp-muted">IELTS багцад багтана</span></div>
+      <div className="wsp-section-head"><h2 id="guided-heading">IELTS даалгавар</h2><span className="wsp-muted">Гадаад хэл багцад багтана</span></div>
       <div className="wsp-list">{guidedTasks.map(task => <Link key={task.slug} className="wsp-row" href={"/workshops/" + task.slug}>
         <span className="wsp-row-icon" aria-hidden="true"><Icon name={task.skill === "Writing" ? "pen" : "mic"} /></span>
         <span className="wsp-row-main"><strong lang="en">{task.title}</strong><small>{task.skill} · {task.minutes} минут</small></span>

@@ -1,14 +1,14 @@
-// Speaking partners are voices, so they are shown as sound, not faces: each has a colour and a bar pattern of
-// its own. Pure SVG with no hooks, so server pages (Workshop) can use it; avatar.tsx draws the live wave.
+// Speaking partners are voices, so they are shown as sound, not faces: each has a bar pattern of its own, in the
+// site's one accent (owner request 2026-11-15). Pure SVG with no hooks, so server pages (Workshop) can use it; avatar.tsx draws the live wave.
 import type {CSSProperties} from "react";
 import type {SpeakingVoice} from "./contracts";
 
-/** The partner's colour: mid-tones that read on both the light and the dark card. */
+/** The partner's colour: the theme accent for every partner, so it follows light and dark. */
 export const partnerColor:Record<SpeakingVoice,string>={
- af_heart:"#4f6bed",af_bella:"#e07a5f",am_michael:"#2f8f7a",bf_emma:"#7a5cc9",bm_george:"#4d7ea8",bm_lewis:"#b5543c",
+ af_heart:"var(--blue)",af_bella:"var(--blue)",am_michael:"var(--blue)",bf_emma:"var(--blue)",bm_george:"var(--blue)",bm_lewis:"var(--blue)",
 };
 
-// Seven bar heights (0 to 1) per partner, so the marks differ by shape as well as colour.
+// Seven bar heights (0 to 1) per partner, so the marks differ by shape.
 const patterns:Record<SpeakingVoice,number[]>={
  af_heart:[.25,.6,.95,.5,.8,.4,.2],
  af_bella:[.45,.9,.35,.7,1,.55,.3],

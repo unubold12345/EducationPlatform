@@ -166,3 +166,6 @@ li[data-result="part"] .num { background: #c27a1a; color: #fff; }
 .mock .questions li[data-active] { outline: 1px solid color-mix(in srgb, var(--blue) 35%, transparent); }
 .paragraphs { display: grid; gap: 10px; margin-top: 8px; font-size: 15px; line-height: 1.65; }
 .paragraphs p { margin: 0; }
+/* A JLPT/HSK practice question's player: not sticky, full width above the question. */
+.inline { max-width: none; margin: 0 0 16px; }
+.inline .player { position: static; }

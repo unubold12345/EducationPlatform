@@ -5,15 +5,18 @@ import { ApiError } from "@/lib/api";
 import type { Prisma } from "@/generated/prisma/client";
 import { readingLabEnabled } from "@/lib/local-pilot";
 import { chargeCredits } from "@/modules/credits/service";
-import { AI_ACTIONS, readingPracticeCredits, readingPracticeHold, type UsageMeter } from "@/modules/credits/pricing";
+import {
+  AI_ACTIONS, readingOutputTokens, readingPracticeCredits, readingPracticeHold, readingRetryOutputTokens, readingRetryPrice, type UsageMeter,
+} from "@/modules/credits/pricing";
 import { activeTimedSitting } from "@/modules/exams/active-sitting";
 import { tutorDay } from "@/modules/tutor/contracts";
 import { cleanSourceText, fallbackTitle } from "@/modules/documents/text";
 import { extractDocument } from "@/modules/documents/extract";
 import { readUploadedSource } from "@/modules/documents/upload";
 import {
-  READING_LIMITS, allQuestions, isReadingLanguage, parseGeneratedReading, passageWords, publicGroups, readingMessages,
-  type FullGroup, type ReadingLanguage,
+  READING_COUNT, READING_LIMITS, allQuestions, isReadingLanguage, nextQuestionStart, parseGeneratedQuestions, parseGeneratedReading, passageWords,
+  promptKey, publicGroups, readReadingCount, readingMessages, readingQuestionMessages, retryCount,
+  type ChatMessage, type FullGroup, type ReadingLanguage,
 } from "./contracts";
 import { findReadingSample } from "./samples";
 import {
@@ -24,6 +27,7 @@ import {
 import { ReadingTokenError, openReading, readingImportKey, validGroups } from "./token";
 
 const ACTION = "reading-practice" as const;
+const RETRY_ACTION = "reading-retry" as const;
 const LEASE_MS = 300_000;
 const BODY_SLACK = 256 * 1024;
 const MAX_BODY = READING_LIMITS.fileBytes + BODY_SLACK;
@@ -113,8 +117,29 @@ export async function readingLibrary(userId: string) {
 
 type Source = { kind: "text"; text: string } | Awaited<ReturnType<typeof readUploadedSource>>;
 
-/** The upload form: pasted `text`, or one document or up to four page photos in `file`, plus the explanation `language`. */
-async function readSource(request: Request): Promise<{ source: Source; language: ReadingLanguage }> {
+/** The daily budget and the one-request-in-flight lease shared by a new practice and a retry. */
+async function withGenerationSlot<T>(userId: string, work: () => Promise<T>): Promise<T> {
+  const db = getDb();
+  const now = Date.now(), limitKey = `education-reading-lab:${userId}:${tutorDay(now)}`, lease = BigInt(now + LEASE_MS);
+  await db.rateLimit.upsert({ where: { key: limitKey }, create: { id: randomUUID(), key: limitKey, count: 0, lastRequest: BigInt(0) }, update: {} });
+  // Database CAS enforces a daily budget and one request in flight across every server instance.
+  const reserved = await db.rateLimit.updateMany({
+    where: { key: limitKey, count: { lt: READING_LIMITS.daily }, lastRequest: { lte: BigInt(now) } },
+    data: { count: { increment: 1 }, lastRequest: lease },
+  });
+  if (!reserved.count) throw new ApiError(429, `Дасгал үүсгэж байна эсвэл өдрийн ${READING_LIMITS.daily} хүсэлтийн хязгаарт хүрсэн. Түр хүлээгээд дахин оролдоно уу.`);
+  try { return await work(); }
+  finally {
+    // Only release the lease this request holds; never shorten another request's lease.
+    await db.rateLimit.updateMany({ where: { key: limitKey, lastRequest: lease }, data: { lastRequest: BigInt(Date.now() + 3000) } });
+  }
+}
+
+/**
+ * The upload form: pasted `text`, or one document or up to four page photos in `file`, plus the explanation
+ * `language` and how many questions to write (`count`, 8–24; a page that does not send it gets the default).
+ */
+async function readSource(request: Request): Promise<{ source: Source; language: ReadingLanguage; count: number }> {
   const contentType = request.headers.get("content-type")?.toLowerCase() ?? "";
   if (!contentType.startsWith("multipart/form-data")) throw new ApiError(415, "Файл эсвэл текст бүхий хүсэлт шаардлагатай.");
   const declared = Number(request.headers.get("content-length"));
@@ -123,22 +148,24 @@ async function readSource(request: Request): Promise<{ source: Source; language:
   let form: FormData;
   try { form = await request.formData(); }
   catch { throw new ApiError(400, "Хүсэлтийг уншиж чадсангүй. Дахин оролдоно уу."); }
-  for (const key of form.keys()) if (!["file", "text", "language", "store"].includes(key)) throw new ApiError(400, BAD_SHAPE);
+  for (const key of form.keys()) if (!["file", "text", "language", "store", "count"].includes(key)) throw new ApiError(400, BAD_SHAPE);
   // A page loaded before practices moved to the account would keep the reply in its browser and lose the
   // practice; it does not send `store`, and is told to reload before any credits are held.
   if (form.get("store") !== "account") throw new ApiError(409, RELOAD);
   const language = form.get("language") ?? "mn";
   if (!isReadingLanguage(language)) throw new ApiError(400, "Тайлбарын хэл буруу байна.");
+  const count = form.getAll("count").length > 1 ? null : readReadingCount(form.get("count"));
+  if (count === null) throw new ApiError(400, `Асуултын тоо ${READING_COUNT.min}–${READING_COUNT.max} байна.`);
   const texts = form.getAll("text");
   if (texts.length) {
     if (texts.length > 1 || form.getAll("file").length || typeof texts[0] !== "string") throw new ApiError(400, "Файл эсвэл текстийн аль нэгийг илгээнэ үү.");
     const text = texts[0].trim();
     if (text.length > READING_LIMITS.textChars) throw new ApiError(413, `Текст хэт урт байна. ${READING_LIMITS.textChars.toLocaleString("en-US")} тэмдэгт хүртэл оруулна уу.`);
     if (text.length < READING_LIMITS.minSourceChars) throw new ApiError(422, `Текст хэт богино байна. Дор хаяж ${READING_LIMITS.minSourceChars.toLocaleString("en-US")} тэмдэгт (ойролцоогоор 170 үг) оруулна уу.`);
-    return { source: { kind: "text", text }, language };
+    return { source: { kind: "text", text }, language, count };
   }
   // One document, or up to four page photos; their size and real kind are proven before credits are held.
-  return { source: await readUploadedSource(form, "Унших дасгал үүсгэх файл, зураг эсвэл текстээ оруулна уу."), language };
+  return { source: await readUploadedSource(form, "Унших дасгал үүсгэх файл, зураг эсвэл текстээ оруулна уу."), language, count };
 }
 
 /**
@@ -147,7 +174,7 @@ async function readSource(request: Request): Promise<{ source: Source; language:
  */
 export async function createReadingPractice(userId: string, request: Request) {
   ensureEnabled();
-  const { source, language } = await readSource(request);
+  const { source, language, count } = await readSource(request);
   await ensureNoTimedExam(userId);
   const db = getDb();
   // Practices are counted on the account, whatever a browser holds. A full library is refused before any credits are held.
@@ -155,64 +182,101 @@ export async function createReadingPractice(userId: string, request: Request) {
   if (saved >= READING_LIMITS.practices) throw new ApiError(409, PRACTICES_FULL);
   if (!process.env.DEEPSEEK_API_KEY?.trim()) throw new ApiError(503, "AI дасгал үүсгэгч одоогоор холбогдоогүй байна.");
 
-  const now = Date.now(), limitKey = `education-reading-lab:${userId}:${tutorDay(now)}`, lease = BigInt(now + LEASE_MS);
-  // Priced by length: hold the most this material can cost (pasted text and photos are measured now; a document's
-  // text is only known after extraction, so it holds the full-file price), then settle to what was read and written.
-  const hold = source.kind === "text" ? readingPracticeHold(source.text.length) : source.kind === "images" ? readingPracticeHold(0, source.images.length) : readingPracticeHold(READING_LIMITS.textChars);
+  // Priced by length: hold the most this material can cost with the questions asked for (pasted text and photos are
+  // measured now; a document's text is only known after extraction, so it holds the full-file price), then settle to
+  // what was read and written.
+  const hold = source.kind === "text" ? readingPracticeHold(source.text.length, 0, count) : source.kind === "images" ? readingPracticeHold(0, source.images.length, count) : readingPracticeHold(READING_LIMITS.textChars, 0, count);
   // Credits are held first and refunded on any failure, including material with too little text.
-  return chargeCredits(userId, ACTION, async meter => {
-    await db.rateLimit.upsert({ where: { key: limitKey }, create: { id: randomUUID(), key: limitKey, count: 0, lastRequest: BigInt(0) }, update: {} });
-    // Database CAS enforces a daily budget and one request in flight across every server instance.
-    const reserved = await db.rateLimit.updateMany({
-      where: { key: limitKey, count: { lt: READING_LIMITS.daily }, lastRequest: { lte: BigInt(now) } },
-      data: { count: { increment: 1 }, lastRequest: lease },
-    });
-    if (!reserved.count) throw new ApiError(429, `Дасгал үүсгэж байна эсвэл өдрийн ${READING_LIMITS.daily} хүсэлтийн хязгаарт хүрсэн. Түр хүлээгээд дахин оролдоно уу.`);
-
-    try {
-      let messages: ReturnType<typeof readingMessages>;
-      let info: ReadingReply["source"];
-      if (source.kind === "images") {
-        messages = readingMessages({ images: source.images, language, truncated: false });
-        info = { name: source.name, kind: "image", pages: source.images.length, truncated: false, chars: 0 };
-      } else {
-        const extracted = source.kind === "text" ? { kind: "text", text: source.text, pages: undefined } : await extractDocument(source.name, source.bytes);
-        const cleaned = cleanSourceText(extracted.text);
-        if (cleaned.text.length < READING_LIMITS.minSourceChars) throw new ApiError(422, "Унших дасгал хийх хангалттай текст олдсонгүй. Илүү урт материал оруулна уу.");
-        messages = readingMessages({ text: cleaned.text, language, truncated: cleaned.truncated });
-        info = { name: source.kind === "text" ? PASTED : source.name, kind: source.kind === "text" ? "pasted" : extracted.kind, pages: extracted.pages ?? null, truncated: cleaned.truncated, chars: cleaned.text.length };
-      }
-      const fallback = source.kind === "document" ? fallbackTitle(source.name, "Reading practice") : "Reading practice";
-      const started = Date.now();
-      let practice: ReturnType<typeof parseGeneratedReading> = null;
-      // One silent retry for a malformed or thin reply, only while the function still has time for it.
-      for (let attempt = 0; attempt < 2 && !practice; attempt++) {
-        if (attempt && Date.now() - started > RETRY_BEFORE_MS) break;
-        practice = parseGeneratedReading(await deepseekReading(messages, meter), { fallbackTitle: fallback });
-      }
-      if (!practice) throw new ApiError(503, source.kind === "images" ? "Зурагнаас унших дасгал хийх хангалттай текст уншиж чадсангүй. Илүү тод, бүрэн хуудасны зураг оруулна уу." : "AI унших дасгал үүсгэж чадсангүй. Дахин оролдоно уу.");
-      // Another tab may start a timed exam while the provider is answering.
-      await ensureNoTimedExam(userId);
-      // A practice moved from another tab's browser may have taken the last place meanwhile; the hold is then refunded.
-      if (await db.readingPractice.count({ where: { userId } }) >= READING_LIMITS.practices) throw new ApiError(409, PRACTICES_FULL);
-      // Saved with its key on the account. A failure here refunds the credits like any other.
-      const row = await db.readingPractice.create({
-        data: {
-          userId, title: practice.title.slice(0, 200), language, sourceName: info.name.slice(0, 200) || "Материал", sourceKind: info.kind.slice(0, 20),
-          paragraphs: asJson(practice.paragraphs), questions: asJson(practice.groups), state: asJson(blankState()),
-        },
-        select: PRACTICE_SELECT,
-      });
-      const reply: ReadingReply = { practice: shown(row), source: info, provider: "DeepSeek" };
-      return reply;
-    } finally {
-      // Only release the lease this request holds; never shorten another request's lease.
-      await db.rateLimit.updateMany({ where: { key: limitKey, lastRequest: lease }, data: { lastRequest: BigInt(Date.now() + 3000) } });
+  return chargeCredits(userId, ACTION, meter => withGenerationSlot(userId, async () => {
+    let messages: ReturnType<typeof readingMessages>;
+    let info: ReadingReply["source"];
+    if (source.kind === "images") {
+      messages = readingMessages({ images: source.images, language, truncated: false, count });
+      info = { name: source.name, kind: "image", pages: source.images.length, truncated: false, chars: 0 };
+    } else {
+      const extracted = source.kind === "text" ? { kind: "text", text: source.text, pages: undefined } : await extractDocument(source.name, source.bytes);
+      const cleaned = cleanSourceText(extracted.text);
+      if (cleaned.text.length < READING_LIMITS.minSourceChars) throw new ApiError(422, "Унших дасгал хийх хангалттай текст олдсонгүй. Илүү урт материал оруулна уу.");
+      messages = readingMessages({ text: cleaned.text, language, truncated: cleaned.truncated, count });
+      info = { name: source.kind === "text" ? PASTED : source.name, kind: source.kind === "text" ? "pasted" : extracted.kind, pages: extracted.pages ?? null, truncated: cleaned.truncated, chars: cleaned.text.length };
     }
-  }, {
+    const fallback = source.kind === "document" ? fallbackTitle(source.name, "Reading practice") : "Reading practice";
+    const started = Date.now();
+    let practice: ReturnType<typeof parseGeneratedReading> = null;
+    // One silent retry for a malformed or thin reply, only while the function still has time for it.
+    for (let attempt = 0; attempt < 2 && !practice; attempt++) {
+      if (attempt && Date.now() - started > RETRY_BEFORE_MS) break;
+      practice = parseGeneratedReading(await deepseekReading(messages, readingOutputTokens(count), meter), { fallbackTitle: fallback, count });
+    }
+    if (!practice) throw new ApiError(503, source.kind === "images" ? "Зурагнаас унших дасгал хийх хангалттай текст уншиж чадсангүй. Илүү тод, бүрэн хуудасны зураг оруулна уу." : "AI унших дасгал үүсгэж чадсангүй. Дахин оролдоно уу.");
+    // Another tab may start a timed exam while the provider is answering.
+    await ensureNoTimedExam(userId);
+    // A practice moved from another tab's browser may have taken the last place meanwhile; the hold is then refunded.
+    if (await db.readingPractice.count({ where: { userId } }) >= READING_LIMITS.practices) throw new ApiError(409, PRACTICES_FULL);
+    // Saved with its key on the account. A failure here refunds the credits like any other.
+    const row = await db.readingPractice.create({
+      data: {
+        userId, title: practice.title.slice(0, 200), language, sourceName: info.name.slice(0, 200) || "Материал", sourceKind: info.kind.slice(0, 20),
+        paragraphs: asJson(practice.paragraphs), questions: asJson(practice.groups), state: asJson(blankState()),
+      },
+      select: PRACTICE_SELECT,
+    });
+    const reply: ReadingReply = { practice: shown(row), source: info, provider: "DeepSeek" };
+    return reply;
+  }), {
     hold,
     // A retry after malformed output is not charged twice: the price follows the practice delivered.
     settle: reply => readingPracticeCredits(reply.source.chars, passageWords(reply.practice.paragraphs), allQuestions(reply.practice.groups).length, reply.source.kind === "image" ? reply.source.pages ?? 0 : 0),
+  });
+}
+
+/**
+ * A retry: new questions on the passage of the student's own saved practice, at the retry price
+ * (`readingRetryCredits`, half of a new practice with that passage). The passage, its title and its source stay;
+ * the new questions replace the old ones in place and the answers, results and attempt count are cleared. The
+ * request carries nothing but the practice's id: the passage, the question count, the language and the price are
+ * the account's own, so only a practice this account already paid to generate (or moved from its browser) can be
+ * retried.
+ */
+export async function regenerateReadingPractice(userId: string, id: string, body: unknown): Promise<{ practice: SavedPractice; provider: "DeepSeek" }> {
+  ensureEnabled();
+  if (!record(body) || Object.keys(body).length) throw new ApiError(400, BAD_SHAPE);
+  const { row, groups, practice } = await ownPractice(userId, id);
+  await ensureNoTimedExam(userId);
+  if (!process.env.DEEPSEEK_API_KEY?.trim()) throw new ApiError(503, "AI дасгал үүсгэгч одоогоор холбогдоогүй байна.");
+
+  const old = allQuestions(groups);
+  const count = retryCount(old.length);
+  const paragraphs = practice.paragraphs;
+  const db = getDb();
+  // The passage and the count are known, so the hold is the retry's price; it settles to the questions delivered.
+  return chargeCredits(userId, RETRY_ACTION, meter => withGenerationSlot(userId, async () => {
+    const messages = readingQuestionMessages({ paragraphs, count, language: practice.language, avoid: old.map(question => question.prompt) });
+    const start = nextQuestionStart(old.map(question => question.id), count);
+    const skip = new Set(old.map(question => promptKey(question.prompt)));
+    const started = Date.now();
+    let next: FullGroup[] | null = null;
+    // One silent retry for a malformed or thin reply, only while the function still has time for it.
+    for (let attempt = 0; attempt < 2 && !next; attempt++) {
+      if (attempt && Date.now() - started > RETRY_BEFORE_MS) break;
+      next = parseGeneratedQuestions(await deepseekReading(messages, readingRetryOutputTokens(count), meter), paragraphs, { count, start, skip });
+    }
+    if (!next) throw new ApiError(503, "AI шинэ асуулт үүсгэж чадсангүй. Дахин оролдоно уу.");
+    // Another tab may start a timed exam while the provider is answering.
+    await ensureNoTimedExam(userId);
+    try {
+      const updated = await db.readingPractice.update({
+        where: { id: row.id, userId }, data: { questions: asJson(next), state: asJson(blankState()) }, select: PRACTICE_SELECT,
+      });
+      return { practice: shown(updated), provider: "DeepSeek" as const };
+    } catch (error) {
+      // Deleted while the provider was answering: the hold is refunded.
+      if (missing(error)) throw new ApiError(404, NOT_FOUND);
+      throw error;
+    }
+  }), {
+    hold: readingRetryPrice(paragraphs, count),
+    settle: reply => readingRetryPrice(paragraphs, allQuestions(reply.practice.groups).length),
   });
 }
 
@@ -362,8 +426,8 @@ export async function importReading(userId: string, body: unknown): Promise<Prac
   }
 }
 
-/** DeepSeek JSON mode, with this action's output budget from the price list. */
-async function deepseekReading(messages: ReturnType<typeof readingMessages>, meter: UsageMeter) {
+/** DeepSeek JSON mode. The reply budget comes from the price list and never passes the action's listed budget. */
+async function deepseekReading(messages: ChatMessage[], maxTokens: number, meter: UsageMeter) {
   const key = process.env.DEEPSEEK_API_KEY?.trim();
   if (!key) throw new ApiError(503, "AI дасгал үүсгэгч одоогоор холбогдоогүй байна.");
   let response: Response;
@@ -375,7 +439,7 @@ async function deepseekReading(messages: ReturnType<typeof readingMessages>, met
         model: process.env.DEEPSEEK_MODEL || "deepseek-flash",
         messages,
         thinking: { type: "disabled" },
-        max_tokens: AI_ACTIONS[ACTION].outputTokens,
+        max_tokens: Math.min(AI_ACTIONS[ACTION].outputTokens, maxTokens),
         temperature: 0.4,
         response_format: { type: "json_object" },
         stream: false,

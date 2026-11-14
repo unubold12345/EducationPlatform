@@ -14,6 +14,7 @@ const groups = {
   myexams: ["my_exams"],
   entrance: ["entrance_mocks"],
   mocks: ["additional_exams"],
+  free: ["free_mocks"],
   jlpt: ["jlpt"],
   hsk: ["hsk"],
   practice: ["exam_practice"],

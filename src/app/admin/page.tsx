@@ -8,7 +8,7 @@ import type { Prisma } from "@/generated/prisma/client";
 import { getSession } from "@/lib/session";
 import { getDb } from "@/lib/db";
 import { isAdmin,contentCatalog,databaseLatency } from "@/modules/admin/service";
-import { subscriptionPlans } from "@/modules/subscriptions/plans";
+import { allPlans, findAnyPlan, subscriptionPlans } from "@/modules/subscriptions/plans";
 import { planPrices } from "@/modules/subscriptions/prices";
 import { pageInfo,parsePage } from "@/modules/admin/paging";
 import { AdminShell,Pager,StatusPill,SubTabs,adminGroups,adminTabInfo,adminTabs,auditActions,auditLabel,adminDate as date,money,statusLabel,type AdminTab } from "@/modules/admin/ui";
@@ -100,10 +100,10 @@ export default async function AdminPage({searchParams}:{searchParams:Promise<Rec
     const info=pageInfo(await db.subscription.count({where}),requested);
     const rows=await db.subscription.findMany({where,skip:info.skip,take:info.size,orderBy:[{endsAt:"desc"},{id:"desc"}],select:{id:true,program:true,startsAt:true,endsAt:true,user:{select:{id:true,name:true,email:true}}}});
     return <AdminShell tab={tab} title={title} name={name} testData={testData} scope={scope} description={description}>{testBanner}
-      <SubTabs items={[["","Бүх багц"],...subscriptionPlans.map(plan=>[plan.program,plan.shortTitle] as const)]} current={kind} href={key=>link({kind:key,page:1})}/>
+      <SubTabs items={[["","Бүх багц"],...allPlans.map(plan=>[plan.program,plan.shortTitle+(subscriptionPlans.some(sale=>sale.program===plan.program)?"":" (хуучин)")] as const)]} current={kind} href={key=>link({kind:key,page:1})}/>
       {search("Нэр эсвэл имэйлээр хайх…",{name:"filter",value:filter,options:[["","Бүх төлөв"],["active","Идэвхтэй"],["expired","Дууссан"]]})}
       {exportLink("subscriptions","сарын эрх")}
-      <div className="admin-table-wrap"><table><thead><tr><th>Хэрэглэгч</th><th>Багц</th><th>Хугацаа</th><th>Төлөв</th></tr></thead><tbody>{rows.map(row=><tr key={row.id}><td>{userLink(row.user)}</td><td>{row.program.toUpperCase()}</td><td>{date(row.startsAt)}<small>→ {date(row.endsAt)}</small></td><td><span className={"ws-pill "+(row.startsAt<=now&&row.endsAt>now?"ok":"")}>{row.startsAt<=now&&row.endsAt>now?"Идэвхтэй":"Дууссан"}</span></td></tr>)}</tbody></table>{!rows.length&&empty("Сарын эрх олдсонгүй.")}</div>
+      <div className="admin-table-wrap"><table><thead><tr><th>Хэрэглэгч</th><th>Багц</th><th>Хугацаа</th><th>Төлөв</th></tr></thead><tbody>{rows.map(row=><tr key={row.id}><td>{userLink(row.user)}</td><td>{findAnyPlan(row.program)?.title??row.program.toUpperCase()}</td><td>{date(row.startsAt)}<small>→ {date(row.endsAt)}</small></td><td><span className={"ws-pill "+(row.startsAt<=now&&row.endsAt>now?"ok":"")}>{row.startsAt<=now&&row.endsAt>now?"Идэвхтэй":"Дууссан"}</span></td></tr>)}</tbody></table>{!rows.length&&empty("Сарын эрх олдсонгүй.")}</div>
       <Pager info={info} href={page=>link({page})}/>
     </AdminShell>;
   }
@@ -180,8 +180,8 @@ export default async function AdminPage({searchParams}:{searchParams:Promise<Rec
       <div className="admin-prices admin-credit-allowances">{([["free","Үнэгүй (бүх бүртгэл)"],...subscriptionPlans.map(plan=>[plan.program,plan.title] as const)] as const).map(([key,label])=><AdminCreditForm key={key} allowanceKey={key} title={label} credits={allowances[key as keyof typeof allowances]} fallback={defaults[key as keyof typeof defaults]}/>)}</div>
       <h3 className="admin-subhead">Кредитийн хэмжээний түүх</h3>
       <div className="admin-table-wrap"><table><thead><tr><th>Огноо</th><th>Хэнд</th><th>Өмнө → дараа</th><th>Шалтгаан</th></tr></thead><tbody>{creditHistory.map(row=>{const d=row.details as {key?:string;before?:number;after?:number};return <tr key={row.id}><td>{date(row.createdAt)}</td><td>{d.key==="free"?"Үнэгүй":d.key?.toUpperCase()}</td><td>{formatCredits(d.before??0)} → {formatCredits(d.after??0)}</td><td>{row.reason}<small><code>{row.actorId}</code></small></td></tr>;})}</tbody></table>{!creditHistory.length&&<p className="admin-empty">Кредитийн хэмжээ өөрчлөгдөөгүй. Анхны хэмжээ үйлчилж байна.</p>}</div>
-      <h3 className="admin-subhead" id="credit-pack">AI кредит худалдаа</h3>
-      <p className="admin-help">Суралцагч Багцууд хуудаснаас энэ багцыг туршилтын төлбөрөөр авна. Худалдаж авсан кредит хугацаагүй, сарын болон багцын кредитийн дараа зарцуулагдана. Шинэ болон төлөгдөөгүй захиалгад шууд үйлчилнэ; төлөгдсөн захиалга анхны хэмжээ, дүнгээрээ үлдэнэ.</p>
+      <h3 className="admin-subhead" id="credit-pack">Кредит худалдаа</h3>
+      <p className="admin-help">Суралцагч Багцууд хуудаснаас энэ багцыг туршилтын төлбөрөөр авна. Худалдаж авсан кредит хугацаагүй, сарын болон багцын кредитийн дараа AI-д зарцуулагдана; үгсийн сангийн байнгын багтаамж авахад зөвхөн худалдаж авсан кредит ашиглана. Шинэ болон төлөгдөөгүй захиалгад шууд үйлчилнэ; төлөгдсөн захиалга анхны хэмжээ, дүнгээрээ үлдэнэ.</p>
       <div className="admin-prices"><AdminCreditPackForm credits={pack.credits} amountMnt={pack.amountMnt} fallback={DEFAULT_CREDIT_PACK}/></div>
       <h3 className="admin-subhead">Кредит багцын түүх</h3>
       <div className="admin-table-wrap"><table><thead><tr><th>Огноо</th><th>Өмнө → дараа</th><th>Шалтгаан</th></tr></thead><tbody>{packHistory.map(row=>{const d=row.details as {before?:{credits?:number;amountMnt?:number};after?:{credits?:number;amountMnt?:number}};return <tr key={row.id}><td>{date(row.createdAt)}</td><td>{formatCredits(d.before?.credits??0)} кредит · {money(d.before?.amountMnt??0)} → {formatCredits(d.after?.credits??0)} кредит · {money(d.after?.amountMnt??0)}</td><td>{row.reason}<small><code>{row.actorId}</code></small></td></tr>;})}</tbody></table>{!packHistory.length&&<p className="admin-empty">Кредит багц өөрчлөгдөөгүй. Анхны багц үйлчилж байна.</p>}</div>

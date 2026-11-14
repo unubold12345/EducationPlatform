@@ -2,7 +2,7 @@ import "server-only";
 import { getDb } from "@/lib/db";
 import { ApiError } from "@/lib/api";
 import type { Prisma } from "@/generated/prisma/client";
-import { findSubscriptionPlan } from "@/modules/subscriptions/plans";
+import { findAnyPlan } from "@/modules/subscriptions/plans";
 import {
   UsageMeter, creditCost, creditPeriod, creditResetAt, defaultAllowances, isAllowanceKey, maxCreditCost,
   type AiAction, type AllowanceKey, type AllowanceTable, type CreditReceipt,
@@ -10,12 +10,13 @@ import {
 import { allocateCredits, available, creditTotals, planTermCredits, returnParts, totalsAfter, type Bucket, type ChargePart } from "./buckets";
 
 export type CreditSummary = {
-  period: string; allowance: number; used: number; balance: number;
+  /** `balance` is every credit left; `yellow` is the part of it that was purchased (shown apart, never lapses). */
+  period: string; allowance: number; used: number; balance: number; yellow: number;
   /** This month's free credits, admin bonus and what is left of them; they lapse at `resetsAt`. */
   free: number; bonus: number; monthLeft: number; resetsAt: string;
   /** Each active plan's credits for its current term; they lapse when the plan ends. */
   plans: { program: string; title: string; credits: number; left: number; endsAt: string }[];
-  /** Purchased credits still unspent; they never lapse. */
+  /** Purchased ("yellow") credits still unspent; they never lapse. The meter shows them apart. */
   purchased: number;
 };
 
@@ -68,7 +69,7 @@ export async function creditSummary(userId: string, now = new Date()): Promise<C
   const totals = creditTotals(buckets);
   return {
     period, ...totals, free: table.free, bonus, monthLeft: available(monthBucket), resetsAt: creditResetAt(now.getTime()).toISOString(),
-    plans: planBuckets.map(bucket => ({ program: bucket.program, title: findSubscriptionPlan(bucket.program)?.shortTitle ?? bucket.program, credits: bucket.capacity, left: available(bucket), endsAt: new Date(bucket.endsAt).toISOString() })),
+    plans: planBuckets.map(bucket => ({ program: bucket.program, title: findAnyPlan(bucket.program)?.shortTitle ?? bucket.program, credits: bucket.capacity, left: available(bucket), endsAt: new Date(bucket.endsAt).toISOString() })),
     purchased: available(walletBucket),
   };
 }
@@ -90,7 +91,7 @@ async function moveCredits(db: Writer, userId: string, part: ChargePart, sign: 1
 
 const asJson = (parts: ChargePart[]) => parts as unknown as Prisma.InputJsonValue;
 
-type Hold = { id: string; userId: string; action: AiAction; credits: number; parts: ChargePart[]; before: { balance: number; allowance: number } };
+type Hold = { id: string; userId: string; action: AiAction; credits: number; parts: ChargePart[]; before: { balance: number; allowance: number; yellow: number } };
 
 async function holdCredits(userId: string, action: AiAction, credits: number, upTo: boolean): Promise<Hold> {
   // A hold is a whole number of credits and never more than the action's listed (maximum) price,
@@ -185,6 +186,6 @@ export async function chargeCredits<T extends object>(userId: string, action: Ai
     // The whole hold was counted at hold time and stays spent; only the usage record is missing.
     spent = hold.credits;
   }
-  const { balance, allowance } = totalsAfter(hold.before, kept);
-  return { ...result, credits: { action, spent, balance, allowance } };
+  const { balance, allowance, yellow } = totalsAfter(hold.before, kept);
+  return { ...result, credits: { action, spent, balance, allowance, yellow } };
 }

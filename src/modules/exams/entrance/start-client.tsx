@@ -5,7 +5,7 @@ import Link from "next/link";
 import { MOCK_PRICE_LABEL } from "../pricing";
 
 /** A compact start control for the imported ЭЕШ papers: one click, no preflight checklist. */
-export function EntranceStart({ slug, hasAccess, loggedIn, activeAttemptId }: { slug: string; hasAccess: boolean; loggedIn: boolean; activeAttemptId?: string }) {
+export function EntranceStart({ slug, hasAccess, loggedIn, activeAttemptId, free = false }: { slug: string; hasAccess: boolean; loggedIn: boolean; activeAttemptId?: string; free?: boolean }) {
   const router = useRouter();
   const busy = useRef(false);
   const [pending, setPending] = useState(false);
@@ -24,12 +24,18 @@ export function EntranceStart({ slug, hasAccess, loggedIn, activeAttemptId }: { 
       setError("Шалгалт нээгдсэнгүй. Холболтоо шалгаад дахин оролдоно уу.");
     } finally { busy.current = false; setPending(false); }
   }
+  if (!hasAccess && free) return <div className="eesh-gate">
+    <p className="eyebrow">ҮНЭГҮЙ ТУРШИЛТ</p>
+    <strong>₮0</strong>
+    <p>Бүртгэлтэй бүх хүнд үнэгүй. Нэвтэрч ороод эхлүүлнэ.</p>
+    <button type="button" className="button" onClick={() => router.push("/login?next=" + encodeURIComponent("/exams/" + slug))}>Нэвтэрч эхлэх →</button>
+  </div>;
   if (!hasAccess) return <div className="eesh-gate">
     <p className="eyebrow">НЭГ ШАЛГАЛТЫН ЭРХ</p>
     <strong>{MOCK_PRICE_LABEL}</strong>
-    <p>Эсвэл University Prep сарын багц — бүх ЭЕШ mock нээлттэй.</p>
+    <p>Эсвэл ЭЕШ сарын багц — бүх ЭЕШ mock хязгааргүй.</p>
     <button type="button" className="button" onClick={() => router.push(loggedIn ? "/checkout/" + slug : "/login?next=" + encodeURIComponent("/checkout/" + slug))}>Эрх авах →</button>
-    <Link className="text-link" href="/subscribe/entrance">University Prep үзэх</Link>
+    <Link className="text-link" href="/subscribe/entrance">ЭЕШ багц үзэх</Link>
   </div>;
   return <div className="eesh-start">
     <button type="button" className="button eesh-start-button" onClick={start} disabled={pending}>{pending ? "Нээж байна…" : activeAttemptId ? "Үргэлжлүүлэх" : "Шалгалт эхлэх"} <span aria-hidden="true">→</span></button>

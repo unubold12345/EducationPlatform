@@ -12,7 +12,7 @@ const empty = () => ({ responses: {}, flags: [], results: {} });
 const text = path => readFileSync(new URL("../" + path, import.meta.url), "utf8");
 
 test("every SAT and IELTS mock has a practice form with the whole authored bank", () => {
-  assert.equal(examDefinitions.length, 18);
+  assert.equal(examDefinitions.length, 21);
   for (const definition of examDefinitions.filter(exam => exam.program !== "entrance")) {
     const { form } = mockPractice(definition);
     assert.equal(new Set(form.questions.map(q => q.id)).size, form.questions.length, definition.slug);

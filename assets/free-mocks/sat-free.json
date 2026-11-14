@@ -1,0 +1,822 @@
+{
+ "slug": "sat-free",
+ "version": 1,
+ "program": "sat",
+ "title": "Digital SAT · Free Half Mock",
+ "description": "Half of a Digital SAT: one Reading and Writing module (27 questions, 32 minutes) and one Math module (22 questions, 35 minutes), with numerical responses. Free sampler; raw scores only.",
+ "sources": [
+  {
+   "label": "College Board — SAT structure",
+   "url": "https://satsuite.collegeboard.org/sat/whats-on-the-test/structure"
+  },
+  {
+   "label": "College Board — Math overview",
+   "url": "https://satsuite.collegeboard.org/sat/whats-on-the-test/math/overview"
+  }
+ ],
+ "notes": [
+  "Free half-length sampler: one module of each section, without adaptive routing or the ten-minute break.",
+  "Original practice questions, not College Board material. Raw correct counts only; no 200–800 scaled score."
+ ],
+ "stages": [
+  {
+   "id": "sat-rw-1",
+   "title": "Reading & Writing · Module 1",
+   "seconds": 1920,
+   "kind": "questions",
+   "instructions": "27 questions · 32 minutes. Read each short text and select one answer. Move freely within this module and flag questions for review. The Math module begins when this timer ends.",
+   "questions": [
+    {
+     "id": "sat-rw-free-1",
+     "domain": "Craft and Structure",
+     "kind": "choice",
+     "prompt": "Which choice completes the text with the most logical and precise word or phrase?",
+     "options": [
+      "collapse",
+      "shift",
+      "vanish",
+      "harden"
+     ],
+     "answers": [
+      "shift"
+     ],
+     "explanation": "The text contrasts rigidity with flexibility: the joints let parts of the bridge move, or shift, a little. Collapsing or vanishing would be failures, and hardening is the opposite of what the joints allow.",
+     "passage": "Engineers who design bridges for earthquake zones cannot rely on strength alone. A structure that is too rigid may crack when the ground moves, so designers often include joints and bearings that allow parts of the bridge to ______ slightly without breaking."
+    },
+    {
+     "id": "sat-rw-free-2",
+     "domain": "Craft and Structure",
+     "kind": "choice",
+     "prompt": "Which choice completes the text with the most logical and precise word or phrase?",
+     "options": [
+      "deceptive",
+      "accidental",
+      "unfinished",
+      "repetitive"
+     ],
+     "answers": [
+      "deceptive"
+     ],
+     "explanation": "The simplicity only seemed simple; it hid careful, layered work. That makes it deceptive. 'Carefully revised' rules out accidental and unfinished.",
+     "passage": "The novelist's early reviewers called her prose plain, but later critics argued that its apparent simplicity was ______: each short sentence, they noted, had been carefully revised to carry several layers of meaning."
+    },
+    {
+     "id": "sat-rw-free-3",
+     "domain": "Craft and Structure",
+     "kind": "choice",
+     "prompt": "Which choice completes the text with the most logical and precise word or phrase?",
+     "options": [
+      "hostile",
+      "measured",
+      "secretive",
+      "enthusiastic"
+     ],
+     "answers": [
+      "measured"
+     ],
+     "explanation": "'Although' signals a contrast with outright rejection. A report that praises some parts and asks for changes in others is balanced, or measured, not hostile; the requested changes show it was not simply enthusiastic.",
+     "passage": "Although the committee had been expected to reject the proposal outright, its final report was more ______, praising the plan's goals while recommending changes to its budget."
+    },
+    {
+     "id": "sat-rw-free-4",
+     "domain": "Craft and Structure",
+     "kind": "choice",
+     "prompt": "Which choice completes the text with the most logical and precise word or phrase?",
+     "options": [
+      "reversed",
+      "predicted",
+      "concealed",
+      "imitated"
+     ],
+     "answers": [
+      "reversed"
+     ],
+     "explanation": "Building rail where trams were removed undoes the earlier choice, so the cities reversed it.",
+     "passage": "In the 1950s, many cities removed their tram lines to make room for cars. In recent decades, several of those cities have ______ that decision, building new light-rail networks along routes where trams once ran."
+    },
+    {
+     "id": "sat-rw-free-5",
+     "domain": "Craft and Structure",
+     "kind": "choice",
+     "prompt": "Which choice best describes the overall structure of the text?",
+     "options": [
+      "It compares the dances of two bee species and explains why one is more accurate.",
+      "It proposes a new theory of bee communication and then rejects every earlier study.",
+      "It describes a behaviour, presents an assumption about the behaviour's importance, and then reports a finding that complicates that assumption.",
+      "It describes an experiment in detail and then explains how the experiment was funded."
+     ],
+     "answers": [
+      "It describes a behaviour, presents an assumption about the behaviour's importance, and then reports a finding that complicates that assumption."
+     ],
+     "explanation": "The text explains the dance, states what researchers 'once assumed', and then introduces evidence with 'However' that weakens that assumption.",
+     "passage": "Honeybees share the location of food through a 'waggle dance': a returning forager moves in a figure-eight pattern, and the angle of the straight middle run indicates the direction of the food relative to the sun. Researchers once assumed that the dance was the colony's main source of information about food. However, when experiments made the dances impossible to follow, colonies in some environments gathered food nearly as well as colonies whose dances could be read."
+    },
+    {
+     "id": "sat-rw-free-6",
+     "domain": "Craft and Structure",
+     "kind": "choice",
+     "prompt": "Which choice best states the main purpose of the text?",
+     "options": [
+      "To explain why the clock shop went out of business",
+      "To describe the history of the street in detail",
+      "To argue that old shops should be protected by law",
+      "To show a character becoming aware of something she had long overlooked"
+     ],
+     "answers": [
+      "To show a character becoming aware of something she had long overlooked"
+     ],
+     "explanation": "Mara ignores the shop for years and only notices the loss, and the new quiet, when it closes. The text gives no reasons for the closure, no history and no argument.",
+     "passage": "Mara had walked past the old clock shop every morning for years without once looking in. On the day it closed, she stopped. Through the dusty window she could see the empty hooks where the clocks had hung, and for the first time she noticed how quiet the street had become."
+    },
+    {
+     "id": "sat-rw-free-7",
+     "domain": "Craft and Structure",
+     "kind": "choice",
+     "prompt": "Based on the texts, how would the author of Text 2 most likely respond to the planners described in Text 1?",
+     "options": [
+      "By arguing that the planners overlook how people change their driving habits when roads are widened",
+      "By agreeing that wider highways permanently end traffic jams",
+      "By claiming that cities should remove all of their highways",
+      "By noting that the planners' proposal would cost too much"
+     ],
+     "answers": [
+      "By arguing that the planners overlook how people change their driving habits when roads are widened"
+     ],
+     "explanation": "Text 2's point is that easier driving creates new trips, which the planners' reasoning ignores. It never discusses cost or removing highways.",
+     "passage": "Text 1\nSome urban planners argue that adding lanes to busy highways reduces traffic jams. More space, they say, lets more cars move at once, so journeys become faster.\n\nText 2\nStudies of several cities have found that new highway lanes are often filled within a few years. When driving becomes easier, people make trips they previously avoided, and congestion returns. This effect, known as induced demand, suggests that wider roads alone rarely solve traffic problems."
+    },
+    {
+     "id": "sat-rw-free-8",
+     "domain": "Information and Ideas",
+     "kind": "choice",
+     "prompt": "Which choice best states the main idea of the text?",
+     "options": [
+      "Farmers in dry regions should stop growing crops that need water.",
+      "Soil sensors are too expensive for most farmers to use.",
+      "Heavy watering always produces the largest harvests.",
+      "Soil sensors may help farmers use less water while keeping their harvests nearly as large."
+     ],
+     "answers": [
+      "Soil sensors may help farmers use less water while keeping their harvests nearly as large."
+     ],
+     "explanation": "The study's result is less water with almost the same harvest. Nothing in the text discusses cost, and the result contradicts 'always'.",
+     "passage": "Farmers in dry regions often face a difficult choice: water crops heavily and risk running short later in the season, or water lightly and accept smaller harvests. In one study, farmers in an arid region used soil sensors that report moisture at several depths. These farmers applied about a fifth less water than nearby farmers without sensors, yet their harvests were nearly the same size."
+    },
+    {
+     "id": "sat-rw-free-9",
+     "domain": "Information and Ideas",
+     "kind": "choice",
+     "prompt": "According to the text, what happened after the park changed its plantings?",
+     "options": [
+      "The volunteers stopped counting birds.",
+      "Insect-eating birds disappeared from the park.",
+      "More bird species were recorded in the park.",
+      "The remaining lawn attracted more species than the shrubs did."
+     ],
+     "answers": [
+      "More bird species were recorded in the park."
+     ],
+     "explanation": "The count rose from 41 to 58 species after the change. The text says new insect-eating birds appeared, not that they left.",
+     "passage": "In 2019, volunteers began counting the bird species that visited a city park each weekend. In the first year they recorded 41 species. After the park replaced part of its lawn with native shrubs and flowering plants, the yearly count rose to 58 species within three years, including several insect-eating birds that had never been recorded there."
+    },
+    {
+     "id": "sat-rw-free-10",
+     "domain": "Information and Ideas",
+     "kind": "choice",
+     "prompt": "Which quotation from the poem would most effectively illustrate the student's claim?",
+     "options": [
+      "\"The stones are grey, the sky is wide, / the path runs on along the side.\"",
+      "\"The stream that used to hold my face / now hurries it away downstream.\"",
+      "\"I left my boots beside the door / the way I always did before.\"",
+      "\"My brother laughed, and so did I, / and neither of us asked him why.\""
+     ],
+     "answers": [
+      "\"The stream that used to hold my face / now hurries it away downstream.\""
+     ],
+     "explanation": "Only this quotation uses water, and the image of the reflection once held still and now carried away suggests change over time.",
+     "passage": "In the poem 'The Ford', the speaker returns as an adult to a stream that she crossed every day as a child. A student claims that the poem uses images of water to suggest that time has changed the speaker."
+    },
+    {
+     "id": "sat-rw-free-11",
+     "domain": "Information and Ideas",
+     "kind": "choice",
+     "prompt": "Which choice best describes data from the table that support the researcher's conclusion?",
+     "options": [
+      "Group W studied the fewest hours and had the lowest average score.",
+      "Group X studied six hours each week.",
+      "Group Y had a higher average score than Group Z, although Group Z studied more hours each week.",
+      "Every group had an average score above 60."
+     ],
+     "answers": [
+      "Group Y had a higher average score than Group Z, although Group Z studied more hours each week."
+     ],
+     "explanation": "The second half of the conclusion needs the top-study group (Z, 10 hours) to score below another group: Y scored 81 and Z scored 79. The choice about Group W supports only the first half.",
+     "passage": "A researcher recorded the average weekly study time and the average score on a final test for four groups of students.\n\nGroup | Weekly study (hours) | Average score\nW | 4 | 68\nX | 6 | 74\nY | 8 | 81\nZ | 10 | 79\n\nThe researcher concluded that scores generally rose with study time but that the group that studied most did not have the highest average score."
+    },
+    {
+     "id": "sat-rw-free-12",
+     "domain": "Information and Ideas",
+     "kind": "choice",
+     "prompt": "Which choice most logically completes the text?",
+     "options": [
+      "the residents probably obtained sea fish from traders.",
+      "the town was originally built on the coast.",
+      "the residents did not eat fish at all.",
+      "river fish were more popular in the town than sea fish."
+     ],
+     "answers": [
+      "the residents probably obtained sea fish from traders."
+     ],
+     "explanation": "Sea fish reached a town whose people did not travel to the sea, so someone else brought them: trade fits the evidence. The bones themselves contradict the other choices.",
+     "passage": "Archaeologists studying an ancient inland trading town found large numbers of fish bones, although the town was more than 200 kilometres from the nearest coast. The bones came from sea fish rather than river fish, and there is no evidence that the town's residents travelled to the coast themselves. The archaeologists therefore concluded that ______"
+    },
+    {
+     "id": "sat-rw-free-13",
+     "domain": "Information and Ideas",
+     "kind": "choice",
+     "prompt": "Which choice best states a conclusion that the biologist's findings support?",
+     "options": [
+      "The lizards prefer cold climates to warm ones.",
+      "Rocks are warmer than open ground at midday.",
+      "The lizards are active only at night.",
+      "The lizards probably avoid midday activity to keep from overheating."
+     ],
+     "answers": [
+      "The lizards probably avoid midday activity to keep from overheating."
+     ],
+     "explanation": "The lizards hide exactly when the ground exceeds their safe temperature, which suggests the hiding prevents overheating. The text says they are active in the morning and afternoon.",
+     "passage": "A biologist observed that a species of desert lizard is active in the early morning and late afternoon but hides under rocks around midday. When she measured the ground temperature, she found that between late morning and early afternoon it often rose above the highest body temperature the lizards can safely tolerate."
+    },
+    {
+     "id": "sat-rw-free-14",
+     "domain": "Information and Ideas",
+     "kind": "choice",
+     "prompt": "Based on the text, what does the narrator eventually realise about the grandfather's advice?",
+     "options": [
+      "It was a joke with no real meaning.",
+      "It was meant to teach careful observation.",
+      "It showed that he had forgotten his recipes.",
+      "It was meant to discourage the narrator from cooking."
+     ],
+     "answers": [
+      "It was meant to teach careful observation."
+     ],
+     "explanation": "The final sentence states the realisation: the advice taught the narrator to pay attention rather than measure.",
+     "passage": "Grandfather never wrote down his recipes. When I asked him how much salt to add to the soup, he would taste it, frown and say, 'Until it tells you it's ready.' For years I thought he was teasing me. Only after I began cooking for my own family did I understand that he had been teaching me to pay attention rather than to measure."
+    },
+    {
+     "id": "sat-rw-free-15",
+     "domain": "Standard English Conventions",
+     "kind": "choice",
+     "prompt": "Which choice completes the text so that it conforms to the conventions of Standard English?",
+     "options": [
+      "objects,",
+      "objects;",
+      "objects",
+      "objects, which"
+     ],
+     "answers": [
+      "objects;"
+     ],
+     "explanation": "Two independent clauses need a semicolon (or a comma with a conjunction). A comma alone creates a comma splice; 'which' leaves 'many of them have…' without a proper structure.",
+     "passage": "The museum's new exhibition features more than 300 ______ many of them have never been displayed before."
+    },
+    {
+     "id": "sat-rw-free-16",
+     "domain": "Standard English Conventions",
+     "kind": "choice",
+     "prompt": "Which choice completes the text so that it conforms to the conventions of Standard English?",
+     "options": [
+      "have",
+      "are",
+      "were",
+      "has"
+     ],
+     "answers": [
+      "has"
+     ],
+     "explanation": "The subject is 'Each', which is singular, so the verb is 'has'. 'Paintings' is inside the prepositional phrase.",
+     "passage": "Each of the paintings in the collection ______ been restored by the museum's conservation team."
+    },
+    {
+     "id": "sat-rw-free-17",
+     "domain": "Standard English Conventions",
+     "kind": "choice",
+     "prompt": "Which choice completes the text so that it conforms to the conventions of Standard English?",
+     "options": [
+      "the team's conclusion was that the model needed revision.",
+      "the model was revised by the team.",
+      "the team concluded that the model needed revision.",
+      "revision of the model was the team's conclusion."
+     ],
+     "answers": [
+      "the team concluded that the model needed revision."
+     ],
+     "explanation": "The opening phrase describes who studied the data, so 'the team' must come right after the comma. Otherwise the conclusion, the model or the revision seems to have studied the data.",
+     "passage": "After studying the data for several weeks, ______"
+    },
+    {
+     "id": "sat-rw-free-18",
+     "domain": "Standard English Conventions",
+     "kind": "choice",
+     "prompt": "Which choice completes the text so that it conforms to the conventions of Standard English?",
+     "options": [
+      "their",
+      "they're",
+      "there",
+      "its"
+     ],
+     "answers": [
+      "their"
+     ],
+     "explanation": "A plural possessive pronoun is needed for 'the two scientists': their. 'They're' means 'they are', and 'its' is singular.",
+     "passage": "The two scientists published ______ findings in the same issue of the journal."
+    },
+    {
+     "id": "sat-rw-free-19",
+     "domain": "Standard English Conventions",
+     "kind": "choice",
+     "prompt": "Which choice completes the text so that it conforms to the conventions of Standard English?",
+     "options": [
+      "rise",
+      "rising",
+      "rises",
+      "have risen"
+     ],
+     "answers": [
+      "rises"
+     ],
+     "explanation": "The singular subject 'Mount Kilimanjaro' needs a singular finite verb; the appositive between the commas does not change it. 'Rising' is not a finite verb.",
+     "passage": "Mount Kilimanjaro, the highest mountain in Africa, ______ nearly 5,900 metres above sea level."
+    },
+    {
+     "id": "sat-rw-free-20",
+     "domain": "Standard English Conventions",
+     "kind": "choice",
+     "prompt": "Which choice completes the text so that it conforms to the conventions of Standard English?",
+     "options": [
+      "ingredients;",
+      "ingredients, which",
+      "ingredients:",
+      "ingredients, they are"
+     ],
+     "answers": [
+      "ingredients:"
+     ],
+     "explanation": "A colon introduces a list after a complete clause. A semicolon must join two independent clauses, 'which' would need a verb of its own, and 'ingredients, they are' is a comma splice.",
+     "passage": "The recipe requires only three ______ flour, water and salt."
+    },
+    {
+     "id": "sat-rw-free-21",
+     "domain": "Standard English Conventions",
+     "kind": "choice",
+     "prompt": "Which choice completes the text so that it conforms to the conventions of Standard English?",
+     "options": [
+      "launches",
+      "launched",
+      "will launch",
+      "is launching"
+     ],
+     "answers": [
+      "launched"
+     ],
+     "explanation": "'Last summer' sets the action in the past, so the simple past 'launched' is needed.",
+     "passage": "Last summer, the city ______ a programme that offers free swimming lessons to children."
+    },
+    {
+     "id": "sat-rw-free-22",
+     "domain": "Standard English Conventions",
+     "kind": "choice",
+     "prompt": "Which choice completes the text so that it conforms to the conventions of Standard English?",
+     "options": [
+      "bird's",
+      "birds",
+      "birds's",
+      "birds'"
+     ],
+     "answers": [
+      "birds'"
+     ],
+     "explanation": "The eggs belong to many birds, so the plural possessive 'birds'' is correct.",
+     "passage": "The researchers counted the seabirds' nests and found that the ______ eggs were laid weeks earlier than in previous years."
+    },
+    {
+     "id": "sat-rw-free-23",
+     "domain": "Expression of Ideas",
+     "kind": "choice",
+     "prompt": "Which choice completes the text with the most logical transition?",
+     "options": [
+      "However,",
+      "Therefore,",
+      "For example,",
+      "Similarly,"
+     ],
+     "answers": [
+      "However,"
+     ],
+     "explanation": "The second sentence limits the first ('it seems to be everywhere' versus 'not all sand is suitable'), so a contrast is needed.",
+     "passage": "Sand is one of the main ingredients of concrete, and it seems to be everywhere. ______ not all sand is suitable: the smooth, rounded grains of desert sand do not lock together well, so builders usually rely on sand from rivers and quarries."
+    },
+    {
+     "id": "sat-rw-free-24",
+     "domain": "Expression of Ideas",
+     "kind": "choice",
+     "prompt": "Which choice completes the text with the most logical transition?",
+     "options": [
+      "In contrast,",
+      "For instance,",
+      "Next,",
+      "Nevertheless,"
+     ],
+     "answers": [
+      "Next,"
+     ],
+     "explanation": "The sentences describe steps in order: first measuring, then moving the seedlings.",
+     "passage": "Researchers first measured the height of each seedling. ______ they moved half of the seedlings into a shaded greenhouse and left the rest in full sun."
+    },
+    {
+     "id": "sat-rw-free-25",
+     "domain": "Expression of Ideas",
+     "kind": "choice",
+     "prompt": "Which choice completes the text with the most logical transition?",
+     "options": [
+      "Similarly,",
+      "In fact,",
+      "Meanwhile,",
+      "Instead,"
+     ],
+     "answers": [
+      "In fact,"
+     ],
+     "explanation": "The second sentence adds a striking detail that supports and sharpens the first: the usual danger is over-care. 'In fact' introduces that emphasis.",
+     "passage": "Cacti are known for needing very little care. ______ cacti grown indoors more often die from too much water than from too little."
+    },
+    {
+     "id": "sat-rw-free-26",
+     "domain": "Expression of Ideas",
+     "kind": "choice",
+     "prompt": "The student wants to emphasise the historical importance of the Orkhon Valley. Which choice most effectively uses relevant information from the notes to accomplish this goal?",
+     "options": [
+      "The Orkhon Valley, a UNESCO World Heritage site since 2004, contains the ruins of Kharkhorum, the 13th-century capital of the Mongol Empire.",
+      "The Orkhon Valley is a valley in central Mongolia.",
+      "In 2004, UNESCO added several new places to its list.",
+      "Both the Orkhon Valley and the ruins of Kharkhorum are in central Mongolia."
+     ],
+     "answers": [
+      "The Orkhon Valley, a UNESCO World Heritage site since 2004, contains the ruins of Kharkhorum, the 13th-century capital of the Mongol Empire."
+     ],
+     "explanation": "Only this choice links the valley to its World Heritage status and to an imperial capital, which shows its historical importance. The other choices give only a location or a general fact about UNESCO.",
+     "passage": "While researching a topic, a student has taken the following notes:\n• The Orkhon Valley is in central Mongolia.\n• It was added to UNESCO's World Heritage List in 2004.\n• The valley contains archaeological remains from many centuries, including the ruins of Kharkhorum.\n• Kharkhorum was the capital of the Mongol Empire in the 13th century."
+    },
+    {
+     "id": "sat-rw-free-27",
+     "domain": "Expression of Ideas",
+     "kind": "choice",
+     "prompt": "The student wants to present a benefit of placing solar panels above canals. Which choice most effectively uses relevant information from the notes to accomplish this goal?",
+     "options": [
+      "Solar panels convert sunlight into electricity.",
+      "Solar panels produce less electricity when they become hot.",
+      "In one test, solar panels were installed above a canal.",
+      "In one test, solar panels above a canal produced slightly more electricity than panels on land because the water kept them cooler."
+     ],
+     "answers": [
+      "In one test, solar panels above a canal produced slightly more electricity than panels on land because the water kept them cooler."
+     ],
+     "explanation": "Only this choice states a benefit of the canal location and the reason for it. The others give background, or the test's setting, without the benefit.",
+     "passage": "While researching a topic, a student has taken the following notes:\n• Solar panels convert sunlight into electricity.\n• Panels produce less electricity when they become hot.\n• In one test, panels were installed above a canal.\n• The water below cooled the panels, and they produced slightly more electricity than similar panels on land.\n• Covering the canal also reduced evaporation."
+    }
+   ]
+  },
+  {
+   "id": "sat-math-1",
+   "title": "Math · Module 1",
+   "seconds": 2100,
+   "kind": "questions",
+   "instructions": "22 questions · 35 minutes. A calculator is permitted throughout Math. Some questions require a numerical response: enter an integer, decimal or fraction, without units. Reference formulas and a graphing calculator are available from Tools.",
+   "questions": [
+    {
+     "id": "sat-math-free-1",
+     "domain": "Algebra",
+     "kind": "choice",
+     "prompt": "If 3x − 7 = 11, what is the value of x?",
+     "options": [
+      "4",
+      "6",
+      "5",
+      "18"
+     ],
+     "answers": [
+      "6"
+     ],
+     "explanation": "Add 7 to both sides: 3x = 18. Divide by 3: x = 6."
+    },
+    {
+     "id": "sat-math-free-2",
+     "domain": "Algebra",
+     "kind": "number",
+     "prompt": "A line in the xy-plane passes through the points (0, 4) and (2, 10). What is the slope of the line?",
+     "answers": [
+      "3"
+     ],
+     "explanation": "Slope = (10 − 4)/(2 − 0) = 6/2 = 3."
+    },
+    {
+     "id": "sat-math-free-3",
+     "domain": "Advanced Math",
+     "kind": "choice",
+     "prompt": "Which expression is equivalent to (x + 5)(x − 3)?",
+     "options": [
+      "x² − 2x − 15",
+      "x² + 2x + 15",
+      "x² + 2x − 15",
+      "x² − 15"
+     ],
+     "answers": [
+      "x² + 2x − 15"
+     ],
+     "explanation": "Expand: x² − 3x + 5x − 15 = x² + 2x − 15."
+    },
+    {
+     "id": "sat-math-free-4",
+     "domain": "Problem-Solving and Data Analysis",
+     "kind": "number",
+     "prompt": "A shirt regularly costs $40. During a sale, its price is reduced by 15%. What is the sale price of the shirt, in dollars?",
+     "answers": [
+      "34"
+     ],
+     "explanation": "The discount is 0.15 × 40 = 6 dollars, so the sale price is 40 − 6 = 34. Equivalently, 0.85 × 40 = 34."
+    },
+    {
+     "id": "sat-math-free-5",
+     "domain": "Algebra",
+     "kind": "choice",
+     "prompt": "A gym charges a one-time joining fee of $40 plus $25 per month. Which equation gives the total cost C, in dollars, of a membership for m months?",
+     "options": [
+      "C = 25m + 40",
+      "C = 40m + 25",
+      "C = 65m",
+      "C = 25(m + 40)"
+     ],
+     "answers": [
+      "C = 25m + 40"
+     ],
+     "explanation": "The monthly charge is multiplied by the number of months, and the one-time fee is added once: C = 25m + 40."
+    },
+    {
+     "id": "sat-math-free-6",
+     "domain": "Geometry and Trigonometry",
+     "kind": "choice",
+     "prompt": "In a triangle, two of the angles measure 48° and 67°. What is the measure, in degrees, of the third angle?",
+     "options": [
+      "55",
+      "75",
+      "115",
+      "65"
+     ],
+     "answers": [
+      "65"
+     ],
+     "explanation": "The angles of a triangle add to 180°: 180 − 48 − 67 = 65. 115 is the sum of the two given angles."
+    },
+    {
+     "id": "sat-math-free-7",
+     "domain": "Advanced Math",
+     "kind": "number",
+     "prompt": "The function f is defined by f(x) = 2x² − 3. What is the value of f(−2)?",
+     "answers": [
+      "5"
+     ],
+     "explanation": "f(−2) = 2(−2)² − 3 = 2(4) − 3 = 5. Squaring −2 gives a positive 4."
+    },
+    {
+     "id": "sat-math-free-8",
+     "domain": "Algebra",
+     "kind": "choice",
+     "prompt": "If 2(x + 3) = 5x − 9, what is the value of x?",
+     "options": [
+      "1",
+      "5",
+      "3",
+      "15"
+     ],
+     "answers": [
+      "5"
+     ],
+     "explanation": "Expand: 2x + 6 = 5x − 9. Then 15 = 3x, so x = 5."
+    },
+    {
+     "id": "sat-math-free-9",
+     "domain": "Problem-Solving and Data Analysis",
+     "kind": "choice",
+     "prompt": "A school club has 12 students in grade 9, 18 in grade 10, 15 in grade 11 and 15 in grade 12. If one club member is chosen at random, what is the probability that the student is in grade 10?",
+     "options": [
+      "1/4",
+      "1/3",
+      "3/10",
+      "3/7"
+     ],
+     "answers": [
+      "3/10"
+     ],
+     "explanation": "There are 12 + 18 + 15 + 15 = 60 members, and 18 are in grade 10: 18/60 = 3/10."
+    },
+    {
+     "id": "sat-math-free-10",
+     "domain": "Advanced Math",
+     "kind": "choice",
+     "prompt": "What are the solutions of the equation x² − 7x + 10 = 0?",
+     "options": [
+      "2 and 5",
+      "−2 and −5",
+      "1 and 10",
+      "−2 and 5"
+     ],
+     "answers": [
+      "2 and 5"
+     ],
+     "explanation": "Factor: (x − 2)(x − 5) = 0, so x = 2 or x = 5. Check: the solutions add to 7 and multiply to 10."
+    },
+    {
+     "id": "sat-math-free-11",
+     "domain": "Algebra",
+     "kind": "choice",
+     "prompt": "Which of the following points lies on the line y = −2x + 7?",
+     "options": [
+      "(1, 3)",
+      "(2, 4)",
+      "(−1, 5)",
+      "(3, 1)"
+     ],
+     "answers": [
+      "(3, 1)"
+     ],
+     "explanation": "Substitute x = 3: y = −6 + 7 = 1. For (1, 3), y would be 5; for (2, 4), 3; for (−1, 5), 9."
+    },
+    {
+     "id": "sat-math-free-12",
+     "domain": "Geometry and Trigonometry",
+     "kind": "choice",
+     "prompt": "A rectangle has a length of 12 and a width of 5. What is the length of a diagonal of the rectangle?",
+     "options": [
+      "7",
+      "13",
+      "17",
+      "60"
+     ],
+     "answers": [
+      "13"
+     ],
+     "explanation": "The diagonal is the hypotenuse of a right triangle with legs 12 and 5: √(144 + 25) = √169 = 13."
+    },
+    {
+     "id": "sat-math-free-13",
+     "domain": "Algebra",
+     "kind": "choice",
+     "prompt": "If x + y = 12 and x − y = 4, what is the value of xy?",
+     "options": [
+      "12",
+      "16",
+      "32",
+      "48"
+     ],
+     "answers": [
+      "32"
+     ],
+     "explanation": "Adding the equations gives 2x = 16, so x = 8 and y = 4. Then xy = 32."
+    },
+    {
+     "id": "sat-math-free-14",
+     "domain": "Advanced Math",
+     "kind": "choice",
+     "prompt": "A population of bacteria starts at 200 and triples every hour. Which function gives the population P after t hours?",
+     "options": [
+      "P(t) = 200 + 3t",
+      "P(t) = 3(200)ᵗ",
+      "P(t) = 200(1/3)ᵗ",
+      "P(t) = 200(3)ᵗ"
+     ],
+     "answers": [
+      "P(t) = 200(3)ᵗ"
+     ],
+     "explanation": "Tripling is repeated multiplication by 3, starting from 200: P(t) = 200 · 3ᵗ. Adding 3t would be linear growth."
+    },
+    {
+     "id": "sat-math-free-15",
+     "domain": "Problem-Solving and Data Analysis",
+     "kind": "choice",
+     "prompt": "A data set of 8 values has a median of 21. If 4 is added to each value, what is the median of the new data set?",
+     "options": [
+      "25",
+      "21",
+      "29",
+      "84"
+     ],
+     "answers": [
+      "25"
+     ],
+     "explanation": "Adding the same number to every value shifts every value, and therefore the median, by that number: 21 + 4 = 25."
+    },
+    {
+     "id": "sat-math-free-16",
+     "domain": "Algebra",
+     "kind": "choice",
+     "prompt": "The equation y = 0.5x + 12 models the height y, in centimetres, of a plant x days after it was first measured. What is the best interpretation of 0.5 in this context?",
+     "options": [
+      "The plant was 0.5 centimetre tall when first measured.",
+      "The plant grows 0.5 centimetre each day.",
+      "The plant grows for 0.5 day.",
+      "The plant grows 12 centimetres each day."
+     ],
+     "answers": [
+      "The plant grows 0.5 centimetre each day."
+     ],
+     "explanation": "0.5 is the slope: the change in height for each additional day. 12 is the height when x = 0."
+    },
+    {
+     "id": "sat-math-free-17",
+     "domain": "Advanced Math",
+     "kind": "choice",
+     "prompt": "The function g is defined by g(x) = (x − 4)² + 1. What is the minimum value of g(x)?",
+     "options": [
+      "−4",
+      "4",
+      "1",
+      "17"
+     ],
+     "answers": [
+      "1"
+     ],
+     "explanation": "A square is never negative, so (x − 4)² is smallest, 0, when x = 4. Then g(4) = 1."
+    },
+    {
+     "id": "sat-math-free-18",
+     "domain": "Algebra",
+     "kind": "number",
+     "prompt": "A delivery van can carry at most 900 kilograms, including the driver. The driver weighs 80 kilograms and each box weighs 20 kilograms. What is the greatest number of boxes the van can carry on one trip with the driver?",
+     "answers": [
+      "41"
+     ],
+     "explanation": "80 + 20b ≤ 900 gives 20b ≤ 820, so b ≤ 41. The greatest whole number of boxes is 41."
+    },
+    {
+     "id": "sat-math-free-19",
+     "domain": "Problem-Solving and Data Analysis",
+     "kind": "choice",
+     "prompt": "In a random sample of 200 voters in a town, 120 said they support building a new park. The town has 15,000 voters. Based on the sample, about how many voters in the town support the new park?",
+     "options": [
+      "120",
+      "6,000",
+      "12,000",
+      "9,000"
+     ],
+     "answers": [
+      "9,000"
+     ],
+     "explanation": "The sample proportion is 120/200 = 0.6, and 0.6 × 15,000 = 9,000. 6,000 is the estimate of voters who do not support it."
+    },
+    {
+     "id": "sat-math-free-20",
+     "domain": "Advanced Math",
+     "kind": "choice",
+     "prompt": "If x > 0 and x² = 49, what is the value of √(x + 2)?",
+     "options": [
+      "7",
+      "3",
+      "9",
+      "√51"
+     ],
+     "answers": [
+      "3"
+     ],
+     "explanation": "Since x > 0, x = 7. Then √(7 + 2) = √9 = 3."
+    },
+    {
+     "id": "sat-math-free-21",
+     "domain": "Geometry and Trigonometry",
+     "kind": "choice",
+     "prompt": "In right triangle ABC, angle C is a right angle, AC = 8 and AB = 17. What is the value of cos A?",
+     "options": [
+      "8/17",
+      "15/17",
+      "8/15",
+      "15/8"
+     ],
+     "answers": [
+      "8/17"
+     ],
+     "explanation": "BC = √(17² − 8²) = 15. Cosine is adjacent over hypotenuse: for angle A, the adjacent side is AC = 8 and the hypotenuse is AB = 17."
+    },
+    {
+     "id": "sat-math-free-22",
+     "domain": "Advanced Math",
+     "kind": "number",
+     "prompt": "For what value of k does the equation x² + 6x + k = 0 have exactly one real solution?",
+     "answers": [
+      "9"
+     ],
+     "explanation": "One real solution means the discriminant is zero: 6² − 4k = 0, so k = 9. Then x² + 6x + 9 = (x + 3)²."
+    }
+   ]
+  }
+ ]
+}

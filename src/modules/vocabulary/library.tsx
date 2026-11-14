@@ -7,6 +7,7 @@ import { speechFor, type QuizScope } from "./quiz";
 import { speak } from "./speech";
 import { readStored, writeStored } from "./api";
 import { Glyph } from "./glyphs";
+import type { Confirm, ConfirmRequest } from "./modal";
 import styles from "./vocabulary.module.css";
 
 export const STATUS_LABEL: Record<StudyStatus, string> = { new: "Шинэ", learning: "Сурч буй", familiar: "Танил", mastered: "Цээжилсэн" };
@@ -33,6 +34,8 @@ export type LibraryActions = {
   updateDeck: (id: string, fields: { name?: string; color?: DeckColor }) => Promise<string | null>;
   deleteDeck: (deck: VocabularyDeck, withWords: boolean) => Promise<string | null>;
   quiz: (launch: QuizLaunch) => void;
+  /** Asks in a modal before a delete or a progress reset. */
+  confirm: Confirm;
 };
 
 const STATUS_FILTERS: { id: StatusFilter; label: string }[] = [
@@ -158,6 +161,11 @@ export function Library({ words, decks, now, canSpeak, actions, onAdd, onImport 
     setBusy(false);
     if (problem) setError(problem); else if (!keep) setSelected(new Set());
   }
+  /** A bulk change that cannot be undone runs only after the modal is answered. */
+  async function ask(request: ConfirmRequest, run: (ids: string[]) => Promise<string | null>) {
+    if (busy || !chosen.length) return;
+    if (await actions.confirm(request)) await bulk(run);
+  }
   async function createDeck(event: FormEvent) {
     event.preventDefault();
     const name = deckName.trim();
@@ -186,8 +194,8 @@ export function Library({ words, decks, now, canSpeak, actions, onAdd, onImport 
         <p>{narrowed || scope !== "all" ? `${filtered.length} / ${words.length} үг` : `${words.length} үг`}</p>
       </div>
       <div className={styles.libraryActions}>
-        <button type="button" className={styles.ghost} onClick={onImport}><Glyph name="upload" size={16} />Файлаас оруулах</button>
-        <button type="button" className={styles.primary} onClick={onAdd}><Icon name="plus" size={16} />Үг нэмэх</button>
+        <button type="button" className={styles.ghost} onClick={onImport} aria-haspopup="dialog"><Glyph name="upload" size={16} />Файлаас оруулах</button>
+        <button type="button" className={styles.primary} onClick={onAdd} aria-haspopup="dialog"><Icon name="plus" size={16} />Үг нэмэх</button>
       </div>
     </div>
 
@@ -250,8 +258,8 @@ export function Library({ words, decks, now, canSpeak, actions, onAdd, onImport 
               <Glyph name="star" size={15} />{chosen.every(word => word.starred) ? "Онцлохоо болих" : "Онцлох"}
             </button>
             <button type="button" className={styles.chipButton} onClick={() => actions.quiz({ wordIds: chosen.map(word => word.id) })} disabled={busy}><Icon name="bolt" size={15} />Quiz</button>
-            <button type="button" className={styles.chipButton} onClick={() => { if (window.confirm(`${chosen.length} үгийн давталтын явцыг арилгах уу?`)) void bulk(actions.reset); }} disabled={busy}><Glyph name="reset" size={15} />Явц арилгах</button>
-            <button type="button" className={`${styles.chipButton} ${styles.chipDanger}`} onClick={() => { if (window.confirm(`${chosen.length} үгийг устгах уу? Буцаах боломжгүй.`)) void bulk(actions.remove); }} disabled={busy}><Icon name="trash" size={15} />Устгах</button>
+            <button type="button" className={styles.chipButton} onClick={() => void ask({ title: `${chosen.length} үгийн давталтын явцыг арилгах уу?`, text: "Эдгээр үг шинэ үг болж, давталтаа эхнээс нь эхэлнэ.", choices: [{ value: "reset", label: "Явц арилгах", tone: "danger" }] }, actions.reset)} disabled={busy} aria-haspopup="dialog"><Glyph name="reset" size={15} />Явц арилгах</button>
+            <button type="button" className={`${styles.chipButton} ${styles.chipDanger}`} onClick={() => void ask({ title: `${chosen.length} үгийг устгах уу?`, text: "Сонгосон үгс болон тэдгээрийн давталтын явц устана. Буцаах боломжгүй.", choices: [{ value: "delete", label: `${chosen.length} үг устгах`, tone: "danger" }] }, actions.remove)} disabled={busy} aria-haspopup="dialog"><Icon name="trash" size={15} />Устгах</button>
             <button type="button" className={styles.rowAction} onClick={() => setSelected(new Set())} aria-label="Сонголтыг цуцлах" title="Сонголтыг цуцлах" disabled={busy}><Icon name="close" size={16} /></button>
           </span>
         </div> : null}
@@ -261,8 +269,8 @@ export function Library({ words, decks, now, canSpeak, actions, onAdd, onImport 
           <h3>Үгсийн сан хоосон байна</h3>
           <p>Эхний үгээ гараар нэмэх эсвэл хичээлийн файл, хуудасны зургаас AI-аар түүж аваарай.</p>
           <div className={styles.emptyActions}>
-            <button type="button" className={styles.primary} onClick={onAdd}><Icon name="plus" size={16} />Үг нэмэх</button>
-            <button type="button" className={styles.ghost} onClick={onImport}><Glyph name="upload" size={16} />Файлаас оруулах</button>
+            <button type="button" className={styles.primary} onClick={onAdd} aria-haspopup="dialog"><Icon name="plus" size={16} />Үг нэмэх</button>
+            <button type="button" className={styles.ghost} onClick={onImport} aria-haspopup="dialog"><Glyph name="upload" size={16} />Файлаас оруулах</button>
           </div>
         </div> : !filtered.length ? <div className={styles.empty}>
           <span className={styles.emptyMark} aria-hidden="true"><Icon name="search" size={28} /></span>
@@ -290,7 +298,7 @@ export function Library({ words, decks, now, canSpeak, actions, onAdd, onImport 
 }
 
 function DeckHead({ deck, words, actions, onGone }: { deck: VocabularyDeck; words: VocabularyWord[]; actions: LibraryActions; onGone: () => void }) {
-  const [mode, setMode] = useState<"view" | "rename" | "delete">("view");
+  const [mode, setMode] = useState<"view" | "rename">("view");
   const [name, setName] = useState(deck.name);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -302,6 +310,15 @@ function DeckHead({ deck, words, actions, onGone }: { deck: VocabularyDeck; word
     const problem = await work();
     setBusy(false);
     if (problem) setError(problem); else { setMode("view"); done?.(); }
+  }
+  async function remove() {
+    const answer = await actions.confirm({
+      title: `“${deck.name}” багцыг устгах уу?`,
+      text: words.length ? `Багцад ${words.length} үг байна. Үгсийг сандаа үлдээх эсвэл багцтай нь хамт устгаж болно.` : "Багц хоосон байна.",
+      choices: [{ value: "keep", label: "Багцыг устгаад үгсийг үлдээх", tone: words.length ? "soft" : "danger" },
+        ...(words.length ? [{ value: "all", label: `Багц ба ${words.length} үгийг устгах`, tone: "danger" as const }] : [])],
+    });
+    if (answer === "keep" || answer === "all") void run(() => actions.deleteDeck(deck, answer === "all"), onGone);
   }
   function rename(event: FormEvent) {
     event.preventDefault();
@@ -329,13 +346,7 @@ function DeckHead({ deck, words, actions, onGone }: { deck: VocabularyDeck; word
           onClick={() => { if (deck.color !== color) void run(() => actions.updateDeck(deck.id, { color })); }} disabled={busy} />)}
       </span>
       <button type="button" className={styles.rowAction} onClick={() => { setName(deck.name); setMode("rename"); }} aria-label="Багцын нэр солих" title="Нэр солих" disabled={busy}><Icon name="pen" size={16} /></button>
-      <button type="button" className={`${styles.rowAction} ${styles.deleteAction}`} onClick={() => setMode("delete")} aria-label="Багцыг устгах" title="Багцыг устгах" disabled={busy}><Icon name="trash" size={16} /></button>
-    </div> : null}
-    {mode === "delete" ? <div className={styles.deckConfirm} role="alertdialog" aria-label="Багцыг устгах">
-      <p>“{deck.name}” багцыг устгах уу?</p>
-      <button type="button" className={styles.ghost} onClick={() => void run(() => actions.deleteDeck(deck, false), onGone)} disabled={busy}>Багцыг устгаад үгсийг үлдээх</button>
-      {words.length ? <button type="button" className={`${styles.ghost} ${styles.dangerGhost}`} onClick={() => void run(() => actions.deleteDeck(deck, true), onGone)} disabled={busy}>Багц ба {words.length} үгийг устгах</button> : null}
-      <button type="button" className={styles.link} onClick={() => setMode("view")} disabled={busy}>Болих</button>
+      <button type="button" className={`${styles.rowAction} ${styles.deleteAction}`} onClick={() => void remove()} aria-label="Багцыг устгах" title="Багцыг устгах" aria-haspopup="dialog" disabled={busy}><Icon name="trash" size={16} /></button>
     </div> : null}
     {error ? <p className={styles.error} role="alert">{error}</p> : null}
   </div>;

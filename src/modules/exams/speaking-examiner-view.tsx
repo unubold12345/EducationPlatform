@@ -9,7 +9,7 @@ import {SpeakingReportView,type SessionStats} from "@/modules/speaking-lab/repor
 import {countWords,speakingTargets,type SpeakingReport} from "@/modules/speaking-lab/contracts";
 import {getProgress,getServerProgress,savePhrase,subscribeProgress} from "@/modules/speaking-lab/progress";
 import {CreditCost,useCredits} from "@/modules/credits/client";
-import {cueCard,examinerName,examinerScript,isTranscript,transcriptText,type ExaminerStage} from "./speaking-examiner";
+import {cueCard,endsSpeaking,examinerName,examinerScript,isTranscript,transcriptText,type ExaminerStage} from "./speaking-examiner";
 import {ExaminerPicker,useExaminerVoice} from "./speaking-examiner-picker";
 import {ExaminerEngine} from "./speaking-examiner-engine";
 import {EMPTY_RECORD,speakingRecord,subscribeExaminer,updateSpeakingRecord} from "./speaking-examiner-store";
@@ -88,8 +88,8 @@ export function SpeakingExaminer({base,recordId,stage,remaining=Infinity,answers
   :status==="preparing"?"Нэг минут бэлдээрэй. Тэмдэглэл хийж болно."
   :status==="paused"?"Түр зогссон"
   :status==="stopped"?"Шалгагч зогслоо"
-  :!timed?(part===3?"Speaking-ийн гурван хэсэг дууслаа.":"Энэ хэсэг дууслаа. Дараагийн хэсгээ дээрээс нээнэ үү.")
-  :part===3?"Speaking дууслаа. Цаг дуусахад үр дүн гарна.":"Энэ хэсэг дууслаа. Дараагийн хэсэг цаг дуусахад эхэлнэ.";
+  :!timed?(endsSpeaking(stage)?"Speaking-ийн бүх хэсэг дууслаа.":"Энэ хэсэг дууслаа. Дараагийн хэсгээ дээрээс нээнэ үү.")
+  :endsSpeaking(stage)?"Speaking дууслаа. Цаг дуусахад үр дүн гарна.":"Энэ хэсэг дууслаа. Дараагийн хэсэг цаг дуусахад эхэлнэ.";
  const hint=listening?(view.long?"Хоёр минут хүртэл ярина. Дуусвал товчийг дарна уу.":"Хариулж дуусаад түр чимээгүй болоход дараагийн асуулт руу шилжинэ.")
   :status==="speaking"||status==="voicing"?"Асуултыг сонсоод хариулна уу."
   :preparation?"Бэлтгэлийн минут дуусахад Part 2 автоматаар эхэлнэ."

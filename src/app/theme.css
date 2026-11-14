@@ -459,7 +459,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, summary:focus-visibl
   border: 1px solid color-mix(in srgb, var(--blue) 18%, transparent);
   font-size: 11px;
 }
-.launch-symbol.ielts { background: color-mix(in srgb, #a27acb 16%, var(--surface)); color: #b591da; border-color: #a27acb2e; }
+.launch-symbol.ielts { background: color-mix(in srgb, var(--blue) 16%, var(--surface)); color: var(--blue); border-color: color-mix(in srgb, var(--blue) 18%, transparent); }
 .launch-option strong { font-size: 13.5px; }
 .launch-option small { font-family: var(--font-mono); font-size: 9px; letter-spacing: .02em; margin-top: 5px; }
 .launch-arrow { font-size: 16px; opacity: .7; transition: transform .16s, opacity .16s; }
@@ -579,8 +579,8 @@ a:focus-visible, button:focus-visible, input:focus-visible, summary:focus-visibl
   background: color-mix(in srgb, var(--blue) 12%, var(--surface));
   border: 1px solid color-mix(in srgb, var(--blue) 16%, transparent);
 }
-.purple .subject-symbol { background: color-mix(in srgb, #a27acb 15%, var(--surface)); color: #a878d8; border-color: #a27acb2b; }
-.green .subject-symbol { background: color-mix(in srgb, #42a97c 14%, var(--surface)); color: #4fb287; border-color: #42a97c2b; }
+.purple .subject-symbol { background: color-mix(in srgb, var(--blue) 15%, var(--surface)); color: var(--blue); border-color: color-mix(in srgb, var(--blue) 17%, transparent); }
+.green .subject-symbol { background: color-mix(in srgb, var(--blue) 14%, var(--surface)); color: var(--blue); border-color: color-mix(in srgb, var(--blue) 17%, transparent); }
 :root[data-theme="dark"] .purple .subject-symbol { color: #c3a2e8; }
 :root[data-theme="dark"] .green .subject-symbol { color: #7ed3ad; }
 .program-card .eyebrow { font-size: 9px; }
@@ -654,8 +654,8 @@ a:focus-visible, button:focus-visible, input:focus-visible, summary:focus-visibl
     linear-gradient(155deg, color-mix(in srgb, var(--surface) 90%, var(--blue) 10%), var(--surface));
   box-shadow: inset 0 1px 0 #ffffff14;
 }
-.program-detail.purple { background: radial-gradient(600px 280px at 82% 0%, #a27acb2e, transparent 70%), linear-gradient(155deg, color-mix(in srgb, var(--surface) 90%, #a27acb 10%), var(--surface)); }
-.program-detail.green { background: radial-gradient(600px 280px at 82% 0%, #42a97c2b, transparent 70%), linear-gradient(155deg, color-mix(in srgb, var(--surface) 90%, #42a97c 10%), var(--surface)); }
+.program-detail.purple { background: radial-gradient(600px 280px at 82% 0%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 70%), linear-gradient(155deg, color-mix(in srgb, var(--surface) 90%, var(--blue) 10%), var(--surface)); }
+.program-detail.green { background: radial-gradient(600px 280px at 82% 0%, color-mix(in srgb, var(--blue) 17%, transparent), transparent 70%), linear-gradient(155deg, color-mix(in srgb, var(--surface) 90%, var(--blue) 10%), var(--surface)); }
 .program-detail h1 { font-size: clamp(40px, 5vw, 62px); letter-spacing: -.028em; }
 .detail-description { font-size: 15px; line-height: 1.85; max-width: 48ch; }
 .detail-symbol { font-size: 104px; opacity: .85; }
@@ -729,7 +729,6 @@ a:focus-visible, button:focus-visible, input:focus-visible, summary:focus-visibl
 }
 .exam-card:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--blue) 44%, var(--line)); box-shadow: var(--shadow-lift); }
 .exam-card:hover::after { opacity: 1; }
-.exam-card.entrance { background: linear-gradient(166deg, color-mix(in srgb, var(--surface) 94%, #42a97c 6%), var(--surface) 58%); }
 .exam-card.ielts { border-top-color: var(--line); }
 .exam-card-top { position: relative; z-index: 1; padding-right: 34px; }
 .exam-subject { font-family: var(--font-mono); font-size: 9px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
@@ -934,8 +933,6 @@ body:has(.exam-session) .education-backdrop { display: none; }
 }
 .plan-card::after { content: ""; position: absolute; inset: auto -30% -55% auto; width: 260px; height: 260px; border-radius: 50%; background: radial-gradient(closest-side, color-mix(in srgb, var(--blue) 13%, transparent), transparent 70%); pointer-events: none; }
 .plan-card.sat { border-color: color-mix(in srgb, var(--blue) 42%, var(--line)); box-shadow: 0 24px 70px -55px var(--blue), inset 0 1px 0 #ffffff12; }
-.plan-card.ielts { background: linear-gradient(168deg, color-mix(in srgb, var(--surface) 94%, #a27acb 6%), var(--surface) 62%); }
-.plan-card.entrance { background: linear-gradient(168deg, color-mix(in srgb, var(--surface) 94%, #42a97c 6%), var(--surface) 62%); }
 .plan-card-top { margin-bottom: 22px; }
 .plan-card h2 { font-size: 25px; letter-spacing: -.022em; }
 .plan-card > p { font-size: 11.5px; line-height: 1.85; }
@@ -1043,7 +1040,7 @@ body:has(.exam-session) .education-backdrop { display: none; }
   border-radius: 26px;
   background:
     radial-gradient(520px 300px at 12% 10%, color-mix(in srgb, var(--blue) 20%, transparent), transparent 70%),
-    linear-gradient(140deg, color-mix(in srgb, var(--purple) 45%, var(--surface)), var(--surface) 66%);
+    linear-gradient(140deg, color-mix(in srgb, var(--blue) 8%, var(--surface)), var(--surface) 66%);
 }
 .speaking-art { transform: rotate(-4deg); }
 .speaking-art svg { filter: drop-shadow(0 18px 40px color-mix(in srgb, var(--blue) 28%, transparent)); }
@@ -1273,9 +1270,9 @@ body:has(.exam-session) .education-backdrop { display: none; }
 .workshop-paper .sheet { fill: var(--surface); stroke: var(--line); }
 .workshop-paper .ink { fill: var(--ink); opacity: .85; }
 .workshop-paper .line { fill: color-mix(in srgb, var(--ink) 16%, transparent); }
-.workshop-paper .mark { fill: color-mix(in srgb, #c94a5a 18%, transparent); }
-.workshop-paper .strike { stroke: #c94a5a; stroke-width: 1.6; }
-.workshop-paper .fix { fill: color-mix(in srgb, #1f9a6b 45%, transparent); }
+.workshop-paper .mark { fill: color-mix(in srgb, var(--blue) 14%, transparent); }
+.workshop-paper .strike { stroke: var(--muted); stroke-width: 1.6; }
+.workshop-paper .fix { fill: color-mix(in srgb, var(--blue) 45%, transparent); }
 .workshop-paper .badge { fill: var(--btn-bg); }
 .workshop-paper .band { fill: var(--btn-ink); font: 800 15px var(--font-mono); }
 .workshop-paper .spark { fill: var(--blue); opacity: .8; }

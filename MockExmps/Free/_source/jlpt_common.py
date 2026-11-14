@@ -95,7 +95,7 @@ class JlptMock:
         return {
             "slug": self.slug, "version": 1, "program": "jlpt", "title": title, "description": description, "points": points,
             "notes": ["Үнэгүй, хагас хэмжээний дадлагын mock: бүх бүлгийн хэлбэр, бүтэн шалгалтын тал орчим асуулт.",
-                      "Албан бус, эх зохиомжтой. Япон хэлний багшийн хяналт хүлээгдэж байна. Listening-ийн дуу хараахан бичигдээгүй.",
+                      "Албан бус, эх зохиомжтой. Япон хэлний багшийн хяналт хүлээгдэж байна. Listening-ийн дуу хиймэл япон дуу хоолойгоор бичигдсэн; хүний сонсголын шалгалт хүлээгдэж байна.",
                       "Raw зөв хариултын тоо; JLPT-ийн 180 оноо, тэнцсэн эсэхийг тооцохгүй."],
             "sources": [{"label": "JLPT · албан бүтэц", "url": "https://www.jlpt.jp/e/guideline/testsections.html"},
                         {"label": f"JLPT · {level} түвшин", "url": "https://www.jlpt.jp/e/about/levelsummary.html"}],

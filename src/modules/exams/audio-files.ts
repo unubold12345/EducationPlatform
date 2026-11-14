@@ -5,22 +5,27 @@ import formsData from "./ielts-forms-audio.json" with { type: "json" };
 const formsAudio=Object.values(formsData as Record<string,{prefix:string;seconds:number[]}>);
 import jlptData from './jlpt/audio-catalog.json' with { type: 'json' };
 import hskData from './hsk/audio-catalog.json' with { type: 'json' };
+import freeData from './free/audio-catalog.json' with { type: 'json' };
 type ItemTimings=Record<string,{seconds:number[];questions:Record<string,{start:number;end:number;part:number}>}>;
 const jlptAudio = jlptData as ItemTimings;
 // HSK 1 (scripts/generate-hsk-audio.py): four part tracks per mock in assets/hsk-audio, each item read twice.
 const hskAudio = hskData as ItemTimings;
+// The free half-length mocks (scripts/generate-free-audio.py): IELTS Parts 1–2, JLPT N5/N4 and HSK 1 tracks in
+// assets/free-audio, with the same per-item timings as the paid JLPT and HSK catalogues.
+const freeAudio = freeData as ItemTimings;
 /**
  * Which audio route serves a mock. Each route bundles one recording folder into its server function, which must
  * stay under Vercel's 250 MB: `…/audio` serves assets/exams (IELTS 01–06, JLPT), `…/audio/forms` serves
- * assets/ielts-forms (IELTS 07–12) and `…/audio/hsk` serves assets/hsk-audio (HSK 1). A new recording set should
- * get its own folder and route segment.
+ * assets/ielts-forms (IELTS 07–12), `…/audio/hsk` serves assets/hsk-audio (HSK 1) and `…/audio/free` serves
+ * assets/free-audio (the free mocks). A new recording set should get its own folder and route segment.
  */
-export type AudioSet="base"|"forms"|"hsk";
-export const audioSetOf=(slug:string):AudioSet=>Object.hasOwn(formsData,slug)?"forms":Object.hasOwn(hskAudio,slug)?"hsk":"base";
-export const audioPath=(slug:string)=>({base:"/audio",forms:"/audio/forms",hsk:"/audio/hsk"} as const)[audioSetOf(slug)];
-export function jlptQuestionAudio(slug:string,id:string) { return Object.hasOwn(jlptAudio,slug)?jlptAudio[slug].questions[id]:undefined; }
+export type AudioSet="base"|"forms"|"hsk"|"free";
+export const audioSetOf=(slug:string):AudioSet=>Object.hasOwn(formsData,slug)?"forms":Object.hasOwn(hskAudio,slug)?"hsk":Object.hasOwn(freeAudio,slug)?"free":"base";
+export const audioPath=(slug:string)=>({base:"/audio",forms:"/audio/forms",hsk:"/audio/hsk",free:"/audio/free"} as const)[audioSetOf(slug)];
+const timed=(catalog:ItemTimings,slug:string,id:string)=>Object.hasOwn(catalog,slug)&&Object.hasOwn(catalog[slug].questions,id)?catalog[slug].questions[id]:undefined;
+export function jlptQuestionAudio(slug:string,id:string) { return timed(jlptAudio,slug,id)??timed(freeAudio,slug,id); }
 /** Where one HSK item (its number and both readings) sits in its part's track, for practice replay. */
-export function hskQuestionAudio(slug:string,id:string) { return Object.hasOwn(hskAudio,slug)&&Object.hasOwn(hskAudio[slug].questions,id)?hskAudio[slug].questions[id]:undefined; }
+export function hskQuestionAudio(slug:string,id:string) { return timed(hskAudio,slug,id)??timed(freeAudio,slug,id); }
 const listeningFiles:Record<string,string>={
   "ielts-academic-01":"ielts-01",
   "ielts-academic-02":"ielts-02",
@@ -44,11 +49,13 @@ const listeningSeconds:Record<string,readonly number[]>={
 const prefixOf=(slug:string)=>Object.hasOwn(listeningFiles,slug)?listeningFiles[slug]:undefined;
 // Exact allowlist keeps user input out of filesystem paths. A snapshot explicitly selects its original audio revision.
 export function listeningFile(slug:string,part:number,version=2):string|undefined {
+  if(Object.hasOwn(freeAudio,slug))return Number.isInteger(part)&&part>=1&&part<=freeAudio[slug].seconds.length?`${slug}-part-${part}.mp3`:undefined;
   if(Object.hasOwn(jlptAudio,slug)||Object.hasOwn(hskAudio,slug))return Number.isInteger(part)&&part>=1&&part<=4?`${slug}-part-${part}.mp3`:undefined;
   const prefix=version>=2&&Object.hasOwn(revisedAudio,slug)?revisedAudio[slug].prefix:prefixOf(slug);
   return prefix&&Number.isInteger(part)&&part>=1&&part<=4?`${prefix}-part-${part}.mp3`:undefined;
 }
 export function listeningParts(slug:string,version=2):readonly number[] {
+  if(Object.hasOwn(freeAudio,slug))return freeAudio[slug].seconds;
   if(Object.hasOwn(jlptAudio,slug))return jlptAudio[slug].seconds;
   if(Object.hasOwn(hskAudio,slug))return hskAudio[slug].seconds;
   if(version>=2&&Object.hasOwn(revisedAudio,slug))return revisedAudio[slug].seconds;

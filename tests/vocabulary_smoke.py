@@ -194,17 +194,25 @@ with sync_playwright() as p:
     page.screenshot(path=str(ART / "vocabulary-bank-dark.png"), full_page=True)
     page.evaluate("document.documentElement.dataset.theme = 'light'")
     page.wait_for_timeout(350)
+    # The file scan is a modal over the page; its close button returns to the page.
+    expect(page.locator("dialog[data-modal][open]")).to_contain_text("Файлаас үг түүх")
+    panel.get_by_role("button", name="Хаах", exact=True).click()
+    expect(page.locator("dialog[data-modal]")).to_have_count(0)
 
     # Manual add through the real page and real API, straight into a deck.
     page.get_by_role("button", name="Үг нэмэх", exact=True).click()
     add = page.locator("[data-panel='add']")
     expect(panel).to_have_count(0)
+    expect(page.locator("dialog[data-modal][open]")).to_contain_text("Шинэ үг")
+    expect(add.get_by_label("Үг эсвэл хэллэг", exact=True)).to_be_focused()
     add.get_by_label("Үг эсвэл хэллэг", exact=True).fill("take off")
     add.get_by_label("Орчуулга", exact=True).fill("хөөрөх")
     add.get_by_label(re.compile("Жишээ өгүүлбэр")).fill("The plane will take off on time.")
     add.get_by_label(re.compile("^Багц")).select_option(label="IELTS Reading")
     add.get_by_role("button", name="Сандаа нэмэх", exact=True).click()
     expect(page.locator("[class*='notice']")).to_contain_text("үг хадгалагдлаа")
+    expect(add.get_by_role("status")).to_contain_text("“take off” хадгалагдлаа · одоо 6 үг")
+    expect(add.get_by_label("Үг эсвэл хэллэг", exact=True)).to_have_value("")
     expect(page.locator("li[data-term='take off']")).to_contain_text("хөөрөх")
     expect(page.locator("li[data-term='take off']")).to_contain_text("IELTS Reading")
     expect(total(page)).to_have_text("6")
@@ -220,8 +228,20 @@ with sync_playwright() as p:
     editor.get_by_role("button", name="Хадгалах", exact=True).click()
     expect(page.locator("li[data-term='resilient']")).to_contain_text("тэсвэртэй, уян хатан")
 
-    page.on("dialog", lambda dialog: dialog.accept())
-    page.locator("li[data-term='deteriorate']").get_by_role("button", name="deteriorate үгийг устгах").click()
+    # Deleting asks in a modal: cancel and Escape keep the word, confirming deletes it on the server.
+    delete = page.locator("li[data-term='deteriorate']").get_by_role("button", name="deteriorate үгийг устгах")
+    ask = page.locator("dialog[data-modal][open]")
+    delete.click()
+    expect(ask).to_contain_text("“deteriorate” үгийг устгах уу?")
+    ask.get_by_role("button", name="Болих", exact=True).click()
+    expect(ask).to_have_count(0)
+    delete.click()
+    expect(ask).to_be_visible()
+    page.keyboard.press("Escape")
+    expect(ask).to_have_count(0)
+    expect(page.locator("li[data-term='deteriorate']")).to_have_count(1)
+    delete.click()
+    ask.get_by_role("button", name="Устгах", exact=True).click()
     expect(page.locator("[class*='notice']")).to_contain_text("устгагдлаа")
     expect(page.locator("li[data-term='deteriorate']")).to_have_count(0)
     expect(total(page)).to_have_text("5")
@@ -336,7 +356,9 @@ with sync_playwright() as p:
     expect(page.locator("[class*='deckHead']")).to_have_attribute("data-color", "green")
     # Deleting a deck keeps its words unless asked otherwise.
     page.get_by_role("button", name="Багцыг устгах", exact=True).click()
+    expect(page.locator("dialog[data-modal][open]")).to_contain_text("“SAT” багцыг устгах уу?")
     page.get_by_role("button", name="Багцыг устгаад үгсийг үлдээх", exact=True).click()
+    expect(page.locator("dialog[data-modal]")).to_have_count(0)
     expect(page.locator("[class*='notice']")).to_contain_text("“SAT” багц устгагдлаа")
     expect(page.locator("button[data-deck]").filter(has_text="SAT")).to_have_count(0)
     expect(page.locator("li[data-term]")).to_have_count(14)
@@ -460,7 +482,8 @@ with sync_playwright() as p:
     assert made.json()["total"] == 100 and made.json()["limit"] == 100, made.json()
     over = cap.request.post(API, headers=ORIGIN, data={"term": "one more", "translation": "дахин"})
     assert over.status == 409 and "100 үгийн хязгаартаа хүрсэн" in over.json()["error"], (over.status, over.text())
-    assert "IELTS эсвэл SAT багцтай бол 3,000 үг" in over.json()["error"], over.json()
+    assert "Гадаад хэл багцтай бол 3,000 үг" in over.json()["error"], over.json()
+    assert "Кредитээр байнгын багтаамж нэмж болно" in over.json()["error"], over.json()
     many = cap.request.post(WORDS, headers=ORIGIN, data={"action": "add", "words": [{"term": "bulk word", "translation": "олон"}]})
     assert many.status == 409 and "100 үгийн хязгаартаа хүрсэн" in many.json()["error"], (many.status, many.text())
     # A 409, not the tiny file's 422: the full bank is refused before the file is read or credits are held.
@@ -481,13 +504,53 @@ with sync_playwright() as p:
     expect(cap_page.get_by_text("26–50 / 100")).to_be_visible()
     cap_page.get_by_role("button", name="Үг нэмэх", exact=True).click()
     expect(cap_page.get_by_role("button", name="Сандаа нэмэх", exact=True)).to_be_disabled()
+    cap_page.keyboard.press("Escape")
+    expect(cap_page.locator("[data-panel='add']")).to_have_count(0)
     cap_page.get_by_role("button", name="Файлаас оруулах", exact=True).click()
     expect(cap_page.get_by_role("button", name="Үгсийг олох", exact=True)).to_be_disabled()
     expect(cap_page.locator("[data-panel='import']")).to_contain_text("Үгсийн сан дүүрсэн")
     cap_page.screenshot(path=str(ART / "vocabulary-bank-full.png"), full_page=True)
     # Nothing was held or spent by the refused import.
     cap_page.goto(BASE + "/workspace/plans", wait_until="domcontentloaded")
-    expect(cap_page.locator(".pricing-topup-balance strong")).to_have_text("100")
+    expect(cap_page.locator(".pricing-topup-balance > strong")).to_have_text("100")
+    expect(cap_page.locator(".pricing-yellow-balance strong")).to_have_text("0")
+
+    # Permanent space is bought with yellow (purchased) credits only: refused without them, nothing changes.
+    SPACE = API + "/space"
+    refused = cap.request.post(SPACE, headers=ORIGIN, data={"packs": 1, "requestId": "qa-space-" + uuid4().hex[:12]})
+    assert refused.status == 402 and "Кредит хүрэлцэхгүй" in refused.json()["error"], (refused.status, refused.text())
+    for bad in [{"packs": 0, "requestId": "qa-space-bad00001"}, {"packs": 21, "requestId": "qa-space-bad00002"}, {"packs": 1}, {"packs": 1, "requestId": "bad id"}, {"packs": 1, "requestId": "qa-space-bad00003", "credits": 0}]:
+        assert cap.request.post(SPACE, headers=ORIGIN, data=bad).status == 400, bad
+    assert cap.request.post(SPACE, headers={"Origin": "https://untrusted.invalid"}, data={"packs": 1, "requestId": "qa-space-origin01"}).status == 403
+    # Buy the yellow credit pack the plans page shows (simulated payment), then 100 more words for 200 of them.
+    figures = [int(re.sub(r"[^0-9]", "", text)) for text in [cap_page.locator(".pricing-yellow .pricing-single-price strong").inner_text(), cap_page.locator(".pricing-yellow .pricing-single-price span").inner_text()]]
+    order = cap.request.post(BASE + "/api/credits/orders", headers=ORIGIN, data={"credits": figures[1], "amountMnt": figures[0]})
+    assert order.ok, order.text()
+    assert cap.request.post(BASE + "/api/credits/orders/" + order.json()["id"] + "/confirm", headers=ORIGIN, data={"decision": "success"}).json()["status"] == "PAID"
+    request_id = "qa-space-" + uuid4().hex[:12]
+    bought = cap.request.post(SPACE, headers=ORIGIN, data={"packs": 1, "requestId": request_id})
+    assert bought.status == 200, bought.text()
+    space = bought.json()
+    assert (space["added"], space["spent"], space["extra"], space["limit"], space["yellow"]) == (100, 200, 100, 200, figures[1] - 200), space
+    # The same request id again buys nothing more.
+    repeated = cap.request.post(SPACE, headers=ORIGIN, data={"packs": 1, "requestId": request_id}).json()
+    assert (repeated["added"], repeated["repeated"], repeated["limit"], repeated["yellow"]) == (0, True, 200, figures[1] - 200), repeated
+    grown = cap.request.post(API, headers=ORIGIN, data={"term": "one more", "translation": "дахин"})
+    assert grown.status == 201 and grown.json()["total"] == 101 and grown.json()["limit"] == 200, grown.text()
+    # The month's free credits were not touched; the yellow balance shows the 200 spent.
+    cap_page.goto(BASE + "/workspace/plans", wait_until="domcontentloaded")
+    expect(cap_page.locator(".pricing-topup-balance > strong")).to_have_text("100")
+    expect(cap_page.locator(".pricing-yellow-balance strong")).to_have_text(f"{figures[1] - 200:,}")
+    cap_page.goto(BASE + "/workspace/vocabulary", wait_until="domcontentloaded")
+    expect(cap_page.locator("[data-stat='total'] small")).to_have_text("200 хүртэл")
+    expect(cap_page.locator("[data-stat='total']")).to_contain_text("Үүнээс байнгын +100 үг")
+    expect(cap_page.locator(".wsp-credits.is-yellow strong")).to_have_text(f"{figures[1] - 200:,}")
+    cap_page.get_by_role("button", name="Багтаамж нэмэх", exact=True).click()
+    panel = cap_page.locator("[data-panel='space']")
+    expect(cap_page.locator("dialog[data-modal][open]")).to_contain_text("Байнгын багтаамж нэмэх")
+    expect(panel).to_contain_text("100 үг = 200 кредит")
+    expect(panel.get_by_role("button", name="100 үг нэмэх", exact=True)).to_be_enabled()
+    cap_page.screenshot(path=str(ART / "vocabulary-space-panel.png"), full_page=True)
     cap.close()
 
     # Mobile: no sideways scroll on the list, a panel or the quiz; the drawer still opens on the vocabulary tab.
@@ -502,6 +565,8 @@ with sync_playwright() as p:
     m.get_by_role("button", name="Файлаас оруулах", exact=True).click()
     expect(m.locator("[data-panel='import']")).to_be_visible()
     assert m.evaluate("document.documentElement.scrollWidth <= window.innerWidth"), "horizontal scroll with the import panel"
+    m.keyboard.press("Escape")
+    expect(m.locator("[data-panel='import']")).to_have_count(0)
     m.get_by_role("button", name="Quiz тохируулах", exact=True).click()
     expect(m.get_by_role("heading", name="Quiz тохируулах")).to_be_visible()
     assert m.evaluate("document.documentElement.scrollWidth <= window.innerWidth"), "horizontal scroll on the quiz setup"
@@ -514,4 +579,4 @@ with sync_playwright() as p:
 
     assert not errors, errors
     browser.close()
-print("PASS: vocabulary guest redirects (new and old addresses), anonymous/origin/body/ownership guards for words, decks, bulk changes, quiz grades and file scans (no provider call), manual add into a deck, edit, delete, server persistence across reloads and accounts, the any-count/level/type import options with the price badge only, a mocked AI scan whose review list survives a reload and saves only the chosen words into a new deck, decks (create, rename, recolour, delete), star/move bulk changes, search, sort, list/card views and paging, a 10-question keyboard quiz and a typed quiz with a hint whose grades are stored as study progress, the 100-word free bank refusing adds and imports before any credit hold, and mobile with no horizontal scroll; no DeepSeek request made.")
+print("PASS: vocabulary guest redirects (new and old addresses), anonymous/origin/body/ownership guards for words, decks, bulk changes, quiz grades and file scans (no provider call), manual add into a deck from the add modal, edit, delete through a confirm modal (cancel, Escape, confirm), server persistence across reloads and accounts, the any-count/level/type import options with the price badge only, a mocked AI scan whose review list survives a reload and saves only the chosen words into a new deck, decks (create, rename, recolour, delete in a modal), the file-scan and bank-space modals, star/move bulk changes, search, sort, list/card views and paging, a 10-question keyboard quiz and a typed quiz with a hint whose grades are stored as study progress, the 100-word free bank refusing adds and imports before any credit hold, and mobile with no horizontal scroll; no DeepSeek request made.")

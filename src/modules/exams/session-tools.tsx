@@ -105,4 +105,3 @@ export function MathTools() {
   return <section className="exam-tools"><div><h2>Desmos graphing calculator</h2><p className="fine-print">Интернет шаардлагатай. Өөрийн зөвшөөрөгдсөн тооны машиныг мөн ашиглаж болно.</p><iframe title="Desmos graphing calculator" src="https://www.desmos.com/calculator?embed" loading="lazy"/></div><div><h2>Reference</h2><p>Circle: A = πr², C = 2πr<br/>Rectangle: A = ℓw<br/>Triangle: A = ½bh<br/>Right triangle: a² + b² = c²<br/>45°–45°–90°: x, x, x√2<br/>30°–60°–90°: x, x√3, 2x<br/>Rectangular prism: V = ℓwh<br/>Cylinder: V = πr²h<br/>Cone: V = ⅓πr²h<br/>Sphere: V = ⁴⁄₃πr³<br/>Rectangular pyramid: V = ⅓ℓwh<br/>Triangle angles: 180°<br/>Full circle: 360° = 2π radians</p></div></section>;
 }
 
-export const shortcutHint = "Товчлуур: ← → шилжих · A–E сонгох · F тэмдэглэх";

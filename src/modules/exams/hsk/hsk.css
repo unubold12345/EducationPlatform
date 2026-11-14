@@ -1,5 +1,5 @@
 /* HSK 1 hub, briefing, sitting, practice and results. Scoped under .hsk-*; colours come from the site tokens. */
-.hsk-hub,.hsk-work,.hsk-results,.practice-session{--hsk-accent:#c8553d}
+.hsk-hub,.hsk-work,.hsk-results,.practice-session{--hsk-accent:var(--blue)}
 .hsk-hub,.hsk-work,.hsk-results{min-width:0}
 .hsk-hub-head{max-width:760px;margin:30px 0}.hsk-hub-head h1{font-size:clamp(32px,5vw,58px);margin:10px 0}.hsk-hub-head>p{color:var(--muted);line-height:1.8}
 .wsp-content .hsk-hub-head h1{font-size:clamp(28px,3.2vw,38px);font-weight:720;line-height:1.12;letter-spacing:-.02em}
@@ -88,8 +88,16 @@
 .hsk-items-L2 .hsk-item,.hsk-items-L4 .hsk-item{padding-bottom:16px}
 
 .hsk-next{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:24px 0}.hsk-next>span{color:var(--muted);font-size:12px}
-.hsk-practice-audio{border:1px solid var(--line);border-radius:14px;padding:16px;margin:18px 0}.hsk-practice-audio audio{width:100%;margin:10px 0}.hsk-practice-audio button{font-size:13px}
-.practice-hsk{display:grid;gap:12px;margin:10px 0 16px}
+/* Practice (owner request 2026-11-14): one narrow column, small pictures, compact answers. */
+.practice-hsk{display:grid;gap:14px;max-width:620px;margin:10px 0 16px}
+.practice-hsk .hsk-question{gap:14px}
+.practice-hsk .hsk-question>.hsk-picture{width:min(100%,280px)}
+.practice-hsk .hsk-picture img{border-radius:8px}
+.practice-hsk .hsk-picture-grid{grid-template-columns:repeat(6,minmax(0,92px));gap:8px;margin:0;padding:0}
+.practice-hsk .hsk-options-pictures{grid-template-columns:repeat(3,minmax(0,170px));gap:10px}
+.practice-hsk .hsk-options-judge{max-width:280px}
+.practice-hsk .hsk-line{margin:0}
+@media(max-width:560px){.practice-hsk .hsk-picture-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.practice-hsk .hsk-options-pictures{grid-template-columns:repeat(3,minmax(0,1fr))}}
 
 /* Results. */
 .hsk-score-line{font-size:16px}.hsk-score-line strong{font-size:22px}

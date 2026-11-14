@@ -54,8 +54,9 @@ def main(selected: set[str]) -> int:
         program_dir = FREE / folder
         mock, figures = module.build(program_dir)
         if figures is not None:
+            # The figure folder is the one the mock's Figures object writes to (IELTS uses "ielts-free", not its slug).
             for name, digest in figures.write().items():
-                manifest["files"][f"{folder}/images/{mock['slug']}/{name}"] = digest
+                manifest["files"][(figures.dir / name).relative_to(FREE).as_posix()] = digest
         manifest["files"][f"{folder}/{mock['slug']}.json"] = write_json(program_dir / f"{mock['slug']}.json", mock)
         if shape == "entrance":
             problems, summary = validate_entrance(mock, program_dir, **limits)

@@ -7,8 +7,7 @@ import { notFound } from "next/navigation";
 import type { ExamStage } from "@/modules/exams/types";
 import { ExamStart } from "@/modules/exams/start-client";
 import { getSession } from "@/lib/session";
-import { getDb } from "@/lib/db";
-import { hasSubscription } from "@/modules/subscriptions/access";
+import { briefingAccess } from "@/modules/subscriptions/briefing-access";
 import { mockBriefingSummary } from "@/modules/exams/briefing-summary";
 import { PracticeEntry } from "@/modules/exam-practice/entry";
 import { JlptBriefing } from "@/modules/exams/jlpt/briefing";
@@ -23,21 +22,19 @@ function stageDetail(stage: ExamStage) {
   if (stage.kind === "preparation") return "Бэлтгэлийн минут";
   if (stage.kind === "writing") return stage.questions.length + " даалгавар";
   if (stage.kind === "speaking") return stage.questions.length + " асуулт";
-  if (stage.id === "ielts-listening-check") return "40 хариултаа шалгах";
+  if (stage.id === "ielts-listening-check") return stage.questions.length + " хариултаа шалгах";
   return (stage.variants ? stage.variants.lower.length : stage.questions.length) + " асуулт";
 }
 
 export default async function ExamPage({params}:{params:Promise<{slug:string}>}){
   const exam=await getExam((await params).slug);if(!exam)notFound();
   const session=await getSession();
-  const access=session?await getDb().mockPurchase.findFirst({where:{userId:session.user.id,examSlug:exam.slug,status:"PAID"},select:{id:true}}):null;
-  const subscribed=session?await hasSubscription(session.user.id,exam.program):false;
-  const subscriptionSitting=session?await getDb().mockAttempt.findFirst({where:{userId:session.user.id,slug:exam.slug,status:"IN_PROGRESS",subscriptionAccess:true},select:{id:true}}):null;
-  const activeAttempt=session?await getDb().mockAttempt.findFirst({where:{userId:session.user.id,slug:exam.slug,status:"IN_PROGRESS"},select:{id:true}}):null;
-  const hasAccess=Boolean(access)||subscribed||Boolean(subscriptionSitting);
-  if(exam.program==="jlpt")return <JlptBriefing exam={exam} hasAccess={hasAccess} loggedIn={Boolean(session)} activeAttemptId={activeAttempt?.id}/>;
-  if(exam.program==="hsk")return <HskBriefing exam={exam} hasAccess={hasAccess} loggedIn={Boolean(session)} activeAttemptId={activeAttempt?.id}/>;
-  if(exam.program==="entrance")return <EntranceBriefing exam={exam} hasAccess={hasAccess} loggedIn={Boolean(session)} activeAttemptId={activeAttempt?.id}/>;
+  // Free, bought, a plan, or this Гадаад хэл plan month's pick; the API checks the same rules again on every request.
+  const gate=await briefingAccess(session?.user.id??null,exam.slug,exam.program);
+  const {hasAccess,activeAttemptId}=gate;
+  if(exam.program==="jlpt")return <JlptBriefing exam={exam} gate={gate} loggedIn={Boolean(session)}/>;
+  if(exam.program==="hsk")return <HskBriefing exam={exam} gate={gate} loggedIn={Boolean(session)}/>;
+  if(exam.program==="entrance")return <EntranceBriefing exam={exam} hasAccess={hasAccess} practice={gate.practice} free={gate.free} loggedIn={Boolean(session)} activeAttemptId={activeAttemptId}/>;
   const summary=mockBriefingSummary(exam);
   const sat=exam.program==="sat";
   const collection=sat?{href:"/exams/sat",title:"Digital SAT"}:{href:"/exams/ielts",title:"IELTS Academic"};
@@ -62,9 +59,9 @@ export default async function ExamPage({params}:{params:Promise<{slug:string}>})
           <div className="briefing-facts-head"><span className="eyebrow">ШАЛГАЛТЫН ТОВЧ</span><span className={hasAccess ? "status access-unlocked" : "status"}>{hasAccess ? "✓ Эрх нээлттэй" : "Эрх шаардлагатай"}</span></div>
           <dl>{summary.facts.map(fact => <div key={fact.label}><dt>{fact.label}</dt><dd>{fact.value}</dd></div>)}</dl>
           <p className="briefing-price">{summary.priceNote}</p>
-          {activeAttempt ? <Link className="briefing-resume" href={"/exams/attempts/" + activeAttempt.id}>Нээлттэй оролдлого · үргэлжлүүлэх <span aria-hidden="true">→</span></Link> : null}
+          {activeAttemptId ? <Link className="briefing-resume" href={"/exams/attempts/" + activeAttemptId}>Нээлттэй оролдлого · үргэлжлүүлэх <span aria-hidden="true">→</span></Link> : null}
         </div>
-        <div className="briefing-start"><ExamStart slug={exam.slug} program={exam.program} hasAccess={hasAccess} loggedIn={Boolean(session)} examiner={exam.program==="ielts"&&speakingLabEnabled()}/><PracticeEntry slug={exam.slug} hasAccess={Boolean(access)||subscribed}/></div>
+        <div className="briefing-start"><ExamStart slug={exam.slug} program={exam.program} hasAccess={hasAccess} loggedIn={Boolean(session)} examiner={exam.program==="ielts"&&speakingLabEnabled()} free={gate.free} pick={gate.pick} plan={gate.plan} pickedUntil={gate.pickedUntil}/><PracticeEntry slug={exam.slug} hasAccess={gate.practice} locked={gate.locked}/></div>
       </aside>
 
       <section className="briefing-section exam-stages" aria-labelledby="exam-stages-heading">
@@ -81,7 +78,7 @@ export default async function ExamPage({params}:{params:Promise<{slug:string}>})
         <div className="briefing-section-head"><span aria-hidden="true">02</span><div><p className="eyebrow">ЭХЛЭХЭЭС ӨМНӨ</p><h2 id="exam-rules-heading">Шалгалтын горим</h2></div></div>
         <div className="briefing-rule-grid">
           <div><h3>Цаг ба хадгалалт</h3><ul><li>Цаг серверт хадгалагдана. Refresh хийсэн ч дахин эхлэхгүй.</li><li>Хариу автоматаар хадгалагдана. Цаг дуусахад эцэслэгдэнэ.</li><li>Нээлттэй оролдлого байвал үргэлжилнэ.</li></ul></div>
-          <div><h3>Хэсгийн дүрэм</h3><ul><li>Одоогийн хэсэгт буцаж, хариугаа засаж болно. Дууссан хэсэг рүү буцахгүй.</li><li>Стандарт хугацаа дуусахаас өмнө хэсэг алгасах, шалгалтыг дуусгах боломжгүй.</li><li>Хариулаагүй асуулт байж болно.</li>{sat ? <li>Math-ийн турш тооны машин, томьёоны лавлах болон Desmos нээлттэй.</li> : <li>Listening бичлэг нэг удаа тоглоно. Speaking нь микрофонтой, 12 минутын simulation{speakingLabEnabled()?"; AI шалгагчтай ярилцаж өгч болно":""}.</li>}</ul></div>
+          <div><h3>Хэсгийн дүрэм</h3><ul><li>Одоогийн хэсэгт буцаж, хариугаа засаж болно. Дууссан хэсэг рүү буцахгүй.</li><li>Стандарт хугацаа дуусахаас өмнө хэсэг алгасах, шалгалтыг дуусгах боломжгүй.</li><li>Хариулаагүй асуулт байж болно.</li>{sat ? <li>Math-ийн турш тооны машин, томьёоны лавлах болон Desmos нээлттэй.</li> : <li>Listening бичлэг нэг удаа тоглоно. Speaking нь микрофонтой, {exam.stages.filter(stage=>stage.kind==="speaking"||stage.kind==="preparation").reduce((sum,stage)=>sum+stage.seconds,0)/60} минутын simulation{speakingLabEnabled()?"; AI шалгагчтай ярилцаж өгч болно":""}.</li>}</ul></div>
           <div><h3>Үр дүн</h3><ul>{sat ? <><li>SAT raw оноо; 1600 хөрвүүлэлтгүй.</li><li>Албан ёсны College Board оноо биш.</li></> : <><li>Listening, Reading-ийн зөв хариултын тоо.</li><li>Writing, Speaking-д автомат band өгөхгүй.</li></>}<li>Эцсийн дүн таны бүртгэлд хадгалагдана.</li></ul></div>
         </div>
         <p className="briefing-caveat">Энэ mock нь албан ёсны шалгалт эсвэл баталгаажсан оноо биш.</p>

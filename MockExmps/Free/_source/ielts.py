@@ -78,10 +78,10 @@ PART2 = [
     ("Narrator", "Now listen and answer questions 15 to 20."),
     ("Coordinator", "Now let me tell you about the different areas on your map and the work we'll be doing in each this season."),
     ("Coordinator", "Starting from the visitor centre, the first area you come to is the Reed Beds. The reeds there need cutting back every autumn, and that's the main job this month. It's hard work, but very satisfying."),
-    ("Coordinator", "Next to them is Kingfisher Lake. There's nothing for volunteers to do there at the moment, because the birds are breeding, so we keep people well away."),
+    ("Coordinator", "Next to them is Kingfisher Lake. There's nothing for volunteers to do there at the moment. Large flocks of ducks arrive there for the winter, and we don't want to disturb them, so we keep people well away."),
     ("Coordinator", "The Meadow is where we're running a wildflower survey. Volunteers count the plants in marked squares. No experience is necessary; we'll train you."),
     ("Coordinator", "In the Woodland, our priority is the paths. Tree roots and mud have made some sections dangerous, so we're laying new surfaces."),
-    ("Coordinator", "The Hide, the wooden building overlooking the main lake, is used by birdwatchers. We need volunteers there at weekends to chat with visitors and help them identify the birds they see. We had planned to build a second hide this year, but that's been postponed."),
+    ("Coordinator", "The Hide, the wooden building overlooking the main lake, is used by birdwatchers. We need volunteers there on Saturdays to chat with visitors and help them identify the birds they see. We had planned to build a second hide this year, but that's been postponed."),
     ("Coordinator", "Finally, the Orchard. Last year we planted thirty young apple trees there, and they need protecting from rabbits, so we'll be putting a fence around each one."),
     ("Coordinator", "Right. If you'd like to collect your vests from the table by the door, we'll make a start."),
     ("Narrator", "That is the end of Part 2. You now have half a minute to check your answers."),
@@ -107,12 +107,13 @@ def listening() -> list[dict]:
     note(1, "Caller's surname: ____", ["Hartley"], 1, "H-A-R-T-L-E-Y", "The receptionist first misses the E.")
     note(2, "Course level: ____", ["beginners", "beginner", "beginners'"], 1, "I'd suggest the one for beginners", "The intermediate course is rejected as too fast.")
     note(3, "Day of the course: ____", ["Saturday", "Saturdays"], 1, "So it's now on Saturdays", "Sunday was the old day.")
-    note(4, "Session starts at: ____", ["9:15", "9.15", "9:15am", "9.15am", "9:15 am", "9.15 am"], 2,
+    note(4, "Session starts at: ____", ["9:15", "9.15", "09:15", "09.15", "9:15am", "9.15am", "9:15 am", "9.15 am", "9:15 a.m.", "9.15 a.m."], 2,
          "the session itself begins at a quarter past nine", "Nine o'clock is only when the doors open.")
-    note(5, "Meet at the ____ entrance of the museum", ["garden"], 1, "please go to the garden entrance", "The main entrance is busy with school groups.")
-    note(6, "Course price for members: £____", ["85", "eighty-five"], 1, "for members of the arts centre it's eighty-five", "£95 is the full price; the caller decides to join.")
+    note(5, "Meet at the ____ entrance of the museum", ["garden", "back"], 1, "please go to the garden entrance at the back of the building",
+         "The main entrance is busy with school groups. The garden entrance is at the back, so “back” is also accepted.")
+    note(6, "Course price for members: £____", ["85", "£85", "eighty-five"], 1, "for members of the arts centre it's eighty-five", "£95 is the full price; the caller decides to join.")
     note(7, "Price includes lunch and a ____", ["certificate"], 1, "you'll receive a certificate", "")
-    note(8, "Remember to bring a ____", ["raincoat"], 1, "The thing people most often forget is a raincoat", "A tripod is lent, so it is not needed.")
+    note(8, "What to bring: a camera, a spare battery and a ____", ["raincoat"], 1, "The thing people most often forget is a raincoat", "A tripod is lent, so it is not needed.")
     note(9, "Maximum number of people in a group: ____", ["12", "twelve"], 1, "so the limit is now twelve", "Fifteen was the old limit.")
     note(10, "Public car park: ____ Street", ["Bridge"], 1, "There's a public car park on Bridge Street", "The museum car park is for staff only.")
 
@@ -155,7 +156,7 @@ def listening() -> list[dict]:
 P1_TITLE = "Reading passage 1 · The rise of the repair café"
 P1 = """A. On the first Saturday of every month, the community hall in the small town of Holbrook fills with broken things. People arrive carrying lamps that no longer light, jackets with failed zips, radios that have fallen silent and chairs with loose legs. Waiting for them at a row of tables are volunteers with screwdrivers, sewing machines and soldering irons. Nobody pays for the repairs, and nobody is promised that their object will be fixed. The only condition is that owners stay and watch and, where possible, help.
 
-B. Holbrook's repair café is one of thousands of similar events now held around the world. The idea spread from the Netherlands in the late 2000s, and its appeal is easy to understand. Many household products are designed in ways that make them difficult to open, and spare parts can be expensive or impossible to find. When something breaks, buying a replacement is often cheaper and quicker than finding someone to mend it. Repair cafés offer an alternative: free expertise, shared tools and a social occasion.
+B. Holbrook's repair café, which opened in 2015, is one of thousands of similar events now held around the world. The idea spread from the Netherlands in the late 2000s, and its appeal is easy to understand. Many household products are designed in ways that make them difficult to open, and spare parts can be expensive or impossible to find. When something breaks, buying a replacement is often cheaper and quicker than finding someone to mend it. Repair cafés offer an alternative: free expertise, shared tools and a social occasion.
 
 C. The organisers in Holbrook keep careful records. Of the 1,200 items brought in during the café's first three years, a little under two thirds left in working order. Textiles and furniture had the highest success rates, since they rarely need specialised parts. Electronic devices were the most difficult. 'Often we can find the fault,' says Rob Ellis, a retired electrician who has volunteered since the beginning, 'but if the part is glued in or the manufacturer doesn't sell it, there's nothing we can do except explain why.'
 
@@ -213,7 +214,7 @@ def reading() -> list[dict]:
     for n, statement, answer, explanation, evidence in [
         (1, "Owners must stay at the café while their item is being repaired.", "TRUE", "Staying is the only condition.", "The only condition is that owners stay and watch"),
         (2, "Volunteers promise to repair every item that is brought in.", "FALSE", "The passage says the opposite.", "nobody is promised that their object will be fixed"),
-        (3, "The first repair café was held in Holbrook.", "FALSE", "The idea came to Holbrook from elsewhere.", "The idea spread from the Netherlands in the late 2000s"),
+        (3, "The first repair café was held in Holbrook.", "FALSE", "The idea spread from the Netherlands in the late 2000s; Holbrook's café opened later, in 2015.", "The idea spread from the Netherlands in the late 2000s"),
         (4, "Most of the items brought to the Holbrook café in its first three years were repaired successfully.", "TRUE", "A little under two thirds is still a majority.", "a little under two thirds left in working order"),
         (5, "Electronic devices are the type of item most often brought to the café.", "NOT GIVEN", "The passage says electronics were the most difficult to repair, not the most common.", None),
         (6, "The café charges local businesses to appear on its list of repairers.", "NOT GIVEN", "A list of nearby businesses is mentioned, but nothing is said about charges.", None),
@@ -321,16 +322,17 @@ def build(program_dir):
         "figure": figures.add("writing-1", chart_svg(), "Households owning a desktop computer, a laptop and a tablet in Norland, 2005, 2015 and 2025", expandable=True),
         "explanation": "An overview can contrast the steady fall in desktop ownership with the rise of laptops and tablets, and note that laptops overtook desktops by 2015 and were the most common device in 2025. Useful details: desktops 48% → 22%; laptops 12% → 71%; tablets from none in 2005 to 46%. Percentages can exceed 100 in total because households own several devices. Causes are not shown, so do not invent them. A qualified human reviewer should assess task achievement, coherence and cohesion, lexical resource and grammatical range and accuracy; no automatic band is assigned.",
     }]
-    part1 = [("Home town", "Where is your home town?"), ("Home town", "What do you like most about living there?"),
-             ("Home town", "How has your home town changed in recent years?"), ("Reading", "Do you enjoy reading? Why or why not?"),
+    # The site's examiner says "Let's talk about <topic in lower case>", so the topic reads as a phrase ("your home town").
+    part1 = [("Your home town", "Where is your home town?"), ("Your home town", "What do you like most about living there?"),
+             ("Your home town", "How has your home town changed in recent years?"), ("Reading", "Do you enjoy reading? Why or why not?"),
              ("Reading", "What kinds of things do you usually read?"), ("Reading", "Did you read more when you were a child than you do now?")]
-    card = ("Describe a useful skill you learned outside school. You should say: what the skill is, who taught you or how you learned it, "
-            "how long it took to learn, and explain why this skill is useful to you.")
+    card = ("Describe a useful skill you learned outside school. You should say: what the skill is; who taught you or how you learned it; "
+            "how long it took to learn; and explain why this skill is useful to you.")
     speaking1 = [{"id": f"is-free-p1-{i + 1}", "domain": "Speaking", "kind": "speaking", "answers": [], "prompt": f"{topic} · {text}", "explanation": SPEAK_NOTE}
                  for i, (topic, text) in enumerate(part1)]
     notes = {"id": "is-free-notes", "domain": "Speaking", "kind": "speaking", "answers": [], "prompt": card, "explanation": SPEAK_NOTE}
     speaking2 = [{"id": "is-free-p2", "domain": "Speaking", "kind": "speaking", "answers": [], "prompt": card, "explanation": SPEAK_NOTE},
-                 {"id": "is-free-p2-round", "domain": "Speaking", "kind": "speaking", "answers": [], "prompt": "Do you think you will teach this skill to someone else?", "explanation": SPEAK_NOTE}]
+                 {"id": "is-free-p2-round", "domain": "Speaking", "kind": "speaking", "answers": [], "prompt": "Rounding-off question: Do you think you will teach this skill to someone else?", "explanation": SPEAK_NOTE}]
 
     for question in listening_questions:
         assert any(re.search(re.escape(answer), script_text(PART1 if question["listening"]["part"] == 1 else PART2), re.I)
@@ -373,8 +375,9 @@ def build(program_dir):
             {"id": "ielts-speaking-prep", "title": "Speaking · Part 2 preparation", "seconds": 60, "kind": "preparation",
              "instructions": "You have exactly one minute to prepare. Make brief notes. Speaking Part 2 begins automatically; you will then have two minutes to speak.",
              "questions": [notes]},
-            {"id": "ielts-speaking-2", "title": "Speaking · Part 2 long turn", "seconds": 120, "kind": "speaking",
-             "instructions": "Speak for up to two minutes about your prepared topic. If time remains, answer the short rounding-off question. The recording is saved for review.",
+            # "-final": this mock has no Part 3, so the site's examiner closes the Speaking test after Part 2.
+            {"id": "ielts-speaking-2-final", "title": "Speaking · Part 2 long turn", "seconds": 120, "kind": "speaking",
+             "instructions": "Speak for up to two minutes about your prepared topic. If time remains, answer the short rounding-off question. The recording is saved for review. The test ends after this part.",
              "questions": speaking2},
         ],
     }

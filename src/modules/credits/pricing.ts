@@ -4,10 +4,10 @@
  * Pure module (no server or browser APIs): the server charges from it, pages show the same numbers,
  * and the unit tests import it directly.
  */
-import { subscriptionPlans, type SubscriptionProgram } from "../subscriptions/plans.ts";
+import { allPlans, type SubscriptionProgram } from "../subscriptions/plans.ts";
 import { VOCABULARY_LIMITS } from "../vocabulary/contracts.ts";
 import { AI_IMAGE_LIMITS } from "../ai-images/contracts.ts";
-import { READING_LIMITS } from "../reading-lab/contracts.ts";
+import { READING_LIMITS, passageWords } from "../reading-lab/contracts.ts";
 import { MY_EXAM_LIMITS } from "../my-exams/contracts.ts";
 import { STRUCTURE_LIMITS } from "../roadmap/structure.ts";
 
@@ -42,7 +42,7 @@ export type AiAction =
   | "chat" | "review-coach" | "practice-assistant" | "math-tutor"
   | "writing-ideas" | "writing-grammar" | "writing-feedback"
   | "speaking-turn" | "speaking-report"
-  | "vocabulary-import" | "exam" | "exam-10" | "exam-20" | "reading-practice" | "roadmap";
+  | "vocabulary-import" | "exam" | "exam-retry" | "exam-10" | "exam-20" | "reading-practice" | "reading-retry" | "roadmap";
 
 type ActionBudget = { label: string; area: string; inputTokens: number; outputTokens: number };
 
@@ -62,14 +62,21 @@ export const AI_ACTIONS: Record<AiAction, ActionBudget> = {
   "speaking-turn": { label: "Ярилцагчийн нэг хариулт", area: "Speaking Lab", inputTokens: 5000, outputTokens: 900 },
   "speaking-report": { label: "Эцсийн тайлан", area: "Speaking Lab", inputTokens: 14000, outputTokens: 3200 },
   "vocabulary-import": { label: "Файлаас үг оруулах", area: "Үгсийн сан", inputTokens: 24000, outputTokens: 8000 },
-  // Priced by its questions (`examCredits` below); this budget is the largest exam from a full-length file.
-  "exam": { label: "Шалгалт үүсгэх", area: "Файлаас шалгалт", inputTokens: 24000, outputTokens: 8000 },
+  // Priced by its questions (`examCredits` below); this budget is the largest exam from a full-length file:
+  // 40 questions written as two parallel replies of 20, each reading the whole file.
+  "exam": { label: "Шалгалт үүсгэх", area: "Файлаас шалгалт", inputTokens: 48000, outputTokens: 16000 },
+  // New questions for a saved exam from its kept text (`examRetryCredits` below): the same two replies, each also
+  // reading the prompts of the questions it replaces.
+  "exam-retry": { label: "Шинэ асуулт үүсгэх (хямд)", area: "Файлаас шалгалт", inputTokens: 54800, outputTokens: 16000 },
   // Retired 2026-11-12, when the exam became priced per question. Nothing charges these any more; they stay
   // so earlier charges keep their name and totals in the admin's credit reports.
   "exam-10": { label: "10 асуулттай шалгалт (хуучин үнэ)", area: "Файлаас шалгалт", inputTokens: 24000, outputTokens: 4800 },
   "exam-20": { label: "20 асуулттай шалгалт (хуучин үнэ)", area: "Файлаас шалгалт", inputTokens: 24000, outputTokens: 8000 },
   // Priced by length (`readingPracticeCredits` below); this budget is the most one practice can cost.
-  "reading-practice": { label: "Унших дасгал үүсгэх", area: "Reading Lab", inputTokens: 24000, outputTokens: 6000 },
+  "reading-practice": { label: "Унших дасгал үүсгэх", area: "Reading Lab", inputTokens: 24000, outputTokens: 8000 },
+  // New questions on a saved practice's own passage (`readingRetryCredits` below): the longest stored passage and
+  // the questions it replaces in, the most questions out, no passage written.
+  "reading-retry": { label: "Шинэ асуулт үүсгэх (хямд)", area: "Reading Lab", inputTokens: 17340, outputTokens: 5400 },
   // Priced by the plan's length (`roadmapCredits` below); this budget is the longest plan, a year of weeks.
   "roadmap": { label: "AI төлөвлөгөө зохиох", area: "Бэлтгэлийн төлөвлөгөө", inputTokens: 2500, outputTokens: 2800 + 55 * STRUCTURE_LIMITS.maxWeeks },
 };
@@ -146,9 +153,10 @@ export function vocabularyImportHold(words: number) {
 }
 
 /**
- * What DeepSeek bills for an exam from a file: the material it reads plus the questions it writes back.
- * `examOutputTokens` is also the provider's `max_tokens` for that exam, so the cost below is the most the call
- * can cost. The rates fill the action's token budget above (a full 45,000-character document, 20 questions).
+ * What DeepSeek bills for an exam from a file: the material it reads plus the questions it writes back. An exam
+ * above 20 questions is written as parallel replies of at most 20 (`examReplies`), and every reply reads the whole
+ * material. `examOutputTokens` is also the provider's `max_tokens` for one reply, so the cost below is the most
+ * the exam can cost. The rates fill the action's token budget above (a full 45,000-character document, 40 questions).
  */
 export const EXAM_RATE = {
   /** Exam rules, the structure rules and the student's optional structure request. */
@@ -159,6 +167,8 @@ export const EXAM_RATE = {
   replyTokens: 800,
   /** One question: prompt, four options, the key, an explanation and a topic. */
   tokensPerQuestion: 360,
+  /** A retry lists each question it replaces by at most 160 characters of its prompt. */
+  tokensPerEarlier: 85,
 } as const;
 
 /**
@@ -169,19 +179,27 @@ export const EXAM_RATE = {
  */
 export const EXAM_PRICE = { perQuestion: 2, floorMargin: 2 } as const;
 
-/** The reply budget, and the provider's `max_tokens`, for an exam of `questions` questions. */
-export function examOutputTokens(questions: number) {
-  return EXAM_RATE.replyTokens + bounded(questions, MY_EXAM_LIMITS.questions) * EXAM_RATE.tokensPerQuestion;
+/** How many model replies write an exam of `questions` questions: one per 20 (`examParts` in my-exams/contracts.ts). */
+export function examReplies(questions: number) {
+  return Math.max(1, Math.ceil(bounded(questions, MY_EXAM_LIMITS.questions) / MY_EXAM_LIMITS.partQuestions));
 }
-/** DeepSeek peak list cost, in nano-dollars, of reading `textChars` (or `images` page photos) and writing `questions` questions. */
-export function examCostNano(textChars: number, questions: number, images = 0) {
+/** The budget, and the provider's `max_tokens`, of one reply that writes `questions` questions (at most one part's). */
+export function examOutputTokens(questions: number) {
+  return EXAM_RATE.replyTokens + bounded(questions, MY_EXAM_LIMITS.partQuestions) * EXAM_RATE.tokensPerQuestion;
+}
+/**
+ * DeepSeek peak list cost, in nano-dollars, of reading `textChars` (or `images` page photos) and writing `questions`
+ * questions. A retry also reads the `earlier` questions it replaces.
+ */
+export function examCostNano(textChars: number, questions: number, images = 0, earlier = 0) {
   const chars = bounded(textChars, MY_EXAM_LIMITS.textChars);
   const pictures = bounded(images, AI_IMAGE_LIMITS.perUpload);
-  // An exam reads a document or page photos, never both, so the larger one is priced.
-  return costNanoUsd(
-    EXAM_RATE.promptTokens + Math.max(Math.ceil(chars / EXAM_RATE.charsPerToken), pictures * AI_IMAGE_LIMITS.tokens),
-    examOutputTokens(questions),
-  );
+  const count = bounded(questions, MY_EXAM_LIMITS.questions);
+  const replies = examReplies(count);
+  // An exam reads a document or page photos, never both, so the larger one is priced; every reply reads it again.
+  const read = EXAM_RATE.promptTokens + Math.max(Math.ceil(chars / EXAM_RATE.charsPerToken), pictures * AI_IMAGE_LIMITS.tokens)
+    + bounded(earlier, MY_EXAM_LIMITS.questions) * EXAM_RATE.tokensPerEarlier;
+  return costNanoUsd(replies * read, replies * EXAM_RATE.replyTokens + count * EXAM_RATE.tokensPerQuestion);
 }
 /**
  * Credits for an exam that read `textChars` of document text (or `images` page photos) and delivered
@@ -200,35 +218,22 @@ export function examHold(questions: number, images = 0) {
   return images > 0 ? examCredits(0, questions, images) : examCredits(MY_EXAM_LIMITS.textChars, questions);
 }
 
-/** Actions sold above their DeepSeek cost; every other action's price is its token budget's cost. */
-export const MARGIN_ACTIONS: readonly AiAction[] = ["vocabulary-import", "exam"];
-export const CREDIT_COSTS = {
-  ...Object.fromEntries(AI_ACTION_IDS.map(action => [action, creditsForTokens(AI_ACTIONS[action].inputTokens, AI_ACTIONS[action].outputTokens)])),
-  "vocabulary-import": vocabularyImportHold(VOCABULARY_LIMITS.importWords),
-  "exam": examHold(MY_EXAM_LIMITS.questions),
-} as Record<AiAction, number>;
 /**
- * An image attached to a conversation is billed by DeepSeek as at most 1,024 more input tokens, and the reply
- * first restates what it read (the prompt asks for that), budgeted here as this many more output tokens.
- * The owner asked on 2026-11-09 for a picture to raise a chat reply's price a little more than its bare
- * input cost: 2 credits per image at the peak price.
+ * A retry (owner decision 2026-11-15): new questions that replace the ones on a saved exam or Reading Lab
+ * practice, made from material the same account already paid to generate from, for this share of what making
+ * it the first time costs. The server only offers it for the student's own row that still has its material.
  */
-export const IMAGE_OUTPUT_TOKENS = 600;
+export const RETRY_PRICE = { percent: 50 } as const;
+const retryShare = (credits: number) => Math.ceil(credits * RETRY_PRICE.percent / 100);
+
 /**
- * Whole credits each image adds to that reply. Photos given to an import or an exam replace the document text,
- * which the action's budget already covers, so those prices do not change.
+ * Credits for a retry of an exam whose kept text is `textChars` long and that delivers `questions` questions:
+ * half the first price, and never below the DeepSeek peak list cost of the retry itself (which also reads the
+ * replaced questions). The text and the count are known before the call, so this is also the hold.
  */
-export const IMAGE_CREDITS = creditsForTokens(AI_IMAGE_LIMITS.tokens, IMAGE_OUTPUT_TOKENS);
-export const IMAGE_ACTIONS: readonly AiAction[] = ["chat", "review-coach", "practice-assistant", "math-tutor"];
-const imageCount = (images: number) => Number.isFinite(images) ? Math.min(AI_IMAGE_LIMITS.perMessage, Math.max(0, Math.ceil(images))) : AI_IMAGE_LIMITS.perMessage;
-/** The listed price of one action, plus the image surcharge when a conversation message carries images. */
-export function creditCost(action: AiAction, images = 0) {
-  return CREDIT_COSTS[action] + (IMAGE_ACTIONS.includes(action) ? imageCount(images) * IMAGE_CREDITS : 0);
-}
-/** The most one request of this action can ever hold: its price with the most images a message may carry. */
-export function maxCreditCost(action: AiAction) { return creditCost(action, AI_IMAGE_LIMITS.perMessage); }
-export function isAiAction(value: unknown): value is AiAction {
-  return typeof value === "string" && Object.hasOwn(AI_ACTIONS, value);
+export function examRetryCredits(textChars: number, questions: number) {
+  const cost = Math.ceil(examCostNano(textChars, questions, 0, questions) / NANO_PER_CREDIT);
+  return Math.max(1, retryShare(examCredits(textChars, questions)), cost);
 }
 
 /**
@@ -237,7 +242,7 @@ export function isAiAction(value: unknown): value is AiAction {
  * The first live call (2026-11-10) read 1,935 characters and returned a 351-word passage with 12 questions for
  * 1,206 + 1,951 tokens ($0.0027); these rates price that at 6 credits, leaving room for longer Mongolian explanations.
  * They fill the action's budget, so a full 45,000-character file with the longest passage and most questions costs
- * exactly the listed (maximum) price.
+ * exactly the listed (maximum) price. The student chooses the number of questions (8–24, owner decision 2026-11-15).
  */
 export const READING_PRACTICE_RATE = {
   /** Instructions, the JSON shape and the explanation language. */
@@ -264,12 +269,80 @@ export function readingPracticeCredits(textChars: number, passageWords: number, 
     rate.replyTokens + words * rate.tokensPerPassageWord + count * rate.tokensPerQuestion,
   );
 }
+/** The reply budget, and the provider's `max_tokens`, of a practice with up to `questions` questions: the longest passage plus them. */
+export function readingOutputTokens(questions: number) {
+  const rate = READING_PRACTICE_RATE;
+  return rate.replyTokens + READING_LIMITS.passageWords.max * rate.tokensPerPassageWord + bounded(questions, READING_LIMITS.questions.max) * rate.tokensPerQuestion;
+}
 /**
  * The most a practice from this material can cost: its known length (pasted text) or photo count, with the longest
- * passage and the most questions. A document's text is only known after extraction, so it holds the full-file price.
+ * passage and the `questions` the student asked for (the most there can be when it is not given). A document's text
+ * is only known after extraction, so it holds the full-file price.
  */
-export function readingPracticeHold(textChars: number, images = 0) {
-  return readingPracticeCredits(textChars, READING_LIMITS.passageWords.max, READING_LIMITS.questions.max, images);
+export function readingPracticeHold(textChars: number, images = 0, questions: number = READING_LIMITS.questions.max) {
+  return readingPracticeCredits(textChars, READING_LIMITS.passageWords.max, questions, images);
+}
+
+/**
+ * Credits for a retry of a Reading Lab practice: new questions on the passage already saved with it. Half of what
+ * a new practice with this passage (`passageChars` characters, `passageWords` words) and `questions` questions
+ * costs (`RETRY_PRICE`). The passage and the count are known before the call, so this is also the hold. Reading
+ * Lab is sold at DeepSeek's cost, so at peak hours a retry can cost DeepSeek slightly more than this (the owner
+ * chose half price knowing that); off-peak and with a cached prompt it does not.
+ */
+export function readingRetryCredits(passageChars: number, passageWords: number, questions: number) {
+  return Math.max(1, retryShare(readingPracticeCredits(passageChars, passageWords, questions)));
+}
+/**
+ * The retry price of a stored practice, from its own passage and `questions` (its current count, or the number
+ * delivered): the page shows this figure and the server holds and settles it.
+ */
+export function readingRetryPrice(paragraphs: readonly string[], questions: number) {
+  const count = Math.min(READING_LIMITS.questions.max, Math.max(READING_LIMITS.questions.min, Math.ceil(questions) || 0));
+  return readingRetryCredits(paragraphs.join("\n").length, passageWords(paragraphs), count);
+}
+/** The reply budget, and the provider's `max_tokens`, of a retry that writes `questions` questions and no passage. */
+export function readingRetryOutputTokens(questions: number) {
+  return READING_PRACTICE_RATE.replyTokens + bounded(questions, READING_LIMITS.questions.max) * READING_PRACTICE_RATE.tokensPerQuestion;
+}
+
+/**
+ * Actions sold above their DeepSeek cost; every other action's price is its token budget's cost, except the two
+ * retries (`RETRY_ACTIONS`), which are a share of the first generation's price.
+ */
+export const MARGIN_ACTIONS: readonly AiAction[] = ["vocabulary-import", "exam"];
+export const RETRY_ACTIONS: readonly AiAction[] = ["exam-retry", "reading-retry"];
+/** The longest passage a stored practice can hold, in characters: what a Reading Lab retry reads at most. */
+const READING_PASSAGE_CHARS = READING_LIMITS.paragraphs.max * READING_LIMITS.paragraph;
+export const CREDIT_COSTS = {
+  ...Object.fromEntries(AI_ACTION_IDS.map(action => [action, creditsForTokens(AI_ACTIONS[action].inputTokens, AI_ACTIONS[action].outputTokens)])),
+  "vocabulary-import": vocabularyImportHold(VOCABULARY_LIMITS.importWords),
+  "exam": examHold(MY_EXAM_LIMITS.questions),
+  "exam-retry": examRetryCredits(MY_EXAM_LIMITS.textChars, MY_EXAM_LIMITS.questions),
+  "reading-retry": readingRetryCredits(READING_PASSAGE_CHARS, READING_LIMITS.passageWords.max, READING_LIMITS.questions.max),
+} as Record<AiAction, number>;
+/**
+ * An image attached to a conversation is billed by DeepSeek as at most 1,024 more input tokens, and the reply
+ * first restates what it read (the prompt asks for that), budgeted here as this many more output tokens.
+ * The owner asked on 2026-11-09 for a picture to raise a chat reply's price a little more than its bare
+ * input cost: 2 credits per image at the peak price.
+ */
+export const IMAGE_OUTPUT_TOKENS = 600;
+/**
+ * Whole credits each image adds to that reply. Photos given to an import or an exam replace the document text,
+ * which the action's budget already covers, so those prices do not change.
+ */
+export const IMAGE_CREDITS = creditsForTokens(AI_IMAGE_LIMITS.tokens, IMAGE_OUTPUT_TOKENS);
+export const IMAGE_ACTIONS: readonly AiAction[] = ["chat", "review-coach", "practice-assistant", "math-tutor"];
+const imageCount = (images: number) => Number.isFinite(images) ? Math.min(AI_IMAGE_LIMITS.perMessage, Math.max(0, Math.ceil(images))) : AI_IMAGE_LIMITS.perMessage;
+/** The listed price of one action, plus the image surcharge when a conversation message carries images. */
+export function creditCost(action: AiAction, images = 0) {
+  return CREDIT_COSTS[action] + (IMAGE_ACTIONS.includes(action) ? imageCount(images) * IMAGE_CREDITS : 0);
+}
+/** The most one request of this action can ever hold: its price with the most images a message may carry. */
+export function maxCreditCost(action: AiAction) { return creditCost(action, AI_IMAGE_LIMITS.perMessage); }
+export function isAiAction(value: unknown): value is AiAction {
+  return typeof value === "string" && Object.hasOwn(AI_ACTIONS, value);
 }
 
 /**
@@ -301,7 +374,9 @@ export function creditRange(action: AiAction) {
   const max = CREDIT_COSTS[action];
   if (action === "vocabulary-import") return { min: vocabularyImportCredits(0, 1), max };
   if (action === "exam") return { min: examCredits(0, MY_EXAM_LIMITS.minQuestions), max };
+  if (action === "exam-retry") return { min: examRetryCredits(0, MY_EXAM_LIMITS.minQuestions), max };
   if (action === "reading-practice") return { min: readingPracticeCredits(READING_LIMITS.minSourceChars, READING_LIMITS.passageWords.min, READING_LIMITS.questions.min), max };
+  if (action === "reading-retry") return { min: readingRetryCredits(READING_LIMITS.minSourceChars, READING_LIMITS.passageWords.min, READING_LIMITS.questions.min), max };
   if (action === "roadmap") return { min: roadmapCredits(1), max };
   return { min: max, max };
 }
@@ -318,10 +393,13 @@ export function speakingCreditAction(action: string): AiAction {
   return action === "report" ? "speaking-report" : "speaking-turn";
 }
 
-/** Monthly amounts an admin can change: the free credits and each plan's credits. */
+/**
+ * Monthly amounts an admin can change: the free credits and each plan's credits. Retired plans (IELTS, SAT) keep a
+ * key so a subscription bought before 2026-11-13 still gets its credits until it ends.
+ */
 export type AllowanceKey = "free" | SubscriptionProgram;
 export type AllowanceTable = Record<AllowanceKey, number>;
-export const ALLOWANCE_KEYS = ["free", ...subscriptionPlans.map(plan => plan.program)] as AllowanceKey[];
+export const ALLOWANCE_KEYS = ["free", ...allPlans.map(plan => plan.program)] as AllowanceKey[];
 export const CREDIT_ALLOWANCE_LIMITS = { min: 0, max: 100_000 } as const;
 /** An admin grant adds bonus credits to one student's current month. */
 export const CREDIT_GRANT_LIMITS = { min: 1, max: 10_000 } as const;
@@ -349,7 +427,7 @@ export function validCreditPack(credits: unknown, amountMnt: unknown) {
 
 /** The code defaults, used where no admin-set row exists. */
 export function defaultAllowances(): AllowanceTable {
-  return Object.fromEntries([["free", FREE_MONTHLY_CREDITS], ...subscriptionPlans.map(plan => [plan.program, plan.aiCredits])]) as AllowanceTable;
+  return Object.fromEntries([["free", FREE_MONTHLY_CREDITS], ...allPlans.map(plan => [plan.program, plan.aiCredits])]) as AllowanceTable;
 }
 const UB_OFFSET_MS = 8 * 3600_000;
 /** The Ulaanbaatar calendar month a charge belongs to (and the free credits' month), as "YYYY-MM". */
@@ -384,16 +462,24 @@ export class UsageMeter {
   costMicroUsd() { return Math.ceil(costNanoUsd(this.prompt, this.completion, this.cached) / 1000); }
 }
 
-export type CreditReceipt = { action: AiAction; spent: number; balance: number; allowance: number };
+/**
+ * What an AI reply says about the credits: `balance` is every credit left (normal and yellow), `allowance` the
+ * meter's size (this month's and the plan terms' credits plus the yellow credits still unspent) and `yellow` the
+ * purchased credits left, which the page shows apart from the normal ones. A reply from a server older than the
+ * yellow figure carries none (`null`); the page then keeps the yellow figure it had.
+ */
+export type CreditReceipt = { action: AiAction; spent: number; balance: number; allowance: number; yellow: number | null };
+const whole = (item: unknown): item is number => typeof item === "number" && Number.isSafeInteger(item) && item >= 0;
 /** Accepts only a well-formed receipt from an AI reply, for the page's balance display. */
 export function readReceipt(value: unknown): CreditReceipt | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
   const receipt = (value as Record<string, unknown>).credits;
   if (!receipt || typeof receipt !== "object" || Array.isArray(receipt)) return null;
-  const { action, spent, balance, allowance } = receipt as Record<string, unknown>;
+  const { action, spent, balance, allowance, yellow } = receipt as Record<string, unknown>;
   if (!isAiAction(action)) return null;
-  if (![spent, balance, allowance].every(item => typeof item === "number" && Number.isSafeInteger(item) && item >= 0)) return null;
-  return { action, spent: spent as number, balance: balance as number, allowance: allowance as number };
+  if (![spent, balance, allowance].every(whole)) return null;
+  if (yellow !== undefined && (!whole(yellow) || yellow > (balance as number))) return null;
+  return { action, spent: spent as number, balance: balance as number, allowance: allowance as number, yellow: yellow === undefined ? null : yellow };
 }
 
 export function formatCredits(value: number) { return value.toLocaleString("en-US"); }

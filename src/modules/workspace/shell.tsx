@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Icon, type IconName } from "./icons";
 import { inWorkspace, workspaceTab, type WorkspaceTab } from "./paths";
@@ -9,6 +9,7 @@ import { useThreads } from "./chat-store";
 import type { ShellAccount } from "./data";
 import { CreditsProvider, normalCredits, useCredits } from "@/modules/credits/client";
 import { formatCredits } from "@/modules/credits/pricing";
+import { NotifyPanel, NotifyRailButton, NotifyTopButton, useInbox } from "@/modules/notifications/client";
 
 const tabs: { id: WorkspaceTab; href: string; label: string; icon: IconName }[] = [
   { id: "home", href: "/workspace", label: "Нүүр", icon: "home" },
@@ -38,9 +39,18 @@ export function WorkspaceShell({ account, fontClass, children }: { account: Shel
   const menuButton = useRef<HTMLButtonElement>(null);
   const shown = inWorkspace(pathname);
 
-  // Close the phone menu whenever the route changes.
+  // The inbox opens from the rail row (desktop, phone menu) or the phone top bar.
+  const [notifyOpen, setNotifyOpen] = useState(false);
+  const railBell = useRef<HTMLButtonElement>(null);
+  const topBell = useRef<HTMLButtonElement>(null);
+  const [bells] = useState(() => [railBell, topBell]);
+  const lastBell = useRef(railBell);
+  const inbox = useInbox(account?.unread ?? 0, Boolean(account) && shown);
+  const closeNotify = useCallback((restoreFocus: boolean) => { setNotifyOpen(false); if (restoreFocus) lastBell.current.current?.focus(); }, []);
+
+  // Close the phone menu and the inbox whenever the route changes.
   const [lastPath, setLastPath] = useState(pathname);
-  if (lastPath !== pathname) { setLastPath(pathname); setOpen(false); }
+  if (lastPath !== pathname) { setLastPath(pathname); setOpen(false); setNotifyOpen(false); }
 
   useEffect(() => {
     if (!open) return;
@@ -77,6 +87,7 @@ export function WorkspaceShell({ account, fontClass, children }: { account: Shel
         {account ? account.plans.length ? <div className="wsp-plan-card"><span>Идэвхтэй багц</span>{account.plans.map(plan => <p key={plan.title}><strong>{plan.title}</strong><em className={plan.daysLeft <= 5 ? "is-warn" : undefined}>{plan.daysLeft} хоног</em></p>)}</div>
           : <Link className="wsp-cta" href="/workspace/plans"><Icon name="bolt" />Багц сонгох</Link>
           : <Link className="wsp-cta" href="/login?next=%2Fworkspace"><Icon name="profile" />Нэвтрэх</Link>}
+        {account ? <NotifyRailButton unread={inbox.unread} open={notifyOpen} buttonRef={railBell} onClick={() => { lastBell.current = railBell; setOpen(false); setNotifyOpen(value => !value); }} /> : null}
         <div className="wsp-account-row">
           {account ? <Link className="wsp-account" href="/workspace/profile" title={account.name} aria-current={onProfile}><span className="wsp-avatar" aria-hidden="true">{initials(account.name)}</span><span className="wsp-account-text"><strong>{account.name}</strong><small>{account.email}</small></span></Link>
             : <Link className="wsp-account" href="/register"><span className="wsp-avatar is-guest" aria-hidden="true"><Icon name="profile" size={16} /></span><span className="wsp-account-text"><strong>Бүртгүүлэх</strong><small>Үнэгүй бүртгэл</small></span></Link>}
@@ -85,11 +96,13 @@ export function WorkspaceShell({ account, fontClass, children }: { account: Shel
       </div>
     </aside>
     <button type="button" className="wsp-scrim" aria-label="Цэс хаах" tabIndex={-1} onClick={() => setOpen(false)} />
+    {account && notifyOpen ? <NotifyPanel inbox={inbox} onClose={closeNotify} openers={bells} /> : null}
     <div className="wsp-body">
       <header className="wsp-topbar">
         <button ref={menuButton} type="button" className="wsp-icon-button" aria-controls="wsp-side" aria-expanded={open} onClick={() => setOpen(true)}><Icon name="menu" /><span className="sr-only">Цэс нээх</span></button>
         <Link href="/workspace" className="wsp-logo is-compact" aria-label="Workspace нүүр"><span className="wsp-logo-mark" aria-hidden="true">e<span>·</span></span></Link>
         <span className="wsp-topbar-title">{title}</span>
+        {account ? <NotifyTopButton unread={inbox.unread} open={notifyOpen} buttonRef={topBell} onClick={() => { lastBell.current = topBell; setNotifyOpen(value => !value); }} /> : null}
         {account ? <Link className="wsp-top-account" href="/workspace/profile" aria-label={PROFILE_LABEL} aria-current={onProfile}><span className="wsp-avatar" aria-hidden="true">{initials(account.name)}</span></Link>
           : <Link className="wsp-top-signin" href="/login?next=%2Fworkspace">Нэвтрэх</Link>}
       </header>

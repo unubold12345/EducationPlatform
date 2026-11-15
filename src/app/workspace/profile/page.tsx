@@ -77,7 +77,7 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
 
   return <div className="container page-space ws profile-page">
     <header className="wsp-page-head profile-heading">
-      <div><h1>Миний профайл</h1><p>Хувийн мэдээлэл, багц ба шалгалтын эрх, нууц үгээ эндээс удирдана.</p></div>
+      <div><h1 className="sr-only">Миний профайл</h1><p>Хувийн мэдээлэл, багц ба шалгалтын эрх, нууц үгээ эндээс удирдана.</p></div>
       <div className="profile-heading-actions">
         {administrator&&<Link className="button secondary" href="/admin">Удирдлагын төв</Link>}
         <SignOut/>

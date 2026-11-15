@@ -6,9 +6,9 @@ import {drillAudioKey} from "../src/modules/listening-lab/audio-key.ts";
 
 const timings=JSON.parse(readFileSync(new URL("../src/modules/listening-lab/timings.json",import.meta.url),"utf8"));
 
-test("two full tests: Parts 1–4 each, 10 marks per part, numbered like IELTS",()=>{
+test("five full tests: Parts 1–4 each, 10 marks per part, numbered like IELTS",()=>{
  assert.equal(new Set(listeningDrills.map(d=>d.id)).size,listeningDrills.length);
- for(const t of [1,2])assert.deepEqual(listeningDrills.filter(d=>d.test===t).map(d=>d.part),[1,2,3,4]);
+ for(const t of [1,2,3,4,5])assert.deepEqual(listeningDrills.filter(d=>d.test===t).map(d=>d.part),[1,2,3,4]);
  for(const drill of listeningDrills){
   assert.equal(totalMarks(drill),10,drill.id);
   const items=numberedQuestions(drill),start=(drill.part-1)*10+1;

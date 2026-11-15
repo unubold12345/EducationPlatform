@@ -41,10 +41,10 @@ Three silent, real local-browser recordings made with reserved QA data. MP4/H.26
 | File | Duration | Actual actions |
 | --- | --- | --- |
 | `public/home/exam-practice.mp4` | 23 s | Browse the library, select SAT, open practice, select/check an answer, move to the next question |
-| `public/home/workspace-review.mp4` | 18.4 s | Open Workspace, open Review, select a completed sample, inspect questions and explanations |
-| `public/home/workshop.mp4` | 28.4 s | Open Workshop, choose a Speaking partner/part, open Essay Studio and type a sample paragraph |
+| `public/home/workspace-review.mp4` | 18.5 s | Open Workspace, open Review, select a completed sample, inspect questions and explanations |
+| `public/home/workshop.mp4` | 28.6 s | Open Workshop, choose a Speaking partner/part, open Essay Studio and type a sample paragraph |
 
-Regenerate with `python scripts/record-homepage-demos.py` while the local preview and database are running (re-recorded 2026-11-13 on the current Workspace; the Speaking Lab session-type locator was loosened because the button's name now includes its description). The script creates a disposable `qa-exam-home-demo-…@example.invalid` account, uses simulated SAT payment and the existing guarded local QA deadline fixture to prepare a sample submitted result. It never changes an application timer or access check. Raw captures stay ignored under `artifacts/home-recordings/`; only compressed media is used by the page.
+Regenerate with `python scripts/record-homepage-demos.py` while the local preview and database are running (re-recorded 2026-11-16 against that day's build, so the loops show the notification row, the current Exams, Review and Workshop layouts and the five-test Listening card; the 2026-11-13 set is kept in ignored `artifacts/home-recordings/prev-2026-11-13/`; the Speaking Lab session-type locator was loosened because the button's name now includes its description). The script creates a disposable `qa-exam-home-demo-…@example.invalid` account, uses simulated SAT payment and the existing guarded local QA deadline fixture to prepare a sample submitted result. It never changes an application timer or access check. Raw captures stay ignored under `artifacts/home-recordings/`; only compressed media is used by the page.
 
 The original click-to-play version was verified locally for decoding, seeking and deferred video requests. Videos and posters remain unchanged in the new autoplay version. Responsive artwork is served by Next Image. Original screenshots are in ignored `artifacts/home-final/`; hand-drawn variant screenshots are in `artifacts/home-handdrawn/`.
 

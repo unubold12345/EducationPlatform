@@ -2,7 +2,9 @@
 
 Workspace: `C:/Users/Hitech/Desktop/codes/educationplatform`.
 
-Read [docs/OPERATIONS.md](./docs/OPERATIONS.md) first, then [docs/PROJECT.md](./docs/PROJECT.md).
+Read [docs/OPERATIONS.md](./docs/OPERATIONS.md) first, then [docs/PROJECT.md](./docs/PROJECT.md). Both are short on
+purpose. Feature detail is in `docs/project/<topic>.md`: open only the files for the area your task touches, and search
+`docs/OPERATIONS_HISTORY.md` instead of reading it whole.
 These two files replace the former `HANDOFF.md`, `readme.md`, `rules.md`, `start.md` and detailed
 `AGENTS.md`; do not recreate or update those retired files.
 
@@ -21,8 +23,8 @@ Non-negotiables:
   server-side. Never add timer, payment, grading or AI bypasses.
 - Run only the checks `docs/OPERATIONS.md` requires for the change type (`npm run check`). Report only checks
   actually run.
-- Record outcomes in `docs/OPERATIONS.md` as one short entry of at most five lines, naming your tool and model. Never
-  re-attribute another agent's work or paste play-by-play there.
+- Record outcomes in `docs/OPERATIONS.md` as one entry of at most 600 characters, naming your tool and model; put feature
+  detail in the matching `docs/project/` file. Never re-attribute another agent's work or paste play-by-play there.
 - Keep LawTest/Lexlab completely separate; this project only links to <https://lexlab.site/plan>.
 - Payments are simulated and hosted accounts are a test pilot.
 

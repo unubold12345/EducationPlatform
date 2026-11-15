@@ -5,6 +5,8 @@ import { findExam } from "./definitions";
 import { MOCK_PRICE_MNT } from "./pricing";
 import { mockPilotPaymentsEnabled } from "@/lib/local-pilot";
 import { isFreeMock } from "./free/catalog";
+import { notify } from "@/modules/notifications/service";
+import { mockPaidNotice } from "@/modules/notifications/rules";
 export class MockAccessRequired extends ApiError {
   constructor(public slug:string) { super(402,"Энэ шалгалтын эрхийг ₮10,000-өөр нээнэ үү."); }
 }
@@ -25,7 +27,9 @@ export async function confirmMockOrder(id:string,userId:string,decision:"success
     if (!order) throw new ApiError(404,"Захиалга олдсонгүй.");
     if (order.status==="PAID") return order;
     if (order.provider!=="MOCK"||order.amountMnt!==MOCK_PRICE_MNT||order.currency!=="MNT"||!findExam(order.examSlug)||isFreeMock(order.examSlug)) throw new ApiError(409,"Захиалгын мэдээлэл зөрүүтэй байна.");
-    await tx.mockPurchase.updateMany({where:{id,userId,status:{not:"PAID"}},data:decision==="success"?{status:"PAID",paidAt:new Date()}:{status:"DECLINED"}});
+    const changed=await tx.mockPurchase.updateMany({where:{id,userId,status:{not:"PAID"}},data:decision==="success"?{status:"PAID",paidAt:new Date()}:{status:"DECLINED"}});
+    // Only the request that flips the order to PAID reports it.
+    if (decision==="success"&&changed.count) await notify(tx,userId,mockPaidNotice(findExam(order.examSlug)!.title,order.examSlug,id));
     return tx.mockPurchase.findUniqueOrThrow({where:{id},select:purchaseFields});
   });
 }

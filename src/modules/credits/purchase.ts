@@ -3,6 +3,8 @@ import { getDb } from "@/lib/db";
 import { ApiError } from "@/lib/api";
 import { mockPilotPaymentsEnabled } from "@/lib/local-pilot";
 import { DEFAULT_CREDIT_PACK, type CreditPackOffer } from "./pricing";
+import { notify } from "@/modules/notifications/service";
+import { creditsPaidNotice } from "@/modules/notifications/rules";
 
 export const CREDIT_PACK_KEY = "default";
 
@@ -44,6 +46,7 @@ export async function confirmCreditOrder(id: string, userId: string, decision: "
     // Only the request that flips the order to PAID adds credits, so a repeated confirm never adds twice.
     const changed = await tx.creditOrder.updateMany({ where: { id, userId, status: { not: "PAID" } }, data: { status: "PAID", activeKey: null, paidAt: new Date() } });
     if (changed.count) await tx.creditWallet.upsert({ where: { userId }, create: { userId, purchased: order.credits }, update: { purchased: { increment: order.credits } } });
+    if (changed.count) await notify(tx, userId, creditsPaidNotice(order.credits, id));
     return tx.creditOrder.findUniqueOrThrow({ where: { id }, select: fields });
   });
 }

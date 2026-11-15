@@ -215,6 +215,38 @@ main:has(> .wsp) { isolation: auto; }
 .wsp-credits.is-yellow:hover { border-color: var(--wsp-yellow-line); }
 .wsp-credits.is-yellow .wsp-credits-text strong { color: var(--wsp-yellow); }
 
+/* Notifications: a rail row with the unread count, and the inbox beside the rail. */
+.wsp-notify-row { position: relative; width: 100%; border: 0; background: transparent; text-align: left; cursor: pointer; }
+.wsp-notify-row[aria-expanded="true"] { background: var(--wsp-hover); color: var(--wsp-ink); }
+.wsp-notify-row[aria-expanded="true"] svg { color: var(--wsp-accent); }
+.wsp-notify-count { min-width: 20px; margin-left: auto; padding: 1px 6px; border-radius: 999px; background: var(--wsp-accent); color: var(--wsp-accent-ink); font-size: 11px; font-style: normal; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 18px; text-align: center; }
+.wsp-notify-top { position: relative; display: none; }
+.wsp-notify-top .wsp-notify-count { position: absolute; top: -2px; right: -4px; min-width: 16px; padding: 0 4px; font-size: 10px; line-height: 16px; }
+.wsp-notify {
+  position: fixed; bottom: 14px; left: calc(var(--wsp-rail) + 10px); z-index: 45;
+  display: flex; flex-direction: column;
+  width: min(380px, calc(100vw - var(--wsp-rail) - 24px)); max-height: min(560px, calc(100dvh - 28px));
+  overflow: hidden; border: 1px solid var(--wsp-line); border-radius: 16px;
+  background: var(--wsp-card); box-shadow: var(--wsp-shadow-card);
+}
+.wsp-notify:focus-visible { outline: none; }
+.wsp-notify-head { display: flex; align-items: center; gap: 6px; padding: 10px 10px 10px 16px; border-bottom: 1px solid var(--wsp-line); }
+.wsp-notify-head h2 { margin: 0 auto 0 0; font-size: 15px; font-weight: 650; }
+.wsp-notify-all { padding: 6px 10px; border: 0; border-radius: 8px; background: transparent; color: var(--wsp-accent); font-size: 13px; font-weight: 600; cursor: pointer; }
+.wsp-notify-all:hover { background: var(--wsp-accent-soft); }
+.wsp-notify-list { margin: 0; padding: 6px; overflow-y: auto; overscroll-behavior: contain; list-style: none; }
+.wsp-notify-list a, .wsp-notify-list button { display: flex; align-items: flex-start; gap: 10px; width: 100%; padding: 10px; border: 0; border-radius: 10px; background: transparent; color: var(--wsp-text); text-align: left; cursor: pointer; }
+.wsp-notify-list a:hover, .wsp-notify-list button:hover { background: var(--wsp-hover); }
+.wsp-notify-dot { flex-shrink: 0; width: 8px; height: 8px; margin-top: 6px; border-radius: 50%; background: transparent; }
+.wsp-notify-list li[data-unread] .wsp-notify-dot { background: var(--wsp-accent); }
+.wsp-notify-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; overflow-wrap: anywhere; }
+.wsp-notify-text strong { color: var(--wsp-muted); font-size: 14px; font-weight: 550; }
+.wsp-notify-list li[data-unread] .wsp-notify-text strong { color: var(--wsp-ink); font-weight: 650; }
+.wsp-notify-text > span { color: var(--wsp-muted); font-size: 13.5px; white-space: pre-line; }
+.wsp-notify-text small { color: var(--wsp-soft); font-size: 12px; }
+.wsp-notify-empty { margin: 0; padding: 28px 16px; color: var(--wsp-muted); text-align: center; }
+.wsp-notify-empty button { padding: 0; border: 0; background: transparent; color: var(--wsp-accent); font-weight: 600; cursor: pointer; }
+
 .wsp-side-links { display: grid; gap: 1px; }
 .wsp-side-links a, .wsp-side-links button { display: flex; align-items: center; gap: 10px; width: 100%; padding: 7px 12px; border: 0; border-radius: 10px; background: transparent; color: var(--wsp-muted); font-size: 13.5px; font-weight: 500; text-align: left; white-space: nowrap; cursor: pointer; }
 .wsp-side-links a:hover, .wsp-side-links button:hover { background: var(--wsp-hover); color: var(--wsp-ink); }
@@ -255,6 +287,7 @@ main:has(> .wsp) { isolation: auto; }
 :root[data-ws-rail="collapsed"] .wsp-side-links button { justify-content: center; padding-inline: 0; }
 :root[data-ws-rail="collapsed"] .wsp-cta { font-size: 0; gap: 0; }
 :root[data-ws-rail="collapsed"] .wsp-credits { justify-content: center; padding-inline: 0; }
+:root[data-ws-rail="collapsed"] .wsp-notify-row .wsp-notify-count { position: absolute; top: 2px; right: 4px; min-width: 16px; padding: 0 4px; font-size: 10px; line-height: 16px; }
 :root[data-ws-rail="collapsed"] .wsp-credits-bar { right: 8px; left: 8px; }
 :root[data-ws-rail="collapsed"] .wsp-account-row { flex-direction: column; margin-inline: -12px; padding-inline: 12px; }
 
@@ -755,6 +788,14 @@ main:has(> .wsp) { isolation: auto; }
   :root[data-ws-rail="collapsed"] .wsp-side-links a,
   :root[data-ws-rail="collapsed"] .wsp-side-links button { justify-content: flex-start; padding-inline: 12px; }
   :root[data-ws-rail="collapsed"] .wsp-cta { font-size: 15px; gap: 8px; }
+  :root[data-ws-rail="collapsed"] .wsp-notify-row .wsp-notify-count { position: static; min-width: 20px; padding: 1px 6px; font-size: 11px; line-height: 18px; }
+  .wsp-notify-top { display: inline-grid; }
+  /* On phones the inbox is a page of its own, over the top bar. */
+  .wsp-notify { inset: 0; z-index: 50; width: auto; max-height: none; border: 0; border-radius: 0; background: var(--wsp-bg); box-shadow: none; }
+  .wsp-notify-head { min-height: 56px; padding: 8px 14px 8px 18px; }
+  .wsp-notify-head h2 { font-size: 16px; }
+  .wsp-notify-list { flex: 1; padding: 8px 8px calc(16px + env(safe-area-inset-bottom)); }
+  .wsp-notify-list a, .wsp-notify-list button { padding: 14px 10px; }
   :root[data-ws-rail="collapsed"] .wsp-account-row { flex-direction: row; margin-inline: -16px; padding-inline: 16px 12px; }
 
   .wsp-topbar {

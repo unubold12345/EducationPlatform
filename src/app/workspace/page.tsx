@@ -48,7 +48,7 @@ export default async function WorkspaceHome() {
   return <div className="wsp-page wsp-home">
     <header className="wsp-hero">
       <p className="wsp-hello">Сайн уу, {user.name.trim().slice(0, 60)}</p>
-      <h1>Өнөөдөр юу сурах вэ?</h1>
+      <h1 className="sr-only">Өнөөдөр юу сурах вэ?</h1>
     </header>
     <HomeSwitcher programs={programs} labs={labs} />
 

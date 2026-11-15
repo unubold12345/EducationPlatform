@@ -4,6 +4,8 @@ import { ApiError } from "@/lib/api";
 import { mockPilotPaymentsEnabled } from "@/lib/local-pilot";
 import { addCalendarMonth } from "./plans";
 import { pricedPlan } from "./prices";
+import { notify } from "@/modules/notifications/service";
+import { planPaidNotice } from "@/modules/notifications/rules";
 
 const fields={id:true,program:true,amountMnt:true,currency:true,provider:true,status:true,createdAt:true,paidAt:true,periodStart:true,periodEnd:true} as const;
 export async function createSubscriptionOrder(program:string,userId:string) {
@@ -32,6 +34,7 @@ export async function confirmSubscriptionOrder(id:string,userId:string,decision:
       const start=active?current.endsAt:now;const end=addCalendarMonth(start);
       await tx.subscription.upsert({where:{userId_program:{userId,program:order.program}},create:{userId,program:order.program,startsAt:start,endsAt:end},update:{startsAt:active?current.startsAt:start,endsAt:end}});
       await tx.subscriptionOrder.update({where:{id},data:{periodStart:start,periodEnd:end}});
+      await notify(tx,userId,planPaidNotice(plan.title,end,Boolean(active),id));
     }
     return tx.subscriptionOrder.findUniqueOrThrow({where:{id},select:fields});
   });

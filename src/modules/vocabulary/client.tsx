@@ -174,7 +174,7 @@ export function Vocabulary({ userId, initialWords, initialDecks, space: initialS
 
   return <div className={`wsp-page ${styles.page}`}>
     <header className={styles.head}>
-      <h1>Үгээ цуглуул. Ухаалгаар давт.</h1>
+      <h1 className="sr-only">Үгээ цуглуул. Ухаалгаар давт.</h1>
     </header>
 
     {/* Study first (owner request 2026-11-15): the card to turn over leads the page, the figures sit beside it. */}

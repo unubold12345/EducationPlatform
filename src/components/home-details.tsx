@@ -73,7 +73,7 @@ const demos = [
 
 export function HomeWorkspaceDetails() {
   return <section className="section home-workspace-details" id="workspace" aria-labelledby="home-workspace-heading">
-    <div className="section-heading" data-reveal><h2 id="home-workspace-heading">Бэлтгэл чинь ингэж өрнөнө.</h2></div>
+    <h2 className="sr-only" id="home-workspace-heading">Бэлтгэл хэрхэн өрнөх вэ</h2>
     <div className="home-demo-grid" id="demos">{demos.map(demo => <article className="home-demo-card" key={demo.id} data-reveal><div className="home-demo-heading"><span>{demo.number}</span><h3 id={demo.id + "-heading"}>{demo.title}</h3></div><div className="home-demo-screen"><HomeDemoVideo id={demo.id} /></div><div className="home-demo-footer"><p id={demo.id + "-description"}>{demo.text}</p><Link className="text-link" href={demo.href}>{demo.link} ↗</Link></div><p className="sr-only">Бичлэгийн алхмууд: {demo.transcript}</p></article>)}</div>
     <div className="home-feature-grid">{workspaceFeatures.map(feature => <article key={feature.title} data-reveal><span className="home-feature-mark" aria-hidden="true">{feature.mark}</span><div><h3>{feature.title}</h3><p>{feature.text}</p></div></article>)}</div>
   </section>;
@@ -83,7 +83,7 @@ export function HomeWorkshopDetails() {
   const labs = [
     { enabled: speakingLabEnabled(), mark: "◌", title: "Speaking Lab", text: "6 AI хамтрагч · Дуугаар ярилц · 3 хэсэг", href: "/labs/ielts-speaking" },
     { enabled: writingLabEnabled(), mark: "Aa", title: "Essay Studio", text: "Эссэ · Захидал · AI засвар, үнэлгээ", href: "/labs/ielts-writing" },
-    { enabled: listeningLabEnabled(), mark: "≋", title: "Listening Lab", text: "2 тест · Давтаж сонс · Тексттэй харьцуул", href: "/labs/ielts-listening" },
+    { enabled: listeningLabEnabled(), mark: "≋", title: "Listening Lab", text: "5 тест · Давтаж сонс · Тексттэй харьцуул", href: "/labs/ielts-listening" },
     { enabled: readingLabEnabled(), mark: "¶", title: "Reading Lab", text: "5 текст · 7 төрлийн асуулт · Өөрийн файлаас", href: "/labs/ielts-reading" },
   ].filter(lab => lab.enabled);
   return <section className="section home-workshop-details" id="workshop" aria-labelledby="home-workshop-heading">

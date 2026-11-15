@@ -9,12 +9,15 @@ import { findAnyPlan } from "@/modules/subscriptions/plans";
 import { programOf, programPrefixes } from "./programs";
 import { creditSummary } from "@/modules/credits/service";
 import type { CreditBalance } from "@/modules/credits/client";
+import { unreadNotifications } from "@/modules/notifications/service";
 
 export type ShellAccount = {
   name: string; email: string; userKey: string;
   plans: { title: string; daysLeft: number }[];
   // This month's AI credits; null when the credit tables cannot be read, so the shell still renders.
   credits: CreditBalance;
+  // Unread notices already in the inbox; 0 when the table cannot be read, so the shell still renders.
+  unread: number;
 } | null;
 
 const DAY_MS = 864e5;
@@ -24,14 +27,15 @@ export const shellAccount = cache(async (): Promise<ShellAccount> => {
   const session = await getSession();
   if (!session) return null;
   const now = new Date();
-  const [plans, credits] = await Promise.all([
+  const [plans, credits, unread] = await Promise.all([
     getDb().subscription.findMany({ where: { userId: session.user.id, startsAt: { lte: now }, endsAt: { gt: now } }, orderBy: { endsAt: "asc" }, select: { program: true, endsAt: true } }),
     creditSummary(session.user.id, now).then(summary => ({ balance: summary.balance, allowance: summary.allowance, yellow: summary.yellow }), () => null),
+    unreadNotifications(session.user.id).catch(() => 0),
   ]);
   return {
     name: session.user.name, email: session.user.email, userKey: session.user.id,
     plans: plans.map(plan => ({ title: findAnyPlan(plan.program)?.shortTitle ?? plan.program, daysLeft: Math.ceil((plan.endsAt.getTime() - now.getTime()) / DAY_MS) })),
-    credits,
+    credits, unread,
   };
 });
 

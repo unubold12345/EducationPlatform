@@ -63,9 +63,7 @@ export default async function PlansPage() {
   ];
   const normal = credits ? Math.max(0, credits.balance - credits.yellow) : 0;
   return <div className="container page-space pricing-page">
-    <header className="wsp-page-head">
-      <div><h1>Багцууд</h1></div>
-    </header>
+    <h1 className="sr-only">Багцууд</h1>
 
 
     <section className="pricing-plans" id="plans" aria-labelledby="pricing-plans-heading">

@@ -295,7 +295,7 @@
   .barTools { margin-left: auto; gap: 6px; }
   .tool, .timer, .timeUsed { height: 36px; padding: 0 10px; }
   .barTools .primary, .barTools .secondary { padding: 8px 12px; font-size: 13px; }
-  .back span { display: none; }
+  .back span, .tool[data-pdf] span { display: none; }
   .tabs { top: calc(var(--wsp-top, 0px) + 106px); }
   .passage { padding: 18px 14px 20px; border-radius: 16px; }
   .passage h2 { font-size: 22px; }

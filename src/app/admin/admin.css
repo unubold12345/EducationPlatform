@@ -205,6 +205,8 @@ body:has(.admin-page) .header-inner { max-width: none; }
 .admin-user-actions textarea, .admin-fix-form textarea { min-height: 76px; }
 .admin-fix-form input[type="radio"] { width: 16px; min-height: 0; }
 .admin-user-actions .button, .admin-price .button, .admin-fix-form .button { justify-self: start; }
+.admin-announce { grid-column: span 2; }
+.admin-announce textarea { width: 100%; min-width: 0; padding: 8px 12px; border: 1px solid var(--ws-line, var(--line)); border-radius: 10px; background: var(--ws-inset, var(--surface)); color: var(--ink); font: inherit; font-size: 14px; font-weight: 400; resize: vertical; }
 .admin-page .button.danger, :root[data-theme="dark"] .admin-page .button.danger { background: #c9303a; color: #fff; }
 .admin-page .button.danger:hover:not(:disabled), :root[data-theme="dark"] .admin-page .button.danger:hover:not(:disabled) { background: #a92630; }
 .admin-user-actions [role="status"], .admin-price [role="status"], .admin-fix-form [role="status"] { margin: 0; color: var(--blue); font-size: 13.5px; }
@@ -263,6 +265,7 @@ body:has(.admin-page) .header-inner { max-width: none; }
   .admin-page .admin-metrics-wide { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .admin-user { grid-template-columns: 1fr; }
   .admin-prices { grid-template-columns: 1fr; }
+  .admin-announce { grid-column: auto; }
 }
 
 @media (max-width: 960px) {

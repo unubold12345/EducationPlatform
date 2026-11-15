@@ -42,6 +42,7 @@ model User {
   suspendedReason String?
   events UserEvent[]
   adminNotes AdminNote[]
+  notifications Notification[]
 }
 
 // Account activity kept for support and fraud review: sign-ins with IP/device, sign-ups and
@@ -689,4 +690,34 @@ model StudyDay {
   day String
   createdAt DateTime @default(now())
   @@id([userId, day])
+}
+
+// In-app notifications (2026-11-15): one row per notice in a student's inbox. `dedupeKey` names the event
+// ("order:<id>", "plan-ending:<program>:<end>", "announcement:<id>") so the same event never lands twice.
+model Notification {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kind String
+  title String
+  body String
+  // A path on this site, or null when the notice opens nothing.
+  href String?
+  dedupeKey String?
+  readAt DateTime?
+  createdAt DateTime @default(now())
+  @@unique([userId, dedupeKey])
+  @@index([userId, createdAt])
+}
+
+// An admin message to every member. It is copied into a student's inbox the first time they read the inbox
+// after it was sent, so sending writes one row whatever the number of accounts.
+model Announcement {
+  id String @id @default(cuid())
+  title String
+  body String
+  href String?
+  authorId String
+  createdAt DateTime @default(now())
+  @@index([createdAt])
 }

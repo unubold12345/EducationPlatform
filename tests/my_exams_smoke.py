@@ -56,6 +56,20 @@ def upload(request, name="notes.pdf", **fields):
 def move(request, token, **extra):
     return request.post(IMPORT_API, headers=ORIGIN, data={"token": token, "draft": None, "last": None, "attempts": 0, **extra})
 
+def check_pdf(page, name, key):
+    # "PDF татах" lays the exam out on a print-only sheet and opens the browser's print dialog (stubbed here).
+    page.evaluate("window.__printed = 0; window.print = () => { window.__printed++; }")
+    page.locator("button[data-pdf]").click()
+    page.wait_for_function("window.__printed === 1")
+    sheet = page.locator("[data-print-sheet]")
+    expect(sheet).to_be_hidden()
+    assert sheet.locator("ol.ps-list").first.locator("> li.ps-q").count() == 10, "every question is on the sheet"
+    assert sheet.locator("[data-print-key]").count() == (1 if key else 0), "the key is printed only with a graded sitting"
+    if key: assert sheet.locator("[data-print-key] li.ps-q").count() == 10, "one key line per question"
+    page.pdf(path=str(ART / name), format="A4")
+    page.evaluate("dispatchEvent(new Event('afterprint'))")
+    expect(sheet).to_have_count(0)
+
 def new_account(context, label):
     signup = context.request.post(BASE + "/api/auth/sign-up/email", headers=ORIGIN, data={
         "name": label, "email": "qa-myexam-" + uuid4().hex[:12] + "@example.invalid", "password": "Local-Test-" + uuid4().hex,
@@ -296,6 +310,8 @@ with sync_playwright() as p:
     # This exam has no kept material, so the page offers no retry.
     expect(page.get_by_role("button", name="Шинэ асуулт үүсгэх")).to_have_count(0)
     page.screenshot(path=str(ART / "my-exams-briefing-desktop.png"), full_page=True)
+    assert made["last"] is None, "a new exam has no graded sitting"
+    check_pdf(page, "my-exams-paper.pdf", key=False)
     page.unroute(generation_route)
 
     # A retry through the page, with only the server's reply mocked: an exam whose material was kept shows the
@@ -434,6 +450,7 @@ with sync_playwright() as p:
     assert page.locator("article[class*='review']").count() == 10, "one review card per question"
     expect(page.get_by_text("Тайлбар").first).to_be_visible()
     page.screenshot(path=str(ART / "my-exams-result-desktop.png"), full_page=True)
+    check_pdf(page, "my-exams-paper-key.pdf", key=True)
 
     page.get_by_role("button", name="Алдсан · 7").click()
     assert page.locator("article[class*='review']").count() == 7, "wrong filter"
@@ -549,4 +566,4 @@ with sync_playwright() as p:
     expect(page.get_by_text("Одоогоор шалгалт алга")).to_be_visible()
     assert not errors, errors
     browser.close()
-print("PASS: my-exams guest redirect, signed-in/origin/multipart/file/count 5-40/structure/language/Office/oversize generation guards and the stale-page refusal (no provider call), session/origin/shape/ownership guards on grade, sitting, delete and import, a browser exam moved to the account once with its claimed score re-graded from the sealed key, an expired token moved, question-count slider up to 40 and per-question price badge, retry guards (session, origin, empty body, ownership, no kept material) and the retry button with only the server reply mocked, the whole-page processing screen while that reply is held (modal, covers the rail, Escape and scroll blocked, released by the reply), generation UI with only the provider reply mocked, briefing, timed runner, keyboard answers, flag, answer sheet, autosave to the account, reload and second-device resume, server grading from the stored key, result stats/review filters, score persistence, untimed retake saved on leaving, timed auto-submit on a fake clock, free 5 and IELTS 15 saved-exam limits counted on the account (cleared browser still full), 20-exam account ceiling, mobile drawer and no horizontal scroll, client file checks, delete from the account; no DeepSeek request made.")
+print("PASS: my-exams guest redirect, signed-in/origin/multipart/file/count 5-40/structure/language/Office/oversize generation guards and the stale-page refusal (no provider call), session/origin/shape/ownership guards on grade, sitting, delete and import, a browser exam moved to the account once with its claimed score re-graded from the sealed key, an expired token moved, question-count slider up to 40 and per-question price badge, retry guards (session, origin, empty body, ownership, no kept material) and the retry button with only the server reply mocked, the whole-page processing screen while that reply is held (modal, covers the rail, Escape and scroll blocked, released by the reply), generation UI with only the provider reply mocked, briefing, the PDF sheet without the key before a sitting and with it after, timed runner, keyboard answers, flag, answer sheet, autosave to the account, reload and second-device resume, server grading from the stored key, result stats/review filters, score persistence, untimed retake saved on leaving, timed auto-submit on a fake clock, free 5 and IELTS 15 saved-exam limits counted on the account (cleared browser still full), 20-exam account ceiling, mobile drawer and no horizontal scroll, client file checks, delete from the account; no DeepSeek request made.")

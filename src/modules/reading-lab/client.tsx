@@ -6,9 +6,10 @@ import { CreditCost, useCredits } from "@/modules/credits/client";
 import { readReceipt, readingPracticeHold, readingRetryPrice } from "@/modules/credits/pricing";
 import { MaterialImages, useMaterialPick } from "@/modules/ai-images/client";
 import { ProcessingOverlay } from "@/modules/workspace/processing";
+import { PrintSheet, usePrintSheet } from "@/modules/workspace/print-sheet";
 import {
   GAP, READING_COUNT, READING_LIMITS, TFNG, allQuestions, groupType, matchCount, matchLabel, optionLetter, paragraphLabel,
-  passageWords, publicGroups, retryCount, type PublicGroup, type PublicQuestion, type ReadingAnswer,
+  passageWords, publicGroups, retryCount, type PublicGroup, type PublicQuestion, type ReadingAnswer, type ReadingGrade,
   type ReadingLanguage, type ResultItem,
 } from "./contracts";
 import { readingSamples, type ReadingSample } from "./samples";
@@ -245,7 +246,7 @@ export function ReadingLab({ userKey, initialPractices = [], initialSamples = {}
   return <div className={`wsp-page ${styles.page}`}>
     <header className={styles.head}>
       <p className={styles.kicker}><Link href="/workspace/workshop">Workshop</Link><span aria-hidden="true">·</span>Reading</p>
-      <h1>Унших лаб</h1>
+      <h1 className="sr-only">Унших лаб</h1>
       <p className={styles.lead}>IELTS Academic Reading-ийн маягаар эх бичвэр уншиж, асуултад хариулна. Хариултаа шалгахад зөв хариултын нотолгоог текстээс тэмдэглэж, яагаад зөв болохыг тайлбарлана.</p>
       <ul className={styles.facts} aria-label="Дасгалын бүтэц">
         <li><Icon name="clock" size={16} />{READING_LIMITS.minutes} минут нэг текстэд</li>
@@ -532,6 +533,7 @@ function Runner({ practice, state, notice = null, onState, textSize, onTextSize,
   const [focus, setFocus] = useState<string | null>(null);
   const [now, setNow] = useState(() => Date.now());
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("saved");
+  const paper = usePrintSheet();
   // Signed in, answers and the timer are saved on the account; a guest's sample progress is kept by `onState` in this browser.
   const [saver] = useState(() => practice.saveUrl ? createSaver(practice.saveUrl, setSaveStatus) : null);
   const passage = useRef<HTMLElement>(null);
@@ -627,10 +629,12 @@ function Runner({ practice, state, notice = null, onState, textSize, onTextSize,
   return <div className={`wsp-page ${styles.runnerPage}`} data-pane={pane}>
     {/* A paid retry is writing new questions: the whole page waits until they arrive or the request fails. */}
     <ProcessingOverlay open={renewing} title="Шинэ асуулт бэлдэж байна…" detail="Энэ эх бичвэрт шинэ асуулт бэлдэж байна. 20–60 секунд орно." />
+    {paper.printing ? <ReadingPdf practice={practice} result={result} job={paper.job} onDone={paper.done} /> : null}
     <header className={styles.bar}>
       <button type="button" className={styles.back} onClick={onBack}><Icon name="back" size={18} /><span>Унших лаб</span></button>
       <div className={styles.barTitle}><strong lang="en">{practice.title}</strong><small>{checked ? `${result.correct}/${result.total} зөв` : `${answered}/${questions.length} хариулсан`}</small></div>
       <div className={styles.barTools}>
+        <button type="button" className={styles.tool} onClick={paper.print} title="PDF татах" aria-label="PDF татах" data-pdf=""><Icon name="download" size={16} /><span>PDF</span></button>
         <button type="button" className={styles.tool} onClick={() => onTextSize(((textSize + 1) % 3) as TextSize)} title="Текстийн хэмжээ" aria-label={`Текстийн хэмжээ: ${["жижиг", "дунд", "том"][textSize]}`}><span aria-hidden="true">A<small>A</small></span></button>
         {checked ? state.finishedSeconds !== null ? <span className={styles.timeUsed}><Icon name="clock" size={16} />{clock(state.finishedSeconds)}</span> : null
           : timing ? <button type="button" className={styles.timer} data-over={left < 0 ? "" : undefined} data-low={left >= 0 && left <= 120 ? "" : undefined} onClick={stopTimer} disabled={busy} title="Цаг зогсоох">
@@ -698,6 +702,59 @@ function Runner({ practice, state, notice = null, onState, textSize, onTextSize,
       </section>
     </div>
   </div>;
+}
+
+/**
+ * The practice on paper, saved as a PDF from the browser's print dialog: the passage, then the questions. The key and
+ * explanations are on a last page only while the answers are checked, which is when the page holds them.
+ */
+function ReadingPdf({ practice, result, job, onDone }: { practice: RunnerPractice; result: ReadingGrade | null; job: number; onDone: (job: number) => void }) {
+  const key = result ? new Map(result.results.map(item => [item.id, item])) : null;
+  const entries = practice.groups.flatMap(group => group.questions.map(question => ({ group, question })));
+  const numbers = new Map(entries.map((entry, index) => [entry.question.id, index + 1]));
+  const blank = <span className="ps-blank">&nbsp;</span>;
+  const gapped = (prompt: string) => { const [before, after = ""] = prompt.split(GAP); return <>{before}{blank}{after}</>; };
+  const starts = practice.groups.map((_, index) => practice.groups.slice(0, index).reduce((sum, group) => sum + group.questions.length, 1));
+  return <PrintSheet title={practice.title} job={job} onDone={onDone}>
+    <header className="ps-head" lang="en">
+      <h1>{practice.title}</h1>
+      <p lang="mn">{[...practice.meta.filter(Boolean), `${entries.length} асуулт`, `${READING_LIMITS.minutes} минут`].join(" · ")}</p>
+    </header>
+    <div lang="en">{practice.paragraphs.map((paragraph, index) => <div key={index} className="ps-para"><b>{paragraphLabel(index)}</b><p>{paragraph}</p></div>)}</div>
+    <section className="ps-page" lang="en">
+      {practice.groups.map((group, groupIndex) => {
+        const first = starts[groupIndex], last = first + group.questions.length - 1;
+        const choices = group.options && group.labels !== "paragraph" ? group.options : null;
+        return <div key={groupIndex} className="ps-group">
+          <h3>{range(first, last)}</h3>
+          <p>{group.instruction}{group.limit ? <> <b>{group.limit}</b></> : null}</p>
+          {choices ? <div className="ps-box">
+            {group.heading ? <p>{group.heading}</p> : null}
+            <ul className="ps-options">{choices.map((option, index) => <li key={index}><b>{matchLabel(group, index)}</b><span>{option}</span></li>)}</ul>
+          </div> : group.heading ? <p><b>{group.heading}</b></p> : null}
+          <ol className="ps-list">{group.questions.map(question => <li key={question.id} className="ps-q">
+            <span className="ps-num">{numbers.get(question.id)}.</span>
+            <div className="ps-body">
+              {question.kind === "tfng" ? <><p>{question.prompt}</p><div className="ps-inline">{TFNG.map(option => <span key={option}>☐ {option}</span>)}</div></>
+                : question.kind === "choice" ? <><p>{question.prompt}</p><ul className="ps-options">{question.options.map((option, index) => <li key={index}><b>{optionLetter(index)}.</b><span>{option}</span></li>)}</ul></>
+                  : question.prompt.includes(GAP) ? <p>{gapped(question.prompt)}</p>
+                    : <p>{question.prompt} {blank}</p>}
+            </div>
+          </li>)}</ol>
+        </div>;
+      })}
+    </section>
+    {key ? <section className="ps-page ps-key" data-print-key="">
+      <h2 className="ps-section" lang="en">Answers</h2>
+      <ol className="ps-list">{entries.map(({ group, question }) => {
+        const item = key.get(question.id);
+        return item ? <li key={question.id} className="ps-q">
+          <span className="ps-num">{numbers.get(question.id)}.</span>
+          <div className="ps-body"><p lang="en"><b>{answerDisplay(group, question, item)}</b></p><p>{item.explanation}</p></div>
+        </li> : null;
+      })}</ol>
+    </section> : null}
+  </PrintSheet>;
 }
 
 function highlight(paragraph: string, marks: Mark[], focus: string | null): ReactNode {

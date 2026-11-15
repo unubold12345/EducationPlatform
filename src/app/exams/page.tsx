@@ -67,7 +67,7 @@ export default async function ExamsPage(){
       chips:["听力 · 15м","阅读 · 17м"],count:hskMocks.length,href:"/exams/hsk",cta:"Mock сонгох",plan:"Гадаад хэл"},
   ];
   return <div className="container page-space library-page">
-    <header className="wsp-page-head library-head"><div><h1>Шалгалтууд</h1><p>SAT, IELTS, ЭЕШ, JLPT, HSK-ийн бүтэн mock. Цагтай шалгалтаар өөрийгөө шалгах эсвэл цаггүй, AI туслахтай дадлагаар бэлдээрэй.</p></div><Link className="wsp-link" href="/workspace/review">Миний үр дүн →</Link></header>
+    <header className="wsp-page-head library-head"><div><h1 className="sr-only">Шалгалтууд</h1><p>SAT, IELTS, ЭЕШ, JLPT, HSK-ийн бүтэн mock. Цагтай шалгалтаар өөрийгөө шалгах эсвэл цаггүй, AI туслахтай дадлагаар бэлдээрэй.</p></div><Link className="wsp-link" href="/workspace/review">Миний үр дүн →</Link></header>
 
     {/* One row per programme (owner request 2026-11-15): what it is, how a sitting runs, what it costs. */}
     <section className="library-list" aria-label="Шалгалтын хөтөлбөрүүд">

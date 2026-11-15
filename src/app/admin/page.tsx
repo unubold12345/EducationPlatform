@@ -18,6 +18,8 @@ import { AdminCreditPackForm } from "@/components/admin-credit-pack-form";
 import { creditAllowances } from "@/modules/credits/service";
 import { creditPack } from "@/modules/credits/purchase";
 import { creditMonths, creditUsage } from "@/modules/admin/credits";
+import { AdminAnnouncementForm, AdminAnnouncementWithdraw } from "@/components/admin-announcement-form";
+import { NOTIFICATION_LIMITS, announcementKey } from "@/modules/notifications/rules";
 import { AI_ACTIONS, CREDIT_USD, DEEPSEEK_PRICE, DEFAULT_CREDIT_PACK, creditPeriod, creditRangeLabel, defaultAllowances, formatCredits, formatUsd, isAiAction } from "@/modules/credits/pricing";
 
 export const metadata:Metadata={title:"Удирдлагын төв",robots:{index:false,follow:false}};
@@ -143,6 +145,21 @@ export default async function AdminPage({searchParams}:{searchParams:Promise<Rec
       {search("Хэрэглэгчийн нэр эсвэл имэйл…",{name:"filter",value:filter,options:[["","Бүх төлөв"],["IN_PROGRESS","Үргэлжилж байна"],["SUBMITTED","Дууссан"]]})}
       <div className="admin-table-wrap"><table><thead><tr><th>Эхэлсэн</th><th>Суралцагч</th><th>Материал</th><th>Төлөв</th><th>Сүүлд</th></tr></thead><tbody>{rows.map(row=><tr key={row.id}><td>{date(row.createdAt)}</td><td>{userLink(row.user)}</td><td>{row.label}<small><code>{row.id}</code></small></td><td><StatusPill status={row.status}/><small>{row.result}</small></td><td>{date(row.updatedAt)}</td></tr>)}</tbody></table>{!rows.length&&empty("Оролдлого олдсонгүй.")}</div>
       <Pager info={info} href={page=>link({page})} label="оролдлого"/>
+    </AdminShell>;
+  }
+
+  if(tab==="announcements") {
+    const info=pageInfo(await db.announcement.count(),requested);
+    const rows=await db.announcement.findMany({skip:info.skip,take:info.size,orderBy:[{createdAt:"desc"},{id:"desc"}]});
+    const keys=rows.map(row=>announcementKey(row.id));
+    const [reached,read]=rows.length?await Promise.all([db.notification.groupBy({by:["dedupeKey"],where:{dedupeKey:{in:keys}},_count:{_all:true}}),db.notification.groupBy({by:["dedupeKey"],where:{dedupeKey:{in:keys},readAt:{not:null}},_count:{_all:true}})]):[[],[]];
+    const count=(list:typeof reached,id:string)=>list.find(row=>row.dedupeKey===announcementKey(id))?._count._all??0;
+    return <AdminShell tab={tab} title={title} name={name} description={description}>
+      <p className="admin-help">Мэдэгдэл суралцагчийн Workspace-ийн хажуу цэсний «Мэдэгдэл» хэсэгт харагдана; имэйл илгээхгүй. Бүгдэд илгээсэн мэдэгдэл {NOTIFICATION_LIMITS.announcementDays} хоногийн дотор Workspace нээсэн, илгээхээс өмнө бүртгүүлсэн хэрэглэгчдэд хүрнэ. Нэг хэрэглэгчид илгээсэн нь <Link href="/admin?tab=audit&filter=announce">үйлдлийн түүхэнд</Link> бүртгэгдэнэ.</p>
+      <div className="admin-prices"><AdminAnnouncementForm/></div>
+      <h3 className="admin-subhead">Бүгдэд илгээсэн</h3>
+      <div className="admin-table-wrap"><table><thead><tr><th>Огноо</th><th>Мэдэгдэл</th><th>Хүрсэн / уншсан</th><th></th></tr></thead><tbody>{rows.map(row=><tr key={row.id}><td>{date(row.createdAt)}</td><td><strong>{row.title}</strong><small>{row.body}</small>{row.href&&<small><code>{row.href}</code></small>}</td><td>{count(reached,row.id)} / {count(read,row.id)}<small><code>{row.authorId}</code></small></td><td><AdminAnnouncementWithdraw id={row.id} title={row.title}/></td></tr>)}</tbody></table>{!rows.length&&<p className="admin-empty">Мэдэгдэл илгээгээгүй байна.</p>}</div>
+      <Pager info={info} href={page=>link({page})} label="мэдэгдэл"/>
     </AdminShell>;
   }
 

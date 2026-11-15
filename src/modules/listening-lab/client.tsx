@@ -103,8 +103,8 @@ export function ListeningLab() {
   <header className={styles.top}>
    <div>
     <p className={styles.kicker}><Link href="/workspace/workshop">Workshop</Link> · Listening</p>
-    <h1>Сонсгол лаб</h1>
-    <p className={styles.lede}>IELTS Listening-ийн бүрэн хэсгүүд: хоёр тест, тус бүр Part 1–4, 40 асуулт. Бичлэг нь жинхэнэ шалгалтын адил танилцуулга, асуулт унших болон шалгах хугацаатай. Дадлагын горимд дахин сонсож хурдыг өөрчилнө; шалгалтын горимд бичлэг нэг л удаа тоглоно.</p>
+    <h1 className="sr-only">Сонсгол лаб</h1>
+    <p className={styles.lede}>IELTS Listening-ийн бүрэн хэсгүүд: таван тест, тус бүр Part 1–4, 40 асуулт. Бичлэг нь жинхэнэ шалгалтын адил танилцуулга, асуулт унших болон шалгах хугацаатай. Дадлагын горимд дахин сонсож хурдыг өөрчилнө; шалгалтын горимд бичлэг нэг л удаа тоглоно.</p>
    </div>
    <div className={styles.modes} role="tablist" aria-label="Горим">
     {(["practice","exam"] as const).map(mode=><button key={mode} type="button" role="tab" aria-selected={lab.mode===mode} onClick={()=>chooseMode(mode)}>
@@ -115,7 +115,7 @@ export function ListeningLab() {
 
   <div className={styles.layout}>
    <nav className={styles.drills} aria-label="Сонсголын тестүүд">
-    {([1,2] as const).map(test=><Fragment key={test}>
+    {[...new Set(listeningDrills.map(d=>d.test))].map(test=><Fragment key={test}>
      <p className={styles.testLabel}>Test {test}</p>
      {listeningDrills.filter(d=>d.test===test).map(d=>{const s=lab.drills[d.id],total=totalMarks(d);return <button key={d.id} type="button" aria-current={d.id===drill.id?"true":undefined} onClick={()=>chooseDrill(d.id)} data-drill={d.id}>
       <span className={styles.part}>Part {d.part}</span>

@@ -1,0 +1,40 @@
+/* The paper version of an exam or a reading practice (print-sheet.tsx). Hidden on screen; while it is mounted,
+   printing shows only this sheet, black on white whatever the theme. */
+.print-sheet { display: none; }
+
+@media print {
+  @page { margin: 16mm 15mm; }
+  html[data-printing], html[data-printing] body { background: #fff !important; }
+  html[data-printing] body > *:not(.print-sheet) { display: none !important; }
+  html[data-printing] .print-sheet {
+    display: block; color: #111; font-size: 11.5pt; line-height: 1.5;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  .print-sheet * { color: inherit; }
+  .ps-head { margin-bottom: 14pt; padding-bottom: 9pt; border-bottom: 1.2pt solid #111; }
+  .ps-head h1 { margin: 0; font-size: 18pt; font-weight: 700; line-height: 1.2; }
+  .ps-head p { margin: 4pt 0 0; color: #444; font-size: 9.5pt; }
+  .ps-section { margin: 16pt 0 8pt; font-size: 13pt; font-weight: 700; break-after: avoid; }
+  .ps-page { break-before: page; }
+  .ps-list { margin: 0; padding: 0; list-style: none; }
+  .ps-q { display: flex; gap: 8pt; margin-bottom: 11pt; break-inside: avoid; }
+  .ps-num { flex: none; min-width: 20pt; font-weight: 700; }
+  .ps-body { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+  .ps-body > p { margin: 0; }
+  .ps-options { margin: 4pt 0 0; padding: 0; list-style: none; }
+  .ps-options li { display: flex; gap: 6pt; margin-top: 2pt; }
+  .ps-options b { flex: none; min-width: 14pt; }
+  .ps-inline { display: flex; flex-wrap: wrap; gap: 4pt 18pt; margin-top: 4pt; font-size: 10.5pt; }
+  .ps-blank { display: inline-block; min-width: 54pt; border-bottom: .8pt solid #111; }
+  .ps-para { display: flex; gap: 9pt; margin-bottom: 8pt; }
+  .ps-para b { flex: none; min-width: 12pt; }
+  .ps-para p { margin: 0; text-align: justify; }
+  .ps-group { margin-top: 14pt; }
+  .ps-group h3 { margin: 0; font-size: 11.5pt; font-weight: 700; break-after: avoid; }
+  .ps-group > p { margin: 2pt 0 7pt; font-style: italic; break-after: avoid; }
+  .ps-box { margin: 0 0 9pt; padding: 7pt 10pt; border: .8pt solid #777; break-inside: avoid; }
+  .ps-box p { margin: 0 0 3pt; font-weight: 700; }
+  .ps-key .ps-q { margin-bottom: 7pt; }
+  .ps-key .ps-body > p + p { margin-top: 1pt; color: #333; font-size: 10.5pt; }
+  .ps-fine { margin-top: 14pt; padding-top: 6pt; border-top: .6pt solid #999; color: #555; font-size: 8.5pt; }
+}

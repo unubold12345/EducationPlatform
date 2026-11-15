@@ -439,7 +439,7 @@ export function SpeakingLab({signedIn}:{signedIn:boolean}) {
 
  return <div className={`sl-root container page-space phase-${phase}`}>
   <header className="sl-top">
-   <div><p className="sl-kicker">IELTS Speaking · Experiment</p><h1>{phase==="setup"?"Speaking partner":mock?"Speaking mock test":`Talking with ${name}`}</h1></div>
+   <div><p className="sl-kicker">IELTS Speaking · Experiment</p><h1 className="sr-only">{phase==="setup"?"Speaking partner":mock?"Speaking mock test":`Talking with ${name}`}</h1></div>
    {phase!=="setup"&&mock&&<ol className="sl-steps" aria-label="Mock test progress">
     {([1,2,3] as SpeakingPart[]).map(p=><li key={p} className={phase==="report"||p<part?"done":p===part?"active":""}>Part {p}</li>)}
     <li className={phase==="report"?"active":""}>Report</li>

@@ -23,6 +23,7 @@ const groups = {
   account: ["profile", "demo_accounts"],
   ui: ["theme", "homepage_polish"],
   writing: ["writing_lab"],
+  notifications: ["notifications"],
 };
 const args = process.argv.slice(2);
 const flags = new Set(args.filter(arg => arg.startsWith("--")));

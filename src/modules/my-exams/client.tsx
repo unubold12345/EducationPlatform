@@ -14,6 +14,7 @@ import { CreditCost, useCredits } from "@/modules/credits/client";
 import { examHold } from "@/modules/credits/pricing";
 import { MaterialImages, useMaterialPick } from "@/modules/ai-images/client";
 import { ProcessingOverlay } from "@/modules/workspace/processing";
+import { PrintSheet, usePrintSheet } from "@/modules/workspace/print-sheet";
 
 const ACCEPT = ".pdf,.docx,.pptx,.txt,.md,.csv,image/*";
 const ALLOWED = new Set(["pdf", "docx", "pptx", "txt", "md", "csv"]);
@@ -259,7 +260,7 @@ export function MyExams({ userKey, limit: planLimit, initialExams }: { userKey: 
     {processing}
     <header className={styles.head}>
       <p className={styles.kicker}><Icon name="fileExam" size={17} />Файлаас шалгалт</p>
-      <h1>Файлаа оруул.<br /><span>Шалгалт болго.</span></h1>
+      <h1 className="sr-only">Файлаа оруул.<br /><span>Шалгалт болго.</span></h1>
       <p className={styles.lead}>Хичээлийн файл эсвэл хуудасны зургаас AI {EXAM_COUNT.min}–{EXAM_COUNT.max} асуулттай шалгалт үүсгэнэ.</p>
     </header>
 
@@ -347,6 +348,42 @@ function Renew({ exam, busy, renewing, onRenew }: { exam: SavedExam; busy: boole
   </div>;
 }
 
+/**
+ * The exam on paper, saved as a PDF from the browser's print dialog. The key and explanations are on a last page only
+ * when the page holds a graded sitting of these questions: the server sends them with a result and never before.
+ */
+function ExamPdf({ exam }: { exam: SavedExam }) {
+  const { printing, job, print, done } = usePrintSheet();
+  const key = exam.last ? new Map(exam.last.results.map(item => [item.id, item])) : null;
+  return <>
+    <button type="button" className={styles.ghost} onClick={print} data-pdf=""><Icon name="download" size={17} />PDF татах</button>
+    {printing ? <PrintSheet title={exam.title} job={job} onDone={done}>
+      <header className="ps-head">
+        <h1>{exam.title}</h1>
+        <p>{exam.questions.length} асуулт · {minutes(exam.suggestedSeconds)} · {exam.sourceName}</p>
+      </header>
+      <ol className="ps-list">{exam.questions.map((question, order) => <li key={question.id} className="ps-q">
+        <span className="ps-num">{order + 1}.</span>
+        <div className="ps-body">
+          <p><MathText text={question.prompt} /></p>
+          <ul className="ps-options">{question.options.map((option, index) => <li key={index}><b>{LETTERS[index]}.</b><span><MathText text={option} /></span></li>)}</ul>
+        </div>
+      </li>)}</ol>
+      {key ? <section className="ps-page ps-key" data-print-key="">
+        <h2 className="ps-section">Хариулт ба тайлбар</h2>
+        <ol className="ps-list">{exam.questions.map((question, order) => {
+          const item = key.get(question.id);
+          return item ? <li key={question.id} className="ps-q">
+            <span className="ps-num">{order + 1}.</span>
+            <div className="ps-body"><p><b>{LETTERS[item.answer]}</b></p><p><MathText text={item.explanation} /></p></div>
+          </li> : null;
+        })}</ol>
+      </section> : null}
+      <p className="ps-fine">AI үүсгэсэн шалгалт: хариулт, тайлбарыг багш хянаагүй.</p>
+    </PrintSheet> : null}
+  </>;
+}
+
 function Briefing({ exam, busy, error, onBack, onStart, onResume, onResult, onDelete, renewing, onRenew }: {
   exam: SavedExam;
   busy: boolean;
@@ -400,6 +437,7 @@ function Briefing({ exam, busy, error, onBack, onStart, onResume, onResult, onDe
       </div> : null}
 
       <Renew exam={exam} busy={busy} renewing={renewing} onRenew={onRenew} />
+      <div className={styles.renew}><ExamPdf exam={exam} /></div>
       <button type="button" className={styles.briefDelete} onClick={onDelete} disabled={busy}><Icon name="trash" size={16} />Шалгалтыг устгах</button>
     </section>
   </div>;
@@ -668,6 +706,7 @@ function Result({ exam, result, busy, error, onBack, onRetake, onDelete, renewin
     <div className={styles.resultActions}>
       <button type="button" className={styles.primary} onClick={onRetake}><Icon name="repeat" size={18} />Дахин өгөх</button>
       <button type="button" className={styles.ghost} onClick={onBack}>Жагсаалт руу буцах</button>
+      <ExamPdf exam={exam} />
       <button type="button" className={styles.deleteLink} onClick={onDelete} disabled={busy}><Icon name="trash" size={16} />Устгах</button>
     </div>
     <Renew exam={exam} busy={busy} renewing={renewing} onRenew={onRenew} />

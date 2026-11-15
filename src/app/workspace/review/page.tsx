@@ -30,7 +30,7 @@ export default async function ReviewList({ searchParams }: { searchParams: Promi
     return "/workspace/review" + (text ? "?" + text : "");
   };
   return <div className="wsp-page wsp-review-list">
-    <header className="wsp-page-head"><div><h1>Миний үр дүн</h1><p>Дууссан mock бүрийн оноо, алдсан асуулт, тайлбарыг эргэн хараад AI багшаас асуугаарай.</p></div></header>
+    <header className="wsp-page-head"><div><h1 className="sr-only">Миний үр дүн</h1><p>Дууссан mock бүрийн оноо, алдсан асуулт, тайлбарыг эргэн хараад AI багшаас асуугаарай.</p></div></header>
 
     {open.length ? <section className="wsp-section" aria-labelledby="open-heading">
       <div className="wsp-section-head"><h2 id="open-heading">Дуусаагүй</h2><span className="wsp-muted">Цаг серверт үргэлжилж байна</span></div>

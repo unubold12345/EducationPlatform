@@ -216,7 +216,7 @@ export function WorkspaceChat({ userKey, firstName, threads: listed, initial }: 
   </div>;
 
   if (!thread && !draftHere) return <div className="wsp-page wsp-chat-start">
-    <header className="wsp-hero"><p className="wsp-hello"><Icon name="spark" size={18} />AI туслах</p><h1>{firstName}, юуг хамт ойлгох вэ?</h1></header>
+    <header className="wsp-hero"><p className="wsp-hello"><Icon name="spark" size={18} />AI туслах</p><h1 className="sr-only">{firstName}, юуг хамт ойлгох вэ?</h1></header>
     <Composer state={composer} onChange={setComposer} onSubmit={submit} pending={pending} autoFocus />
     {error ? <p className="wsp-error" role="alert">{error}</p> : null}
     <p className="wsp-fine">Таны мессеж, хавсаргасан зураг AI руу илгээгдэнэ. Нэр, утас, нүүр царай зэрэг хувийн мэдээлэл бүү оруулаарай. Чат таны бүртгэлд хадгалагдаж, бусад төхөөрөмж дээр ч харагдана; зургийн зөвхөн жижиг хувилбар үлдэнэ. Хугацаатай шалгалтын үеэр AI хаалттай.</p>

@@ -12,6 +12,8 @@ import { revalidatePath } from "next/cache";
 import { authFeatures, isDemoEmail } from "@/lib/auth-features";
 import { CREDIT_ALLOWANCE_LIMITS, CREDIT_GRANT_LIMITS, CREDIT_PACK_LIMITS, creditPeriod, defaultAllowances, isAllowanceKey, validAllowance, validCreditPack, validGrant } from "@/modules/credits/pricing";
 import { CREDIT_PACK_KEY, creditPack } from "@/modules/credits/purchase";
+import { notify } from "@/modules/notifications/service";
+import { planGrantedNotice } from "@/modules/notifications/rules";
 
 export async function isAdmin(userId: string) {
   const membership = await getDb().adminMembership.findUnique({where:{userId},select:{userId:true,user:{select:{email:true}}}});
@@ -104,6 +106,7 @@ export async function adminMutation(actorId:string, input:unknown) {
         const end=action==="expire-plan"?now:addCalendarMonth(active?before.endsAt:now);
         const start=action==="expire-plan"?new Date(Math.min(before!.startsAt.getTime(),now.getTime())):active?before.startsAt:now;
         await tx.subscription.upsert({where:{userId_program:{userId:target,program:plan}},create:{userId:target,program:plan,startsAt:start,endsAt:end},update:{startsAt:start,endsAt:end}});
+        if(action==="grant-month")await notify(tx,target,planGrantedNotice(findAnyPlan(plan)?.title??plan,end));
         details={program:plan,before:before?.endsAt.toISOString()??null,after:end.toISOString(),paymentCreated:false};
       }
     }

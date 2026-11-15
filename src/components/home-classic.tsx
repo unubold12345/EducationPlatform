@@ -15,17 +15,18 @@ export async function HomeClassic() {
   return <>
     <HomeAtmosphere variant="orbit" />
     <HomeMotion className={"home-page home-art-" + HOME_ART_STYLE}>
-      <section className="hero">
-        <div className="hero-copy" data-reveal>
-          <h1>Том зорилго.<br /><span>Өдөр бүрийн</span><br />жижиг алхам.</h1>
-          <p className="hero-description">Шалгалтаа давт. Алдаагаа ойлго.<br />Өөрийн хэмнэлээр урагшил.</p>
-          <div className="hero-actions"><Link className="button" href="/workspace">Workspace нээх <span aria-hidden="true">↗</span></Link><Link className="home-watch-link" href="#demos"><span aria-hidden="true">▶</span> Хэрхэн ажилладаг вэ?</Link></div>
-          <div className="hero-stats" aria-label="Бэлтгэлийн боломжууд"><div><strong>{String(homePrograms.length).padStart(2, "0")}</strong><span>Хөтөлбөр</span></div><div><strong>{totalMocks}</strong><span>Бүтэн mock</span></div><div><strong>{String(labCount()).padStart(2, "0")}</strong><span>Хэлний студи</span></div></div>
-        </div>
-        <div className="home-hero-visual" data-reveal>
-          <div className="home-hero-photo"><Image src={homeArtwork.studyHero.src} alt={homeArtwork.studyHero.alt} fill sizes="(max-width: 760px) 100vw, 52vw" loading="eager" fetchPriority="high" /></div>
+      {/* The photo fills one card; the headline sits over its darkened left side and the exam links run along the bottom. */}
+      <section className="hero hero-card">
+        <div className="hero-card-frame" data-reveal>
+          <Image className="hero-card-photo" src={homeArtwork.studyHero.src} alt={homeArtwork.studyHero.alt} fill sizes="(max-width: 1320px) 100vw, 1280px" loading="eager" fetchPriority="high" />
+          <div className="hero-copy">
+            <h1>Том зорилго.<br /><span>Өдөр бүрийн</span><br />жижиг алхам.</h1>
+            <p className="hero-description">Шалгалтаа давт. Алдаагаа ойлго.<br />Өөрийн хэмнэлээр урагшил.</p>
+            <div className="hero-actions"><Link className="button" href="/workspace">Workspace нээх <span aria-hidden="true">↗</span></Link><Link className="home-watch-link" href="#demos"><span aria-hidden="true">▶</span> Хэрхэн ажилладаг вэ?</Link></div>
+          </div>
           <aside className="launch-panel" aria-label="Шалгалтаа сонгох"><span className="eyebrow">ХААНААС ЭХЛЭХ ВЭ?</span><div>{[{ title: "SAT", href: "/exams/sat" }, { title: "IELTS", href: "/exams/ielts" }, { title: "ЭЕШ", href: "/exams/eesh" }, { title: "JLPT", href: "/exams/jlpt" }, { title: "HSK", href: "/exams/hsk" }].map(item => <Link key={item.href} href={item.href}>{item.title}<span aria-hidden="true">↗</span></Link>)}</div></aside>
         </div>
+        <div className="hero-stats" data-reveal aria-label="Бэлтгэлийн боломжууд"><div><strong>{String(homePrograms.length).padStart(2, "0")}</strong><span>Хөтөлбөр</span></div><div><strong>{totalMocks}</strong><span>Бүтэн mock</span></div><div><strong>{String(labCount()).padStart(2, "0")}</strong><span>Хэлний студи</span></div></div>
       </section>
       <div className="home-ticker" data-reveal aria-hidden="true">{[0, 1].map(index => <div className="home-ticker-track" key={index}>{tickerItems.map(item => <span key={item}>{item}<i>✳</i></span>)}</div>)}</div>
       <section className="section home-programs" id="programs" aria-labelledby="programs-heading">

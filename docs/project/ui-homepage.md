@@ -24,6 +24,9 @@ Part of the [project guide](../PROJECT.md) (was PROJECT.md section 7). "Section 
   gone; the closing call to action is one line; the Workspace features are AI chat, vocabulary, exams from a file and review;
   a lone fifth programme card spans the row; the FAQ adds AI credits; the three loops were re-recorded on the current Workspace.
   The loops section has no visible title (its `h2` is `sr-only`, owner request); the loops were last re-recorded 2026-11-16.
+  Hero since 2026-11-16 (owner picked from wireframes): one photo card (`.hero.hero-card` in `home-overview.css`). The photo fills the
+  right two thirds, the headline and buttons sit on the dark left, the five exam links run along the card's bottom edge and the three
+  figures are a row beneath. The card is dark in both themes. Restore: `artifacts/design-backup-2026-11-16-hero/restore.ps1`.
 
 - The header theme switch defaults to the browser preference and saves an explicit choice in
   `education-theme` localStorage. The public site now shares the Workspace's blue/neutral palette and self-hosted Inter (`next/font/google`, fetched at build) with

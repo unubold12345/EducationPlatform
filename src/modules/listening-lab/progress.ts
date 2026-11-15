@@ -13,6 +13,16 @@ export const blankDrillState=():DrillState=>({answers:{},checked:false,best:null
 let cache:Lab|null=null;
 const listeners=new Set<()=>void>();
 
+// Where a visit opens: the part being answered if one was left unfinished, otherwise the first part not yet checked.
+// (It used to reopen whichever part was clicked last, so one look at Test 2 made every visit start there.)
+let current:string|null=null;
+function startDrill(saved:unknown,drills:Lab["drills"]) {
+ if(current&&findListeningDrill(current))return current;
+ const left=typeof saved==="string"&&findListeningDrill(saved)?drills[saved]:undefined;
+ if(left&&!left.checked&&Object.keys(left.answers).length)return saved as string;
+ return (listeningDrills.find(d=>drills[d.id]?.best==null)??listeningDrills[0]).id;
+}
+
 function read():Lab {
  try {
   const raw=JSON.parse(localStorage.getItem(KEY)??"null");
@@ -31,10 +41,10 @@ function read():Lab {
    }
    drills[id]={answers,checked:state.checked===true,best:typeof state.best==="number"?state.best:null,attempts:Number.isInteger(state.attempts)?state.attempts:0};
   }
-  return {drill:findListeningDrill(raw.drill)?raw.drill:EMPTY.drill,mode:raw.mode==="exam"?"exam":"practice",speed:SPEEDS.includes(raw.speed)?raw.speed:1,drills};
+  return {drill:startDrill(raw.drill,drills),mode:raw.mode==="exam"?"exam":"practice",speed:SPEEDS.includes(raw.speed)?raw.speed:1,drills};
  }catch{return EMPTY;}
 }
-export const getLab=()=>cache??=read();
+export const getLab=()=>{cache??=read();current=cache.drill;return cache;};
 export const getServerLab=()=>EMPTY;
 export function subscribeLab(listener:()=>void) {
  listeners.add(listener);
@@ -43,7 +53,7 @@ export function subscribeLab(listener:()=>void) {
  return()=>{listeners.delete(listener);window.removeEventListener("storage",onStorage);};
 }
 export function updateLab(change:(current:Lab)=>Lab) {
- cache=change(getLab());
+ cache=change(getLab());current=cache.drill;
  try{localStorage.setItem(KEY,JSON.stringify(cache));}catch{/* Storage can be unavailable; the page keeps working for this visit. */}
  for(const listener of listeners)listener();
 }

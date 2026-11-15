@@ -25,6 +25,8 @@ Before 2026-10-25 agents were not recorded. Commits and details are in the full 
 
 ## Archived recent entries
 
+- **2026-11-15 · Claude Code (Fable 5.2) · Page titles and phone inbox**: the large `h1` on the Workspace rail pages and labs is
+  `sr-only` (collection, exam and result titles stay); the phone inbox covers the screen. `check` + 8 browser groups passed.
 - **2026-11-15 · Claude Code (Fable 5.2) · In-app notifications** ([notifications](./project/notifications.md)): rail inbox, purchase and
   plan notices, admin announcements. Additive migration applied locally only. `check:all` and `check -- notifications` passed
   (300 unit tests, build, 21 browser suites). Not on the hosted site; no commit or push.

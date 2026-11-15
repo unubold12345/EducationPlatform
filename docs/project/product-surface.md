@@ -17,7 +17,7 @@ Part of the [project guide](../PROJECT.md) (was PROJECT.md section 2). "Section 
 | AI tutor | DeepSeek math hints, explanations and mistake review; students can attach photos of a problem or their working (section 7) |
 | Speaking Lab | Isolated IELTS speaking studio at `/labs/ielts-speaking` |
 | Essay Studio | Workshop writing practice with AI corrections at `/labs/ielts-writing` |
-| Listening Lab | Five original IELTS Listening practice tests (Parts 1–4, mock-style recordings) at `/labs/ielts-listening`; the sidebar is one collapsible row per test (only the open test lists its parts; on phones a row of test chips over a sideways strip of parts) |
+| Listening Lab | Five original IELTS Listening practice tests (Parts 1–4, mock-style recordings) at `/labs/ielts-listening`; the sidebar is one collapsible row per test (only the open test lists its parts; on phones a row of test chips over a sideways strip of parts). A visit opens on a part left half-answered, otherwise on the first part not yet checked (`startDrill` in `progress.ts`), not on the part clicked last |
 | Reading Lab | Five original IELTS Academic passages (62 questions, seven question types) and credit-paid AI practices (8–24 questions, half-price retry) from the student's own file, page photos or pasted text at `/labs/ielts-reading` (section 7) |
 | Workspace | `/workspace`: the signed-in study app, separate from the marketing site, with left tabs for Home, AI chat, Vocabulary, Exams, Review, Workshop and Plans, plus the profile (section 7) |
 | Daily streak | Removed 2026-11-14 (owner request): no rail row, Home card or check-in route. The study roadmap page was removed on 2026-11-13 (section 7) |

@@ -207,3 +207,41 @@
   .home-page .home-program-image img { transition: none; }
   .home-page .home-program-detail:hover .home-program-image img { transform: none; }
 }
+
+/* Hero as one photo card (2026-11-16, owner picked from wireframes). The card is dark over the photo in both themes,
+   so its text colours are fixed. Restore: artifacts/design-backup-2026-11-16-hero/restore.ps1. */
+.home-page .hero.hero-card { display: block; padding: 26px 0 38px; }
+.home-page .hero-card-frame { position: relative; isolation: isolate; display: flex; flex-direction: column; justify-content: space-between; gap: 40px; min-height: 560px; overflow: hidden; border-radius: 28px; background: #0b1220; color: #fff; }
+/* The photo takes the right two thirds, so both students stay clear of the headline; the fade joins it to the dark left. */
+.home-page .hero-card-photo { z-index: -2; left: auto !important; width: 68% !important; object-fit: cover; object-position: 50% 30%; }
+.home-page .hero-card-frame::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, #0b1220 0%, #0b1220 32%, #0b1220b3 46%, #0b122000 66%), linear-gradient(0deg, #080d18b3 0%, #080d1800 34%); }
+.home-page .hero-card .hero-copy { max-width: 600px; padding: 58px 56px 0; }
+.home-page .hero.hero-card h1 { color: #fff; }
+.home-page .hero.hero-card h1 > span { color: #6db3ff; }
+.home-page .hero-card .hero-description { color: #ffffffc7; }
+.home-page .hero-card .hero-actions { margin: 28px 0 0; }
+.home-page .hero-card .home-watch-link { color: #fff; }
+.home-page .hero-card .home-watch-link > span { border-color: #ffffff59; color: #fff; }
+.home-page .hero-card .launch-panel { display: flex; align-items: center; gap: 12px 32px; margin: 0; padding: 16px 56px; border: 0; border-top: 1px solid #ffffff24; border-radius: 0; background: #080d188c; -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
+.home-page .hero-card .launch-panel > .eyebrow { flex: none; margin: 0; color: #ffffffa6; }
+.home-page .hero-card .launch-panel > div { flex: 1; margin-top: 0; }
+.home-page .hero-card .launch-panel a { color: #fff; }
+.home-page .hero-card .launch-panel a + a { border-left-color: #ffffff29; }
+.home-page .hero-card .launch-panel a > span { color: #6db3ff; }
+.home-page .hero-card .hero-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: none; margin-top: 22px; padding-top: 0; border-top: 0; }
+.home-page .hero-card .hero-stats > div { display: flex; align-items: baseline; justify-content: center; gap: 10px; padding: 0 12px; }
+.home-page .hero-card .hero-stats span { margin-top: 0; }
+@media (max-width: 1050px) {
+  .home-page .hero-card-frame { min-height: 500px; }
+  .home-page .hero-card .hero-copy { padding: 44px 36px 0; }
+  .home-page .hero-card .launch-panel { padding-inline: 36px; }
+}
+@media (max-width: 760px) {
+  .home-page .hero.hero-card { padding: 16px 0 28px; }
+  .home-page .hero-card-frame { min-height: 0; gap: 30px; border-radius: 22px; }
+  .home-page .hero-card-photo { left: 0 !important; width: 100% !important; object-position: 70% 20%; }
+  .home-page .hero-card-frame::before { background: linear-gradient(180deg, #080d1899 0%, #080d18d9 55%, #080d18f2 100%); }
+  .home-page .hero-card .hero-copy { padding: 34px 22px 0; }
+  .home-page .hero-card .launch-panel { flex-direction: column; align-items: stretch; padding: 14px 22px 16px; }
+  .home-page .hero-card .hero-stats > div { flex-direction: column; align-items: center; gap: 4px; padding: 0 6px; text-align: center; }
+}

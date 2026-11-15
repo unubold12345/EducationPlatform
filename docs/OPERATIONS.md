@@ -115,6 +115,8 @@ npm run admin:grant -- qa-demo-01@example.invalid
 ## 7. Recent
 
 Full entries, with attribution and verification limits, are at the top of [OPERATIONS_HISTORY.md](./OPERATIONS_HISTORY.md).
+- **2026-11-16 · Claude Code (Fable 5.2) · Hero photo card, Listening start** ([ui-homepage](./project/ui-homepage.md)): the homepage hero is one
+  photo card (owner picked it); Listening Lab opens on the first unchecked part, not the last one clicked. `check -- ui` passed; 3001 rebuilt. No commit.
 - **2026-11-16 · Claude Code (Fable 5.2) · Listening Lab picker**: the 20-part sidebar is an accordion, one row per test (owner picked it
   from wireframes). `check` and a build passed; seen at desktop and 375 px, and on the rebuilt 3001. Restore: `artifacts/design-backup-2026-11-16-listening/restore.ps1`.
 - **2026-11-16 · Claude Code (Fable 5.2) · Listening Lab Tests 3–5**: twelve new parts in `listening-lab/drills.ts` with recordings
@@ -124,5 +126,3 @@ Full entries, with attribution and verification limits, are at the top of [OPERA
   loops re-recorded after Listening Tests 3–5; Workshop card says five tests. `check -- ui` passed on the whole tree; 3001 rebuilt.
 - **2026-11-16 · Claude Code (Fable 5.2) · PDF of own exams** ([my-exams](./project/my-exams.md)): "PDF татах" prints an exam from a
   file or a Reading Lab practice via the browser dialog; key only after a graded sitting. `check -- myexams` passed. No commit.
-- **2026-11-15 · Claude Code (Fable 5.2) · Page titles and phone inbox**: the large `h1` on the Workspace rail pages and labs is
-  `sr-only` (collection, exam and result titles stay); the phone inbox covers the screen. `check` + 8 browser groups passed.

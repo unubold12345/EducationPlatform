@@ -115,6 +115,8 @@ npm run admin:grant -- qa-demo-01@example.invalid
 ## 7. Recent
 
 Full entries, with attribution and verification limits, are at the top of [OPERATIONS_HISTORY.md](./OPERATIONS_HISTORY.md).
+- **2026-11-16 · Claude Code (Fable 5.2) · Listening Lab picker**: the 20-part sidebar is an accordion, one row per test (owner picked it
+  from wireframes). `check` and a build passed; seen at desktop and 375 px, and on the rebuilt 3001. Restore: `artifacts/design-backup-2026-11-16-listening/restore.ps1`.
 - **2026-11-16 · Claude Code (Fable 5.2) · Listening Lab Tests 3–5**: twelve new parts in `listening-lab/drills.ts` with recordings
   (`public/listening-lab/t3-*`, `t4-*`, `t5-*`). Only `tests/listening-lab.test.mjs` and a Whisper pass were run; **`npm run check`, the
   build and browser suites were not run** (left to the next agent by the owner). The 3001 preview is on an older build. No commit.
@@ -124,6 +126,3 @@ Full entries, with attribution and verification limits, are at the top of [OPERA
   file or a Reading Lab practice via the browser dialog; key only after a graded sitting. `check -- myexams` passed. No commit.
 - **2026-11-15 · Claude Code (Fable 5.2) · Page titles and phone inbox**: the large `h1` on the Workspace rail pages and labs is
   `sr-only` (collection, exam and result titles stay); the phone inbox covers the screen. `check` + 8 browser groups passed.
-- **2026-11-15 · Claude Code (Fable 5.2) · In-app notifications** ([notifications](./project/notifications.md)): rail inbox, purchase and
-  plan notices, admin announcements. Additive migration applied locally only. `check:all` and `check -- notifications` passed
-  (300 unit tests, build, 21 browser suites). Not on the hosted site; no commit or push.

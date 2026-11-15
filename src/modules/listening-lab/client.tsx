@@ -35,6 +35,9 @@ export function ListeningLab() {
  const [time,setTime]=useState(0);
  const [examUsed,setExamUsed]=useState<string|null>(null);
  const [showText,setShowText]=useState(false);
+ // The picker opens the current part's test until the student opens another (0 = all closed).
+ const [open,setOpen]=useState<number|null>(null);
+ const openTest=open??drill.test;
  const used=examUsed===drill.id;
  const textVisible=state.checked||(lab.mode==="practice"&&showText);
  const duration=timing?.duration??0;
@@ -115,14 +118,25 @@ export function ListeningLab() {
 
   <div className={styles.layout}>
    <nav className={styles.drills} aria-label="Сонсголын тестүүд">
-    {[...new Set(listeningDrills.map(d=>d.test))].map(test=><Fragment key={test}>
-     <p className={styles.testLabel}>Test {test}</p>
-     {listeningDrills.filter(d=>d.test===test).map(d=>{const s=lab.drills[d.id],total=totalMarks(d);return <button key={d.id} type="button" aria-current={d.id===drill.id?"true":undefined} onClick={()=>chooseDrill(d.id)} data-drill={d.id}>
-      <span className={styles.part}>Part {d.part}</span>
-      <strong>{d.title}</strong>
-      <small>{d.skill}{s?.best!=null&&<em data-full={s.best===total?"":undefined}>{s.best}/{total}</em>}</small>
-     </button>;})}
-    </Fragment>)}
+    {/* One row per test; only the open test lists its four parts. */}
+    {[...new Set(listeningDrills.map(d=>d.test))].map(test=>{
+     const parts=listeningDrills.filter(d=>d.test===test),tried=parts.filter(d=>lab.drills[d.id]?.best!=null);
+     const best=tried.reduce((n,d)=>n+(lab.drills[d.id].best??0),0),total=parts.reduce((n,d)=>n+totalMarks(d),0),isOpen=test===openTest;
+     return <div key={test} className={styles.test}>
+      <button type="button" className={styles.testHead} aria-expanded={isOpen} aria-controls={`listening-test-${test}`} data-test={test} data-current={test===drill.test?"":undefined} onClick={()=>setOpen(isOpen?0:test)}>
+       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+       <strong>Test {test}</strong>
+       {tried.length>0&&<em data-full={tried.length===parts.length&&best===total?"":undefined}>{best}/{total}</em>}
+      </button>
+      {isOpen&&<div className={styles.testParts} id={`listening-test-${test}`}>
+       {parts.map(d=>{const s=lab.drills[d.id],marks=totalMarks(d);return <button key={d.id} type="button" aria-current={d.id===drill.id?"true":undefined} onClick={()=>chooseDrill(d.id)} data-drill={d.id}>
+        <span className={styles.part}>Part {d.part}</span>
+        <strong>{d.title}</strong>
+        <small>{d.skill}{s?.best!=null&&<em data-full={s.best===marks?"":undefined}>{s.best}/{marks}</em>}</small>
+       </button>;})}
+      </div>}
+     </div>;
+    })}
    </nav>
 
    <section className={styles.work} aria-labelledby="listening-title">

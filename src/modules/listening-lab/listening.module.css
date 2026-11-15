@@ -120,8 +120,6 @@ li[data-result] .choice label[data-correct] .letter { border-color: var(--good);
 }
 
 /* IELTS-style question groups (2026-11-07): test labels, group headings, option box, matching and partial marks. */
-.testLabel { margin: 10px 2px 2px; color: var(--muted); font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
-.testLabel:first-child { margin-top: 0; }
 .group + .group { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--line); }
 .group .qhead { display: grid; gap: 4px; margin-bottom: 10px; }
 .group .qhead p { font-style: normal; line-height: 1.5; }
@@ -139,7 +137,6 @@ li[data-result="bad"] .match select { border-color: var(--bad); }
 li[data-result="part"] .num { background: #c27a1a; color: #fff; }
 .num { width: auto; min-width: 26px; padding: 0 6px; }
 .lines li[data-narrator] .speaker, .lines li[data-narrator] button > span:last-child { color: var(--muted); font-style: italic; }
-@media (max-width: 900px) { .testLabel { display: none; } }
 
 /* IELTS mock Listening stages reuse this layout (src/modules/exams/listening-section.tsx). */
 .mock { max-width: none; }
@@ -169,3 +166,27 @@ li[data-result="part"] .num { background: #c27a1a; color: #fff; }
 /* A JLPT/HSK practice question's player: not sticky, full width above the question. */
 .inline { max-width: none; margin: 0 0 16px; }
 .inline .player { position: static; }
+
+/* Listening Lab picker (2026-11-16): one collapsible row per test, so the sidebar stays one screen tall. */
+.test { display: grid; gap: 6px; }
+.drills .testHead { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 12px; background: transparent; }
+.drills .testHead svg { flex: none; width: 14px; height: 14px; fill: none; stroke: var(--muted); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; transition: transform .18s; }
+.drills .testHead[aria-expanded="true"] svg { transform: rotate(90deg); }
+.drills .testHead strong { flex: 1; font-size: 13px; letter-spacing: .02em; }
+.drills .testHead[aria-expanded="true"] { border-color: transparent; padding-bottom: 4px; }
+.drills .testHead[aria-expanded="false"][data-current] { border-color: color-mix(in srgb, var(--blue) 45%, var(--line)); }
+.drills .testHead[aria-expanded="false"][data-current] strong { color: var(--blue); }
+.testParts { display: grid; gap: 6px; padding-bottom: 6px; }
+@media (max-width: 900px) {
+  /* Phones: the five tests share one row; the open test's parts scroll sideways beneath it. */
+  .root:not(.mock) .layout { grid-template-columns: minmax(0, 1fr); }
+  .root:not(.mock) .drills { flex-wrap: wrap; min-width: 0; overflow: visible; margin: 0; padding: 0; scroll-snap-type: none; }
+  .test { display: contents; }
+  .drills .testHead { flex: 1 1 0; min-width: 0; justify-content: center; padding: 9px 6px; }
+  .drills .testHead svg { display: none; }
+  .drills .testHead strong { flex: none; }
+  .drills .testHead em { display: none; }
+  .drills .testHead[aria-expanded="true"] { border-color: var(--blue); padding-bottom: 9px; background: color-mix(in srgb, var(--blue) 8%, var(--surface)); }
+  .testParts { order: 2; flex: 0 0 100%; display: flex; gap: 8px; min-width: 0; padding-bottom: 4px; overflow-x: auto; scroll-snap-type: x mandatory; }
+}
+@media (prefers-reduced-motion: reduce) { .drills .testHead svg { transition: none; } }

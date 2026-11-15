@@ -25,6 +25,9 @@ Before 2026-10-25 agents were not recorded. Commits and details are in the full 
 
 ## Archived recent entries
 
+- **2026-11-15 · Claude Code (Fable 5.2) · In-app notifications** ([notifications](./project/notifications.md)): rail inbox, purchase and
+  plan notices, admin announcements. Additive migration applied locally only. `check:all` and `check -- notifications` passed
+  (300 unit tests, build, 21 browser suites). Not on the hosted site; no commit or push.
 - **2026-11-15 · Claude Code (Fable 5.2) · Docs reorganized (owner request: session start cost too many tokens).** `PROJECT.md` is
   now a short map; its text moved unchanged into `docs/project/*.md`; this file's log moved to the history file. Docs only:
   `git diff --check`. Topic text was not re-checked against the code. No commit or push.

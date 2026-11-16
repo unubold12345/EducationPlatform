@@ -6,7 +6,7 @@ import { findExam, allExamSlugs } from '../src/modules/exams/definitions.ts';
 import { jlptMocks } from '../src/modules/exams/jlpt/catalog.ts';
 import { createExamState, expireStages, makeReport, stageFor, validateExamEdit, editExam } from '../src/modules/exams/engine.ts';
 import { mockPractice } from '../src/modules/exam-practice/form.ts';
-import { listeningFile, listeningParts, listeningPosition, jlptQuestionAudio } from '../src/modules/exams/audio-files.ts';
+import { audioSetOf, listeningFile, listeningParts, listeningPosition, jlptQuestionAudio } from '../src/modules/exams/audio-files.ts';
 import { validateContentShape, validateAnswerKeys } from '../src/modules/content/validation.ts';
 const json=path=>JSON.parse(readFileSync(path,'utf8'));
 const hash=body=>createHash('sha256').update(body).digest('hex');
@@ -64,19 +64,24 @@ test('JLPT practice carries skill groups without keys or scripts and reveals onl
  }
 });
 
-test('24 Japanese tracks match authored scripts, hashes, item timings and allowlisted paths',()=>{
- for(const meta of jlptMocks){
-  const manifest=json('assets/jlpt/'+meta.slug+'-audio.json');
-  const offline=json(`MockExmps/JLPT/${meta.level}/mock-0${meta.number}/mock.json`);
-  assert.equal(manifest.parts.length,4);assert.deepEqual(listeningParts(meta.slug),manifest.parts.map(p=>p.seconds));
-  assert.ok(manifest.parts.reduce((sum,p)=>sum+p.seconds,0)<(meta.level==='N5'?1800:2100));
-  for(const part of manifest.parts){
-   assert.equal(hash(stable(offline.sections[2].groups[part.part-1])),part.scriptSha256);
-   const filename=listeningFile(meta.slug,part.part);assert.equal(filename,part.file);
-   assert.ok(existsSync('assets/exams/'+filename));assert.equal(hash(readFileSync('assets/exams/'+filename)),part.sha256);
-   for(const [id,range] of Object.entries(part.questions)){assert.ok(range.end>range.start);assert.ok(range.end<part.seconds);assert.deepEqual(jlptQuestionAudio(meta.slug,id),{...range,part:part.part});}
+test('24 Japanese tracks per audio revision match authored scripts, hashes, item timings and allowlisted paths',()=>{
+ // Revision 1: Kokoro tracks in assets/exams (attempts started before revision 2). Revision 2: VoxCPM2 in assets/jlpt-audio.
+ for(const [revision,folder] of [[1,'assets/exams'],[2,'assets/jlpt-audio']]){
+  for(const meta of jlptMocks){
+   const manifest=json((revision===1?'assets/jlpt/':'assets/jlpt-audio/')+meta.slug+'-audio.json');
+   const offline=json(`MockExmps/JLPT/${meta.level}/mock-0${meta.number}/mock.json`);
+   assert.equal(manifest.parts.length,4);assert.deepEqual(listeningParts(meta.slug,revision),manifest.parts.map(p=>p.seconds));
+   assert.ok(manifest.parts.reduce((sum,p)=>sum+p.seconds,0)<(meta.level==='N5'?1800:2100));
+   assert.equal(audioSetOf(meta.slug,revision),revision===1?'base':'jlpt');
+   for(const part of manifest.parts){
+    assert.equal(hash(stable(offline.sections[2].groups[part.part-1])),part.scriptSha256);
+    const filename=listeningFile(meta.slug,part.part,revision);assert.equal(filename,part.file);
+    assert.ok(existsSync(folder+'/'+filename));assert.equal(hash(readFileSync(folder+'/'+filename)),part.sha256);
+    for(const [id,range] of Object.entries(part.questions)){assert.ok(range.end>range.start);assert.ok(range.end<part.seconds);assert.deepEqual(jlptQuestionAudio(meta.slug,id,revision),{...range,part:part.part});}
+   }
+   assert.equal(listeningPosition(meta.slug,0,revision).part,1);assert.equal(listeningPosition(meta.slug,9999,revision).ended,true);
   }
-  assert.equal(listeningPosition(meta.slug,0).part,1);assert.equal(listeningPosition(meta.slug,9999).ended,true);
  }
+ for(const meta of jlptMocks)assert.equal(findExam(meta.slug).audioRevision,2);
  assert.equal(listeningFile('../jlpt-n5-01',1),undefined);assert.equal(listeningFile('jlpt-n5-01',5),undefined);
 });

@@ -8,6 +8,11 @@ import hskData from './hsk/audio-catalog.json' with { type: 'json' };
 import freeData from './free/audio-catalog.json' with { type: 'json' };
 type ItemTimings=Record<string,{seconds:number[];questions:Record<string,{start:number;end:number;part:number}>}>;
 const jlptAudio = jlptData as ItemTimings;
+// JLPT audio revision 2 (scripts/generate-jlpt-audio-v2.py, VoxCPM2 via VoiceStudio) in assets/jlpt-audio. Attempts
+// snapshot `audioRevision`; one without it (started before revision 2) keeps the Kokoro tracks in assets/exams.
+import jlptV2Data from './jlpt/audio-catalog-v2.json' with { type: 'json' };
+const jlptAudioV2 = jlptV2Data as ItemTimings;
+const jlptRevised = (slug:string,version:number)=>version>=2&&Object.hasOwn(jlptAudioV2,slug);
 // HSK 1 (scripts/generate-hsk-audio.py): four part tracks per mock in assets/hsk-audio, each item read twice.
 const hskAudio = hskData as ItemTimings;
 // The free half-length mocks (scripts/generate-free-audio.py): IELTS Parts 1–2, JLPT N5/N4 and HSK 1 tracks in
@@ -17,13 +22,14 @@ const freeAudio = freeData as ItemTimings;
  * Which audio route serves a mock. Each route bundles one recording folder into its server function, which must
  * stay under Vercel's 250 MB: `…/audio` serves assets/exams (IELTS 01–06, JLPT), `…/audio/forms` serves
  * assets/ielts-forms (IELTS 07–12), `…/audio/hsk` serves assets/hsk-audio (HSK 1) and `…/audio/free` serves
- * assets/free-audio (the free mocks). A new recording set should get its own folder and route segment.
+ * assets/free-audio (the free mocks) and `…/audio/jlpt` serves assets/jlpt-audio (JLPT audio revision 2). A new
+ * recording set should get its own folder and route segment. `version` is the attempt's or practice form's audio revision.
  */
-export type AudioSet="base"|"forms"|"hsk"|"free";
-export const audioSetOf=(slug:string):AudioSet=>Object.hasOwn(formsData,slug)?"forms":Object.hasOwn(hskAudio,slug)?"hsk":Object.hasOwn(freeAudio,slug)?"free":"base";
-export const audioPath=(slug:string)=>({base:"/audio",forms:"/audio/forms",hsk:"/audio/hsk",free:"/audio/free"} as const)[audioSetOf(slug)];
+export type AudioSet="base"|"forms"|"hsk"|"free"|"jlpt";
+export const audioSetOf=(slug:string,version=2):AudioSet=>Object.hasOwn(formsData,slug)?"forms":Object.hasOwn(hskAudio,slug)?"hsk":Object.hasOwn(freeAudio,slug)?"free":jlptRevised(slug,version)?"jlpt":"base";
+export const audioPath=(slug:string,version=2)=>({base:"/audio",forms:"/audio/forms",hsk:"/audio/hsk",free:"/audio/free",jlpt:"/audio/jlpt"} as const)[audioSetOf(slug,version)];
 const timed=(catalog:ItemTimings,slug:string,id:string)=>Object.hasOwn(catalog,slug)&&Object.hasOwn(catalog[slug].questions,id)?catalog[slug].questions[id]:undefined;
-export function jlptQuestionAudio(slug:string,id:string) { return timed(jlptAudio,slug,id)??timed(freeAudio,slug,id); }
+export function jlptQuestionAudio(slug:string,id:string,version=2) { return (jlptRevised(slug,version)?timed(jlptAudioV2,slug,id):timed(jlptAudio,slug,id))??timed(freeAudio,slug,id); }
 /** Where one HSK item (its number and both readings) sits in its part's track, for practice replay. */
 export function hskQuestionAudio(slug:string,id:string) { return timed(hskAudio,slug,id)??timed(freeAudio,slug,id); }
 const listeningFiles:Record<string,string>={
@@ -56,6 +62,7 @@ export function listeningFile(slug:string,part:number,version=2):string|undefine
 }
 export function listeningParts(slug:string,version=2):readonly number[] {
   if(Object.hasOwn(freeAudio,slug))return freeAudio[slug].seconds;
+  if(jlptRevised(slug,version))return jlptAudioV2[slug].seconds;
   if(Object.hasOwn(jlptAudio,slug))return jlptAudio[slug].seconds;
   if(Object.hasOwn(hskAudio,slug))return hskAudio[slug].seconds;
   if(version>=2&&Object.hasOwn(revisedAudio,slug))return revisedAudio[slug].seconds;

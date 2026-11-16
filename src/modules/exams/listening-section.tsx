@@ -51,7 +51,7 @@ export function LockedListeningPlayer({ attemptId, slug, elapsed, version=1 }: {
       <input type="range" min={0} max={length} step={0.1} value={at} disabled readOnly aria-label="Бичлэгийн байрлал" style={{ "--progress": `${Math.min(100, at / length * 100)}%` } as CSSProperties} />
       <span className={styles.time}>{clock(at)} / {clock(length)}</span>
     </div>
-    {!ended && <audio key={part} ref={audio} src={`/api/mock-attempts/${attemptId}${audioPath(slug)}?part=${part}`} preload="auto" aria-label={"Listening recording part " + part}
+    {!ended && <audio key={part} ref={audio} src={`/api/mock-attempts/${attemptId}${audioPath(slug,version)}?part=${part}`} preload="auto" aria-label={"Listening recording part " + part}
       onLoadedMetadata={() => void resume()} onError={() => setBlocked(true)} onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)}
       onTimeUpdate={event => setShown(event.currentTarget.currentTime)} />}
     {blocked && !ended ? <button className="button secondary small" onClick={() => void resume()}>Дууг одоогийн байрлалаас холбох →</button> : null}

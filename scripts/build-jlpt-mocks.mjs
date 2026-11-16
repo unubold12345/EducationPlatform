@@ -16,7 +16,7 @@ const catalog=[];
 for(const level of ['N5','N4'])for(let number=1;number<=3;number++){
  const source=JSON.parse(readFileSync(join('MockExmps','JLPT',level,`mock-0${number}`,'mock.json'),'utf8'));
  const slug=source.id;
- const definition={slug,version:1,program:'jlpt',title:`JLPT ${level} · Mock 0${number}`,description:source.theme,
+ const definition={slug,version:1,audioRevision:2,program:'jlpt',title:`JLPT ${level} · Mock 0${number}`,description:source.theme,
   points:source.itemCount,notes:['Албан бус, эх зохиомжтой дадлагын mock. Япон хэлний багшийн хяналт хүлээгдэж байна.','Listening нь хиймэл япон дуу хоолойтой. Зургийн оронд нөхцөлийн текст ашигласан.','Raw зөв хариултын тоо; JLPT-ийн 180 оноо, тэнцсэн эсэхийг тооцохгүй.'],
   sources:source.referenceUrls.slice(0,2).map((url,i)=>({label:i?'JLPT · шинэчилсэн бүтэц':'JLPT · албан бүтэц',url})),stages:[]};
  for(const section of source.sections){

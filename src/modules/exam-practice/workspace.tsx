@@ -238,7 +238,7 @@ export function PracticeWorkspace({initial,speakingLab,initialSection}:{initial:
       <QuestionStrip current={question.id} onSelect={go} items={strip.map(item=>({id:item.id,label:item.label,state:stateOf(item,reveals[item.id],responses[item.id]),flagged:flags.includes(item.id)}))}/>
       {section.math?<MathScratchpad key={"practice-"+form.slug} attemptId={"practice-"+form.slug}/>:null}
       {tools?<MathTools/>:null}
-      {jlpt&&question.audioPart?<JlptPracticeAudio key={question.id} slug={form.slug} questionId={question.id} part={question.audioPart}/>:null}
+      {jlpt&&question.audioPart?<JlptPracticeAudio key={question.id} slug={form.slug} questionId={question.id} part={question.audioPart} revision={form.audioRevision}/>:null}
       {hsk&&question.audioPart?<HskPracticeAudio key={question.id} slug={form.slug} questionId={question.id} part={question.audioPart}/>:null}
       {!jlpt&&!hsk&&question.audioPart?<section className="listening-player practice-audio"><div><strong>Listening · Part {question.audioPart} / {Math.max(...form.questions.map(item=>item.audioPart??0))}</strong></div><audio key={question.audioPart} controls preload="none" src={url+audioPath(form.slug)+"?part="+question.audioPart} aria-label={"Listening recording part "+question.audioPart}/></section>:null}
       <div className={"exam-question-layout "+(passage?"with-passage":"")}>

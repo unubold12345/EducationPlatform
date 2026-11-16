@@ -8,8 +8,9 @@ import { JapaneseText } from './text';
 import player from '@/modules/listening-lab/listening.module.css';
 import './jlpt.css';
 
-type Props={stage:PublicStage;slug:string;attemptId:string;elapsed:number;answers:Record<string,string>;flags:string[];disabled:boolean;onChange:(id:string,value:string)=>void;onFlag:(id:string)=>void};
-export function JlptSection({stage,slug,attemptId,elapsed,answers,flags,disabled,onChange,onFlag}:Props){
+type Props={stage:PublicStage;slug:string;attemptId:string;elapsed:number;answers:Record<string,string>;flags:string[];disabled:boolean;onChange:(id:string,value:string)=>void;onFlag:(id:string)=>void;version?:number};
+/** `version` is the attempt's audio revision (1 = Kokoro tracks, 2 = VoxCPM2 tracks). */
+export function JlptSection({stage,slug,attemptId,elapsed,answers,flags,disabled,onChange,onFlag,version=1}:Props){
  const listening=stage.kind==='listening';
  const pages:{ids:string[];groupId:string;passage?:string}[]=[];
  for(const group of stage.groups??[]){
@@ -19,7 +20,7 @@ export function JlptSection({stage,slug,attemptId,elapsed,answers,flags,disabled
    else pages.push({ids:[q.id],groupId:group.id,passage:q.passage});
   }
  }
- const position=listening?listeningPosition(slug,elapsed):null;
+ const position=listening?listeningPosition(slug,elapsed,version):null;
  const livePart=position&&!position.ended?position.part:null;
  const [selected,setSelected]=useState(0),[followed,setFollowed]=useState(livePart),[readings,setReadings]=useState(true),[onlyOpen,setOnlyOpen]=useState(false);
  if(livePart!==followed){setFollowed(livePart);if(livePart)setSelected(livePart-1);}
@@ -32,7 +33,7 @@ export function JlptSection({stage,slug,attemptId,elapsed,answers,flags,disabled
  useQuestionShortcuts({onPrevious:()=>go(selected-1),onNext:()=>go(selected+1),onFlag:()=>{if(active)onFlag(active.id);},onOption:at=>{const value=active?.options?.[at];if(value&&!disabled)onChange(active.id,value);}});
  const openPages=pages.map((p,i)=>({p,i})).filter(({p})=>!onlyOpen||p.ids.some(id=>!answers[id]?.trim()||flags.includes(id)));
  return <section className="jlpt-work" aria-label="JLPT даалгавар">
-  {listening?<div className={`${player.root} ${player.mock}`}><LockedListeningPlayer attemptId={attemptId} slug={slug} elapsed={elapsed}/></div>:null}
+  {listening?<div className={`${player.root} ${player.mock}`}><LockedListeningPlayer attemptId={attemptId} slug={slug} elapsed={elapsed} version={version}/></div>:null}
   <nav className="jlpt-skills" aria-label="Даалгаврын төрөл">{stage.groups?.map((g,i)=>{const qs=stage.questions.filter(q=>q.groupId===g.id);return <button key={g.id} type="button" aria-current={g.id===group?.id?'true':undefined} onClick={()=>go(pages.findIndex(p=>p.groupId===g.id))}><strong>{listening?`${i+1}. `:''}{g.title}</strong><small>{qs.filter(q=>answers[q.id]?.trim()).length}/{qs.length}{livePart===i+1?' · Тоглож байна':''}</small></button>;})}</nav>
   <div className="jlpt-controls"><button type="button" aria-pressed={readings} onClick={()=>setReadings(!readings)}>ふりがな {readings?'✓':'—'}</button><button type="button" aria-pressed={onlyOpen} onClick={()=>setOnlyOpen(!onlyOpen)}>Хоосон / тэмдэгтэй</button><span>{selected+1}/{pages.length} хуудас</span></div>
   <nav className="jlpt-page-strip" aria-label="Асуулт сонгох">{openPages.map(({p,i})=><button type="button" key={p.ids[0]} aria-current={i===selected?'true':undefined} data-answered={p.ids.every(id=>answers[id]?.trim())?'':undefined} onClick={()=>go(i)}>{stage.questions.find(q=>q.id===p.ids[0])?.number}{p.ids.length>1?`–${stage.questions.find(q=>q.id===p.ids.at(-1))?.number}`:''}{p.ids.some(id=>flags.includes(id))?' ⚑':''}</button>)}</nav>

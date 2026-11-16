@@ -151,7 +151,7 @@ export function mockPractice(definition: ExamDefinition): PracticeSource {
   };
   return {
     audioRevision:definition.audioRevision??1,
-    form: { slug: definition.slug, title: definition.title, subject: subjectOf(definition), sections, questions, passages, briefingHref: "/exams/" + definition.slug, ...(definition.points ? { points: definition.points } : {}) },
+    form: { slug: definition.slug, title: definition.title, subject: subjectOf(definition), sections, questions, passages, briefingHref: "/exams/" + definition.slug, ...(definition.points ? { points: definition.points } : {}), ...(definition.audioRevision ? { audioRevision: definition.audioRevision } : {}) },
     grade: (id, response) => ({ correct: isCorrect(questionFor(id), response) }),
     reveal(id, result) {
       const question = questionFor(id);

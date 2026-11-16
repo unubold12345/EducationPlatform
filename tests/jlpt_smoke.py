@@ -112,11 +112,12 @@ with sync_playwright() as p:
                 page.goto(BASE+'/exams/attempts/'+attempt)
                 expect(page.locator('[data-listening-player] audio')).to_be_visible(visible=False)
                 source=page.locator('[data-listening-player] audio').get_attribute('src')
-                assert source.endswith('part=1')
+                assert source.endswith('/audio/jlpt?part=1')  # new sittings use audio revision 2
                 track=context.request.get(BASE+source,headers={'Range':'bytes=0-127'})
                 assert track.status==206 and len(track.body())==128
-                assert context.request.get(endpoint+'/audio?part=2').status==403
-                assert context.request.get(practice+'/audio?part=1').status==403
+                assert context.request.get(endpoint+'/audio/jlpt?part=2').status==403
+                assert context.request.get(endpoint+'/audio?part=1').status==404  # revision 1 route refuses a revision 2 sitting
+                assert context.request.get(practice+'/audio/jlpt?part=1').status==403
                 # Oral-response options are numbers only; no spoken choices or transcript in the UI payload.
                 oral=[q for q in data['stage']['questions'] if q['groupId'].endswith('-3') or q['groupId'].endswith('-4')]
                 assert all(q['options']==['1','2','3'] for q in oral)

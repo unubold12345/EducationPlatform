@@ -29,6 +29,9 @@ const nextConfig: NextConfig = {
   // `/audio/free` reads assets/free-audio (the free half-length mocks) through audio-response-free.ts:
   "/api/mock-attempts/*/audio/free":["./assets/free-audio/*.mp3"],
   "/api/exam-practice/*/audio/free":["./assets/free-audio/*.mp3"],
+  // `/audio/jlpt` reads assets/jlpt-audio (JLPT audio revision 2) through audio-response-jlpt.ts:
+  "/api/mock-attempts/*/audio/jlpt":["./assets/jlpt-audio/*.mp3"],
+  "/api/exam-practice/*/audio/jlpt":["./assets/jlpt-audio/*.mp3"],
   "/api/exams/audio-check":["./assets/exams/audio-check.mp3"],
  },
 };

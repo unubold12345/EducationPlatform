@@ -26,8 +26,7 @@ every session. Product facts: [PROJECT.md](./PROJECT.md) and `docs/project/`. Pa
 Owner actions:
 1. Make the repository private. `reference/` holds the withdrawn БҮТ papers; 2018 A and 2019 A print a no-copying notice.
 2. Confirm plan figures: ЭЕШ ₮40,000, Гадаад хэл ₮60,000 (3,000 AI credits), and that the ЭЕШ plan keeps a 100-word bank and 5 saved exams.
-3. Audio: listen to the free mocks (HSK free item 1 was misheard by Whisper). Paid JLPT N4 audio misreads 33 of 84 listening
-   items (何を as なんを and others; audit 2026-11-14); decide whether to regenerate it as a new recording revision.
+3. Audio: listen to the free mocks (HSK free item 1 was misheard by Whisper) and to JLPT audio revision 2 (VoxCPM2 narrator, 2026-11-16).
 4. Complete one real Google sign-in with an owner-controlled account (only the authorization start is verified).
 5. Buy a sender domain if wanted, then switch to Resend ([troubleshooting](./project/troubleshooting.md)).
 6. Listen to one Speaking Lab partner on the hosted site from a phone. The DeepInfra key was pasted into a chat; consider replacing it.
@@ -115,6 +114,9 @@ npm run admin:grant -- qa-demo-01@example.invalid
 ## 7. Recent
 
 Full entries, with attribution and verification limits, are at the top of [OPERATIONS_HISTORY.md](./OPERATIONS_HISTORY.md).
+- **2026-11-16 · Claude Code (Opus 5.5) · JLPT audio revision 2** ([assessments](./project/assessments.md)): N5/N4 narrator re-voiced with VoxCPM2
+  via the VoiceStudio app (warm male, owner-picked); dialogue keeps the Kokoro takes. `assets/jlpt-audio`, `/audio/jlpt`, `audioRevision: 2`; old
+  sittings keep revision 1. Whisper flagged one narrator line (N5-02 L24). `check` passed; no browser suite, build or human listen.
 - **2026-11-16 · Claude Code (Fable 5.2) · Hero photo card, Listening start** ([ui-homepage](./project/ui-homepage.md)): the homepage hero is one
   photo card (owner picked it); Listening Lab opens on the first unchecked part, not the last one clicked. `check -- ui` passed; 3001 rebuilt. No commit.
 - **2026-11-16 · Claude Code (Fable 5.2) · Listening Lab picker**: the 20-part sidebar is an accordion, one row per test (owner picked it

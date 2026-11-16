@@ -24,6 +24,8 @@ export type PracticeQuestion = {
 };
 export type PracticeSection = { id: string; title: string; kind: PracticeSectionKind; hint: string; math: boolean };
 export type PracticeForm = {
+  /** Audio revision of the recordings practice plays (JLPT: 1 Kokoro, 2 VoxCPM2); absent means 1. */
+  audioRevision?: number;
   slug: string; title: string; subject: PracticeSubject; sections: PracticeSection[]; questions: PracticeQuestion[];
   passages: { title: string; text: string }[]; briefingHref: string; points?: number;
 };

@@ -59,7 +59,7 @@ Part of the [project guide](../PROJECT.md) (was PROJECT.md section 3). "Section 
   can read, so one shared reader of `assets/exams` once put all 93 recordings (236 MB) into every audio route.
   Each folder now has its own reader and route: `/audio` reads `assets/exams` through `audio-response.ts`
   (IELTS 01–06 and JLPT, 180 MB bundle) and `/audio/forms` reads `assets/ielts-forms` through
-  `audio-response-forms.ts` (IELTS 07–12, 77 MB), `/audio/hsk` reads `assets/hsk-audio` (HSK 1, 12 MB), `/audio/free` reads `assets/free-audio`
+  `audio-response-forms.ts` (IELTS 07–12, 77 MB), `/audio/hsk` reads `assets/hsk-audio` (HSK 1, 12 MB), `/audio/jlpt` reads `assets/jlpt-audio` (JLPT audio revision 2, 28 MB), `/audio/free` reads `assets/free-audio`
   (the free mocks, 12 MB), for both `/api/mock-attempts/<id>/…` and `/api/exam-practice/<slug>/…`. `audio-handlers.ts` holds the shared checks and reads no files;
   `audioPath()` in `audio-files.ts` picks the route, and each route refuses the other folder's mocks.
   `next.config.ts` lists only the `/audio/forms` folder: tracing keys match anywhere in a route path, so an `/audio`
@@ -74,7 +74,19 @@ Part of the [project guide](../PROJECT.md) (was PROJECT.md section 3). "Section 
 - `jlpt-n5-01`–`03`: 21 vocabulary / 20 min, 22 grammar-reading / 40 min, 24 listening / 30 min.
   `jlpt-n4-01`–`03`: 28 / 25 min, 29 / 55 min, 28 / 35 min. Server deadlines and attempt snapshots use the existing exam engine.
 - `scripts/build-jlpt-mocks.mjs` converts offline `MockExmps/JLPT` source into six private `assets/jlpt` definitions and an answer-free catalogue. Authoring packs and official format reference images stay excluded from deployment.
-- `scripts/generate-jlpt-audio.py` uses local Kokoro-82M Japanese voices (Apache-2.0) and Misaki Japanese G2P. The 24 MP3s in `assets/exams/jlpt-*-part-*.mp3` have script/file hashes, measured durations and per-item timings; protected mock/practice audio routes apply the existing access and active-sitting checks.
+- Audio revision 1: `scripts/generate-jlpt-audio.py` uses local Kokoro-82M Japanese voices (Apache-2.0) and Misaki Japanese G2P. The 24 MP3s in `assets/exams/jlpt-*-part-*.mp3` have script/file hashes, measured durations and per-item timings; protected mock/practice audio routes apply the existing access and active-sitting checks.
+- Audio revision 2 (2026-11-16, current): only the narrator changes (owner decision). `scripts/generate-jlpt-audio-v2.py`
+  (setup in its header) reads instructions, item numbers, questions and spoken choices with VoxCPM2 (openbmb/VoxCPM2,
+  Apache-2.0) run locally through the VoiceStudio desktop app's engine install: one cloned warm male voice (reference clip
+  in `assets/jlpt-audio/voices/`), N5 lines slowed to 0.92. The woman and man are revision 1's exact Kokoro takes, read
+  from its utterance cache; every line is levelled to one loudness. Track layout and pauses match revision 1.
+  Speech-only kana fix narrator readings the voice gets wrong (numbers before 番 and answer numbers, 何です/何を/何時,
+  名札, 申込書, furigana including okurigana); per-line seed overrides and extra readings live in
+  `scripts/jlpt-audio-v2-lines.json`. Files: `assets/jlpt-audio/<slug>-part-N.mp3`
+  (48 kbps mono), `<slug>-audio.json` manifests and `src/modules/exams/jlpt/audio-catalog-v2.json` timings, served by
+  `/audio/jlpt`. JLPT definitions carry `audioRevision: 2`, so new sittings and practice use revision 2; an attempt
+  snapshot without it keeps the Kokoro files in `assets/exams`. Every narrator line was transcribed with Whisper large-v3
+  and compared in kana; nobody has listened to it all yet.
 - Timed listening follows the server clock, with no pause/replay; practice can replay one item and reveals its transcript only after checking. Written questions keep shared passages together, use numbered options and support optional authored furigana. Result skill links open focused practice.
 - Per-mock access uses the existing simulated ₮10,000 purchase, or a Гадаад хэл pick (2026-11-13). Raw scores only; no 180-point conversion or pass/fail claim.
 - All questions are original drafts awaiting Japanese-teacher review. Situational text replaces illustrations. Synthetic tracks are shorter than the official listening window; remaining time is answer checking. Native-speaker listening review and learner calibration remain pending.

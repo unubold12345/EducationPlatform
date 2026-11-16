@@ -138,7 +138,7 @@ test('Twelve Mandarin tracks match the pack, their hashes, item timings, own rou
   assert.equal(listeningPosition(meta.slug,0).part,1);assert.equal(listeningPosition(meta.slug,9999).ended,true);
  }
  assert.equal(listeningFile('../hsk1-mock-01',1),undefined);assert.equal(listeningFile('hsk1-mock-01',5),undefined);
- assert.equal(audioSetOf('jlpt-n5-01'),'base');assert.equal(audioSetOf('ielts-academic-07'),'forms');
+ assert.equal(audioSetOf('jlpt-n5-01',1),'base');assert.equal(audioSetOf('jlpt-n5-01'),'jlpt');assert.equal(audioSetOf('ielts-academic-07'),'forms');
 });
 
 test('HSK slugs, pictures and audio stay out of the offline pack, and the pack stays out of deployment',()=>{

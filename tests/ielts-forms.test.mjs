@@ -118,15 +118,24 @@ test("practice mode carries every new question, grades its key and reveals the p
 });
 
 test("each recording folder has its own audio route, and only that route reads it", () => {
-  for (const slug of ["ielts-academic-01", "ielts-academic-06", "jlpt-n5-01", "sat-full-02", "eesh-math-2024-m1"]) assert.equal(audioSetOf(slug), "base", slug);
+  for (const slug of ["ielts-academic-01", "ielts-academic-06", "sat-full-02", "eesh-math-2024-m1"]) assert.equal(audioSetOf(slug), "base", slug);
+  // JLPT: audio revision 1 (Kokoro) stays in assets/exams; revision 2 (VoxCPM2) has its own folder and route.
+  assert.equal(audioSetOf("jlpt-n5-01", 1), "base"); assert.equal(audioSetOf("jlpt-n5-01"), "jlpt");
   for (const slug of slugs) assert.equal(audioSetOf(slug), "forms", slug);
   const source = path => readFileSync(disk(path), "utf8");
+
   // The build bundles a folder into a route when that route's code reads it, so the shared parts read nothing.
   for (const shared of ["src/modules/exams/audio-handlers.ts", "src/modules/exams/audio-range.ts"]) {
     assert.doesNotMatch(source(shared), /readFile\(|from "[^"]*audio-response/, shared);
   }
   assert.match(source("src/modules/exams/audio-response.ts"), /"assets", "exams", filename/);
   assert.match(source("src/modules/exams/audio-response-forms.ts"), /"assets", "ielts-forms", filename/);
+  assert.match(source("src/modules/exams/audio-response-jlpt.ts"), /"assets", "jlpt-audio", filename/);
+  for (const route of ["src/app/api/mock-attempts/[id]/audio/jlpt", "src/app/api/exam-practice/[slug]/audio/jlpt"]) {
+    const jlpt = source(route + "/route.ts");
+    assert.match(jlpt, /audio-response-jlpt"/); assert.doesNotMatch(jlpt, /audio-response"/); assert.match(jlpt, /"jlpt"/);
+  }
+  assert.match(source("next.config.ts"), /"\/api\/mock-attempts\/\*\/audio\/jlpt":\["\.\/assets\/jlpt-audio\/\*\.mp3"\]/);
   for (const route of ["src/app/api/mock-attempts/[id]/audio", "src/app/api/exam-practice/[slug]/audio"]) {
     const base = source(route + "/route.ts"), forms = source(route + "/forms/route.ts");
     assert.match(base, /audio-response"/); assert.doesNotMatch(base, /audio-response-forms/); assert.match(base, /"base"/);

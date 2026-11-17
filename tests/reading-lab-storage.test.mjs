@@ -4,8 +4,9 @@ import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { READING_LIMITS, allQuestions, gradeReading } from "../src/modules/reading-lab/contracts.ts";
 import { findReadingSample } from "../src/modules/reading-lab/samples.ts";
+import { subscriptionPlans } from "../src/modules/subscriptions/plans.ts";
 import {
-  PRACTICES_FULL, answersFit, applyProgress, blankState, importedParagraphs, importedState, isBlank, legacyState, readGradeRequest,
+  PRACTICES_FULL, practiceCapacity, practiceUpgrade, practicesFullMessage, answersFit, applyProgress, blankState, importedParagraphs, importedState, isBlank, legacyState, readGradeRequest,
   readImportRequest, readProgressRequest, readSavedPractice, readState,
 } from "../src/modules/reading-lab/state.ts";
 import { READING_TOKEN_TTL_MS, ReadingTokenError, openReading, readingImportKey, sealReading } from "../src/modules/reading-lab/token.ts";
@@ -209,16 +210,23 @@ test("moved progress is marked again from the key, and a claimed score is ignore
   assert.deepEqual(legacyState(browser), { answers: { q1: 0 }, checked: true, attempts: 2, timerStartedAt: null, finishedSeconds: 40 });
 });
 
-test("the account keeps at most 20 practices, and a full library is refused before credits are held", () => {
-  assert.equal(READING_LIMITS.practices, 20);
+test("the plan sets how many practices are kept (free and Basic 5, Pro 15), and a full library is refused before credits are held", () => {
+  assert.equal(READING_LIMITS.practices, 20, "the account ceiling, whatever the plan");
+  assert.equal(READING_LIMITS.freePractices, 5);
   assert.match(PRACTICES_FULL, /20 дасгал/);
+  // Owner rule 2026-11-17: the largest active plan wins; retired IELTS/SAT plans keep 15 until they end.
+  assert.deepEqual(subscriptionPlans.map(plan => [plan.program, plan.readingPractices]), [["entrance", 5], ["language_basic", 5], ["language", 15]]);
+  assert.deepEqual([[], ["entrance"], ["language_basic"], ["language"], ["language_basic", "language"], ["ielts"], ["sat"], ["unknown"]].map(practiceCapacity), [5, 5, 5, 15, 15, 15, 15, 5]);
+  assert.deepEqual(practiceUpgrade(), { practices: 15, plans: ["Гадаад хэл Pro"] });
+  assert.equal(practicesFullMessage(5), "Хадгалах 5 дасгалын хязгаарт хүрсэн. Шинэ дасгал үүсгэхийн өмнө нэгийг нь устгана уу. Гадаад хэл Pro багцтай бол 15 дасгал хадгална.");
+  assert.equal(practicesFullMessage(15), "Хадгалах 15 дасгалын хязгаарт хүрсэн. Шинэ дасгал үүсгэхийн өмнө нэгийг нь устгана уу.");
   const service = text("src/modules/reading-lab/service.ts");
-  const full = "const saved = await db.readingPractice.count({ where: { userId } });\n  if (saved >= READING_LIMITS.practices) throw new ApiError(409, PRACTICES_FULL);";
+  const full = "const limit = await readingPracticeLimit(userId);\n  const saved = await db.readingPractice.count({ where: { userId } });\n  if (saved >= limit) throw new ApiError(409, practicesFullMessage(limit));";
   assert.ok(service.includes(full));
   assert.ok(service.indexOf(full) < service.indexOf("return chargeCredits("), "the 409 comes before any credits are held");
   assert.ok(service.indexOf("await ensureNoTimedExam(userId);") < service.indexOf(full));
   // Counted again just before the practice is saved (a move from another tab may fill the last place); the hold is then refunded.
-  const again = service.indexOf("if (await db.readingPractice.count({ where: { userId } }) >= READING_LIMITS.practices) throw new ApiError(409, PRACTICES_FULL);");
+  const again = service.indexOf("if (await db.readingPractice.count({ where: { userId } }) >= limit) throw new ApiError(409, practicesFullMessage(limit));");
   assert.ok(again > service.indexOf("return chargeCredits(") && again < service.indexOf("await db.readingPractice.create("));
   // A page from before the move does not send `store` and is told to reload before credits are held.
   assert.ok(service.indexOf('if (form.get("store") !== "account") throw new ApiError(409, RELOAD);') < service.indexOf("return chargeCredits("));
@@ -232,7 +240,8 @@ test("the account keeps at most 20 practices, and a full library is refused befo
   assert.match(service, /const where = \{ userId_sampleId: \{ userId, sampleId: sample\.id \} \};/);
 
   const client = text("src/modules/reading-lab/client.tsx");
-  assert.match(client, /<Creator full=\{practices\.length >= READING_LIMITS\.practices\}/);
+  assert.match(client, /<Creator full=\{practices\.length >= initialLimit\} limit=\{initialLimit\}/);
+  assert.match(text("src/app/labs/ielts-reading/page.tsx"), /initialLimit=\{library\?\.limit\}/, "the page passes the plan's size");
   assert.match(client, /const ready = !full && /);
   assert.match(client, /form\.append\("store", "account"\);/);
   // Moving from the browser stops sending once the account is full, newest practice first.

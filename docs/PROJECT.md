@@ -15,12 +15,13 @@ LawTest/Lexlab is a separate service; this project only links to <https://lexlab
 
 | Area | Where | What | Detail |
 | --- | --- | --- | --- |
-| Full mocks | `/exams`, `/exams/{sat,ielts,jlpt,hsk,eesh}` | SAT 01–09, IELTS Academic 01–12, JLPT N5/N4 ×3 each, HSK 1 and 2 ×3 each, 194 ЭЕШ papers (Math 55, Physics 60, Chemistry 18, Biology 21, English 40); server-authoritative timers, immutable attempt snapshots | [assessments](./project/assessments.md) |
+| Full mocks | `/exams`, `/exams/{sat,ielts,toefl,jlpt,hsk,eesh}` | SAT 01–09, IELTS Academic 01–12, TOEFL iBT 01–09 (2026 format), JLPT N5/N4 ×3 each, HSK 1 and 2 ×3 each, 194 ЭЕШ papers (Math 55, Physics 60, Chemistry 18, Biology 21, English 40); server-authoritative timers, immutable attempt snapshots | [assessments](./project/assessments.md) |
 | Free mocks | hub tiles | Ten half-length mocks, one per exam, open to every verified account | [assessments](./project/assessments.md) |
 | Practice mode | `/exams/<slug>/practice` | Any mock without a clock, instant checks, DeepSeek assistant; refused while a timed sitting is open | [exam-tools](./project/exam-tools.md) |
-| Plans and payments | `/workspace/plans`, `/subscribe/*`, `/checkout/*` | Free, ЭЕШ ₮40,000, Гадаад хэл ₮60,000 (15 picks a plan month), ₮10,000 per mock, yellow credit packs; all simulated | [pricing-access](./project/pricing-access.md) |
+| Plans and payments | `/workspace/plans`, `/subscribe/*`, `/checkout/*` | Free, ЭЕШ ₮29,900, Гадаад хэл Basic ₮29,900, Pro ₮59,900 (all non-ЭЕШ mocks), ₮10,000 per mock for 7 days, plan sales, yellow credit packs; all simulated | [pricing-access](./project/pricing-access.md) |
 | Accounts | `/login`, `/workspace/profile` | Better Auth email/password, Google OAuth, verification, recovery, five demo accounts | [accounts-auth](./project/accounts-auth.md) |
 | Workspace | `/workspace/*` | Signed-in shell with rail: Home, AI chat, Vocabulary, Exams, Review (AI coach), Workshop, Plans | [workspace](./project/workspace.md) |
+| JLPT/HSK decks | `/workspace/workshop?exam=jlpt\|hsk`, `/labs/words/<deck>`, `/labs/kana`, `/labs/pinyin` | Workshop exam tabs; N5/N4, HSK 1/2 word decks, Kana and Pinyin workshops, Basic/Pro only | [language-decks](./project/language-decks.md) |
 | Vocabulary | `/workspace/vocabulary` | Word bank, decks, AI file scan, Leitner progress, quiz | [vocabulary](./project/vocabulary.md) |
 | Exam from file | `/workspace/my-exams` | AI multiple-choice exam (5–40 questions) from a document or page photos, saved on the account, half-price retry | [my-exams](./project/my-exams.md) |
 | Notifications | rail row **Мэдэгдэл**, `/admin?tab=announcements` | In-app inbox: purchases, plan reminders, admin announcements; no email or push | [notifications](./project/notifications.md) |
@@ -54,7 +55,7 @@ LawTest/Lexlab is a separate service; this project only links to <https://lexlab
 | Path | Holds |
 | --- | --- |
 | `src/app` | Pages and route handlers; `src/components`, `src/lib` (auth, session, API, config, email, db) |
-| `src/modules/exams` | Sitting lifecycle, timers, scoring engine; `entrance/`, `hsk/`, `free/` sub-catalogues; `exam-practice` is practice mode |
+| `src/modules/exams` | Sitting lifecycle, timers, scoring engine; `entrance/`, `hsk/`, `toefl/`, `free/` sub-catalogues; `exam-practice` is practice mode |
 | `src/modules/{subscriptions,credits}` | Plans, picks, access rule, purchases; credit prices, buckets and ledger |
 | `src/modules/{workspace,vocabulary,my-exams,reading-lab,workshops,listening-lab,tutor}` | The feature of the same name |
 | `src/modules/{documents,ai-images}` | Shared bounded file extraction and image-input rules for AI features |

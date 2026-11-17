@@ -24,6 +24,8 @@ model User {
   chatThreads ChatThread[]
   readingPractices ReadingPractice[]
   readingSampleStates ReadingSampleState[]
+  essayReviews EssayReview[]
+  languageDeckProgress LanguageDeckProgress[]
   studyPlan StudyPlan?
   studyDays StudyDay[]
   creditPeriods CreditPeriod[]
@@ -74,6 +76,9 @@ model AdminNote {
 model PlanPrice {
   program String @id
   amountMnt Int
+  // An optional sale: the price actually charged while set (and before saleEndsAt, when that is set).
+  saleAmountMnt Int?
+  saleEndsAt DateTime?
   updatedBy String
   updatedAt DateTime @updatedAt
 }
@@ -469,7 +474,7 @@ model CreditWallet {
   updatedAt DateTime @updatedAt
 }
 
-// The one AI credit pack on sale (key "default"). A missing row falls back to the code default.
+// The AI credit packs on sale, one row each (key "p<credits>", for example "p1000"). No rows falls back to the code defaults.
 model CreditPack {
   key String @id
   credits Int
@@ -515,6 +520,8 @@ model MockPurchase {
   status String @default("PENDING")
   createdAt DateTime @default(now())
   paidAt DateTime?
+  // A purchase made from 2026-11-17 on opens the mock for 7 days from payment; null = a permanent earlier purchase.
+  expiresAt DateTime?
   @@unique([userId, examSlug])
 }
 
@@ -650,6 +657,30 @@ model ReadingPractice {
   @@unique([userId, importKey])
   @@index([userId, updatedAt])
 }
+// An Essay Studio expert review written by Claude Opus (2026-11-17). Kept on the account: the rows are also the quota
+// count (free once, plan reviews a plan month), so there is no delete. Token counts record what the review cost.
+model EssayReview {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  task String
+  promptId String?
+  title String
+  prompt String
+  essay String
+  words Int
+  language String
+  review Json
+  // "strong": DeepSeek, paid with credits. "expert": Claude Opus, counted against the plan's monthly reviews.
+  kind String @default("expert")
+  // The review's overall band, copied out of `review` so the page's list never reads the JSON.
+  overall Float @default(0)
+  model String
+  inputTokens Int
+  outputTokens Int
+  createdAt DateTime @default(now())
+  @@index([userId, createdAt])
+}
 // Progress on one of the built-in Reading Lab samples.
 model ReadingSampleState {
   userId String
@@ -720,4 +751,24 @@ model Announcement {
   authorId String
   createdAt DateTime @default(now())
   @@index([createdAt])
+}
+
+// Study progress on the JLPT/HSK word decks (Workshop → JLPT / HSK, 2026-11-18). Deck words live in
+// assets/language-decks/<deck>.json; a row exists only for a word the student has graded. Same Leitner fields as
+// VocabularyWord, and self-study data only, never a grade.
+model LanguageDeckProgress {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deck String
+  wordId String
+  box Int @default(0)
+  correct Int @default(0)
+  wrong Int @default(0)
+  reviewedAt DateTime?
+  dueAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([userId, deck, wordId])
+  @@index([userId, deck])
 }

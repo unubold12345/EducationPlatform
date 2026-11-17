@@ -3,10 +3,10 @@ import assert from "node:assert/strict";
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import {
   AI_ACTIONS, AI_ACTION_IDS, ALLOWANCE_KEYS, CREDIT_ALLOWANCE_LIMITS, CREDIT_COSTS, CREDIT_GRANT_LIMITS, CREDIT_PACK_LIMITS, CREDIT_USD, DEEPSEEK_PRICE,
-  DEFAULT_CREDIT_PACK, EXAM_PRICE, EXAM_RATE, FREE_MONTHLY_CREDITS, MARGIN_ACTIONS, READING_PRACTICE_RATE, RETRY_ACTIONS, RETRY_PRICE, UsageMeter, VOCABULARY_IMPORT_PRICE, VOCABULARY_IMPORT_RATE, costNanoUsd, creditCost, creditPeriod, creditRange, creditRangeLabel,
+  DEFAULT_CREDIT_PACK, DEFAULT_CREDIT_PACKS, EXAM_PRICE, EXAM_RATE, FREE_MONTHLY_CREDITS, MARGIN_ACTIONS, READING_PRACTICE_RATE, RETRY_ACTIONS, RETRY_PRICE, UsageMeter, VOCABULARY_IMPORT_PRICE, VOCABULARY_IMPORT_RATE, costNanoUsd, creditCost, creditPeriod, creditRange, creditRangeLabel,
   creditResetAt, creditValueMicroUsd, creditsForTokens,
   defaultAllowances, examCostNano, examCredits, examHold, examOutputTokens, examReplies, examRetryCredits, formatCredits, formatUsd, isAiAction, isAllowanceKey, readReceipt,
-  readUsage, readingOutputTokens, readingPracticeCredits, readingPracticeHold, readingRetryCredits, readingRetryOutputTokens, readingRetryPrice, speakingCreditAction, validAllowance, validCreditPack, validGrant, vocabularyImportCostNano, vocabularyImportCredits, vocabularyImportHold, writingCreditAction,
+  readUsage, readingOutputTokens, readingPracticeCostNano, readingPracticeCredits, READING_PRICE, readingPracticeHold, readingRetryCredits, readingRetryOutputTokens, readingRetryPrice, speakingCreditAction, validAllowance, validCreditPack, validGrant, vocabularyImportCostNano, vocabularyImportCredits, vocabularyImportHold, writingCreditAction,
 } from "../src/modules/credits/pricing.ts";
 import {
   allocateCredits, available, creditTotals, planTermCredits, returnParts, spendOrder, termMonthsStarted, totalsAfter,
@@ -26,12 +26,12 @@ test("credit prices follow the DeepSeek peak list price", () => {
   assert.equal(CREDIT_USD, 0.001);
   assert.deepEqual(CREDIT_COSTS, {
     "chat": 5, "review-coach": 6, "practice-assistant": 5, "math-tutor": 3,
-    "writing-ideas": 3, "writing-grammar": 5, "writing-feedback": 6,
+    "writing-ideas": 3, "writing-grammar": 5, "writing-feedback": 6, "writing-review": 21,
     "speaking-turn": 3, "speaking-report": 9,
-    "vocabulary-import": 47, "exam": 80, "exam-retry": 40, "exam-10": 13, "exam-20": 17, "reading-practice": 17, "reading-retry": 8, "roadmap": 8,
+    "vocabulary-import": 47, "exam": 80, "exam-retry": 40, "exam-10": 13, "exam-20": 17, "reading-practice": 48, "reading-retry": 24, "roadmap": 8,
   });
   assert.deepEqual(RETRY_ACTIONS, ["exam-retry", "reading-retry"]);
-  assert.deepEqual(MARGIN_ACTIONS, ["vocabulary-import", "exam"]);
+  assert.deepEqual(MARGIN_ACTIONS, ["vocabulary-import", "exam", "reading-practice"]);
   for (const action of AI_ACTION_IDS) {
     const { inputTokens, outputTokens } = AI_ACTIONS[action];
     const usd = (inputTokens * DEEPSEEK_PRICE.inputCacheMiss + outputTokens * DEEPSEEK_PRICE.output) / 1e6;
@@ -181,8 +181,8 @@ test("a retry costs half of the first generation", () => {
   assert.equal(creditRangeLabel("exam-retry"), "5–40");
 
   // A Reading Lab practice: half of what a new practice with the saved passage and that many questions costs.
-  assert.equal(readingRetryCredits(3_000, 500, 12), 3);
-  assert.equal(readingRetryCredits(5_400, 900, 24), 5);
+  assert.equal(readingRetryCredits(3_000, 500, 12), 12);
+  assert.equal(readingRetryCredits(5_400, 900, 24), 24);
   const longest = READING_LIMITS.paragraphs.max * READING_LIMITS.paragraph;
   assert.equal(readingRetryCredits(longest, READING_LIMITS.passageWords.max, READING_LIMITS.questions.max), creditCost("reading-retry"));
   const rate = READING_PRACTICE_RATE;
@@ -192,8 +192,8 @@ test("a retry costs half of the first generation", () => {
       const where = `${chars}/${words}/${questions}`;
       assert.equal(retry, Math.ceil(first / 2), where);
       assert.ok(retry >= 1 && retry < first && retry <= creditCost("reading-retry"), where);
-      // Reading Lab is sold at cost, so half price is below the retry's peak cost; it still covers the off-peak cost
-      // (half the peak list price) of reading the passage and the replaced questions and writing the new ones.
+      // Since 2026-11-17 a practice is sold above cost, so half its price covers even the off-peak cost (half the
+      // peak list price) of reading the passage and the replaced questions and writing the new ones.
       const peakUsd = ((rate.promptTokens + Math.ceil(chars / rate.charsPerToken) + questions * 60) * DEEPSEEK_PRICE.inputCacheMiss + readingRetryOutputTokens(questions) * DEEPSEEK_PRICE.output) / 1e6;
       assert.ok(retry * CREDIT_USD >= peakUsd / 2 - 1e-12, "off-peak cost: " + where);
     }
@@ -206,37 +206,43 @@ test("a retry costs half of the first generation", () => {
   assert.equal(readingRetryPrice(paragraphs, 3), readingRetryPrice(paragraphs, READING_LIMITS.questions.min), "never priced below the smallest practice");
   assert.equal(readingRetryPrice(paragraphs, 1e9), readingRetryPrice(paragraphs, READING_LIMITS.questions.max));
   assert.equal(readingRetryPrice(paragraphs, NaN), readingRetryPrice(paragraphs, READING_LIMITS.questions.min));
-  assert.deepEqual(creditRange("reading-retry"), { min: 2, max: 8 });
-  assert.equal(creditRangeLabel("reading-retry"), "2–8");
+  assert.deepEqual(creditRange("reading-retry"), { min: 7, max: 24 });
+  assert.equal(creditRangeLabel("reading-retry"), "7–24");
   assert.match(AI_ACTIONS["exam-retry"].label, /хямд/);
   assert.match(AI_ACTIONS["reading-retry"].label, /хямд/);
 });
 
-test("a reading practice is priced by the material read and the passage and questions written", () => {
+test("a reading practice is priced per question, never below twice its DeepSeek cost", () => {
+  const NANO_PER_CREDIT = Math.round(CREDIT_USD * 1e9);
   const { inputTokens, outputTokens } = AI_ACTIONS["reading-practice"];
   const rate = READING_PRACTICE_RATE;
-  // The rates fill the action's token budget, so its listed price is the most one practice can cost.
+  // The rates fill the action's token budget; the listed price is the most one practice can cost.
   assert.equal(rate.promptTokens + READING_LIMITS.textChars / rate.charsPerToken, inputTokens);
   assert.equal(rate.replyTokens + READING_LIMITS.passageWords.max * rate.tokensPerPassageWord + READING_LIMITS.questions.max * rate.tokensPerQuestion, outputTokens);
   assert.equal(readingPracticeCredits(READING_LIMITS.textChars, READING_LIMITS.passageWords.max, READING_LIMITS.questions.max), creditCost("reading-practice"));
-  // The first live call (1,935 characters → 351 words, 12 questions; $0.0027 real) costs 6, not the flat 15.
-  assert.equal(readingPracticeCredits(1_935, 351, 12), 6);
-  assert.ok(readingPracticeCredits(1_935, 351, 12) * CREDIT_USD >= 0.0027, "never below the measured real cost");
-  assert.equal(readingPracticeCredits(12_000, 800, 12), 8);
-  assert.equal(readingPracticeCredits(0, 600, 12, 4), 7, "four page photos");
-  assert.ok(readingPracticeCredits(2_000, 350, 12) < readingPracticeCredits(30_000, 350, 12));
-  assert.ok(readingPracticeCredits(5_000, 300, 12) < readingPracticeCredits(5_000, 900, 12));
+  // Owner rule 2026-11-17: 2 credits a question, like an exam from a file (was the DeepSeek cost, 6 for this practice).
+  assert.deepEqual(READING_PRICE, { perQuestion: 2, floorMargin: 2 });
+  assert.equal(readingPracticeCredits(1_935, 351, 12), 24);
+  assert.ok(readingPracticeCredits(1_935, 351, 12) * CREDIT_USD >= 2 * 0.0027, "at least twice the measured real cost");
+  assert.equal(readingPracticeCredits(12_000, 800, 12), 24);
+  assert.equal(readingPracticeCredits(0, 600, 12, 4), 24, "four page photos");
+  // A very long file is priced above 2 a question, at twice its peak cost.
+  assert.equal(readingPracticeCredits(READING_LIMITS.textChars, 900, 12), Math.ceil(2 * readingPracticeCostNano(READING_LIMITS.textChars, 900, 12) / NANO_PER_CREDIT));
+  assert.ok(readingPracticeCredits(2_000, 350, 12) < readingPracticeCredits(READING_LIMITS.textChars, 900, 12));
+  for (const [chars, words, questions, images] of [[1_000, 180, 7, 0], [5_000, 600, 12, 0], [READING_LIMITS.textChars, 1_300, 24, 0], [0, 600, 12, 4]]) {
+    assert.ok(readingPracticeCredits(chars, words, questions, images) * NANO_PER_CREDIT >= 2 * readingPracticeCostNano(chars, words, questions, images), "twice the cost");
+  }
   assert.ok(readingPracticeCredits(5_000, 600, 8) < readingPracticeCredits(5_000, 600, 14));
   assert.ok(readingPracticeCredits(5_000, 600, 14) < readingPracticeCredits(5_000, 600, 24));
   // The student chooses 8–24 questions; the reply budget and the hold follow that count.
   assert.equal(READING_LIMITS.questions.max, 24);
   assert.deepEqual([8, 12, 24, 99, NaN].map(readingOutputTokens), [4800, 5600, 8000, 8000, 8000]);
   assert.equal(readingOutputTokens(READING_LIMITS.questions.max), outputTokens);
-  assert.equal(readingPracticeCredits(12_000, 800, 24), 11);
+  assert.equal(readingPracticeCredits(12_000, 800, 24), 48);
   // Holds: pasted text by its length, photos by their count, a document at the full-file price.
-  assert.deepEqual([readingPracticeHold(1_935, 0, 12), readingPracticeHold(0, 4, 12), readingPracticeHold(READING_LIMITS.textChars, 0, 12)], [8, 9, 14], "twelve questions");
-  assert.deepEqual([readingPracticeHold(1_935), readingPracticeHold(0, 4), readingPracticeHold(READING_LIMITS.textChars)], [11, 12, 17], "the most questions when no count is given");
-  assert.equal(readingPracticeHold(READING_LIMITS.textChars, 0, 8), 13);
+  assert.deepEqual([readingPracticeHold(1_935, 0, 12), readingPracticeHold(0, 4, 12), readingPracticeHold(READING_LIMITS.textChars, 0, 12)], [24, 24, 28], "twelve questions");
+  assert.deepEqual([readingPracticeHold(1_935), readingPracticeHold(0, 4), readingPracticeHold(READING_LIMITS.textChars)], [48, 48, 48], "the most questions when no count is given");
+  assert.equal(readingPracticeHold(READING_LIMITS.textChars, 0, 8), 26);
   for (const questions of [8, 12, 24]) assert.ok(readingPracticeCredits(20_000, 900, questions) <= readingPracticeHold(20_000, 0, questions), "the hold for a count covers a practice of that count");
   // The hold always covers the settled price, which stays between one credit and the listed maximum.
   for (const chars of [0, READING_LIMITS.minSourceChars, 5_000, 20_000, READING_LIMITS.textChars]) {
@@ -249,10 +255,11 @@ test("a reading practice is priced by the material read and the passage and ques
       }
     }
   }
-  assert.equal(readingPracticeCredits(1e9, 1e9, 1e9, 1e9), 17, "input is clamped to one practice's bounds");
-  assert.equal(readingPracticeCredits(NaN, NaN, NaN, NaN), 17, "malformed input prices as the maximum");
-  assert.deepEqual(creditRange("reading-practice"), { min: 4, max: 17 });
-  assert.equal(creditRangeLabel("reading-practice"), "4–17");
+  assert.equal(readingPracticeCredits(1e9, 1e9, 1e9, 1e9), 48, "input is clamped to one practice's bounds");
+  assert.equal(readingPracticeCredits(NaN, NaN, NaN, NaN), 48, "malformed input prices as the maximum");
+  assert.deepEqual(creditRange("reading-practice"), { min: 14, max: 48 });
+  assert.equal(creditRangeLabel("reading-practice"), "14–48");
+  assert.ok(MARGIN_ACTIONS.includes("reading-practice"));
 });
 
 test("feature actions map to their price list entries", () => {
@@ -266,9 +273,9 @@ test("feature actions map to their price list entries", () => {
 });
 
 test("every plan carries monthly credits on top of the free ones", () => {
-  // Two plans on sale (owner rule 2026-11-13); the retired IELTS and SAT plans keep their credits until they end.
-  assert.deepEqual(subscriptionPlans.map(plan => [plan.program, plan.aiCredits]), [["entrance", 1500], ["language", 3000]]);
-  assert.deepEqual(allPlans.map(plan => [plan.program, plan.aiCredits]), [["entrance", 1500], ["language", 3000], ["ielts", 3000], ["sat", 2000]]);
+  // Three plans on sale (owner rules 2026-11-13 and 2026-11-17); the retired IELTS and SAT plans keep their credits until they end.
+  assert.deepEqual(subscriptionPlans.map(plan => [plan.program, plan.aiCredits]), [["entrance", 1200], ["language_basic", 1200], ["language", 3000]]);
+  assert.deepEqual(allPlans.map(plan => [plan.program, plan.aiCredits]), [["entrance", 1200], ["language_basic", 1200], ["language", 3000], ["ielts", 3000], ["sat", 2000]]);
   assert.equal(FREE_MONTHLY_CREDITS, 100);
 });
 
@@ -341,8 +348,10 @@ test("the meter counts every available credit; purchased credits fill it rather 
   assert.deepEqual(allocateCredits(buckets, 61), [{ kind: "month", period: "2026-11", credits: 60 }, { kind: "plan", id: "t", credits: 1 }]);
 });
 
-test("the credit pack has admin-editable size and price within bounds", () => {
+test("the credit packs have admin-editable sizes and prices within bounds", () => {
   assert.deepEqual(DEFAULT_CREDIT_PACK, { credits: 1000, amountMnt: 5000 });
+  assert.deepEqual(DEFAULT_CREDIT_PACKS.map(pack => pack.credits), [200, 500, 1000, 2000, 5000]);
+  assert.ok(DEFAULT_CREDIT_PACKS.some(pack => pack.credits === DEFAULT_CREDIT_PACK.credits && pack.amountMnt === DEFAULT_CREDIT_PACK.amountMnt));
   assert.ok(validCreditPack(DEFAULT_CREDIT_PACK.credits, DEFAULT_CREDIT_PACK.amountMnt));
   assert.deepEqual(CREDIT_PACK_LIMITS, { credits: { min: 10, max: 100000 }, amountMnt: { min: 1000, max: 1000000, step: 100 } });
   for (const [credits, amount] of [[10, 1000], [100000, 1000000], [2500, 12300]]) assert.ok(validCreditPack(credits, amount), `${credits}/${amount}`);
@@ -353,8 +362,8 @@ test("the credit pack has admin-editable size and price within bounds", () => {
 
 test("admin-set amounts replace the defaults and stay within their limits", () => {
   // Retired plans keep a key so a subscription bought before 2026-11-13 still gets its credits until it ends.
-  assert.deepEqual(ALLOWANCE_KEYS, ["free", "entrance", "language", "ielts", "sat"]);
-  assert.deepEqual(defaultAllowances(), { free: 100, entrance: 1500, language: 3000, ielts: 3000, sat: 2000 });
+  assert.deepEqual(ALLOWANCE_KEYS, ["free", "entrance", "language_basic", "language", "ielts", "sat"]);
+  assert.deepEqual(defaultAllowances(), { free: 100, entrance: 1200, language_basic: 1200, language: 3000, ielts: 3000, sat: 2000 });
   assert.ok(isAllowanceKey("free") && isAllowanceKey("language") && isAllowanceKey("sat") && !isAllowanceKey("toString") && !isAllowanceKey("jlpt"));
   assert.deepEqual([CREDIT_ALLOWANCE_LIMITS.min, CREDIT_ALLOWANCE_LIMITS.max, CREDIT_GRANT_LIMITS.min, CREDIT_GRANT_LIMITS.max], [0, 100000, 1, 10000]);
   for (const ok of [0, 1, 1500, 100000]) assert.ok(validAllowance(ok), String(ok));
@@ -412,6 +421,7 @@ test("every DeepSeek call is charged against credits, with its budget from the p
     "src/modules/exam-practice/service.ts": "\"practice-assistant\"",
     "src/modules/workspace/chat-service.ts": "review ? \"review-coach\" : \"chat\"",
     "src/modules/writing-lab/service.ts": "writingCreditAction(body.action)",
+    "src/modules/writing-lab/expert-service.ts": "chargeCredits(userId,\"writing-review\",",
     "src/modules/speaking-lab/service.ts": "speakingCreditAction(body.action)",
     "src/modules/vocabulary/service.ts": "\"vocabulary-import\"",
     "src/modules/my-exams/service.ts": "chargeCredits(userId, \"exam\",",
@@ -427,7 +437,7 @@ test("every DeepSeek call is charged against credits, with its budget from the p
   // A new provider call must be added here (and charged) rather than bypass credits.
   const callers = sourceFiles("src").filter(path => !path.startsWith("src/generated/") && /api\.deepseek\.com|deepseekChat\(|deepseekTutor\(/.test(text(path)));
   assert.deepEqual(callers.sort(), [...Object.keys(charged), "src/modules/tutor/provider.ts"].sort());
-  for (const path of ["src/modules/writing-lab/service.ts", "src/modules/vocabulary/service.ts", "src/modules/my-exams/service.ts", "src/modules/reading-lab/service.ts"]) {
+  for (const path of ["src/modules/writing-lab/service.ts", "src/modules/writing-lab/expert-service.ts", "src/modules/vocabulary/service.ts", "src/modules/my-exams/service.ts", "src/modules/reading-lab/service.ts"]) {
     assert.match(text(path), /AI_ACTIONS\[/, path);
     assert.doesNotMatch(text(path), /max_tokens:\s*\d/, path);
   }
@@ -484,7 +494,7 @@ test("a priced-by-result charge holds its maximum and returns the rest when it s
   assert.match(vocabulary, /readChars = cleaned\.text\.length;/);
   assert.ok(vocabulary.indexOf("if (stored >= limit)") < vocabulary.indexOf("return chargeCredits("), "a full bank is refused before credits are held");
   const exams = text("src/modules/my-exams/service.ts");
-  assert.match(exams, /hold: examHold\(count, pictures\)/);
+  assert.match(exams, /hold: topic !== null \? examCredits\(topic\.length, count\) : examHold\(count, pictures\)/);
   // The reply now carries the exam saved on the account; the charge still follows its question count.
   assert.match(exams, /settle: reply => examCredits\(readChars, reply\.exam\.questions\.length, pictures\)/, "the charge follows the questions delivered");
   assert.match(exams, /readChars = cleaned\.text\.length;/);
@@ -494,9 +504,11 @@ test("a priced-by-result charge holds its maximum and returns the rest when it s
 
 test("admin credit actions are validated, audited and kept server-side", () => {
   const admin = text("src/modules/admin/service.ts");
-  assert.match(admin, /"grant-credits","set-credits","set-credit-pack"\]\.includes\(action\)/);
-  assert.match(admin, /action==="set-credit-pack"&&\(target!==CREDIT_PACK_KEY\|\|!validCreditPack\(credits,amount\)\)/);
-  assert.match(admin, /action!=="set-credit-pack"&&credits!==undefined/);
+  assert.match(admin, /"grant-credits","set-credits","set-credit-packs"\]\.includes\(action\)/);
+  // The whole list is saved at once and validated as a list; an empty list resets to the default packs.
+  assert.match(admin, /action==="set-credit-packs"&&\(target!=="packs"\|\|!Array\.isArray\(packs\)\|\|\(packs\.length>0&&!validCreditPacks\(packs\)\)\)/);
+  assert.match(admin, /action!=="set-credit-packs"&&packs!==undefined/);
+  assert.match(admin, /tx\.creditPack\.deleteMany\(\{\}\)/);
   assert.match(admin, /action==="grant-credits"&&!validGrant\(amount\)/);
   assert.match(admin, /action==="set-credits"&&\(!isAllowanceKey\(target\)\|\|!validAllowance\(amount\)\)/);
   assert.match(admin, /bonus:\{increment:Number\(amount\)\}/);
@@ -504,7 +516,8 @@ test("admin credit actions are validated, audited and kept server-side", () => {
   const ui = text("src/modules/admin/ui.tsx");
   assert.match(ui, /\["credits", "AI кредит"\]/);
   assert.match(ui, /\["grant-credits", "AI кредит олгосон"\]/);
-  assert.match(ui, /\["set-credit-pack", "AI кредит багц өөрчилсөн"\]/);
+  assert.match(ui, /\["set-credit-packs", "AI кредит багцууд өөрчилсөн"\]/);
+  assert.match(ui, /\["set-sale", "Хямдрал өөрчилсөн"\]/);
   const page = text("src/app/admin/page.tsx");
   // The price history stays the first table on the Prices tab; credit amounts follow it.
   assert.ok(page.indexOf("Үнийн өөрчлөлтийн түүх") < page.indexOf("Кредитийн хэмжээний түүх"));
@@ -514,9 +527,9 @@ test("admin credit actions are validated, audited and kept server-side", () => {
 test("a credit pack purchase is simulated, checked on the server and adds credits once", () => {
   const purchase = text("src/modules/credits/purchase.ts");
   assert.match(purchase, /if \(!mockPilotPaymentsEnabled\(\)\) throw new ApiError\(403/);
-  // The price the page showed must still be the price on sale; the order itself is checked again on confirm.
-  assert.match(purchase, /pack\.credits !== shown\.credits \|\| pack\.amountMnt !== shown\.amountMnt\) throw new ApiError\(409/);
-  assert.match(purchase, /order\.credits !== pack\.credits \|\| order\.amountMnt !== pack\.amountMnt \|\| order\.currency !== "MNT" \|\| order\.provider !== "MOCK"/);
+  // The pack the student chose must still be on sale at that size and price; the order itself is checked again on confirm.
+  assert.match(purchase, /if \(!offered\(await creditPacks\(\), shown\.credits, shown\.amountMnt\)\) throw new ApiError\(409/);
+  assert.match(purchase, /!offered\(await creditPacks\(tx\), order\.credits, order\.amountMnt\) \|\| order\.currency !== "MNT" \|\| order\.provider !== "MOCK"/);
   assert.match(purchase, /findFirst\(\{ where: \{ id, userId \}/, "an order is only ever read by its owner");
   assert.match(purchase, /const changed = await tx\.creditOrder\.updateMany\(\{ where: \{ id, userId, status: \{ not: "PAID" \} \}, data: \{ status: "PAID"/);
   assert.match(purchase, /if \(changed\.count\) await tx\.creditWallet\.upsert\(\{ where: \{ userId \}, create: \{ userId, purchased: order\.credits \}, update: \{ purchased: \{ increment: order\.credits \} \} \}\)/);
@@ -529,7 +542,7 @@ test("a credit pack purchase is simulated, checked on the server and adds credit
   const plans = text("src/app/workspace/plans/page.tsx");
   assert.match(plans, /className="pricing-single pricing-topup pricing-yellow" id="credits"/);
   assert.match(plans, /Кредит <strong>\{formatCredits\(credits\.yellow\)\}<\/strong>/);
-  assert.match(plans, /<CreditTopUp credits=\{pack\.credits\} amountMnt=\{pack\.amountMnt\}/);
+  assert.match(plans, /<CreditTopUp packs=\{packs\} signedIn=/);
   assert.doesNotMatch(plans, /pricing-ai|creditHistory|AI_ACTION_IDS|DEEPSEEK_PRICE/);
   assert.doesNotMatch(text("src/app/workspace/plans/plans.css"), /pricing-ai/);
 });

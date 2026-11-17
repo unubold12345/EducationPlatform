@@ -25,6 +25,44 @@ Before 2026-10-25 agents were not recorded. Commits and details are in the full 
 
 ## Archived recent entries
 
+- **2026-11-18 · Claude Code (Fable 5.2) · Nine offline TOEFL iBT mocks, 2026 format** ([assessments](./project/assessments.md)):
+  `MockExmps/TOEFL` forms 01–09, each with both adaptive second modules (127 scored items), writing, speaking, model answers and
+  recording scripts. Not on the site; no audio. `build.py` valid 9/9; gaps screened against a word list; a key-free solve agreed on
+  134–137 of 137 per form and every disagreement was fixed. No teacher review, no commit.
+- **2026-11-18 · Claude Code (Opus 5.5) · No AI provider names on the site** ([speaking-writing-labs](./project/speaking-writing-labs.md)):
+  Essay Studio, plans and the Speaking examiner say "AI" / "Шинжээчийн үнэлгээ" instead of Claude or DeepSeek; tests forbid the
+  names on those pages. Admin pages unchanged. `check -- writing` and `-- billing` passed; 3001 restarted. No commit.
+- **2026-11-18 · Claude Code (Opus 5.5) · EssayReview.overall column** ([speaking-writing-labs](./project/speaking-writing-labs.md)):
+  the review list reads the band from a new column instead of 24 full review JSONs; migration `20261118090000` backfills old
+  rows (25 local rows checked). `check -- writing` passed; 3001 restarted. Apply both new migrations on Neon before deploying. No commit.
+- **2026-11-18 · Claude Code (Opus 5.5) · Essay Studio: review only below, scrolling fixes** ([speaking-writing-labs](./project/speaking-writing-labs.md)):
+  the full review opens only in the report section (overlay while waiting); sidebar height capped to the paper/screen
+  (640 px when stacked), fixes scroll under a sticky header, marks never move the page. `check -- writing` passed; local DB
+  daemon was wedged and restarted (data intact). No commit.
+- **2026-11-17 · Claude Code (Opus 5.5) · Essay Studio full review on DeepSeek; Claude quota 0/2/5** ([speaking-writing-labs](./project/speaking-writing-labs.md)):
+  "Бүрэн үнэлгээ" = Claude's examiner prompt and report on deepseek-flash with thinking, 21 credits; `EssayReview.kind` + migration
+  `20261117210000`; Claude free 0, Basic 2, Pro 5. `check -- writing` and `-- billing` passed; live 3001 run: 34 s, 21 credits. No commit.
+- **2026-11-17 · Claude Code (Opus 5.5) · Essay Studio expert review on Claude Opus 5.5** ([speaking-writing-labs](./project/speaking-writing-labs.md)):
+  free 1, Basic 5, Pro 12 a plan month (server quota, lease); `EssayReview` + migration `20261117200000`; `@anthropic-ai/sdk`.
+  `check -- writing` (mocked Anthropic) and `-- billing` passed; one live review on 3001: 85 s, $0.147. Key must go to Vercel. No commit.
+- **2026-11-17 · Claude Code (Opus 5.5) · Matching/order fix, Reading limits, AI-topic mode** ([my-exams](./project/my-exams.md), [reading-lab](./project/reading-lab.md)):
+  match/order built by the server from pairs/steps, with interactive boards; Reading Lab keeps 5 (Pro 15) at 2 credits a question;
+  exams and Reading practices from a topic or a random one, no file. `check` passed; live DeepSeek runs; 3001 rebuilt. No commit.
+- **2026-11-17 · Claude Code (Sonnet 5.5) · Plans, sales, 7-day mocks, credit packs** ([pricing-access](./project/pricing-access.md)): ЭЕШ ₮29,900, new Гадаад хэл Basic ₮29,900, Pro ₮59,900, no picks;
+  7-day mock purchases; admin sales and pack list; migration `20261117100000`. `check:all` passed in parts (312 unit, billing, admin, ui, notifications). Mobile routes untouched, not expiry-aware. Hosted not checked; no commit.
+- **2026-11-17 · Claude Code (Opus 5.5) · Exam from file: question formats** ([my-exams](./project/my-exams.md)): seven formats as chips (choice,
+  true/false, fill-in, matching, I–III, case, order), each still one option, so grading and the mobile app are unchanged; the server plans the mix,
+  groups it and spreads the key over A–D. `check -- myexams` passed (308 unit, build, mixed-exam suite); screenshots reviewed. No live DeepSeek run, no commit.
+- **2026-11-16 · Claude Code (Opus 5.5) · JLPT audio revision 2** ([assessments](./project/assessments.md)): N5/N4 narrator re-voiced with VoxCPM2
+  via the VoiceStudio app (warm male, owner-picked); dialogue keeps the Kokoro takes. `assets/jlpt-audio`, `/audio/jlpt`, `audioRevision: 2`; old
+  sittings keep revision 1. Whisper flagged one narrator line (N5-02 L24). `check` passed; no browser suite, build or human listen.
+- **2026-11-16 · Claude Code (Fable 5.2) · HSK 2, three mocks** ([assessments](./project/assessments.md)): `hsk2-mock-01`–`03`, 60 items each, 82 new pictures, 22 min of Kokoro audio per mock, two-level hub. `check -- hsk` passed (304 unit, build, HSK 1 and 2 browser flow);
+  screenshots of the HSK 2 sitting, practice and results reviewed; 3001 restarted on the new build (owner approved). Audio unchecked by Whisper or ear; drafts await a teacher. No commit.
+- **2026-11-16 · Claude Code (Fable 5.2) · Homepage loops rebuilt** ([HOMEPAGE_MEDIA](./HOMEPAGE_MEDIA.md)): the three loops are now 12 to 14 s
+  films from real screenshots with camera moves, a pointer and numbered captions (`scripts/home-loops/`, HyperFrames). `check -- ui` passed;
+  frames reviewed; files are 0.9 to 1.7 MB (were 0.3 to 0.5). Old set: `artifacts/home-recordings/prev-2026-11-16/`. No commit.
+- **2026-11-16 · Claude Code (Fable 5.2) · Typed hero headline** ([ui-homepage](./project/ui-homepage.md)): the homepage headline types
+  itself slowly and keeps a blinking caret (`hero-typing.tsx`). `check -- ui` passed; 3001 rebuilt (`next start`) and seen at 1280 and 390. No commit.
 - **2026-11-16 · Claude Code (Fable 5.2) · Listening Lab picker and player** ([product-surface](./project/product-surface.md)): test rows are
   cards with a numbered header; the top intro text is gone; the player marks breaks on the track and names the phase. `check` passed (301
   unit); seen on `next dev` 3008 at 1280/390/320, signed out; 3001 rebuilt later. No commit. Restore: `artifacts/design-backup-2026-11-16-listening-2/restore.ps1`.

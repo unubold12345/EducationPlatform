@@ -6,6 +6,8 @@ export function inWorkspace(pathname: string) {
   if (pathname === "/exams" || pathname.startsWith("/exams/")) return true;
   if (pathname.startsWith("/checkout/") || pathname.startsWith("/workshops/")) return true;
   if (["/labs/ielts-writing", "/labs/ielts-speaking", "/labs/ielts-listening", "/labs/ielts-reading"].includes(pathname)) return true;
+  // JLPT/HSK word decks (Workshop → JLPT / HSK, 2026-11-18).
+  if (pathname.startsWith("/labs/words/") || pathname === "/labs/kana" || pathname === "/labs/pinyin") return true;
   return false;
 }
 
@@ -17,7 +19,7 @@ export function workspaceTab(pathname: string): WorkspaceTab | null {
   if (pathname.startsWith("/workspace/my-exams")) return "myexams";
   if (pathname.startsWith("/workspace/review")) return "review";
   if (pathname.startsWith("/workspace/workshop")) return "workshop";
-  if (pathname.startsWith("/workshops/") || pathname.startsWith("/labs/ielts-")) return "workshop";
+  if (pathname.startsWith("/workshops/") || pathname.startsWith("/labs/ielts-") || pathname.startsWith("/labs/words/") || pathname === "/labs/kana" || pathname === "/labs/pinyin") return "workshop";
   if (pathname.startsWith("/workspace/plans") || pathname.startsWith("/subscribe/")) return "plans";
   if (pathname.startsWith("/workspace/profile")) return "profile";
   if (pathname === "/exams" || pathname.startsWith("/exams/") || pathname.startsWith("/checkout/")) return "exams";

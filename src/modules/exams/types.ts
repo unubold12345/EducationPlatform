@@ -1,5 +1,5 @@
 /** The ЭЕШ plan covers the "entrance" mocks: original ЭЕШ-style Mathematics, Physics, Chemistry, Biology and English. */
-export type ExamProgram = "sat" | "ielts" | "entrance" | "jlpt" | "hsk";
+export type ExamProgram = "sat" | "ielts" | "entrance" | "jlpt" | "hsk" | "toefl";
 /** HSK picture and pinyin display data (answer-free). Words the student hears stay in `listening.script`. */
 export type HskPicture = { label?: string; src: string; alt: string };
 export type HskLine = { label?: string; text: string; pinyin: string };
@@ -8,6 +8,18 @@ export type HskItem = { pictures?: HskPicture[]; line?: HskLine; choices?: HskLi
 /** A part's shared six pictures or six answers/words, and its worked example with the example's printed answer. */
 /** `layout` (HSK 2) names the page type a group is drawn as when its id does not: an HSK 1 part or J, the text-only true/false part. */
 export type HskGroup = { layout?: "L1"|"L2"|"L3"|"L4"|"R1"|"R2"|"R3"|"R4"|"J"; pictures?: HskPicture[]; choices?: HskLine[]; example?: { pictures?: HskPicture[]; line?: HskLine; statement?: HskLine; choices?: HskLine[]; answerLine?: HskLine; answer: string } };
+/** TOEFL printed material (answer-free): a Complete the Words gap, a Build a Sentence task, or the recording a speaking item plays. */
+export type ToeflItem = { gap?: { prefix: string; missing: number }; build?: { context: string; prefix?: string; suffix?: string; end: string; chips: string[]; slots: number }; clip?: string };
+/** A TOEFL group's page: the paragraph with its gaps (`q` marks a gap), a text or passage, a recording, a writing task or a speaking introduction. Never answers or scripts. */
+export type ToeflGroup =
+  | { layout: "words"; segments: (string | { q: string; prefix?: string; missing?: number })[] }
+  | { layout: "daily"; format: string; heading: string; text: string }
+  | { layout: "academic"; title: string; paragraphs: string[] }
+  | { layout: "response"; clip: string }
+  | { layout: "set"; setting: string; clip: string }
+  | { layout: "email"; scenario: string; to: string; subject: string; bullets: string[] }
+  | { layout: "discussion"; course: string; professor: { name: string; post: string }; students: { name: string; post: string }[] }
+  | { layout: "speaking-intro"; part: "repeat" | "interview"; scenario: string; picture?: string; clip: string };
 export type EntranceSubject = "math" | "physics" | "chemistry" | "biology" | "english";
 /** A site-drawn diagram (legacy mock content) or a stored, self-contained SVG diagram. */
 export type ExamFigure =
@@ -22,6 +34,7 @@ export type ExamGroup = {
   pageMode?: "single" | "group";
   kind?: "listening";
   hsk?: HskGroup;
+  toefl?: ToeflGroup;
 };
 export type ExamQuestion = {
   id: string; domain: string; prompt: string; passage?: string; options?: string[];
@@ -50,11 +63,19 @@ export type ExamQuestion = {
   listening?: { part: number; script: string };
   /** HSK printed material (pictures, pinyin, text choices); answer-free. */
   hsk?: HskItem;
+  /** TOEFL printed material; answer-free. */
+  toefl?: ToeflItem;
+  /** Seconds from the stage start during which a changed answer is accepted (TOEFL Listening plays each item once). */
+  window?: { start: number; end: number };
 };
 export type ExamStage = {
   id: string; title: string; seconds: number; kind: "questions" | "break" | "listening" | "writing" | "speaking" | "preparation";
   instructions: string; questions: ExamQuestion[]; passages?: { title: string; text: string }[];
   audioPart?: number; variants?: { lower: ExamQuestion[]; higher: ExamQuestion[] };
+  /** Correct answers in the previous stage needed for the `higher` variant; without it the engine uses 65 %. */
+  routeAt?: number;
+  /** The variant's own length when the two routes differ (TOEFL Listening Module 2); `seconds` is used before routing. */
+  variantSeconds?: { lower: number; higher: number };
   groups?: ExamGroup[];
 };
 export type ExamDefinition = {

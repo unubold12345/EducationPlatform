@@ -12,7 +12,7 @@ export const CHAT_STORE_LIMITS = { threads: 30, messages: 60, chars: 12_000, pre
 /** The chat route's body cap: the text request, base64 images and their previews, below Vercel's 4.5 MB function limit. */
 export const CHAT_BODY_BYTES = 48_000 + Math.ceil(AI_IMAGE_LIMITS.messageBytes / 3) * 4 + CHAT_STORE_LIMITS.previews * CHAT_STORE_LIMITS.previewChars + 1024;
 
-export const CHAT_SUBJECTS = ["general", "sat", "ielts", "eesh-math", "eesh-physics", "eesh-chemistry", "eesh-biology", "eesh-english", "jlpt", "hsk"] as const;
+export const CHAT_SUBJECTS = ["general", "sat", "ielts", "eesh-math", "eesh-physics", "eesh-chemistry", "eesh-biology", "eesh-english", "jlpt", "hsk", "toefl"] as const;
 export type ChatSubject = (typeof CHAT_SUBJECTS)[number];
 export const CHAT_MODES = ["ask", "solve", "explain", "quiz", "writing", "vocab"] as const;
 export type ChatMode = (typeof CHAT_MODES)[number];
@@ -48,6 +48,7 @@ export const subjectLabels: Record<ChatSubject, string> = {
   "eesh-english": "ЭЕШ · Англи хэл",
   jlpt: "JLPT · Япон хэл",
   hsk: "HSK · Хятад хэл",
+  toefl: "TOEFL iBT",
 };
 export const modeLabels: Record<ChatMode, { label: string; placeholder: string }> = {
   ask: { label: "Асуух", placeholder: "Юу ч асуугаарай: хичээл, шалгалтын бүтэц, сурах арга…" },
@@ -124,6 +125,7 @@ export type ReviewContext = {
 };
 
 const subjectGuides: Record<ChatSubject, string> = {
+  toefl: "TOEFL iBT (2026 format): for Reading and Listening, point to the evidence in the text or transcript and explain why wrong options fail; for Complete the Words, explain the word and its spelling; for Build a Sentence, explain the word order. Writing and Speaking need a qualified reviewer; never predict an official TOEFL score or band.",
   general: "The student may ask about any of these exams, about study planning, or about a school subject.",
   sat: "Digital SAT: for Reading and Writing, point to evidence in the text and explain why wrong options fail; for Math, work in clear steps and mention a faster method when there is one.",
   ielts: "IELTS Academic: explain paraphrase, FALSE versus NOT GIVEN, listening traps, and Writing/Speaking criteria (task response, coherence and cohesion, lexical resource, grammatical range and accuracy). Never give a band score.",

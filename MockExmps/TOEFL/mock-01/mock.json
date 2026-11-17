@@ -1,0 +1,2006 @@
+{
+  "id": "toefl-ibt-01",
+  "format": "TOEFL iBT, January 2026",
+  "date": "2026-11-18",
+  "minutes": {
+    "reading": {
+      "router": 20,
+      "lower": 9,
+      "upper": 9
+    },
+    "listening": {
+      "router": 18,
+      "lower": 7,
+      "upper": 11
+    },
+    "writing": {
+      "build": 6,
+      "email": 7,
+      "discussion": 10
+    },
+    "speaking": 8
+  },
+  "routing": {
+    "reading": [
+      21,
+      35
+    ],
+    "listening": [
+      20,
+      32
+    ]
+  },
+  "number": 1,
+  "theme": "Birdsong and decoys; sea otters, time zones, spaced study, painted statues",
+  "reading": {
+    "router": [
+      {
+        "type": "complete_words",
+        "subject": "Biology",
+        "text": "Pollination is the transfer of pollen from the male part of a flower to the female part. Many pla[nts] depend o[n] insects, bi[rds], or wi[nd] to ca[rry] pollen bet[ween] flowers. When a bee vis[its] a flo[wer] to col[lect] nectar, pol[len] sticks to its body. The bee then leaves some of this pollen on the next flower it visits. Without pollinators, many of the fruits and vegetables that people eat could not be produced.",
+        "gapped": "Pollination is the transfer of pollen from the male part of a flower to the female part. Many **(1)** `pla _ _ _` depend **(2)** `o _` insects, **(3)** `bi _ _ _`, or **(4)** `wi _ _` to **(5)** `ca _ _ _` pollen **(6)** `bet _ _ _ _` flowers. When a bee **(7)** `vis _ _ _` a **(8)** `flo _ _ _` to **(9)** `col _ _ _ _` nectar, **(10)** `pol _ _ _` sticks to its body. The bee then leaves some of this pollen on the next flower it visits. Without pollinators, many of the fruits and vegetables that people eat could not be produced.",
+        "answers": [
+          "plants",
+          "on",
+          "birds",
+          "wind",
+          "carry",
+          "between",
+          "visits",
+          "flower",
+          "collect",
+          "pollen"
+        ],
+        "full": "Pollination is the transfer of pollen from the male part of a flower to the female part. Many plants depend on insects, birds, or wind to carry pollen between flowers. When a bee visits a flower to collect nectar, pollen sticks to its body. The bee then leaves some of this pollen on the next flower it visits. Without pollinators, many of the fruits and vegetables that people eat could not be produced.",
+        "numbers": [
+          1,
+          10
+        ]
+      },
+      {
+        "type": "complete_words",
+        "subject": "Economics",
+        "text": "In economics, opportunity cost is the value of the best alternative that is given up when a choice is made. Because ti[me] and mo[ney] are lim[ited], people can[not] have every[thing] they wa[nt]. A stu[dent] who spe[nds] an eve[ning] at wo[rk] gives up several hours of study. Economists use this idea to explain why individuals, companies, and governments must compare the benefits of different options before acting.",
+        "gapped": "In economics, opportunity cost is the value of the best alternative that is given up when a choice is made. Because **(11)** `ti _ _` and **(12)** `mo _ _ _` are **(13)** `lim _ _ _ _`, people **(14)** `can _ _ _` have **(15)** `every _ _ _ _ _` they **(16)** `wa _ _`. A **(17)** `stu _ _ _ _` who **(18)** `spe _ _ _` an **(19)** `eve _ _ _ _` at **(20)** `wo _ _` gives up several hours of study. Economists use this idea to explain why individuals, companies, and governments must compare the benefits of different options before acting.",
+        "answers": [
+          "time",
+          "money",
+          "limited",
+          "cannot",
+          "everything",
+          "want",
+          "student",
+          "spends",
+          "evening",
+          "work"
+        ],
+        "full": "In economics, opportunity cost is the value of the best alternative that is given up when a choice is made. Because time and money are limited, people cannot have everything they want. A student who spends an evening at work gives up several hours of study. Economists use this idea to explain why individuals, companies, and governments must compare the benefits of different options before acting.",
+        "numbers": [
+          11,
+          20
+        ]
+      },
+      {
+        "type": "daily_life",
+        "format": "notice",
+        "heading": "Read a notice.",
+        "text": "NOTICE: BIKE ROOM CLOSED FOR REPAIRS\n\nThe bicycle storage room in Harlow Hall will be closed from Monday, March 9, to Wednesday, March 11, while new racks are installed. Please remove your bicycle by Sunday evening. Any bikes left in the room will be moved to the outdoor racks behind the building.\n\nHousing Office",
+        "questions": [
+          {
+            "q": "What is the main purpose of the notice?",
+            "options": [
+              "To inform residents that a storage area will be unavailable for a few days",
+              "To remind residents to lock their bicycles at night",
+              "To explain how to register a bicycle with the Housing Office",
+              "To announce that new bicycles are available to rent"
+            ],
+            "answer": "A",
+            "kind": "purpose",
+            "why": "The notice says the bike room 'will be closed' for three days while racks are installed.",
+            "number": 21
+          },
+          {
+            "q": "What will happen to bicycles that are still in the room on Monday?",
+            "options": [
+              "They will stay locked inside until Wednesday.",
+              "Their owners will be charged a fee.",
+              "They will be taken to a different location.",
+              "They will be kept at the Housing Office."
+            ],
+            "answer": "C",
+            "kind": "detail",
+            "why": "Bikes left in the room 'will be moved to the outdoor racks behind the building'.",
+            "number": 22
+          }
+        ]
+      },
+      {
+        "type": "daily_life",
+        "format": "email",
+        "heading": "Read an email.",
+        "text": "To: Daniel Okafor\nFrom: Riverside Books\nSubject: Your order #48213\n\nDear Mr. Okafor,\n\nThank you for your recent order. Two of the three books you requested, A History of Maps and Cooking for One, were shipped this morning and should arrive within four business days.\n\nUnfortunately, The Night Garden is temporarily out of stock. We expect new copies on May 20. You can wait for the book at no extra shipping cost, replace it with another title, or cancel that part of your order for a full refund. Please reply to this message by May 12 to let us know which option you prefer. If we do not hear from you, we will send the book when it becomes available.\n\nSincerely,\nCustomer Service, Riverside Books",
+        "questions": [
+          {
+            "q": "Why did the bookstore write to Mr. Okafor?",
+            "options": [
+              "To confirm that all of his books have been delivered",
+              "To explain that one book in his order is not yet available",
+              "To offer him a discount on his next purchase",
+              "To ask him to pay an additional shipping charge"
+            ],
+            "answer": "B",
+            "kind": "purpose",
+            "why": "Two books were shipped, but The Night Garden is 'temporarily out of stock'; the email sets out his choices.",
+            "number": 23
+          },
+          {
+            "q": "What will happen if Mr. Okafor does not reply to the email?",
+            "options": [
+              "His entire order will be canceled.",
+              "He will receive a refund for one book.",
+              "The missing book will be sent to him later.",
+              "A different book will be mailed to him."
+            ],
+            "answer": "C",
+            "kind": "detail",
+            "why": "'If we do not hear from you, we will send the book when it becomes available.'",
+            "number": 24
+          },
+          {
+            "q": "Which of the following is NOT offered to Mr. Okafor?",
+            "options": [
+              "Waiting until the book is in stock again",
+              "Choosing a different book",
+              "Getting his money back for one book",
+              "Receiving the book sooner for an extra fee"
+            ],
+            "answer": "D",
+            "kind": "negative",
+            "why": "He may wait, replace the title or cancel for a refund. Faster delivery for a fee is never mentioned.",
+            "number": 25
+          }
+        ]
+      },
+      {
+        "type": "daily_life",
+        "format": "text_messages",
+        "heading": "Read a chain of text messages.",
+        "text": "Maya (5:42 p.m.): Are you still at the supermarket? We're out of rice, and I need it for dinner tonight.\nLeo (5:44 p.m.): I just paid, but I can go back in. Do you need anything else?\nMaya (5:45 p.m.): No, that's all. Thanks! I'll start cutting the vegetables.\nLeo (5:46 p.m.): OK. I'll be home in twenty minutes.",
+        "questions": [
+          {
+            "q": "Why does Maya send a message to Leo?",
+            "options": [
+              "To find out what time he will get home",
+              "To tell him that dinner is ready",
+              "To invite him to cook with her",
+              "To ask him to buy something"
+            ],
+            "answer": "D",
+            "kind": "purpose",
+            "why": "She says they are out of rice and she needs it for dinner, so she wants Leo to buy some.",
+            "number": 26
+          },
+          {
+            "q": "What can be inferred about Leo?",
+            "options": [
+              "He had finished shopping when he read Maya's message.",
+              "He forgot to bring enough money to the store.",
+              "He is planning to prepare the vegetables.",
+              "He does not like eating rice for dinner."
+            ],
+            "answer": "A",
+            "kind": "inference",
+            "why": "'I just paid, but I can go back in' shows that his shopping was already done.",
+            "number": 27
+          }
+        ]
+      },
+      {
+        "type": "daily_life",
+        "format": "schedule",
+        "heading": "Read a schedule.",
+        "text": "GREENFIELD COMMUNITY POOL\nSummer Hours (June 1 to August 31)\n\nMonday to Friday: 6:00 a.m. to 9:00 p.m.\nSaturday and Sunday: 8:00 a.m. to 6:00 p.m.\n\nLap swimming only: weekdays, 6:00 to 8:00 a.m.\nChildren's lessons: Saturdays, 9:00 to 11:00 a.m. (register at the front desk)\n\nAdmission: adults $5, children under 12 $3, children under 3 free\nMonthly pass: $40 (includes one free guest visit)\n\nPlease note:\n- Children under 10 must be with an adult at all times.\n- Lockers are free, but you must bring your own lock.\n- Towels can be rented at the front desk for $2.\n- The pool closes for 30 minutes whenever lightning is reported in the area.",
+        "questions": [
+          {
+            "q": "Who would most likely be in the pool at 7:00 a.m. on a Tuesday?",
+            "options": [
+              "A child taking a swimming lesson",
+              "An adult swimming laps",
+              "A family playing in the water",
+              "A group of children without an adult"
+            ],
+            "answer": "B",
+            "kind": "inference",
+            "why": "Weekdays from 6:00 to 8:00 a.m. are for lap swimming only; lessons are on Saturdays.",
+            "number": 28
+          },
+          {
+            "q": "What is true about the monthly pass?",
+            "options": [
+              "It is cheaper for children under 12.",
+              "It must be bought before June 1.",
+              "It lets the holder bring a visitor once at no cost.",
+              "It includes the cost of a towel and a lock."
+            ],
+            "answer": "C",
+            "kind": "detail",
+            "why": "The pass 'includes one free guest visit'.",
+            "number": 29
+          },
+          {
+            "q": "According to the schedule, what should visitors bring if they want to use a locker?",
+            "options": [
+              "Their own lock",
+              "A monthly pass",
+              "A registration form",
+              "Two dollars for the rental fee"
+            ],
+            "answer": "A",
+            "kind": "detail",
+            "why": "'Lockers are free, but you must bring your own lock.' The $2 fee is for towels.",
+            "number": 30
+          }
+        ]
+      },
+      {
+        "type": "academic",
+        "subject": "Biology",
+        "title": "City Noise and Birdsong",
+        "paragraphs": [
+          "In many cities, traffic and machinery produce a constant, low-pitched roar. For birds, which rely on song to attract mates and defend their territory, this noise is a serious obstacle. A song that cannot be heard is of little use to the singer.",
+          "Researchers have found that several species adjust their behavior in response. Great tits living in noisy urban areas, for example, sing at a higher pitch than those in nearby forests, which allows their songs to rise above the rumble of engines. Other birds simply sing more loudly, and some, such as European robins, sing at night, when the streets are quieter. Because these changes can appear quickly, scientists believe that individual birds learn to modify their songs rather than inheriting new ones.",
+          "Such flexibility has limits, however. Singing louder requires more energy, and singing at night can reduce the time available for rest. Moreover, females of some species seem to prefer the lower-pitched songs that city noise drowns out, so males that adapt may be heard but judged less attractive. Species that cannot adjust at all tend to disappear from the noisiest neighborhoods. As a result, urban noise may gradually reduce the variety of birds that live alongside people."
+        ],
+        "questions": [
+          {
+            "q": "According to the passage, why is city noise a problem for birds?",
+            "options": [
+              "It makes it difficult for them to find food.",
+              "It slowly damages their hearing.",
+              "It interferes with the way they communicate.",
+              "It attracts predators to their nests."
+            ],
+            "answer": "C",
+            "kind": "factual",
+            "why": "Paragraph 1: birds rely on song to attract mates and defend territory, and 'a song that cannot be heard is of little use'.",
+            "number": 31
+          },
+          {
+            "q": "The word \"modify\" in the passage is closest in meaning to",
+            "options": [
+              "repeat",
+              "change",
+              "shorten",
+              "protect"
+            ],
+            "answer": "B",
+            "kind": "vocabulary",
+            "why": "To modify something is to change it; the birds change their songs.",
+            "number": 32
+          },
+          {
+            "q": "Which of the following is NOT mentioned as a way that birds respond to urban noise?",
+            "options": [
+              "Singing at a higher pitch",
+              "Increasing the volume of their songs",
+              "Singing at a different time of day",
+              "Building their nests farther from roads"
+            ],
+            "answer": "D",
+            "kind": "negative_factual",
+            "why": "Paragraph 2 mentions higher pitch, louder song and singing at night. Nest location is not discussed.",
+            "number": 33
+          },
+          {
+            "q": "What can be inferred about male birds that sing at a higher pitch in cities?",
+            "options": [
+              "They may have more difficulty attracting a mate.",
+              "They use less energy than males that sing loudly.",
+              "They are the first to leave noisy neighborhoods.",
+              "They inherited their songs from their parents."
+            ],
+            "answer": "A",
+            "kind": "inference",
+            "why": "Paragraph 3: females of some species prefer lower-pitched songs, so males that adapt 'may be heard but judged less attractive'.",
+            "number": 34
+          },
+          {
+            "q": "How does the third paragraph relate to the second paragraph?",
+            "options": [
+              "It gives further examples of the species named in the second paragraph.",
+              "It describes drawbacks of the adjustments described in the second paragraph.",
+              "It questions the accuracy of the research in the second paragraph.",
+              "It explains how the findings in the second paragraph were collected."
+            ],
+            "answer": "B",
+            "kind": "paragraph_relationship",
+            "why": "Paragraph 2 lists the adjustments; paragraph 3 begins 'Such flexibility has limits' and lists their costs.",
+            "number": 35
+          }
+        ]
+      }
+    ],
+    "lower": [
+      {
+        "type": "complete_words",
+        "subject": "Earth science",
+        "text": "The water cycle describes how water moves continuously between the oceans, the atmosphere, and the land. Energy from sunl[ight] causes wa[ter] in se[as] and la[kes] to evap[orate] and ri[se] into the air. The ris[ing] vapor co[ols] and fo[rms] clouds, wh[ich] return water as rain or snow. Rivers and underground streams then carry the water back to the sea, and the process begins again.",
+        "gapped": "The water cycle describes how water moves continuously between the oceans, the atmosphere, and the land. Energy from **(36)** `sunl _ _ _ _` causes **(37)** `wa _ _ _` in **(38)** `se _ _` and **(39)** `la _ _ _` to **(40)** `evap _ _ _ _ _` and **(41)** `ri _ _` into the air. The **(42)** `ris _ _ _` vapor **(43)** `co _ _ _` and **(44)** `fo _ _ _` clouds, **(45)** `wh _ _ _` return water as rain or snow. Rivers and underground streams then carry the water back to the sea, and the process begins again.",
+        "answers": [
+          "sunlight",
+          "water",
+          "seas",
+          "lakes",
+          "evaporate",
+          "rise",
+          "rising",
+          "cools",
+          "forms",
+          "which"
+        ],
+        "full": "The water cycle describes how water moves continuously between the oceans, the atmosphere, and the land. Energy from sunlight causes water in seas and lakes to evaporate and rise into the air. The rising vapor cools and forms clouds, which return water as rain or snow. Rivers and underground streams then carry the water back to the sea, and the process begins again.",
+        "numbers": [
+          36,
+          45
+        ]
+      },
+      {
+        "type": "daily_life",
+        "format": "social_post",
+        "heading": "Read a post on a community message board.",
+        "text": "Campus Community Board\nPosted by Priya S., 2 hours ago\n\nFOUND: a gray wool scarf on the bench outside the Science Library this morning. I gave it to the staff at the front desk inside the library, so you can pick it up there. Just tell them where you think you lost it. I hope it finds its owner soon!",
+        "questions": [
+          {
+            "q": "Why did Priya write the post?",
+            "options": [
+              "To ask whether anyone has seen her scarf",
+              "To complain about the service at the library",
+              "To help someone get back a lost item",
+              "To offer a scarf for sale"
+            ],
+            "answer": "C",
+            "kind": "purpose",
+            "why": "She found a scarf and explains where its owner can collect it.",
+            "number": 46
+          },
+          {
+            "q": "What should the owner of the scarf do?",
+            "options": [
+              "Send a message to Priya",
+              "Go to the front desk of the library",
+              "Look on the bench outside the library",
+              "Post a description of the scarf online"
+            ],
+            "answer": "B",
+            "kind": "detail",
+            "why": "Priya gave the scarf to the front desk staff: 'you can pick it up there'.",
+            "number": 47
+          }
+        ]
+      },
+      {
+        "type": "daily_life",
+        "format": "flyer",
+        "heading": "Read a flyer.",
+        "text": "VOLUNTEER DAY AT LAKESIDE PARK\nSaturday, April 18, 9:00 a.m. to 1:00 p.m.\n\nHelp us get the park ready for spring! Volunteers will plant flowers near the main entrance, paint the picnic tables, and collect litter along the lake path.\n\nWhat to know:\n- Meet at the boathouse at 8:45 a.m. to sign in and choose a task.\n- Gloves and tools are provided. Please wear old clothes and closed shoes.\n- Bring a water bottle. A free lunch will be served at 1:00 p.m.\n- Volunteers under 16 must come with a parent.\n\nIf it rains, the event will be held on Sunday, April 19, at the same time.\nTo sign up, email parks@lakesidetown.example by April 15.",
+        "questions": [
+          {
+            "q": "Which activity is NOT part of the event?",
+            "options": [
+              "Planting flowers",
+              "Painting tables",
+              "Picking up trash",
+              "Repairing boats"
+            ],
+            "answer": "D",
+            "kind": "negative",
+            "why": "Volunteers plant flowers, paint picnic tables and collect litter. The boathouse is only the meeting place.",
+            "number": 48
+          },
+          {
+            "q": "What are volunteers asked to bring?",
+            "options": [
+              "Something to drink",
+              "A pair of gloves",
+              "Their own lunch",
+              "Painting tools"
+            ],
+            "answer": "A",
+            "kind": "detail",
+            "why": "'Bring a water bottle.' Gloves, tools and lunch are provided.",
+            "number": 49
+          },
+          {
+            "q": "What will happen if the weather is bad on April 18?",
+            "options": [
+              "The event will be canceled.",
+              "Volunteers will work inside the boathouse.",
+              "The event will take place one day later.",
+              "The event will start in the afternoon."
+            ],
+            "answer": "C",
+            "kind": "inference",
+            "why": "If it rains, the event moves to Sunday, April 19, the following day, at the same time.",
+            "number": 50
+          }
+        ]
+      }
+    ],
+    "upper": [
+      {
+        "type": "complete_words",
+        "subject": "Sociology",
+        "text": "Social norms are the unwritten rules that guide how people behave in a particular group or society. They te[ll] members wh[at] is consi[dered] polite, accep[table], or offe[nsive] in ever[yday] situations. Although most no[rms] are ne[ver] formally tau[ght], children grad[ually] learn them by watching adults. People who break a norm may not be punished by law, but they often face disapproval from those around them.",
+        "gapped": "Social norms are the unwritten rules that guide how people behave in a particular group or society. They **(36)** `te _ _` members **(37)** `wh _ _` is **(38)** `consi _ _ _ _ _` polite, **(39)** `accep _ _ _ _ _`, or **(40)** `offe _ _ _ _ _` in **(41)** `ever _ _ _ _` situations. Although most **(42)** `no _ _ _` are **(43)** `ne _ _ _` formally **(44)** `tau _ _ _`, children **(45)** `grad _ _ _ _ _` learn them by watching adults. People who break a norm may not be punished by law, but they often face disapproval from those around them.",
+        "answers": [
+          "tell",
+          "what",
+          "considered",
+          "acceptable",
+          "offensive",
+          "everyday",
+          "norms",
+          "never",
+          "taught",
+          "gradually"
+        ],
+        "full": "Social norms are the unwritten rules that guide how people behave in a particular group or society. They tell members what is considered polite, acceptable, or offensive in everyday situations. Although most norms are never formally taught, children gradually learn them by watching adults. People who break a norm may not be punished by law, but they often face disapproval from those around them.",
+        "numbers": [
+          36,
+          45
+        ]
+      },
+      {
+        "type": "academic",
+        "subject": "Business",
+        "title": "The Decoy Effect",
+        "paragraphs": [
+          "When shoppers choose between two products, their decision can be changed by adding a third option that almost no one wants. Marketers call this the decoy effect. The decoy is not really meant to be sold; its purpose is to make one of the other options look better by comparison.",
+          "A simple illustration involves drink sizes. Suppose a café sells a small coffee for $3 and a large one for $5. Many customers will choose the small. If the café adds a medium for $4.50, however, the large suddenly looks like a bargain, since it costs only slightly more than the medium. Sales of the large coffee typically rise, even though hardly anyone buys the medium. The customers' needs have not changed, yet their preferences have.",
+          "Psychologists explain the effect by noting that people rarely judge value in absolute terms. Because it is hard to know what a cup of coffee is truly worth, buyers look for easy comparisons, and the decoy supplies one. Critics argue that the practice manipulates consumers into spending more than they intended. Others reply that customers remain free to choose and that simply knowing about the technique is usually enough to resist it."
+        ],
+        "questions": [
+          {
+            "q": "What is the passage mainly about?",
+            "options": [
+              "Why cafés sell drinks in several sizes",
+              "How an unattractive option can influence what people buy",
+              "Why most consumers prefer inexpensive products",
+              "How psychologists calculate the true value of a product"
+            ],
+            "answer": "B",
+            "kind": "main_idea",
+            "why": "The whole passage explains the decoy effect: an option 'almost no one wants' changes which of the other options people choose.",
+            "number": 46
+          },
+          {
+            "q": "According to the passage, what usually happens when the medium coffee is added to the menu?",
+            "options": [
+              "Most customers begin to order the medium.",
+              "The café lowers the price of the large coffee.",
+              "Customers buy fewer drinks than before.",
+              "More customers choose the large coffee."
+            ],
+            "answer": "D",
+            "kind": "factual",
+            "why": "Paragraph 2: 'Sales of the large coffee typically rise, even though hardly anyone buys the medium.'",
+            "number": 47
+          },
+          {
+            "q": "The word \"bargain\" in the passage is closest in meaning to",
+            "options": [
+              "good deal",
+              "risky choice",
+              "new product",
+              "common mistake"
+            ],
+            "answer": "A",
+            "kind": "vocabulary",
+            "why": "A bargain is something sold at a good price; the large looks cheap next to the medium.",
+            "number": 48
+          },
+          {
+            "q": "Why does the author state that the customers' needs \"have not changed, yet their preferences have\"?",
+            "options": [
+              "To suggest that customers want more coffee than they did before",
+              "To argue that customers should always buy the small size",
+              "To emphasize that the decoy changes choices without changing what people require",
+              "To explain why cafés often lose money on medium drinks"
+            ],
+            "answer": "C",
+            "kind": "purpose",
+            "why": "The sentence stresses that only the comparison changed, not how much coffee anyone needs.",
+            "number": 49
+          },
+          {
+            "q": "What can be inferred about people who are aware of the decoy effect?",
+            "options": [
+              "They usually avoid stores that use it.",
+              "They are less likely to be influenced by it.",
+              "They tend to choose the decoy option.",
+              "They believe it should be made illegal."
+            ],
+            "answer": "B",
+            "kind": "inference",
+            "why": "Paragraph 3: 'simply knowing about the technique is usually enough to resist it'.",
+            "number": 50
+          }
+        ]
+      }
+    ]
+  },
+  "listening": {
+    "router": [
+      {
+        "type": "choose_response",
+        "voice": "F-US",
+        "prompt": "Do you know when the campus bookstore closes today?",
+        "options": [
+          "It's across from the library.",
+          "I think it stays open until six.",
+          "Yes, I bought my books there.",
+          "About twenty dollars, I think."
+        ],
+        "answer": "B",
+        "why": "The speaker wants a closing time. Only B gives one.",
+        "number": 1
+      },
+      {
+        "type": "choose_response",
+        "voice": "M-UK",
+        "prompt": "How did your presentation go this morning?",
+        "options": [
+          "At nine o'clock, in Room 12.",
+          "It's about renewable energy.",
+          "Better than I expected, actually.",
+          "Yes, I'm going there now."
+        ],
+        "answer": "C",
+        "why": "'How did it go?' asks for an evaluation. A answers when/where, B answers what about.",
+        "number": 2
+      },
+      {
+        "type": "choose_response",
+        "voice": "F-AU",
+        "prompt": "Would you mind if I opened the window?",
+        "options": [
+          "Not at all. It's a bit warm in here.",
+          "Yes, I opened it this morning.",
+          "I don't mind washing them.",
+          "It's the one on the left."
+        ],
+        "answer": "A",
+        "why": "'Not at all' gives permission after 'Would you mind...?'",
+        "number": 3
+      },
+      {
+        "type": "choose_response",
+        "voice": "M-US",
+        "prompt": "I can't find my student ID anywhere.",
+        "options": [
+          "You can find it on the map.",
+          "Yes, I'm a student here, too.",
+          "I found the class very interesting.",
+          "Have you checked your jacket pocket?"
+        ],
+        "answer": "D",
+        "why": "A helpful reply to a lost item is a suggestion about where to look.",
+        "number": 4
+      },
+      {
+        "type": "choose_response",
+        "voice": "F-UK",
+        "prompt": "Why don't we take a short break?",
+        "options": [
+          "Because it broke yesterday.",
+          "Good idea. I could use a coffee.",
+          "It takes about ten minutes.",
+          "No, we didn't take it."
+        ],
+        "answer": "B",
+        "why": "'Why don't we...?' is a suggestion, not a request for a reason; B accepts it.",
+        "number": 5
+      },
+      {
+        "type": "choose_response",
+        "voice": "M-AU",
+        "prompt": "Whose turn is it to book the study room?",
+        "options": [
+          "It's on the second floor.",
+          "For two hours, I believe.",
+          "I did it last week, so it must be yours.",
+          "Turn left at the end of the hall."
+        ],
+        "answer": "C",
+        "why": "The question asks who should do it. C answers indirectly: it is the first speaker's turn.",
+        "number": 6
+      },
+      {
+        "type": "choose_response",
+        "voice": "F-US",
+        "prompt": "The elevator is out of order again.",
+        "options": [
+          "I'd like to order now, please.",
+          "It goes up to the tenth floor.",
+          "Thanks, I'll have the same.",
+          "Then I guess we're taking the stairs."
+        ],
+        "answer": "D",
+        "why": "'Out of order' means broken, so the natural reaction is to use the stairs.",
+        "number": 7
+      },
+      {
+        "type": "choose_response",
+        "voice": "M-UK",
+        "prompt": "Did you manage to get tickets for the concert?",
+        "options": [
+          "They'd sold out before I got online.",
+          "The manager is in a meeting right now.",
+          "It starts at eight o'clock on Saturday.",
+          "Yes, I manage a small team at work."
+        ],
+        "answer": "A",
+        "why": "A means 'no' without saying it. B and D only repeat the sound of 'manage'.",
+        "number": 8
+      },
+      {
+        "type": "choose_response",
+        "voice": "F-AU",
+        "prompt": "How long have you been waiting for the bus?",
+        "options": [
+          "It's the number fourteen.",
+          "About two kilometers.",
+          "Long enough to read a whole chapter.",
+          "I'll wait for you there."
+        ],
+        "answer": "C",
+        "why": "'How long' asks about time. C answers with an informal measure of time; B gives a distance.",
+        "number": 9
+      },
+      {
+        "type": "choose_response",
+        "voice": "M-US",
+        "prompt": "Shouldn't we let Professor Lee know we'll be late?",
+        "options": [
+          "Yes, she knows a lot about it.",
+          "I've already sent her an email.",
+          "No, it wasn't very late.",
+          "We let them in at noon."
+        ],
+        "answer": "B",
+        "why": "The speaker suggests informing the professor; B says this has been done.",
+        "number": 10
+      },
+      {
+        "type": "choose_response",
+        "voice": "F-UK",
+        "prompt": "This printer jams every time I use it.",
+        "options": [
+          "Try the one upstairs. It's much newer.",
+          "I love that kind of music.",
+          "You should print it in color.",
+          "It's kept in the top drawer."
+        ],
+        "answer": "A",
+        "why": "The speaker complains about a machine; A offers a practical alternative.",
+        "number": 11
+      },
+      {
+        "type": "choose_response",
+        "voice": "M-AU",
+        "prompt": "Do you want to get lunch before the lecture or after?",
+        "options": [
+          "The lecture hall is next to the cafeteria.",
+          "It was a very long lecture.",
+          "Yes, I do.",
+          "Let's go after. I still have to finish my notes."
+        ],
+        "answer": "D",
+        "why": "An either/or question needs a choice, not 'yes'. D chooses 'after' and gives a reason.",
+        "number": 12
+      },
+      {
+        "type": "conversation",
+        "setting": "Listen to a conversation between a student and a library employee.",
+        "voices": {
+          "Woman": "F-UK",
+          "Man": "M-US"
+        },
+        "script": [
+          [
+            "Woman",
+            "Hi. I got an email saying the book I requested is ready, but I can't find it on the hold shelf."
+          ],
+          [
+            "Man",
+            "Let me check. What's your name?"
+          ],
+          [
+            "Woman",
+            "Elena Petrova."
+          ],
+          [
+            "Man",
+            "Hmm, the system says it arrived yesterday. Oh, I see. It was sent to the Science Library by mistake."
+          ],
+          [
+            "Woman",
+            "That's on the other side of campus, and I have class in ten minutes."
+          ],
+          [
+            "Man",
+            "You don't need to go yourself. I can ask them to send it over. It should be here by tomorrow afternoon."
+          ],
+          [
+            "Woman",
+            "That would be great. Will I get another email?"
+          ],
+          [
+            "Man",
+            "Yes, as soon as it arrives."
+          ]
+        ],
+        "questions": [
+          {
+            "q": "Why does the woman speak to the man?",
+            "options": [
+              "She cannot find a book that she was told was ready.",
+              "She wants to keep a book for a longer time.",
+              "She needs directions to the Science Library.",
+              "She has lost a book that belongs to the library."
+            ],
+            "answer": "A",
+            "kind": "purpose",
+            "why": "She received an email that her book was ready but cannot find it on the hold shelf.",
+            "number": 13
+          },
+          {
+            "q": "What will the man probably do next?",
+            "options": [
+              "Walk to the Science Library",
+              "Send the woman an email immediately",
+              "Arrange for the book to be sent to his library",
+              "Cancel the woman's request"
+            ],
+            "answer": "C",
+            "kind": "prediction",
+            "why": "'I can ask them to send it over.' The email will come later, when the book arrives.",
+            "number": 14
+          }
+        ]
+      },
+      {
+        "type": "conversation",
+        "setting": "Listen to a conversation between two friends.",
+        "voices": {
+          "Man": "M-AU",
+          "Woman": "F-US"
+        },
+        "script": [
+          [
+            "Man",
+            "Are we still going hiking on Saturday?"
+          ],
+          [
+            "Woman",
+            "I was just looking at the forecast. They're saying heavy rain all morning."
+          ],
+          [
+            "Man",
+            "Oh no. I've been looking forward to this all week."
+          ],
+          [
+            "Woman",
+            "Me too. But the trail gets really muddy, and it's no fun when you can't see the view."
+          ],
+          [
+            "Man",
+            "True. What about Sunday instead?"
+          ],
+          [
+            "Woman",
+            "I have to work until three on Sunday."
+          ],
+          [
+            "Man",
+            "Well, we could do something indoors on Saturday. There's that new photography exhibit downtown."
+          ],
+          [
+            "Woman",
+            "Oh, I've heard good things about it. Let's do that and save the hike for next weekend."
+          ]
+        ],
+        "questions": [
+          {
+            "q": "What problem do the speakers have?",
+            "options": [
+              "The hiking trail has been closed.",
+              "Bad weather is expected on the day of their hike.",
+              "The woman has to work on Saturday.",
+              "They cannot agree on which trail to take."
+            ],
+            "answer": "B",
+            "kind": "detail",
+            "why": "The forecast is 'heavy rain all morning' on Saturday. The woman works on Sunday, not Saturday.",
+            "number": 15
+          },
+          {
+            "q": "What do the speakers decide to do on Saturday?",
+            "options": [
+              "Go hiking in the afternoon",
+              "Stay home and rest",
+              "Go to work together",
+              "Visit an exhibit"
+            ],
+            "answer": "D",
+            "kind": "detail",
+            "why": "'Let's do that' refers to the photography exhibit; the hike is saved for next weekend.",
+            "number": 16
+          }
+        ]
+      },
+      {
+        "type": "conversation",
+        "setting": "Listen to a conversation between a student and a professor.",
+        "voices": {
+          "Woman": "F-AU",
+          "Man": "M-UK"
+        },
+        "script": [
+          [
+            "Woman",
+            "Come in, Marcus. You wanted to talk about your paper topic?"
+          ],
+          [
+            "Man",
+            "Yes. I'd like to write about the history of transportation in this city."
+          ],
+          [
+            "Woman",
+            "That's an interesting area, but it's quite broad for a ten-page paper. You'd have to cover a hundred and fifty years."
+          ],
+          [
+            "Man",
+            "I was worried about that. Should I pick one type of transportation, like the streetcars?"
+          ],
+          [
+            "Woman",
+            "That would work much better. You know, the library has a collection of old streetcar maps that hardly anyone uses."
+          ],
+          [
+            "Man",
+            "Really? So I could compare the routes from different decades."
+          ],
+          [
+            "Woman",
+            "Exactly. Bring me a one-paragraph plan by Friday, and we'll go from there."
+          ]
+        ],
+        "questions": [
+          {
+            "q": "What does the professor say about the student's original topic?",
+            "options": [
+              "Too many students have already chosen it.",
+              "It is too large for the assignment.",
+              "There are not enough sources about it.",
+              "It is not related to the course."
+            ],
+            "answer": "B",
+            "kind": "detail",
+            "why": "'It's quite broad for a ten-page paper.'",
+            "number": 17
+          },
+          {
+            "q": "Why does the professor mention the library's map collection?",
+            "options": [
+              "To suggest material the student could use for a narrower topic",
+              "To explain why the library is often crowded",
+              "To show that streetcars are no longer in use",
+              "To remind the student to return some maps"
+            ],
+            "answer": "A",
+            "kind": "function",
+            "why": "After agreeing that streetcars are a better topic, she points him to a source he can use for it.",
+            "number": 18
+          }
+        ]
+      },
+      {
+        "type": "conversation",
+        "setting": "Listen to a conversation at a phone repair shop.",
+        "voices": {
+          "Man": "M-US",
+          "Woman": "F-UK"
+        },
+        "script": [
+          [
+            "Man",
+            "Hi. I dropped my phone yesterday, and now the screen doesn't respond when I touch it."
+          ],
+          [
+            "Woman",
+            "Let me take a look. Hmm, the glass isn't cracked, so it's probably the layer underneath. We'd have to replace the whole screen."
+          ],
+          [
+            "Man",
+            "How much would that cost?"
+          ],
+          [
+            "Woman",
+            "For this model, a hundred and twenty dollars. It takes about two hours."
+          ],
+          [
+            "Man",
+            "Oh. That's more than I expected. I only paid two hundred for the phone."
+          ],
+          [
+            "Woman",
+            "I understand. Is it still under warranty? If you bought it less than a year ago, the manufacturer might cover the repair."
+          ],
+          [
+            "Man",
+            "I got it in March, so that's only eight months."
+          ],
+          [
+            "Woman",
+            "Then I'd call them before you pay us anything."
+          ]
+        ],
+        "questions": [
+          {
+            "q": "What is wrong with the man's phone?",
+            "options": [
+              "The glass is cracked.",
+              "The battery runs out quickly.",
+              "The screen does not react to touch.",
+              "It will not turn on."
+            ],
+            "answer": "C",
+            "kind": "detail",
+            "why": "'The screen doesn't respond when I touch it.' The woman says the glass is not cracked.",
+            "number": 19
+          },
+          {
+            "q": "What does the woman suggest the man do?",
+            "options": [
+              "Buy a less expensive phone",
+              "Come back in two hours",
+              "Pay for the repair in advance",
+              "Contact the company that made the phone"
+            ],
+            "answer": "D",
+            "kind": "detail",
+            "why": "The phone may still be under warranty: 'I'd call them [the manufacturer] before you pay us anything.'",
+            "number": 20
+          }
+        ]
+      },
+      {
+        "type": "announcement",
+        "setting": "Listen to an announcement in a classroom.",
+        "voice": "M-UK",
+        "script": "Before we finish, I have one quick announcement about next week's midterm. Because of the construction work in this building, the exam will not be held in our usual classroom. Instead, we'll meet in Room 204 of the Chemistry Building at the regular class time. Please arrive a few minutes early, since the room can be hard to find. You may bring a calculator, but phones must be turned off and put away. I'll post a map on the course website tonight.",
+        "questions": [
+          {
+            "q": "What is the main purpose of the announcement?",
+            "options": [
+              "To tell students that an exam will be held in a different place",
+              "To explain which topics will be on an exam",
+              "To inform students that an exam has been postponed",
+              "To describe construction plans for the building"
+            ],
+            "answer": "A",
+            "kind": "purpose",
+            "why": "The exam is at the regular time but in Room 204 of the Chemistry Building.",
+            "number": 21
+          },
+          {
+            "q": "What will the professor do later today?",
+            "options": [
+              "Email the exam results to students",
+              "Put a map on the course website",
+              "Visit the Chemistry Building",
+              "Hand out calculators"
+            ],
+            "answer": "B",
+            "kind": "detail",
+            "why": "'I'll post a map on the course website tonight.'",
+            "number": 22
+          }
+        ]
+      },
+      {
+        "type": "announcement",
+        "setting": "Listen to an announcement in a library.",
+        "voice": "F-AU",
+        "script": "Good afternoon, and welcome to the Central Library. Please note that the third floor will close at five p.m. today so that new carpet can be installed. If you are using a study room on that floor, please take all of your belongings with you, as the area will be locked overnight. Computers and printers are still available on the first and second floors until our regular closing time of ten o'clock. The third floor will reopen tomorrow at noon. We apologize for the inconvenience.",
+        "questions": [
+          {
+            "q": "Why is the third floor closing early today?",
+            "options": [
+              "A staff meeting is being held there.",
+              "The printers are being repaired.",
+              "Exams are taking place there.",
+              "Work is being done on the floor."
+            ],
+            "answer": "D",
+            "kind": "detail",
+            "why": "It closes 'so that new carpet can be installed'.",
+            "number": 23
+          },
+          {
+            "q": "What are people in the third-floor study rooms asked to do?",
+            "options": [
+              "Move to the second floor by noon",
+              "Return their books before five o'clock",
+              "Remove their things when they leave",
+              "Reserve a room for tomorrow"
+            ],
+            "answer": "C",
+            "kind": "detail",
+            "why": "'Please take all of your belongings with you, as the area will be locked overnight.'",
+            "number": 24
+          }
+        ]
+      },
+      {
+        "type": "talk",
+        "subject": "Marine biology",
+        "voice": "F-US",
+        "script": "Today I want to introduce the idea of a keystone species. That's an animal that has a much larger effect on its environment than you'd expect from its numbers. A classic example is the sea otter, which lives along the Pacific coast of North America. Sea otters eat a lot of sea urchins. Now, urchins are small, spiny animals that feed on kelp, a giant seaweed that grows in underwater forests. And these kelp forests are home to hundreds of kinds of fish and other animals. So what happens when the otters disappear? Well, we actually know, because in the eighteen hundreds, hunters killed most of them for their fur. Without otters, the number of urchins exploded. The urchins ate the kelp right down to the sea floor, and they left behind what scientists call urchin barrens, which are basically underwater deserts. The fish that depended on the kelp went away, too. Later, when otters were protected and returned to some areas, the kelp forests grew back, and so did the fish. In places where otters never returned, the barrens are still there. So the otter doesn't just live in the kelp forest. In a sense, it keeps the forest alive. Take it away, and the whole system changes.",
+        "questions": [
+          {
+            "q": "What is the talk mainly about?",
+            "options": [
+              "How sea otters hunt for food",
+              "Why kelp grows quickly in cold water",
+              "How one species can shape an entire ecosystem",
+              "Why hunting was common in the 1800s"
+            ],
+            "answer": "C",
+            "kind": "main_idea",
+            "why": "The otter is the professor's example of a keystone species, one with a very large effect on its environment.",
+            "number": 25
+          },
+          {
+            "q": "According to the professor, what do sea urchins eat?",
+            "options": [
+              "Small fish",
+              "Kelp",
+              "Sea otters",
+              "Shellfish"
+            ],
+            "answer": "B",
+            "kind": "detail",
+            "why": "Urchins 'feed on kelp, a giant seaweed'.",
+            "number": 26
+          },
+          {
+            "q": "What happened after hunters killed most of the sea otters?",
+            "options": [
+              "The fish population increased.",
+              "Kelp forests spread along the coast.",
+              "Sea urchins began to disappear.",
+              "Sea urchins multiplied and destroyed the kelp."
+            ],
+            "answer": "D",
+            "kind": "detail",
+            "why": "'The number of urchins exploded. The urchins ate the kelp right down to the sea floor.'",
+            "number": 27
+          },
+          {
+            "q": "Why does the professor mention places where otters never returned?",
+            "options": [
+              "To support the idea that otters are the reason kelp forests recover",
+              "To show that urchins cannot survive without otters",
+              "To explain why otters are still hunted today",
+              "To suggest that kelp forests are not important to fish"
+            ],
+            "answer": "A",
+            "kind": "function",
+            "why": "Kelp came back where otters returned and did not where they stayed away; the contrast supports the claim.",
+            "number": 28
+          }
+        ]
+      },
+      {
+        "type": "talk",
+        "subject": "History",
+        "voice": "M-AU",
+        "script": "Here's a question. When it's noon in one city, what time is it in a city three hundred kilometers to the west? Today, that's easy to answer. But in the early eighteen hundreds, it wasn't. Back then, every town set its clocks by the sun. Noon was simply the moment when the sun was highest in the sky. That meant noon in one town came a few minutes earlier or later than noon in the next town. And for most of history, nobody cared, because nobody could travel fast enough to notice. Then came the railroads. Suddenly, people could pass through several towns in a single hour, and every station kept its own local time. Imagine trying to read a train schedule! In the United States, railroad companies had to deal with dozens of different local times, and mistakes led to missed connections and even accidents. So, in eighteen eighty-three, the railroad companies agreed to divide the country into a small number of time zones. Inside each zone, every clock would show the same time. Some people complained that the railroads were changing the natural time, but the system was so practical that cities quickly adopted it. The following year, an international conference began extending the idea to the rest of the world.",
+        "questions": [
+          {
+            "q": "What is the main topic of the talk?",
+            "options": [
+              "How railroads were built across the United States",
+              "Why clocks became more accurate in the 1800s",
+              "How people measured time in ancient towns",
+              "Why a standard system of time was introduced"
+            ],
+            "answer": "D",
+            "kind": "main_idea",
+            "why": "The talk moves from local sun time to the problem railroads created and the time zones that solved it.",
+            "number": 29
+          },
+          {
+            "q": "How did towns set their clocks before the railroads?",
+            "options": [
+              "By the position of the sun",
+              "By the arrival of trains",
+              "By the time in the capital city",
+              "By an international agreement"
+            ],
+            "answer": "A",
+            "kind": "detail",
+            "why": "'Every town set its clocks by the sun. Noon was simply the moment when the sun was highest.'",
+            "number": 30
+          },
+          {
+            "q": "Why did differences in local time not matter for most of history?",
+            "options": [
+              "Most people did not own clocks.",
+              "People could not travel fast enough to notice them.",
+              "Towns were located very far apart.",
+              "Governments required all towns to use one time."
+            ],
+            "answer": "B",
+            "kind": "detail",
+            "why": "'Nobody cared, because nobody could travel fast enough to notice.'",
+            "number": 31
+          },
+          {
+            "q": "What does the professor say about the public's reaction to time zones?",
+            "options": [
+              "Everyone welcomed the new system immediately.",
+              "Most cities refused to use it for many years.",
+              "Some people objected, but the system was soon accepted.",
+              "People were confused because train schedules changed."
+            ],
+            "answer": "C",
+            "kind": "attitude",
+            "why": "'Some people complained... but the system was so practical that cities quickly adopted it.'",
+            "number": 32
+          }
+        ]
+      }
+    ],
+    "lower": [
+      {
+        "type": "choose_response",
+        "voice": "F-UK",
+        "prompt": "What time does the library open on Sundays?",
+        "options": [
+          "On the second floor.",
+          "Yes, it's open.",
+          "At ten in the morning.",
+          "I borrowed two books."
+        ],
+        "answer": "C",
+        "why": "'What time' needs a time.",
+        "number": 33
+      },
+      {
+        "type": "choose_response",
+        "voice": "M-US",
+        "prompt": "Is this seat taken?",
+        "options": [
+          "No, go ahead.",
+          "I took it yesterday.",
+          "It's a nice chair.",
+          "At three o'clock."
+        ],
+        "answer": "A",
+        "why": "The speaker wants to sit down; A says the seat is free.",
+        "number": 34
+      },
+      {
+        "type": "choose_response",
+        "voice": "F-AU",
+        "prompt": "Thanks for helping me carry those boxes.",
+        "options": [
+          "They're in the kitchen.",
+          "No problem. I was happy to help.",
+          "Yes, I need some help.",
+          "There are six boxes."
+        ],
+        "answer": "B",
+        "why": "A polite reply to thanks.",
+        "number": 35
+      },
+      {
+        "type": "choose_response",
+        "voice": "M-UK",
+        "prompt": "Where can I buy a bus pass?",
+        "options": [
+          "It costs thirty dollars.",
+          "Every fifteen minutes.",
+          "The bus is late today.",
+          "At the ticket office in the station."
+        ],
+        "answer": "D",
+        "why": "'Where' needs a place. A gives a price and B a frequency.",
+        "number": 36
+      },
+      {
+        "type": "choose_response",
+        "voice": "F-US",
+        "prompt": "Would you like some more tea?",
+        "options": [
+          "Yes, please. Just half a cup.",
+          "I like the green one.",
+          "It's four o'clock.",
+          "No, I don't have any."
+        ],
+        "answer": "A",
+        "why": "An offer is accepted with 'Yes, please'.",
+        "number": 37
+      },
+      {
+        "type": "choose_response",
+        "voice": "M-AU",
+        "prompt": "How do you usually get to class?",
+        "options": [
+          "It starts at nine.",
+          "It's in the science building.",
+          "I ride my bike most days.",
+          "About twenty students."
+        ],
+        "answer": "C",
+        "why": "'How do you get to...?' asks about transport.",
+        "number": 38
+      },
+      {
+        "type": "choose_response",
+        "voice": "F-UK",
+        "prompt": "I'm sorry I'm late.",
+        "options": [
+          "It's eight thirty in the morning.",
+          "That's all right. We just started.",
+          "See you later this afternoon.",
+          "Yes, you are very sorry about it."
+        ],
+        "answer": "B",
+        "why": "The natural reply to an apology is to accept it.",
+        "number": 39
+      },
+      {
+        "type": "conversation",
+        "setting": "Listen to a conversation between two students.",
+        "voices": {
+          "Woman": "F-US",
+          "Man": "M-AU"
+        },
+        "script": [
+          [
+            "Woman",
+            "Excuse me, is this where the chess club meets?"
+          ],
+          [
+            "Man",
+            "It is, but the meeting doesn't start until six. You're a little early."
+          ],
+          [
+            "Woman",
+            "Oh, good. I'm new, and I wasn't sure I had the right room."
+          ],
+          [
+            "Man",
+            "Welcome! Have you played much before?"
+          ],
+          [
+            "Woman",
+            "Only with my grandfather. I'm not very good."
+          ],
+          [
+            "Man",
+            "Don't worry. We have players at every level, and on Thursdays we give free lessons for beginners."
+          ],
+          [
+            "Woman",
+            "That sounds perfect. Do I need to bring anything?"
+          ],
+          [
+            "Man",
+            "No, we have plenty of boards. Just bring yourself."
+          ]
+        ],
+        "questions": [
+          {
+            "q": "Why was the woman unsure when she arrived?",
+            "options": [
+              "She did not know how to play chess.",
+              "She thought she was late for the meeting.",
+              "She had forgotten to bring a chessboard.",
+              "She did not know if she was in the correct place."
+            ],
+            "answer": "D",
+            "kind": "detail",
+            "why": "'I'm new, and I wasn't sure I had the right room.'",
+            "number": 40
+          },
+          {
+            "q": "What does the man say about Thursdays?",
+            "options": [
+              "The club does not meet on that day.",
+              "New players can get lessons without paying.",
+              "Members must bring their own boards.",
+              "The meeting starts earlier than usual."
+            ],
+            "answer": "B",
+            "kind": "detail",
+            "why": "'On Thursdays we give free lessons for beginners.'",
+            "number": 41
+          }
+        ]
+      },
+      {
+        "type": "announcement",
+        "setting": "Listen to an announcement in a student residence.",
+        "voice": "M-US",
+        "script": "Hello, residents of Parker Hall. This is a reminder that we will have a fire drill tomorrow morning at ten o'clock. When you hear the alarm, please leave your room right away and use the stairs, not the elevators. Everyone should meet in the parking lot behind the building. The drill will take about fifteen minutes. Please do not go back inside until a staff member tells you it is safe. Thank you for your cooperation.",
+        "questions": [
+          {
+            "q": "What is the announcement mainly about?",
+            "options": [
+              "A safety practice planned for tomorrow",
+              "A repair to the building's elevators",
+              "A new rule about parking",
+              "A meeting for new residents"
+            ],
+            "answer": "A",
+            "kind": "main_idea",
+            "why": "It is a reminder about tomorrow's fire drill and what residents should do.",
+            "number": 42
+          },
+          {
+            "q": "Where should residents go when they hear the alarm?",
+            "options": [
+              "To their rooms",
+              "To the elevators",
+              "To the parking lot",
+              "To the front office"
+            ],
+            "answer": "C",
+            "kind": "detail",
+            "why": "'Everyone should meet in the parking lot behind the building.'",
+            "number": 43
+          }
+        ]
+      },
+      {
+        "type": "announcement",
+        "setting": "Listen to an announcement from a student club.",
+        "voice": "F-AU",
+        "script": "Hi, everyone. This is a quick reminder from the International Students Club. Our movie night is this Friday at seven in the student center. This month, we're showing a comedy from Brazil with English subtitles. Tickets are free, but seats are limited, so please pick up your ticket at the club office before Thursday. We'll also have snacks from different countries, and if you'd like to bring a dish to share, you're very welcome to. See you there!",
+        "questions": [
+          {
+            "q": "What should students do if they want to attend the event?",
+            "options": [
+              "Pay for a ticket at the door",
+              "Arrive at the student center by seven",
+              "Sign up on the club's website",
+              "Get a ticket from the club office in advance"
+            ],
+            "answer": "D",
+            "kind": "detail",
+            "why": "Tickets are free but limited: 'please pick up your ticket at the club office before Thursday'.",
+            "number": 44
+          },
+          {
+            "q": "What does the speaker say about food?",
+            "options": [
+              "Food is not allowed in the student center.",
+              "Snacks will be sold during the movie.",
+              "Students may bring some to share.",
+              "Dinner will be served before the movie."
+            ],
+            "answer": "C",
+            "kind": "detail",
+            "why": "'If you'd like to bring a dish to share, you're very welcome to.'",
+            "number": 45
+          }
+        ]
+      },
+      {
+        "type": "announcement",
+        "setting": "Listen to an announcement in a classroom.",
+        "voice": "M-UK",
+        "script": "OK, class, here are a few details about Thursday's trip to the science museum. The bus leaves from the front of the school at eight thirty, so please be here by eight fifteen. We'll have lunch at the museum. You can buy food in the café or bring your own. Don't forget your notebook, because you'll need to answer some questions about the exhibits. We should be back by three o'clock.",
+        "questions": [
+          {
+            "q": "What time should students arrive at school on Thursday?",
+            "options": [
+              "At eight o'clock",
+              "At eight fifteen",
+              "At eight thirty",
+              "At three o'clock"
+            ],
+            "answer": "B",
+            "kind": "detail",
+            "why": "The bus leaves at eight thirty, 'so please be here by eight fifteen'.",
+            "number": 46
+          },
+          {
+            "q": "Why do students need to bring a notebook?",
+            "options": [
+              "To complete an assignment during the visit",
+              "To write down the bus schedule",
+              "To draw pictures of the building",
+              "To take notes during lunch"
+            ],
+            "answer": "A",
+            "kind": "detail",
+            "why": "'You'll need to answer some questions about the exhibits.'",
+            "number": 47
+          }
+        ]
+      }
+    ],
+    "upper": [
+      {
+        "type": "choose_response",
+        "voice": "M-UK",
+        "prompt": "You wouldn't happen to have the notes from Tuesday's seminar, would you?",
+        "options": [
+          "Yes, it happened on Tuesday.",
+          "No, I wouldn't mind at all.",
+          "The seminar room is upstairs.",
+          "I'm afraid I missed that one, too."
+        ],
+        "answer": "D",
+        "why": "A polite, indirect request for notes. D explains indirectly that the speaker cannot help.",
+        "number": 33
+      },
+      {
+        "type": "choose_response",
+        "voice": "F-US",
+        "prompt": "I've been thinking of dropping statistics this term.",
+        "options": [
+          "Be careful not to break it.",
+          "You might want to talk to your advisor first.",
+          "I think it fell behind the desk.",
+          "The term ends in December."
+        ],
+        "answer": "B",
+        "why": "'Dropping' a course means leaving it. B gives sensible advice; A and C take 'drop' literally.",
+        "number": 34
+      },
+      {
+        "type": "choose_response",
+        "voice": "M-AU",
+        "prompt": "Is the scholarship deadline really this Friday?",
+        "options": [
+          "That's what it says on the website.",
+          "No, I've never been on a ship.",
+          "She's a really good scholar.",
+          "I usually finish work at five on Fridays."
+        ],
+        "answer": "A",
+        "why": "A confirms the date by naming the source of the information.",
+        "number": 35
+      },
+      {
+        "type": "conversation",
+        "setting": "Listen to a conversation between two students.",
+        "voices": {
+          "Man": "M-US",
+          "Woman": "F-UK"
+        },
+        "script": [
+          [
+            "Man",
+            "So, have you decided about the internship in Chicago?"
+          ],
+          [
+            "Woman",
+            "Honestly, I'm still on the fence. The work sounds amazing, but it's unpaid, and rent there isn't cheap."
+          ],
+          [
+            "Man",
+            "Couldn't you stay with your cousin? Doesn't she live there?"
+          ],
+          [
+            "Woman",
+            "She does, but she's moving in July, right in the middle of the program."
+          ],
+          [
+            "Man",
+            "Hmm. What about the research assistant job Professor Adams mentioned?"
+          ],
+          [
+            "Woman",
+            "It pays, and I could live at home. But it's mostly entering data. I doubt I'd learn much."
+          ],
+          [
+            "Man",
+            "Well, a line on your résumé is one thing. Actually enjoying your summer is another."
+          ],
+          [
+            "Woman",
+            "That's exactly what keeps me up at night. I'll give myself until Friday to decide."
+          ]
+        ],
+        "questions": [
+          {
+            "q": "What does the woman mean when she says she is \"on the fence\"?",
+            "options": [
+              "She has decided to refuse the internship.",
+              "She is waiting for the company's answer.",
+              "She has not made up her mind yet.",
+              "She is looking for a place to live."
+            ],
+            "answer": "C",
+            "kind": "function",
+            "why": "To be 'on the fence' is to be undecided; she goes on to weigh both options.",
+            "number": 36
+          },
+          {
+            "q": "What can be inferred about the research assistant job?",
+            "options": [
+              "It would teach the woman more than the internship.",
+              "It would be easier for the woman to afford.",
+              "It is located in Chicago.",
+              "It has already been offered to another student."
+            ],
+            "answer": "B",
+            "kind": "inference",
+            "why": "'It pays, and I could live at home', unlike the unpaid internship in an expensive city.",
+            "number": 37
+          }
+        ]
+      },
+      {
+        "type": "announcement",
+        "setting": "Listen to an announcement in a university department.",
+        "voice": "F-US",
+        "script": "May I have your attention, please? As some of you have heard, the visiting lecture by Dr. Amara Nwosu, originally scheduled for this evening, has been postponed because her flight was canceled. She has kindly agreed to speak next Wednesday at the same time instead. If you registered for tonight, your place is automatically reserved, so there is no need to sign up again. However, the event has been moved to the larger auditorium in Baker Hall, since interest turned out to be far greater than we anticipated. If you can no longer attend, please let the department office know so that your seat can be offered to someone on the waiting list.",
+        "questions": [
+          {
+            "q": "Why was the lecture postponed?",
+            "options": [
+              "The speaker's travel plans were disrupted.",
+              "Too few people had registered.",
+              "The auditorium was not available.",
+              "The speaker was feeling unwell."
+            ],
+            "answer": "A",
+            "kind": "detail",
+            "why": "It was postponed 'because her flight was canceled'.",
+            "number": 38
+          },
+          {
+            "q": "What can be inferred about the lecture?",
+            "options": [
+              "People who registered must sign up a second time.",
+              "It will be shorter than originally planned.",
+              "It will be recorded for students who cannot attend.",
+              "More people want to attend than the organizers first expected."
+            ],
+            "answer": "D",
+            "kind": "inference",
+            "why": "It moves to a larger auditorium because interest was 'far greater than we anticipated', and there is a waiting list.",
+            "number": 39
+          }
+        ]
+      },
+      {
+        "type": "talk",
+        "subject": "Psychology",
+        "voice": "M-UK",
+        "script": "Let's say you have five hours to prepare for an exam. You could study for five hours the night before, or you could study one hour a day for five days. Same amount of time. Which is better? Well, more than a century of research gives a clear answer: spreading it out wins, and it isn't close. Psychologists call this the spacing effect. It was first described in the eighteen eighties by Hermann Ebbinghaus, who tested himself on lists of meaningless syllables, and it's been confirmed in hundreds of studies since. Why does it work? One explanation is that forgetting is actually useful. When you come back to material after a gap, you've forgotten some of it, so your brain has to work to rebuild the memory. That effort is what strengthens it. When you reread your notes five times in one night, by contrast, everything feels familiar, but that feeling is misleading. You're recognizing the material, not recalling it. And here's the irony. When students are asked which method works better, most choose cramming. It feels more productive, because the information is right there, fresh in your mind. Unfortunately, a week later, most of it is gone. So if you remember one thing from today, ideally after a short delay, it's this: study less at a time, but more often.",
+        "questions": [
+          {
+            "q": "What is the main point of the talk?",
+            "options": [
+              "Students should spend more total hours studying.",
+              "Spreading study sessions over time improves long-term memory.",
+              "Rereading notes is the most reliable way to learn.",
+              "Memory research has changed little in a century."
+            ],
+            "answer": "B",
+            "kind": "main_idea",
+            "why": "With the same total time, 'spreading it out wins'; this is the spacing effect.",
+            "number": 40
+          },
+          {
+            "q": "Why does the professor mention Hermann Ebbinghaus?",
+            "options": [
+              "To criticize an outdated research method",
+              "To give an example of a student who crammed",
+              "To explain why meaningless syllables are hard to learn",
+              "To identify the person who first described the effect"
+            ],
+            "answer": "D",
+            "kind": "function",
+            "why": "'It was first described in the eighteen eighties by Hermann Ebbinghaus.'",
+            "number": 41
+          },
+          {
+            "q": "According to the professor, why can forgetting be useful?",
+            "options": [
+              "It makes room for new information.",
+              "It shows students which topics are unimportant.",
+              "It forces the brain to work to rebuild a memory.",
+              "It makes the material feel more familiar."
+            ],
+            "answer": "C",
+            "kind": "detail",
+            "why": "After a gap 'your brain has to work to rebuild the memory. That effort is what strengthens it.'",
+            "number": 42
+          },
+          {
+            "q": "What does the professor imply about students who prefer cramming?",
+            "options": [
+              "They mistake a feeling of familiarity for real learning.",
+              "They usually get higher marks on exams.",
+              "They have not been told to study every day.",
+              "They forget information more slowly than other students."
+            ],
+            "answer": "A",
+            "kind": "inference",
+            "why": "Cramming 'feels more productive', but the familiar feeling is 'misleading' and most is gone a week later.",
+            "number": 43
+          }
+        ]
+      },
+      {
+        "type": "talk",
+        "subject": "Art history",
+        "voice": "F-AU",
+        "script": "When you picture an ancient Greek statue, you probably imagine smooth white marble. That image is so familiar that, for centuries, people assumed the Greeks wanted their statues white. They didn't. Most ancient statues were originally painted, often in bright blues, reds, and yellows, with detailed patterns on the clothing and even colored eyes and lips. So where did the color go? Well, paint is fragile. After two thousand years of sun, rain, and burial in the ground, most of it simply wore away. And here's an uncomfortable detail. When traces of paint did survive, some collectors in the eighteenth and nineteenth centuries actually cleaned them off, because by then pure white marble had come to represent classical beauty. In other words, the ancient look we admire is partly a modern creation. How do we know what the originals looked like? Researchers shine ultraviolet light on the stone, which makes invisible traces of pigment glow. They also analyze tiny particles to identify the exact minerals that were used. From that evidence, they've built full-color reconstructions. Now, many visitors find these reconstructions, frankly, ugly. Too bright, almost like cartoons. But ask yourself whether that reaction tells us about the Greeks' taste or about our own. That's a question I'd like you to think about for next week.",
+        "questions": [
+          {
+            "q": "What is the talk mainly about?",
+            "options": [
+              "How ancient sculptors carved marble",
+              "Why museums restore damaged statues",
+              "A common misunderstanding about how ancient statues looked",
+              "The differences between Greek and Roman art"
+            ],
+            "answer": "C",
+            "kind": "main_idea",
+            "why": "People assumed the statues were meant to be white; in fact most were painted.",
+            "number": 44
+          },
+          {
+            "q": "According to the professor, what is one reason the statues lost their color?",
+            "options": [
+              "Weather and burial wore the paint away over time.",
+              "The Greeks removed the paint themselves.",
+              "The marble slowly absorbed the paint.",
+              "Ultraviolet light destroyed the pigments."
+            ],
+            "answer": "A",
+            "kind": "detail",
+            "why": "'After two thousand years of sun, rain, and burial in the ground, most of it simply wore away.'",
+            "number": 45
+          },
+          {
+            "q": "How do researchers find traces of the original paint?",
+            "options": [
+              "By comparing statues with ancient paintings",
+              "By washing the stone with chemicals",
+              "By reading descriptions written by collectors",
+              "By shining a special kind of light on the stone"
+            ],
+            "answer": "D",
+            "kind": "detail",
+            "why": "'Researchers shine ultraviolet light on the stone, which makes invisible traces of pigment glow.'",
+            "number": 46
+          },
+          {
+            "q": "What does the professor imply about visitors who dislike the colored reconstructions?",
+            "options": [
+              "They have studied ancient art carefully.",
+              "They are right that the colors are inaccurate.",
+              "Their reaction may reflect modern taste rather than ancient taste.",
+              "They prefer Roman statues to Greek ones."
+            ],
+            "answer": "C",
+            "kind": "inference",
+            "why": "She asks whether the reaction 'tells us about the Greeks' taste or about our own'.",
+            "number": 47
+          }
+        ]
+      }
+    ]
+  },
+  "writing": {
+    "build": [
+      {
+        "context": "Are you ready for the quiz this afternoon?",
+        "answer": "No, I have not read the last chapter.",
+        "chips": [
+          "I",
+          "have not",
+          "read",
+          "the last",
+          "chapter"
+        ],
+        "focus": "negation",
+        "prefix": "No,",
+        "number": 1,
+        "display": [
+          "have not",
+          "read",
+          "I",
+          "chapter",
+          "the last"
+        ]
+      },
+      {
+        "context": "The library was so crowded this afternoon.",
+        "answer": "Were you able to find a place to sit?",
+        "chips": [
+          "were",
+          "you",
+          "able to",
+          "find",
+          "a place",
+          "to sit"
+        ],
+        "focus": "yes_no_question",
+        "number": 2,
+        "display": [
+          "you",
+          "able to",
+          "a place",
+          "find",
+          "were",
+          "to sit"
+        ]
+      },
+      {
+        "context": "My sister is visiting me this weekend.",
+        "answer": "How long is she going to stay with you?",
+        "chips": [
+          "how long",
+          "is",
+          "she",
+          "going to",
+          "stay",
+          "with you"
+        ],
+        "focus": "wh_question",
+        "number": 3,
+        "display": [
+          "going to",
+          "stay",
+          "how long",
+          "is",
+          "with you",
+          "she"
+        ]
+      },
+      {
+        "context": "I'm thinking about joining the photography club.",
+        "answer": "My roommate said that the meetings are a lot of fun.",
+        "chips": [
+          "my roommate",
+          "said that",
+          "the meetings",
+          "are",
+          "a lot of fun"
+        ],
+        "focus": "statement",
+        "number": 4,
+        "display": [
+          "the meetings",
+          "a lot of fun",
+          "said that",
+          "are",
+          "my roommate"
+        ]
+      },
+      {
+        "context": "The cafeteria is closed for repairs this week.",
+        "answer": "Do you know where we can eat instead?",
+        "chips": [
+          "do",
+          "you know",
+          "where",
+          "we",
+          "can eat",
+          "instead"
+        ],
+        "focus": "embedded_question",
+        "number": 5,
+        "display": [
+          "instead",
+          "do",
+          "where",
+          "we",
+          "can eat",
+          "you know"
+        ]
+      },
+      {
+        "context": "Your presentation was really interesting.",
+        "answer": "Thank you, but I wish I had practiced it more.",
+        "chips": [
+          "I wish",
+          "I",
+          "had practiced",
+          "it",
+          "more"
+        ],
+        "focus": "perfect",
+        "prefix": "Thank you, but",
+        "number": 6,
+        "display": [
+          "had practiced",
+          "I",
+          "it",
+          "more",
+          "I wish"
+        ]
+      },
+      {
+        "context": "I can't open the file you sent me.",
+        "answer": "Could you tell me which program you are using?",
+        "chips": [
+          "could",
+          "you",
+          "tell me",
+          "which program",
+          "you are",
+          "using"
+        ],
+        "focus": "embedded_question",
+        "extra": "are you",
+        "number": 7,
+        "display": [
+          "using",
+          "which program",
+          "you are",
+          "could",
+          "are you",
+          "tell me",
+          "you"
+        ]
+      },
+      {
+        "context": "Is the professor going to post our grades today?",
+        "answer": "She did not say when they would be available.",
+        "chips": [
+          "she",
+          "did not",
+          "say",
+          "when",
+          "they would",
+          "be available"
+        ],
+        "focus": "embedded_question",
+        "extra": "would they",
+        "number": 8,
+        "display": [
+          "say",
+          "she",
+          "be available",
+          "would they",
+          "they would",
+          "did not",
+          "when"
+        ]
+      },
+      {
+        "context": "I need to borrow a laptop for my exam tomorrow.",
+        "answer": "The one that the department lends to students is very slow.",
+        "chips": [
+          "that",
+          "the department",
+          "lends",
+          "to students",
+          "is",
+          "very slow"
+        ],
+        "focus": "relative_clause",
+        "prefix": "The one",
+        "extra": "are",
+        "number": 9,
+        "display": [
+          "to students",
+          "are",
+          "very slow",
+          "the department",
+          "that",
+          "is",
+          "lends"
+        ]
+      },
+      {
+        "context": "I missed the registration deadline for the workshop.",
+        "answer": "If I were you, I would email the organizer and explain what happened.",
+        "chips": [
+          "I would",
+          "email",
+          "the organizer",
+          "and explain",
+          "what happened"
+        ],
+        "focus": "conditional",
+        "prefix": "If I were you,",
+        "number": 10,
+        "display": [
+          "and explain",
+          "email",
+          "what happened",
+          "the organizer",
+          "I would"
+        ]
+      }
+    ],
+    "email": {
+      "scenario": "You live in a university residence hall. The heater in your room stopped working three days ago, and the weather is getting colder. You reported the problem using the online maintenance form two days ago, but no one has come to repair it. You decide to contact the housing manager, Mr. Alvarez.",
+      "to": "Mr. Alvarez",
+      "subject": "Broken heater in my room",
+      "bullets": [
+        "Describe the problem in your room.",
+        "Explain what you have already done about it.",
+        "Ask when the heater will be repaired."
+      ],
+      "model": "Dear Mr. Alvarez,\n\nI am writing about a problem in my room, 312 in Carter Hall. The heater stopped working three days ago, and since then the room has been very cold, especially at night. It has become difficult to study or sleep there.\n\nI reported the problem through the online maintenance form on Tuesday and received a confirmation message. However, no one has come to look at the heater, and I have not heard anything since then.\n\nCould you please tell me when someone will be able to repair it? Because the weather is getting colder, I would be grateful if it could be fixed this week. If that is not possible, could I borrow a small electric heater in the meantime?\n\nThank you for your help.\n\nSincerely,\nMin-jun Park"
+    },
+    "discussion": {
+      "course": "urban planning",
+      "professor": {
+        "name": "Dr. Osei",
+        "post": "Over the next two weeks, we will look at how cities manage transportation. Some places, including the city of Tallinn in Estonia and the country of Luxembourg, have made buses and trams free for residents. Supporters say this reduces traffic and helps people with low incomes, while opponents worry about the cost. What do you think? Should cities make public transportation free for everyone? Why or why not?"
+      },
+      "students": [
+        {
+          "name": "Claire",
+          "post": "I think free public transportation is a great idea. When people don't have to pay, more of them leave their cars at home, so there is less traffic and cleaner air. It also helps students and workers who spend a large part of their income just getting to school or to their jobs."
+        },
+        {
+          "name": "Andrew",
+          "post": "I'm not sure that making transportation free solves the real problem. In my city, people avoid buses because they are slow and don't come often enough, not because of the price. I would rather see the money spent on more routes and more frequent service, even if riders still pay a small fare."
+        }
+      ],
+      "model": "In my opinion, cities should not make public transportation free for everyone, although I agree with Claire that cost matters for some riders. As Andrew points out, price is rarely the main reason people avoid buses. When a system loses its ticket income, it depends completely on tax money, and in difficult years the service may be cut, which hurts the very people it was meant to help. A fairer solution would be to keep normal fares but offer free passes to students, older people, and residents with low incomes. In this way, the people who truly need help receive it, while the city still has enough funds to add routes and run buses more often. A reliable system will attract far more drivers than a free one that is slow and crowded."
+    }
+  },
+  "speaking": {
+    "repeat": {
+      "scenario": "You are learning how to welcome new students to the university library. Listen to your supervisor and repeat what she says. Repeat only once.",
+      "picture": "A library entrance hall with a front desk, study rooms upstairs and printers beside the door.",
+      "voice": "F-US",
+      "sentences": [
+        "The library is open every day.",
+        "Please show your student card at the front desk.",
+        "Quiet study rooms are located on the second floor.",
+        "You can borrow up to ten books for three weeks at a time.",
+        "Printers and scanners are available next to the main entrance.",
+        "If you can't find a book, the staff at the help desk will gladly search the catalog for you.",
+        "Before you leave, remember to return any laptops that you borrowed during your visit."
+      ]
+    },
+    "interview": {
+      "topic": "reading habits",
+      "scenario": "You have agreed to take part in a research study about reading habits. You will have a short online interview with a researcher. The researcher will ask you some questions.",
+      "voice": "M-UK",
+      "questions": [
+        {
+          "kind": "event",
+          "q": "Thank you for joining me today. To begin, please think about the last thing you read for pleasure, such as a book, a magazine, or an article online. What was it, and what did you like about it?",
+          "model": "The last thing I read for pleasure was a novel that my sister gave me for my birthday. It is a detective story set in a small town by the sea, and I finished it in about three days because I could not stop reading. What I liked most was the main character, an older police officer who notices small details that everyone else misses. The ending also surprised me, because the person who committed the crime was someone I never suspected. After I finished it, I immediately looked for another book by the same author."
+        },
+        {
+          "kind": "life",
+          "q": "People read in different ways. Some prefer printed books, while others would rather read on a phone or a tablet. Which do you usually prefer, and why?",
+          "model": "I usually prefer printed books, especially when I am reading for a long time. First, my eyes get tired when I look at a screen for more than an hour, and I already use a computer all day for my studies. Second, with a paper book I am not interrupted by messages or notifications, so I can concentrate better. However, I have to admit that reading on my phone is convenient when I am traveling, because I can carry many books without any extra weight. So I use both, but paper is still my first choice."
+        },
+        {
+          "kind": "opinion",
+          "q": "Now I'd like to hear your opinion. Some people believe that young people today read less than earlier generations did. Do you agree? Why or why not?",
+          "model": "I only partly agree with that idea. It is probably true that young people read fewer novels and newspapers than their parents did, because there are so many other kinds of entertainment now, such as videos and games. On the other hand, I think young people actually read a great deal every day. They read messages, articles, and posts online for hours. The real change is that the texts are much shorter, so people have less practice concentrating on one long piece of writing. In my view, the problem is not the amount of reading but the type of reading."
+        },
+        {
+          "kind": "opinion",
+          "q": "Here is my last question. Do you think schools should require students to read a certain number of books every year? Why or why not?",
+          "model": "No, I don't think schools should set a fixed number of books for every student. When reading becomes a rule, many students treat it like a task to finish, and they may choose the shortest books just to reach the number. That does not make anyone love reading. I believe it is more effective to give students time to read during the school day and to let them choose books that match their interests. Teachers can still encourage them by recommending good titles and discussing them in class. If students enjoy what they read, they will naturally read more."
+        }
+      ]
+    }
+  }
+}

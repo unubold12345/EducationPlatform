@@ -116,6 +116,17 @@
 }
 .segmented button:hover { color: var(--wsp-ink); }
 .segmented .segmentActive { background: var(--wsp-card); color: var(--wsp-ink); box-shadow: 0 1px 3px rgba(17, 24, 39, .12); }
+/* File or topic: the first choice in the left column. */
+.sourceTabs { align-self: flex-start; max-width: 100%; }
+.sourceTabs button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap; }
+.topicBox {
+  display: flex; flex-direction: column; gap: 10px; flex: 1; min-height: 210px; padding: 16px;
+  border: 1px solid var(--wsp-line); border-radius: 16px; background: color-mix(in srgb, var(--wsp-card) 80%, transparent);
+}
+.topicBox textarea { min-height: 96px; }
+.topicIdeas { display: flex; flex-wrap: wrap; gap: 6px; }
+.topicIdeas button { cursor: pointer; }
+.topicHint { margin: 0; color: var(--wsp-soft); font-size: 12px; line-height: 1.5; }
 
 .generate {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
@@ -304,6 +315,8 @@
 .flagButton:hover { border-color: var(--wsp-amber); color: var(--wsp-amber); }
 .flagOn { border-color: color-mix(in srgb, var(--wsp-amber) 50%, var(--wsp-line)); background: var(--wsp-amber-soft); color: var(--wsp-amber); }
 .prompt { margin: 0 0 20px; color: var(--wsp-ink); font-size: 18px; font-weight: 480; line-height: 1.7; white-space: pre-line; overflow-wrap: anywhere; }
+.howto { margin: -8px 0 18px; padding: 10px 12px; border-left: 3px solid var(--wsp-accent); border-radius: 6px; background: var(--wsp-chip); color: var(--wsp-ink); font-size: 14px; line-height: 1.55; }
+.howto b { margin-right: 4px; }
 .options { display: grid; gap: 10px; }
 .option {
   display: flex; align-items: flex-start; gap: 12px;
@@ -478,3 +491,89 @@
 /* Exams still in this browser that could not be moved to the account. */
 .moveNote { margin: 0 0 12px; color: var(--wsp-muted); font-size: 12.5px; line-height: 1.55; }
 .sheetStatus[data-warn] { color: var(--wsp-bad); }
+
+/* Matching and sequence questions answered by arranging (arrange-board.tsx). */
+.board {
+  --mx-pair-0: #3b82f6; --mx-pair-1: #f59e0b; --mx-pair-2: #10b981; --mx-pair-3: #ec4899; --mx-pair-4: #8b5cf6;
+  display: grid; gap: 12px;
+}
+.matchBox { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); column-gap: 56px; }
+.matchLines { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 0; }
+.matchLines path { fill: none; stroke-width: 2.5; stroke-linecap: round; }
+.matchColumn { position: relative; z-index: 1; display: grid; gap: 10px; align-content: center; margin: 0; padding: 0; list-style: none; }
+.matchCard {
+  display: flex; align-items: flex-start; gap: 10px; width: 100%; min-height: 52px; padding: 11px 13px;
+  border: 1.5px solid var(--wsp-line); border-radius: 12px; background: var(--wsp-card); color: var(--wsp-text);
+  font: inherit; text-align: left; cursor: pointer; transition: border-color .14s, background .14s, box-shadow .14s;
+}
+.matchCard:hover { border-color: var(--wsp-line-strong); background: var(--wsp-chip); }
+.matchCard:focus-visible { outline: 2px solid var(--wsp-accent); outline-offset: 2px; }
+.matchCard[data-linked] { border-color: var(--mx-pair); background: color-mix(in srgb, var(--mx-pair) 9%, var(--wsp-card)); }
+.matchCard[data-on] { border-color: var(--wsp-accent); background: var(--wsp-accent-soft); box-shadow: 0 0 0 3px color-mix(in srgb, var(--wsp-accent) 22%, transparent); }
+.matchTag {
+  display: grid; place-items: center; flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%;
+  background: var(--wsp-chip); color: var(--wsp-muted); font-size: 12px; font-weight: 700;
+}
+.matchCard[data-linked] .matchTag { background: var(--mx-pair); color: #fff; }
+.matchCard[data-on] .matchTag { background: var(--wsp-accent); color: #fff; }
+.matchText { flex: 1; min-width: 0; padding-top: 2px; font-size: 14.5px; line-height: 1.5; overflow-wrap: anywhere; }
+.boardFoot { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; color: var(--wsp-muted); font-size: 13px; }
+.boardFoot b { color: var(--wsp-good); }
+.boardReset {
+  padding: 6px 12px; border: 1px solid var(--wsp-line); border-radius: 999px; background: var(--wsp-card);
+  color: var(--wsp-ink); font: inherit; font-size: 12.5px; font-weight: 600; cursor: pointer;
+}
+.boardReset:hover { border-color: var(--wsp-line-strong); background: var(--wsp-chip); }
+
+.orderList { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; counter-reset: none; }
+.orderRow {
+  display: flex; align-items: center; gap: 10px; padding: 9px 10px 9px 6px;
+  border: 1.5px solid var(--wsp-line); border-radius: 12px; background: var(--wsp-card);
+  transition: border-color .14s, box-shadow .14s, transform .14s;
+}
+.orderRow[data-dragging] { border-color: var(--wsp-accent); box-shadow: var(--wsp-shadow-card); transform: scale(1.015); }
+.orderHandle { flex-shrink: 0; padding: 6px 4px; color: var(--wsp-muted); font-size: 18px; line-height: 1; cursor: grab; touch-action: none; user-select: none; }
+.orderRow[data-dragging] .orderHandle { cursor: grabbing; }
+.orderPlace {
+  display: grid; place-items: center; flex-shrink: 0; width: 28px; height: 28px; border-radius: 8px;
+  background: var(--wsp-accent-soft); color: var(--wsp-accent); font-size: 13px; font-weight: 800;
+}
+.orderText { flex: 1; min-width: 0; color: var(--wsp-text); font-size: 14.5px; line-height: 1.5; overflow-wrap: anywhere; }
+.orderMoves { display: flex; gap: 4px; flex-shrink: 0; }
+.orderMoves button {
+  display: grid; place-items: center; width: 32px; height: 32px; border: 1px solid var(--wsp-line); border-radius: 8px;
+  background: var(--wsp-card); color: var(--wsp-ink); font: inherit; font-size: 15px; cursor: pointer;
+}
+.orderMoves button:hover:not(:disabled) { border-color: var(--wsp-line-strong); background: var(--wsp-chip); }
+.orderMoves button:disabled { opacity: .35; cursor: default; }
+
+.reviewPairs { display: grid; gap: 8px; margin: 0 0 12px; padding: 0; list-style: none; }
+.reviewPairs li {
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1.25fr); align-items: start; gap: 10px;
+  padding: 10px 12px; border: 1px solid var(--wsp-line); border-radius: 10px; color: var(--wsp-text); font-size: 14px; line-height: 1.5;
+}
+.reviewPairs li[data-ok="yes"] { border-color: color-mix(in srgb, var(--wsp-good) 45%, var(--wsp-line)); }
+.reviewPairs li[data-ok="no"] { border-color: color-mix(in srgb, var(--wsp-bad) 45%, var(--wsp-line)); background: var(--wsp-bad-soft); }
+.reviewArrow { color: var(--wsp-muted); padding-top: 2px; }
+.reviewYours { display: block; margin-top: 4px; color: var(--wsp-bad); font-size: 12.5px; }
+.reviewOrders { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin: 0 0 12px; }
+.reviewOrders h4 { margin: 0 0 6px; color: var(--wsp-muted); font-size: 12px; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; }
+.reviewOrders ol { display: grid; gap: 6px; margin: 0; padding-left: 22px; color: var(--wsp-text); font-size: 14px; line-height: 1.5; }
+.reviewOrders li { padding: 6px 10px; border: 1px solid var(--wsp-line); border-radius: 8px; }
+.reviewOrders li[data-ok="yes"] { border-color: color-mix(in srgb, var(--wsp-good) 45%, var(--wsp-line)); }
+.reviewOrders li[data-ok="no"] { border-color: color-mix(in srgb, var(--wsp-bad) 45%, var(--wsp-line)); background: var(--wsp-bad-soft); }
+
+@media (max-width: 520px) {
+  /* Narrow columns: the badge sits on the card's corner so the text keeps the whole width, and words break only when they must. */
+  .matchBox { column-gap: 20px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .matchColumn { gap: 12px; }
+  .matchCard { position: relative; padding: 12px 9px 9px; min-height: 46px; }
+  .matchCard .matchTag { position: absolute; top: -8px; left: -6px; width: 20px; height: 20px; font-size: 10.5px; box-shadow: 0 0 0 2px var(--wsp-card); }
+  .matchText { padding-top: 0; font-size: 13px; overflow-wrap: break-word; hyphens: auto; }
+  .orderText { font-size: 13.5px; }
+  .orderMoves button { width: 30px; height: 30px; }
+  .reviewPairs li { grid-template-columns: auto minmax(0, 1fr); }
+  .reviewArrow { display: none; }
+  .reviewPairs li > span:last-child { grid-column: 2; }
+}
+@media (prefers-reduced-motion: reduce) { .matchCard, .orderRow { transition: none; } .orderRow[data-dragging] { transform: none; } }

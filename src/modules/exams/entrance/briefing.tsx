@@ -67,7 +67,7 @@ export function EntranceBriefing({ exam, hasAccess, practice, free, loggedIn, ac
           <div><dt>Оноо</dt><dd>{meta.points}</dd></div>
           <div><dt>Тооцоолуур</dt><dd>{exam.subject === "english" ? "Шаардлагагүй" : "Хэрэглэхгүй"}</dd></div>
         </dl>
-        <p className="eesh-rail-price">{free ? "Үнэгүй · бүртгэлтэй бүх хүнд" : "₮10,000 эсвэл ЭЕШ багц"}</p>
+        <p className="eesh-rail-price">{free ? "Үнэгүй · бүртгэлтэй бүх хүнд" : "₮10,000 / 7 хоног эсвэл ЭЕШ багц"}</p>
         {exam.notes?.length ? <details className="eesh-instructions"><summary>Заавар</summary><ul>{exam.notes.map(note => <li key={note}>{note}</li>)}</ul></details> : null}
         <p className="eesh-rail-note">Зөв хариултын оноо; албан ЭЕШ-ийн оноо биш.</p>
       </aside>

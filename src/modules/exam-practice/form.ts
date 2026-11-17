@@ -108,6 +108,33 @@ export function mockPractice(definition: ExamDefinition): PracticeSource {
           ...(figure?{figure}:{}),...(hsk?{hsk}:{}),...(group.hsk?{hskGroup:group.hsk}:{}),...(question.listening?{audioPart:question.listening.part}:{})});
       }
     }
+  } else if (definition.program === "toefl") {
+    // One section per task page; Module 2 lists both routes. Practice shows every gap's prefix, so a paragraph reads whole.
+    const moduleNames: Record<string, string> = { r1: "Reading 1", r2l: "Reading 2 Lower", r2u: "Reading 2 Upper", l1: "Listening 1", l2l: "Listening 2 Lower", l2u: "Listening 2 Upper", w: "Writing", s: "Speaking" };
+    // Speaking items sit in their own stages without groups; they join the page of the intro stage before them.
+    const pages: { stage: ExamStage; group: ExamGroup; questions: ExamQuestion[] }[] = [];
+    for (const stage of definition.stages) {
+      const list = stage.variants ? [...stage.variants.lower, ...stage.variants.higher] : stage.questions;
+      if (stage.kind === "preparation") { for (const group of stage.groups ?? []) pages.push({ stage: { ...stage, kind: "speaking" }, group, questions: [] }); continue; }
+      if (!stage.groups?.length) { pages.at(-1)?.questions.push(...list.filter(question => !question.groupId)); continue; }
+      for (const group of stage.groups) pages.push({ stage, group, questions: list.filter(question => question.groupId === group.id) });
+    }
+    for (const { stage, group, questions: inGroup } of pages) {
+      if (!inGroup.length) continue;
+      const part = /-(r1|r2l|r2u|l1|l2l|l2u|w|s)-/.exec(group.id)?.[1] ?? "";
+      const kind = stage.kind === "listening" ? "listening" : stage.kind === "writing" ? "writing" : stage.kind === "speaking" ? "speaking" : "questions";
+      const first = inGroup[0].number, last = inGroup.at(-1)!.number;
+      sections.push({ id: group.id, title: `${moduleNames[part] ?? stage.title} · ${group.title} ${first === last ? first : first + "–" + last}`, kind, math: false,
+        hint: kind === "listening" ? "Бичлэгийг хэдэн ч удаа сонсож болно. Хариугаа шалгасны дараа текст нээгдэнэ." : kind === "speaking" ? "Бичлэгийг сонсоод чанга хариулж дасгал хийгээрэй. Энд бичлэг хадгалахгүй; шалгавал жишиг хариу гарна." : "" });
+      const byId = new Map(inGroup.map(question => [question.id, question]));
+      const toeflGroup = group.toefl?.layout === "words" ? { ...group.toefl, segments: group.toefl.segments.map(part => typeof part === "string" ? part : { q: part.q, prefix: byId.get(part.q)?.toefl?.gap?.prefix, missing: byId.get(part.q)?.toefl?.gap?.missing }) } : group.toefl;
+      for (const question of inGroup) {
+        authored.set(question.id, question);
+        const { id, number, domain, prompt, options, kind: questionKind, optionLabels, minWords, matcher } = question;
+        questions.push({ id, section: group.id, label: number!, domain, prompt, options, kind: questionKind, optionLabels, minWords, matcher, points: 1,
+          ...(question.toefl ? { toefl: question.toefl } : {}), ...(toeflGroup ? { toeflGroup } : {}), ...(question.context ? { context: question.context } : {}) });
+      }
+    }
   } else if (definition.program === "jlpt") {
     for (const stage of definition.stages) for (const group of stage.groups ?? []) {
       const list = stage.questions.filter(question=>question.groupId===group.id);
@@ -145,7 +172,7 @@ export function mockPractice(definition: ExamDefinition): PracticeSource {
   };
   const partOf = (id: string) => questions.find(question => question.id === id)?.audioPart;
   const transcriptFor = (id: string) => {
-    if (definition.program === "jlpt" || definition.program === "hsk") return authored.get(id)?.listening?.script;
+    if (definition.program === "jlpt" || definition.program === "hsk" || definition.program === "toefl") return authored.get(id)?.listening?.script;
     const part = partOf(id);
     return part ? transcripts[part - 1] : undefined;
   };
@@ -156,7 +183,7 @@ export function mockPractice(definition: ExamDefinition): PracticeSource {
     reveal(id, result) {
       const question = questionFor(id);
       const transcript = transcriptFor(id);
-      return { ...result, answer: question.answerDisplay ?? question.answers.join(" / "), ...(definition.program==="jlpt"||definition.program==="hsk"?{answerValue:question.answers[0]}:{}), explanation: question.explanation, points: pointsOf(question), ...(transcript ? { transcript } : {}) };
+      return { ...result, answer: question.answerDisplay ?? question.answers.join(" / "), ...(definition.program==="jlpt"||definition.program==="hsk"||(definition.program==="toefl"&&question.kind==="choice")?{answerValue:question.answers[0]}:{}), explanation: question.explanation, points: pointsOf(question), ...(transcript ? { transcript } : {}) };
     },
     material(id) {
       const question = questionFor(id);

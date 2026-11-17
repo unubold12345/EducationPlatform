@@ -60,6 +60,6 @@ export function EntranceHub({ subject }: { subject: EntranceSubject }) {
       })}
     </section>
 
-    <p className="fine-print eesh-hub-note">Нэг mock-ийн эрх ₮10,000 · ЭЕШ сарын багцад бүх ЭЕШ mock хязгааргүй багтана. Бүх даалгаврыг энэ сайтад зориулж зохиосон; БҮТ-ийн албан материал биш.</p>
+    <p className="fine-print eesh-hub-note">Нэг mock-ийн эрх ₮10,000 / 7 хоног · ЭЕШ сарын багцад бүх ЭЕШ mock хязгааргүй багтана. Бүх даалгаврыг энэ сайтад зориулж зохиосон; БҮТ-ийн албан материал биш.</p>
   </div>;
 }

@@ -5,6 +5,7 @@ import { getDb } from "@/lib/db";
 import { examDefinitions } from "@/modules/exams/definitions";
 import { entranceTotal } from "@/modules/exams/entrance/catalog";
 import { hskMocks } from "@/modules/exams/hsk/catalog";
+import { toeflMocks } from "@/modules/exams/toefl/catalog";
 import { listeningLabEnabled, readingLabEnabled, speakingLabEnabled, writingLabEnabled } from "@/lib/local-pilot";
 import { practiceSummaries } from "@/modules/exam-practice/service";
 import { finishedAttempts, openAttempts } from "@/modules/workspace/data";
@@ -35,6 +36,7 @@ export default async function WorkspaceHome() {
   const programs: (HomeProgram & { program: ExamProgram; tag: string })[] = [
     { program: "sat", href: "/exams/sat", label: "Digital SAT", detail: `${count("sat")} бүтэн mock · 98 асуулт`, tone: "tone-blue", tag: "Reading · Math" },
     { program: "ielts", href: "/exams/ielts", label: "IELTS Academic", detail: `${count("ielts")} бүтэн mock · 4 чадвар`, tone: "tone-violet", tag: "Listening · Speaking" },
+    { program: "toefl", href: "/exams/toefl", label: "TOEFL iBT", detail: `${toeflMocks.length} бүтэн mock · 2026 формат`, tone: "tone-violet", tag: "Reading · Listening · Speaking" },
     { program: "entrance", href: "/exams/eesh", label: "ЭЕШ", detail: `${entranceTotal} mock · 5 хичээл`, tone: "tone-green", tag: "Мат · Физик · Хими · Био · Англи" },
     { program: "jlpt", href: "/exams/jlpt", label: "JLPT N5・N4", detail: "6 бүтэн mock · япон audio", tone: "tone-amber", tag: "語彙 · 文法 · 聴解" },
     { program: "hsk", href: "/exams/hsk", label: "HSK 1–2", detail: `${hskMocks.length} бүтэн mock · хятад audio`, tone: "tone-amber", tag: "听力 · 阅读" },

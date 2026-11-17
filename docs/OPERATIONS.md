@@ -25,13 +25,14 @@ every session. Product facts: [PROJECT.md](./PROJECT.md) and `docs/project/`. Pa
 
 Owner actions:
 1. Make the repository private. `reference/` holds the withdrawn БҮТ papers; 2018 A and 2019 A print a no-copying notice.
-2. Confirm plan figures: ЭЕШ ₮40,000, Гадаад хэл ₮60,000 (3,000 AI credits), and that the ЭЕШ plan keeps a 100-word bank and 5 saved exams.
+2. Confirm plan figures (2026-11-17): ЭЕШ ₮29,900, Гадаад хэл Basic ₮29,900, Pro ₮59,900; 7-day mock purchases; and that Basic and Pro open every non-ЭЕШ mock with no picks.
 3. Audio: listen to the free mocks (HSK free item 1 was misheard by Whisper) and to JLPT audio revision 2 (VoxCPM2 narrator, 2026-11-16).
 4. Complete one real Google sign-in with an owner-controlled account (only the authorization start is verified).
 5. Buy a sender domain if wanted, then switch to Resend ([troubleshooting](./project/troubleshooting.md)).
 6. Listen to one Speaking Lab partner on the hosted site from a phone. The DeepInfra key was pasted into a chat; consider replacing it.
 7. Old exercise rows stay in Neon by owner choice (2026-11-05); keep the tables, no dropping migration unless asked
    (`scripts/purge-exercises.mjs` is available).
+8. TOEFL: the nine forms are on the site (2026-11-18) with synthetic recordings nobody has listened to; listen to the ones `MockExmps/TOEFL/AUDIO.md` flags and get a teacher's read.
 
 For agents:
 - Not verified on the hosted site: signed-in dashboard, admin, plans, picks, retries, free sittings, or a real sitting.
@@ -66,7 +67,7 @@ restarts, database changes, commits or pushes, and remove the row when done. Nev
 | Before an authorized push | `npm run check:push` (build + core); add affected groups | 1.5 min |
 | Behaviour across routes (server/API, data or migrations, auth/session, route or layout structure, exam lifecycle/timers/grading, payments/entitlements, publishing, shared component logic) | `npm run check:all` | 5.5 min |
 
-Groups: `core` (routing, sessions, layout, exam engine) · `vocabulary` · `myexams` (exam from file) · `entrance` (ЭЕШ mocks, hub,
+Groups: `core` (routing, sessions, layout, exam engine) · `vocabulary` · `decks` (JLPT/HSK decks, Workshop tabs) · `myexams` (exam from file) · `entrance` (ЭЕШ mocks, hub,
 withdrawn-paper 404s) · `mocks` (added SAT/IELTS forms, Гадаад хэл picks) · `free` (free mocks, their audio) · `jlpt` · `hsk`
 (also the `/exams` grid) · `practice` (practice mode, assistant, sitting tools) · `admin` (admin, publishing) · `billing` (plans,
 prices, checkout, access, picks) · `account` (profile, password, demo accounts) · `ui` (theme, global CSS, chrome, homepage, copy) ·
@@ -114,16 +115,24 @@ npm run admin:grant -- qa-demo-01@example.invalid
 ## 7. Recent
 
 Full entries, with attribution and verification limits, are at the top of [OPERATIONS_HISTORY.md](./OPERATIONS_HISTORY.md).
-- **2026-11-17 · Claude Code (Opus 5.5) · Exam from file: question formats** ([my-exams](./project/my-exams.md)): seven formats as chips (choice,
-  true/false, fill-in, matching, I–III, case, order), each still one option, so grading and the mobile app are unchanged; the server plans the mix,
-  groups it and spreads the key over A–D. `check -- myexams` passed (308 unit, build, mixed-exam suite); screenshots reviewed. No live DeepSeek run, no commit.
-- **2026-11-16 · Claude Code (Opus 5.5) · JLPT audio revision 2** ([assessments](./project/assessments.md)): N5/N4 narrator re-voiced with VoxCPM2
-  via the VoiceStudio app (warm male, owner-picked); dialogue keeps the Kokoro takes. `assets/jlpt-audio`, `/audio/jlpt`, `audioRevision: 2`; old
-  sittings keep revision 1. Whisper flagged one narrator line (N5-02 L24). `check` passed; no browser suite, build or human listen.
-- **2026-11-16 · Claude Code (Fable 5.2) · HSK 2, three mocks** ([assessments](./project/assessments.md)): `hsk2-mock-01`–`03`, 60 items each, 82 new pictures, 22 min of Kokoro audio per mock, two-level hub. `check -- hsk` passed (304 unit, build, HSK 1 and 2 browser flow);
-  screenshots of the HSK 2 sitting, practice and results reviewed; 3001 restarted on the new build (owner approved). Audio unchecked by Whisper or ear; drafts await a teacher. No commit.
-- **2026-11-16 · Claude Code (Fable 5.2) · Homepage loops rebuilt** ([HOMEPAGE_MEDIA](./HOMEPAGE_MEDIA.md)): the three loops are now 12 to 14 s
-  films from real screenshots with camera moves, a pointer and numbered captions (`scripts/home-loops/`, HyperFrames). `check -- ui` passed;
-  frames reviewed; files are 0.9 to 1.7 MB (were 0.3 to 0.5). Old set: `artifacts/home-recordings/prev-2026-11-16/`. No commit.
-- **2026-11-16 · Claude Code (Fable 5.2) · Typed hero headline** ([ui-homepage](./project/ui-homepage.md)): the homepage headline types
-  itself slowly and keeps a blinking caret (`hero-typing.tsx`). `check -- ui` passed; 3001 rebuilt (`next start`) and seen at 1280 and 390. No commit.
+- **2026-11-18 · Claude Code (Opus 5.5) · TOEFL iBT mocks on the site** ([assessments](./project/assessments.md)): nine forms at
+  `/exams/toefl` (Basic/Pro or 7-day buy): routed Reading/Listening modules, listening answer windows on the server clock,
+  one-clip audio allowlist, letter-box gaps, Build a Sentence, writing, recorded speaking, raw results, practice. Audio
+  function traced at 88.5 MB (limit 250). `npm run check` and all 17 browser groups passed; committed with every agent's
+  pending work and pushed. Recordings not listened to; no teacher review.
+- **2026-11-18 · Claude Code (Opus 5.5) · Workshop quiz, deck page redesign** ([language-decks](./project/language-decks.md)):
+  Duolingo-style quiz maker and session for Kana, JLPT/HSK decks and the Pinyin tone drill (8 exercise kinds, retries,
+  results, grades saved); deck page now hero + lesson path + word cards. Restore script in
+  `artifacts/design-backup-2026-11-18`. Next.js 16.4.6 security bump verified in worktree `../educationplatform-security`,
+  not merged. Deck/vocabulary tests and both browser suites passed on 3001 (full unit step fails on TOEFL work in progress). No commit.
+- **2026-11-18 · Claude Code (Opus 5.5) · Kana, Pinyin workshops, deck Romaji** ([language-decks](./project/language-decks.md)):
+  `/labs/kana` (hiragana/katakana charts, row cards and quiz) and `/labs/pinyin` (tones, 405-syllable chart, tone drill on 302
+  HSK words), chart first, Basic/Pro only, progress in the existing deck table (no migration). JLPT decks get a Romaji toggle;
+  two wrong example readings fixed. `check -- decks vocabulary` passed; local DB stalled once and was restarted; 3001 rebuilt. No commit.
+- **2026-11-18 · Claude Code (Opus 5.5) · JLPT/HSK word decks, Workshop exam tabs** ([language-decks](./project/language-decks.md)):
+  N5/N4/HSK 1/HSK 2 decks (1,248 words, DeepSeek drafts for review), Basic/Pro only, progress table (migration `20261118120000`).
+  `check -- decks vocabulary writing` passed; 3001 rebuilt. Apply the migration on Neon before deploying. No commit.
+- **2026-11-18 · Claude Code (Opus 5.5) · TOEFL offline recordings** ([assessments](./project/assessments.md)): 459 Kokoro
+  MP3s for the nine `MockExmps/TOEFL` forms, manifests, `AUDIO.md`; modules 19–20/8/10.5 min (blueprint 18/7/11). Validator:
+  structure passed, Whisper flags 23 recordings for words and 17 for names. `build.py` 0 errors. Not listened to; no commit.
+  Site build plan (no code): [plans/2026-11-18-toefl-mocks-on-site.md](./superpowers/plans/2026-11-18-toefl-mocks-on-site.md).

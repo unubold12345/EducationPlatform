@@ -40,7 +40,7 @@ const NANO_PER_CREDIT = Math.round(CREDIT_USD * 1e9);
 
 export type AiAction =
   | "chat" | "review-coach" | "practice-assistant" | "math-tutor"
-  | "writing-ideas" | "writing-grammar" | "writing-feedback"
+  | "writing-ideas" | "writing-grammar" | "writing-feedback" | "writing-review"
   | "speaking-turn" | "speaking-report"
   | "vocabulary-import" | "exam" | "exam-retry" | "exam-10" | "exam-20" | "reading-practice" | "reading-retry" | "roadmap";
 
@@ -58,7 +58,11 @@ export const AI_ACTIONS: Record<AiAction, ActionBudget> = {
   "math-tutor": { label: "Нэг хариулт", area: "SAT математикийн AI багш", inputTokens: 4000, outputTokens: 1400 },
   "writing-ideas": { label: "Санаа авах", area: "Essay Studio", inputTokens: 3000, outputTokens: 1200 },
   "writing-grammar": { label: "Дүрэм шалгах", area: "Essay Studio", inputTokens: 5000, outputTokens: 2400 },
-  "writing-feedback": { label: "Бүрэн үнэлгээ", area: "Essay Studio", inputTokens: 5000, outputTokens: 3600 },
+  // The quick report the mobile app still asks for; the website's full review is "writing-review".
+  "writing-feedback": { label: "Товч үнэлгээ (апп)", area: "Essay Studio", inputTokens: 5000, outputTokens: 3600 },
+  // The full examiner review on DeepSeek with thinking (owner request 2026-11-17): reasoning is usually 7,000–9,000
+  // tokens and the review 3,000–4,000, so 16,000 leaves room for a long text.
+  "writing-review": { label: "Бүрэн үнэлгээ", area: "Essay Studio", inputTokens: 4000, outputTokens: 16000 },
   "speaking-turn": { label: "Ярилцагчийн нэг хариулт", area: "Speaking Lab", inputTokens: 5000, outputTokens: 900 },
   "speaking-report": { label: "Эцсийн тайлан", area: "Speaking Lab", inputTokens: 14000, outputTokens: 3200 },
   "vocabulary-import": { label: "Файлаас үг оруулах", area: "Үгсийн сан", inputTokens: 24000, outputTokens: 8000 },
@@ -256,18 +260,29 @@ export const READING_PRACTICE_RATE = {
   replyTokens: 600,
 } as const;
 
-/** Credits for reading `textChars` of material (or `images` page photos) and returning a passage of `passageWords` with `questions` questions. */
-export function readingPracticeCredits(textChars: number, passageWords: number, questions: number, images = 0) {
+/**
+ * What a practice costs a student (owner rule 2026-11-17, was its DeepSeek cost): like an exam from a file, a
+ * fixed price per question delivered, never below `floorMargin` times the DeepSeek peak cost of that practice.
+ */
+export const READING_PRICE = { perQuestion: 2, floorMargin: 2 } as const;
+/** DeepSeek peak list cost, in nano-dollars, of reading `textChars` (or `images` page photos) and returning a passage of `passageWords` with `questions` questions. */
+export function readingPracticeCostNano(textChars: number, passageWords: number, questions: number, images = 0) {
   const rate = READING_PRACTICE_RATE;
   const chars = bounded(textChars, READING_LIMITS.textChars);
   const words = bounded(passageWords, READING_LIMITS.passageWords.max);
   const count = bounded(questions, READING_LIMITS.questions.max);
   const pictures = bounded(images, AI_IMAGE_LIMITS.perUpload);
-  return creditsForTokens(
+  return costNanoUsd(
     // A practice reads pasted text, a document or page photos, never two of them, so the larger one is priced.
     rate.promptTokens + Math.max(Math.ceil(chars / rate.charsPerToken), pictures * AI_IMAGE_LIMITS.tokens),
     rate.replyTokens + words * rate.tokensPerPassageWord + count * rate.tokensPerQuestion,
   );
+}
+/** Credits for a practice from `textChars` of material (or `images` page photos) with a passage of `passageWords` and `questions` questions. */
+export function readingPracticeCredits(textChars: number, passageWords: number, questions: number, images = 0) {
+  const value = bounded(questions, READING_LIMITS.questions.max) * READING_PRICE.perQuestion;
+  const floor = Math.ceil(READING_PRICE.floorMargin * readingPracticeCostNano(textChars, passageWords, questions, images) / NANO_PER_CREDIT);
+  return Math.max(1, value, floor);
 }
 /** The reply budget, and the provider's `max_tokens`, of a practice with up to `questions` questions: the longest passage plus them. */
 export function readingOutputTokens(questions: number) {
@@ -287,8 +302,8 @@ export function readingPracticeHold(textChars: number, images = 0, questions: nu
  * Credits for a retry of a Reading Lab practice: new questions on the passage already saved with it. Half of what
  * a new practice with this passage (`passageChars` characters, `passageWords` words) and `questions` questions
  * costs (`RETRY_PRICE`). The passage and the count are known before the call, so this is also the hold. Reading
- * Lab is sold at DeepSeek's cost, so at peak hours a retry can cost DeepSeek slightly more than this (the owner
- * chose half price knowing that); off-peak and with a cached prompt it does not.
+ * Lab practices are sold above DeepSeek's cost since 2026-11-17 (`READING_PRICE`), so half the price still covers
+ * a retry's own cost.
  */
 export function readingRetryCredits(passageChars: number, passageWords: number, questions: number) {
   return Math.max(1, retryShare(readingPracticeCredits(passageChars, passageWords, questions)));
@@ -310,7 +325,7 @@ export function readingRetryOutputTokens(questions: number) {
  * Actions sold above their DeepSeek cost; every other action's price is its token budget's cost, except the two
  * retries (`RETRY_ACTIONS`), which are a share of the first generation's price.
  */
-export const MARGIN_ACTIONS: readonly AiAction[] = ["vocabulary-import", "exam"];
+export const MARGIN_ACTIONS: readonly AiAction[] = ["vocabulary-import", "exam", "reading-practice"];
 export const RETRY_ACTIONS: readonly AiAction[] = ["exam-retry", "reading-retry"];
 /** The longest passage a stored practice can hold, in characters: what a Reading Lab retry reads at most. */
 const READING_PASSAGE_CHARS = READING_LIMITS.paragraphs.max * READING_LIMITS.paragraph;
@@ -319,6 +334,7 @@ export const CREDIT_COSTS = {
   "vocabulary-import": vocabularyImportHold(VOCABULARY_LIMITS.importWords),
   "exam": examHold(MY_EXAM_LIMITS.questions),
   "exam-retry": examRetryCredits(MY_EXAM_LIMITS.textChars, MY_EXAM_LIMITS.questions),
+  "reading-practice": readingPracticeHold(READING_LIMITS.textChars),
   "reading-retry": readingRetryCredits(READING_PASSAGE_CHARS, READING_LIMITS.passageWords.max, READING_LIMITS.questions.max),
 } as Record<AiAction, number>;
 /**
@@ -413,16 +429,37 @@ export function validGrant(value: unknown): value is number {
   return typeof value === "number" && Number.isInteger(value) && value >= CREDIT_GRANT_LIMITS.min && value <= CREDIT_GRANT_LIMITS.max;
 }
 /**
- * The one AI credit pack on sale. Admins change both numbers in the Prices tab (`CreditPack`); this is the
- * fallback when no row exists. Purchased credits never expire and are spent after the monthly and plan credits.
+ * The AI credit packs on sale (owner rule 2026-11-17: several sizes, admin-editable). Admins add, change and remove packs
+ * in the Prices tab (`CreditPack`, one row per pack); these are the fallback when no row exists, at 5 tugrik a credit.
+ * Purchased credits never expire and are spent after the monthly and plan credits.
  */
-export const DEFAULT_CREDIT_PACK = { credits: 1000, amountMnt: 5000 } as const;
 export type CreditPackOffer = { credits: number; amountMnt: number };
+export const DEFAULT_CREDIT_PACKS: readonly CreditPackOffer[] = [
+  { credits: 200, amountMnt: 1000 }, { credits: 500, amountMnt: 2500 }, { credits: 1000, amountMnt: 5000 },
+  { credits: 2000, amountMnt: 10000 }, { credits: 5000, amountMnt: 25000 },
+];
+/** The single pack older code (the mobile app's plans route) still reads: the 1,000-credit pack. */
+export const DEFAULT_CREDIT_PACK = { credits: 1000, amountMnt: 5000 } as const;
 export const CREDIT_PACK_LIMITS = { credits: { min: 10, max: 100_000 }, amountMnt: { min: 1000, max: 1_000_000, step: 100 } } as const;
+/** How many packs the list may hold. */
+export const CREDIT_PACK_COUNT = { min: 1, max: 12 } as const;
 export function validCreditPack(credits: unknown, amountMnt: unknown) {
   const { credits: c, amountMnt: m } = CREDIT_PACK_LIMITS;
   return typeof credits === "number" && Number.isInteger(credits) && credits >= c.min && credits <= c.max
     && typeof amountMnt === "number" && Number.isInteger(amountMnt) && amountMnt >= m.min && amountMnt <= m.max && amountMnt % m.step === 0;
+}
+
+/** A whole list of packs an admin saves: 1–12 valid packs with different credit amounts. */
+export function validCreditPacks(value: unknown): value is CreditPackOffer[] {
+  if (!Array.isArray(value) || value.length < CREDIT_PACK_COUNT.min || value.length > CREDIT_PACK_COUNT.max) return false;
+  const seen = new Set<number>();
+  for (const item of value) {
+    if (!item || typeof item !== "object" || Array.isArray(item) || Object.keys(item).length !== 2) return false;
+    const { credits, amountMnt } = item as Record<string, unknown>;
+    if (!validCreditPack(credits, amountMnt) || seen.has(credits as number)) return false;
+    seen.add(credits as number);
+  }
+  return true;
 }
 
 /** The code defaults, used where no admin-set row exists. */

@@ -25,6 +25,7 @@ const freeAudio = freeData as ItemTimings;
  * assets/free-audio (the free mocks) and `…/audio/jlpt` serves assets/jlpt-audio (JLPT audio revision 2). A new
  * recording set should get its own folder and route segment. `version` is the attempt's or practice form's audio revision.
  */
+// TOEFL (assets/toefl-audio) plays one clip per item through `…/audio/toefl` and its own handlers in toefl/audio.ts, not this set.
 export type AudioSet="base"|"forms"|"hsk"|"free"|"jlpt";
 export const audioSetOf=(slug:string,version=2):AudioSet=>Object.hasOwn(formsData,slug)?"forms":Object.hasOwn(hskAudio,slug)?"hsk":Object.hasOwn(freeAudio,slug)?"free":jlptRevised(slug,version)?"jlpt":"base";
 export const audioPath=(slug:string,version=2)=>({base:"/audio",forms:"/audio/forms",hsk:"/audio/hsk",free:"/audio/free",jlpt:"/audio/jlpt"} as const)[audioSetOf(slug,version)];

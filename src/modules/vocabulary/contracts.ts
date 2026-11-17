@@ -112,10 +112,10 @@ export function vocabularyCapacity(programs: readonly string[], extraWords = 0) 
   return Math.min(VOCABULARY_LIMITS.maxWords, words + extra);
 }
 
-/** The plans on sale that make the bank bigger than the free one, for the upgrade hint. */
+/** The plan(s) on sale with the biggest bank, for the upgrade hint (a smaller plan's bank is not the way to grow it). */
 export function vocabularyUpgrade() {
-  const plans = subscriptionPlans.filter(plan => plan.vocabularyWords > VOCABULARY_LIMITS.freeWords);
-  return { words: Math.max(VOCABULARY_LIMITS.freeWords, ...plans.map(plan => plan.vocabularyWords)), plans: plans.map(plan => plan.shortTitle) };
+  const words = Math.max(VOCABULARY_LIMITS.freeWords, ...subscriptionPlans.map(plan => plan.vocabularyWords));
+  return { words, plans: words > VOCABULARY_LIMITS.freeWords ? subscriptionPlans.filter(plan => plan.vocabularyWords === words).map(plan => plan.shortTitle) : [] };
 }
 
 /** The readable "bank is full" message, with the plan and the yellow-credit space as ways to grow it. */

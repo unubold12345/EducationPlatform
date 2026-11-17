@@ -57,7 +57,7 @@ const right = (outcome: Outcome | null | undefined) => outcome?.result === "corr
 const gradeOf = (outcome: Outcome): StudyGrade => !right(outcome) ? "again" : outcome.result === "close" || outcome.hinted ? "hard" : "good";
 const clock = (seconds: number) => `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
 
-function makeRun(pool: VocabularyWord[], bank: VocabularyWord[], settings: Settings, smart: boolean, canSpeak: (lang: string) => boolean): Run | null {
+function makeRun(pool: QuizBankWord[], bank: QuizBankWord[], settings: Settings, smart: boolean, canSpeak: (lang: string) => boolean): Run | null {
   const startedAt = Date.now();
   const questions = buildQuiz(pool, {
     count: Math.min(settings.count, MAX_QUESTIONS), direction: settings.direction, kinds: settings.kinds,
@@ -68,9 +68,15 @@ function makeRun(pool: VocabularyWord[], bank: VocabularyWord[], settings: Setti
   return { questions, outcomes: questions.map(() => null), index: 0, startedAt, before: Object.fromEntries(questions.map(item => [item.wordId, boxes.get(item.wordId) ?? 0])) };
 }
 
-export function Quiz({ userId, words, decks, launch, now, onExit, onStudied, onStar }: {
-  userId: string; words: VocabularyWord[]; decks: VocabularyDeck[]; launch: QuizLaunch; now: number;
-  onExit: () => void; onStudied: (updates: StudyUpdate[]) => void; onStar: (ids: string[]) => Promise<string | null>;
+// The JLPT/HSK decks (Workshop) reuse this quiz: their words carry a reading and a voice language, grades go to the
+// deck's own review route, and there is no star (`onStar` absent).
+export type QuizBankWord = VocabularyWord & { reading?: string | null; lang?: string; answers?: readonly string[] };
+
+export function Quiz({ userId, words, decks, launch, now, onExit, onStudied, onStar, reviewUrl = VOCABULARY_API + "/review", groups = { label: "Багц", all: "Бүх багц", none: "Багцгүй үгс" }, exitLabel = "Үгс рүү буцах" }: {
+  userId: string; words: QuizBankWord[]; decks: VocabularyDeck[]; launch: QuizLaunch; now: number;
+  onExit: () => void; onStudied: (updates: StudyUpdate[]) => void; onStar?: (ids: string[]) => Promise<string | null>;
+  /** How the deck filter is named; decks call their groups lessons and have no ungrouped words (`none: null`). */
+  reviewUrl?: string; groups?: { label: string; all: string; none: string | null }; exitLabel?: string;
 }) {
   const { canSpeak, any: hasVoice } = useVoices();
   const [settings, setSettings] = useState<Settings>(() => loadSettings(userId));
@@ -100,7 +106,7 @@ export function Quiz({ userId, words, decks, launch, now, onExit, onStudied, onS
   const scopeCounts = useMemo(() => Object.fromEntries(QUIZ_SCOPES.map(item => [item, quizPool(inDeck, { scope: item, now }).length])) as Record<QuizScope, number>, [inDeck, now]);
   const available: Record<QuizKind, boolean> = useMemo(() => ({
     choice: true, typing: true, truefalse: true, card: true,
-    listening: pool.some(word => { const speech = speechFor(word.term); return Boolean(speech && canSpeak(speech.lang)); }),
+    listening: pool.some(word => { const speech = speechFor(word.term, word.lang); return Boolean(speech && canSpeak(speech.lang)); }),
     cloze: pool.some(word => clozeText(word.example, word.term)),
   }), [pool, canSpeak]);
   const kinds = settings.kinds.filter(kind => available[kind]);
@@ -145,7 +151,7 @@ export function Quiz({ userId, words, decks, launch, now, onExit, onStudied, onS
     if (!results.length) return;
     setSaveError("");
     try {
-      const data = await sendJson<{ words: StudyUpdate[] }>(VOCABULARY_API + "/review", { results });
+      const data = await sendJson<{ words: StudyUpdate[] }>(reviewUrl, { results });
       setSaved(data.words);
       onStudied(data.words);
     } catch (reason) {
@@ -254,7 +260,7 @@ export function Quiz({ userId, words, decks, launch, now, onExit, onStudied, onS
   }, []);
 
   if (stage === "setup") return <div className={`wsp-page ${styles.page}`}>
-    <button type="button" className={styles.back} onClick={onExit}><Icon name="back" size={18} />Үгс рүү буцах</button>
+    <button type="button" className={styles.back} onClick={onExit}><Icon name="back" size={18} />{exitLabel}</button>
     <section className={styles.quizSetup} aria-labelledby="quiz-setup-heading">
       <div className={styles.setupHead}>
         <span className={styles.quizSetupMark} aria-hidden="true"><Icon name="bolt" size={26} /></span>
@@ -271,11 +277,11 @@ export function Quiz({ userId, words, decks, launch, now, onExit, onStudied, onS
             onClick={() => { setScope(item); setError(""); }}><strong>{SCOPE_LABEL[item]}</strong><span>{item === "smart" ? "Чухлыг нь түрүүлж" : `${scopeCounts[item]} үг`}</span></button>)}</div>
           <small>{scope === "smart" ? "Давтах цаг нь болсон, шинэ, сул үгсийг түрүүлж асууна." : `${pool.length} үгээс асууна.`}</small>
         </div>
-        <label className={styles.option}><span>Багц</span>
+        <label className={styles.option}><span>{groups.label}</span>
           <select value={deck} onChange={event => { setDeck(event.target.value); setError(""); }}>
-            <option value="all">Бүх багц</option>
+            <option value="all">{groups.all}</option>
             {decks.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}
-            <option value="none">Багцгүй үгс</option>
+            {groups.none ? <option value="none">{groups.none}</option> : null}
           </select>
         </label>
       </>}
@@ -330,7 +336,7 @@ export function Quiz({ userId, words, decks, launch, now, onExit, onStudied, onS
     const raised = first.filter(entry => right(entry.result) && (after.get(entry.item.wordId) ?? -1) > (run.before[entry.item.wordId] ?? 0)).length;
     const missedWords = words.filter(word => missed.includes(word.id));
     return <div className={`wsp-page ${styles.page}`}>
-      <button type="button" className={styles.back} onClick={onExit}><Icon name="back" size={18} />Үгс рүү буцах</button>
+      <button type="button" className={styles.back} onClick={onExit}><Icon name="back" size={18} />{exitLabel}</button>
       <section className={styles.quizDone} aria-labelledby="quiz-done-heading">
         <span className={styles.quizDoneMark} data-tone={percent >= 80 ? "good" : percent >= 50 ? "ok" : "low"} aria-hidden="true"><strong>{percent}</strong>%</span>
         <p className={styles.kicker}>QUIZ ДУУССАН</p>
@@ -349,7 +355,7 @@ export function Quiz({ userId, words, decks, launch, now, onExit, onStudied, onS
             const was = run.before[item.wordId] ?? 0, next = after.get(item.wordId);
             return <li key={item.id} data-result={right(result) ? (result!.result === "close" || result!.hinted ? "hard" : "good") : "again"}>
               <span className={styles.resultMark} aria-hidden="true"><Icon name={right(result) ? "check" : "close"} size={14} /></span>
-              <strong>{item.term}</strong><span>{item.translation}</span>
+              <strong>{item.term}{item.reading && item.reading !== item.term ? <small> {item.reading}</small> : null}</strong><span>{item.translation}</span>
               {next === undefined ? null : !right(result) ? <em className={styles.down}>Удахгүй дахин асууна</em>
                 : <em className={next > was ? styles.up : undefined}>{next > was ? `Түвшин ${was} → ${next}` : `Түвшин ${next}/${STUDY_BOX_MAX}`}</em>}
             </li>;
@@ -361,10 +367,10 @@ export function Quiz({ userId, words, decks, launch, now, onExit, onStudied, onS
           {missedWords.length ? <button type="button" className={styles.primary} onClick={() => start(missedWords, false)}><Icon name="repeat" size={17} />Алдсан {missedWords.length} үгээр дахин</button> : null}
           <button type="button" className={missedWords.length ? styles.ghost : styles.primary} onClick={() => start()}><Icon name="repeat" size={17} />Дахин авах</button>
           <button type="button" className={styles.ghost} onClick={() => { setRun(null); setDone(null); }}>Тохиргоо</button>
-          {missedWords.length ? <button type="button" className={styles.ghost} disabled={starred} onClick={() => { setStarred(true); void onStar(missedWords.map(word => word.id)).then(problem => { if (problem) { setStarred(false); setSaveError(problem); } }); }}>
+          {missedWords.length && onStar ? <button type="button" className={styles.ghost} disabled={starred} onClick={() => { setStarred(true); void onStar(missedWords.map(word => word.id)).then(problem => { if (problem) { setStarred(false); setSaveError(problem); } }); }}>
             <Glyph name="star" size={16} filled={starred} />{starred ? "Онцолсон" : "Алдсан үгсийг онцлох"}
           </button> : null}
-          <button type="button" className={styles.ghost} onClick={onExit}>Үгс рүү буцах</button>
+          <button type="button" className={styles.ghost} onClick={onExit}>{exitLabel}</button>
         </div>
       </section>
     </div>;
@@ -372,7 +378,7 @@ export function Quiz({ userId, words, decks, launch, now, onExit, onStudied, onS
 
   if (!run || !question) return <div className={`wsp-page ${styles.page}`}>
     <p className={styles.error} role="alert">Quiz ачаалж чадсангүй. Үгс рүү буцаад дахин оролдоно уу.</p>
-    <button type="button" className={styles.ghost} onClick={onExit}>Үгс рүү буцах</button>
+    <button type="button" className={styles.ghost} onClick={onExit}>{exitLabel}</button>
   </div>;
 
   const hitsSoFar = run.outcomes.filter((item, index) => right(item) && !run.questions[index].retry).length;
@@ -432,7 +438,7 @@ export function Quiz({ userId, words, decks, launch, now, onExit, onStudied, onS
         {answered ? <>
           <strong className={right(outcome) ? styles.feedbackGood : styles.feedbackBad}>{verdict}</strong>
           {!right(outcome) || outcome?.result === "close" ? <p>Зөв хариулт: <b>{correctText}</b></p> : null}
-          <p className={styles.feedbackPair}><span>{question.term}</span><i aria-hidden="true">→</i><span>{question.translation}</span></p>
+          <p className={styles.feedbackPair}><span>{question.term}{question.reading && question.reading !== question.term ? <small> {question.reading}</small> : null}</span><i aria-hidden="true">→</i><span>{question.translation}</span></p>
           {question.example ? <p className={styles.feedbackExample}>“{question.example}”</p> : null}
         </> : <p className={styles.feedbackHint}>{question.kind === "card" ? "Хариуг санаад, дараа нь шалгаарай." : question.kind === "typing" ? "Хариултаа бичээд Enter дарна уу." : "Хариултаа сонгоно уу."}</p>}
       </div>
@@ -449,7 +455,7 @@ export function Quiz({ userId, words, decks, launch, now, onExit, onStudied, onS
 }
 
 /** The words a session may draw from: an explicit selection, or a deck narrowed by scope. */
-function scopedPool(words: VocabularyWord[], launch: QuizLaunch, scope: QuizScope, deck: string, now: number) {
+function scopedPool(words: QuizBankWord[], launch: QuizLaunch, scope: QuizScope, deck: string, now: number) {
   if (launch.wordIds?.length) {
     const ids = new Set(launch.wordIds);
     return words.filter(word => ids.has(word.id));

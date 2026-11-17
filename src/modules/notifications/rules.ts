@@ -38,8 +38,9 @@ export function planPaidNotice(planTitle: string, end: Date, renewed: boolean, o
 export function planGrantedNotice(planTitle: string, end: Date): Notice {
   return { kind: "plan-granted", title: "Танд сарын эрх олголоо", body: `${planTitle} багц ${noticeDate(end)} хүртэл идэвхтэй.`, href: "/workspace/plans", dedupeKey: null };
 }
-export function mockPaidNotice(examTitle: string, slug: string, orderId: string): Notice {
-  return { kind: "mock-paid", title: "Шалгалтын эрх нээгдлээ", body: examTitle, href: "/exams/" + slug, dedupeKey: "order:" + orderId };
+/** `until` is when a 7-day purchase ends; the same order row is bought again after it lapses, so the end is part of the key. */
+export function mockPaidNotice(examTitle: string, slug: string, orderId: string, until?: Date): Notice {
+  return { kind: "mock-paid", title: "Шалгалтын эрх нээгдлээ", body: until ? `${examTitle} · ${noticeDate(until)} хүртэл` : examTitle, href: "/exams/" + slug, dedupeKey: "order:" + orderId + (until ? ":" + until.getTime() : "") };
 }
 export function creditsPaidNotice(credits: number, orderId: string): Notice {
   return { kind: "credits-paid", title: "Кредит нэмэгдлээ", body: `${credits.toLocaleString("en-US")} кредит таны дансанд орлоо.`, href: "/workspace/plans#credits", dedupeKey: "order:" + orderId };

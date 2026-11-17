@@ -11,18 +11,20 @@ import { join } from "node:path";
 const groups = {
   core: ["browser", "accounts", "exams"],
   vocabulary: ["vocabulary"],
+  decks: ["language_decks"],
   myexams: ["my_exams"],
   entrance: ["entrance_mocks"],
   mocks: ["additional_exams"],
   free: ["free_mocks"],
   jlpt: ["jlpt"],
   hsk: ["hsk"],
+  toefl: ["toefl"],
   practice: ["exam_practice"],
   admin: ["admin", "publishing"],
   billing: ["payments", "subscriptions"],
   account: ["profile", "demo_accounts"],
   ui: ["theme", "homepage_polish"],
-  writing: ["writing_lab"],
+  writing: ["writing_lab", "writing_expert"],
   notifications: ["notifications"],
 };
 const args = process.argv.slice(2);
@@ -82,7 +84,11 @@ if (await health()) {
 }
 
 // Suites test the real open-sitting block, so the development override is always off here.
-const env = { ...process.env, TEST_BASE_URL: base, BETTER_AUTH_URL: base, PYTHONIOENCODING: "utf-8", DEV_PRACTICE_DURING_MOCK: "false" };
+// Browser suites never reach Claude, nor DeepSeek for the essay review: the server talks to the suites' local mock
+// (tests/writing_expert_smoke.py), Claude with a fake key. Only the essay review reads DEEPSEEK_BASE_URL.
+const mockBase = `http://127.0.0.1:${process.env.MOCK_ANTHROPIC_PORT ?? "8471"}`;
+const env = { ...process.env, TEST_BASE_URL: base, BETTER_AUTH_URL: base, PYTHONIOENCODING: "utf-8", DEV_PRACTICE_DURING_MOCK: "false",
+  ANTHROPIC_API_KEY: "check-mock-key", ANTHROPIC_BASE_URL: mockBase, DEEPSEEK_BASE_URL: mockBase };
 const server = spawn(process.execPath, ["node_modules/next/dist/bin/next", "start", "-p", port], { env, stdio: "ignore" });
 function stopServer() {
   if (process.platform === "win32") spawnSync("taskkill", ["/pid", String(server.pid), "/T", "/F"], { stdio: "ignore" });

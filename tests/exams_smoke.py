@@ -35,7 +35,7 @@ with sync_playwright() as p:
     page.on("pageerror",lambda e:errors.append(str(e)))
     page.goto(BASE+"/exams")
     page.wait_for_load_state("networkidle")
-    expect(page.locator(".library-list .exam-card")).to_have_count(5)
+    expect(page.locator(".library-list .exam-card")).to_have_count(6)
     expect(page.locator(".library-list .exam-card.entrance")).to_have_count(1)
     expect(page.locator(".library-list .exam-card.entrance").first).to_contain_text("ЭЕШ")
     page.screenshot(path=str(ART/"exams-grid-desktop.png"),full_page=True)

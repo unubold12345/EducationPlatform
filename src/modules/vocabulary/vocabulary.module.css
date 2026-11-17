@@ -32,6 +32,7 @@
 .studyFace { display: grid; flex: 1; place-content: center; justify-items: center; gap: 10px; min-width: 0; padding: 24px 4px 22px; text-align: center; }
 .studyTerm { display: flex; align-items: center; justify-content: center; gap: 12px; max-width: 100%; margin: 0; color: var(--wsp-ink); font-size: clamp(30px, 5.6vw, 48px); font-weight: 740; line-height: 1.15; letter-spacing: -.035em; }
 .studyTerm > span { min-width: 0; overflow-wrap: anywhere; }
+.studyReading { margin: 0; color: var(--wsp-muted); font-size: 15px; font-weight: 600; }
 .studyAnswer { margin: 0; color: var(--wsp-accent); font-size: clamp(18px, 2.6vw, 22px); font-weight: 650; line-height: 1.4; overflow-wrap: anywhere; }
 .studyExample { max-width: 54ch; margin: 0; color: var(--wsp-muted); font-size: 13.5px; font-style: italic; line-height: 1.55; overflow-wrap: anywhere; }
 .studyGrade { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; width: min(460px, 100%); margin: 0 auto; }

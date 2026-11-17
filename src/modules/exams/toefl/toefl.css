@@ -1,0 +1,88 @@
+/* TOEFL iBT hub, briefing, sitting, practice and results. Scoped under .toefl-*; one accent colour from the site tokens. */
+.toefl-hub,.toefl-work,.toefl-results,.toefl-practice{--toefl-accent:var(--blue);min-width:0}
+.toefl-hub-head{max-width:780px;margin:30px 0}.toefl-hub-head h1{font-size:clamp(32px,5vw,56px);margin:10px 0}.toefl-hub-head>p{color:var(--muted);line-height:1.8}
+.toefl-format{color:var(--muted);font-size:14px;margin:0 0 18px;line-height:1.7}
+.toefl-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.toefl-card{display:flex;flex-direction:column;gap:12px;padding:24px;border:1px solid var(--line);border-radius:16px;background:var(--paper);min-width:0}
+.toefl-card h2{font-size:22px;margin:0}.toefl-card p{font-size:14px;color:var(--muted);line-height:1.7;margin:0}
+.toefl-card dl{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:8px 0}.toefl-card dt{font-size:11px;color:var(--muted)}.toefl-card dd{margin:3px 0 0;font-weight:600}
+.toefl-card .button{margin-top:auto}.toefl-card progress{width:100%;accent-color:var(--toefl-accent)}
+.toefl-note{padding:14px 18px;border:1px solid var(--line);border-radius:10px;color:var(--muted);font-size:13px;line-height:1.8}
+.toefl-plan li span{color:var(--muted);font-size:13px}
+/* TOEFL stage details are long: let them wrap instead of the shared one-line rule. */
+.toefl-hub .exam-briefing-layout>*{min-width:0}
+.toefl-plan li>span{white-space:normal;text-align:right;min-width:0}
+.toefl-plan li>strong{flex:0 0 auto}
+@media (max-width:560px){.toefl-plan li{flex-direction:column;gap:4px}.toefl-plan li>span{text-align:left}}
+
+/* Sitting: task pages and questions. */
+.toefl-work>h2{margin:14px 0 6px;font-size:22px}
+.toefl-pages{display:flex;gap:8px;overflow:auto;padding:6px 0 14px;max-width:100%}
+.toefl-pages button{flex:0 0 180px;display:grid;text-align:left;gap:6px;border:1px solid var(--line);border-radius:10px;padding:11px 12px;background:transparent;color:inherit;cursor:pointer}
+.toefl-pages strong{font-size:13px;font-weight:550}.toefl-pages small{color:var(--muted);font-size:12px}
+.toefl-pages button[aria-current=true]{border-color:var(--toefl-accent);background:color-mix(in srgb,var(--toefl-accent) 8%,transparent)}
+.toefl-instructions{color:var(--muted);font-size:14px;line-height:1.7;margin:0 0 14px}
+.toefl-split{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:24px;align-items:start}
+.toefl-text{border:1px solid var(--line);border-radius:12px;padding:18px 20px;line-height:1.85;font-size:15.5px;max-height:70vh;overflow:auto;background:var(--paper)}
+.toefl-text p{margin:0 0 12px}.toefl-text h3{margin:0 0 12px;font-size:18px}
+.toefl-daily{white-space:pre-line}
+.toefl-paragraph-number{display:inline-grid;place-items:center;min-width:22px;height:22px;margin-right:8px;border-radius:6px;background:color-mix(in srgb,var(--toefl-accent) 12%,transparent);font-size:12px;font-weight:700}
+.toefl-questions{display:grid;gap:14px;min-width:0}
+.toefl-question{border:1px solid var(--line);border-radius:12px;padding:14px 16px;min-width:0}
+.toefl-question header{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px}
+.toefl-question>p{margin:0 0 10px;line-height:1.6}
+.toefl-flag{border:1px solid var(--line);border-radius:8px;background:transparent;color:inherit;padding:5px 9px;font-size:12px;cursor:pointer}
+.toefl-flag[aria-pressed=true]{border-color:var(--toefl-accent);color:var(--toefl-accent)}
+.toefl-next{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:22px 0 0}.toefl-next span{color:var(--muted);font-size:13px}
+
+/* Complete the Words: the paragraph with letter boxes after each printed prefix. */
+.toefl-words p{font-size:17px;line-height:2.5;margin:0;border:1px solid var(--line);border-radius:12px;padding:18px 20px;background:var(--paper)}
+.toefl-gap{display:inline-flex;align-items:baseline;gap:2px;white-space:nowrap}
+.toefl-gap-prefix{font-weight:600}
+.toefl-gap-box{width:1.35em;height:1.7em;padding:0;text-align:center;font:inherit;font-weight:600;border:0;border-bottom:2px solid var(--muted);border-radius:3px 3px 0 0;background:color-mix(in srgb,var(--toefl-accent) 6%,transparent);color:inherit}
+.toefl-gap-box:focus{outline:2px solid var(--toefl-accent);outline-offset:1px;border-bottom-color:var(--toefl-accent)}
+.toefl-gap[data-filled] .toefl-gap-box{border-bottom-color:var(--toefl-accent)}
+.toefl-gap-flags{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.toefl-gap-flags span{display:inline-flex;align-items:center;gap:6px;font-size:13px}
+
+/* Build a Sentence. */
+.toefl-build{display:grid;gap:14px}
+.toefl-build-line,.toefl-build-reply{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0;font-size:16px;line-height:1.6}
+.toefl-speaker{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:color-mix(in srgb,var(--toefl-accent) 14%,transparent);font-size:12px;font-weight:700;flex:0 0 auto}
+.toefl-slot{min-width:84px;min-height:38px;padding:6px 10px;border:1.5px dashed var(--line);border-radius:8px;background:transparent;color:inherit;font:inherit;display:inline-flex;align-items:center;justify-content:center}
+.toefl-slot[data-filled]{border-style:solid;border-color:var(--toefl-accent);background:color-mix(in srgb,var(--toefl-accent) 8%,transparent);cursor:pointer}
+.toefl-build-fixed{font-weight:600}.toefl-build-end{font-weight:700}
+.toefl-chips{display:flex;flex-wrap:wrap;gap:8px;padding:12px;border:1px solid var(--line);border-radius:10px;min-height:58px}
+.toefl-chip{padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:inherit;font:inherit;cursor:pointer}
+.toefl-chip:hover:not(:disabled){border-color:var(--toefl-accent)}.toefl-chip:disabled{opacity:.5;cursor:default}
+
+/* Listening and Speaking. */
+.toefl-progress{color:var(--muted);font-size:13px;margin:6px 0 12px}
+.toefl-listen-head h2{font-size:22px;margin:4px 0}.toefl-listen-head p{color:var(--muted);margin:0 0 16px}
+.toefl-listen-now{display:flex;align-items:center;gap:12px;padding:22px;border:1px solid var(--line);border-radius:12px;font-weight:600}
+.toefl-wave{display:inline-flex;align-items:center;gap:3px;height:24px}
+.toefl-wave i{width:4px;border-radius:2px;background:var(--toefl-accent);animation:toefl-wave 1s ease-in-out infinite}
+.toefl-wave i:nth-child(1){height:8px}.toefl-wave i:nth-child(2){height:18px;animation-delay:.15s}.toefl-wave i:nth-child(3){height:24px;animation-delay:.3s}.toefl-wave i:nth-child(4){height:14px;animation-delay:.45s}.toefl-wave i:nth-child(5){height:10px;animation-delay:.6s}
+@keyframes toefl-wave{50%{transform:scaleY(.4)}}
+@media (prefers-reduced-motion:reduce){.toefl-wave i{animation:none}}
+.toefl-window{margin:0 0 12px;color:var(--muted)}.toefl-window strong{color:inherit;font-variant-numeric:tabular-nums}
+.toefl-player{margin:0 0 12px}
+.toefl-task{border:1px solid var(--line);border-radius:12px;padding:18px 20px;line-height:1.75;background:var(--paper);min-width:0}
+.toefl-task h2{margin:0 0 8px;font-size:20px}.toefl-task ul{padding-left:20px}
+.toefl-email-head{display:grid;gap:4px;margin:12px 0 0;padding:10px 12px;border-radius:8px;background:color-mix(in srgb,var(--toefl-accent) 6%,transparent)}
+.toefl-email-head div{display:flex;gap:8px}.toefl-email-head dt{font-weight:700}.toefl-email-head dd{margin:0}
+.toefl-posts{display:grid;gap:10px;margin-top:12px}
+.toefl-post{border-left:3px solid var(--line);padding:4px 0 4px 12px}.toefl-post p{margin:4px 0 0}.toefl-professor{border-left-color:var(--toefl-accent)}
+.toefl-picture{display:grid;gap:4px;padding:10px 12px;border:1px dashed var(--line);border-radius:8px;font-style:italic}.toefl-picture span{font-style:normal;font-size:12px;color:var(--muted)}
+.toefl-writing{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:22px;align-items:start}
+.toefl-editor{display:grid;gap:8px;min-width:0}.toefl-editor textarea{width:100%;min-height:360px;font:inherit;line-height:1.7;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--paper);color:inherit}
+.toefl-speak-card{border:1px solid var(--line);border-radius:14px;padding:22px;display:grid;gap:12px}.toefl-speak-card h2{margin:0;font-size:22px}
+.toefl-speaking{display:grid;gap:16px}
+
+/* Results. */
+.toefl-review-text{white-space:pre-line;line-height:1.75}
+.toefl-recordings>div{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+
+@media (max-width:900px){.toefl-cards{grid-template-columns:repeat(2,minmax(0,1fr))}.toefl-split,.toefl-writing{grid-template-columns:1fr}.toefl-text{max-height:none}}
+@media (max-width:560px){.toefl-cards{grid-template-columns:1fr}.toefl-words p{font-size:16px;padding:14px;line-height:2.4}.toefl-slot{min-width:64px}.toefl-pages button{flex-basis:150px}}
+.toefl-gap-other{font-weight:600;letter-spacing:.08em;white-space:nowrap}
+.toefl-practice{display:grid;gap:14px;margin:0 0 14px}.toefl-practice-audio p{margin:0 0 8px}

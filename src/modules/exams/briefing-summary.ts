@@ -1,4 +1,4 @@
-import { MOCK_PRICE_LABEL } from "./pricing.ts";
+import { MOCK_PRICE_TERM } from "./pricing.ts";
 import type { ExamDefinition, ExamStage } from "./types.ts";
 import { entranceSubjectLabels, subjectFromSlug } from "./entrance/subjects.ts";
 import { isFreeMock } from "./free/catalog.ts";
@@ -40,7 +40,7 @@ export function mockBriefingSummary(exam: ExamDefinition): MockBriefingSummary {
 
   // A free half mock is open to every signed-in account; SAT and IELTS mocks otherwise come with the Гадаад хэл plan.
   const free = isFreeMock(exam.slug);
-  const priceNote = free ? "Үнэгүй · бүртгэлтэй бүх хүнд" : `${MOCK_PRICE_LABEL} эсвэл Гадаад хэл багц`;
+  const priceNote = free ? "Үнэгүй · бүртгэлтэй бүх хүнд" : `${MOCK_PRICE_TERM} эсвэл Гадаад хэл багц`;
   if (exam.program === "sat") {
     const deliveredQuestions = exam.stages.reduce((sum, stage) => sum + questionsFor(stage), 0);
     const modules = exam.stages.filter(stage => stage.kind === "questions").length;
@@ -78,7 +78,7 @@ export function mockBriefingSummary(exam: ExamDefinition): MockBriefingSummary {
         { label: "Хугацаа", value: `${formatExamDuration(totalSeconds)}` },
         { label: "Оноо", value: `${exam.points ?? 100}` },
       ],
-      priceNote: `${MOCK_PRICE_LABEL} эсвэл ЭЕШ багц`,
+      priceNote: `${MOCK_PRICE_TERM} эсвэл ЭЕШ багц`,
       scoreNote: "Зөв хариултын оноо; албан ЭЕШ-ийн оноо биш.",
       totalSeconds,
       breakSeconds,

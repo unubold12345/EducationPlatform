@@ -482,7 +482,7 @@ with sync_playwright() as p:
     assert made.json()["total"] == 100 and made.json()["limit"] == 100, made.json()
     over = cap.request.post(API, headers=ORIGIN, data={"term": "one more", "translation": "дахин"})
     assert over.status == 409 and "100 үгийн хязгаартаа хүрсэн" in over.json()["error"], (over.status, over.text())
-    assert "Гадаад хэл багцтай бол 3,000 үг" in over.json()["error"], over.json()
+    assert "Гадаад хэл Pro багцтай бол 3,000 үг" in over.json()["error"], over.json()
     assert "Кредитээр байнгын багтаамж нэмж болно" in over.json()["error"], over.json()
     many = cap.request.post(WORDS, headers=ORIGIN, data={"action": "add", "words": [{"term": "bulk word", "translation": "олон"}]})
     assert many.status == 409 and "100 үгийн хязгаартаа хүрсэн" in many.json()["error"], (many.status, many.text())
@@ -523,7 +523,8 @@ with sync_playwright() as p:
         assert cap.request.post(SPACE, headers=ORIGIN, data=bad).status == 400, bad
     assert cap.request.post(SPACE, headers={"Origin": "https://untrusted.invalid"}, data={"packs": 1, "requestId": "qa-space-origin01"}).status == 403
     # Buy the yellow credit pack the plans page shows (simulated payment), then 100 more words for 200 of them.
-    figures = [int(re.sub(r"[^0-9]", "", text)) for text in [cap_page.locator(".pricing-yellow .pricing-single-price strong").inner_text(), cap_page.locator(".pricing-yellow .pricing-single-price span").inner_text()]]
+    chosen = cap_page.locator('.pricing-packs button[aria-pressed="true"]')
+    figures = [int(re.sub(r"[^0-9]", "", text)) for text in [chosen.locator("span").inner_text(), chosen.locator("strong").inner_text()]]
     order = cap.request.post(BASE + "/api/credits/orders", headers=ORIGIN, data={"credits": figures[1], "amountMnt": figures[0]})
     assert order.ok, order.text()
     assert cap.request.post(BASE + "/api/credits/orders/" + order.json()["id"] + "/confirm", headers=ORIGIN, data={"decision": "success"}).json()["status"] == "PAID"

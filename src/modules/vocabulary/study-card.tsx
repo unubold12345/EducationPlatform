@@ -14,9 +14,10 @@ import styles from "./vocabulary.module.css";
  * over and grade without opening a quiz. It takes the words whose date has come and the ones never studied, most
  * urgent first. A grade goes through the same review route as a quiz answer, so the server keeps the schedule.
  */
-export function StudyCard({ words, now, canSpeak, onStudied, onQuiz }: {
-  words: VocabularyWord[]; now: number; canSpeak: (lang: string) => boolean;
-  onStudied: (updates: StudyUpdate[]) => void; onQuiz: (launch: QuizLaunch) => void;
+export function StudyCard({ words, now, canSpeak, onStudied, onQuiz, reviewUrl = VOCABULARY_API + "/review" }: {
+  // JLPT/HSK deck words also carry a reading and a voice language (Workshop decks, 2026-11-18).
+  words: (VocabularyWord & { reading?: string | null; lang?: string })[]; now: number; canSpeak: (lang: string) => boolean;
+  onStudied: (updates: StudyUpdate[]) => void; onQuiz: (launch: QuizLaunch) => void; reviewUrl?: string;
 }) {
   const [shown, setShown] = useState<string | null>(null);
   // Graded or skipped words leave the card until the page is loaded again, whatever the server answered.
@@ -30,7 +31,7 @@ export function StudyCard({ words, now, canSpeak, onStudied, onQuiz }: {
   const word = queue[0] ?? null;
   const revealed = word !== null && shown === word.id;
   const canQuiz = words.length >= QUIZ_MIN_WORDS;
-  const speech = word ? speechFor(word.term) : null;
+  const speech = word ? speechFor(word.term, word.lang) : null;
   const voiced = speech && canSpeak(speech.lang) ? speech : null;
 
   const pass = (id: string) => setPassed(previous => new Set(previous).add(id));
@@ -38,7 +39,7 @@ export function StudyCard({ words, now, canSpeak, onStudied, onQuiz }: {
     if (!word || saving) return;
     setSaving(true); setError("");
     try {
-      const data = await sendJson<{ words: StudyUpdate[] }>(VOCABULARY_API + "/review", { results: [{ id: word.id, grade: value }] });
+      const data = await sendJson<{ words: StudyUpdate[] }>(reviewUrl, { results: [{ id: word.id, grade: value }] });
       onStudied(data.words);
       pass(word.id);
     } catch (reason) {
@@ -63,6 +64,7 @@ export function StudyCard({ words, now, canSpeak, onStudied, onQuiz }: {
           {voiced ? <button type="button" className={styles.speakBig} onClick={() => speak(voiced.text, voiced.lang)} aria-label={`${word.term} үгийг сонсох`} title="Сонсох"><Icon name="sound" size={19} /></button> : null}
         </p>
         {revealed ? <>
+          {word.reading && word.reading !== word.term ? <p className={styles.studyReading}>{word.reading}</p> : null}
           <p className={styles.studyAnswer}>{word.translation}</p>
           {word.example ? <p className={styles.studyExample}>“{word.example}”</p> : null}
         </> : <Level word={word} now={now} />}

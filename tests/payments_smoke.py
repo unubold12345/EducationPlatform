@@ -1,11 +1,12 @@
-import os
+import os,subprocess
 from pathlib import Path
 from uuid import uuid4
 from playwright.sync_api import sync_playwright, expect
 
 BASE=os.environ.get("TEST_BASE_URL","http://localhost:3001").rstrip("/")
 ORIGIN={"Origin":BASE}
-ART=Path(__file__).resolve().parent.parent/"artifacts"
+ROOT=Path(__file__).resolve().parent.parent
+ART=ROOT/"artifacts"
 ART.mkdir(exist_ok=True)
 
 with sync_playwright() as p:
@@ -18,7 +19,8 @@ with sync_playwright() as p:
     expect(page.locator(".account-entry")).to_have_attribute("href","/login")
     assert context.request.post(BASE+"/api/mock-payments",headers=ORIGIN,data={"slug":"sat-full-01"}).status==401
     page.goto(BASE+"/exams")
-    expect(page.locator(".library-list .exam-price strong")).to_have_text(["₮10,000"] * 5)
+    expect(page.locator(".library-list .exam-price strong")).to_have_text(["₮10,000"] * 6)
+    expect(page.locator(".library-list .exam-price span").first).to_contain_text("7 хоног")
     page.goto(BASE+"/checkout/sat-full-01")
     expect(page).to_have_url(BASE+"/login?next=%2Fcheckout%2Fsat-full-01")
     page.get_by_role("link",name="Бүртгүүлэх",exact=True).click()
@@ -61,10 +63,16 @@ with sync_playwright() as p:
     receipts=page.evaluate("""async id=>Promise.all([1,2].map(async()=>{const r=await fetch('/api/mock-payments/'+id+'/confirm',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({decision:'success'})});return {status:r.status,body:await r.json()}}))""",order_id)
     assert all(r["status"]==200 and r["body"]["status"]=="PAID" and r["body"]["amountMnt"]==10000 for r in receipts),receipts
     assert receipts[0]["body"]["paidAt"]==receipts[1]["body"]["paidAt"]
+    # The purchase lasts 7 days from payment.
+    from datetime import datetime
+    paid_at=datetime.fromisoformat(receipts[0]["body"]["paidAt"].replace("Z","+00:00"));ends_at=datetime.fromisoformat(receipts[0]["body"]["expiresAt"].replace("Z","+00:00"))
+    assert (ends_at-paid_at).total_seconds()==7*86400,(paid_at,ends_at)
+    assert receipts[0]["body"]["expiresAt"]==receipts[1]["body"]["expiresAt"]
     repeated=context.request.post(BASE+"/api/mock-payments/"+order_id+"/confirm",headers=ORIGIN,data={"decision":"decline"}).json()
     assert repeated["status"]=="PAID" and repeated["paidAt"]==receipts[0]["body"]["paidAt"]
     page.goto(BASE+"/checkout/sat-full-01")
     expect(page.locator(".checkout-success")).to_contain_text("Бодит мөнгө суутгаагүй")
+    expect(page.locator(".checkout-success")).to_contain_text("7 хоног")
     page.screenshot(path=str(ART/"mock-checkout-paid.png"),full_page=True)
     page.goto(BASE+"/dashboard")
     expect(page).to_have_url(BASE+"/workspace")
@@ -82,7 +90,35 @@ with sync_playwright() as p:
     page.goto(BASE+"/workspace/profile")
     page.get_by_role("tab",name="Багц ба эрх",exact=True).click()
     expect(page.locator(".purchase-row")).to_have_count(2)
+    expect(page.locator(".purchase-row").first).to_contain_text("хүртэл")
     page.screenshot(path=str(ART/"profile-exam-access.png"),full_page=True)
+    # After 7 days the mock closes for new sittings and practice, an open sitting can still be finished, and it can be bought again.
+    user_id=context.request.get(BASE+"/api/auth/get-session").json()["user"]["id"]
+    def expire(slug):
+        subprocess.check_output(["node","tests/subscription_fixture.mjs","expire-purchase",user_id,slug],cwd=ROOT)
+    # Practice access passes while the purchase runs; the open SAT sitting only keeps practice closed for now (403).
+    running=context.request.get(BASE+"/api/exam-practice/ielts-academic-01")
+    assert running.status==403 and "Хугацаатай шалгалт нээлттэй" in running.json()["error"],running.text()
+    expire("ielts-academic-01")
+    assert context.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"ielts-academic-01"}).status==402,"a lapsed purchase opens no new sitting"
+    assert context.request.get(BASE+"/api/exam-practice/ielts-academic-01").status==402,"nor practice"
+    page.goto(BASE+"/exams/ielts-academic-01");expect(page.locator(".exam-purchase-gate")).to_be_visible()
+    page.goto(BASE+"/checkout/ielts-academic-01");expect(page.get_by_role("button",name="Туршилтаар төлөх",exact=False)).to_be_visible()
+    page.goto(BASE+"/workspace/profile");page.get_by_role("tab",name="Багц ба эрх",exact=True).click()
+    expect(page.locator(".purchase-row").first).to_contain_text("Хугацаа дууссан")
+    expire("sat-full-01")
+    assert context.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"sat-full-01"}).json()["id"]==sat_id,"the sitting started inside the 7 days is still open"
+    assert context.request.get(BASE+"/api/mock-attempts/"+sat_id).status==200
+    assert other.request.get(BASE+"/api/mock-attempts/"+sat_id).status==404
+    again=context.request.post(BASE+"/api/mock-payments",headers=ORIGIN,data={"slug":"ielts-academic-01"}).json()
+    assert again["status"]=="PENDING" and again["amountMnt"]==10000 and again["expiresAt"] is None,again
+    bought=context.request.post(BASE+"/api/mock-payments/"+again["id"]+"/confirm",headers=ORIGIN,data={"decision":"success"}).json()
+    assert bought["status"]=="PAID" and bought["expiresAt"] is not None,bought
+    reopened=context.request.get(BASE+"/api/exam-practice/ielts-academic-01")
+    assert reopened.status==403 and "Хугацаатай шалгалт нээлттэй" in reopened.json()["error"],"bought again: access passes, the open SAT sitting still closes practice"
+    assert context.request.post(BASE+"/api/mock-payments",headers=ORIGIN,data={"slug":"ielts-academic-01"}).json()["id"]==again["id"] and context.request.post(BASE+"/api/mock-payments",headers=ORIGIN,data={"slug":"ielts-academic-01"}).json()["status"]=="PAID","an open purchase is not sold twice"
+    page.goto(BASE+"/workspace/profile");page.get_by_role("tab",name="Багц ба эрх",exact=True).click()
+    expect(page.locator(".purchase-row")).to_have_count(2)
     for route in ["/checkout/sat-full-01","/checkout/ielts-academic-01","/exams"]:
         for width in [1440,390,320]:
             page.set_viewport_size({"width":width,"height":844})

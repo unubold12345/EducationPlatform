@@ -80,7 +80,9 @@ with sync_playwright() as p:
     for _ in range(2):
         assert student.request.post(BASE + "/api/mock-payments/" + mock["id"] + "/confirm", headers=ORIGIN, data={"decision": "success"}).json()["status"] == "PAID"
     page.goto(BASE + "/workspace/plans")
-    figures = [int(re.sub(r"[^0-9]", "", text)) for text in [page.locator(".pricing-yellow .pricing-single-price strong").inner_text(), page.locator(".pricing-yellow .pricing-single-price span").inner_text()]]
+    # The 1,000-credit pack is the one picked when the plans page opens; its button reads "1,000 кредит" over its price.
+    chosen = page.locator('.pricing-packs button[aria-pressed="true"]')
+    figures = [int(re.sub(r"[^0-9]", "", text)) for text in [chosen.locator("span").inner_text(), chosen.locator("strong").inner_text()]]
     credit = student.request.post(BASE + "/api/credits/orders", headers=ORIGIN, data={"credits": figures[1], "amountMnt": figures[0]}).json()
     for _ in range(2):
         assert student.request.post(BASE + "/api/credits/orders/" + credit["id"] + "/confirm", headers=ORIGIN, data={"decision": "success"}).json()["status"] == "PAID"
@@ -89,7 +91,7 @@ with sync_playwright() as p:
     assert state["unread"] == 3, state
     assert [item["kind"] for item in state["items"]] == ["credits-paid", "mock-paid", "plan-paid"], state
     plan_item, mock_item, credit_item = state["items"][2], state["items"][1], state["items"][0]
-    assert plan_item["title"] == "Багц идэвхжлээ" and "Гадаад хэл багц" in plan_item["body"] and plan_item["href"] == "/workspace/plans"
+    assert plan_item["title"] == "Багц идэвхжлээ" and "Гадаад хэл Pro багц" in plan_item["body"] and plan_item["href"] == "/workspace/plans"
     assert mock_item["href"] == "/exams/sat-full-01" and mock_item["title"] == "Шалгалтын эрх нээгдлээ"
     assert f"{figures[1]:,} кредит" in credit_item["body"] and credit_item["href"] == "/workspace/plans#credits"
     assert all(not item["read"] and set(item) == {"id", "kind", "title", "body", "href", "read", "createdAt"} for item in state["items"])

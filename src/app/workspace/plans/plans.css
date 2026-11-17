@@ -32,8 +32,8 @@
 .pricing-section-head > p { max-width: 40ch; margin: 0; font-size: 12px; line-height: 1.75; color: var(--muted); text-align: right; }
 
 /* Four cards: the free account, then the three plans. Two per row once four no longer fit beside the rail. */
-.pricing-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; align-items: stretch; }
-@media (max-width: 1100px) { .pricing-grid { grid-template-columns: minmax(0, 1fr); } }
+.pricing-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; align-items: stretch; }
+@media (max-width: 1280px) { .pricing-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .pricing-card[data-program="free"] .pricing-symbol { background: color-mix(in srgb, var(--ink) 7%, transparent); color: var(--ink); font-size: 21px; }
 .pricing-card { position: relative; display: flex; flex-direction: column; min-width: 0; padding: 26px; border: 1px solid var(--line); border-radius: 22px; background: color-mix(in srgb, var(--surface) 82%, transparent); overflow: hidden; }
 .pricing-card[data-featured] { border-color: color-mix(in srgb, var(--blue) 48%, var(--line)); background: linear-gradient(165deg, color-mix(in srgb, var(--surface) 92%, var(--blue) 8%), var(--surface) 54%); }
@@ -50,6 +50,16 @@
 .pricing-price { display: flex; align-items: baseline; gap: 7px; margin: 22px 0 20px; padding-bottom: 20px; border-bottom: 1px solid var(--line); }
 .pricing-price strong { font-size: clamp(28px, 3vw, 34px); line-height: 1; letter-spacing: -.045em; font-variant-numeric: tabular-nums; }
 .pricing-price span { font-size: 13px; color: var(--muted); }
+/* A sale: the regular price struck through beside the price charged. */
+.pricing-price { flex-wrap: wrap; }
+.pricing-price s, .plan-was { color: var(--muted); font-size: 15px; font-weight: 400; text-decoration: line-through; font-variant-numeric: tabular-nums; }
+.pricing-price .pricing-sale-note { flex-basis: 100%; margin: -2px 0 0; color: var(--blue); font-size: 12.5px; font-weight: 600; }
+.pricing-packs { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.pricing-packs button { display: grid; gap: 2px; min-width: 112px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 12px; background: color-mix(in srgb, var(--surface) 82%, transparent); color: var(--ink); font: inherit; text-align: left; cursor: pointer; }
+.pricing-packs button strong { font-size: 15px; font-variant-numeric: tabular-nums; }
+.pricing-packs button span { color: var(--muted); font-size: 12.5px; font-variant-numeric: tabular-nums; }
+.pricing-packs button[aria-pressed="true"] { border-color: var(--blue); box-shadow: inset 0 0 0 1px var(--blue); }
+.pricing-packs button:disabled { cursor: default; opacity: .6; }
 .pricing-features { display: grid; gap: 10px; flex: 1; margin: 0; padding: 0; list-style: none; }
 .pricing-features li { display: flex; align-items: flex-start; gap: 9px; font-size: 12px; line-height: 1.65; }
 .pricing-features li > span { flex: 0 0 16px; color: var(--blue); font-size: 11px; }
@@ -77,7 +87,8 @@
 .pricing-credits { display: flex; align-items: center; gap: 6px; margin: -4px 0 14px; color: var(--muted); font-size: 13px; }
 .pricing-credits svg, .pricing-topup-balance svg { width: 15px; height: 15px; flex-shrink: 0; fill: var(--blue); }
 .pricing-credits strong { color: var(--ink); font-variant-numeric: tabular-nums; }
-.pricing-single.pricing-topup { margin-top: 30px; scroll-margin-top: 80px; }
+.pricing-single.pricing-topup { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); margin-top: 30px; scroll-margin-top: 80px; }
+.pricing-topup .pricing-topup-buy { justify-items: start; }
 .pricing-topup + .pricing-single { margin-top: 14px; }
 .pricing-single p.pricing-topup-balance { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; margin-top: 10px; color: var(--ink); font-size: 13.5px; }
 .pricing-topup-balance strong { font-variant-numeric: tabular-nums; }
@@ -113,7 +124,6 @@
   .pricing-summary > strong, .pricing-summary-label { grid-column: 1; }
   .pricing-summary dl { grid-column: 2; grid-row: 2 / span 2; }
   .pricing-summary > strong { margin-top: 10px; }
-  .pricing-grid { grid-template-columns: minmax(0, 1fr); }
   .pricing-card { max-width: none; }
   .pricing-section-head { align-items: start; flex-direction: column; gap: 10px; }
   .pricing-section-head > p { text-align: left; }
@@ -123,6 +133,7 @@
 }
 @media (max-width: 700px) {
   .pricing-compare { display: none; }
+  .pricing-grid { grid-template-columns: minmax(0, 1fr); }
 }
 @media (max-width: 620px) {
   .pricing-topline { align-items: flex-start; flex-direction: column; gap: 10px; }

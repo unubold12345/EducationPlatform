@@ -2,15 +2,16 @@ export const dynamic="force-dynamic";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { examDefinitions } from "@/modules/exams/definitions";
-import { MOCK_PRICE_LABEL } from "@/modules/exams/pricing";
+import { MOCK_PRICE_LABEL, MOCK_PURCHASE_DAYS } from "@/modules/exams/pricing";
 import { entranceCounts, entranceTotal } from "@/modules/exams/entrance/catalog";
 import { hskMocks } from "@/modules/exams/hsk/catalog";
+import { toeflMocks } from "@/modules/exams/toefl/catalog";
 import "./library.css";
 export const metadata:Metadata={title:"Бүтэн шалгалтууд"};
 
 type Programme = {
-  id: "sat" | "ielts" | "eesh" | "jlpt" | "hsk";
-  tone: "sat" | "ielts" | "entrance" | "jlpt" | "hsk";
+  id: "sat" | "ielts" | "toefl" | "eesh" | "jlpt" | "hsk";
+  tone: "sat" | "ielts" | "toefl" | "entrance" | "jlpt" | "hsk";
   /** The exam's full or native name, shown small beside the title when it adds something. */
   sub?: string;
   title: string;
@@ -44,6 +45,13 @@ export default async function ExamsPage(){
       count:ielts,href:"/exams/ielts",cta:`${ielts} mock үзэх`,plan:"Гадаад хэл",
     },
     {
+      id:"toefl",tone:"toefl",sub:"2026 оны шинэ формат",title:"TOEFL iBT",
+      copy:"Reading, Listening нь эхний модулийн дүнгээр Lower эсвэл Upper модуль руу шилжинэ. Complete the Words, Build a Sentence, имэйл, хэлэлцүүлэг, Listen and Repeat, ярилцлага.",
+      facts:[{label:"Агуулга",value:"50 Reading · 47 Listening · 12 Writing · 11 Speaking"},{label:"Хугацаа",value:"≈86–89 мин"}],
+      chips:["Read · 29м","Listen · 27–30м","Write · 23м","Speak · 8м"],
+      count:toeflMocks.length,href:"/exams/toefl",cta:"Mock сонгох",plan:"Гадаад хэл",
+    },
+    {
       id:"eesh",tone:"entrance",sub:"Элсэлтийн ерөнхий шалгалт",title:"ЭЕШ",
       copy:"Математик, физик 2015–2026; хими, биологи 2020–2026; англи хэл 2018–2026. Жил, хувилбараар эрэмбэлсэн бүтэн mock.",
       facts:[{label:"Агуулга",value:"5 хичээл · 100 оноо"},{label:"Хугацаа",value:"80–100 минут"}],
@@ -67,7 +75,7 @@ export default async function ExamsPage(){
       chips:["听力","阅读"],count:hskMocks.length,href:"/exams/hsk",cta:"Mock сонгох",plan:"Гадаад хэл"},
   ];
   return <div className="container page-space library-page">
-    <header className="wsp-page-head library-head"><div><h1 className="sr-only">Шалгалтууд</h1><p>SAT, IELTS, ЭЕШ, JLPT, HSK-ийн бүтэн mock. Цагтай шалгалтаар өөрийгөө шалгах эсвэл цаггүй, AI туслахтай дадлагаар бэлдээрэй.</p></div><Link className="wsp-link" href="/workspace/review">Миний үр дүн →</Link></header>
+    <header className="wsp-page-head library-head"><div><h1 className="sr-only">Шалгалтууд</h1><p>SAT, IELTS, TOEFL, ЭЕШ, JLPT, HSK-ийн бүтэн mock. Цагтай шалгалтаар өөрийгөө шалгах эсвэл цаггүй, AI туслахтай дадлагаар бэлдээрэй.</p></div><Link className="wsp-link" href="/workspace/review">Миний үр дүн →</Link></header>
 
     {/* One row per programme (owner request 2026-11-15): what it is, how a sitting runs, what it costs. */}
     <section className="library-list" aria-label="Шалгалтын хөтөлбөрүүд">
@@ -83,14 +91,14 @@ export default async function ExamsPage(){
           <dl className="library-row-facts">{item.facts.map(fact=><div key={fact.label}><dt>{fact.label}</dt><dd>{fact.value}</dd></div>)}</dl>
         </div>
         <div className="library-row-buy">
-          <div className="exam-price"><strong>{MOCK_PRICE_LABEL}</strong><span>{item.id==="eesh"?`Эсвэл ${item.plan} сарын багц, хязгааргүй`:`Эсвэл ${item.plan} багцаар сард 15 mock`}</span></div>
+          <div className="exam-price"><strong>{MOCK_PRICE_LABEL}</strong><span>{`/ ${MOCK_PURCHASE_DAYS} хоног · эсвэл ${item.plan} сарын багц, хязгааргүй`}</span></div>
           <Link className="button" href={item.href}>{item.id==="eesh"?item.cta:"Mock сонгох"} <span aria-hidden="true">→</span></Link>
         </div>
       </article>)}
     </section>
 
     <footer className="library-note">
-      <p>Бүх даалгаврыг энэ сайтад зориулж зохиосон; College Board, IELTS, JLPT, HSK, БҮТ-ийн албан материал биш. SAT, IELTS-ийн албан оноо, band тооцохгүй.</p>
+      <p>Бүх даалгаврыг энэ сайтад зориулж зохиосон; College Board, IELTS, ETS (TOEFL), JLPT, HSK, БҮТ-ийн албан материал биш. SAT, IELTS, TOEFL-ийн албан оноо, band тооцохгүй.</p>
       <div><Link className="text-link" href="/workspace/plans">Сарын багцууд →</Link><Link className="text-link" href="/programs">Хөтөлбөрүүд →</Link></div>
     </footer>
   </div>;

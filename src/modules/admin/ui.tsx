@@ -39,7 +39,7 @@ export const statusLabel = (value: string) => ({ PAID: "Төлөгдсөн", PEN
 export const eventLabel = (value: string) => ({ "sign-in": "Нэвтэрсэн", "sign-up": "Бүртгүүлсэн", "password-change": "Нууц үг сольсон" }[value] ?? value);
 export const auditActions: readonly (readonly [string, string])[] = [
   ["grant-month", "Сарын эрх олгосон"], ["expire-plan", "Сарын эрх дуусгасан"], ["revoke-sessions", "Төхөөрөмжөөс гаргасан"],
-  ["suspend", "Бүртгэл хаасан"], ["unsuspend", "Хаалт цуцалсан"], ["add-note", "Тэмдэглэл нэмсэн"], ["set-price", "Үнэ өөрчилсөн"], ["grant-credits", "AI кредит олгосон"], ["set-credits", "AI кредитийн хэмжээ өөрчилсөн"], ["set-credit-pack", "AI кредит багц өөрчилсөн"],
+  ["suspend", "Бүртгэл хаасан"], ["unsuspend", "Хаалт цуцалсан"], ["add-note", "Тэмдэглэл нэмсэн"], ["set-price", "Үнэ өөрчилсөн"], ["set-sale", "Хямдрал өөрчилсөн"], ["grant-credits", "AI кредит олгосон"], ["set-credits", "AI кредитийн хэмжээ өөрчилсөн"], ["set-credit-packs", "AI кредит багцууд өөрчилсөн"], ["set-credit-pack", "AI кредит багц өөрчилсөн"],
   ["announce", "Мэдэгдэл илгээсэн"], ["withdraw-announcement", "Мэдэгдэл буцаасан"],
   ["content-fix", "Асуулт зассан"], ["content-save", "Ноорог хадгалсан"], ["content-review", "Ноорог хянасан"], ["content-publish", "Контент нийтэлсэн"], ["review-content", "Хяналтын төлөв өөрчилсөн"],
 ];

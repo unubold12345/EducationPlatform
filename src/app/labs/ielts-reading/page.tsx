@@ -16,5 +16,5 @@ export default async function ReadingLabPage() {
   const session = await getSession();
   const userId = session?.user.id ?? null;
   const library = userId ? await readingLibrary(userId) : null;
-  return <ReadingLab userKey={userId} initialPractices={library?.practices ?? []} initialSamples={library?.samples ?? {}} />;
+  return <ReadingLab userKey={userId} initialPractices={library?.practices ?? []} initialSamples={library?.samples ?? {}} initialLimit={library?.limit} />;
 }

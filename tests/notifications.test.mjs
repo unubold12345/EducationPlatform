@@ -17,6 +17,11 @@ test("purchase notices name the event, link to it and are keyed by the order", (
   assert.match(bought.body, /Гадаад хэл багц 2026\.12\.25 хүртэл/);
   assert.deepEqual([planPaidNotice("ЭЕШ", end, true, "ord2").kind, planPaidNotice("ЭЕШ", end, true, "ord2").title], ["plan-renewed", "Багц сунгагдлаа"]);
   assert.deepEqual(mockPaidNotice("SAT 03", "sat-03", "p1"), { kind: "mock-paid", title: "Шалгалтын эрх нээгдлээ", body: "SAT 03", href: "/exams/sat-03", dedupeKey: "order:p1" });
+  // A 7-day purchase names its end, and a repeat purchase of the same order row (after it lapsed) is a new notice.
+  const first = mockPaidNotice("SAT 03", "sat-03", "p1", end), again = mockPaidNotice("SAT 03", "sat-03", "p1", new Date(end.getTime() + 8 * 86400_000));
+  assert.match(first.body, /^SAT 03 · 2026\.12\.25 хүртэл$/);
+  assert.notEqual(first.dedupeKey, again.dedupeKey);
+  assert.equal(first.dedupeKey, mockPaidNotice("SAT 03", "sat-03", "p1", new Date(end)).dedupeKey);
   const credits = creditsPaidNotice(5000, "c1");
   assert.match(credits.body, /^5,000 кредит/);
   assert.deepEqual([credits.href, credits.dedupeKey], ["/workspace/plans#credits", "order:c1"]);

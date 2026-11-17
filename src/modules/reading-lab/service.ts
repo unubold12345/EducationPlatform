@@ -1,5 +1,5 @@
 import "server-only";
-import { randomUUID } from "node:crypto";
+import { randomInt, randomUUID } from "node:crypto";
 import { getDb } from "@/lib/db";
 import { ApiError } from "@/lib/api";
 import type { Prisma } from "@/generated/prisma/client";
@@ -14,13 +14,13 @@ import { cleanSourceText, fallbackTitle } from "@/modules/documents/text";
 import { extractDocument } from "@/modules/documents/extract";
 import { readUploadedSource } from "@/modules/documents/upload";
 import {
-  READING_COUNT, READING_LIMITS, allQuestions, isReadingLanguage, nextQuestionStart, parseGeneratedQuestions, parseGeneratedReading, passageWords,
+  READING_COUNT, READING_LIMITS, READING_TOPIC_IDEAS, allQuestions, isReadingLanguage, nextQuestionStart, parseGeneratedQuestions, parseGeneratedReading, passageWords,
   promptKey, publicGroups, readReadingCount, readingMessages, readingQuestionMessages, retryCount,
   type ChatMessage, type FullGroup, type ReadingLanguage,
 } from "./contracts";
 import { findReadingSample } from "./samples";
 import {
-  PRACTICES_FULL, answersFit, applyProgress, blankState, importedParagraphs, importedState, isBlank, isPracticeId, isSampleId,
+  practiceCapacity, practicesFullMessage, answersFit, applyProgress, blankState, importedParagraphs, importedState, isBlank, isPracticeId, isSampleId,
   readGradeRequest, readImportRequest, readParagraphs, readProgressRequest, readState,
   type PracticeState, type ProgressRequest, type SavedPractice,
 } from "./state";
@@ -34,6 +34,8 @@ const MAX_BODY = READING_LIMITS.fileBytes + BODY_SLACK;
 /** A retry only starts while there is time left for it inside the function's limit. */
 const RETRY_BEFORE_MS = 60_000;
 const PASTED = "Буулгасан текст";
+/** The "source" line of a practice made from a topic. */
+const topicName = (topic: string) => "Сэдэв: " + (topic.length > 120 ? topic.slice(0, 119).trimEnd() + "…" : topic);
 const RELOAD = "Хуудас шинэчлэгдсэн байна. Хуудсаа дахин ачаалаад оролдоно уу.";
 const STALE = "Энэ дасгал өөр цонх эсвэл төхөөрөмж дээр өөрчлөгдсөн байна. Хуудсаа дахин ачаална уу.";
 const NOT_FOUND = "Энэ дасгал олдсонгүй.";
@@ -97,6 +99,11 @@ async function ownPractice(userId: string, id: string) {
   return { row, ...stored };
 }
 
+/** How many practices the student may keep, from their active plans (the free size without one). */
+export async function readingPracticeLimit(userId: string, now = new Date()) {
+  const rows = await getDb().subscription.findMany({ where: { userId, startsAt: { lte: now }, endsAt: { gt: now } }, select: { program: true } });
+  return practiceCapacity(rows.map(row => row.program));
+}
 /** The student's own practices, most recently changed first. */
 export async function listReadingPractices(userId: string): Promise<SavedPractice[]> {
   const rows = await getDb().readingPractice.findMany({ where: { userId }, orderBy: { updatedAt: "desc" }, take: READING_LIMITS.practices, select: PRACTICE_SELECT });
@@ -111,11 +118,11 @@ export async function listSampleStates(userId: string): Promise<Record<string, P
 }
 /** The page's first read for a signed-in student. */
 export async function readingLibrary(userId: string) {
-  const [practices, samples] = await Promise.all([listReadingPractices(userId), listSampleStates(userId)]);
-  return { practices, samples };
+  const [practices, samples, limit] = await Promise.all([listReadingPractices(userId), listSampleStates(userId), readingPracticeLimit(userId)]);
+  return { practices, samples, limit };
 }
 
-type Source = { kind: "text"; text: string } | Awaited<ReturnType<typeof readUploadedSource>>;
+type Source = { kind: "text"; text: string } | { kind: "topic"; topic: string } | Awaited<ReturnType<typeof readUploadedSource>>;
 
 /** The daily budget and the one-request-in-flight lease shared by a new practice and a retry. */
 async function withGenerationSlot<T>(userId: string, work: () => Promise<T>): Promise<T> {
@@ -148,7 +155,7 @@ async function readSource(request: Request): Promise<{ source: Source; language:
   let form: FormData;
   try { form = await request.formData(); }
   catch { throw new ApiError(400, "Хүсэлтийг уншиж чадсангүй. Дахин оролдоно уу."); }
-  for (const key of form.keys()) if (!["file", "text", "language", "store", "count"].includes(key)) throw new ApiError(400, BAD_SHAPE);
+  for (const key of form.keys()) if (!["file", "text", "topic", "language", "store", "count"].includes(key)) throw new ApiError(400, BAD_SHAPE);
   // A page loaded before practices moved to the account would keep the reply in its browser and lose the
   // practice; it does not send `store`, and is told to reload before any credits are held.
   if (form.get("store") !== "account") throw new ApiError(409, RELOAD);
@@ -156,6 +163,14 @@ async function readSource(request: Request): Promise<{ source: Source; language:
   if (!isReadingLanguage(language)) throw new ApiError(400, "Тайлбарын хэл буруу байна.");
   const count = form.getAll("count").length > 1 ? null : readReadingCount(form.get("count"));
   if (count === null) throw new ApiError(400, `Асуултын тоо ${READING_COUNT.min}–${READING_COUNT.max} байна.`);
+  // A practice from a topic has no material (owner request 2026-11-17): the student's request, or a random topic when empty.
+  const topics = form.getAll("topic");
+  if (topics.length) {
+    if (topics.length > 1 || form.getAll("file").length || form.getAll("text").length || typeof topics[0] !== "string") throw new ApiError(400, "Файл, текст эсвэл сэдвийн аль нэгийг илгээнэ үү.");
+    if (topics[0].length > READING_LIMITS.topicRequest) throw new ApiError(400, `Сэдэв ${READING_LIMITS.topicRequest} тэмдэгтээс ихгүй байна.`);
+    const asked = topics[0].replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/g, "").replace(/\s+/g, " ").trim();
+    return { source: { kind: "topic", topic: asked || READING_TOPIC_IDEAS[randomInt(READING_TOPIC_IDEAS.length)] }, language, count };
+  }
   const texts = form.getAll("text");
   if (texts.length) {
     if (texts.length > 1 || form.getAll("file").length || typeof texts[0] !== "string") throw new ApiError(400, "Файл эсвэл текстийн аль нэгийг илгээнэ үү.");
@@ -178,19 +193,24 @@ export async function createReadingPractice(userId: string, request: Request) {
   await ensureNoTimedExam(userId);
   const db = getDb();
   // Practices are counted on the account, whatever a browser holds. A full library is refused before any credits are held.
+  const limit = await readingPracticeLimit(userId);
   const saved = await db.readingPractice.count({ where: { userId } });
-  if (saved >= READING_LIMITS.practices) throw new ApiError(409, PRACTICES_FULL);
+  if (saved >= limit) throw new ApiError(409, practicesFullMessage(limit));
   if (!process.env.DEEPSEEK_API_KEY?.trim()) throw new ApiError(503, "AI дасгал үүсгэгч одоогоор холбогдоогүй байна.");
 
   // Priced by length: hold the most this material can cost with the questions asked for (pasted text and photos are
   // measured now; a document's text is only known after extraction, so it holds the full-file price), then settle to
   // what was read and written.
-  const hold = source.kind === "text" ? readingPracticeHold(source.text.length, 0, count) : source.kind === "images" ? readingPracticeHold(0, source.images.length, count) : readingPracticeHold(READING_LIMITS.textChars, 0, count);
+  const hold = source.kind === "topic" ? readingPracticeHold(source.topic.length, 0, count) : source.kind === "text" ? readingPracticeHold(source.text.length, 0, count) : source.kind === "images" ? readingPracticeHold(0, source.images.length, count) : readingPracticeHold(READING_LIMITS.textChars, 0, count);
   // Credits are held first and refunded on any failure, including material with too little text.
   return chargeCredits(userId, ACTION, meter => withGenerationSlot(userId, async () => {
     let messages: ReturnType<typeof readingMessages>;
     let info: ReadingReply["source"];
-    if (source.kind === "images") {
+    if (source.kind === "topic") {
+      // No material: the model writes an original passage from its own knowledge of the topic.
+      messages = readingMessages({ topic: source.topic, language, truncated: false, count });
+      info = { name: topicName(source.topic), kind: "topic", pages: null, truncated: false, chars: source.topic.length };
+    } else if (source.kind === "images") {
       messages = readingMessages({ images: source.images, language, truncated: false, count });
       info = { name: source.name, kind: "image", pages: source.images.length, truncated: false, chars: 0 };
     } else {
@@ -212,7 +232,7 @@ export async function createReadingPractice(userId: string, request: Request) {
     // Another tab may start a timed exam while the provider is answering.
     await ensureNoTimedExam(userId);
     // A practice moved from another tab's browser may have taken the last place meanwhile; the hold is then refunded.
-    if (await db.readingPractice.count({ where: { userId } }) >= READING_LIMITS.practices) throw new ApiError(409, PRACTICES_FULL);
+    if (await db.readingPractice.count({ where: { userId } }) >= limit) throw new ApiError(409, practicesFullMessage(limit));
     // Saved with its key on the account. A failure here refunds the credits like any other.
     const row = await db.readingPractice.create({
       data: {

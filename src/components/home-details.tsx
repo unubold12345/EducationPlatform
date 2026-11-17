@@ -6,7 +6,7 @@ import { examDefinitions } from "@/modules/exams/definitions";
 import { entranceCounts, entranceTotal } from "@/modules/exams/entrance/catalog";
 import { jlptMocks } from "@/modules/exams/jlpt/catalog";
 import { hskMocks } from "@/modules/exams/hsk/catalog";
-import { MOCK_PRICE_LABEL } from "@/modules/exams/pricing";
+import { MOCK_PRICE_LABEL, MOCK_PURCHASE_DAYS } from "@/modules/exams/pricing";
 import { freeMocks } from "@/modules/exams/free/catalog";
 import { FREE_MONTHLY_CREDITS } from "@/modules/credits/pricing";
 import { salePlanFor } from "@/modules/subscriptions/plans";
@@ -46,13 +46,13 @@ const formats: Record<string, { href: string; artwork: keyof typeof homeArtwork;
 
 export function HomeProgramDetails({ plans }: { plans: Plans }) {
   return <><div className="home-detail-list">{homePrograms.map(program => {
-    // SAT, IELTS, JLPT and HSK come with the Гадаад хэл plan (15 mocks a month); ЭЕШ has its own plan.
+    // SAT, IELTS, JLPT and HSK come with the Гадаад хэл plans (Basic is the cheapest); ЭЕШ has its own plan.
     const format = formats[program.slug], plan = plans.find(item => item.program === salePlanFor(program.slug)?.program);
     return <article className={"home-program-detail home-program-" + program.slug} id={"program-" + program.slug} key={program.slug} data-reveal>
       <div className="home-program-image"><Image src={homeArtwork[format.artwork].src} alt={homeArtwork[format.artwork].alt} fill sizes="(max-width: 620px) 100vw, 50vw" /><i aria-hidden="true">{program.symbol}</i></div>
       <div className="home-program-copy"><header><div><p className="eyebrow">{program.subtitle}</p><h3>{program.slug === "entrance" ? "ЭЕШ" : program.title}</h3></div><span className="status">{program.status}</span></header><p className="home-program-summary">{format.summary}</p>
         <details className="home-program-more"><summary>Бүтэц, хугацаа <span aria-hidden="true">+</span></summary><dl>{format.facts.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl><ul className="home-topic-list">{program.topics.map(topic => <li key={topic}>{topic}</li>)}</ul></details>
-        <footer><p>{plan ? <><strong>₮{plan.amountMnt.toLocaleString("en-US")}</strong> / сар <small>{plan.title}{plan.mockPicks ? ` · сард ${plan.mockPicks} mock` : " · хязгааргүй"}</small></> : <><strong>{MOCK_PRICE_LABEL}</strong> / mock</>}</p><Link className="text-link" href={format.href}>Шалгалтууд <span aria-hidden="true">↗</span></Link></footer>
+        <footer><p>{plan ? <>{plan.onSale ? <s className="plan-was">₮{plan.regularMnt.toLocaleString("en-US")}</s> : null} <strong>₮{plan.amountMnt.toLocaleString("en-US")}</strong> / сар <small>{plan.title}{plan.mockPicks ? ` · сард ${plan.mockPicks} mock` : " · хязгааргүй"}</small></> : <><strong>{MOCK_PRICE_LABEL}</strong> / mock · {MOCK_PURCHASE_DAYS} хоног</>}</p><Link className="text-link" href={format.href}>Шалгалтууд <span aria-hidden="true">↗</span></Link></footer>
       </div>
     </article>;
   })}</div><p className="home-section-note">Бэлтгэлийн материал: албан ёсны шалгалт, SAT scaled score, IELTS band, JLPT эсвэл HSK тэнцсэн дүн биш. ЭЕШ, JLPT, HSK материал багшийн хяналт хүлээж байна.</p></>;
@@ -94,15 +94,15 @@ export function HomeWorkshopDetails() {
 export function HomePlans({ plans }: { plans: Plans }) {
   return <section className="section home-plans" id="plans" aria-labelledby="home-plans-heading">
     <div className="section-heading" data-reveal><h2 id="home-plans-heading">Нэг mock. Эсвэл бүтэн сар.</h2><Link className="text-link" href="/workspace/plans">Багцуудыг харьцуулах ↗</Link></div>
-    <div className="home-plan-grid"><article className="home-plan-card" data-program="free" data-reveal><div className="home-plan-top"><span className="subject-symbol" aria-hidden="true">✦</span><span>01 / ҮНЭГҮЙ</span></div><h3>Үнэгүй</h3><p className="home-plan-price"><strong>₮0</strong><span>/ сар</span></p><ul><li>{freeMocks.length} үнэгүй хагас mock: SAT, IELTS, ЭЕШ, JLPT, HSK</li><li>Сар бүр {FREE_MONTHLY_CREDITS} AI кредит</li><li>Үгсийн сан, файлаас шалгалт</li></ul><Link className="button secondary" href="/register">Үнэгүй бүртгүүлэх <span aria-hidden="true">↗</span></Link></article>{plans.map((plan, index) => <article className="home-plan-card" key={plan.program} data-reveal><div className="home-plan-top"><span className="subject-symbol" aria-hidden="true">{plan.symbol}</span><span>0{index + 2} / САРЫН БАГЦ</span></div><h3>{plan.title}</h3><p className="home-plan-price"><strong>₮{plan.amountMnt.toLocaleString("en-US")}</strong><span>/ сар</span></p><ul>{plan.features.slice(0, 3).map(feature => <li key={feature}>{feature}</li>)}</ul><Link className="button secondary" href={"/subscribe/" + plan.program}>Багц сонгох <span aria-hidden="true">↗</span></Link></article>)}</div>
-    <div className="home-single-plan" data-reveal><span aria-hidden="true">↗</span><div><h3>Нэг mock-оос эхэлж болно.</h3><p>{totalMocks} mock · Дахин өгөх, цаггүй дадлага багтана.</p></div><strong>{MOCK_PRICE_LABEL}<small>/ нэг mock</small></strong><Link className="text-link" href="/exams">Шалгалт сонгох ↗</Link></div>
+    <div className="home-plan-grid"><article className="home-plan-card" data-program="free" data-reveal><div className="home-plan-top"><span className="subject-symbol" aria-hidden="true">✦</span><span>01 / ҮНЭГҮЙ</span></div><h3>Үнэгүй</h3><p className="home-plan-price"><strong>₮0</strong><span>/ сар</span></p><ul><li>{freeMocks.length} үнэгүй хагас mock: SAT, IELTS, ЭЕШ, JLPT, HSK</li><li>Сар бүр {FREE_MONTHLY_CREDITS} AI кредит</li><li>Үгсийн сан, файлаас шалгалт</li></ul><Link className="button secondary" href="/register">Үнэгүй бүртгүүлэх <span aria-hidden="true">↗</span></Link></article>{plans.map((plan, index) => <article className="home-plan-card" key={plan.program} data-reveal><div className="home-plan-top"><span className="subject-symbol" aria-hidden="true">{plan.symbol}</span><span>0{index + 2} / САРЫН БАГЦ</span></div><h3>{plan.title}</h3><p className="home-plan-price">{plan.onSale ? <s aria-label="Энгийн үнэ">₮{plan.regularMnt.toLocaleString("en-US")}</s> : null}<strong>₮{plan.amountMnt.toLocaleString("en-US")}</strong><span>/ сар</span></p><ul>{plan.features.slice(0, 3).map(feature => <li key={feature}>{feature}</li>)}</ul><Link className="button secondary" href={"/subscribe/" + plan.program}>Багц сонгох <span aria-hidden="true">↗</span></Link></article>)}</div>
+    <div className="home-single-plan" data-reveal><span aria-hidden="true">↗</span><div><h3>Нэг mock-оос эхэлж болно.</h3><p>{totalMocks} mock · Дахин өгөх, цаггүй дадлага багтана.</p></div><strong>{MOCK_PRICE_LABEL}<small>/ нэг mock · {MOCK_PURCHASE_DAYS} хоног</small></strong><Link className="text-link" href="/exams">Шалгалт сонгох ↗</Link></div>
     <p className="home-section-note">Туршилтын төлбөр · Бодит мөнгө суутгахгүй · Автоматаар сунгахгүй.</p>
   </section>;
 }
 
 const questions = [
   ["Шалгалт ба дадлага ямар ялгаатай вэ?", "Шалгалт хэсэг бүрийн хугацаатай. Дадлагад цаггүй ажиллаж, хариулсныхаа дараа тайлбарыг үзэж болно. Хоёр горимд ижил mock-ийн эрх үйлчилнэ."],
-  ["Сарын багц юуг нээх вэ?", "ЭЕШ багц бүх ЭЕШ mock-ийг хязгааргүй нээнэ. Гадаад хэл багцаар SAT, IELTS, JLPT, HSK-ийн mock-оос сар бүр 15-ыг сонгож, тэр сардаа хэдэн ч удаа өгч, дадлага хийнэ; 4 Workshop даалгавар багтана. Үнэгүй бүртгэлд шалгалт бүрийн хагас mock бий."],
+  ["Сарын багц юуг нээх вэ?", "ЭЕШ багц бүх ЭЕШ mock-ийг хязгааргүй нээнэ. Гадаад хэл Basic болон Pro багц SAT, IELTS, JLPT, HSK-ийн бүх mock-ийг хязгааргүй нээж, 4 Workshop даалгавар багтана; Pro нь AI кредит, үгсийн сан, файлаас шалгалтын багтаамж илүү. Нэг mock-ийг тусад нь авбал 7 хоногийн турш нээлттэй. Үнэгүй бүртгэлд шалгалт бүрийн хагас mock бий."],
   ["AI туслахыг үнэгүй ашиглаж болох уу?", "Баталгаажсан бүртгэл бүр сар бүр 100 AI кредит авна. Сарын багц нэмэлт кредиттэй. Кредитийг тусад нь авч болно: хугацаагүй, AI-д зарцуулагдаж, үгсийн сангийн байнгын багтаамж авна. Хугацаатай шалгалтын үеэр AI хаалттай."],
   ["Хуудсаа хаавал цаг зогсох уу?", "Үгүй. Хугацаатай mock-ийн цаг үргэлжилнэ. Хадгалсан хариугаа үргэлжлүүлж болно; хугацаа дууссан хэсгийг өөрчлөхгүй."],
   ["Багц дуусвал үр дүнгээ үзэж болох уу?", "Болно. Багцтай үед эхэлсэн шалгалтаа үргэлжлүүлж, өмнөх үр дүнгээ үзнэ. Шинээр эхлэхэд хүчинтэй багц эсвэл тухайн mock-ийн эрх хэрэгтэй."],

@@ -11,7 +11,7 @@ export function ProgramArt({ program }: { program: ExamProgram }) {
     </g>)}
     <rect x="166" y="66" width="38" height="20" rx="10" className="badge" /><text x="185" y="80" textAnchor="middle" className="badge-text">R&amp;W</text>
   </svg>;
-  if (program === "ielts") return <svg className="wsp-art" viewBox="0 0 240 132" aria-hidden="true">
+  if (program === "ielts" || program === "toefl") return <svg className="wsp-art" viewBox="0 0 240 132" aria-hidden="true">
     <rect x="22" y="14" width="196" height="104" rx="12" className="paper" />
     <path d="M44 74v-8a26 26 0 0 1 52 0v8" className="stroke" /><rect x="38" y="70" width="14" height="24" rx="6" className="ink" /><rect x="88" y="70" width="14" height="24" rx="6" className="ink" />
     {[0, 1, 2, 3, 4, 5, 6, 7, 8].map(i => { const h = [10, 18, 30, 22, 36, 24, 14, 26, 12][i]; return <rect key={i} x={118 + i * 9} y={66 - h / 2} width="5" height={h} rx="2.5" className="accent" />; })}

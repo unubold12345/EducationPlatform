@@ -15,6 +15,8 @@ import { JlptSection } from "./jlpt/section";
 import { JlptResults } from "./jlpt/results";
 import { HskSection } from "./hsk/section";
 import { HskResults } from "./hsk/results";
+import { ToeflSection } from "./toefl/section";
+import { ToeflResults } from "./toefl/results";
 import { EntranceRunner } from "./entrance/session";
 
 const MathText = dynamic(() => import("./math-text").then(module => module.MathText));
@@ -77,7 +79,7 @@ function StandardExamRunner({initial,examiner}:{initial:PublicExamAttempt;examin
   },[examiner,choice,stageKind,endpoint]);
   // The Listening layout shows a whole part at once, so single-question shortcuts are off there.
   const listeningView=(stage:PublicExamAttempt["stage"])=>stage?.kind==="listening"||stage?.id==="ielts-listening-check";
-  useQuestionShortcuts(initial.program==="jlpt"||initial.program==="hsk"||listeningView(attempt.stage)||examining?{}:{
+  useQuestionShortcuts(initial.program==="jlpt"||initial.program==="hsk"||initial.program==="toefl"||listeningView(attempt.stage)||examining?{}:{
     onPrevious:()=>{if(index>0&&latest.current.stage?.questions.length)navigate(index-1);},
     onNext:()=>{const count=latest.current.stage?.questions.length??0;if(index<count-1)navigate(index+1);},
     onFlag:()=>{if(latest.current.stage?.questions.length&&!paused.current)flag();},
@@ -155,6 +157,7 @@ function StandardExamRunner({initial,examiner}:{initial:PublicExamAttempt;examin
 
   if(attempt.report&&attempt.program==="jlpt")return <JlptResults attempt={attempt}/>;
   if(attempt.report&&attempt.program==="hsk")return <HskResults attempt={attempt}/>;
+  if(attempt.report&&attempt.program==="toefl")return <ToeflResults attempt={attempt}/>;
   if(attempt.report)return <div className="container page-space exam-results"><p className="eyebrow">Шалгалт дууссан · Хадгалсан үр дүн</p><h1>{attempt.title}</h1><p>Хугацаа дууссан хэсгүүдийн хариу өөрчлөгдөхгүй.</p>{recovery}
     <div className="exam-report-grid">{attempt.report.sections.map(section=><section key={section.title}><p className="eyebrow">{section.title}</p>{section.pending?<><strong>Хяналт хүлээгдэж байна</strong><p>{section.pending} хариу / prompt · Багшаар үнэлүүлнэ</p></>:<><strong>{section.correct}<span> / {section.total}</span></strong><p>Зөв хариулт · Raw count</p></>}</section>)}</div>
     <div className="notice">{attempt.program==="sat"?(attempt.timeline.length<=2?`Үнэгүй хагас mock: хэсэг бүрийн нэг модуль, дасан зохицох чиглүүлэлтгүй. Доор бүх ${attempt.report.reviews.length} асуултын тайлбар бий. Үүнийг 400–1600 албан ёсны SAT оноонд хөрвүүлэхгүй.`:"SAT-ийн хоёрдугаар модуль нь 65%-ийн дадлагын босгоор сонгогдсон. Модуль бүрийн хоёр туршилтын асуултыг үндсэн raw тоонд оруулаагүй. Доор бүх 98 асуултын тайлбар бий. Үүнийг 400–1600 албан ёсны SAT оноонд хөрвүүлэхгүй."):attempt.program==="entrance"?"Зөв хариултын тоо (raw) гарлаа. Хариулт бүр нэг оноотой; албан ЭЕШ-ийн жинлэсэн оноо болон 800 онооны хөрвүүлэлт биш. Энэ mock-ийн даалгавруудыг энэ сайтад зориулж зохиосон.":"Listening болон Reading-ийн raw тоо гарлаа. Writing, Speaking нь task response, fluency, vocabulary, grammar болон pronunciation зэрэг шалгуураар багшийн үнэлгээ шаарддаг. Энэ mock нь band оноо зохиож гаргахгүй."}</div>
@@ -168,9 +171,9 @@ function StandardExamRunner({initial,examiner}:{initial:PublicExamAttempt;examin
   </div>;
 
   const stage=attempt.stage!;const question=stage.questions[index]??stage.questions[0];
-  const hsk=attempt.program==="hsk";
-  // JLPT and HSK draw their own section pages, so the generic strip, map and question panel stay off.
-  const jlpt=attempt.program==="jlpt"||hsk;
+  const hsk=attempt.program==="hsk",toefl=attempt.program==="toefl";
+  // JLPT, HSK and TOEFL draw their own section pages, so the generic strip, map and question panel stay off.
+  const jlpt=attempt.program==="jlpt"||hsk||toefl;
   const math=/^sat-math/.test(stage.id),calculator=math;const elapsed=stage.seconds-remaining;const listening=listeningView(stage);
   const passage=question?.passage ? stage.passages?.find(p=>p.title===question.passage)?.text??question.passage : "";
   const answered=stage.questions.filter(q=>!!answers[q.id]?.trim()).length;
@@ -182,11 +185,12 @@ function StandardExamRunner({initial,examiner}:{initial:PublicExamAttempt;examin
     <p className="sr-only" aria-live="polite">{timeNotice}</p>
     <div className="container exam-workspace"><details className="exam-directions"><summary>Directions / Заавар</summary><p>{stage.instructions}</p></details>
       {hsk?<HskSection key={stage.id} stage={stage} slug={attempt.slug} attemptId={attempt.id} elapsed={Math.max(0,elapsed)} answers={answers} flags={flags} disabled={conflict} onChange={changeFor} onFlag={flagFor}/>:null}
-      {jlpt&&!hsk?<JlptSection key={stage.id} stage={stage} slug={attempt.slug} attemptId={attempt.id} version={attempt.audioRevision??1} elapsed={Math.max(0,elapsed)} answers={answers} flags={flags} disabled={conflict} onChange={changeFor} onFlag={flagFor}/>:null}
+      {toefl?<ToeflSection key={stage.id} stage={stage} slug={attempt.slug} attemptId={attempt.id} elapsed={Math.max(0,elapsed)} remaining={remaining} answers={answers} flags={flags} disabled={conflict} onChange={changeFor} onFlag={flagFor} onRecording={blob=>void uploadRecording(blob,stage.id)}/>:null}
+      {jlpt&&!hsk&&!toefl?<JlptSection key={stage.id} stage={stage} slug={attempt.slug} attemptId={attempt.id} version={attempt.audioRevision??1} elapsed={Math.max(0,elapsed)} answers={answers} flags={flags} disabled={conflict} onChange={changeFor} onFlag={flagFor}/>:null}
       {!jlpt&&listening?<ListeningSection version={attempt.audioRevision??1} attemptId={attempt.id} slug={attempt.slug} stage={stage} elapsed={stage.kind==="listening"?Math.max(0,elapsed):null} answers={answers} flags={flags} disabled={conflict} onChange={changeFor} onFlag={flagFor}/>:null}
       {!jlpt&&!listening&&!examining&&stage.questions.length>1?<QuestionStrip current={question.id} onSelect={id=>navigate(stage.questions.findIndex(q=>q.id===id))} items={stage.questions.map((q,i)=>({id:q.id,label:String(i+1),state:answers[q.id]?.trim()?"answered":undefined,flagged:flags.includes(q.id)}))}/>:null}
       {!jlpt&&!listening&&!examining&&grid?<section className="exam-question-map"><h2>Асуултаа шалгах</h2><p>Тэмдэгтэй = дараа харах · Цэнхэр = хариулсан. Зөвхөн энэ хэсгийн асуултууд.</p><div>{stage.questions.map((q,i)=><button key={q.id} className={(answers[q.id]?"answered ":"")+(flags.includes(q.id)?"flagged":"")} onClick={()=>navigate(i)} aria-label={"Асуулт "+(i+1)+(flags.includes(q.id)?", тэмдэгтэй":"")}>{i+1}{flags.includes(q.id)?" ⚑":""}</button>)}</div><p className="fine-print">Хугацаа дуусахад дараагийн хэсэг автоматаар эхэлнэ. Эрт дуусгах боломжгүй.</p></section>:null}
-      {stage.kind==="speaking"?<SpeakingRecorder key={stage.id} onComplete={blob=>void uploadRecording(blob,stage.id)}/>:null}
+      {stage.kind==="speaking"&&!toefl?<SpeakingRecorder key={stage.id} onComplete={blob=>void uploadRecording(blob,stage.id)}/>:null}
       {examiner&&speakingStage(stage)&&choice==="ask"?<ExaminerInvitation onChoose={value=>setExaminerChoice(attempt.slug,value)}/>:null}
       {examiner&&speakingStage(stage)&&choice==="off"?<p className="exam-examiner-switch">Асуултыг дэлгэцээс уншиж, чанга хариулна. <button className="text-link" onClick={()=>setExaminerChoice(attempt.slug,"on")}>AI шалгагчтай үргэлжлүүлэх →</button></p>:null}
       {/* Not keyed by stage: one examiner (and its audio) carries on through Parts 1, 2 and 3. */}

@@ -34,7 +34,11 @@ const TYPING_MAX = 48;
 const GAP = "＿＿＿＿";
 
 export type QuizWord = Pick<VocabularyWord, "id" | "term" | "translation" | "example">
-  & Partial<Pick<VocabularyWord, "deckId" | "starred" | "box" | "correct" | "wrong" | "reviewedAt" | "dueAt">>;
+  & Partial<Pick<VocabularyWord, "deckId" | "starred" | "box" | "correct" | "wrong" | "reviewedAt" | "dueAt">>
+  // JLPT/HSK deck words (2026-11-18): the kana or pinyin reading, also accepted when typing the word, and the
+  // language to read the term in (Chinese and Japanese share characters, so the script alone cannot tell).
+  // `answers`: more spellings that count when the word is typed (a Japanese word's romaji: kazoku, shi/si…).
+  & { reading?: string | null; lang?: string; answers?: readonly string[] };
 export type QuizSpeech = { text: string; lang: string };
 export type QuizQuestion = {
   id: string;
@@ -54,6 +58,8 @@ export type QuizQuestion = {
   term: string;
   translation: string;
   example: string | null;
+  /** The term's kana or pinyin reading, for deck words. */
+  reading: string | null;
   /** How the word can be read aloud, or null when its script has no voice. */
   speech: QuizSpeech | null;
   /** A second ask of a word missed earlier in the same session; it does not change the grade. */
@@ -98,9 +104,10 @@ export function quizPool<T extends QuizWord>(words: readonly T[], filter: { scop
 }
 
 /** A language tag a browser voice can read the term in, or null (Cyrillic has no dependable voice). */
-export function speechFor(term: string): QuizSpeech | null {
+export function speechFor(term: string, lang?: string): QuizSpeech | null {
   const text = term.replace(/\s+/g, " ").trim();
   if (!text || text.length > 80) return null;
+  if (lang) return { text, lang };
   if (/[぀-ヿ一-鿿]/.test(text)) return { text, lang: "ja-JP" };
   if (/[가-힯]/.test(text)) return { text, lang: "ko-KR" };
   if (/^[\p{Script=Latin}\d\s'’.,!?()&/-]+$/u.test(text) && /\p{Script=Latin}/u.test(text)) return { text, lang: "en-US" };
@@ -249,7 +256,7 @@ export function buildQuiz(words: readonly QuizWord[], options: BuildOptions): Qu
   }
 
   for (const word of picked) {
-    const speech = speechFor(word.term);
+    const speech = speechFor(word.term, word.lang);
     const direction: QuestionDirection = options.direction === "mixed"
       ? (random() < 0.5 ? "term-to-translation" : "translation-to-term")
       : options.direction;
@@ -289,11 +296,15 @@ export function buildQuiz(words: readonly QuizWord[], options: BuildOptions): Qu
     const otherSide = (candidate: QuizWord) => side === "term-to-translation" ? candidate.translation : candidate.term;
     const base = {
       id: "q" + (questions.length + 1), wordId: word.id, direction: side,
-      term: word.term, translation: word.translation, example: word.example ?? null, speech, retry: false,
+      term: word.term, translation: word.translation, example: word.example ?? null, reading: word.reading ?? null, speech, retry: false,
     };
 
     if (kind === "typing") {
-      questions.push({ ...base, kind, prompt: asking, options: [], answer: -1, accepted: acceptedAnswers(correct), claim: null });
+      // Typing a Japanese or Chinese word: its kana or pinyin counts too (pinyin with or without tone marks).
+      // `answers` when given (deck words: the kana or pinyin and the romaji), otherwise the shown reading.
+      const forms = side === "translation-to-term" ? (word.answers ?? (word.reading ? [word.reading] : [])) : [];
+      const readings = forms.flatMap(value => [value, value.normalize("NFD").replace(/[\u0300-\u036f]/g, "")]).flatMap(value => [value, value.replace(/\s+/g, "")]);
+      questions.push({ ...base, kind, prompt: asking, options: [], answer: -1, accepted: [...new Set([...acceptedAnswers(correct), ...readings.flatMap(acceptedAnswers)])], claim: null });
       continue;
     }
     if (kind === "card") {

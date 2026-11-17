@@ -1,9 +1,9 @@
 // Client-safe shapes for practice mode. Nothing here may carry an answer before the student checks it.
-import type { ExamFigure, HskGroup, HskItem } from "../exams/types";
+import type { ExamFigure, HskGroup, HskItem, ToeflGroup, ToeflItem } from "../exams/types";
 export type PracticeKind = "choice" | "number" | "short" | "essay" | "speaking";
 export type PracticeSectionKind = "questions" | "listening" | "writing" | "speaking";
 /** ЭЕШ Mathematics, Physics and English are the imported set; SAT and IELTS are the international papers. */
-export type PracticeSubject = "sat" | "ielts" | "jlpt" | "hsk" | "eesh-math" | "eesh-physics" | "eesh-chemistry" | "eesh-biology" | "eesh-english";
+export type PracticeSubject = "sat" | "ielts" | "toefl" | "jlpt" | "hsk" | "eesh-math" | "eesh-physics" | "eesh-chemistry" | "eesh-biology" | "eesh-english";
 
 export type PracticeQuestion = {
   id: string; section: string; label: string; domain: string; kind: PracticeKind;
@@ -21,6 +21,8 @@ export type PracticeQuestion = {
   task?: string; instructions?: string; groupFigure?: ExamFigure;
   /** HSK: the question's pictures, pinyin or text choices, and its part's shared pictures, bank and example. */
   hsk?: HskItem; hskGroup?: HskGroup;
+  /** TOEFL: the gap, Build a Sentence boxes or speaking clip, and the task page (paragraph with every gap's prefix, text, recording, writing task). */
+  toefl?: ToeflItem; toeflGroup?: ToeflGroup;
 };
 export type PracticeSection = { id: string; title: string; kind: PracticeSectionKind; hint: string; math: boolean };
 export type PracticeForm = {

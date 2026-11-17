@@ -33,6 +33,11 @@ Part of the [project guide](../PROJECT.md) (was PROJECT.md section 7). "Section 
   20 → 40, 21 → 51, 30 → 60, 40 → 80; page photos by their number: 10 → 20, 40 → 80) and the charge settles to the questions
   delivered and the text read. The 2 and the margin are code constants (`EXAM_PRICE`); the owner did not name a figure.
   The retired `exam-10`/`exam-20` ids stay in the price list only so earlier charges keep their name in admin reports.
+- Reading Lab price since 2026-11-17 (owner request to raise it): like an exam from a file, `READING_PRICE` = 2 credits per
+  question delivered, never below 2× the practice's DeepSeek peak cost (`readingPracticeCostNano`, the token rates below);
+  "reading-practice" joined `MARGIN_ACTIONS`. 12 questions = 24 (28 from a full 45,000-character file), 24 = 48; listed
+  range 14–48 (was 4–17). The hold for a document is the full-file price for the chosen count; retries stay half (7–24).
+  The figures in the next two bullets are the cost basis and the history before this change.
 - Reading Lab practices are priced by length (owner rule 2026-11-10) with the same hold-and-settle: `readingPracticeCredits` =
   1,500 prompt tokens + the larger of one token per two characters of material or 1,024 per page photo (input), plus 600 + 2 per
   passage word + 200 per question (output). The rates fill the 24,000/8,000 budget, so a full 45,000-character file with a
@@ -57,7 +62,7 @@ Part of the [project guide](../PROJECT.md) (was PROJECT.md section 7). "Section 
     fixed while a plan is renewed before it ends). Every billing month of the term adds the plan's credits when that month begins;
     unused ones carry over and lapse only when the subscription ends. Nothing resets on the 1st. A plan bought again after it
     lapsed starts a new term with fresh credits. Plans stack; per-mock purchases add none.
-  - Purchased ("yellow", 2026-11-13): the credit pack (default 1,000 credits for ₮5,000, simulated payment like the plans; `CreditOrder`,
+  - Purchased ("yellow", 2026-11-13): the credit packs (default list 200 / 500 / 1,000 / 2,000 / 5,000 credits at ₮5 a credit; an admin saves the whole list, 1–12 packs, in the Prices tab and the student picks one on the plans page; one `CreditPack` row per pack, key `p<credits>`; simulated payment like the plans; `CreditOrder`,
     `CreditWallet`). They never lapse, are shown apart from the month's and plan's credits (a yellow chip in the rail meter, a yellow
     row on the plans page) and are the only credits that buy permanent vocabulary space. Receipts carry `yellow` (credits left); a reply
     without it keeps the page's figure.

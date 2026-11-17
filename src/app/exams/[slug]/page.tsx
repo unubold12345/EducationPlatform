@@ -12,6 +12,7 @@ import { mockBriefingSummary } from "@/modules/exams/briefing-summary";
 import { PracticeEntry } from "@/modules/exam-practice/entry";
 import { JlptBriefing } from "@/modules/exams/jlpt/briefing";
 import { HskBriefing } from "@/modules/exams/hsk/briefing";
+import { ToeflBriefing } from "@/modules/exams/toefl/briefing";
 import { EntranceBriefing } from "@/modules/exams/entrance/briefing";
 import { speakingLabEnabled } from "@/lib/local-pilot";
 
@@ -34,6 +35,7 @@ export default async function ExamPage({params}:{params:Promise<{slug:string}>})
   const {hasAccess,activeAttemptId}=gate;
   if(exam.program==="jlpt")return <JlptBriefing exam={exam} gate={gate} loggedIn={Boolean(session)}/>;
   if(exam.program==="hsk")return <HskBriefing exam={exam} gate={gate} loggedIn={Boolean(session)}/>;
+  if(exam.program==="toefl")return <ToeflBriefing exam={exam} gate={gate} loggedIn={Boolean(session)}/>;
   if(exam.program==="entrance")return <EntranceBriefing exam={exam} hasAccess={hasAccess} practice={gate.practice} free={gate.free} loggedIn={Boolean(session)} activeAttemptId={activeAttemptId}/>;
   const summary=mockBriefingSummary(exam);
   const sat=exam.program==="sat";
@@ -61,7 +63,7 @@ export default async function ExamPage({params}:{params:Promise<{slug:string}>})
           <p className="briefing-price">{summary.priceNote}</p>
           {activeAttemptId ? <Link className="briefing-resume" href={"/exams/attempts/" + activeAttemptId}>Нээлттэй оролдлого · үргэлжлүүлэх <span aria-hidden="true">→</span></Link> : null}
         </div>
-        <div className="briefing-start"><ExamStart slug={exam.slug} program={exam.program} hasAccess={hasAccess} loggedIn={Boolean(session)} examiner={exam.program==="ielts"&&speakingLabEnabled()} free={gate.free} pick={gate.pick} plan={gate.plan} pickedUntil={gate.pickedUntil}/><PracticeEntry slug={exam.slug} hasAccess={gate.practice} locked={gate.locked}/></div>
+        <div className="briefing-start"><ExamStart slug={exam.slug} program={exam.program} hasAccess={hasAccess} loggedIn={Boolean(session)} examiner={exam.program==="ielts"&&speakingLabEnabled()} free={gate.free} pick={gate.pick} plan={gate.plan} pickedUntil={gate.pickedUntil} boughtUntil={gate.boughtUntil}/><PracticeEntry slug={exam.slug} hasAccess={gate.practice} locked={gate.locked}/></div>
       </aside>
 
       <section className="briefing-section exam-stages" aria-labelledby="exam-stages-heading">

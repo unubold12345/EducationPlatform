@@ -230,6 +230,48 @@ Part of the [project guide](../PROJECT.md) (was PROJECT.md section 3). "Section 
   `src/modules/exams/free/audio-catalog.json`. Recorded lengths leave checking time: IELTS 567 s of 900, N5 444 of 900, N4 561 of
   1,080, HSK 387 of 480. A Whisper-small round trip found every IELTS answer and 0.82–1.00 JLPT kana recall; HSK item 1 (小猫, woman's
   voice) was misheard. Nobody has listened yet.
-- Site details: hub tiles on every programme hub and a strip on `/exams#free`; briefings say free and half-length; the HSK result scales
+- Site details: each programme hub shows its free mock as the first tile (the `/exams` strip was removed on 2026-11-14); briefings say free and half-length; the HSK result scales
   each section to 100 by its item count (×10 here); the free IELTS Speaking ends after Part 2 (stage `ielts-speaking-2-final`, which the
   examiner closes with the end-of-test line). Admins can fix them like any mock. Teacher and native-speaker review remain pending.
+
+### TOEFL iBT (2026-11-18)
+
+- On the site since 2026-11-18: nine forms `toefl-01`…`09` at `/exams/toefl` (Гадаад хэл Basic/Pro, or ₮10,000 for 7 days per
+  mock). `scripts/build-toefl-mocks.mjs` turns the pack below into `assets/toefl/toefl-NN.json` (server-only definitions, read
+  lazily by `toefl/content.ts`), `assets/toefl-audio/` (459 MP3s, 64.5 MB, `manifest.json` with hashes) and the client-safe
+  `src/modules/exams/toefl/catalog.json` and `timeline.json`. It is deterministic; rerun it after any pack change
+  (`tests/toefl.test.mjs` checks counts, keys, hashes and that client files hold no key or script).
+- Sitting (20 stages): Reading Module 1 20 min, Module 2 9 min routed Upper at 21 of 35; Listening Module 1 runs on a server
+  timeline (each clip once, then an answer window of 20 s per Choose a Response item or 25 s per question after a set) and
+  Module 2 is routed Upper at 20 of 32 with its own length per route; Writing: Build a Sentence 6 min, email 7, discussion
+  10; Speaking: two introductions, 7 Listen and Repeat items (8–12 s to answer) and 4 interview questions (45 s), each
+  recorded and uploaded like IELTS Speaking. Engine additions are opt-in fields: `routeAt`, `variantSeconds` (read through
+  `stageSeconds`) and a question `window` (a changed answer outside it plus 5 s is refused); SAT routing is unchanged.
+- Audio has its own routes and function bundles (`/api/mock-attempts/[id]/audio/toefl`, `/api/exam-practice/[slug]/audio/toefl`):
+  during a sitting only the clip playing now on the server clock is served; practice serves any clip after the access check.
+- Views live in `src/modules/exams/toefl/` (hub, briefing, section, practice item, results, `toefl.css`): letter boxes for
+  Complete the Words, tap-to-place boxes for Build a Sentence. Results are raw: Reading /50 and Listening /47 with the module
+  taken, Build a Sentence /10; the email, discussion and speaking wait for review, with model answers after the sitting.
+  Practice lists both routes per module; transcripts and model answers open after a check. Browser suite: `check -- toefl`.
+- The pack: `MockExmps/TOEFL` (never deployed; in `.vercelignore`) holds the nine original forms in the format ETS introduced
+  on 21 January 2026.
+- A form follows ETS's 2026 blueprint: Reading 50 items (Complete the Words, Read in Daily Life, Read an Academic Passage) and
+  Listening 47 (Choose a Response, Conversation, Announcement, Academic Talk), each as a 35- or 32-item routing module plus a
+  15-item Lower or Upper module (both are written, so 127 scored items per form); Writing with 10 Build a Sentence items, an
+  email and an academic discussion post; Speaking with 7 Listen and Repeat sentences and a 4-question interview.
+- `_source/formNN.py` is the content, `_source/build.py` validates the blueprint and writes `mock-NN/candidate.md`,
+  `answers.md`, `examiner.md` (recording scripts with US/UK/AU voice codes) and `mock.json`; `_source/AUTHORING.md` is the
+  writing spec. Details, what was checked and the pack's own decisions (module split, routing at about 60 %, raw scores only):
+  `MockExmps/TOEFL/README.md` and `SOURCES.md`.
+- Offline recordings (2026-11-18): `mock-NN/audio/` has one MP3 per spoken item (51 per form: Choose a Response prompts,
+  conversations, announcements, talks, the two speaking scenario lines, Listen and Repeat sentences, interview questions)
+  and `audio-manifest.json` (voice per speaker, duration, file and source-text SHA-256, revision). `_source/generate_audio.py`
+  synthesises them with local Kokoro-82M (fp32 model from the Speaking Lab cache, kokoro-js voice tables, speed 1.0, one
+  sentence per call); AU codes use two extra British voices (`bf_isabella`, `bm_fable`). Script text is never changed:
+  titles and room numbers get speech-only renderings, and espeak misreadings (heteronyms such as "excuse me", "live",
+  "read"; teens stressed like "fifty") are corrected at phoneme level and listed per recording in the manifest. It is
+  re-runnable per form and per recording and remakes only recordings whose script, phonemes or settings changed (their
+  `revision` goes up). `_source/validate_audio.py` checks files, hashes, decoding and durations and runs a Whisper round
+  trip (small.en, medium.en second opinion; files over 25 s are cut at sentence pauses first, because long-file
+  transcription dropped sentence-initial words), listing recordings that differ from their script, ordinary words before
+  name spellings; the pack's `AUDIO.md` is the index. Files hold speech only; pauses come from ADMINISTRATION.md.

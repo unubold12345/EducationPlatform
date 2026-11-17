@@ -2,7 +2,7 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { MOCK_PRICE_LABEL } from "../pricing";
+import { MOCK_PRICE_LABEL, MOCK_PURCHASE_DAYS } from "../pricing";
 
 /** A compact start control for the imported ЭЕШ papers: one click, no preflight checklist. */
 export function EntranceStart({ slug, hasAccess, loggedIn, activeAttemptId, free = false }: { slug: string; hasAccess: boolean; loggedIn: boolean; activeAttemptId?: string; free?: boolean }) {
@@ -33,7 +33,7 @@ export function EntranceStart({ slug, hasAccess, loggedIn, activeAttemptId, free
   if (!hasAccess) return <div className="eesh-gate">
     <p className="eyebrow">НЭГ ШАЛГАЛТЫН ЭРХ</p>
     <strong>{MOCK_PRICE_LABEL}</strong>
-    <p>Эсвэл ЭЕШ сарын багц — бүх ЭЕШ mock хязгааргүй.</p>
+    <p>Энэ mock {MOCK_PURCHASE_DAYS} хоногийн турш нээлттэй. Эсвэл ЭЕШ сарын багц — бүх ЭЕШ mock хязгааргүй.</p>
     <button type="button" className="button" onClick={() => router.push(loggedIn ? "/checkout/" + slug : "/login?next=" + encodeURIComponent("/checkout/" + slug))}>Эрх авах →</button>
     <Link className="text-link" href="/subscribe/entrance">ЭЕШ багц үзэх</Link>
   </div>;

@@ -1,33 +1,63 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { CREDIT_PACK_LIMITS } from "@/modules/credits/pricing";
+import { CREDIT_PACK_COUNT, CREDIT_PACK_LIMITS, type CreditPackOffer } from "@/modules/credits/pricing";
 
-/** The AI credit pack on sale: how many credits it adds and what it costs, changed with a reason and audited. */
-export function AdminCreditPackForm({ credits, amountMnt, fallback }: { credits: number; amountMnt: number; fallback: { credits: number; amountMnt: number } }) {
+type Row = { credits: string; amount: string };
+const toRows = (packs: readonly CreditPackOffer[]): Row[] => packs.map(pack => ({ credits: String(pack.credits), amount: String(pack.amountMnt) }));
+
+/**
+ * The AI credit packs on sale: add, change or remove any number of them (1–12), changed with a reason and audited.
+ * The list is saved as a whole; "Анхны багцууд" saves the code defaults back.
+ */
+export function AdminCreditPacksForm({ packs, defaults, custom }: { packs: readonly CreditPackOffer[]; defaults: readonly CreditPackOffer[]; custom: boolean }) {
   const router = useRouter();
+  const [rows, setRows] = useState<Row[]>(() => toRows(packs));
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const format = (value: number) => value.toLocaleString("en-US");
-  const changed = credits !== fallback.credits || amountMnt !== fallback.amountMnt;
-  return <form className="admin-price admin-credit-pack" onSubmit={async event => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget), nextCredits = Number(data.get("credits")), nextAmount = Number(data.get("amount"));
-    if (!window.confirm(`AI кредит багц: ${format(credits)} кредит / ₮${format(amountMnt)} → ${format(nextCredits)} кредит / ₮${format(nextAmount)}. Шинэ захиалгад шууд үйлчилнэ. Хадгалах уу?`)) return;
+  const summary = (list: readonly CreditPackOffer[]) => list.map(pack => `${format(pack.credits)} / ₮${format(pack.amountMnt)}`).join(", ");
+  const change = (index: number, key: keyof Row, value: string) => setRows(current => current.map((row, at) => at === index ? { ...row, [key]: value } : row));
+
+  async function save(list: CreditPackOffer[], reason: string) {
     setBusy(true); setMessage("");
     try {
-      const response = await fetch("/api/admin", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "set-credit-pack", target: "default", credits: nextCredits, amount: nextAmount, reason: data.get("reason") }) });
+      const response = await fetch("/api/admin", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "set-credit-packs", target: "packs", packs: list, reason }) });
       const result = await response.json();
       if (!response.ok) throw Error(result.error);
-      setMessage("Кредит багц шинэчлэгдлээ."); router.refresh();
+      setMessage(list.length ? "Кредит багцууд шинэчлэгдлээ." : "Анхны багцууд сэргэлээ.");
+      router.refresh();
     } catch (error) { setMessage(error instanceof Error ? error.message : "Алдаа гарлаа."); }
     finally { setBusy(false); }
+  }
+
+  return <form className="admin-price admin-credit-pack" onSubmit={event => {
+    event.preventDefault();
+    const reason = String(new FormData(event.currentTarget).get("reason") ?? "");
+    const list = rows.map(row => ({ credits: Number(row.credits), amountMnt: Number(row.amount) }));
+    if (!window.confirm(`AI кредит багцууд: ${summary(packs)} → ${summary(list)}. Шинэ болон төлөгдөөгүй захиалгад шууд үйлчилнэ. Хадгалах уу?`)) return;
+    void save(list, reason);
   }}>
-    <div><strong>AI кредит багц</strong><small>Одоо {format(credits)} кредит · ₮{format(amountMnt)}{changed ? ` · анхны ${format(fallback.credits)} кредит · ₮${format(fallback.amountMnt)}` : ""}</small></div>
-    <label>Кредит<input name="credits" type="number" required min={CREDIT_PACK_LIMITS.credits.min} max={CREDIT_PACK_LIMITS.credits.max} step={1} defaultValue={credits}/></label>
-    <label>Үнэ (₮)<input name="amount" type="number" required min={CREDIT_PACK_LIMITS.amountMnt.min} max={CREDIT_PACK_LIMITS.amountMnt.max} step={CREDIT_PACK_LIMITS.amountMnt.step} defaultValue={amountMnt}/></label>
-    <label>Шалтгаан<input name="reason" required minLength={5} maxLength={1000} placeholder="Жишээ: шалгалтын улиралд хямдруулав"/></label>
-    <button className="button primary" disabled={busy}>{busy ? "Хадгалж байна…" : "Хадгалах"}</button>
+    <div><strong>AI кредит багцууд</strong><small>Одоо {summary(packs)}{custom ? ` · анхны: ${summary(defaults)}` : " · анхны багцууд"}</small></div>
+    <div className="admin-pack-rows">
+      {rows.map((row, index) => <div className="admin-pack-row" key={index}>
+        <label>Кредит<input type="number" required min={CREDIT_PACK_LIMITS.credits.min} max={CREDIT_PACK_LIMITS.credits.max} step={1} value={row.credits} onChange={event => change(index, "credits", event.target.value)}/></label>
+        <label>Үнэ (₮)<input type="number" required min={CREDIT_PACK_LIMITS.amountMnt.min} max={CREDIT_PACK_LIMITS.amountMnt.max} step={CREDIT_PACK_LIMITS.amountMnt.step} value={row.amount} onChange={event => change(index, "amount", event.target.value)}/></label>
+        <button type="button" className="button" aria-label={`${row.credits || "Шинэ"} кредитийн багцыг хасах`} disabled={busy || rows.length <= CREDIT_PACK_COUNT.min} onClick={() => setRows(current => current.filter((_, at) => at !== index))}>Хасах</button>
+      </div>)}
+    </div>
+    <div className="admin-sale-actions">
+      <button type="button" className="button" disabled={busy || rows.length >= CREDIT_PACK_COUNT.max} onClick={() => setRows(current => [...current, { credits: "", amount: "" }])}>+ Багц нэмэх</button>
+    </div>
+    <label>Шалтгаан<input name="reason" required minLength={5} maxLength={1000} placeholder="Жишээ: шалгалтын улиралд олон хэмжээтэй багц нэмэв"/></label>
+    <div className="admin-sale-actions">
+      <button className="button primary" disabled={busy}>{busy ? "Хадгалж байна…" : "Хадгалах"}</button>
+      {custom ? <button type="button" className="button" disabled={busy} onClick={event => {
+        const reason = String(new FormData(event.currentTarget.form!).get("reason") ?? "").trim();
+        if (reason.length < 5) { setMessage("Шалтгаанаа бичнэ үү (5-аас дээш тэмдэгт)."); return; }
+        if (window.confirm(`Анхны багцууд руу буцаах уу? ${summary(defaults)}`)) { setRows(toRows(defaults)); void save([], reason); }
+      }}>Анхны багцууд</button> : null}
+    </div>
     {message && <p role="status">{message}</p>}
   </form>;
 }

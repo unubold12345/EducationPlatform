@@ -215,6 +215,11 @@ body:has(.admin-page) .header-inner { max-width: none; }
 
 .admin-prices { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 0 0 8px; }
 .admin-credit-allowances { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.admin-pack-list { grid-template-columns: minmax(0, 1fr); }
+.admin-pack-rows { display: grid; gap: 10px; }
+.admin-pack-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; align-items: end; gap: 10px; }
+.admin-sale-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.admin-sale[data-live] { border-color: var(--blue); }
 /* Overview: this month's AI spending as one link row under the metrics. */
 .admin-ai-strip { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 18px; margin: -6px 0 20px; padding: 14px 18px; border: 1px solid var(--ws-line); border-radius: 14px; background: var(--ws-card); color: var(--muted); font-size: 13.5px; }
 .admin-ai-strip > span:first-child { font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }

@@ -1,9 +1,10 @@
 # Free half-length mocks — offline pack
 
 Prepared 2026-11-12 by Claude Code (Claude Opus 5.5) at the owner's request: one free mock per exam for
-free-plan students, about half the length of a full mock. **Not on the website yet.** No website code, asset,
-catalogue, database row or price was changed; the folder is excluded from deployment in `.vercelignore`
-like every other pack. Answer keys are inside the JSON files, so keep the folder private.
+free-plan students, about half the length of a full mock. **On the website since 2026-11-13.** This folder is
+the source: `scripts/build-free-mocks.mjs` converts it into the site's files (see "On the site" below). The
+folder itself is excluded from deployment in `.vercelignore` like every other pack. Answer keys are inside the
+JSON files, so keep the folder private.
 
 Every question, passage, dialogue, chart and key is original. None is copied from the paid mocks, and
 no official paper or answer key is reproduced.
@@ -28,7 +29,7 @@ SHA-256 of every generated file.
 
 ## Format: ready for the site's loaders
 
-Each file uses the shape the site already reads, so integration mostly means copying files and registering slugs:
+Each file uses the shape the site already reads, so the site build copies it with few changes:
 
 - **ЭЕШ:** the stored-paper shape of `assets/entrance-mocks/<subject>/<slug>.json`, read by
   `src/modules/exams/entrance/content.ts` (groups, questions, passages, points, figures). `year` is 2026 and
@@ -39,9 +40,10 @@ Each file uses the shape the site already reads, so integration mostly means cop
 The IDs follow the prefixes the site keys on. SAT question IDs start with `sat-rw` and `sat-math`, and the Math
 stage ID starts with `sat-math`, because the report, calculator and tutor use those prefixes. IELTS stages
 reuse `ielts-listening` and `ielts-listening-check`. JLPT numbers start with V, G or L. HSK groups start with
-`hsk-l-` and `hsk-r-`. Figures already carry their future public paths:
+`hsk-l-` and `hsk-r-`. Figures carry the public paths planned here. The site build rewrites them to
+`/exam-assets/free/<slug>/`, because the ЭЕШ and HSK builds delete and rebuild their own folders:
 
-| Folder here | Public path the JSON expects |
+| Folder here | Path planned in the JSON |
 | --- | --- |
 | `eesh/images/<slug>/` | `/exam-assets/eesh/<subject>/<slug>/` |
 | `ielts/images/ielts-free/` | `/ielts-mocks/ielts-free/` |
@@ -65,38 +67,37 @@ the SAT Math keys are recalculated in Python (SymPy for Mathematics). It also ch
 its options, point totals, group and passage references, figure files, a script for every listening item, the
 half-length time limits, IELTS evidence quotes present in the scripts and passages, and every HSK line against
 the HSK pack's 150-word list. `grade_with_engine.mjs` imports the site's `engine.ts` read-only and confirms that
-entering every key scores full marks and an empty sitting scores zero. On 2026-11-12 all ten scored 100%.
+entering every key scores full marks and an empty sitting scores zero. On 2026-11-12 all ten scored 100%, and again
+after the 2026-11-13 review fixes.
 
 HSK pictures are drawn by the HSK pack's own `MockExmps/HSK/_source/scenes.py`, imported read-only.
 
-## Integration checklist (later; not done)
+## On the site (2026-11-13)
 
-1. **Files.** Copy ЭЕШ JSON to `assets/entrance-mocks/<subject>/` and figures to `public/exam-assets/eesh/...`; JLPT
-   to `assets/jlpt/`; HSK to `assets/hsk/` and its pictures to `public/exam-assets/hsk/hsk1-free/`; load SAT and IELTS
-   definitions server-side (for example next to `ielts-forms.json`) and the IELTS chart into `public/ielts-mocks/ielts-free/`.
-2. **Catalogues and pages.** Add catalogue rows or a "free sample" card per programme. The ЭЕШ hub groups papers by year
-   and form, so the free papers need their own row, not a 2026 variant.
-3. **Access, server-side.** Grant these ten slugs to every signed-in, verified account without opening any paid slug,
-   and keep the existing start, read, save, audio, AI and ownership checks. Decide whether retakes are unlimited.
-   Free slugs must not appear as per-mock purchases.
-4. **Audio (required before Listening can be sat).** IELTS, JLPT N5/N4 and HSK listening are scripts only. The
-   existing generators read the paid packs, so they need a free-mock entry: `scripts/generate-jlpt-audio.py`
-   (the item scripts already use ナレーター/男/女), `scripts/generate-hsk-audio.py` (read each item twice), and the IELTS
-   Kokoro pipeline from `ielts-academic-free-listening.json`. Follow PROJECT "Audio functions": give each new
-   recording set its own folder, reader and route segment, and check the bundle sizes.
-5. **Copy that assumes a full mock.** The `ielts-listening-check` stage label says "40 хариултаа шалгах"
-   (`src/app/exams/[slug]/page.tsx`); here it is 20. HSK results convert correct × 5 per 20-item section; with 10 items
-   per section the same 100-per-section scale is correct × 10. The SAT free mock has no break and no adaptive routing.
-6. **Tests.** Extend the unit and browser suites (`entrance`, `mocks`, `jlpt`, `hsk`, `billing` groups) to cover the
-   free slugs and the free-access rule.
+Site details are in `docs/project/assessments.md`, "Free half-length mocks".
+
+- **Build.** `node scripts/build-free-mocks.mjs` reads this folder and writes the private definitions to
+  `assets/free-mocks/` (ЭЕШ papers keep the stored-paper shape), the IELTS Listening scripts for practice after a check,
+  the figures to `public/exam-assets/free/<slug>/` and the client-safe `src/modules/exams/free/catalog.json`. The HSK
+  worked examples stay shared at `/exam-assets/hsk/examples/`.
+- **Audio.** `scripts/generate-free-audio.py` reads the scripts here and writes 14 Kokoro tracks to `assets/free-audio`,
+  served on `/audio/free`.
+- **Access.** Every signed-in, verified account, with retakes and practice. Free mocks are never sold or picked and are not
+  counted in the paid totals (`src/modules/subscriptions/mock-access.ts`).
+- **Pages.** Each programme hub shows its free mock as the first tile, and the briefings say free and half-length. Copy
+  that assumed a full mock (40 answers, ×5 per HSK section) was fixed. The free IELTS Speaking ends after Part 2.
+- **After editing this pack:** run `build.py` and `grade_with_engine.mjs` (above), then `node scripts/build-free-mocks.mjs`,
+  then `python scripts/generate-free-audio.py` if a listening script changed, then the checks `docs/OPERATIONS.md`
+  requires (`npm run check -- free` covers these mocks and their audio).
 
 ## Limits
 
 - **No teacher or native-speaker review**, and no learner calibration. Difficulty targets the paid mocks' level by the
   author's judgement only. ЭЕШ papers need a subject teacher; English, Japanese and Chinese need native review.
-- **No audio yet** (see step 4). The IELTS listening stage is set to 15 minutes from the script length (about 1,130 spoken
-  words and six 30-second pauses, roughly 10–11 minutes at 150 words a minute), which leaves time to check answers;
-  measure it after synthesis.
+  The 2026-11-13 AI review re-derived every key (none wrong) and fixed ambiguous items; it does not replace a teacher.
+- **Nobody has listened to the audio.** A Whisper-small round trip heard every IELTS answer and 0.82–1.00 of the JLPT
+  kana, but misheard HSK item 1 (小猫, woman's voice). Recorded lengths leave time to check answers: IELTS 567 s of the
+  900 s stage, JLPT N5 444 of 900, N4 561 of 1,080, HSK 387 of 480.
 - Short reading texts are original. The ЭЕШ English and IELTS repair-café stories are fictional. The SAT and IELTS
   texts state a few real-world facts, checked from general knowledge but not against cited sources: induced demand, the
   waggle dance, Kilimanjaro's height, the Orkhon Valley's 2004 World Heritage listing, desert sand in concrete, and

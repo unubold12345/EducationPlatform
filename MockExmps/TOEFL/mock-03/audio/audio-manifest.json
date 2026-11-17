@@ -1,0 +1,2388 @@
+{
+  "form": 3,
+  "id": "toefl-ibt-03",
+  "generated": "2026-11-18",
+  "generator": "MockExmps/TOEFL/_source/generate_audio.py",
+  "complete": true,
+  "engine": {
+    "model": "onnx-community/Kokoro-82M-v1.0-ONNX onnx/model.onnx (fp32)",
+    "modelSha256": "8fbea51ea711f2af382e88c833d9e288c6dc82ce5e98421ea61c058ce21a34cb",
+    "packages": {
+      "kokoro-onnx": "0.6.1",
+      "onnxruntime": "1.31.1",
+      "numpy": "2.5.4"
+    },
+    "voiceTables": "node_modules/kokoro-js/voices",
+    "voiceSha256": {
+      "af_bella": "f69d836209b78eb8c66e75e3cda491e26ea838a3674257e9d4e5703cbaf55c8b",
+      "af_heart": "d583ccff3cdca2f7fae535cb998ac07e9fcb90f09737b9a41fa2734ec44a8f0b",
+      "am_fenrir": "c27989f741f7ee34d273a39d8a595cc0837d35f5ced9a29b7cc162614616df43",
+      "am_michael": "1d1f21dd8da39c30705cd4c75d039d265e9bc4a2a93ed09bc9e1b1225eb95ba1",
+      "bf_emma": "669fe0647f9dd04fcab92f1439a40eeb4c8b4ab1f82e4996fe3d918ce4a63b73",
+      "bf_isabella": "3754352c4aaa46d17f27654ab7518d65b62ad6163a0f55a5f4330c2da2c4e94f",
+      "bm_fable": "f889083196807b4adb15e9204252165f503b8d33d3982e681c52443c49d798f1",
+      "bm_george": "c4b235a4c1f2cd3b939fed08b899ce9385638b763f7b73a59616c4fc9bd6c9bc"
+    }
+  },
+  "settings": {
+    "speed": 1.0,
+    "sampleRate": 24000,
+    "leadSeconds": 0.3,
+    "tailSeconds": 0.6,
+    "sentenceGapSeconds": 0.35,
+    "turnGapSeconds": 0.5,
+    "minSentencePhonemes": 12,
+    "targetRmsDb": -20.0,
+    "peakCeiling": 0.95,
+    "bitrate": "64k",
+    "trim": "kokoro-onnx trim per chunk (60 dB)"
+  },
+  "voiceMap": {
+    "F-US": "af_heart",
+    "M-US": "am_michael",
+    "F-UK": "bf_emma",
+    "M-UK": "bm_george",
+    "F-AU": "bf_isabella",
+    "M-AU": "bm_fable"
+  },
+  "narrators": {
+    "F": "am_fenrir",
+    "M": "af_bella"
+  },
+  "renderings": [
+    {
+      "pattern": "\\bDr\\. ",
+      "spoken": "Doctor "
+    },
+    {
+      "pattern": "\\bMr\\. ",
+      "spoken": "Mister "
+    },
+    {
+      "pattern": "\\bMrs\\. ",
+      "spoken": "Missus "
+    },
+    {
+      "pattern": "\\bMs\\. ",
+      "spoken": "Miz "
+    },
+    {
+      "pattern": "\\bRoom 204\\b",
+      "spoken": "Room two oh four"
+    },
+    {
+      "pattern": "\\bStatistics 210\\b",
+      "spoken": "Statistics two ten"
+    },
+    {
+      "pattern": "\\bTaipei 101\\b",
+      "spoken": "Taipei one oh one"
+    }
+  ],
+  "phonemeFixes": [
+    {
+      "espeak": "ɛkskjˈuːs mˌiː",
+      "corrected": "ɛkskjˈuːz mˌiː",
+      "why": "'Excuse me' is the verb, /z/"
+    },
+    {
+      "espeak": "jˈuːs ð",
+      "corrected": "jˈuːz ð",
+      "why": "'use the/this' is the verb, /z/"
+    },
+    {
+      "espeak": "ˈɛnɪwˌɒn jˈuːsɪz",
+      "corrected": "ˈɛnɪwˌɒn jˈuːzɪz",
+      "why": "'anyone uses' is the verb, /z/"
+    },
+    {
+      "espeak": "ˈɑːktəpəs jˈuːsᵻz",
+      "corrected": "ˈɑːktəpəs jˈuːzᵻz",
+      "why": "'the octopus uses' is the verb, /z/"
+    },
+    {
+      "espeak": "fˈaktəɹiz klˈəʊs",
+      "corrected": "fˈaktəɹiz klˈəʊz",
+      "why": "'factories close' is the verb, /z/"
+    },
+    {
+      "espeak": "ˌaplɪkˈeɪʃənz klˈəʊs",
+      "corrected": "ˌaplɪkˈeɪʃənz klˈəʊz",
+      "why": "'applications close' is the verb, /z/"
+    },
+    {
+      "espeak": "ʃiː lˈaɪv ðˈɛɹ",
+      "corrected": "ʃiː lˈɪv ðˈɛɹ",
+      "why": "'she live there' is the verb live"
+    },
+    {
+      "espeak": "hˈɑːɹdli lˈaɪv",
+      "corrected": "hˈɑːɹdli lˈɪv",
+      "why": "'hardly live without' is the verb live"
+    },
+    {
+      "espeak": "fɹˈɛndz lˈaɪv",
+      "corrected": "fɹˈɛndz lˈɪv",
+      "why": "'friends live far away' is the verb live"
+    },
+    {
+      "espeak": "θˈɪŋ juː ɹˈiːd fɔː",
+      "corrected": "θˈɪŋ juː ɹˈɛd fɔː",
+      "why": "'the last thing you read' is past tense"
+    },
+    {
+      "espeak": "ˈaktʃuːəli ɹˈiːd",
+      "corrected": "ˈaktʃuːəli ɹˈɛd",
+      "why": "'have you actually read' is the participle"
+    },
+    {
+      "espeak": "hiːz jˈuːzd tʊ",
+      "corrected": "hiːz jˈuːst tʊ",
+      "why": "'he's used to' (accustomed) has /s/"
+    },
+    {
+      "espeak": "teen with first-syllable stress before a non-number word",
+      "corrected": "citation stress on -teen",
+      "why": "a teen quantity ('fifteen minutes') keeps its stress on -teen, so it is not heard as 'fifty'"
+    }
+  ],
+  "timing": {
+    "router": {
+      "recordings": 20,
+      "speechSeconds": 430.97,
+      "pauseSeconds": 740,
+      "totalSeconds": 1170.97,
+      "blueprintMinutes": 18,
+      "ratioToBlueprint": 1.084
+    },
+    "lower": {
+      "recordings": 11,
+      "speechSeconds": 138.9,
+      "pauseSeconds": 340,
+      "totalSeconds": 478.9,
+      "blueprintMinutes": 7,
+      "ratioToBlueprint": 1.14
+    },
+    "upper": {
+      "recordings": 7,
+      "speechSeconds": 268.64,
+      "pauseSeconds": 360,
+      "totalSeconds": 628.64,
+      "blueprintMinutes": 11,
+      "ratioToBlueprint": 0.952
+    },
+    "speaking": {
+      "recordings": 13,
+      "speechSeconds": 94.77,
+      "pauseSeconds": 250,
+      "totalSeconds": 344.77,
+      "blueprintMinutes": 8,
+      "ratioToBlueprint": 0.718
+    }
+  },
+  "recordings": [
+    {
+      "id": "listening-m1-01-response",
+      "file": "listening-m1-01-response.mp3",
+      "section": "listening",
+      "module": "router",
+      "type": "choose_response",
+      "questions": [
+        1
+      ],
+      "voices": {
+        "Speaker": {
+          "code": "M-US",
+          "voice": "am_michael"
+        }
+      },
+      "seconds": 3.098,
+      "pcmSeconds": 3.097,
+      "pauseAfterSeconds": 20,
+      "bytes": 25630,
+      "sha256": "863d24ff372914ecbd539bfcf5601e62ab27be51e97e63832f2663ee957e4976",
+      "sourceSha256": "bf85f8c768a0c69c21c04326bf7fac1aa291679cd7a2c8b6f1a988d6364c4272",
+      "fingerprint": "2f93b54f7329ee2b681efb623276d06079af816476c83ef49e2857898711d282",
+      "revision": 1,
+      "gain": 1.2539,
+      "segments": [
+        {
+          "speaker": null,
+          "code": "M-US",
+          "voice": "am_michael",
+          "start": 0.3,
+          "seconds": 2.197,
+          "text": "Where did you park your bike this morning?"
+        }
+      ]
+    },
+    {
+      "id": "listening-m1-02-response",
+      "file": "listening-m1-02-response.mp3",
+      "section": "listening",
+      "module": "router",
+      "type": "choose_response",
+      "questions": [
+        2
+      ],
+      "voices": {
+        "Speaker": {
+          "code": "F-UK",
+          "voice": "bf_emma"
+        }
+      },
+      "seconds": 3.183,
+      "pcmSeconds": 3.183,
+      "pauseAfterSeconds": 20,
+      "bytes": 26206,
+      "sha256": "4c482c5e8b05acb9cce71a4d57417a6ac409693cf5df04edf0228f0694efcdd6",
+      "sourceSha256": "1e5a3b766c1baec86541c68f2ce7828f665304fe8cfbce4071a9bb543962bacb",
+      "fingerprint": "4c3adcb28cecba4d6a6a77509fcb5f8ae30c43c54fff8bd4515143c8ce332cdc",
+      "revision": 1,
+      "gain": 0.9545,
+      "segments": [
+        {
+          "speaker": null,
+          "code": "F-UK",
+          "voice": "bf_emma",
+          "start": 0.3,
+          "seconds": 2.283,
+          "text": "Have you handed in your history essay yet?"
+        }
+      ]
+    },
+    {
+      "id": "listening-m1-03-response",
+      "file": "listening-m1-03-response.mp3",
+      "section": "listening",
+      "module": "router",
+      "type": "choose_response",
+      "questions": [
+        3
+      ],
+      "voices": {
+        "Speaker": {
+          "code": "M-AU",
+          "voice": "bm_fable"
+        }
+      },
+      "seconds": 3.823,
+      "pcmSeconds": 3.823,
+      "pauseAfterSeconds": 20,
+      "bytes": 31390,
+      "sha256": "d69007a2fab56aef76d428e5a018175be9bcf4f81732072e7c3ce07b83304dd0",
+      "sourceSha256": "b346e89bb535e9780384822e50f9130ac2be4a3272b662c937ea0d7f59844297",
+      "fingerprint": "d30b017c75c466493e9b95a801b72f6dce2d9927584ef55e93c347ff3a988fc9",
+      "revision": 1,
+      "gain": 1.2707,
+      "segments": [
+        {
+          "speaker": null,
+          "code": "M-AU",
+          "voice": "bm_fable",
+          "start": 0.3,
+          "seconds": 2.923,
+          "text": "Would you mind keeping your voice down in here?"
+        }
+      ]
+    },
+    {
+      "id": "listening-m1-04-response",
+      "file": "listening-m1-04-response.mp3",
+      "section": "listening",
+      "module": "router",
+      "type": "choose_response",
+      "questions": [
+        4
+      ],
+      "voices": {
+        "Speaker": {
+          "code": "F-US",
+          "voice": "af_heart"
+        }
+      },
+      "seconds": 3.631,
+      "pcmSeconds": 3.631,
+      "pauseAfterSeconds": 20,
+      "bytes": 29854,
+      "sha256": "87d8a819275b20e43f8d358fdb89ea1c64938752753f6ba2051693eb61f28b31",
+      "sourceSha256": "660d15d13eaf9c44e512304bb060162d8a42c7ef5daeeb7064810bcfb084f7ef",
+      "fingerprint": "f289193763475e6aac847e882fa9e17d38b938ead562d04df2b49a7cc1d3cd38",
+      "revision": 1,
+      "gain": 1.2945,
+      "segments": [
+        {
+          "speaker": null,
+          "code": "F-US",
+          "voice": "af_heart",
+          "start": 0.3,
+          "seconds": 2.731,
+          "text": "How often does the shuttle to the train station run?"
+        }
+      ]
+    },
+    {
+      "id": "listening-m1-05-response",
+      "file": "listening-m1-05-response.mp3",
+      "section": "listening",
+      "module": "router",
+      "type": "choose_response",
+      "questions": [
+        5
+      ],
+      "voices": {
+        "Speaker": {
+          "code": "M-UK",
+          "voice": "bm_george"
+        }
+      },
+      "seconds": 3.972,
+      "pcmSeconds": 3.972,
+      "pauseAfterSeconds": 20,
+      "bytes": 32542,
+      "sha256": "b28e1de1e57ec376e71b8353e64ac79559bf19f86b48c0179a9bd98031386a69",
+      "sourceSha256": "ce02dd97c8f3e94ff651d0d870e023519eb30168f78fcc4e8b7063d3245326b2",
+      "fingerprint": "41ea12a29dbf205e107ae5842eed52ad36ab6301fb8a0534264c6b08cdc5b19d",
+      "revision": 1,
+      "gain": 1.0272,
+      "segments": [
+        {
+          "speaker": null,
+          "code": "M-UK",
+          "voice": "bm_george",
+          "start": 0.3,
+          "seconds": 3.072,
+          "text": "I think I left my umbrella in the lecture hall."
+        }
+      ]
+    },
+    {
+      "id": "listening-m1-06-response",
+      "file": "listening-m1-06-response.mp3",
+      "section": "listening",
+      "module": "router",
+      "type": "choose_response",
+      "questions": [
+        6
+      ],
+      "voices": {
+        "Speaker": {
+          "code": "F-AU",
+          "voice": "bf_isabella"
+        }
+      },
+      "seconds": 2.927,
+      "pcmSeconds": 2.927,
+      "pauseAfterSeconds": 20,
+      "bytes": 24094,
+      "sha256": "f9acea9b197ac99d9ab629abbbdaf225655bd4416699136393c69dbb41e54100",
+      "sourceSha256": "cd7e2e1de6bb99d01ac67d42b0b4e2970ae70ba64cf60ce5a9d76df5d98ccc7a",
+      "fingerprint": "867d8b547b254b7741e49a178d892c5afee6862f455fc9483dd8f0b2e683d030",
+      "revision": 1,
+      "gain": 0.6391,
+      "segments": [
+        {
+          "speaker": null,
+          "code": "F-AU",
+          "voice": "bf_isabella",
+          "start": 0.3,
+          "seconds": 2.027,
+          "text": "What did you think of the guest speaker?"
+        }
+      ]
+    },
+    {
+      "id": "listening-m1-07-response",
+      "file": "listening-m1-07-response.mp3",
+      "section": "listening",
+      "module": "router",
+      "type": "choose_response",
+      "questions": [
+        7
+      ],
+      "voices": {
+        "Speaker": {
+          "code": "M-US",
+          "voice": "am_michael"
+        }
+      },
+      "seconds": 3.524,
+      "pcmSeconds": 3.524,
+      "pauseAfterSeconds": 20,
+      "bytes": 28894,
+      "sha256": "6072b97fff8f9ec8afd392d74c087f33edd0524d0b7b8e35d69cc0b514e10175",
+      "sourceSha256": "1e92beee744963c4609bd8e4f7280662b578714cb6c567b43a2bb0a28012d9d9",
+      "fingerprint": "e67f472cdce638102cff55c8bea0f89ee7c62d3a69707d7b269b409a79fcd763",
+      "revision": 1,
+      "gain": 1.3071,
+      "segments": [
+        {
+          "speaker": null,
+          "code": "M-US",
+          "voice": "am_michael",
+          "start": 0.3,
+          "seconds": 2.624,
+          "text": "Would you like me to save you a seat at the front?"
+        }
+      ]
+    },
+    {
+      "id": "listening-m1-08-response",
+      "file": "listening-m1-08-response.mp3",
+      "section": "listening",
+      "module": "router",
+      "type": "choose_response",
+      "questions": [
+        8
+      ],
+      "voices": {
+        "Speaker": {
+          "code": "F-UK",
+          "voice": "bf_emma"
+        }
+      },
+      "seconds": 3.225,
+      "pcmSeconds": 3.225,
+      "pauseAfterSeconds": 20,
+      "bytes": 26590,
+      "sha256": "ade28b53c652a2bec145a896f7a04d886cbd9a594f8ca73db251ca31713403ec",
+      "sourceSha256": "f0815b289208b7a7403fbd9445a6d124274253f43247722feb25abc6d76a33a0",
+      "fingerprint": "7099c09c64077721eb5e2956fbb358cb817e0248a92dbafa8f057a0510ac06c5",
+      "revision": 1,
+      "gain": 0.944,
+      "segments": [
+        {
+          "speaker": null,
+          "code": "F-UK",
+          "voice": "bf_emma",
+          "start": 0.3,
+          "seconds": 2.325,
+          "text": "Isn't the chemistry lab closed on Fridays?"
+        }
+      ]
+    },
+    {
+      "id": "listening-m1-09-response",
+      "file": "listening-m1-09-response.mp3",
+      "section": "listening",
+      "module": "router",
+      "type": "choose_response",
+      "questions": [
+        9
+      ],
+      "voices": {
+        "Speaker": {
+          "code": "M-AU",
+          "voice": "bm_fable"
+        }
+      },
+      "seconds": 4.207,
+      "pcmSeconds": 4.207,
+      "pauseAfterSeconds": 20,
+      "bytes": 34462,
+      "sha256": "3f0a4687fde5c62047432e2d105814e5fb9be0d7eb47266f6f8e071e8ce0fb54",
+      "sourceSha256": "6b55ca8d33bb44dc854c506555a078fb04fa262cdbfcf489b251a74628e4f10b",
+      "fingerprint": "611a922880c1e6aa6abb948ae6cebc248503b2341d66f3d6a27654d7d5156072",
+      "revision": 1,
+      "gain": 1.358,
+      "segments": [
+        {
+          "speaker": null,
+          "code": "M-AU",
+          "voice": "bm_fable",
+          "start": 0.3,
+          "seconds": 3.307,
+          "text": "Do you know who's teaching the drawing class next term?"
+        }
+      ]
+    },
+    {
+      "id": "listening-m1-10-response",
+      "file": "listening-m1-10-response.mp3",
+      "section": "listening",
+      "module": "router",
+      "type": "choose_response",
+      "questions": [
+        10
+      ],
+      "voices": {
+        "Speaker": {
+          "code": "F-US",
+          "voice": "af_heart"
+        }
+      },
+      "seconds": 4.1,
+      "pcmSeconds": 4.1,
+      "pauseAfterSeconds": 20,
+      "bytes": 33503,
+      "sha256": "7c400d7443ea208b939456d546449000b23a1af4fd79599f09ca97e9ff0b0b81",
+      "sourceSha256": "4910cf9a3debc9a2eed3e52da7aed144ff5563afc7f6086dfbbe2335a9f5df49",
+      "fingerprint": "399ea59dca302669680c3110c78a1068efea1722f95f097d1b8338fd9674c6b6",
+      "revision": 1,
+      "gain": 1.1147,
+      "segments": [
+        {
+          "speaker": null,
+          "code": "F-US",
+          "voice": "af_heart",
+          "start": 0.3,
+          "seconds": 3.2,
+          "text": "This coffee machine just took my money and gave me nothing."
+        }
+      ]
+    },
+    {
+      "id": "listening-m1-11-response",
+      "file": "listening-m1-11-response.mp3",
+      "section": "listening",
+      "module": "router",
+      "type": "choose_response",
+      "questions": [
+        11
+      ],
+      "voices": {
+        "Speaker": {
+          "code": "M-UK",
+          "voice": "bm_george"
+        }
+      },
+      "seconds": 3.204,
+      "pcmSeconds": 3.204,
+      "pauseAfterSeconds": 20,
+      "bytes": 26399,
+      "sha256": "e23c2f38e059e2347b7dcbbbe2f9102edfa9c30fbe19cdc8ccf020a510c88176",
+      "sourceSha256": "85a8809c089f2385125fdb00c9923ff612f778a2c18b68aafb744ca2b58c159d",
+      "fingerprint": "ea094cc8387e1ff0ca379a36910353d2731b696ded32b5815e22c13f07001d74",
+      "revision": 1,
+      "gain": 0.9913,
+      "segments": [
+        {
+          "speaker": null,
+          "code": "M-UK",
+          "voice": "bm_george",
+          "start": 0.3,
+          "seconds": 2.304,
+          "text": "How come you weren't at practice yesterday?"
+        }
+      ]
+    },
+    {
+      "id": "listening-m1-12-response",
+      "file": "listening-m1-12-response.mp3",
+      "section": "listening",
+      "module": "router",
+      "type": "choose_response",
+      "questions": [
+        12
+      ],
+      "voices": {
+        "Speaker": {
+          "code": "F-AU",
+          "voice": "bf_isabella"
+        }
+      },
+      "seconds": 3.652,
+      "pcmSeconds": 3.652,
+      "pauseAfterSeconds": 20,
+      "bytes": 30047,
+      "sha256": "44927f4bf8f7b414cdb09de24bf31090f530e9543a9539b3911fe1fdb8755cc3",
+      "sourceSha256": "87eda30ff7f2c0a2c22447073fa03b30cd5169242b48ca267e594665805f16e7",
+      "fingerprint": "b8a176b110924e42259c34569887815f741e6129064a2cbc7b18ab4719f28fca",
+      "revision": 1,
+      "gain": 0.6775,
+      "segments": [
+        {
+          "speaker": null,
+          "code": "F-AU",
+          "voice": "bf_isabella",
+          "start": 0.3,
+          "seconds": 2.752,
+          "text": "Should I bring anything to the study session tonight?"
+        }
+      ]
+    },
+    {
+      "id": "listening-m1-13-conversation",
+      "file": "listening-m1-13-conversation.mp3",
+      "section": "listening",
+      "module": "router",
+      "type": "conversation",
+      "questions": [
+        13,
+        14
+      ],
+      "voices": {
+        "Man": {
+          "code": "M-AU",
+          "voice": "bm_fable"
+        },
+        "Woman": {
+          "code": "F-US",
+          "voice": "af_heart"
+        }
+      },
+      "seconds": 42.421,
+      "pcmSeconds": 42.421,
+      "pauseAfterSeconds": 50,
+      "bytes": 340134,
+      "sha256": "630ad20deb75003079788b89693ee362b6859eb9497aaa83c55d993a66830876",
+      "sourceSha256": "f34095b48a7f0d5af80cd8aba2924b6d3ae9882b8c8bba3eb961595f6280cf54",
+      "fingerprint": "6ba309f2b09a32dd0b1ea7ab684a6244faa6d288414e4aaf112ab49d36e3018d",
+      "revision": 1,
+      "gain": 0.9006,
+      "segments": [
+        {
+          "speaker": "Man",
+          "code": "M-AU",
+          "voice": "bm_fable",
+          "start": 0.3,
+          "seconds": 8.081,
+          "text": "Hi. I'm here to pick up a poster. I sent the file on Monday. The name's Emre Kaya."
+        },
+        {
+          "speaker": "Woman",
+          "code": "F-US",
+          "voice": "af_heart",
+          "start": 8.881,
+          "seconds": 6.067,
+          "text": "Kaya... here it is. Oh. It looks like it was printed in the small size, not the large one you ordered."
+        },
+        {
+          "speaker": "Man",
+          "code": "M-AU",
+          "voice": "bm_fable",
+          "start": 15.449,
+          "seconds": 3.947,
+          "text": "Oh no. My presentation is at two o'clock this afternoon."
+        },
+        {
+          "speaker": "Woman",
+          "code": "F-US",
+          "voice": "af_heart",
+          "start": 19.895,
+          "seconds": 6.46,
+          "text": "Don't worry. The large printer's free right now, so I can print it again. It takes about forty minutes."
+        },
+        {
+          "speaker": "Man",
+          "code": "M-AU",
+          "voice": "bm_fable",
+          "start": 26.855,
+          "seconds": 2.048,
+          "text": "Will I have to pay again?"
+        },
+        {
+          "speaker": "Woman",
+          "code": "F-US",
+          "voice": "af_heart",
+          "start": 29.403,
+          "seconds": 4.348,
+          "text": "No, of course not. It was our mistake. Do you want to wait here?"
+        },
+        {
+          "speaker": "Man",
+          "code": "M-AU",
+          "voice": "bm_fable",
+          "start": 34.251,
+          "seconds": 4.233,
+          "text": "I've got a class now. I'll come back at noon."
+        },
+        {
+          "speaker": "Woman",
+          "code": "F-US",
+          "voice": "af_heart",
+          "start": 38.984,
+          "seconds": 2.837,
+          "text": "That's fine. It'll be rolled up and waiting at this desk."
+        }
+      ]
+    },
+    {
+      "id": "listening-m1-15-conversation",
+      "file": "listening-m1-15-conversation.mp3",
+      "section": "listening",
+      "module": "router",
+      "type": "conversation",
+      "questions": [
+        15,
+        16
+      ],
+      "voices": {
+        "Man": {
+          "code": "M-UK",
+          "voice": "bm_george"
+        },
+        "Woman": {
+          "code": "F-AU",
+          "voice": "bf_isabella"
+        }
+      },
+      "seconds": 36.358,
+      "pcmSeconds": 36.358,
+      "pauseAfterSeconds": 50,
+      "bytes": 291558,
+      "sha256": "67da3969f3fb8d7649ec86ccc2776ce171c3a0f080b56dd7e18707a471834092",
+      "sourceSha256": "aa498649a3a47e71ec8f4c693c924f2e83772f79b2c9c523ed32fdc5054bf7c7",
+      "fingerprint": "dbff844b45d1ca7e4086735d116183640d45010d65273e4d6d1275338763deed",
+      "revision": 1,
+      "gain": 0.7883,
+      "segments": [
+        {
+          "speaker": "Man",
+          "code": "M-UK",
+          "voice": "bm_george",
+          "start": 0.3,
+          "seconds": 4.937,
+          "text": "So, what should we make for the dinner on Friday? Everyone's bringing something."
+        },
+        {
+          "speaker": "Woman",
+          "code": "F-AU",
+          "voice": "bf_isabella",
+          "start": 5.737,
+          "seconds": 4.105,
+          "text": "I was thinking of my chicken curry. People always like it."
+        },
+        {
+          "speaker": "Man",
+          "code": "M-UK",
+          "voice": "bm_george",
+          "start": 10.341,
+          "seconds": 3.285,
+          "text": "Hmm, but Jonas and Mei don't eat meat, remember?"
+        },
+        {
+          "speaker": "Woman",
+          "code": "F-AU",
+          "voice": "bf_isabella",
+          "start": 14.127,
+          "seconds": 5.799,
+          "text": "Oh, right. I forgot. What about a vegetable curry, then? With chickpeas."
+        },
+        {
+          "speaker": "Man",
+          "code": "M-UK",
+          "voice": "bm_george",
+          "start": 20.425,
+          "seconds": 2.944,
+          "text": "That works. And I could make rice to go with it."
+        },
+        {
+          "speaker": "Woman",
+          "code": "F-AU",
+          "voice": "bf_isabella",
+          "start": 23.869,
+          "seconds": 3.307,
+          "text": "Perfect. But we don't have a pot that's big enough for eight people."
+        },
+        {
+          "speaker": "Man",
+          "code": "M-UK",
+          "voice": "bm_george",
+          "start": 27.676,
+          "seconds": 4.169,
+          "text": "My neighbor has a huge one. I'll ask her tonight."
+        },
+        {
+          "speaker": "Woman",
+          "code": "F-AU",
+          "voice": "bf_isabella",
+          "start": 32.345,
+          "seconds": 3.413,
+          "text": "Great. Then I'll go shopping for the vegetables tomorrow morning."
+        }
+      ]
+    },
+    {
+      "id": "listening-m1-17-conversation",
+      "file": "listening-m1-17-conversation.mp3",
+      "section": "listening",
+      "module": "router",
+      "type": "conversation",
+      "questions": [
+        17,
+        18
+      ],
+      "voices": {
+        "Woman": {
+          "code": "F-UK",
+          "voice": "bf_emma"
+        },
+        "Man": {
+          "code": "M-US",
+          "voice": "am_michael"
+        }
+      },
+      "seconds": 41.32,
+      "pcmSeconds": 41.32,
+      "pauseAfterSeconds": 50,
+      "bytes": 331302,
+      "sha256": "63198c40ac603e77b33b0b4abb2b06ce0e46f7d97cef88cbe389975820b8ff45",
+      "sourceSha256": "add8ddee91c6de1f3cb0263a2366130eca2063db3b2bc45be985419356388cf6",
+      "fingerprint": "e4b4ede4ef577dcf57ad5695dcf7cc68eff7a21e7b050ec88896efe0ce548dcc",
+      "revision": 2,
+      "gain": 1.0808,
+      "segments": [
+        {
+          "speaker": "Woman",
+          "code": "F-UK",
+          "voice": "bf_emma",
+          "start": 0.3,
+          "seconds": 4.979,
+          "text": "Professor Voss, do you have a minute? I wanted to ask about your seminar on city planning."
+        },
+        {
+          "speaker": "Man",
+          "code": "M-US",
+          "voice": "am_michael",
+          "start": 5.779,
+          "seconds": 5.312,
+          "text": "Of course. Though I should tell you, it's been full since the first day of registration."
+        },
+        {
+          "speaker": "Woman",
+          "code": "F-UK",
+          "voice": "bf_emma",
+          "start": 11.591,
+          "seconds": 4.233,
+          "text": "I know. I'm on the waiting list. But I need it to graduate in the spring."
+        },
+        {
+          "speaker": "Man",
+          "code": "M-US",
+          "voice": "am_michael",
+          "start": 16.324,
+          "seconds": 5.547,
+          "text": "I see. The trouble is, the room only seats fifteen, so I can't simply add a chair.",
+          "phonemeFixes": [
+            "teen number keeps its stress on -teen"
+          ]
+        },
+        {
+          "speaker": "Woman",
+          "code": "F-UK",
+          "voice": "bf_emma",
+          "start": 22.371,
+          "seconds": 2.197,
+          "text": "Is there any chance someone will drop it?"
+        },
+        {
+          "speaker": "Man",
+          "code": "M-US",
+          "voice": "am_michael",
+          "start": 25.068,
+          "seconds": 7.198,
+          "text": "It happens. Usually one or two students leave after the first week. Come to the first meeting on Monday anyway."
+        },
+        {
+          "speaker": "Woman",
+          "code": "F-UK",
+          "voice": "bf_emma",
+          "start": 32.766,
+          "seconds": 1.472,
+          "text": "So I should just show up?"
+        },
+        {
+          "speaker": "Man",
+          "code": "M-US",
+          "voice": "am_michael",
+          "start": 34.738,
+          "seconds": 5.982,
+          "text": "Yes. If a seat opens up, I'll give it to whoever's there. And final-year students come first."
+        }
+      ]
+    },
+    {
+      "id": "listening-m1-19-conversation",
+      "file": "listening-m1-19-conversation.mp3",
+      "section": "listening",
+      "module": "router",
+      "type": "conversation",
+      "questions": [
+        19,
+        20
+      ],
+      "voices": {
+        "Woman": {
+          "code": "F-AU",
+          "voice": "bf_isabella"
+        },
+        "Man": {
+          "code": "M-US",
+          "voice": "am_michael"
+        }
+      },
+      "seconds": 38.513,
+      "pcmSeconds": 38.513,
+      "pauseAfterSeconds": 50,
+      "bytes": 308838,
+      "sha256": "cadcf7b5fec2314fd45ae81975c03d313e21e702ad3efe1c908da395a38eb7ab",
+      "sourceSha256": "0574a182572c323f6445a499e61f3f065b828398e754397f6814a920fd2b11da",
+      "fingerprint": "dfe9bf836fc08c61b9bb68a5c6f619cc44a0b7652de1bb59bfe65157348303e1",
+      "revision": 1,
+      "gain": 0.8485,
+      "segments": [
+        {
+          "speaker": "Woman",
+          "code": "F-AU",
+          "voice": "bf_isabella",
+          "start": 0.3,
+          "seconds": 4.809,
+          "text": "Hello. I'd like to return these running shoes. I bought them last Saturday."
+        },
+        {
+          "speaker": "Man",
+          "code": "M-US",
+          "voice": "am_michael",
+          "start": 5.609,
+          "seconds": 2.304,
+          "text": "Sure. Is there something wrong with them?"
+        },
+        {
+          "speaker": "Woman",
+          "code": "F-AU",
+          "voice": "bf_isabella",
+          "start": 8.413,
+          "seconds": 4.873,
+          "text": "They're a little tight. I wore them around the house for an hour, and my toes hurt."
+        },
+        {
+          "speaker": "Man",
+          "code": "M-US",
+          "voice": "am_michael",
+          "start": 13.785,
+          "seconds": 5.406,
+          "text": "That's no problem, as long as you haven't worn them outside. Do you have the receipt?"
+        },
+        {
+          "speaker": "Woman",
+          "code": "F-AU",
+          "voice": "bf_isabella",
+          "start": 19.691,
+          "seconds": 1.429,
+          "text": "Yes, here it is."
+        },
+        {
+          "speaker": "Man",
+          "code": "M-US",
+          "voice": "am_michael",
+          "start": 21.621,
+          "seconds": 5.043,
+          "text": "Thanks. Would you like to try a bigger size? We have a half size up in the same color."
+        },
+        {
+          "speaker": "Woman",
+          "code": "F-AU",
+          "voice": "bf_isabella",
+          "start": 27.164,
+          "seconds": 5.747,
+          "text": "Hmm. Actually, I'd rather just get my money back. I want to look around some other stores first."
+        },
+        {
+          "speaker": "Man",
+          "code": "M-US",
+          "voice": "am_michael",
+          "start": 33.411,
+          "seconds": 4.501,
+          "text": "All right. The refund will go back onto your card in three to five days."
+        }
+      ]
+    },
+    {
+      "id": "listening-m1-21-announcement",
+      "file": "listening-m1-21-announcement.mp3",
+      "section": "listening",
+      "module": "router",
+      "type": "announcement",
+      "questions": [
+        21,
+        22
+      ],
+      "voices": {
+        "Speaker": {
+          "code": "M-AU",
+          "voice": "bm_fable"
+        }
+      },
+      "seconds": 35.67,
+      "pcmSeconds": 35.67,
+      "pauseAfterSeconds": 50,
+      "bytes": 286182,
+      "sha256": "d002adfa5354758a6db405f6b973f0b7c171a63f7f072b9d94caf08fdd34a4d6",
+      "sourceSha256": "537dda93e52f687fcb61ec8f4f049a8b898c14dd6c47ddb93f289c00d8e04120",
+      "fingerprint": "02c409bfad650b0c55b4f364ffefcefbd9ffb03771d93dc789680293aeaf7bd7",
+      "revision": 1,
+      "gain": 0.7669,
+      "segments": [
+        {
+          "speaker": null,
+          "code": "M-AU",
+          "voice": "bm_fable",
+          "start": 0.3,
+          "seconds": 34.77,
+          "text": "Good morning, everyone, and welcome to the Harrowgate Museum of Natural History. My name's Callum, and I'll be your guide for the next hour. Before we go in, just a few rules. You're welcome to take photos, but please switch off your flash, because bright light can damage some of the older objects. Food and drinks have to stay in your bags. And please keep together as a group, since some of the rooms are quite narrow. If you have any questions, just ask me as we go. All right, let's begin with the dinosaur hall."
+        }
+      ]
+    },
+    {
+      "id": "listening-m1-23-announcement",
+      "file": "listening-m1-23-announcement.mp3",
+      "section": "listening",
+      "module": "router",
+      "type": "announcement",
+      "questions": [
+        23,
+        24
+      ],
+      "voices": {
+        "Speaker": {
+          "code": "F-US",
+          "voice": "af_heart"
+        }
+      },
+      "seconds": 31.194,
+      "pcmSeconds": 31.194,
+      "pauseAfterSeconds": 50,
+      "bytes": 250278,
+      "sha256": "29b37f4b5df8d4a45598a9bb0448fd30ee6f987b1bc633eef49c55d8374df26f",
+      "sourceSha256": "81bf3a4615e00dfd01b18259b2f0c5ef7769cf485bbd9da715cf3e07f51fa46e",
+      "fingerprint": "21e564d235308f64242cd2c6327cf3be3ccde7949b60321c4c969fbe795a5a1d",
+      "revision": 1,
+      "gain": 1.2012,
+      "segments": [
+        {
+          "speaker": null,
+          "code": "F-US",
+          "voice": "af_heart",
+          "start": 0.3,
+          "seconds": 30.294,
+          "text": "OK, before you pack up, a quick change to the research assignment. I know several of you have other papers due this week, so I've decided to move our deadline from this Friday to next Wednesday. There's one more change. Instead of a written report, I'd like each of you to prepare a five-minute presentation with slides. You'll present in class on Wednesday and Thursday, and I'll post the order of speakers online tomorrow. You don't need to hand in anything on paper, but please upload your slides the night before you present."
+        }
+      ]
+    },
+    {
+      "id": "listening-m1-25-talk",
+      "file": "listening-m1-25-talk.mp3",
+      "section": "listening",
+      "module": "router",
+      "type": "talk",
+      "questions": [
+        25,
+        26,
+        27,
+        28
+      ],
+      "voices": {
+        "Speaker": {
+          "code": "F-UK",
+          "voice": "bf_emma"
+        }
+      },
+      "seconds": 71.589,
+      "pcmSeconds": 71.589,
+      "pauseAfterSeconds": 100,
+      "bytes": 573406,
+      "sha256": "8571ab21f4c5a7e2ded2bfcaa939a637369cd2881c62ca0106ab4a87d2cc847f",
+      "sourceSha256": "34c3ea54eb07235c28f0e1333f8661bf6c21babcd9d8cdcaf88e4b1a0a25ad07",
+      "fingerprint": "1b8953b9dd8da99f74ed39367bb3859b26b86c408e8f34ad66ab773c452a44c0",
+      "revision": 1,
+      "gain": 0.9004,
+      "segments": [
+        {
+          "speaker": null,
+          "code": "F-UK",
+          "voice": "bf_emma",
+          "start": 0.3,
+          "seconds": 70.689,
+          "text": "OK, let's start with a puzzle. How does an animal catch a tiny flying insect in complete darkness? Bats do it hundreds of times a night. And no, it's not because they have amazing eyes. By the way, bats aren't blind. That's a myth. But in the dark, they rely on something else, called echolocation. Here's how it works. As a bat flies, it sends out very short, very high calls. Most of them are too high for human ears, so to us the night seems quiet. When a call hits an object, say, a moth, an echo bounces back. The bat's brain measures how long that echo took to return. A quick echo means the moth is close. A slower one means it's farther away. And the bat doesn't call at a steady rate. When it's just searching, it might call ten or twenty times a second. But as it closes in on an insect, the calls come faster and faster, up to two hundred a second. Scientists actually call this the feeding buzz. So the bat gets more and more detail exactly when it needs it. Now, the insects aren't helpless. Some moths have ears that can pick up bat calls, and when they hear one, they dive toward the ground. So next time, we'll look at this contest between the hunter and the hunted."
+        }
+      ]
+    },
+    {
+      "id": "listening-m1-29-talk",
+      "file": "listening-m1-29-talk.mp3",
+      "section": "listening",
+      "module": "router",
+      "type": "talk",
+      "questions": [
+        29,
+        30,
+        31,
+        32
+      ],
+      "voices": {
+        "Speaker": {
+          "code": "M-UK",
+          "voice": "bm_george"
+        }
+      },
+      "seconds": 91.356,
+      "pcmSeconds": 91.356,
+      "pauseAfterSeconds": 100,
+      "bytes": 731614,
+      "sha256": "90882ece808ed1d223ec3d67fca5d3ad82c244475d083d759fe18c201789657f",
+      "sourceSha256": "e45050006abefaa1af17a1675d3339d8ed9efe5343f708244ff086bea64a512b",
+      "fingerprint": "44ad2b27dc5a9a6a6c293f49ca6848f15c9a36eaf639f942e85502073d1b13d3",
+      "revision": 2,
+      "gain": 1.0222,
+      "segments": [
+        {
+          "speaker": null,
+          "code": "M-UK",
+          "voice": "bm_george",
+          "start": 0.3,
+          "seconds": 90.456,
+          "text": "Let's begin with a simple question. Why do countries trade at all? Why doesn't each country just make everything it needs? Well, part of the answer is obvious. Bananas grow easily in Ecuador. They don't grow easily in Norway. So Norway buys bananas, and it sells things like fish and oil. But here's the less obvious part. Trade can help both sides even when one country is better at making everything. This idea goes back to David Ricardo, an English economist writing in the early eighteen hundreds. Economists call it comparative advantage. Let me give you an everyday example. Imagine a doctor who also happens to type faster than her assistant. Should she do her own typing? No. Every hour she spends typing is an hour she isn't seeing patients, and that's where she's most valuable. So she hires the assistant, and they're both better off. Countries work the same way. A country gains by concentrating on what it does best, compared with its other options, and trading for the rest. Now, I'm not saying trade is painless. When cheaper imports arrive, some local factories close, and those workers pay a real price. But for the economy as a whole, most economists agree that specializing and trading leaves countries richer than doing everything alone.",
+          "phonemeFixes": [
+            "'factories close' is the verb, /z/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "listening-m2-lower-33-response",
+      "file": "listening-m2-lower-33-response.mp3",
+      "section": "listening",
+      "module": "lower",
+      "type": "choose_response",
+      "questions": [
+        33
+      ],
+      "voices": {
+        "Speaker": {
+          "code": "F-AU",
+          "voice": "bf_isabella"
+        }
+      },
+      "seconds": 2.884,
+      "pcmSeconds": 2.884,
+      "pauseAfterSeconds": 20,
+      "bytes": 23899,
+      "sha256": "b3c792502cfe368fbe1350fe16a957538163831918ee97cba97b32a9c0a3eee6",
+      "sourceSha256": "857f0e0f12d89088795537122aa7042d46a8a8e7d6d1814ba333034c14554139",
+      "fingerprint": "7b811725dd87b541b25fb622c37d342704241477ead5f39db5f82f691b6cfc3e",
+      "revision": 1,
+      "gain": 0.6124,
+      "segments": [
+        {
+          "speaker": null,
+          "code": "F-AU",
+          "voice": "bf_isabella",
+          "start": 0.3,
+          "seconds": 1.984,
+          "text": "Where is the nearest bus stop?"
+        }
+      ]
+    },
+    {
+      "id": "listening-m2-lower-34-response",
+      "file": "listening-m2-lower-34-response.mp3",
+      "section": "listening",
+      "module": "lower",
+      "type": "choose_response",
+      "questions": [
+        34
+      ],
+      "voices": {
+        "Speaker": {
+          "code": "M-UK",
+          "voice": "bm_george"
+        }
+      },
+      "seconds": 3.396,
+      "pcmSeconds": 3.396,
+      "pauseAfterSeconds": 20,
+      "bytes": 27931,
+      "sha256": "0734a48c290d895b30b4e99ca2ac4b80317858568f95fb247f05a7c533d743d0",
+      "sourceSha256": "cafd816535d8b22ad791ad5a5debdb24426cbfba4511d2b2138806594f4ca9d4",
+      "fingerprint": "553c25c07e5b8405eea50f1791635de240971aed1dc6bd502436e9f07e03291e",
+      "revision": 1,
+      "gain": 1.0166,
+      "segments": [
+        {
+          "speaker": null,
+          "code": "M-UK",
+          "voice": "bm_george",
+          "start": 0.3,
+          "seconds": 2.496,
+          "text": "Can I borrow your pen for a minute?"
+        }
+      ]
+    },
+    {
+      "id": "listening-m2-lower-35-response",
+      "file": "listening-m2-lower-35-response.mp3",
+      "section": "listening",
+      "module": "lower",
+      "type": "choose_response",
+      "questions": [
+        35
+      ],
+      "voices": {
+        "Speaker": {
+          "code": "F-US",
+          "voice": "af_heart"
+        }
+      },
+      "seconds": 2.522,
+      "pcmSeconds": 2.521,
+      "pauseAfterSeconds": 20,
+      "bytes": 21019,
+      "sha256": "3a697eecab1ad96a720a8aa482342c13f0903fa19e5bd2b3270175925713942b",
+      "sourceSha256": "8db57bcef156dd79505cc32f38c25f882c4f0284fb72a5b8921e4f0c937ef2a6",
+      "fingerprint": "eae463525960a62dab55a973a63f3fe74f803a0c80c7a2cbf0c57d91a7d010af",
+      "revision": 1,
+      "gain": 1.2154,
+      "segments": [
+        {
+          "speaker": null,
+          "code": "F-US",
+          "voice": "af_heart",
+          "start": 0.3,
+          "seconds": 1.621,
+          "text": "How was the concert last night?"
+        }
+      ]
+    },
+    {
+      "id": "listening-m2-lower-36-response",
+      "file": "listening-m2-lower-36-response.mp3",
+      "section": "listening",
+      "module": "lower",
+      "type": "choose_response",
+      "questions": [
+        36
+      ],
+      "voices": {
+        "Speaker": {
+          "code": "M-AU",
+          "voice": "bm_fable"
+        }
+      },
+      "seconds": 3.055,
+      "pcmSeconds": 3.055,
+      "pauseAfterSeconds": 20,
+      "bytes": 25243,
+      "sha256": "0111621bf595788fe77bb79ce775d75847a6a24a5508a68892df0381aac54c8a",
+      "sourceSha256": "9103405356e23705e425d8ed1ae613f281c662385b0d3f92488b61baceb86360",
+      "fingerprint": "7638759a7639850414edf5564c674f524d7cdc49a3d683dd9751c09d3ed75775",
+      "revision": 1,
+      "gain": 0.8094,
+      "segments": [
+        {
+          "speaker": null,
+          "code": "M-AU",
+          "voice": "bm_fable",
+          "start": 0.3,
+          "seconds": 2.155,
+          "text": "Do you have any pets at home?"
+        }
+      ]
+    },
+    {
+      "id": "listening-m2-lower-37-response",
+      "file": "listening-m2-lower-37-response.mp3",
+      "section": "listening",
+      "module": "lower",
+      "type": "choose_response",
+      "questions": [
+        37
+      ],
+      "voices": {
+        "Speaker": {
+          "code": "F-UK",
+          "voice": "bf_emma"
+        }
+      },
+      "seconds": 3.161,
+      "pcmSeconds": 3.161,
+      "pauseAfterSeconds": 20,
+      "bytes": 26011,
+      "sha256": "9e0e9e8ffd867b0942d63a7aa5d79358ae762522ff12f0be8a57e97bc88584e7",
+      "sourceSha256": "644a60741905c84328bf8cc39fab04e924effd557cbd60c091b92d34bf64aad6",
+      "fingerprint": "00fe7905c7d62664e03e37e691da99db4cc740b177354c76f07d098e763c624a",
+      "revision": 1,
+      "gain": 0.907,
+      "segments": [
+        {
+          "speaker": null,
+          "code": "F-UK",
+          "voice": "bf_emma",
+          "start": 0.3,
+          "seconds": 2.261,
+          "text": "Let's meet in front of the cinema at six."
+        }
+      ]
+    },
+    {
+      "id": "listening-m2-lower-38-response",
+      "file": "listening-m2-lower-38-response.mp3",
+      "section": "listening",
+      "module": "lower",
+      "type": "choose_response",
+      "questions": [
+        38
+      ],
+      "voices": {
+        "Speaker": {
+          "code": "M-US",
+          "voice": "am_michael"
+        }
+      },
+      "seconds": 2.756,
+      "pcmSeconds": 2.756,
+      "pauseAfterSeconds": 20,
+      "bytes": 22747,
+      "sha256": "fa3f34eb44be939a3f27cabcc75d6b9d810aa5bbf5007800c96f93f70aa6cd3e",
+      "sourceSha256": "7cc6aa2eebafe86f38b828810b65524c75e8ddf97f707b118f87fa84138104bc",
+      "fingerprint": "115ffc0335456a49b8d6be409114b498f10a958539edbbec5c97fc395ae296d1",
+      "revision": 1,
+      "gain": 1.226,
+      "segments": [
+        {
+          "speaker": null,
+          "code": "M-US",
+          "voice": "am_michael",
+          "start": 0.3,
+          "seconds": 1.856,
+          "text": "It's really cold in this room."
+        }
+      ]
+    },
+    {
+      "id": "listening-m2-lower-39-response",
+      "file": "listening-m2-lower-39-response.mp3",
+      "section": "listening",
+      "module": "lower",
+      "type": "choose_response",
+      "questions": [
+        39
+      ],
+      "voices": {
+        "Speaker": {
+          "code": "F-AU",
+          "voice": "bf_isabella"
+        }
+      },
+      "seconds": 2.735,
+      "pcmSeconds": 2.735,
+      "pauseAfterSeconds": 20,
+      "bytes": 22555,
+      "sha256": "d41ef5e69f9877c404d1ce0376330cbe1947f5c19c02a745135dfc1f311a3d9c",
+      "sourceSha256": "87a694a6cf9713f57b947ad8677740ea7bbd77b708e411b33a617465415b25bf",
+      "fingerprint": "0d772a97df5b37ebeea1208f237f67153a299e7dba9027ba5979fc967fdbd7e8",
+      "revision": 1,
+      "gain": 0.5637,
+      "segments": [
+        {
+          "speaker": null,
+          "code": "F-AU",
+          "voice": "bf_isabella",
+          "start": 0.3,
+          "seconds": 1.835,
+          "text": "How much is this notebook?"
+        }
+      ]
+    },
+    {
+      "id": "listening-m2-lower-40-conversation",
+      "file": "listening-m2-lower-40-conversation.mp3",
+      "section": "listening",
+      "module": "lower",
+      "type": "conversation",
+      "questions": [
+        40,
+        41
+      ],
+      "voices": {
+        "Man": {
+          "code": "M-US",
+          "voice": "am_michael"
+        },
+        "Woman": {
+          "code": "F-UK",
+          "voice": "bf_emma"
+        }
+      },
+      "seconds": 37.203,
+      "pcmSeconds": 37.203,
+      "pauseAfterSeconds": 50,
+      "bytes": 298466,
+      "sha256": "24ffe8b9c0f4d5aede9b8985589b54b51550c520656d8c943d8f7a72547f3e01",
+      "sourceSha256": "7e7a7aabee334b016a8bbef9ee9e103f5dc0ea50473fcb3683d0b035c09be6a1",
+      "fingerprint": "5d685f8a300f115fb40c04f3293d160f864b5b68589bee3a0a48ec8d432db00f",
+      "revision": 2,
+      "gain": 1.0231,
+      "segments": [
+        {
+          "speaker": "Man",
+          "code": "M-US",
+          "voice": "am_michael",
+          "start": 0.3,
+          "seconds": 5.585,
+          "text": "Excuse me. Do you know where Room 15 is? I have a math class there.",
+          "phonemeFixes": [
+            "'Excuse me' is the verb, /z/",
+            "teen number keeps its stress on -teen"
+          ]
+        },
+        {
+          "speaker": "Woman",
+          "code": "F-UK",
+          "voice": "bf_emma",
+          "start": 6.385,
+          "seconds": 3.507,
+          "text": "I'm looking for the same room. It's my first day here."
+        },
+        {
+          "speaker": "Man",
+          "code": "M-US",
+          "voice": "am_michael",
+          "start": 10.393,
+          "seconds": 4.681,
+          "text": "Mine, too. I walked down this hall, but the numbers stop at twelve."
+        },
+        {
+          "speaker": "Woman",
+          "code": "F-UK",
+          "voice": "bf_emma",
+          "start": 15.573,
+          "seconds": 3.635,
+          "text": "Maybe it's upstairs. Oh, look. There's a map on the wall."
+        },
+        {
+          "speaker": "Man",
+          "code": "M-US",
+          "voice": "am_michael",
+          "start": 19.709,
+          "seconds": 6.545,
+          "text": "Good idea. Let's see... Room 15 is on the second floor, next to the library.",
+          "phonemeFixes": [
+            "teen number keeps its stress on -teen"
+          ]
+        },
+        {
+          "speaker": "Woman",
+          "code": "F-UK",
+          "voice": "bf_emma",
+          "start": 26.754,
+          "seconds": 2.283,
+          "text": "Great. The class starts in five minutes."
+        },
+        {
+          "speaker": "Man",
+          "code": "M-US",
+          "voice": "am_michael",
+          "start": 29.537,
+          "seconds": 3.827,
+          "text": "Then let's go up together. I'm Kenji, by the way."
+        },
+        {
+          "speaker": "Woman",
+          "code": "F-UK",
+          "voice": "bf_emma",
+          "start": 33.864,
+          "seconds": 2.739,
+          "text": "Nice to meet you. I'm Sofia."
+        }
+      ]
+    },
+    {
+      "id": "listening-m2-lower-42-announcement",
+      "file": "listening-m2-lower-42-announcement.mp3",
+      "section": "listening",
+      "module": "lower",
+      "type": "announcement",
+      "questions": [
+        42,
+        43
+      ],
+      "voices": {
+        "Speaker": {
+          "code": "M-AU",
+          "voice": "bm_fable"
+        }
+      },
+      "seconds": 29.773,
+      "pcmSeconds": 29.773,
+      "pauseAfterSeconds": 50,
+      "bytes": 238946,
+      "sha256": "3564e3459400ae4d33c9a86c5af01a94f5e03e6fded954a8817bc194ee52fc6b",
+      "sourceSha256": "926ae469e014ca3e0b1c3c33f599f1c4e6d21a80365e5702f2ed841a6de5c83f",
+      "fingerprint": "20354a06fc0b95310c69fc3ff9b418f3801caf867aeaa02f7dcc4355aa9465e5",
+      "revision": 1,
+      "gain": 0.8737,
+      "segments": [
+        {
+          "speaker": null,
+          "code": "M-AU",
+          "voice": "bm_fable",
+          "start": 0.3,
+          "seconds": 28.873,
+          "text": "Attention, students. Starting next Monday, the cafeteria will have new opening hours. Breakfast will be served from seven to nine thirty. Lunch will start at eleven thirty and finish at two. In the evening, the cafeteria will now stay open until eight o'clock, one hour later than before. On Saturdays and Sundays, it will open only for lunch. You can find the new hours on the cafeteria door. Thank you."
+        }
+      ]
+    },
+    {
+      "id": "listening-m2-lower-44-announcement",
+      "file": "listening-m2-lower-44-announcement.mp3",
+      "section": "listening",
+      "module": "lower",
+      "type": "announcement",
+      "questions": [
+        44,
+        45
+      ],
+      "voices": {
+        "Speaker": {
+          "code": "F-US",
+          "voice": "af_heart"
+        }
+      },
+      "seconds": 24.781,
+      "pcmSeconds": 24.781,
+      "pauseAfterSeconds": 50,
+      "bytes": 199010,
+      "sha256": "398492919efac46a541c426ab282b03d535ef2905882a9d1a9f8e158c11ef4fc",
+      "sourceSha256": "4453766fbb0de4edd4c03fde005c8e37f4e5eba472bb70489a618381a1411d00",
+      "fingerprint": "b486baad8cf6af121da9d499508d0de7fea1d39dbdbd5b597b63b559459724c8",
+      "revision": 1,
+      "gain": 1.0934,
+      "segments": [
+        {
+          "speaker": null,
+          "code": "F-US",
+          "voice": "af_heart",
+          "start": 0.3,
+          "seconds": 23.881,
+          "text": "Good morning, everyone. I have some news about our school sports day. It will be this Friday on the playing field behind the gym. We start at nine o'clock with the running races, and after lunch there will be a football game between the teachers and the students. Please wear your sports clothes and bring a hat and a bottle of water. If it rains, we will move everything into the gym. Parents are welcome to come and watch."
+        }
+      ]
+    },
+    {
+      "id": "listening-m2-lower-46-announcement",
+      "file": "listening-m2-lower-46-announcement.mp3",
+      "section": "listening",
+      "module": "lower",
+      "type": "announcement",
+      "questions": [
+        46,
+        47
+      ],
+      "voices": {
+        "Speaker": {
+          "code": "M-UK",
+          "voice": "bm_george"
+        }
+      },
+      "seconds": 26.637,
+      "pcmSeconds": 26.637,
+      "pauseAfterSeconds": 50,
+      "bytes": 213794,
+      "sha256": "d95c16fbff0d573b2f858c378c8f14dee85c4e34170bccb398924f7aca24967a",
+      "sourceSha256": "48af45e029d55a01c83809b13fd3c66308f3cabd15a26ca67e6f0ef61bc09df4",
+      "fingerprint": "af949524b9c08689a8b59b9d5d824b857d7fce25297af4e011d0c90abe1239ae",
+      "revision": 2,
+      "gain": 1.0008,
+      "segments": [
+        {
+          "speaker": null,
+          "code": "M-UK",
+          "voice": "bm_george",
+          "start": 0.3,
+          "seconds": 25.737,
+          "text": "Attention, please. This is a platform change for passengers going to Westbridge. The ten fifteen train to Westbridge will now leave from platform six, not platform two. Please go to platform six now. You can use the stairs or the elevator near the ticket office. The train will leave on time, so please do not be late. We are sorry for the change. Thank you.",
+          "phonemeFixes": [
+            "teen number keeps its stress on -teen"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "listening-m2-upper-33-response",
+      "file": "listening-m2-upper-33-response.mp3",
+      "section": "listening",
+      "module": "upper",
+      "type": "choose_response",
+      "questions": [
+        33
+      ],
+      "voices": {
+        "Speaker": {
+          "code": "F-UK",
+          "voice": "bf_emma"
+        }
+      },
+      "seconds": 3.801,
+      "pcmSeconds": 3.801,
+      "pauseAfterSeconds": 20,
+      "bytes": 31195,
+      "sha256": "31b34589207e46be06a498c972b2f2d16069fed2931632c6425ff9c7cd2e49e1",
+      "sourceSha256": "fdb744b51606f50106ba79606275f5ff4a5d02172fe8846cd4048cb639ff0667",
+      "fingerprint": "023731ffeb38346831dfce9634ce253ba0c33e7b13d001b84bf01fc2c1f41bb9",
+      "revision": 1,
+      "gain": 0.9589,
+      "segments": [
+        {
+          "speaker": null,
+          "code": "F-UK",
+          "voice": "bf_emma",
+          "start": 0.3,
+          "seconds": 2.901,
+          "text": "I don't suppose you could look after my cat this weekend?"
+        }
+      ]
+    },
+    {
+      "id": "listening-m2-upper-34-response",
+      "file": "listening-m2-upper-34-response.mp3",
+      "section": "listening",
+      "module": "upper",
+      "type": "choose_response",
+      "questions": [
+        34
+      ],
+      "voices": {
+        "Speaker": {
+          "code": "M-US",
+          "voice": "am_michael"
+        }
+      },
+      "seconds": 4.377,
+      "pcmSeconds": 4.377,
+      "pauseAfterSeconds": 20,
+      "bytes": 35803,
+      "sha256": "d9776b66972ae2ffbdc6388ed6f0a1c6aeb54c06913ad4cbd27b507c8364c836",
+      "sourceSha256": "d671ac2a687fd9bd292cabc45e38dc3fa968b216851fd0bd937058055f88b336",
+      "fingerprint": "c5adf56b892cc6286a2528e13597ea8684558739923c23214e76fec3041cebbe",
+      "revision": 1,
+      "gain": 1.4358,
+      "segments": [
+        {
+          "speaker": null,
+          "code": "M-US",
+          "voice": "am_michael",
+          "start": 0.3,
+          "seconds": 3.477,
+          "text": "That exam wasn't nearly as bad as everyone made out."
+        }
+      ]
+    },
+    {
+      "id": "listening-m2-upper-35-response",
+      "file": "listening-m2-upper-35-response.mp3",
+      "section": "listening",
+      "module": "upper",
+      "type": "choose_response",
+      "questions": [
+        35
+      ],
+      "voices": {
+        "Speaker": {
+          "code": "F-AU",
+          "voice": "bf_isabella"
+        }
+      },
+      "seconds": 4.463,
+      "pcmSeconds": 4.463,
+      "pauseAfterSeconds": 20,
+      "bytes": 36379,
+      "sha256": "9908fb695652c013876ee006d893a8982869124d09d8730772bfa803326bfa64",
+      "sourceSha256": "014fa038b85f6a5c6e2ef565eb6ea7ed29fae688fedd82acc0f508faedde6bef",
+      "fingerprint": "16d0b13a32c472c4bdd255710aa3faf19f5f72d0e52d4fb89c0c0e8d1aa0f7d8",
+      "revision": 1,
+      "gain": 0.6816,
+      "segments": [
+        {
+          "speaker": null,
+          "code": "F-AU",
+          "voice": "bf_isabella",
+          "start": 0.3,
+          "seconds": 3.563,
+          "text": "You might want to back up your files before you install that update."
+        }
+      ]
+    },
+    {
+      "id": "listening-m2-upper-36-conversation",
+      "file": "listening-m2-upper-36-conversation.mp3",
+      "section": "listening",
+      "module": "upper",
+      "type": "conversation",
+      "questions": [
+        36,
+        37
+      ],
+      "voices": {
+        "Woman": {
+          "code": "F-US",
+          "voice": "af_heart"
+        },
+        "Man": {
+          "code": "M-AU",
+          "voice": "bm_fable"
+        }
+      },
+      "seconds": 44.637,
+      "pcmSeconds": 44.637,
+      "pauseAfterSeconds": 50,
+      "bytes": 357794,
+      "sha256": "6747991606e8f78be61fb22c767a11c982703d0f6677da640f37ebaa0248da6a",
+      "sourceSha256": "5aad95d5e9e09c23b9217d76600621f2b8e4e74ccacc29db937abaef0d3ce3af",
+      "fingerprint": "8e287dfc93b243a153a644112274a19dc59f1b9bc6b3f8b6138aa92cc04b2b80",
+      "revision": 1,
+      "gain": 0.8639,
+      "segments": [
+        {
+          "speaker": "Woman",
+          "code": "F-US",
+          "voice": "af_heart",
+          "start": 0.3,
+          "seconds": 2.069,
+          "text": "You look like you've got something on your mind."
+        },
+        {
+          "speaker": "Man",
+          "code": "M-AU",
+          "voice": "bm_fable",
+          "start": 2.869,
+          "seconds": 8.094,
+          "text": "I have. That software company I worked for last summer offered me a full-time job. They want me to start in January."
+        },
+        {
+          "speaker": "Woman",
+          "code": "F-US",
+          "voice": "af_heart",
+          "start": 11.463,
+          "seconds": 3.891,
+          "text": "That's fantastic! But... you've still got a year left of your degree."
+        },
+        {
+          "speaker": "Man",
+          "code": "M-AU",
+          "voice": "bm_fable",
+          "start": 15.855,
+          "seconds": 5.333,
+          "text": "Exactly. They say I could finish part-time, but realistically, how many people ever do?"
+        },
+        {
+          "speaker": "Woman",
+          "code": "F-US",
+          "voice": "af_heart",
+          "start": 21.688,
+          "seconds": 4.361,
+          "text": "Not many, I'd guess. Then again, offers like that don't grow on trees."
+        },
+        {
+          "speaker": "Man",
+          "code": "M-AU",
+          "voice": "bm_fable",
+          "start": 26.549,
+          "seconds": 3.499,
+          "text": "I know. My parents think I'd be mad to turn it down."
+        },
+        {
+          "speaker": "Woman",
+          "code": "F-US",
+          "voice": "af_heart",
+          "start": 30.547,
+          "seconds": 1.152,
+          "text": "And what do you think?"
+        },
+        {
+          "speaker": "Man",
+          "code": "M-AU",
+          "voice": "bm_fable",
+          "start": 32.199,
+          "seconds": 4.608,
+          "text": "Honestly? I'd hate to be thirty and still two courses short of a degree."
+        },
+        {
+          "speaker": "Woman",
+          "code": "F-US",
+          "voice": "af_heart",
+          "start": 37.307,
+          "seconds": 3.349,
+          "text": "Have you asked whether they'd hold the job until you graduate?"
+        },
+        {
+          "speaker": "Man",
+          "code": "M-AU",
+          "voice": "bm_fable",
+          "start": 41.157,
+          "seconds": 2.88,
+          "text": "No... I suppose it can't hurt to ask."
+        }
+      ]
+    },
+    {
+      "id": "listening-m2-upper-38-announcement",
+      "file": "listening-m2-upper-38-announcement.mp3",
+      "section": "listening",
+      "module": "upper",
+      "type": "announcement",
+      "questions": [
+        38,
+        39
+      ],
+      "voices": {
+        "Speaker": {
+          "code": "M-UK",
+          "voice": "bm_george"
+        }
+      },
+      "seconds": 48.065,
+      "pcmSeconds": 48.065,
+      "pauseAfterSeconds": 50,
+      "bytes": 385250,
+      "sha256": "4b1733d84798aded761a349990e2b9dfd11124249e2b8cc165a27a4cafa94a91",
+      "sourceSha256": "9da43626a3b705a6ad7437443140e0323cc7cfb98fb70c86a21c5d2c77c5a7cf",
+      "fingerprint": "c562e3941e330bbc8fcf44a9694e3366ce2446e812772ef1ed60caff73904b49",
+      "revision": 2,
+      "gain": 1.0243,
+      "segments": [
+        {
+          "speaker": null,
+          "code": "M-UK",
+          "voice": "bm_george",
+          "start": 0.3,
+          "seconds": 47.165,
+          "text": "Good afternoon. A reminder from the International Programs Office: our information session on next year's exchange programs is this Thursday at four in Ashby Hall. Please note that the exchange is open only to students who will have completed two full semesters here before they leave, and whose grade average is at least a B. For partner universities where English isn't the main language, you'll also need an intermediate level in the local language, unless your courses are taught in English. Not sure whether you qualify? Come anyway. Advisers will be on hand to look at individual cases. Applications close on the first of March, and late ones won't be considered.",
+          "phonemeFixes": [
+            "'applications close' is the verb, /z/"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "listening-m2-upper-40-talk",
+      "file": "listening-m2-upper-40-talk.mp3",
+      "section": "listening",
+      "module": "upper",
+      "type": "talk",
+      "questions": [
+        40,
+        41,
+        42,
+        43
+      ],
+      "voices": {
+        "Speaker": {
+          "code": "M-US",
+          "voice": "am_michael"
+        }
+      },
+      "seconds": 87.725,
+      "pcmSeconds": 87.725,
+      "pauseAfterSeconds": 100,
+      "bytes": 702618,
+      "sha256": "d073464161384aae92a3638ada338af7aefd2a6c77861fc85150ab34a5f70215",
+      "sourceSha256": "f69233fe8a67db92332c4ad135f6cd7a96117c015490dd3774e34a09eaa893e6",
+      "fingerprint": "f7b3295ae7603ba61034c8e94596c37f13ef0137dde7f5d62aaacbfd8e2418d4",
+      "revision": 2,
+      "gain": 1.2112,
+      "segments": [
+        {
+          "speaker": null,
+          "code": "M-US",
+          "voice": "am_michael",
+          "start": 0.3,
+          "seconds": 86.825,
+          "text": "Here's something that ought to embarrass modern engineers a little. A concrete sea wall built today may start crumbling within fifty years. Yet Roman harbors have sat in salt water for two thousand years, and the Pantheon's concrete dome in Rome is still standing after nearly nineteen centuries. So what did the Romans know that we don't? Well, their recipe was different. Instead of modern cement, they mixed lime with volcanic ash. And in sea water, something remarkable happens. The water seeps in and reacts with the ash, and over time new crystals grow inside the concrete. In other words, the very thing that destroys our concrete made theirs stronger. There's a second clue. Roman concrete is full of tiny white lumps of lime. For years, people wrote these off as sloppy mixing. But recent research suggests they act as a repair kit. When a crack opens and rainwater gets in, it dissolves some of that lime, which then hardens again and seals the crack. Now, before you get carried away, Roman concrete isn't better across the board. It's weaker than ours under heavy loads, and it sets slowly. You couldn't build a skyscraper with it. Still, cement production is a major source of carbon emissions, so a concrete that repairs itself and lasts for centuries is well worth a second look.",
+          "phonemeFixes": [
+            "teen number keeps its stress on -teen"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "listening-m2-upper-44-talk",
+      "file": "listening-m2-upper-44-talk.mp3",
+      "section": "listening",
+      "module": "upper",
+      "type": "talk",
+      "questions": [
+        44,
+        45,
+        46,
+        47
+      ],
+      "voices": {
+        "Speaker": {
+          "code": "F-AU",
+          "voice": "bf_isabella"
+        }
+      },
+      "seconds": 75.573,
+      "pcmSeconds": 75.573,
+      "pauseAfterSeconds": 100,
+      "bytes": 605274,
+      "sha256": "04563297b2699d1ed835eff7f2671230eca08a846764b5792179eec9ccec99ff",
+      "sourceSha256": "eb624719a487f6e1783156de42081732cae0340c183df85aaf27db5bbfbad5d5",
+      "fingerprint": "cb6c75c874872e1f5214a220125f7ef22afd1529497fe96728abec10356e777e",
+      "revision": 1,
+      "gain": 0.7185,
+      "segments": [
+        {
+          "speaker": null,
+          "code": "F-AU",
+          "voice": "bf_isabella",
+          "start": 0.3,
+          "seconds": 74.673,
+          "text": "Think about the last time you heard about a job opening, or an apartment, or even a good film. Who told you? Your best friend? Possibly. But there's a fair chance it was someone you barely know. Back in nineteen seventy-three, the sociologist Mark Granovetter published a paper with a wonderfully paradoxical title, The Strength of Weak Ties. By strong ties, he meant close friends and family. Weak ties are acquaintances: an old classmate, a neighbor you nod to. Granovetter had asked people near Boston how they'd found their jobs. And of those who'd heard through a personal contact, most said it was someone they saw only occasionally or rarely. Not a close friend. Why would that be? Well, your close friends know one another. They read the same things and hear the same news, so what they tell you is, more often than not, something you already know. An acquaintance, on the other hand, moves in different circles. She's a bridge to information that would never reach you otherwise. Now, I'm not suggesting close friends don't matter. They're the ones who'll help you move house or sit with you when things go wrong. Weak ties won't do that. But when it comes to fresh information, it's the people at the edge of your social world who tend to deliver."
+        }
+      ]
+    },
+    {
+      "id": "speaking-01-repeat-scenario",
+      "file": "speaking-01-repeat-scenario.mp3",
+      "section": "speaking",
+      "module": null,
+      "type": "repeat_scenario",
+      "questions": [],
+      "voices": {
+        "Narrator": {
+          "code": "narrator",
+          "voice": "af_bella"
+        }
+      },
+      "seconds": 8.939,
+      "pcmSeconds": 8.939,
+      "pauseAfterSeconds": 0,
+      "bytes": 72270,
+      "sha256": "9832c1db3268bea6d3fadcd14370d337545c9eb56ede5090646e5d6ba55512df",
+      "sourceSha256": "eb864b22349246b73e7bb2a83b6a669d7be9cf922cfb4b4cc2d00b4f5dc7bb7d",
+      "fingerprint": "e1c5d6ca21ef97dbc09a5d5f0f4ecd375b8c4b43667cde8bd949ef1026a051e2",
+      "revision": 1,
+      "gain": 1.0666,
+      "segments": [
+        {
+          "speaker": "Narrator",
+          "code": "narrator",
+          "voice": "af_bella",
+          "start": 0.3,
+          "seconds": 8.039,
+          "text": "You are learning how to guide visitors around a history museum. Listen to your trainer and repeat what he says. Repeat only once."
+        }
+      ]
+    },
+    {
+      "id": "speaking-01-repeat",
+      "file": "speaking-01-repeat.mp3",
+      "section": "speaking",
+      "module": null,
+      "type": "repeat",
+      "questions": [
+        1
+      ],
+      "voices": {
+        "Speaker": {
+          "code": "M-UK",
+          "voice": "bm_george"
+        }
+      },
+      "seconds": 3.098,
+      "pcmSeconds": 3.097,
+      "pauseAfterSeconds": 8,
+      "bytes": 25607,
+      "sha256": "011f61e353a546493219690ba9cdbfe46d321987b392fc43968d253e4bd3902e",
+      "sourceSha256": "a66ce7a0b7230be84e2cca7cb986447dccd3ca5007a56e653d77396f90884b43",
+      "fingerprint": "6411ed9ec785898ea89cbfa54134983868c1a325bf0fa169efa0f789771fb838",
+      "revision": 1,
+      "gain": 0.9805,
+      "segments": [
+        {
+          "speaker": null,
+          "code": "M-UK",
+          "voice": "bm_george",
+          "start": 0.3,
+          "seconds": 2.197,
+          "text": "Welcome to the history museum."
+        }
+      ]
+    },
+    {
+      "id": "speaking-02-repeat",
+      "file": "speaking-02-repeat.mp3",
+      "section": "speaking",
+      "module": null,
+      "type": "repeat",
+      "questions": [
+        2
+      ],
+      "voices": {
+        "Speaker": {
+          "code": "M-UK",
+          "voice": "bm_george"
+        }
+      },
+      "seconds": 3.652,
+      "pcmSeconds": 3.652,
+      "pauseAfterSeconds": 8,
+      "bytes": 30023,
+      "sha256": "44f05d10938f82ee8a56eda2d612ad3321f677de3d0de954c2a388125346ae8f",
+      "sourceSha256": "5250e9dbed1bcfde7a2f59a6739877a6e4136142bb852cf0dd3f3d323e094e79",
+      "fingerprint": "cf7d50cd94fb5183911ad2f50561e872ca2b125d0db7e5e2b3b66d1b8b2aa210",
+      "revision": 1,
+      "gain": 1.0183,
+      "segments": [
+        {
+          "speaker": null,
+          "code": "M-UK",
+          "voice": "bm_george",
+          "start": 0.3,
+          "seconds": 2.752,
+          "text": "Our tour today will last about an hour."
+        }
+      ]
+    },
+    {
+      "id": "speaking-03-repeat",
+      "file": "speaking-03-repeat.mp3",
+      "section": "speaking",
+      "module": null,
+      "type": "repeat",
+      "questions": [
+        3
+      ],
+      "voices": {
+        "Speaker": {
+          "code": "M-UK",
+          "voice": "bm_george"
+        }
+      },
+      "seconds": 4.591,
+      "pcmSeconds": 4.591,
+      "pauseAfterSeconds": 10,
+      "bytes": 37511,
+      "sha256": "2113de51927a24d1d1432ea2a93e88b66fc88f6115d1a2462bf41764da099829",
+      "sourceSha256": "b066a16cf9298e6d6a51040b571f83ebd6c312530a268cb086afca920c0a8832",
+      "fingerprint": "f809224579f15340f8818365893b56460389d5c854fe1d57faaeb600bdd016ca",
+      "revision": 1,
+      "gain": 1.0135,
+      "segments": [
+        {
+          "speaker": null,
+          "code": "M-UK",
+          "voice": "bm_george",
+          "start": 0.3,
+          "seconds": 3.691,
+          "text": "Please stay behind the rope in front of every display case."
+        }
+      ]
+    },
+    {
+      "id": "speaking-04-repeat",
+      "file": "speaking-04-repeat.mp3",
+      "section": "speaking",
+      "module": null,
+      "type": "repeat",
+      "questions": [
+        4
+      ],
+      "voices": {
+        "Speaker": {
+          "code": "M-UK",
+          "voice": "bm_george"
+        }
+      },
+      "seconds": 4.569,
+      "pcmSeconds": 4.569,
+      "pauseAfterSeconds": 10,
+      "bytes": 37319,
+      "sha256": "7f9d84952b117b078ed49326da19dd428aed13aa0d0d0687fb28205b066dbe3f",
+      "sourceSha256": "e50e797d794eccb09de26771f4c8407151be60d8f12aeb52048dcd18503637b4",
+      "fingerprint": "0ffd609284e3c080c843d90411be8daef10b36033917c628d7ccfae1c6d82fb8",
+      "revision": 1,
+      "gain": 1.0226,
+      "segments": [
+        {
+          "speaker": null,
+          "code": "M-UK",
+          "voice": "bm_george",
+          "start": 0.3,
+          "seconds": 3.669,
+          "text": "The oldest objects in our collection are in the first room."
+        }
+      ]
+    },
+    {
+      "id": "speaking-05-repeat",
+      "file": "speaking-05-repeat.mp3",
+      "section": "speaking",
+      "module": null,
+      "type": "repeat",
+      "questions": [
+        5
+      ],
+      "voices": {
+        "Speaker": {
+          "code": "M-UK",
+          "voice": "bm_george"
+        }
+      },
+      "seconds": 4.505,
+      "pcmSeconds": 4.505,
+      "pauseAfterSeconds": 10,
+      "bytes": 36743,
+      "sha256": "ae647b6866fd62fc277f43bd1457fdb114ef10baa9026cbc78ffa3cbb7f76210",
+      "sourceSha256": "f7fd94d1f4548014b6c552b97ee2e11ed4cdb82e2a30c10601a02202d7a2bff4",
+      "fingerprint": "aaa9d3d9e3a07e3701abfb17912145ecbc1cce82731bce2a03c6f3e1f8ae6f44",
+      "revision": 1,
+      "gain": 1.0323,
+      "segments": [
+        {
+          "speaker": null,
+          "code": "M-UK",
+          "voice": "bm_george",
+          "start": 0.3,
+          "seconds": 3.605,
+          "text": "You can borrow an audio guide at the information desk."
+        }
+      ]
+    },
+    {
+      "id": "speaking-06-repeat",
+      "file": "speaking-06-repeat.mp3",
+      "section": "speaking",
+      "module": null,
+      "type": "repeat",
+      "questions": [
+        6
+      ],
+      "voices": {
+        "Speaker": {
+          "code": "M-UK",
+          "voice": "bm_george"
+        }
+      },
+      "seconds": 5.721,
+      "pcmSeconds": 5.721,
+      "pauseAfterSeconds": 12,
+      "bytes": 46535,
+      "sha256": "3d4f50b5ea485cd7e6ab510860052f2809d387ff30767262f8f234feca15ae86",
+      "sourceSha256": "ae576cb47cdd6580dcaf5350fd11aae86ac6af7756d922831a2300c0be165bb3",
+      "fingerprint": "8addad05520f96576c6a34816a4ce28ddc99777a7d61bec559a929de7ba06230",
+      "revision": 1,
+      "gain": 1.0169,
+      "segments": [
+        {
+          "speaker": null,
+          "code": "M-UK",
+          "voice": "bm_george",
+          "start": 0.3,
+          "seconds": 4.821,
+          "text": "If you would like to know more about any of the objects, please ask me during the tour."
+        }
+      ]
+    },
+    {
+      "id": "speaking-07-repeat",
+      "file": "speaking-07-repeat.mp3",
+      "section": "speaking",
+      "module": null,
+      "type": "repeat",
+      "questions": [
+        7
+      ],
+      "voices": {
+        "Speaker": {
+          "code": "M-UK",
+          "voice": "bm_george"
+        }
+      },
+      "seconds": 5.999,
+      "pcmSeconds": 5.999,
+      "pauseAfterSeconds": 12,
+      "bytes": 48647,
+      "sha256": "571fca0bca0c2d174b78e04f3f59b23f7b5452c007f0ae552609672016f93c29",
+      "sourceSha256": "6c7b46e491ad5e62f9a65e369c2b81c11385f789458e6807a6645324815c23c7",
+      "fingerprint": "489b3a15ec0353f1849725c3ec56be60c22db9c43c57de7d225488d5ddf633d4",
+      "revision": 1,
+      "gain": 1.0227,
+      "segments": [
+        {
+          "speaker": null,
+          "code": "M-UK",
+          "voice": "bm_george",
+          "start": 0.3,
+          "seconds": 5.099,
+          "text": "When the tour is over, you are welcome to visit the gift shop next to the main entrance."
+        }
+      ]
+    },
+    {
+      "id": "speaking-08-interview-scenario",
+      "file": "speaking-08-interview-scenario.mp3",
+      "section": "speaking",
+      "module": null,
+      "type": "interview_scenario",
+      "questions": [],
+      "voices": {
+        "Narrator": {
+          "code": "narrator",
+          "voice": "am_fenrir"
+        }
+      },
+      "seconds": 10.795,
+      "pcmSeconds": 10.795,
+      "pauseAfterSeconds": 0,
+      "bytes": 87057,
+      "sha256": "ddf9ccb9bca2758b9cbd87266dec83748e7c43009a6e0a9752bf1b95326f4634",
+      "sourceSha256": "799d57f4e98b17b8e19ad992b28b70f7053ce37f1492d3e488f59defcf1da77e",
+      "fingerprint": "7908f51178984c24d89c928dea413c8368cca8a817bed56275a091f06ccb0c96",
+      "revision": 1,
+      "gain": 0.8358,
+      "segments": [
+        {
+          "speaker": "Narrator",
+          "code": "narrator",
+          "voice": "am_fenrir",
+          "start": 0.3,
+          "seconds": 9.895,
+          "text": "You have agreed to take part in a research study about cooking and eating habits. You will have a short online interview with a researcher. The researcher will ask you some questions."
+        }
+      ]
+    },
+    {
+      "id": "speaking-08-interview",
+      "file": "speaking-08-interview.mp3",
+      "section": "speaking",
+      "module": null,
+      "type": "interview",
+      "questions": [
+        8
+      ],
+      "voices": {
+        "Speaker": {
+          "code": "F-US",
+          "voice": "af_heart"
+        }
+      },
+      "seconds": 10.355,
+      "pcmSeconds": 10.355,
+      "pauseAfterSeconds": 45,
+      "bytes": 83594,
+      "sha256": "1c5ed2b3fd833da7825d60f64bc70cea847d759d450172ef61997fb87489222b",
+      "sourceSha256": "3e46f6472c45391736de34593384ac278b50a91902ceeb01252e5033321dcc9b",
+      "fingerprint": "9b96c241dd5d7868fe53315659234e9c210c0d0c47246556c1b5dbcddf42001b",
+      "revision": 1,
+      "gain": 1.1645,
+      "segments": [
+        {
+          "speaker": null,
+          "code": "F-US",
+          "voice": "af_heart",
+          "start": 0.3,
+          "seconds": 9.455,
+          "text": "Thank you for taking part today. Let's start with something simple. Think about the last meal that you cooked or helped to cook. What was it, and who did you make it for?"
+        }
+      ]
+    },
+    {
+      "id": "speaking-09-interview",
+      "file": "speaking-09-interview.mp3",
+      "section": "speaking",
+      "module": null,
+      "type": "interview",
+      "questions": [
+        9
+      ],
+      "voices": {
+        "Speaker": {
+          "code": "F-US",
+          "voice": "af_heart"
+        }
+      },
+      "seconds": 10.539,
+      "pcmSeconds": 10.539,
+      "pauseAfterSeconds": 45,
+      "bytes": 85130,
+      "sha256": "e1667555836e03b7e731aa57082f0a645ece67f5370472acefb22763ec4b4011",
+      "sourceSha256": "ad85625cba72c46a8ad735ffcc8abdddd8c1a3788a9999668d9d26ef726b2777",
+      "fingerprint": "8b4bff9a65d097dc777be4d1aa5468649e6419190380b684be1980e45c96f907",
+      "revision": 1,
+      "gain": 1.1935,
+      "segments": [
+        {
+          "speaker": null,
+          "code": "F-US",
+          "voice": "af_heart",
+          "start": 0.3,
+          "seconds": 9.639,
+          "text": "Thanks. Now let's talk about your routine. Some people like to cook at home most days, while others prefer to eat out or order food. Which do you prefer, and why?"
+        }
+      ]
+    },
+    {
+      "id": "speaking-10-interview",
+      "file": "speaking-10-interview.mp3",
+      "section": "speaking",
+      "module": null,
+      "type": "interview",
+      "questions": [
+        10
+      ],
+      "voices": {
+        "Speaker": {
+          "code": "F-US",
+          "voice": "af_heart"
+        }
+      },
+      "seconds": 14.131,
+      "pcmSeconds": 14.131,
+      "pauseAfterSeconds": 45,
+      "bytes": 113739,
+      "sha256": "296f4f3e26a4ff41b6db3d32dd7f063d5bd1a95fae44e3a6e53d51ccc4ce1052",
+      "sourceSha256": "67e23dc76487cb58286ff8595502b3910fdb21f6ff0de8f4eab5fabf71177f00",
+      "fingerprint": "7abe6d43cf9e4df168408dd3caa04dfdc70a044d90fed48b8aacb6520b0a1305",
+      "revision": 1,
+      "gain": 1.2157,
+      "segments": [
+        {
+          "speaker": null,
+          "code": "F-US",
+          "voice": "af_heart",
+          "start": 0.3,
+          "seconds": 13.231,
+          "text": "Now I'd like to hear your opinion. Some people think that eating meals together as a family is less important now than it was in the past, because everyone is so busy. Do you agree with this view? Why or why not?"
+        }
+      ]
+    },
+    {
+      "id": "speaking-11-interview",
+      "file": "speaking-11-interview.mp3",
+      "section": "speaking",
+      "module": null,
+      "type": "interview",
+      "questions": [
+        11
+      ],
+      "voices": {
+        "Speaker": {
+          "code": "F-US",
+          "voice": "af_heart"
+        }
+      },
+      "seconds": 7.872,
+      "pcmSeconds": 7.872,
+      "pauseAfterSeconds": 45,
+      "bytes": 63627,
+      "sha256": "e4fc72f356f8ba37fe04e46d30e9e9394bf4b4b482a4e3110009d5dd972b8718",
+      "sourceSha256": "bfc200a3c05a438af17b23dc85ee9d2cb021aae7365a147911b8ff8661338def",
+      "fingerprint": "4b8fc4a7875390c79627720d955afb75b5d5c298c7647c89023af43cc2631796",
+      "revision": 1,
+      "gain": 1.2167,
+      "segments": [
+        {
+          "speaker": null,
+          "code": "F-US",
+          "voice": "af_heart",
+          "start": 0.3,
+          "seconds": 6.972,
+          "text": "Here is my final question. Do you think schools should teach all students how to cook basic meals? Why or why not?"
+        }
+      ]
+    }
+  ]
+}

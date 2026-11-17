@@ -9,6 +9,8 @@ import { scheduleAuthEmail } from "./auth-email";
 import { accountLinkingPolicy, validateGoogleIdentity } from "./auth-account-policy";
 import { recordUserEvent } from "./user-events";
 import { allowAccountAttempt } from "./account-throttle";
+import { expo } from "@better-auth/expo";
+import { mobileOrigins } from "./mobile-origin";
 
 function createAuth() {
   const baseURL = process.env.BETTER_AUTH_URL;
@@ -22,7 +24,10 @@ function createAuth() {
     appName: "EducationPlatform",
     baseURL,
     secret,
-    trustedOrigins:[new URL(baseURL).origin],
+    // The native app's deep-link scheme is trusted beside the site's own origin (see mobile-origin.ts).
+    trustedOrigins:[new URL(baseURL).origin, ...mobileOrigins()],
+    // Lets the native app name its origin and returns a Google sign-in to the app through its deep link.
+    plugins:[expo()],
     database: prismaAdapter(getDb(), { provider: "postgresql" }),
     emailAndPassword: {
       enabled: true, minPasswordLength: 12, maxPasswordLength: 128,

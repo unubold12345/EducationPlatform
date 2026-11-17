@@ -41,6 +41,10 @@ Part of the [project guide](../PROJECT.md) (was PROJECT.md section 7). "Section 
 - Storage (2026-11-13; `ReadingPractice`, `ReadingSampleState`, migration `20261112200100_reading_lab_storage`): a generated practice
   is saved on the account with its key (`questions`); the browser gets only the passage and answer-free questions. The account holds
   20 practices; a full library is refused with 409 before credits are held, and counted again just before the row is written.
+  Since 2026-11-17 the plan sets how many a student keeps (`readingPractices` in `subscriptions/plans.ts`, `practiceCapacity`
+  in `state.ts`): free, ЭЕШ and Гадаад хэл Basic 5, Pro (and retired IELTS/SAT) 15; 20 stays the account ceiling for practices
+  moved from a browser. Practices already saved above the plan's size are kept; only new ones are refused, with an upgrade hint
+  (`practicesFullMessage`). The page gets the size from `readingLibrary(...).limit`; the mobile app still compares against 20.
   `POST …/grade` marks from the stored key by id; `PATCH …/practices/[id]` saves answers and the timer (0.6 s after a change, retried,
   sent on leaving) or clears for a retry; `DELETE` removes one; `PATCH …/samples/[id]` saves, checks (marked on the server) or clears a
   sample. Every request carries the number of checks the page has seen, so a stale tab gets 409 and a repeated check counts once.
@@ -54,3 +58,9 @@ Part of the [project guide](../PROJECT.md) (was PROJECT.md section 7). "Section 
   questions with blanks and tick boxes, and a last page with the answers and explanations only while the answers are checked
   (after "Дахин оролдох" the page no longer holds the key, so it prints without one). Samples have the button too. There is no
   browser suite for this lab; it was checked by hand-run Playwright on a sample at 1280 and 390 px.
+- From a topic (2026-11-17, owner request): a third tab "Сэдвээр (AI)" sends `topic` (at most 500 characters) instead of `file`
+  or `text`; any two together get 400. An empty topic gets a random IELTS-style subject from `READING_TOPIC_IDEAS`.
+  `readingMessages({ topic })` asks for an ORIGINAL 600–900 word, 5–7 paragraph Academic passage from widely accepted knowledge,
+  with no invented statistics, studies, quotations or named researchers; the question rules are unchanged. Saved as
+  `sourceKind "topic"`, `sourceName "Сэдэв: …"`; retries work as for any practice (they reuse the saved passage). Hold
+  `readingPracticeHold(topic length, 0, count)` = 2 a question. Live DeepSeek run: 786 words, 7 paragraphs, 12 questions.

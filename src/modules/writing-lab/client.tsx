@@ -6,9 +6,12 @@ import {SpellEditor} from "./spell-editor";
 import {blankDraft,getServerStudio,getStudio,subscribeStudio,updateStudio,type Draft} from "./progress";
 import styles from "./writing.module.css";
 import {CreditCost,useCredits} from "@/modules/credits/client";
+import {ExpertPanel,type ExpertInitial} from "./expert-client";
+import {ProcessingOverlay} from "@/modules/workspace/processing";
+import {STRONG_LIMITS,type SavedExpertReview} from "./expert";
 
 const KIND_LABEL:Record<WritingKind,string>={grammar:"Дүрэм",spelling:"Үсэг",punctuation:"Цэг тэмдэг",vocabulary:"Үг",style:"Найруулга"};
-const BUSY_LABEL:Record<WritingAction,string>={ideas:"Санаа боловсруулж байна",grammar:"Дүрэм шалгаж байна",feedback:"Бүрэн үнэлгээ хийж байна · ~20 сек"};
+const BUSY_LABEL:Record<WritingAction,string>={ideas:"Санаа боловсруулж байна",grammar:"Дүрэм шалгаж байна",feedback:"Шалгуур бүрээр нарийвчлан үнэлж байна · ~1 мин"};
 const clock=(seconds:number)=>`${seconds<0?"+":""}${Math.floor(Math.abs(seconds)/60)}:${String(Math.floor(Math.abs(seconds)%60)).padStart(2,"0")}`;
 
 // Replaces the first occurrence without String.replace, whose "$" patterns would corrupt student text.
@@ -36,7 +39,7 @@ function Timer({minutes}:{minutes:number}) {
  </div>;
 }
 
-export function WritingStudio({signedIn}:{signedIn:boolean}) {
+export function WritingStudio({signedIn,expert=null}:{signedIn:boolean;expert?:ExpertInitial|null}) {
  const studio=useSyncExternalStore(subscribeStudio,getStudio,getServerStudio);
  const task=studio.task,info=writingTasks[task],draft=studio.drafts[task]??blankDraft(task);
  const prompt=draft.promptId?findWritingPrompt(draft.promptId):undefined;
@@ -44,12 +47,14 @@ export function WritingStudio({signedIn}:{signedIn:boolean}) {
  const {apply:applyCredits}=useCredits();
  const [error,setError]=useState("");
  const [view,setView]=useState<"write"|"marks">("write");
- const [tab,setTab]=useState<"fixes"|"words"|"summary">("fixes");
  const [active,setActive]=useState<number|null>(null);
  const [spellCount,setSpellCount]=useState<number|null>(null);
+ const [latest,setLatest]=useState<SavedExpertReview|null>(null);
  const editor=useRef<HTMLTextAreaElement>(null);
+ const coachBody=useRef<HTMLDivElement>(null);
  const words=countWords(draft.essay),paragraphs=countParagraphs(draft.essay);
- const reply=draft.reply,report=reply?.report??null;
+ // The sidebar holds the quick checks only; a full review (and any saved before 2026-11-18) shows in the report below.
+ const reply=draft.action==="feedback"?null:draft.reply;
  const stale=!!reply&&draft.action!=="ideas"&&draft.checked!==draft.essay;
  const fixes=(reply?.fixes??[]).map((fix,index)=>({fix,index,done:!draft.essay.includes(fix.original),skipped:draft.dismissed.includes(fix.original)}));
  const open=fixes.filter(f=>!f.done&&!f.skipped);
@@ -74,30 +79,51 @@ export function WritingStudio({signedIn}:{signedIn:boolean}) {
 
  async function run(action:WritingAction) {
   if(busy||!signedIn)return;
-  if(words<MIN_WORDS[action]){setError(`${action==="feedback"?"Бүрэн үнэлгээнд":"Дүрэм шалгахад"} дор хаяж ${MIN_WORDS[action]} үг хэрэгтэй.`);return;}
-  if(task==="free"&&action==="ideas"&&!draft.topic.trim()){setError("Санаа авахын тулд эхлээд сэдвээ бичнэ үү.");return;}
+  const least=action==="feedback"?STRONG_LIMITS.minWords:MIN_WORDS[action];
+  if(words<least){setError(`${action==="feedback"?"Бүрэн үнэлгээнд":"Дүрэм шалгахад"} дор хаяж ${least} үг хэрэгтэй.`);return;}
+  if(task==="free"&&action!=="grammar"&&!draft.topic.trim()){setError(action==="ideas"?"Санаа авахын тулд эхлээд сэдвээ бичнэ үү.":"Бүрэн үнэлгээнд эхлээд сэдвээ бичнэ үү.");return;}
   setBusy(action);setError("");
   const essay=draft.essay;
   try{
-   const response=await fetch("/api/labs/ielts-writing",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({task,promptId:draft.promptId,topic:task==="free"?draft.topic:"",essay,action,language:studio.language})});
+   // The full review is the examiner review on DeepSeek; ideas and grammar stay quick checks.
+   const response=await fetch(action==="feedback"?"/api/labs/ielts-writing/review":"/api/labs/ielts-writing",{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify(action==="feedback"?{task,promptId:task==="free"?null:draft.promptId,topic:task==="free"?draft.topic:"",essay,language:studio.language}:{task,promptId:draft.promptId,topic:task==="free"?draft.topic:"",essay,action,language:studio.language}),
+    signal:AbortSignal.timeout(action==="feedback"?235_000:120_000)});
    const data=await response.json().catch(()=>({}));
    if(!response.ok){setError(typeof data.error==="string"?data.error:"Түр алдаа гарлаа. Дахин оролдоно уу.");return;}
    applyCredits(data);
+   if(action==="feedback"){
+    // The full review opens only in the report section below; the sidebar keeps the last quick check.
+    const saved:SavedExpertReview|null=data.review??null;
+    if(!saved){setError("Түр алдаа гарлаа. Дахин оролдоно уу.");return;}
+    setLatest(saved);
+    updateStudio(s=>{
+     const current=s.drafts[task]??blankDraft(task);
+     const title=task==="free"?(current.topic.trim()||"Free writing").slice(0,80):findWritingPrompt(current.promptId!)?.theme??"Essay";
+     return {...s,history:[...s.history,{date:new Date().toISOString(),task,title,words:countWords(essay),overall:saved.review.overall,bands:saved.review.bands}].slice(-30)};
+    });
+    return;
+   }
    const result:WritingReply={fixes:data.fixes??[],words:data.words??[],report:data.report??null,ideas:data.ideas??null};
    updateStudio(s=>{
     const current=s.drafts[task]??blankDraft(task);
-    const history=action==="feedback"&&result.report?[...s.history,{date:new Date().toISOString(),task,title:task==="free"?(current.topic.trim()||"Free writing").slice(0,80):findWritingPrompt(current.promptId!)?.theme??"Essay",words:countWords(essay),overall:result.report.overall,bands:result.report.bands}].slice(-30):s.history;
-    return {...s,history,drafts:{...s.drafts,[task]:{...current,reply:result,action,checked:essay,dismissed:[]}}};
+    return {...s,drafts:{...s.drafts,[task]:{...current,reply:result,action,checked:essay,dismissed:[]}}};
    });
-   setTab(action==="feedback"?"summary":"fixes");setActive(null);
+   setActive(null);coachBody.current?.scrollTo({top:0});
    if(action!=="ideas"&&result.fixes.length)setView("marks");
-  }catch{setError("Сүлжээний алдаа гарлаа. Бичвэр тань хадгалагдсан хэвээр байна.");}
+  }catch(reason){setError(reason instanceof Error&&reason.name==="TimeoutError"?"Үнэлгээ хэт удлаа. Доорх хадгалсан үнэлгээнүүдээс шалгаад дахин оролдоно уу.":"Сүлжээний алдаа гарлаа. Бичвэр тань хадгалагдсан хэвээр байна.");}
   finally{setBusy(null);}
  }
 
  const target=info.target,progress=target?Math.min(1,words/target):0;
  const history=studio.history.filter(e=>e.task===task).slice(-8);
- const criteria=report?[["Task "+(task==="letter"?"achievement":"response"),report.bands.task],["Coherence & cohesion",report.bands.coherence],["Lexical resource",report.bands.lexical],["Grammar range & accuracy",report.bands.grammar]] as const:[];
+ // Bring a fix card into view inside the sidebar only, so the page itself never jumps.
+ const reveal=(index:number)=>{
+  const box=coachBody.current,card=document.getElementById(`fix-${index}`);
+  if(!box||!card)return;
+  const top=card.getBoundingClientRect().top-box.getBoundingClientRect().top,bottom=top+card.offsetHeight;
+  if(top<0||bottom>box.clientHeight)box.scrollTo({top:box.scrollTop+top-12,behavior:"smooth"});
+ };
 
  return <div className={`container page-space ${styles.root}`}>
   <header className={styles.top}>
@@ -142,7 +168,7 @@ export function WritingStudio({signedIn}:{signedIn:boolean}) {
        editorRef={editor} disabled={!!busy&&busy!=="ideas"} label="Таны бичвэр"
        placeholder={task==="letter"?"Dear Sir or Madam,\n\nI am writing to…":"Эндээс бичиж эхлээрэй. Бичвэр тань энэ төхөөрөмж дээр автоматаар хадгалагдана."}
        onKeyDown={event=>{if(event.key==="Enter"&&(event.ctrlKey||event.metaKey)){event.preventDefault();void run("feedback");}}}/>
-     :<div className={styles.marked} aria-label="Засвар тэмдэглэсэн бичвэр">{segments(draft.essay,open).map((part,i)=>part.index===null?<span key={i}>{part.text}</span>:<mark key={i} data-kind={reply!.fixes[part.index].kind} data-active={active===part.index?"":undefined} onClick={()=>{setActive(part.index);setTab("fixes");document.getElementById(`fix-${part.index}`)?.scrollIntoView({block:"nearest",behavior:"smooth"});}}>{part.text}</mark>)}</div>}
+     :<div className={styles.marked} aria-label="Засвар тэмдэглэсэн бичвэр">{segments(draft.essay,open).map((part,i)=>part.index===null?<span key={i}>{part.text}</span>:<mark key={i} data-kind={reply!.fixes[part.index].kind} data-active={active===part.index?"":undefined} onClick={()=>{const at=part.index!;setActive(at);reveal(at);}}>{part.text}</mark>)}</div>}
     <footer className={styles.meter}>
      <div className={styles.count}>
       {target>0&&<span className={styles.bar} aria-hidden="true"><i style={{transform:`scaleX(${progress})`}} data-done={words>=target?"":undefined}/></span>}
@@ -152,7 +178,7 @@ export function WritingStudio({signedIn}:{signedIn:boolean}) {
      <div className={styles.actions}>
       {signedIn?<>
        <button type="button" className={styles.secondary} disabled={!!busy} onClick={()=>void run("grammar")}>Дүрэм шалгах <CreditCost action="writing-grammar" compact/></button>
-       <button type="button" className={styles.primary} disabled={!!busy} onClick={()=>void run("feedback")} title="Ctrl + Enter">{busy==="feedback"?"Үнэлж байна…":"Бүрэн үнэлгээ"} <CreditCost action="writing-feedback" compact/><kbd>⌃↵</kbd></button>
+       <button type="button" className={styles.primary} disabled={!!busy} onClick={()=>void run("feedback")} title="Ctrl + Enter">{busy==="feedback"?"Үнэлж байна…":"Бүрэн үнэлгээ"} <CreditCost action="writing-review" compact/><kbd>⌃↵</kbd></button>
       </>:<Link className={styles.primary} href="/login?next=%2Flabs%2Fielts-writing">Нэвтэрч AI-аар шалгуулах →</Link>}
      </div>
     </footer>
@@ -161,12 +187,12 @@ export function WritingStudio({signedIn}:{signedIn:boolean}) {
    <aside className={styles.coach} aria-label="AI туслах" aria-busy={!!busy}>
     <div className={styles.coachHead}>
      <span className={styles.spark} aria-hidden="true">✦</span>
-     <div><h2>AI туслах</h2><p>{busy?BUSY_LABEL[busy]:stale?"Бичвэр өөрчлөгдсөн · дахин шалгаж болно":reply?"Сүүлийн шалгалтын үр дүн":"Бичиж дуусаад шалгуулаарай"}</p></div>
+     <div><h2>AI туслах</h2><p>{busy&&busy!=="feedback"?BUSY_LABEL[busy]:stale?"Бичвэр өөрчлөгдсөн · дахин шалгаж болно":reply?"Сүүлийн шалгалтын үр дүн":"Бичиж дуусаад шалгуулаарай"}</p></div>
      <select className={styles.language} aria-label="Тайлбарын хэл" value={studio.language} onChange={event=>updateStudio(s=>({...s,language:event.target.value==="en"?"en":"mn"}))}><option value="mn">MN</option><option value="en">EN</option></select>
     </div>
     {error&&<p className={styles.error} role="alert">{error}</p>}
-    <div className={styles.coachBody} aria-live="polite">
-     {busy?<div className={styles.skeleton} aria-label={BUSY_LABEL[busy]}><i/><i/><i/><i/></div>
+    <div className={styles.coachBody} ref={coachBody} aria-live="polite">
+     {busy&&busy!=="feedback"?<div className={styles.skeleton} aria-label={BUSY_LABEL[busy]}><i/><i/><i/><i/></div>
      :!reply?<div className={styles.empty}>
       <ol>
        <li><b>01</b><span><strong>Санаа ав</strong>Сэдвийн төлөвлөгөө, хэрэгтэй хэллэгүүд.</span></li>
@@ -182,18 +208,13 @@ export function WritingStudio({signedIn}:{signedIn:boolean}) {
       <div className={styles.phrases}>{reply.ideas.phrases.map(p=><button key={p} type="button" onClick={()=>insert(p)}>{p}</button>)}</div>
      </div>
      :<>
-      {report&&<div className={styles.score}>
-       <div className={styles.overall}><strong>{report.overall.toFixed(1)}</strong><span>Тооцоолсон band</span></div>
-       <ul className={styles.criteria}>{criteria.map(([label,value])=><li key={label}><span>{label}</span><i aria-hidden="true"><b style={{transform:`scaleX(${value/9})`}}/></i><em>{value.toFixed(1)}</em></li>)}</ul>
-      </div>}
-      <div className={styles.tabs} role="tablist">
-       <button type="button" role="tab" aria-selected={tab==="fixes"} onClick={()=>setTab("fixes")}>Засвар{open.length?<em>{open.length}</em>:null}</button>
-       {report&&<button type="button" role="tab" aria-selected={tab==="words"} onClick={()=>setTab("words")}>Үг хэллэг{reply.words.length?<em>{reply.words.length}</em>:null}</button>}
-       {report&&<button type="button" role="tab" aria-selected={tab==="summary"} onClick={()=>setTab("summary")}>Дүгнэлт</button>}
-      </div>
-      {tab==="fixes"&&<div className={styles.fixes}>
-       {!fixes.length&&<p className={styles.clean}>✓ Алдаа олдсонгүй. Сайн байна!</p>}
+      {/* The list scrolls inside the sidebar; the count and "fix all" stay at its top. */}
+      <div className={styles.fixesHead}>
+       <h3>Засвар{open.length?<em>{open.length}</em>:null}</h3>
        {open.length>1&&<button type="button" className={styles.link} onClick={applyAll}>Бүгдийг засах ({open.length})</button>}
+      </div>
+      <div className={styles.fixes}>
+       {!fixes.length&&<p className={styles.clean}>✓ Алдаа олдсонгүй. Сайн байна!</p>}
        {fixes.map(({fix,index,done,skipped})=><article key={index} id={`fix-${index}`} className={styles.fix} data-state={done?"done":skipped?"skipped":undefined} data-active={active===index?"":undefined} onMouseEnter={()=>setActive(index)} onMouseLeave={()=>setActive(null)}>
         <span className={styles.kind} data-kind={fix.kind}>{KIND_LABEL[fix.kind]}</span>
         <p className={styles.diff}><s>{fix.original}</s><span aria-hidden="true">→</span><ins>{fix.better||"(устгах)"}</ins></p>
@@ -201,22 +222,16 @@ export function WritingStudio({signedIn}:{signedIn:boolean}) {
         {done?<span className={styles.status}>✓ Засагдсан</span>:skipped?<button type="button" className={styles.link} onClick={()=>edit({dismissed:draft.dismissed.filter(d=>d!==fix.original)})}>Буцаах</button>
          :<div className={styles.fixActions}><button type="button" className={styles.apply} onClick={()=>apply(fix)}>Засах</button><button type="button" className={styles.link} onClick={()=>edit({dismissed:[...draft.dismissed,fix.original]})}>Алгасах</button></div>}
        </article>)}
-      </div>}
-      {tab==="words"&&report&&<div className={styles.words}>
-       {!reply.words.length&&<p className={styles.clean}>Үгийн сонголт тань тохиромжтой байна.</p>}
-       {reply.words.map(w=><article key={w.word} className={styles.word}><p><s>{w.word}</s><span aria-hidden="true">→</span><button type="button" onClick={()=>insert(w.better)} title="Бичвэрт оруулах">{w.better}</button></p>{w.example&&<p className={styles.why}>“{w.example}”</p>}</article>)}
-      </div>}
-      {tab==="summary"&&report&&<div className={styles.summary}>
-       <p>{report.summary}</p>
-       {report.strengths.length>0&&<><h3>Сайн тал</h3><ul>{report.strengths.map(s=><li key={s}>{s}</li>)}</ul></>}
-       {report.next.length>0&&<><h3>Дараагийн алхам</h3><ul>{report.next.map(s=><li key={s}>{s}</li>)}</ul></>}
-       {report.rewrite&&<><h3>Сайжруулсан хувилбар</h3><div className={styles.rewrite}><s>{report.rewrite.original}</s><p>{report.rewrite.better}</p></div></>}
-      </div>}
+      </div>
      </>}
     </div>
     <p className={styles.note}>Илгээхэд даалгавар, бичвэр тань AI руу очно. Band нь албан ёсны IELTS үнэлгээ биш, дадлагын тооцоо.</p>
    </aside>
   </div>
+
+  <ProcessingOverlay open={busy==="feedback"} title="Бүрэн үнэлгээ хийж байна…" detail="AI дөрвөн шалгуур бүрээр үнэлж, засвар, жишээ хариулт бичиж байна. Ихэвчлэн 1 минут орно. Үр дүн доорх хэсэгт нээгдэнэ."/>
+  <ExpertPanel signedIn={signedIn} initial={expert} latest={latest} onApply={fix=>{apply(fix);setView("write");}}
+   draft={{task,promptId:task==="free"?null:draft.promptId,topic:task==="free"?draft.topic:"",essay:draft.essay,language:studio.language}}/>
 
   {history.length>0&&<section className={styles.history} aria-label="Сүүлийн үнэлгээнүүд">
    <h2>Ахиц</h2>

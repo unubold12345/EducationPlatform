@@ -9,6 +9,12 @@ export function stageFor(state:ExamState) {
   if (!stage) return null;
   return stage.variants ? {...stage,questions:stage.variants[state.routes[stage.id] ?? "lower"]} : stage;
 }
+/** A stage's length on the route this attempt took (TOEFL Listening Module 2 differs by route); `seconds` before routing. */
+export function stageSeconds(state:ExamState,index:number) {
+  const stage=state.definition.stages[index];
+  const route=stage?.variantSeconds?state.routes[stage.id]:undefined;
+  return stage ? (route ? stage.variantSeconds![route] : stage.seconds) : 0;
+}
 export function normalise(value:string) { return value.normalize("NFKC").trim().toLocaleLowerCase("en").replace(/[’]/g,"'").replace(/\s+/g," "); }
 const superscripts:Record<string,string>={"⁰":"0","¹":"1","²":"2","³":"3","⁴":"4","⁵":"5","⁶":"6","⁷":"7","⁸":"8","⁹":"9","⁻":"-","⁺":"+"};
 // A power of ten as the keys print it (3.2·10⁻¹³) or as it is typed (3.2*10^-13, 3.2 × 10^(-13), 10⁻¹⁴). The sign
@@ -101,16 +107,19 @@ export function expireStages(state:ExamState,now:number) {
     if (next.variants) {
       const scored=stage.questions.filter(q=>!q.pretest);
       const correct=scored.filter(q=>isCorrect(q,state.responses[q.id]??"")).length;
-      // Transparent practice threshold, NOT College Board's proprietary IRT routing.
-      state.routes[next.id]=correct>=Math.ceil(scored.length*0.65) ? "higher" : "lower";
+      // Transparent practice threshold, NOT College Board's or ETS's proprietary routing. TOEFL forms set their own count.
+      state.routes[next.id]=correct>=(next.routeAt ?? Math.ceil(scored.length*0.65)) ? "higher" : "lower";
     }
     const start=Date.parse(state.deadline);
     state.stageIndex=nextIndex;state.stageStartedAt=new Date(start).toISOString();
-    state.deadline=new Date(start+next.seconds*1000).toISOString();
+    state.deadline=new Date(start+stageSeconds(state,nextIndex)*1000).toISOString();
   }
   return changed;
 }
-export function validateExamEdit(state:ExamState,input:unknown):input is {revision:number;stageId:string;responses:Record<string,string>;flags:string[]} {
+/** Late saves get this many seconds after a question's window closes (TOEFL Listening). */
+export const WINDOW_GRACE_SECONDS=5;
+/** `now`: a question with a `window` accepts a changed answer only inside it (plus the grace); an unchanged value always passes. */
+export function validateExamEdit(state:ExamState,input:unknown,now?:number):input is {revision:number;stageId:string;responses:Record<string,string>;flags:string[]} {
   if (!input || typeof input!=="object") return false;
   const data=input as Record<string,unknown>; const stage=stageFor(state);
   if (!stage || state.finishedAt || data.stageId!==stage.id || !Number.isInteger(data.revision) || (data.revision as number)<0) return false;
@@ -122,6 +131,10 @@ export function validateExamEdit(state:ExamState,input:unknown):input is {revisi
     if (!q || typeof value!=="string") return false;
     const limit=q.kind==="essay" ? 16000 : q.kind==="speaking" ? 4000 : q.kind==="choice" ? Math.max(120,...(q.options??[]).map(option=>option.length)) : 160;
     if(value.length>limit)return false;
+    if(q.window&&now!==undefined&&value!==(state.responses[id]??"")){
+      const elapsed=(now-Date.parse(state.stageStartedAt))/1000;
+      if(elapsed<q.window.start||elapsed>q.window.end+WINDOW_GRACE_SECONDS)return false;
+    }
     return q.kind!=="choice" || value==="" || !!q.options?.includes(value);
   });
 }
@@ -148,7 +161,7 @@ export function makeReport(state:ExamState):ExamReport {
   }
   // ЭЕШ papers report marks by subject skill; SAT and IELTS keep their existing section names.
   const program=state.definition.program;
-  const names=program==="jlpt" ? ["文字・語彙", "文法・読解", "聴解"] : program==="hsk" ? ["听力 · Сонсох","阅读 · Унших"] : program==="sat" ? ["Reading & Writing","Math"] : program==="entrance" ? [...new Set(reviews.filter(q=>!q.pretest).map(q=>q.domain))] : ["Listening","Academic Reading","Writing","Speaking"];
+  const names=program==="toefl" ? ["Reading","Listening","Writing","Speaking"] : program==="jlpt" ? ["文字・語彙", "文法・読解", "聴解"] : program==="hsk" ? ["听力 · Сонсох","阅读 · Унших"] : program==="sat" ? ["Reading & Writing","Math"] : program==="entrance" ? [...new Set(reviews.filter(q=>!q.pretest).map(q=>q.domain))] : ["Listening","Academic Reading","Writing","Speaking"];
   const sections=names.map((title,sectionIndex)=>{
     const list=reviews.filter(q=>!q.pretest&&(program==="jlpt" ? q.number?.startsWith(["V","G","L"][sectionIndex]) : program==="hsk" ? q.groupId?.startsWith(["hsk-l-","hsk-r-"][sectionIndex]) : program==="sat" ? (title==="Reading & Writing" ? q.id.startsWith("sat-rw") : q.id.startsWith("sat-math")) : q.domain===title));
     const graded=list.filter(q=>q.correct!==null);

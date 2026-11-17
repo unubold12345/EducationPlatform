@@ -3,7 +3,7 @@ const nextConfig: NextConfig = {
  poweredByHeader: false,
  serverExternalPackages: ["kokoro-js", "@huggingface/transformers", "onnxruntime-node", "phonemizer", "nodemailer"],
  outputFileTracingIncludes:{
-  "/*":["./assets/entrance-mocks/**/*.json","./assets/jlpt/*.json","./assets/hsk/*.json","./assets/free-mocks/*.json"],
+  "/*":["./assets/entrance-mocks/**/*.json","./assets/jlpt/*.json","./assets/hsk/*.json","./assets/free-mocks/*.json","./assets/language-decks/*.json","./assets/toefl/*.json"],
   // The IELTS mock's AI examiner uses the same local voice and transcription from its own routes.
   "/api/mock-attempts/*/speaking/*":[
    "./node_modules/kokoro-js/voices/bm_george.bin",
@@ -32,6 +32,9 @@ const nextConfig: NextConfig = {
   // `/audio/jlpt` reads assets/jlpt-audio (JLPT audio revision 2) through audio-response-jlpt.ts:
   "/api/mock-attempts/*/audio/jlpt":["./assets/jlpt-audio/*.mp3"],
   "/api/exam-practice/*/audio/jlpt":["./assets/jlpt-audio/*.mp3"],
+  // `/audio/toefl` reads assets/toefl-audio (TOEFL iBT 01–09, about 65 MB) through audio-response-toefl.ts:
+  "/api/mock-attempts/*/audio/toefl":["./assets/toefl-audio/*.mp3"],
+  "/api/exam-practice/*/audio/toefl":["./assets/toefl-audio/*.mp3"],
   "/api/exams/audio-check":["./assets/exams/audio-check.mp3"],
  },
 };

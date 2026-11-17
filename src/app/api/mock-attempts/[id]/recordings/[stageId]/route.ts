@@ -2,6 +2,7 @@ import { ApiError,apiFailure,apiUser,checkOrigin,privateJson } from "@/lib/api";
 import { getDb } from "@/lib/db";
 import { ownMock } from "@/modules/exams/service";
 import type { ExamState } from "@/modules/exams/types";
+import { stageSeconds } from "@/modules/exams/engine";
 type Context={params:Promise<{id:string;stageId:string}>};
 export async function PUT(request:Request,{params}:Context) {
   try {
@@ -10,8 +11,9 @@ export async function PUT(request:Request,{params}:Context) {
     const index=state.definition.stages.findIndex(s=>s.id===stageId&&s.kind==="speaking");
     if(index<0||index>state.stageIndex)throw new ApiError(403,"Энэ хэсэг эхлээгүй байна.");
     // Allow a brief upload grace after recording stops; deadlines still never extend.
-    const start=Date.parse(row.createdAt.toISOString())+state.definition.stages.slice(0,index).reduce((n,s)=>n+s.seconds*1000,0);
-    const end=start+state.definition.stages[index].seconds*1000;
+    // Route-aware lengths: a TOEFL Listening Module 2 is longer on the Upper route.
+    const start=Date.parse(row.createdAt.toISOString())+state.definition.stages.slice(0,index).reduce((n,_,at)=>n+stageSeconds(state,at)*1000,0);
+    const end=start+stageSeconds(state,index)*1000;
     if(Date.now()>end+120000)throw new ApiError(409,"Бичлэг илгээх хугацаа дууссан байна. Татаж авч багшдаа өгнө үү.");
     const mime=request.headers.get("content-type")?.split(";")[0]??"";
     if(!["audio/webm","audio/ogg","audio/mp4"].includes(mime))throw new ApiError(415,"Дэмжихгүй аудио төрөл.");

@@ -14,6 +14,7 @@ import { JapaneseText } from "@/modules/exams/jlpt/text";
 import { JlptPracticeAudio } from "@/modules/exams/jlpt/practice-audio";
 import { HskPracticeAudio } from "@/modules/exams/hsk/practice-audio";
 import { ChineseText, HskMaterial, HskQuestion, hskPart, transcriptLines } from "@/modules/exams/hsk/view";
+import { ToeflPracticeItem } from "@/modules/exams/toefl/practice";
 import { examinerName, isTranscript, transcriptText } from "@/modules/exams/speaking-examiner";
 import { ExaminerPicker, useExaminerVoice } from "@/modules/exams/speaking-examiner-picker";
 import "./practice.css";
@@ -185,6 +186,7 @@ export function PracticeWorkspace({initial,speakingLab,initialSection}:{initial:
   const person=reviewedByPerson(question);
   // Math and physics mocks are Mongolian; the English paper keeps its English questions and answers. Every ЭЕШ explanation is Mongolian.
   const mathPaper=form.subject==="eesh-math",physicsPaper=form.subject==="eesh-physics",entrance=form.subject.startsWith("eesh-");
+  const toefl=form.subject==="toefl";
   const jlpt=form.subject==="jlpt",hsk=form.subject==="hsk",part=hsk?hskPart(question.section,question.hskGroup):undefined;
   const answerLang=jlpt?"ja":hsk?"zh-CN":entrance&&form.subject!=="eesh-english"?"mn":"en",explainLang=entrance?"mn":"en";
   const hasAnswer=Boolean(value.replace(/_/g,"").trim());
@@ -248,14 +250,15 @@ export function PracticeWorkspace({initial,speakingLab,initialSection}:{initial:
           <div className="exam-question-number" ref={heading} tabIndex={-1}><strong>{person?"Task":answerLang==="en"?"Question":"Даалгавар"} {question.label}{hsk?"":" / "+sectionQuestions.length}{question.points?<span className="practice-points"> · {question.points} оноо</span>:null}</strong><button aria-pressed={flags.includes(question.id)} onClick={toggleFlag}>⚑ {flags.includes(question.id)?"Тэмдэглэсэн":"Дараа харах"}</button></div>
           {question.instructions?<section className="practice-context practice-task"><p className="eyebrow">{jlpt?"問題":hsk?"说明 · Заавар":form.subject==="eesh-english"?(/^\d/.test(question.task??"")?"Task "+question.task:question.task??"Task"):"Даалгавар "+(question.task??"")}</p><div lang={answerLang}>{mathPaper||physicsPaper?<MathText text={question.instructions}/>:<RichText text={question.instructions}/>}</div></section>:null}
           {question.groupFigure?<ExamFigureView figure={question.groupFigure}/>:null}
-          {question.context?<section className="practice-context"><p className="eyebrow">{question.contextTitle??"Өгөгдөл"}</p><div lang="en"><RichText text={question.context}/></div></section>:null}
+          {toefl?<ToeflPracticeItem question={question} value={value} disabled={Boolean(reveal)} base={url} onChange={change}/>:null}
+          {question.context&&!toefl?<section className="practice-context"><p className="eyebrow">{question.contextTitle??"Өгөгдөл"}</p><div lang="en"><RichText text={question.context}/></div></section>:null}
           {question.wordBank?.length?<section className="practice-bank" aria-label="Сонголтын сан"><p className="eyebrow">СОНГОЛТУУД</p><ol>{question.wordBank.map(item=><li key={item.label}><span>{item.label}</span><RichText text={item.text}/></li>)}</ol></section>:null}
           {hsk&&part?<div className="practice-hsk"><HskMaterial group={question.hskGroup} readings={readings} example={false}/><HskQuestion question={question} part={part} value={value} disabled={Boolean(reveal)} readings={readings} correct={reveal?.answerValue} onChange={change}/></div>:null}
           {!hsk&&question.prompt?<h2 lang={answerLang}>{mathPaper||physicsPaper?<MathText text={question.prompt}/>:jlpt?<JapaneseText text={question.prompt} readings={readings}/>:form.subject==="eesh-english"?<RichText text={question.prompt}/>:question.prompt}</h2>:null}
           {!hsk&&question.figure?<ExamFigureView figure={question.figure}/>:null}
           {!hsk&&choices.length?<AnswerOptions name={question.id} selected={value} disabled={Boolean(reveal)} lang={answerLang} labels={question.optionLabels} onSelect={change} struck={struck[question.id]} onStrike={option=>toggle(question.id,option)} correctValue={reveal?.answerValue??reveal?.answer} options={choices.map(option=>({value:option,content:optionContent(option)}))}/>:null}
           {person?<div className="exam-written-response"><label htmlFor="practice-text">{question.kind==="speaking"?"Санаа, тэмдэглэл":"Your response"}</label><textarea id="practice-text" lang="en" rows={question.kind==="essay"?15:5} maxLength={question.kind==="essay"?16000:4000} value={value} onChange={event=>change(event.target.value)}/><p className="fine-print">{words(value)} words{question.minWords?" · Minimum "+question.minWords:""}</p></div>:null}
-          {question.kind==="short"||question.kind==="number"?<div className="exam-short-response"><label htmlFor="practice-short">{entrance?"Хариу":question.kind==="number"?"Numerical response — integer, decimal or fraction":"Your answer — follow the word/number limit above"}</label><input id="practice-short" lang={answerLang} autoComplete="off" spellCheck={false} disabled={Boolean(reveal)} maxLength={160} value={value} onChange={event=>change(event.target.value)}/></div>:null}
+          {(question.kind==="short"||question.kind==="number")&&!question.toefl?<div className="exam-short-response"><label htmlFor="practice-short">{entrance?"Хариу":question.kind==="number"?"Numerical response — integer, decimal or fraction":"Your answer — follow the word/number limit above"}</label><input id="practice-short" lang={answerLang} autoComplete="off" spellCheck={false} disabled={Boolean(reveal)} maxLength={160} value={value} onChange={event=>change(event.target.value)}/></div>:null}
 
           {reveal?<section className="practice-feedback" data-result={reveal.correct===null?"review":reveal.correct?"correct":"wrong"} role="status">
             <strong>{reveal.correct===null?"Зөвлөмж":reveal.correct?"Зөв":hasAnswer?"Буруу":"Хариулаагүй"}</strong>

@@ -5,13 +5,15 @@ import { Icon } from "@/modules/workspace/icons";
 import { ScoreRing } from "@/modules/workspace/score";
 import { MathText } from "@/modules/exams/math-text";
 import {
-  EXAM_COUNT, KIND_HINTS, KIND_LABELS, MY_EXAM_LIMITS, QUESTION_KINDS, examKinds, examUpgrade, examsFullMessage, kindOf, readDraft, readSavedExam,
+  EXAM_COUNT, EXAM_TOPIC_IDEAS, KIND_HINTS, KIND_HOWTO, KIND_LABELS, MY_EXAM_LIMITS, QUESTION_KINDS, examKinds, examUpgrade, examsFullMessage, kindOf, readDraft, readSavedExam,
   type ExamDraft, type ExamLanguage, type ExamQuestion, type ExamResult, type GradeItem, type QuestionKind, type SavedExam,
 } from "./contracts";
 import { forgetLegacyExam, legacyExams } from "./store";
+import { boardOf, type Board } from "./arrange";
+import { BoardReview, MatchBoard, OrderBoard } from "./arrange-board";
 import styles from "./my-exams.module.css";
 import { CreditCost, useCredits } from "@/modules/credits/client";
-import { examHold } from "@/modules/credits/pricing";
+import { examCredits, examHold } from "@/modules/credits/pricing";
 import { MaterialImages, useMaterialPick } from "@/modules/ai-images/client";
 import { ProcessingOverlay } from "@/modules/workspace/processing";
 import { PrintSheet, usePrintSheet } from "@/modules/workspace/print-sheet";
@@ -20,6 +22,11 @@ const ACCEPT = ".pdf,.docx,.pptx,.txt,.md,.csv,image/*";
 const ALLOWED = new Set(["pdf", "docx", "pptx", "txt", "md", "csv"]);
 const LETTERS = "ABCDE";
 const UPGRADE = examUpgrade();
+/** How to answer an arranged question; a match or order question whose items could not be read keeps its options and `KIND_HOWTO`. */
+const BOARD_HOWTO: Record<Board["kind"], string> = {
+  match: "Зүүн талын зүйл дээр дараад, түүнд тохирох баруун талын зүйл дээр дарна — хоёрыг шугам холбоно. Бүгдийг холбоход хариулт хадгалагдана. Холбоосыг өөрчлөх бол картыг дахин сонгоно.",
+  order: "Картуудыг ⠿ бариулаас чирж эсвэл ↑ ↓ товчоор эхнийхээс сүүлийнх хүртэл зөв дараалалд оруулна.",
+};
 // "11-р сарын 9" in Ulaanbaatar time (UTC+8 all year), written out by hand: the list is rendered on the server and
 // again in the browser, and a browser without Mongolian locale data would format the same date differently.
 const dateLabel = (time: number) => {
@@ -32,7 +39,7 @@ const clock = (seconds: number) => {
   const safe = Math.max(0, Math.floor(seconds));
   return String(Math.floor(safe / 60)).padStart(2, "0") + ":" + String(safe % 60).padStart(2, "0");
 };
-const kindLabel = (kind: string) => kind === "pdf" ? "PDF" : kind === "docx" ? "Word" : kind === "pptx" ? "PowerPoint" : kind === "image" ? "Зураг" : "Текст";
+const kindLabel = (kind: string) => kind === "pdf" ? "PDF" : kind === "docx" ? "Word" : kind === "pptx" ? "PowerPoint" : kind === "image" ? "Зураг" : kind === "topic" ? "AI сэдэв" : "Текст";
 const EXAM_API = "/api/workspace/my-exams";
 /** A question's format is named only in an exam that mixes formats; an exam of one format needs no label. */
 const mixed = (exam: SavedExam) => examKinds(exam.questions).length > 1;
@@ -62,6 +69,11 @@ async function send(url: string, method: "POST" | "PATCH" | "DELETE", body: unkn
   if (!response.ok) throw new RequestError(typeof data.error === "string" ? data.error : fallback, response.status);
   return data;
 }
+/** Ideas a student can click into the topic box; an empty box gets any topic from the same list on the server. */
+const TOPIC_SAMPLES: Record<ExamLanguage, readonly string[]> = {
+  mn: [EXAM_TOPIC_IDEAS.mn[1], EXAM_TOPIC_IDEAS.mn[7], EXAM_TOPIC_IDEAS.mn[10], EXAM_TOPIC_IDEAS.mn[15]],
+  en: [EXAM_TOPIC_IDEAS.en[1], EXAM_TOPIC_IDEAS.en[7], EXAM_TOPIC_IDEAS.en[10], EXAM_TOPIC_IDEAS.en[16]],
+};
 /** The server's own message when it gave one; a dropped connection or a timeout gets the fallback. */
 const failure = (reason: unknown, fallback: string) => reason instanceof RequestError ? reason.message : fallback;
 
@@ -77,6 +89,9 @@ export function MyExams({ userKey, limit: planLimit, initialExams }: { userKey: 
   const [countText, setCountText] = useState(String(EXAM_COUNT.default));
   const [language, setLanguage] = useState<ExamLanguage>("mn");
   const [structure, setStructure] = useState("");
+  // An exam from a file, or from a topic the AI writes about from its own knowledge (empty: a random school topic).
+  const [mode, setMode] = useState<"file" | "topic">("file");
+  const [topic, setTopic] = useState("");
   // Every format is chosen at first, so a new exam mixes them; at least one always stays chosen.
   const [kinds, setKinds] = useState<QuestionKind[]>([...QUESTION_KINDS]);
   // The server sends the plan's current size with every exam; a plan bought or ended meanwhile shows at once.
@@ -94,6 +109,8 @@ export function MyExams({ userKey, limit: planLimit, initialExams }: { userKey: 
   const active = view.kind === "list" ? null : exams.find(exam => exam.id === view.id) ?? null;
   const full = exams.length >= limit;
   const pictures = picked?.kind === "images" ? picked.images.length : 0;
+  const fromTopic = mode === "topic";
+  const ready = fromTopic ? !full : !!picked && !material.preparing && !full;
 
   useEffect(() => { window.scrollTo({ top: 0, behavior: "auto" }); }, [view]);
 
@@ -167,11 +184,13 @@ export function MyExams({ userKey, limit: planLimit, initialExams }: { userKey: 
     if (!pending) void pick(event.dataTransfer.files);
   }
   async function generate() {
-    if (!picked || pending || material.preparing || full) return;
+    if (!ready || pending) return;
     setPending(true); setError("");
     try {
       const form = new FormData();
-      material.append(form);
+      // A topic is sent instead of a file, never with one; an empty topic lets the server pick one at random.
+      if (fromTopic) form.append("topic", topic.trim());
+      else material.append(form);
       form.append("count", String(count));
       form.append("language", language);
       form.append("structure", structure.trim());
@@ -188,7 +207,7 @@ export function MyExams({ userKey, limit: planLimit, initialExams }: { userKey: 
       if (!exam) throw new Error("AI шалгалт бүрэн ирсэнгүй. Хуудсаа дахин ачаална уу.");
       put(exam);
       setView({ kind: "brief", id: exam.id });
-      material.clear();
+      if (fromTopic) setTopic(""); else material.clear();
     } catch (reason) {
       setError(reason instanceof Error && reason.name !== "TimeoutError" ? reason.message : "Шалгалт үүсгэхэд хэт удлаа. Дахин оролдоно уу.");
     } finally { setPending(false); }
@@ -264,7 +283,7 @@ export function MyExams({ userKey, limit: planLimit, initialExams }: { userKey: 
   // It follows `pending` and `renewing`, which every success, error and timeout clears.
   const processing = <ProcessingOverlay open={pending || renewing !== null}
     title={renewing !== null ? "Шинэ асуулт үүсгэж байна…" : "Шалгалт үүсгэж байна…"}
-    detail={renewing !== null ? "Хадгалсан материалаас шинэ асуулт бэлдэж байна. 20–90 секунд орно." : "Файлыг уншиж, AI асуулт үүсгэж байна. 20–90 секунд орно."} />;
+    detail={renewing !== null ? "Хадгалсан материалаас шинэ асуулт бэлдэж байна. 20–90 секунд орно." : fromTopic ? "AI сэдвээр асуулт бичиж байна. 20–90 секунд орно." : "Файлыг уншиж, AI асуулт үүсгэж байна. 20–90 секунд орно."} />;
 
   if (view.kind === "run" && active) return <Runner key={view.id + ":" + view.startedAt} exam={active} mode={view.mode} startedAt={view.startedAt} onExit={() => show({ kind: "brief", id: active.id })} onDraft={patch => draftChanged(view.id, view.startedAt, patch)} onGraded={graded} />;
   if (view.kind === "brief" && active) return <>{processing}<Briefing exam={active} busy={busy} error={error} onBack={() => show({ kind: "list" })} onStart={mode => void start(active, mode)} onResume={() => active.draft && show({ kind: "run", id: active.id, mode: active.draft.mode, startedAt: active.draft.startedAt })} onResult={() => show({ kind: "result", id: active.id })} onDelete={() => void remove(active)} renewing={renewing === active.id} onRenew={() => void renew(active)} /></>;
@@ -275,13 +294,26 @@ export function MyExams({ userKey, limit: planLimit, initialExams }: { userKey: 
     <header className={styles.head}>
       <p className={styles.kicker}><Icon name="fileExam" size={17} />Файлаас шалгалт</p>
       <h1 className="sr-only">Файлаа оруул.<br /><span>Шалгалт болго.</span></h1>
-      <p className={styles.lead}>Хичээлийн файл эсвэл хуудасны зургаас AI {EXAM_COUNT.min}–{EXAM_COUNT.max} асуулттай шалгалт үүсгэнэ.</p>
+      <p className={styles.lead}>Хичээлийн файл, хуудасны зураг эсвэл зөвхөн сэдвээс AI {EXAM_COUNT.min}–{EXAM_COUNT.max} асуулттай шалгалт үүсгэнэ.</p>
     </header>
 
     <section className={styles.uploadCard} aria-labelledby="mx-upload-heading">
       <h2 id="mx-upload-heading" className="sr-only">Шалгалт үүсгэх файл</h2>
       <div className={styles.source}>
-      <div className={`${styles.drop} ${dragging ? styles.dropActive : ""}`}
+      <div className={`${styles.segmented} ${styles.sourceTabs}`} role="group" aria-label="Шалгалтын материал">
+        <button type="button" aria-pressed={!fromTopic} className={!fromTopic ? styles.segmentActive : undefined} onClick={() => { setMode("file"); setError(""); }} disabled={pending}><Icon name="fileExam" size={15} />Файл, зургаас</button>
+        <button type="button" aria-pressed={fromTopic} className={fromTopic ? styles.segmentActive : undefined} onClick={() => { setMode("topic"); setError(""); }} disabled={pending}><Icon name="spark" size={15} />Сэдвээр (AI)</button>
+      </div>
+      {fromTopic ? <div className={styles.topicBox}>
+        <label className={styles.structure}>
+          <span className={styles.settingLabel}>Сэдэв, хүсэлт <em>сонголтоор · {topic.length}/{MY_EXAM_LIMITS.topicRequest}</em></span>
+          <textarea value={topic} onChange={event => setTopic(event.target.value)} maxLength={MY_EXAM_LIMITS.topicRequest} rows={4} placeholder="жишээ нь: 10-р ангийн физик — Ньютоны хуулиуд, бодлоготой." disabled={pending} aria-describedby="mx-topic-hint" />
+        </label>
+        <div className={styles.topicIdeas} role="group" aria-label="Сэдвийн санаа">
+          {TOPIC_SAMPLES[language].map(idea => <button key={idea} type="button" className={styles.kindChip} onClick={() => setTopic(idea)} disabled={pending}>{idea}</button>)}
+        </div>
+        <p id="mx-topic-hint" className={styles.topicHint}>Файлгүйгээр AI өөрийн мэдлэгээр асуулт бичнэ. Хоосон үлдээвэл санамсаргүй хичээлийн сэдэв сонгоно. Чухал шалгалтын өмнө хариултыг сурах бичигтэйгээ тулгаж үзээрэй.</p>
+      </div> : <div className={`${styles.drop} ${dragging ? styles.dropActive : ""}`}
         onDragEnter={event => { event.preventDefault(); if (!pending) setDragging(true); }}
         onDragOver={event => event.preventDefault()}
         onDragLeave={event => { if (event.currentTarget === event.target) setDragging(false); }}
@@ -298,7 +330,7 @@ export function MyExams({ userKey, limit: planLimit, initialExams }: { userKey: 
           <span>{MY_EXAM_LIMITS.fileBytes / 1024 / 1024} MB хүртэл · PDF, DOCX, PPTX, TXT, MD, CSV эсвэл {material.max} хүртэл хуудасны зураг</span>
           <button type="button" className={styles.choose} onClick={() => input.current?.click()} disabled={pending}>Файл, зураг сонгох</button>
         </>}
-      </div>
+      </div>}
       <label className={styles.structure}>
         <span className={styles.settingLabel}>Шалгалтын бүтэц <em>сонголтоор · {structure.length}/{MY_EXAM_LIMITS.structure}</em></span>
         <textarea value={structure} onChange={event => setStructure(event.target.value)} maxLength={MY_EXAM_LIMITS.structure} rows={2} placeholder="жишээ нь: 5 тодорхойлолт, 10 бодлого; хялбараас хүнд рүү." disabled={pending} />
@@ -326,11 +358,11 @@ export function MyExams({ userKey, limit: planLimit, initialExams }: { userKey: 
           <span className={styles.settingLabel}>Хэл</span>
           <div className={styles.segmented}><button type="button" aria-pressed={language === "mn"} className={language === "mn" ? styles.segmentActive : undefined} onClick={() => setLanguage("mn")} disabled={pending}>Монгол</button><button type="button" aria-pressed={language === "en"} className={language === "en" ? styles.segmentActive : undefined} onClick={() => setLanguage("en")} disabled={pending}>English</button></div>
         </div>
-        <button type="button" className={styles.generate} onClick={() => void generate()} disabled={!picked || pending || material.preparing || full} aria-busy={pending}>
+        <button type="button" className={styles.generate} onClick={() => void generate()} disabled={!ready || pending} aria-busy={pending}>
           {pending ? <><i className={styles.spinner} aria-hidden="true" />Шалгалт үүсгэж байна…</> : <><Icon name="spark" size={18} />Шалгалт үүсгэх</>}
         </button>
         {full ? <p className={styles.limitNote} role="status">{examsFullMessage(limit)}{limit < UPGRADE.exams ? <> <Link href="/workspace/plans">Багц харах</Link></> : null}</p>
-          : <p className={styles.cost}><CreditCost action="exam" cost={examHold(count, pictures)} upTo /></p>}
+          : <p className={styles.cost}><CreditCost action="exam" cost={fromTopic ? examCredits(MY_EXAM_LIMITS.topicRequest, count) : examHold(count, pictures)} upTo /></p>}
         {error ? <p className={styles.error} role="alert">{error}</p> : null}
       </div>
     </section>
@@ -607,6 +639,14 @@ function Runner({ exam, mode, startedAt, onExit, onDraft, onGraded }: {
 
   const go = (next: number) => setIndex(Math.max(0, Math.min(exam.questions.length - 1, next)));
   const select = (option: number) => setAnswers(current => ({ ...current, [question.id]: option }));
+  // An arranged question answers with a number too, or clears its answer while it is not finished.
+  const arrange = (value: number | null) => setAnswers(current => {
+    if (value !== null) return { ...current, [question.id]: value };
+    const next = { ...current };
+    delete next[question.id];
+    return next;
+  });
+  const board = boardOf(question);
   const toggleFlag = () => setFlagged(current => current.includes(question.id) ? current.filter(id => id !== question.id) : [...current, question.id]);
 
   useEffect(() => {
@@ -617,7 +657,7 @@ function Runner({ exam, mode, startedAt, onExit, onDraft, onGraded }: {
       if (event.key === "Escape") { event.preventDefault(); if (submitting) return; if (confirming) setConfirming(false); else onExit(); return; }
       if (["ArrowLeft", "ArrowRight"].includes(event.key)) { event.preventDefault(); go(index + (event.key === "ArrowRight" ? 1 : -1)); return; }
       if (event.key.toLowerCase() === "f") { event.preventDefault(); toggleFlag(); return; }
-      if (/^[1-5]$/.test(event.key)) {
+      if (/^[1-5]$/.test(event.key) && !board) {
         const option = Number(event.key) - 1;
         if (option < question.options.length) { event.preventDefault(); select(option); }
       }
@@ -647,14 +687,18 @@ function Runner({ exam, mode, startedAt, onExit, onDraft, onGraded }: {
               <Icon name="flag" size={16} />{flagged.includes(question.id) ? "Тэмдэглэсэн" : "Тэмдэглэх"}
             </button>
           </div>
-          <p className={styles.prompt}><MathText text={question.prompt} /></p>
-          <div className={styles.options} role="radiogroup" aria-label={`Асуулт ${index + 1}-ийн хариулт`}>
-            {question.options.map((option, optionIndex) => <label key={optionIndex} className={`${styles.option} ${answers[question.id] === optionIndex ? styles.optionOn : ""}`}>
-              <input type="radio" name={question.id} value={optionIndex} checked={answers[question.id] === optionIndex} onChange={() => select(optionIndex)} />
-              <span className={styles.letter} aria-hidden="true">{LETTERS[optionIndex]}</span>
-              <span className={styles.optionText}><MathText text={option} /></span>
-            </label>)}
-          </div>
+          <p className={styles.prompt}><MathText text={board ? board.head || KIND_LABELS[board.kind] : question.prompt} /></p>
+          {board ? <p className={styles.howto}><b>Яаж хариулах вэ?</b> {BOARD_HOWTO[board.kind]}</p>
+            : KIND_HOWTO[kindOf(question)] ? <p className={styles.howto}><b>Яаж хариулах вэ?</b> {KIND_HOWTO[kindOf(question)]}</p> : null}
+          {board?.kind === "match" ? <MatchBoard key={question.id} question={question} board={board} value={answers[question.id]} onAnswer={arrange} />
+            : board?.kind === "order" ? <OrderBoard key={question.id} question={question} board={board} value={answers[question.id]} onAnswer={arrange} />
+              : <div className={styles.options} role="radiogroup" aria-label={`Асуулт ${index + 1}-ийн хариулт`}>
+                {question.options.map((option, optionIndex) => <label key={optionIndex} className={`${styles.option} ${answers[question.id] === optionIndex ? styles.optionOn : ""}`}>
+                  <input type="radio" name={question.id} value={optionIndex} checked={answers[question.id] === optionIndex} onChange={() => select(optionIndex)} />
+                  <span className={styles.letter} aria-hidden="true">{LETTERS[optionIndex]}</span>
+                  <span className={styles.optionText}><MathText text={option} /></span>
+                </label>)}
+              </div>}
           <div className={styles.nav}>
             <button type="button" className={styles.ghost} onClick={() => go(index - 1)} disabled={index === 0 || submitting}><Icon name="back" size={17} />Өмнөх</button>
             {index < exam.questions.length - 1 ? <button type="button" className={styles.primary} onClick={() => go(index + 1)} disabled={submitting}>Дараах<Icon name="arrow" size={17} /></button>
@@ -671,7 +715,7 @@ function Runner({ exam, mode, startedAt, onExit, onDraft, onGraded }: {
           </div>
         </div> : null}
         {error ? <div className={styles.errorBox} role="alert"><p>{error}</p><button type="button" className={styles.ghost} onClick={() => { submitted.current = false; setSubmitting(false); void submit(); }}>Дахин оролдох</button></div> : null}
-        <p className={styles.keys}>1–{question.options.length} — хариулах · ← → — асуулт солих · F — тэмдэглэх · Esc — гарах</p>
+        <p className={styles.keys}>{board ? "" : `1–${question.options.length} — хариулах · `}← → — асуулт солих · F — тэмдэглэх · Esc — гарах</p>
       </section>
 
       <aside className={styles.sheet} aria-labelledby="mx-sheet-title">
@@ -753,6 +797,7 @@ function Result({ exam, result, busy, error, onBack, onRetake, onDelete, renewin
 
       {shown.length ? <div className={styles.reviewList}>{shown.map(({ question, order, result: item }) => {
         const value = status(item);
+        const board = boardOf(question);
         return <article key={question.id} className={styles.review} data-status={value}>
           <div className={styles.reviewHead}>
             <span className={styles.questionNum}>Асуулт {order + 1}</span>
@@ -760,15 +805,15 @@ function Result({ exam, result, busy, error, onBack, onRetake, onDelete, renewin
             {named ? <KindTag question={question} /> : null}
             {question.topic ? <span className={styles.topic}>{question.topic}</span> : null}
           </div>
-          <p className={styles.prompt}><MathText text={question.prompt} /></p>
-          <ul className={styles.reviewOptions}>
+          <p className={styles.prompt}><MathText text={board && item ? board.head || KIND_LABELS[board.kind] : question.prompt} /></p>
+          {board && item ? <BoardReview question={question} board={board} answer={item.answer} chosen={item.chosen} /> : <ul className={styles.reviewOptions}>
             {question.options.map((option, optionIndex) => <li key={optionIndex}
               className={[optionIndex === item?.answer ? styles.right : "", optionIndex === item?.chosen && optionIndex !== item?.answer ? styles.mine : ""].filter(Boolean).join(" ")}>
               <span className={styles.letter}>{LETTERS[optionIndex]}</span>
               <span className={styles.optionText}><MathText text={option} /></span>
               {optionIndex === item?.answer ? <span className={styles.reviewMark}>Зөв хариулт</span> : optionIndex === item?.chosen ? <span className={styles.reviewMark}>Таны хариулт</span> : null}
             </li>)}
-          </ul>
+          </ul>}
           {item ? <div className={styles.explain}><span>Тайлбар</span><p><MathText text={item.explanation} /></p></div> : null}
         </article>;
       })}</div> : <div className={styles.empty}><h3>Энэ шүүлтэд асуулт алга</h3><p>Бүгд гэсэн шүүлтээр бүх асуултаа харна уу.</p></div>}

@@ -40,7 +40,7 @@ with sync_playwright() as p:
     errors=[]
     page.on("pageerror",lambda e:errors.append(str(e)))
     page.goto(BASE+"/exams")
-    expect(page.locator(".library-list .exam-card")).to_have_count(5)
+    expect(page.locator(".library-list .exam-card")).to_have_count(6)
     for program,prefix in [("sat","sat-full"),("ielts","ielts-academic")]:
         page.goto(BASE+"/exams/"+program)
         expect(page.locator(".mock-variant")).to_have_count(LAST[program])
@@ -174,30 +174,23 @@ with sync_playwright() as p:
             page.goto(BASE+"/exams/attempts/"+attempt_id)
             expect(page.locator(".exam-results")).to_be_visible()
             print(slug+": lifecycle, access, save/resume, exact report and media passed",flush=True)
-    # The retired SAT and IELTS plans are not sold. The Гадаад хэл plan opens a mock once it is picked, 15 a plan month.
+    # The retired SAT and IELTS plans are not sold. Гадаад хэл Pro opens every non-ЭЕШ mock with no picking.
     for program in ["sat","ielts"]:
         assert other.request.post(BASE+"/api/subscriptions/orders",headers=ORIGIN,data={"program":program}).status==404
+    assert other.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"sat-full-02"}).status==402,"a plan mock opens only with the plan"
     order=other.request.post(BASE+"/api/subscriptions/orders",headers=ORIGIN,data={"program":"language"})
-    assert order.status==200,order.text()
+    assert order.status==200 and order.json()["amountMnt"]==59900,order.text()
     assert other.request.post(BASE+"/api/subscriptions/orders/"+order.json()["id"]+"/confirm",headers=ORIGIN,data={"decision":"success"}).status==200
     def pick(slug):
         return other.request.post(BASE+"/api/mock-picks",headers=ORIGIN,data={"slug":slug})
-    assert other.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"sat-full-02"}).status==402,"a plan mock opens only once picked"
     assert pick("eesh-math-2024-m1").status==402,"Гадаад хэл never opens ЭЕШ"
-    picked=[f"sat-full-{n:02}" for n in range(2,LAST["sat"]+1)]+[f"ielts-academic-{n:02}" for n in range(2,9)]
-    assert len(picked)==15
-    for index,slug in enumerate(picked):
+    opened=[f"sat-full-{n:02}" for n in range(2,LAST["sat"]+1)]+[f"ielts-academic-{n:02}" for n in range(2,13)]
+    for slug in opened:
         chosen=pick(slug)
-        assert chosen.status==200 and chosen.json()["kind"]=="picked" and chosen.json()["month"]["used"]==index+1,(slug,chosen.text())
+        assert chosen.status==200 and chosen.json()["kind"]=="plan",(slug,chosen.text())
         entitled=other.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":slug})
         assert entitled.status==200,entitled.text()
         assert state(other,BASE+"/api/mock-attempts/"+entitled.json()["id"])["program"]==slug.split("-")[0]
-    # Picking a picked mock again uses nothing; the sixteenth new mock this plan month is refused.
-    again=pick("sat-full-02")
-    assert again.status==200 and again.json()["month"]["used"]==15,again.text()
-    full=pick("ielts-academic-12")
-    assert full.status==409 and "15 mock-ийн сонголт дууссан" in full.json()["error"],full.text()
-    assert other.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"ielts-academic-12"}).status==402
     assert other.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"eesh-math-2024-m1"}).status==402
     page.goto(BASE+"/exams")
     for theme in ["light","dark"]:

@@ -55,7 +55,7 @@ with sync_playwright() as p:
     expect(page.get_by_role("heading", name="Writing & Speaking workshop")).to_be_visible()
     # The library lists five categories (incl. HSK); SAT collects nine mocks and IELTS twelve.
     page.goto(BASE + "/exams")
-    expect(page.locator(".library-list .exam-card")).to_have_count(5)
+    expect(page.locator(".library-list .exam-card")).to_have_count(6)
     for program, prefix, last in [("sat", "sat-full", 9), ("ielts", "ielts-academic", 12)]:
         page.goto(BASE + "/exams/" + program)
         expect(page.locator(".mock-variant")).to_have_count(last)

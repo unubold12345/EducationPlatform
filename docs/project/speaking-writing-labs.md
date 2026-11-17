@@ -89,10 +89,10 @@ request, validated against the fixed list; only the greeting names the examiner,
 the Speaking Lab pilot switch (local pilot, or hosted pilot with `SPEAKING_LAB_ENABLED=true`).
 Students pick an IELTS Task 2 essay, a General Task 1 letter (18 original bank prompts) or free
 writing, write with a live word target and optional soft timer, then ask DeepSeek for ideas, a quick
-grammar check or full feedback. Corrections must quote the student's text exactly or they are
-dropped on the server; each one can be applied, skipped or applied all at once. Full feedback shows
-an unofficial four-criteria band estimate (overall computed server-side with IELTS half-band
-rounding), vocabulary upgrades, strengths, next steps and one rewritten passage.
+grammar check or the full review ("Бүрэн үнэлгээ", the examiner review on DeepSeek since 2026-11-17; see below).
+Corrections must quote the student's text exactly or they are dropped on the server; each one can be applied,
+skipped or applied all at once. The old quick report (`action: "feedback"` on `POST /api/labs/ielts-writing`, 6
+credits: bands, words, strengths, next steps, one rewrite) stays only for the mobile app.
 - Server checks: login, verified email, same origin, strict input shape, bank prompts resolved on the
   server, minimum words, active timed-exam denial (before and after the provider call), and a daily
   40-request budget with one request in flight per student.
@@ -104,3 +104,71 @@ rounding), vocabulary upgrades, strengths, next steps and one rewritten passage.
   apply suggestions from a popover, ignore an issue or add words to a per-browser dictionary.
   Harper's `WorkerLinter` cannot load the bundler-emitted wasm from its blob worker, so the studio
   uses `LocalLinter` on the main thread after a 320 ms typing pause.
+- Sidebar height (2026-11-18): the paper sets the row height and the sidebar fills it (`contain: size`), at most the screen
+  height; below 960 px it is at most `min(640px, 80vh)`. Fixes scroll inside it under a sticky count and "Бүгдийг засах",
+  and clicking a mark scrolls only the sidebar to its card, never the page.
+
+Owner rule 2026-11-18: student-facing text never names an AI provider or model (no Claude, Anthropic, Opus or DeepSeek).
+The two kinds are shown as "Бүрэн үнэлгээ" (DeepSeek) and "Шинжээчийн үнэлгээ" (Claude, badge "Хамгийн хүчтэй AI"); notices
+say the text goes to "AI". Admin cost pages (owner only) still name DeepSeek. API replies keep an unused `provider` field.
+
+#### Full review on DeepSeek (2026-11-17)
+
+Owner request, after a side-by-side test of the examiner prompt on Claude Opus 5.5, DeepSeek Flash and DeepSeek V4-Pro over
+three essays (bands within half a band of each other; Opus alone caught the inconsistent "partly agree" position; Flash
+55–62 s at $0.013–0.014 a review, V4-Pro 162–232 s with weaker Mongolian): make the studio's DeepSeek review as strong as
+Claude's and keep Claude as a plan feature.
+- The studio's "Бүрэн үнэлгээ" button (and Ctrl+Enter) sends the draft (expert input shape; at least 50 words, free writing
+  needs its topic) to `POST /api/labs/ielts-writing/review` (`createStrongReview`, `maxDuration` 240). The same examiner rules
+  (`expertSystem`) plus the JSON shape spelled out (`strongSystem`, `STRONG_SHAPE`; DeepSeek JSON mode takes no schema) go to
+  `deepseek-flash` (or `DEEPSEEK_MODEL`) with thinking on, `max_tokens` from the price list, a 200 s timeout, and the reply
+  goes through the same `normalizeExpertReview`.
+- Price: AI action `writing-review`, 4,000 in / 16,000 out at the peak list price = 21 credits, held first and returned on
+  any failure. One review in flight and 20 a day (`RateLimit` key `education-strong-review:<user>:<day>`).
+- Saved as an `EssayReview` with `kind: "strong"` (migration `20261117210000_essay_review_kind`; existing rows are `expert`).
+  Owner rule 2026-11-18: the review never shows in the sidebar. A processing overlay covers the wait, then the report opens
+  (and scrolls into view) in the review section, which lists both kinds (DeepSeek / Claude tags); its corrections apply to
+  the draft from there. The band goes to the "Ахиц" history. The sidebar keeps only ideas and the grammar check, and hides a
+  full report saved there before this change.
+- `DEEPSEEK_BASE_URL` (default `https://api.deepseek.com`) is read only here, so `scripts/check.mjs` points it at the
+  `writing_expert` suite's mock.
+- First live run (2026-11-17, 3001, the same 212-word essay Claude graded 6.0): 34 s, 21 credits, bands 5.5/6/5.5/5.5 (overall
+  5.5), 15 corrections, 10 vocabulary items, a 239-word model answer.
+
+#### Expert review by Claude Opus (2026-11-17)
+
+Owner request: a stronger essay reviewer on Claude Opus; quota revised the same day to none for free accounts, Basic 2, Pro 5
+(first version: free once, Basic 5, Pro 12). The "Шинжээчийн үнэлгээ"
+section under the studio (`expert-client.tsx`, `expert.module.css`) sends the current draft (`task`, `promptId`, `topic`,
+`essay`, `language`; at least 100 words, free writing needs its topic) to `POST /api/labs/ielts-writing/expert`
+(same-origin, session, verified email, no timed mock, `maxDuration` 300).
+- Model and call (`expert-service.ts`): `claude-opus-5-5` through `@anthropic-ai/sdk` (1.9; sends the key as a Bearer token,
+  API version 2026-10-21), streamed to `finalMessage()`, `max_tokens` 32,000, `output_config.effort` high and a JSON schema
+  (`EXPERT_SCHEMA`), and server-side fallback `fallbacks: "default"` (beta `server-side-fallback-2026-07-01`) so a declined
+  request is retried on Anthropic's recommended model. A `refusal`, a cut-off reply or an unusable one is an error, and no
+  review is counted. Provider error bodies are never shown. `ANTHROPIC_API_KEY` (server only) must be set; without it the
+  route answers 503 "одоогоор холбогдоогүй".
+- Review (`expert.ts`, pure): summary; four criterion bands with evidence quoting the text and "what lifts it half a band";
+  the overall band by IELTS rounding; three priorities; paragraph-by-paragraph notes; up to 25 corrections (kept only when the
+  original is in the text, and applied to the draft with one click); up to 10 vocabulary upgrades; and a band 8–9 model answer
+  that keeps the student's ideas. Explanations are in the studio's language, and English stays English. The prompt
+  calibrates bands (most learner texts 5.0–6.5; never inflate) and treats the task and the text as data.
+- Quota (server only, `expertQuota`): the largest active plan's `expertReviews` (`plans.ts`: Basic 2, Pro 5, retired IELTS
+  5; ЭЕШ and SAT 0) counted over its current plan month (`planMonth`); without one, `EXPERT_LIMITS.freeReviews` = 0, so a free
+  account sees "Basic, Pro багцад →" instead of a counter. Only `kind: "expert"` rows count. It is read inside a one-at-a-time lease (`RateLimit` key `education-expert-review:<user>`, 1-second
+  cool-down), and a review counts only once saved. Plans page row "Claude Opus эссэ шинжээч"; Basic/Pro card lines.
+- Storage: `EssayReview` (migration `20261117200000_essay_reviews`) keeps the prompt, essay, review JSON, the model that
+  answered, and input/output tokens. Rows are the quota, so there is no delete. Since 2026-11-18 the overall band is also its
+  own column (`overall`, migration `20261118090000_essay_review_overall`, backfilled from the stored review), so the list
+  reads only small columns, never the review JSON (about 15 KB a review). Sizing (owner question 2026-11-18): about 8–17 KB a
+  row on disk, so 100,000 reviews is roughly 1–1.7 GB; lookups use the `(userId, createdAt)` index. If storage ever matters,
+  delete rows older than about 12 months: the Claude quota only counts the current plan month. The page lists the last 24
+  (`expertLibrary`), and `GET …/expert/[id]` reopens one for its owner only. Cost at list price is
+  `expertCostUsd` ($4 / $20 per million tokens).
+- Tests: `tests/writing-expert.test.mjs`; `writing_expert` browser suite (in `check -- writing`) runs the real server against a
+  local Anthropic mock. `scripts/check.mjs` now always starts the test server with a fake key and
+  `ANTHROPIC_BASE_URL=http://127.0.0.1:8471`, so no browser suite can reach Claude.
+- First live run (2026-11-17, 3001, a 212-word Task 2 essay): 85 s, 2,876 input and 6,795 output tokens = $0.147 at list
+  price (about 680 reviews per $100). The review had bands 5.5/6/6/6 (overall 6.0), noted the 250-word shortfall, gave 16
+  corrections (all found in the text), 10 vocabulary items and a 299-word model answer. Bands are practice estimates, not
+  official IELTS scores.

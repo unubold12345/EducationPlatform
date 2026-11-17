@@ -17,6 +17,8 @@ export type BriefingAccess = {
   pick: PickState | null;
   /** When this plan month's pick ends, for a picked mock. */
   pickedUntil: string | null;
+  /** When a one-time purchase of this mock ends (7 days from payment), null for a plan, free or permanent access. */
+  boughtUntil: string | null;
   plan: PlanOffer | null;
   activeAttemptId?: string;
   /** Why practice is closed, when it is. */
@@ -29,8 +31,8 @@ export async function briefingAccess(userId: string | null, slug: string, progra
   const free = isFreeMock(slug);
   const sale = free ? undefined : salePlanFor(program);
   const priced = sale ? await pricedPlan(sale.program) : undefined;
-  const plan = priced ? { program: priced.program, title: priced.title, amountMnt: priced.amountMnt, picks: priced.mockPicks } : null;
-  if (!userId) return { hasAccess: false, practice: false, free, pick: null, pickedUntil: null, plan, locked: free ? "Нэвтэрсний дараа үнэгүй нээгдэнэ." : undefined, access: { kind: "none" } };
+  const plan = priced ? { program: priced.program, title: priced.title, amountMnt: priced.amountMnt, regularMnt: priced.regularMnt, picks: priced.mockPicks } : null;
+  if (!userId) return { hasAccess: false, practice: false, free, pick: null, pickedUntil: null, boughtUntil: null, plan, locked: free ? "Нэвтэрсний дараа үнэгүй нээгдэнэ." : undefined, access: { kind: "none" } };
   const [access, sitting] = await Promise.all([
     mockAccess(userId, slug, program),
     getDb().mockAttempt.findFirst({ where: { userId, slug, status: "IN_PROGRESS" }, select: { id: true, subscriptionAccess: true } }),
@@ -39,7 +41,7 @@ export async function briefingAccess(userId: string | null, slug: string, progra
   const pick = access.kind === "pickable" || access.kind === "full" ? { kind: access.kind, used: access.month.used, limit: access.month.limit, end: access.month.end } : null;
   return {
     hasAccess: opens || Boolean(sitting?.subscriptionAccess), practice: opens, free, pick,
-    pickedUntil: access.kind === "picked" ? access.month.end : null, plan, activeAttemptId: sitting?.id,
+    pickedUntil: access.kind === "picked" ? access.month.end : null, boughtUntil: access.kind === "purchase" ? access.expiresAt : null, plan, activeAttemptId: sitting?.id,
     locked: pick ? (pick.kind === "full" ? "Энэ сарын сонголт дууссан." : "Энэ mock-ийг сонгосны дараа нээгдэнэ.") : undefined,
     access,
   };

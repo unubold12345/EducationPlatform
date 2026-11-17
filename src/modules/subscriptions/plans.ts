@@ -1,7 +1,10 @@
-// Monthly plans (owner rule 2026-11-13): three plans in all — the free account, ЭЕШ and Гадаад хэл.
-// - entrance (ЭЕШ): every ЭЕШ mock and its practice mode, no limit.
-// - language (Гадаад хэл): any mock that is not ЭЕШ (SAT, IELTS, JLPT, HSK), at most `mockPicks` (15) per plan
-//   month; a picked mock can be sat again and practised for the rest of that plan month (see mock-access.ts).
+// Monthly plans (owner rules 2026-11-13 and 2026-11-17): the free account plus three plans.
+// - entrance (ЭЕШ, 29,900): every ЭЕШ mock and its practice mode, no limit.
+// - language_basic (Гадаад хэл Basic, 29,900): every mock that is not ЭЕШ (SAT, IELTS, JLPT, HSK), no limit, the IELTS
+//   workshops, 1,200 AI credits, a 1,500-word bank and 5 saved file exams.
+// - language (Гадаад хэл Pro, 59,900): the same mocks and workshops with 3,000 AI credits, a 3,000-word bank and 15 saved
+//   file exams. The key stays "language" so subscriptions bought before the rename keep working. Until 2026-11-17 this
+//   plan opened 15 picked mocks a month; the pick machinery (`mockPicks`, mock-access.ts) stays for any plan that sets it.
 // The IELTS and SAT plans are retired: they are no longer sold or renewed, and a subscription bought before the
 // change keeps its access, AI credits and limits until it ends (`legacyPlans`).
 //
@@ -10,33 +13,37 @@
 // free bank is VOCABULARY_LIMITS.freeWords (see src/modules/vocabulary/contracts.ts).
 // savedExams: how many exams made from a file the student keeps while the plan is active; the largest active
 // plan wins and a free account keeps MY_EXAM_LIMITS.freeExams (see src/modules/my-exams/contracts.ts).
+// readingPractices: how many Reading Lab practices the student keeps (owner rule 2026-11-17: Basic 5, Pro 15); the
+// largest active plan wins and a free account keeps READING_LIMITS.freePractices (see reading-lab/state.ts).
+// expertReviews: Essay Studio expert reviews by Claude Opus a plan month (owner rule 2026-11-17, revised the same day: Basic 2,
+// Pro 5); 0 means the plan adds none, and an account without one gets EXPERT_LIMITS.freeReviews (now 0; see writing-lab/expert.ts).
 // exams: the exam programmes whose mocks the plan opens. mockPicks: mocks a student may pick per plan month,
 // null when every covered mock is open. workshops: the IELTS Writing & Speaking workshops.
-export type SubscriptionProgram = "entrance" | "language" | "ielts" | "sat";
-type ExamKey = "sat" | "ielts" | "entrance" | "jlpt" | "hsk";
+export type SubscriptionProgram = "entrance" | "language" | "language_basic" | "ielts" | "sat";
+type ExamKey = "sat" | "ielts" | "entrance" | "jlpt" | "hsk" | "toefl";
 type PlanDefinition = {
   program: SubscriptionProgram; title: string; shortTitle: string; amountMnt: number; aiCredits: number;
-  vocabularyWords: number; savedExams: number; symbol: string; description: string; features: readonly string[];
+  vocabularyWords: number; savedExams: number; readingPractices: number; expertReviews: number; symbol: string; description: string; features: readonly string[];
   exams: readonly ExamKey[]; mockPicks: number | null; workshops: boolean;
 };
 
-/** Mocks a Гадаад хэл student may pick in one plan month (owner rule 2026-11-13). */
-export const LANGUAGE_MOCK_PICKS = 15;
-
 export const subscriptionPlans = [
-  { program:"entrance", title:"ЭЕШ", shortTitle:"ЭЕШ", amountMnt:40000, aiCredits:1500, vocabularyWords:100, savedExams:5, symbol:"∑", exams:["entrance"], mockPicks:null, workshops:false,
+  { program:"entrance", title:"ЭЕШ", shortTitle:"ЭЕШ", amountMnt:29900, aiCredits:1200, vocabularyWords:500, savedExams:5, readingPractices:5, expertReviews:0, symbol:"∑", exams:["entrance"], mockPicks:null, workshops:false,
     description:"ЭЕШ-ийн бүх хичээлийн бүтэн mock шалгалт, дадлага хязгааргүй.",
     features:["Бүх 194 ЭЕШ mock: математик 55, физик 60, хими 18, биологи 21, англи 40", "Хязгааргүй өгөх, цаггүй дадлага", "AI туслах, тайлбартай үр дүн", "Хадгалсан явц, дахин өгөх боломж"] },
-  { program:"language", title:"Гадаад хэл", shortTitle:"Гадаад хэл", amountMnt:60000, aiCredits:3000, vocabularyWords:3000, savedExams:15, symbol:"Aa", exams:["sat","ielts","jlpt","hsk"], mockPicks:LANGUAGE_MOCK_PICKS, workshops:true,
-    description:"SAT, IELTS, JLPT, HSK-ийн mock-оос сар бүр 15-ыг сонгож өгнө.",
-    features:["ЭЕШ-ээс бусад бүх mock: SAT, IELTS, JLPT, HSK", `Сар бүр ${LANGUAGE_MOCK_PICKS} mock сонгоно; сонгосон mock-оо тэр сардаа дахин өгч, дадлага хийнэ`, "IELTS Writing & Speaking workshop", "AI туслах, тайлбартай үр дүн"] },
+  { program:"language_basic", title:"Гадаад хэл Basic", shortTitle:"Гадаад хэл Basic", amountMnt:29900, aiCredits:1200, vocabularyWords:1500, savedExams:5, readingPractices:5, expertReviews:2, symbol:"Aa", exams:["sat","ielts","toefl","jlpt","hsk"], mockPicks:null, workshops:true,
+    description:"SAT, IELTS, TOEFL, JLPT, HSK-ийн бүх mock, IELTS workshop. Үндсэн багц.",
+    features:["ЭЕШ-ээс бусад бүх mock: SAT, IELTS, TOEFL, JLPT, HSK", "Хязгааргүй өгөх, цаггүй дадлага", "Бүх IELTS Writing & Speaking workshop", "Шинжээчийн эссэ үнэлгээ: сард 2", "AI туслах, тайлбартай үр дүн"] },
+  { program:"language", title:"Гадаад хэл Pro", shortTitle:"Гадаад хэл Pro", amountMnt:59900, aiCredits:3000, vocabularyWords:3000, savedExams:15, readingPractices:15, expertReviews:5, symbol:"Aa+", exams:["sat","ielts","toefl","jlpt","hsk"], mockPicks:null, workshops:true,
+    description:"Basic-ийн бүх боломж, нэмээд 3,000 AI кредит, 3,000 үгийн сан, 15 файлаас шалгалт.",
+    features:["ЭЕШ-ээс бусад бүх mock: SAT, IELTS, TOEFL, JLPT, HSK", "Хязгааргүй өгөх, цаггүй дадлага", "Бүх IELTS Writing & Speaking workshop", "Шинжээчийн эссэ үнэлгээ: сард 5", "AI туслах, тайлбартай үр дүн"] },
 ] as const satisfies readonly PlanDefinition[];
 
 /** Retired 2026-11-13: not sold or renewed; active subscriptions keep these rules until they end. */
 export const legacyPlans = [
-  { program:"ielts", title:"IELTS (хуучин багц)", shortTitle:"IELTS", amountMnt:60000, aiCredits:3000, vocabularyWords:3000, savedExams:15, symbol:"Aa", exams:["ielts"], mockPicks:null, workshops:true,
+  { program:"ielts", title:"IELTS (хуучин багц)", shortTitle:"IELTS", amountMnt:60000, aiCredits:3000, vocabularyWords:3000, savedExams:15, readingPractices:15, expertReviews:5, symbol:"Aa", exams:["ielts"], mockPicks:null, workshops:true,
     description:"Хуучин IELTS багц: хугацаа дуустал IELTS mock, workshop нээлттэй.", features:["12 бүтэн IELTS Academic mock", "4 Writing & Speaking workshop"] },
-  { program:"sat", title:"SAT (хуучин багц)", shortTitle:"SAT", amountMnt:60000, aiCredits:2000, vocabularyWords:3000, savedExams:15, symbol:"x²", exams:["sat"], mockPicks:null, workshops:false,
+  { program:"sat", title:"SAT (хуучин багц)", shortTitle:"SAT", amountMnt:60000, aiCredits:2000, vocabularyWords:3000, savedExams:15, readingPractices:15, expertReviews:0, symbol:"x²", exams:["sat"], mockPicks:null, workshops:false,
     description:"Хуучин SAT багц: хугацаа дуустал SAT mock нээлттэй.", features:["6 бүтэн Digital SAT mock"] },
 ] as const satisfies readonly PlanDefinition[];
 
@@ -50,8 +57,10 @@ export function findSubscriptionPlan(program:unknown) { return subscriptionPlans
 export function findAnyPlan(program:unknown): PlanDefinition | undefined { return allPlans.find(plan=>plan.program===program); }
 /** Whether a plan opens mocks of an exam programme (picked or not). */
 export function planCovers(plan:Pick<PlanDefinition,"exams">, examProgram:string) { return (plan.exams as readonly string[]).includes(examProgram); }
-/** The plan on sale that opens an exam programme's mocks, for "or take the plan" links. */
-export function salePlanFor(examProgram:string) { return subscriptionPlans.find(plan=>planCovers(plan,examProgram)); }
+/** The cheapest plan on sale that opens an exam programme's mocks, for "or take the plan" links. */
+export function salePlanFor(examProgram:string) { return subscriptionPlans.filter(plan=>planCovers(plan,examProgram)).sort((a,b)=>a.amountMnt-b.amountMnt)[0]; }
+/** Where a student goes to use a plan: the ЭЕШ programme page, or the exams hub for the language plans. */
+export function planHomeHref(program:string) { return program==="entrance"||program==="ielts"||program==="sat" ? "/programs/"+program : "/exams"; }
 
 export function addCalendarMonth(value:Date) {
   if(!Number.isFinite(value.getTime()))throw new RangeError("Invalid date");
@@ -82,6 +91,29 @@ export function formatBillingDate(value:string) {
 }
 // Admin price edits stay in whole hundreds of tugrik within a sane monthly range.
 export const PLAN_PRICE_LIMITS = { min: 1000, max: 1000000, step: 100 } as const;
+export const PLAN_SALE_MIN = PLAN_PRICE_LIMITS.min;
 export function validPlanPrice(value: unknown): value is number {
   return typeof value === "number" && Number.isInteger(value) && value >= PLAN_PRICE_LIMITS.min && value <= PLAN_PRICE_LIMITS.max && value % PLAN_PRICE_LIMITS.step === 0;
+}
+
+/** A stored sale on a plan price: the sale price and when it ends (null = until an admin removes it). */
+export type PlanSale = { saleAmountMnt: number | null; saleEndsAt: Date | null };
+/**
+ * The price charged now: the sale price while a sale is set, cheaper than the regular price and not ended; otherwise
+ * the regular price. The sale never raises a price, so a stale row cannot overcharge.
+ */
+export function chargedPrice(regularMnt: number, sale: PlanSale | null | undefined, now = new Date()) {
+  if (!sale || sale.saleAmountMnt === null || sale.saleAmountMnt >= regularMnt) return regularMnt;
+  if (sale.saleEndsAt && sale.saleEndsAt.getTime() <= now.getTime()) return regularMnt;
+  return sale.saleAmountMnt;
+}
+/** A sale price an admin may set: whole hundreds, within the price limits and below the regular price. */
+export function validSalePrice(value: unknown, regularMnt: number): value is number {
+  return validPlanPrice(value) && value < regularMnt;
+}
+/** The end of a sale day (23:59:59.999 Ulaanbaatar) from a "YYYY-MM-DD" date; null for anything else or a past day. */
+export function saleEndFromDate(value: unknown, now = new Date()): Date | null {
+  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+  const end = new Date(`${value}T23:59:59.999+08:00`);
+  return Number.isFinite(end.getTime()) && end.getTime() > now.getTime() ? end : null;
 }

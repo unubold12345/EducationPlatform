@@ -196,7 +196,7 @@ export function SpeakingReportCard({base,recordId,transcripts,note}:{base:string
    <PartnerMark voice={voice} className="exam-examiner-face"/>
    <div>
     <h2 id="exam-speaking-report-title">Speaking · AI тайлан</h2>
-    <p>{examinerName(voice)} таны {transcripts.length} хариултын бичвэрээс fluency, vocabulary, grammar-ийн ойролцоо band, засах зүйлс, жишээ хариулт гаргана. Бичвэр DeepSeek рүү илгээгдэнэ. Энэ нь AI-ийн тооцоолол бөгөөд албан ёсны оноо биш; дуудлагыг үнэлэхгүй, {note}.</p>
+    <p>{examinerName(voice)} таны {transcripts.length} хариултын бичвэрээс fluency, vocabulary, grammar-ийн ойролцоо band, засах зүйлс, жишээ хариулт гаргана. Бичвэр AI руу илгээгдэнэ. Энэ нь AI-ийн тооцоолол бөгөөд албан ёсны оноо биш; дуудлагыг үнэлэхгүй, {note}.</p>
    </div>
   </div>
   <div className="exam-speaking-report-form">

@@ -44,6 +44,23 @@
         "set BETTER_AUTH_URL=http://localhost:3006&& npx next start -p 3006"
       ],
       "port": 3006
+    },
+    {
+      "name": "mobile-web",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": [
+        "/c",
+        "cd /d ../educationplatform-mobile&& set BROWSER=none&& npx expo start --web --port 8081"
+      ],
+      "port": 8081
+    },
+    {
+      "name": "mobile-proxy",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "../educationplatform-mobile/scripts/dev-proxy.mjs"
+      ],
+      "port": 8090
     }
   ]
 }

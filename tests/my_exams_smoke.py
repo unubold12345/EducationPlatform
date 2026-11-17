@@ -529,7 +529,7 @@ with sync_playwright() as p:
     clock_page.screenshot(path=str(ART / "my-exams-limit-desktop.png"), full_page=True)
     full = upload(clock_context.request)
     assert full.status == 409, full.status
-    assert "5 шалгалтын хязгаарт" in full.json()["error"] and "Гадаад хэл багцтай бол 15" in full.json()["error"], full.json()
+    assert "5 шалгалтын хязгаарт" in full.json()["error"] and "Гадаад хэл Pro багцтай бол 15" in full.json()["error"], full.json()
     # Clearing the browser changes nothing: the exams and the limit are on the account.
     clock_page.evaluate("() => { localStorage.clear(); sessionStorage.clear(); }")
     clock_page.reload(wait_until="domcontentloaded")
@@ -559,8 +559,9 @@ with sync_playwright() as p:
     clock_context.close()
 
     # A mixed-format exam on its own account: the briefing counts each format, every question names its format,
-    # a true/false statement has two options answered with 1–2, list prompts keep their lines, grading is the
-    # same, and the review and the paper name the formats. Phone widths do not scroll sideways.
+    # a true/false statement has two options answered with 1–2, a matching question is answered by connecting cards
+    # and a sequence by dragging and moving steps, grading is the same, and the review and the paper name the
+    # formats. Phone widths do not scroll sideways.
     mixed_context = browser.new_context(viewport={"width": 1280, "height": 900}, color_scheme="light")
     mixed_page = mixed_context.new_page()
     mixed_page.on("pageerror", lambda error: errors.append(str(error)))
@@ -586,17 +587,63 @@ with sync_playwright() as p:
     expect(mixed_page.locator("label[class*='optionOn']")).to_contain_text("Худал")
     mixed_page.locator("[class*='sheetCell']").nth(3).click()
     expect(mixed_page.locator("[class*='kindTag']")).to_have_text("Харгалзуулах")
-    assert "job.\n1. Nucleus\n2. Ribosome\n3. Mitochondrion\na) energy" in mixed_page.locator("p[class*='prompt']").inner_text(), "a matching list keeps its lines"
+    # Matching: the prompt shows only the instruction; the items are two columns of cards joined by lines.
+    expect(mixed_page.locator("p[class*='prompt']")).to_have_text("Match each part with its job.")
+    left, right = mixed_page.locator("[class*='matchCard'][data-side='left']"), mixed_page.locator("[class*='matchCard'][data-side='right']")
+    expect(left).to_have_count(3); expect(right).to_have_count(3)
+    expect(mixed_page.locator("input[type=radio]")).to_have_count(0)
+    mixed_page.keyboard.press("1")
+    expect(mixed_page.get_by_text("3 / 7 хариулсан")).to_have_count(0)
+    left.nth(0).click(); right.nth(0).click()  # 1-a: wrong, moved below
+    expect(mixed_page.locator("[class*='matchLines'] path")).to_have_count(1)
+    expect(mixed_page.locator("[class*='boardFoot']")).to_contain_text("1 / 3 холбосон")
+    right.nth(2).click(); left.nth(0).click()  # either side first: 1-c replaces 1-a
+    left.nth(1).click(); right.nth(1).click()
+    expect(mixed_page.locator("[class*='sheetCell']").nth(3)).not_to_have_class(re.compile("sheetCellAnswered"))
+    left.nth(2).click(); right.nth(0).click()
+    expect(mixed_page.locator("[class*='matchLines'] path")).to_have_count(3)
+    expect(mixed_page.locator("[class*='boardFoot']")).to_contain_text("Бүгдийг холбосон")
+    expect(mixed_page.locator("[class*='sheetCell']").nth(3)).to_have_class(re.compile("sheetCellAnswered"))
     mixed_page.screenshot(path=str(ART / "my-exams-formats-runner.png"), full_page=True)
-    for number, key in enumerate([0, 1, 0, 0, 1, 0, 0], start=1):
+    # Sequence: listed G2, S, G1, M; right is G1, S, G2, M. Drag G1 to the top by its handle, then move S up once.
+    mixed_page.locator("[class*='sheetCell']").nth(6).click()
+    expect(mixed_page.get_by_text("Асуулт 7 / 7")).to_be_visible()
+    rows = mixed_page.locator("[class*='orderRow']")
+    expect(rows).to_have_count(4)
+    expect(mixed_page.locator("[class*='boardFoot']")).to_contain_text("хариулт хадгалагдана")
+    handle, top = rows.nth(2).locator("[class*='orderHandle']").bounding_box(), rows.nth(0).bounding_box()
+    mixed_page.mouse.move(handle["x"] + handle["width"] / 2, handle["y"] + handle["height"] / 2)
+    mixed_page.mouse.down()
+    mixed_page.mouse.move(handle["x"] + 4, top["y"] + 4, steps=8)
+    mixed_page.mouse.up()
+    expect(rows.locator("[class*='orderText']")).to_have_text(["G1", "G2", "S", "M"])
+    mixed_page.get_by_role("button", name="S — дээш").click()
+    expect(rows.locator("[class*='orderText']")).to_have_text(["G1", "S", "G2", "M"])
+    expect(mixed_page.locator("[class*='boardFoot']")).to_contain_text("Хариулт хадгалагдлаа")
+    mixed_page.screenshot(path=str(ART / "my-exams-formats-order.png"), full_page=True)
+    for number, key in enumerate([0, 1, 0, None, 1, 0, None], start=1):
+        if key is None: continue
         mixed_page.locator("[class*='sheetCell']").nth(number - 1).click()
         expect(mixed_page.get_by_text(f"Асуулт {number} / 7")).to_be_visible()
         mixed_page.keyboard.press(str(key + 1))
     expect(mixed_page.get_by_text("7 / 7 хариулсан")).to_be_visible()
+    # The arrangement is saved with the sitting: after a reload the cards are joined and the steps in place again.
+    mixed_page.wait_for_timeout(1500)
+    mixed_page.reload(wait_until="domcontentloaded")
+    mixed_page.get_by_text("Cell biology exam").first.click()
+    expect(mixed_page.get_by_text("7 / 7 хариулсан")).to_be_visible()
+    mixed_page.locator("[class*='sheetCell']").nth(3).click()
+    expect(mixed_page.locator("[class*='matchLines'] path")).to_have_count(3)
+    mixed_page.locator("[class*='sheetCell']").nth(6).click()
+    expect(mixed_page.locator("[class*='orderRow'] [class*='orderText']")).to_have_text(["G1", "S", "G2", "M"])
     mixed_page.get_by_role("button", name="Шалгалт дуусгах").click()
     mixed_page.get_by_role("button", name="Тийм, дуусгах").click()
     expect(mixed_page.get_by_text("7 / 7 зөв")).to_be_visible(timeout=15000)
     expect(mixed_page.locator("article[class*='review'] [class*='kindTag']")).to_have_count(7)
+    # The review spells out the right pairs and order in words.
+    expect(mixed_page.locator("[class*='reviewPairs'] li[data-ok='yes']")).to_have_count(3)
+    expect(mixed_page.locator("[class*='reviewPairs'] li").first).to_contain_text("DNA")
+    expect(mixed_page.locator("[class*='reviewOrders'] li[data-ok='yes']")).to_have_count(4)
     mixed_page.screenshot(path=str(ART / "my-exams-formats-result.png"), full_page=True)
     mixed_page.evaluate("window.__printed = 0; window.print = () => { window.__printed++; }")
     mixed_page.locator("button[data-pdf]").click()
@@ -615,6 +662,14 @@ with sync_playwright() as p:
         mixed_page.get_by_text("Cell biology exam").first.click()
         # The first visit starts a new sitting from the briefing; the second opens the sitting left open by the first.
         if width == 390: mixed_page.get_by_role("button", name="Цаггүй эхлэх").click()
+        mixed_page.locator("[class*='sheetCell']").nth(3).click()
+        expect(mixed_page.locator("[class*='matchCard']")).to_have_count(6)
+        assert mixed_page.evaluate("document.documentElement.scrollWidth <= window.innerWidth"), f"horizontal scroll on the matching cards at {width}"
+        mixed_page.screenshot(path=str(ART / f"my-exams-formats-match-{width}.png"), full_page=True)
+        mixed_page.locator("[class*='sheetCell']").nth(6).click()
+        expect(mixed_page.locator("[class*='orderRow']")).to_have_count(4)
+        assert mixed_page.evaluate("document.documentElement.scrollWidth <= window.innerWidth"), f"horizontal scroll on the sequence at {width}"
+        mixed_page.screenshot(path=str(ART / f"my-exams-formats-order-{width}.png"), full_page=True)
         mixed_page.locator("[class*='sheetCell']").nth(4).click()
         expect(mixed_page.locator("[class*='kindTag']")).to_have_text("Дүгнэлт I–III")
         assert mixed_page.evaluate("document.documentElement.scrollWidth <= window.innerWidth"), f"horizontal scroll in the runner at {width}"

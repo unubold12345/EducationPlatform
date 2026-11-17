@@ -55,7 +55,7 @@
   background: linear-gradient(180deg, var(--wsp-card), color-mix(in srgb, var(--wsp-accent-soft) 40%, var(--wsp-card)));
 }
 .source { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
-.segmented { display: inline-flex; align-self: flex-start; gap: 3px; padding: 3px; border: 1px solid var(--wsp-line); border-radius: 12px; background: var(--wsp-chip); }
+.segmented { display: inline-flex; flex-wrap: wrap; align-self: flex-start; max-width: 100%; gap: 3px; padding: 3px; border: 1px solid var(--wsp-line); border-radius: 12px; background: var(--wsp-chip); }
 .segmented button { display: inline-flex; align-items: center; gap: 6px; padding: 7px 13px; border: 0; border-radius: 9px; background: transparent; color: var(--wsp-muted); font: inherit; font-size: 13px; font-weight: 650; cursor: pointer; }
 .segmented button[aria-selected="true"] { background: var(--wsp-card); color: var(--wsp-ink); box-shadow: 0 1px 3px rgba(0, 0, 0, .08); }
 .segmented button:disabled { cursor: default; }
@@ -85,6 +85,16 @@
 .paste textarea:focus { outline: 2px solid color-mix(in srgb, var(--wsp-accent) 55%, transparent); outline-offset: 1px; border-color: var(--wsp-accent); }
 .counter { margin: 0; color: var(--wsp-soft); font-size: 12px; font-variant-numeric: tabular-nums; text-align: right; }
 .counter[data-short] { color: var(--wsp-warn); }
+/* A practice from a topic: a short request, ideas to click and the random-topic note. */
+.topic textarea { flex: 0 0 auto; min-height: 120px; font-weight: 400; }
+.topic .counter { text-align: left; }
+.topic em { color: var(--wsp-soft); font-size: 12px; font-style: normal; font-weight: 500; }
+.ideas { display: flex; flex-wrap: wrap; gap: 6px; }
+.ideas button {
+  min-height: 30px; padding: 5px 11px; border: 1px solid var(--wsp-line); border-radius: 999px; background: var(--wsp-card);
+  color: var(--wsp-muted); font: inherit; font-size: 12.5px; font-weight: 600; cursor: pointer;
+}
+.ideas button:hover { border-color: var(--wsp-accent); color: var(--wsp-accent); }
 
 .settings { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
 .setting { display: grid; gap: 6px; }

@@ -1266,6 +1266,18 @@ body:has(.exam-session) .education-backdrop { display: none; }
 .workshop-tile-body .text-link { margin-top: auto; padding-top: 6px; }
 @media (max-width: 1000px) { .workshop-index-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 640px) { .workshop-index-grid { grid-template-columns: 1fr; } }
+/* Workshop exam tabs (IELTS / JLPT / HSK, 2026-11-18) and the JLPT/HSK deck tiles. */
+.workshop-tabs { display: inline-flex; gap: 4px; width: fit-content; max-width: 100%; margin: 0 0 18px; padding: 4px; overflow-x: auto; border: 1px solid var(--line); border-radius: 999px; background: color-mix(in srgb, var(--surface) 70%, transparent); }
+.workshop-tabs a { flex: none; padding: 8px 18px; border-radius: 999px; color: var(--muted); font-size: 14px; font-weight: 650; text-decoration: none; }
+.workshop-tabs a:hover { color: var(--ink); }
+.workshop-tabs a[aria-current="page"] { background: var(--blue); color: #fff; }
+.workshop-glyphs { display: flex; place-items: center; justify-content: center; align-items: center; gap: 14px; padding: 20px; }
+.workshop-glyphs span { display: grid; place-items: center; width: 27%; aspect-ratio: 1; border: 1px solid color-mix(in srgb, var(--blue) 26%, var(--line)); border-radius: 18px; background: var(--surface); color: var(--ink); font-size: clamp(30px, 4vw, 44px); font-weight: 600; box-shadow: 0 10px 24px color-mix(in srgb, var(--blue) 12%, transparent); }
+.workshop-glyphs span:nth-child(2) { transform: translateY(-10px); color: var(--blue); }
+.workshop-progress { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 13px; }
+.workshop-progress i { flex: 1; height: 4px; border-radius: 4px; background: var(--line); overflow: hidden; }
+.workshop-progress b { display: block; height: 100%; background: var(--blue); }
+.workshop-note { margin: 4px 0 0; font-size: 13px; }
 .workshop-paper { width: 100%; height: 100%; }
 .workshop-paper .sheet { fill: var(--surface); stroke: var(--line); }
 .workshop-paper .ink { fill: var(--ink); opacity: .85; }

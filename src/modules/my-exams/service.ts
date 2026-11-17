@@ -1,5 +1,5 @@
 import "server-only";
-import { createHash, randomUUID } from "node:crypto";
+import { createHash, randomInt, randomUUID } from "node:crypto";
 import { getDb } from "@/lib/db";
 import { Prisma } from "@/generated/prisma/client";
 import { chargeCredits } from "@/modules/credits/service";
@@ -11,7 +11,7 @@ import { cleanSourceText, displayFileName } from "@/modules/documents/text";
 import { extractDocument } from "@/modules/documents/extract";
 import { readUploadedSource } from "@/modules/documents/upload";
 import {
-  EXAM_COUNT, MY_EXAM_LIMITS, cleanStructureRequest, examCapacity, examKinds, examMessages, examParts, examsFullMessage, gradeExam, isExamId, isExamLanguage,
+  EXAM_COUNT, EXAM_TOPIC_IDEAS, MY_EXAM_LIMITS, cleanStructureRequest, examCapacity, examKinds, examMessages, examParts, examsFullMessage, gradeExam, isExamId, isExamLanguage,
   kindPlan, mergeExamParts, nextQuestionStart, parseGeneratedExam, promptKey, publicExam, readBest, readDraft, readExamCount, readExamKinds, readFullQuestions,
   readGradeRequest, readImportRequest, readResult, readSittingRequest, splitKindPlan, spreadAnswers, suggestedSeconds,
   type ExamBest, type ExamDraft, type ExamLanguage, type ExamResult, type GeneratedExam, type QuestionKind, type SavedExam,
@@ -85,6 +85,11 @@ const field = (form: FormData, name: string) => {
   return typeof value === "string" ? value : null;
 };
 
+/** A topic for an exam made without a file whose request was left empty. */
+const randomTopic = (language: ExamLanguage) => EXAM_TOPIC_IDEAS[language][randomInt(EXAM_TOPIC_IDEAS[language].length)];
+/** The "source" line of an exam from a topic, as the library lists it. */
+const topicName = (topic: string) => "Сэдэв: " + clip(topic.replace(/\s+/g, " ").trim(), 120);
+const clip = (value: string, max: number) => value.length > max ? value.slice(0, max - 1).trimEnd() + "…" : value;
 /** How many exams the student may keep, from their active plans (the free size without one). */
 export async function savedExamLimit(userId: string, now = new Date()) {
   const rows = await getDb().subscription.findMany({ where: { userId, startsAt: { lte: now }, endsAt: { gt: now } }, select: { program: true } });
@@ -120,6 +125,8 @@ function titleFromFile(name: string) {
 
 type ExamInput = {
   text?: string; images?: readonly string[]; count: number; language: ExamLanguage; truncated: boolean; structure: string;
+  /** An exam with no file: written from the model's knowledge of this topic. */
+  topic?: string;
   /** The question formats: the student's choice for a new exam, the ones its questions use for a retry. */
   kinds: readonly QuestionKind[];
   avoid?: readonly string[];
@@ -192,9 +199,14 @@ export async function createMyExam(userId: string, request: Request): Promise<Ex
   catch { throw new ApiError(400, "Файлыг уншиж чадсангүй. Дахин оролдоно уу."); }
   // A page loaded before exams moved to the account still reports its own count; it reloads before it can spend credits.
   if (form.has("saved")) throw new ApiError(409, "Хуудас шинэчлэгдсэн байна. Хуудсаа дахин ачаалаад оролдоно уу.");
-  for (const key of form.keys()) if (!["file", "count", "language", "structure", "kinds"].includes(key)) throw new ApiError(400, "Хүсэлтийн бүтэц буруу байна.");
+  for (const key of form.keys()) if (!["file", "count", "language", "structure", "kinds", "topic"].includes(key)) throw new ApiError(400, "Хүсэлтийн бүтэц буруу байна.");
+  // An exam from a topic has no file (owner request 2026-11-17): the student's request, or a random topic when it is empty.
+  const topics = form.getAll("topic");
+  if (topics.length && (topics.length > 1 || form.getAll("file").length || typeof topics[0] !== "string")) throw new ApiError(400, "Файл эсвэл сэдвийн аль нэгийг илгээнэ үү.");
+  const asked = topics.length ? cleanStructureRequest(topics[0] as string) : null;
+  if (asked !== null && (topics[0] as string).length > MY_EXAM_LIMITS.topicRequest) throw new ApiError(400, `Сэдэв ${MY_EXAM_LIMITS.topicRequest} тэмдэгтээс ихгүй байна.`);
   // One document, or up to four page photos; their size and real kind are proven before credits are held.
-  const upload = await readUploadedSource(form, "Шалгалт үүсгэх файл эсвэл зургаа сонгоно уу.");
+  const upload = asked !== null ? null : await readUploadedSource(form, "Шалгалт үүсгэх файл эсвэл зургаа сонгоно уу.");
   const count = readExamCount(field(form, "count"));
   const languageValue = field(form, "language") ?? "mn";
   if (count === null) throw new ApiError(400, `Асуултын тоо ${EXAM_COUNT.min}–${EXAM_COUNT.max} байна.`);
@@ -206,7 +218,8 @@ export async function createMyExam(userId: string, request: Request): Promise<Ex
   const kinds = readExamKinds(field(form, "kinds"));
   if (!kinds) throw new ApiError(400, "Асуултын төрөл буруу байна.");
   const language: ExamLanguage = languageValue;
-  const name = upload.name;
+  const topic = asked === null ? null : asked || randomTopic(language);
+  const name = upload ? upload.name : topicName(topic ?? "");
 
   await ensureNoTimedExam(userId);
   // Exams are counted on the account, so the plan read here decides whether one more fits, whatever the
@@ -218,15 +231,19 @@ export async function createMyExam(userId: string, request: Request): Promise<Ex
   if (!process.env.DEEPSEEK_API_KEY?.trim()) throw new ApiError(503, "AI шалгалт үүсгэгч одоогоор холбогдоогүй байна.");
 
   // The price depends on the text actually read; until extraction, assume the longest document.
-  let readChars: number = MY_EXAM_LIMITS.textChars;
+  let readChars: number = topic !== null ? topic.length : MY_EXAM_LIMITS.textChars;
   // Page photos are priced as DeepSeek bills them (at most 1,024 tokens each) instead of by text length.
-  const pictures = upload.kind === "images" ? upload.images.length : 0;
+  const pictures = upload?.kind === "images" ? upload.images.length : 0;
   // The most this exam can cost is held first and refunded on any failure, including a file with too
   // little text; on success the charge settles to the questions delivered.
   return chargeCredits(userId, "exam", meter => withGenerationSlot<ExamReply>(userId, async () => {
     let input: ExamInput;
     let source: ExamReply["source"];
-    if (upload.kind === "images") {
+    if (!upload) {
+      // No material to read: the model writes from its own knowledge of the topic, which is kept for a retry.
+      input = { text: topic ?? "", topic: topic ?? "", count, language, truncated: false, structure, kinds };
+      source = { name, kind: "topic", pages: null, truncated: false };
+    } else if (upload.kind === "images") {
       // Photos of pages: the model reads them directly, so there is no text to measure first (or to keep for a retry).
       readChars = 0;
       input = { images: upload.images, count, language, truncated: false, structure, kinds };
@@ -239,9 +256,9 @@ export async function createMyExam(userId: string, request: Request): Promise<Ex
       input = { text: cleaned.text, count, language, truncated: cleaned.truncated, structure, kinds };
       source = { name, kind: extracted.kind, pages: extracted.pages ?? null, truncated: cleaned.truncated };
     }
-    const fallbackTitle = upload.kind === "images" ? "Зурагнаас үүсгэсэн шалгалт" : titleFromFile(name);
+    const fallbackTitle = !upload ? clip(topic ?? "", 80) || "AI шалгалт" : upload.kind === "images" ? "Зурагнаас үүсгэсэн шалгалт" : titleFromFile(name);
     const exam = await writeExam(input, fallbackTitle, 1, meter);
-    if (!exam) throw new ApiError(503, upload.kind === "images" ? "Зурагнаас шалгалт үүсгэх хангалттай материал уншиж чадсангүй. Илүү тод, бүрэн хуудасны зураг оруулна уу." : "AI шалгалт үүсгэж чадсангүй. Дахин оролдоно уу.");
+    if (!exam) throw new ApiError(503, upload?.kind === "images" ? "Зурагнаас шалгалт үүсгэх хангалттай материал уншиж чадсангүй. Илүү тод, бүрэн хуудасны зураг оруулна уу." : "AI шалгалт үүсгэж чадсангүй. Дахин оролдоно уу.");
     // Another tab may start a timed exam while the provider is answering.
     await ensureNoTimedExam(userId);
     // Saved with its key on the account. A failure here refunds the credits like any other.
@@ -255,7 +272,7 @@ export async function createMyExam(userId: string, request: Request): Promise<Ex
       select: EXAM_SELECT,
     });
     return { exam: shown(row), limit, source, provider: "DeepSeek" };
-  }), { hold: examHold(count, pictures), settle: reply => examCredits(readChars, reply.exam.questions.length, pictures) });
+  }), { hold: topic !== null ? examCredits(topic.length, count) : examHold(count, pictures), settle: reply => examCredits(readChars, reply.exam.questions.length, pictures) });
 }
 
 /**
@@ -274,7 +291,10 @@ export async function regenerateMyExam(userId: string, id: string, body: unknown
   const questions = row ? readFullQuestions(row.questions) : null;
   if (!row || !questions || !isExamLanguage(row.language)) throw new ApiError(404, "Энэ шалгалт олдсонгүй.");
   const text = row.sourceText ?? "";
-  if (text.length < MIN_TEXT) throw new ApiError(409, NO_SOURCE);
+  // An exam from a topic keeps its topic as its material: a retry writes new questions on the same topic.
+  const fromTopic = row.sourceKind === "topic";
+  if (!fromTopic && text.length < MIN_TEXT) throw new ApiError(409, NO_SOURCE);
+  if (fromTopic && !text.trim()) throw new ApiError(409, NO_SOURCE);
   const language: ExamLanguage = row.language;
   await ensureNoTimedExam(userId);
   if (!process.env.DEEPSEEK_API_KEY?.trim()) throw new ApiError(503, "AI шалгалт үүсгэгч одоогоор холбогдоогүй байна.");
@@ -284,7 +304,7 @@ export async function regenerateMyExam(userId: string, id: string, body: unknown
   return chargeCredits(userId, "exam-retry", meter => withGenerationSlot(userId, async () => {
     const ids = questions.map(question => question.id);
     const exam = await writeExam({
-      text, count, language, truncated: text.length >= MY_EXAM_LIMITS.textChars, structure: row.sourceStructure ?? "",
+      text, ...(fromTopic ? { topic: text } : {}), count, language, truncated: !fromTopic && text.length >= MY_EXAM_LIMITS.textChars, structure: row.sourceStructure ?? "",
       // The formats the exam already uses: nothing in the request can choose them.
       kinds: examKinds(questions), avoid: questions.map(question => question.prompt),
     }, row.title, nextQuestionStart(ids, count), meter);

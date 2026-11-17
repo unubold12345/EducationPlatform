@@ -8,13 +8,13 @@ import { MaterialImages, useMaterialPick } from "@/modules/ai-images/client";
 import { ProcessingOverlay } from "@/modules/workspace/processing";
 import { PrintSheet, usePrintSheet } from "@/modules/workspace/print-sheet";
 import {
-  GAP, READING_COUNT, READING_LIMITS, TFNG, allQuestions, groupType, matchCount, matchLabel, optionLetter, paragraphLabel,
+  GAP, READING_COUNT, READING_LIMITS, READING_TOPIC_IDEAS, TFNG, allQuestions, groupType, matchCount, matchLabel, optionLetter, paragraphLabel,
   passageWords, publicGroups, retryCount, type PublicGroup, type PublicQuestion, type ReadingAnswer, type ReadingGrade,
   type ReadingLanguage, type ResultItem,
 } from "./contracts";
 import { readingSamples, type ReadingSample } from "./samples";
 import {
-  PRACTICES_FULL, applyProgress, blankState, readSampleStates, readSavedPractice, readState,
+  practicesFullMessage, applyProgress, blankState, readSampleStates, readSavedPractice, readState,
   type PracticeState, type ProgressRequest, type SavedPractice,
 } from "./state";
 import {
@@ -114,10 +114,12 @@ function ownPractice(own: SavedPractice, renew: (own: SavedPractice) => Promise<
   };
 }
 
-export function ReadingLab({ userKey, initialPractices = [], initialSamples = {} }: {
+export function ReadingLab({ userKey, initialPractices = [], initialSamples = {}, initialLimit = READING_LIMITS.freePractices }: {
   userKey: string | null;
   /** A signed-in student's practices and sample progress, read from the account by the page. */
   initialPractices?: SavedPractice[];
+  /** How many practices the student's plan keeps (owner rule 2026-11-17: free and Basic 5, Pro 15). */
+  initialLimit?: number;
   initialSamples?: Record<string, PracticeState>;
 }) {
   const signedIn = userKey !== null;
@@ -279,8 +281,8 @@ export function ReadingLab({ userKey, initialPractices = [], initialSamples = {}
     </section>
 
     <section className={styles.section} aria-labelledby="rl-create">
-      <div className={styles.sectionHead}><h2 id="rl-create">Өөрийн дасгал үүсгэх</h2><span>Файл, зураг эсвэл текстээс</span></div>
-      {signedIn ? <Creator full={practices.length >= READING_LIMITS.practices} onCreated={(practice, text) => { put(practice); setNotice({ id: practice.id, text }); setView({ kind: "own", id: practice.id }); }} />
+      <div className={styles.sectionHead}><h2 id="rl-create">Өөрийн дасгал үүсгэх</h2><span>Файл, зураг, текст эсвэл сэдвээс</span></div>
+      {signedIn ? <Creator full={practices.length >= initialLimit} limit={initialLimit} onCreated={(practice, text) => { put(practice); setNotice({ id: practice.id, text }); setView({ kind: "own", id: practice.id }); }} />
         : <div className={styles.signin}>
           <span className={styles.signinMark} aria-hidden="true"><Icon name="spark" size={22} /></span>
           <div><strong>Өөрийн нийтлэл, хичээлээс IELTS дасгал</strong><p>Нэвтэрч ороод файл, хуудасны зураг эсвэл текстээ оруулбал AI түүнээс IELTS маягийн эх бичвэр, асуулт бэлдэнэ. Дасгал, хариулт тань бүртгэлд хадгалагдана.</p></div>
@@ -289,7 +291,7 @@ export function ReadingLab({ userKey, initialPractices = [], initialSamples = {}
     </section>
 
     {signedIn && (practices.length || moveNote || listError) ? <section className={styles.section} aria-labelledby="rl-own">
-      <div className={styles.sectionHead}><h2 id="rl-own">Миний дасгалууд</h2><span>{practices.length} / {READING_LIMITS.practices} · бүртгэлд</span></div>
+      <div className={styles.sectionHead}><h2 id="rl-own">Миний дасгалууд</h2><span>{practices.length} / {initialLimit} · бүртгэлд</span></div>
       {moveNote ? <p className={styles.notice} role="status">{moveNote}</p> : null}
       {listError ? <p className={styles.error} role="alert">{listError}</p> : null}
       <div className={styles.ownList}>{practices.map(own => {
@@ -314,8 +316,10 @@ export function ReadingLab({ userKey, initialPractices = [], initialSamples = {}
   </div>;
 }
 
-function Creator({ full, onCreated }: { full: boolean; onCreated: (practice: SavedPractice, notice: string) => void }) {
-  const [mode, setMode] = useState<"file" | "text">("file");
+function Creator({ full, limit, onCreated }: { full: boolean; limit: number; onCreated: (practice: SavedPractice, notice: string) => void }) {
+  // A file, pasted text, or a topic the AI writes an original passage about (empty: a random IELTS topic).
+  const [mode, setMode] = useState<"file" | "text" | "topic">("file");
+  const [topic, setTopic] = useState("");
   const material = useMaterialPick({ extensions: ALLOWED, maxBytes: READING_LIMITS.fileBytes, documentHint: "PDF, Word, PowerPoint, TXT, MD, CSV файл эсвэл хуудасны зураг сонгоно уу." });
   const picked = material.pick;
   const file = picked?.kind === "document" ? picked.file : null;
@@ -328,9 +332,9 @@ function Creator({ full, onCreated }: { full: boolean; onCreated: (practice: Sav
   const { apply } = useCredits();
   const input = useRef<HTMLInputElement>(null);
   const length = text.trim().length;
-  const ready = !full && (mode === "file" ? Boolean(picked) && !material.preparing : length >= READING_LIMITS.minSourceChars);
+  const ready = !full && (mode === "topic" || (mode === "file" ? Boolean(picked) && !material.preparing : length >= READING_LIMITS.minSourceChars));
   // The most this material can cost, as the server holds it; the charge settles lower for shorter material.
-  const hold = mode === "text" ? readingPracticeHold(Math.max(length, READING_LIMITS.minSourceChars), 0, count)
+  const hold = mode === "topic" ? readingPracticeHold(READING_LIMITS.topicRequest, 0, count) : mode === "text" ? readingPracticeHold(Math.max(length, READING_LIMITS.minSourceChars), 0, count)
     : picked?.kind === "images" ? readingPracticeHold(0, picked.images.length, count) : readingPracticeHold(READING_LIMITS.textChars, 0, count);
 
   async function pick(next: ArrayLike<File> | null | undefined) {
@@ -347,7 +351,8 @@ function Creator({ full, onCreated }: { full: boolean; onCreated: (practice: Sav
     setPending(true); setError("");
     try {
       const form = new FormData();
-      if (mode === "file") material.append(form); else form.append("text", text.trim());
+      // An empty topic lets the server pick one at random.
+      if (mode === "file") material.append(form); else if (mode === "topic") form.append("topic", topic.trim()); else form.append("text", text.trim());
       form.append("language", language);
       form.append("count", String(count));
       // The practice is saved on the account; the server counts the account's practices before any credits are held.
@@ -360,7 +365,7 @@ function Creator({ full, onCreated }: { full: boolean; onCreated: (practice: Sav
       const practice = readSavedPractice(data.practice);
       // Already saved on the account: a reload shows it.
       if (!practice) throw new Error("AI дасгал бүрэн ирсэнгүй. Хуудсаа дахин ачаална уу.");
-      material.clear(); setText("");
+      material.clear(); setText(""); setTopic("");
       const receipt = readReceipt(data);
       onCreated(practice, receipt ? `Дасгал бэлэн боллоо. ${receipt.spent} кредит зарцууллаа${receipt.spent < hold ? ` (хамгийн ихдээ ${hold} кредит барьж, үлдсэнийг буцаалаа)` : ""}.` : "Дасгал бэлэн боллоо.");
     } catch (reason) {
@@ -370,11 +375,12 @@ function Creator({ full, onCreated }: { full: boolean; onCreated: (practice: Sav
 
   return <div className={styles.create}>
     {/* While the practice is being made the whole page waits; `pending` is cleared on success, error and timeout. */}
-    <ProcessingOverlay open={pending} title="Унших дасгал бэлдэж байна…" detail="Материалыг уншиж, эх бичвэр болон асуулт бэлдэж байна. 30–90 секунд орно." />
+    <ProcessingOverlay open={pending} title="Унших дасгал бэлдэж байна…" detail={mode === "topic" ? "AI сэдвээр эх бичвэр, асуулт бичиж байна. 30–90 секунд орно." : "Материалыг уншиж, эх бичвэр болон асуулт бэлдэж байна. 30–90 секунд орно."} />
     <div className={styles.source}>
       <div className={styles.segmented} role="tablist" aria-label="Материалын төрөл">
         <button type="button" role="tab" aria-selected={mode === "file"} onClick={() => { setMode("file"); setError(""); }} disabled={pending}><Icon name="fileExam" size={16} />Файл, зураг</button>
         <button type="button" role="tab" aria-selected={mode === "text"} onClick={() => { setMode("text"); setError(""); }} disabled={pending}><Icon name="pen" size={16} />Текст буулгах</button>
+        <button type="button" role="tab" aria-selected={mode === "topic"} onClick={() => { setMode("topic"); setError(""); }} disabled={pending}><Icon name="spark" size={16} />Сэдвээр (AI)</button>
       </div>
       {mode === "file" ? <div className={`${styles.drop} ${dragging ? styles.dropActive : ""}`}
         onDragEnter={event => { event.preventDefault(); if (!pending) setDragging(true); }}
@@ -394,6 +400,14 @@ function Creator({ full, onCreated }: { full: boolean; onCreated: (practice: Sav
             <span>{READING_LIMITS.fileBytes / 1024 / 1024} MB хүртэл · PDF, DOCX, PPTX, TXT, MD эсвэл {material.max} хүртэл хуудасны зураг</span>
             <button type="button" className={styles.choose} onClick={() => input.current?.click()} disabled={pending}>Файл, зураг сонгох</button>
           </>}
+      </div> : mode === "topic" ? <div className={`${styles.paste} ${styles.topic}`}>
+        <label htmlFor="rl-topic" className={styles.settingLabel}>Сэдэв, хүсэлт <em>сонголтоор</em></label>
+        <textarea id="rl-topic" value={topic} maxLength={READING_LIMITS.topicRequest} disabled={pending} aria-describedby="rl-topic-hint"
+          placeholder="жишээ нь: renewable energy in Mongolia, or the history of chess…" onChange={event => setTopic(event.currentTarget.value)} />
+        <div className={styles.ideas} role="group" aria-label="Сэдвийн санаа">
+          {READING_TOPIC_IDEAS.slice(0, 4).map(idea => <button key={idea} type="button" onClick={() => setTopic(idea)} disabled={pending}>{idea}</button>)}
+        </div>
+        <p id="rl-topic-hint" className={styles.counter}>{topic.length} / {READING_LIMITS.topicRequest} · хоосон бол AI санамсаргүй IELTS сэдэв сонгоно</p>
       </div> : <div className={styles.paste}>
         <label htmlFor="rl-text" className="sr-only">Унших дасгал үүсгэх текст</label>
         <textarea id="rl-text" value={text} maxLength={READING_LIMITS.textChars} disabled={pending} spellCheck={false}
@@ -421,7 +435,7 @@ function Creator({ full, onCreated }: { full: boolean; onCreated: (practice: Sav
         </div>
       </div>
       <ul className={styles.will}>
-        <li>450–900 үгийн IELTS маягийн эх бичвэр</li>
+        <li>{mode === "topic" ? "600–900 үгийн AI бичсэн IELTS маягийн эх бичвэр" : "450–900 үгийн IELTS маягийн эх бичвэр"}</li>
         <li>{count} асуулт: T/F/NG, сонголттой, нөхөх</li>
         <li>Хариулт бүрийн нотолгоо, тайлбар</li>
       </ul>
@@ -429,9 +443,9 @@ function Creator({ full, onCreated }: { full: boolean; onCreated: (practice: Sav
         {pending ? <><i className={styles.spinner} aria-hidden="true" />Дасгал бэлдэж байна…</> : <><Icon name="spark" size={18} />Дасгал үүсгэх</>}
       </button>
       <p className={styles.cost}><CreditCost action="reading-practice" cost={hold} upTo /></p>
-      {full ? <p className={styles.error} role="status">{PRACTICES_FULL}</p> : null}
+      {full ? <p className={styles.error} role="status">{practicesFullMessage(limit)}</p> : null}
       {error ? <p className={styles.error} role="alert">{error}</p> : null}
-      <p className={styles.fine}>Үнэ нь материалын урт, бэлдсэн эх бичвэр, асуултын тоогоор тооцогдоно: богино текст хямд, барьсан кредитийн илүүг буцаана. Материалын текст эсвэл зураг AI руу илгээгдэнэ. Урт материалын эхний 45,000 тэмдэгтийг ашиглана. Файл, текст серверт хадгалагдахгүй. Дасгал, хариулт, дүн таны бүртгэлд хадгалагдаж, өөр төхөөрөмж дээр ч нээгдэнэ; хариултын түлхүүр шалгах хүртэл серверт үлдэнэ. Бүртгэлд {READING_LIMITS.practices} хүртэл дасгал хадгална. AI-ийн бэлдсэн дасгал багшийн хяналтгүй. Хугацаатай шалгалтын үеэр хаалттай.</p>
+      <p className={styles.fine}>Нэг асуулт 2 кредит; маш урт материалд AI-ийн зардлаас хамаарч арай илүү. Ирээгүй асуултын барьсан кредитийг буцаана. Сэдвээр үүсгэхэд AI эх бичвэрийг өөрийн мэдлэгээр бичнэ. Материалын текст эсвэл зураг AI руу илгээгдэнэ. Урт материалын эхний 45,000 тэмдэгтийг ашиглана. Файл, текст серверт хадгалагдахгүй. Дасгал, хариулт, дүн таны бүртгэлд хадгалагдаж, өөр төхөөрөмж дээр ч нээгдэнэ; хариултын түлхүүр шалгах хүртэл серверт үлдэнэ. Бүртгэлд {limit} хүртэл дасгал хадгална (үнэгүй ба Basic 5, Pro 15). AI-ийн бэлдсэн дасгал багшийн хяналтгүй. Хугацаатай шалгалтын үеэр хаалттай.</p>
     </div>
   </div>;
 }

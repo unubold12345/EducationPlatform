@@ -93,7 +93,9 @@
 .link:hover { color: var(--ink); }
 .ghost { padding: 6px 10px; border: 0; border-radius: 10px; background: var(--soft); color: var(--ink); font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; }
 
-.coach { position: sticky; top: 92px; display: flex; flex-direction: column; max-height: calc(100vh - 110px); border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); overflow: hidden; }
+/* The paper sets the row's height and the sidebar fills it (contain: size ignores its own content), never taller than
+   the screen: a long list of fixes scrolls inside instead of running past the paper. */
+.coach { position: sticky; top: 92px; align-self: stretch; contain: size; display: flex; flex-direction: column; max-height: calc(100vh - 110px); border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); overflow: hidden; }
 .coachHead { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--line); }
 .coachHead > div { flex: 1; min-width: 0; }
 .coachHead h2 { margin: 0; font-size: 15px; letter-spacing: -.005em; }
@@ -123,8 +125,14 @@
 .criteria li em { grid-row: 1 / span 2; grid-column: 2; color: var(--ink); font-size: 13px; font-style: normal; font-weight: 700; text-align: right; }
 
 .tabs { display: flex; gap: 2px; margin-bottom: 12px; }
+/* Stays at the top of the sidebar's scrolling list: the count and "fix all" never scroll away. */
+.fixesHead {
+  position: sticky; top: -16px; z-index: 1; display: flex; justify-content: space-between; align-items: center; gap: 10px;
+  margin: -16px -16px 12px; padding: 12px 16px 10px; border-bottom: 1px solid var(--line); background: var(--surface);
+}
+.fixesHead h3 { display: flex; align-items: center; gap: 6px; margin: 0; font-size: 13px; }
+.fixesHead em { min-width: 18px; padding: 1px 6px; border-radius: 999px; background: color-mix(in srgb, var(--warn) 22%, transparent); color: var(--warn); font-size: 11px; font-style: normal; text-align: center; }
 .fixes, .words { display: grid; gap: 10px; }
-.fixes > .link { justify-self: start; }
 .fix, .word { padding: 12px 14px; border: 1px solid var(--line); border-radius: 13px; transition: border-color .15s, opacity .2s, background .15s; animation: rise .3s ease both; }
 .fix[data-active] { border-color: color-mix(in srgb, var(--blue) 55%, var(--line)); background: color-mix(in srgb, var(--blue) 4%, transparent); }
 .fix[data-state] { opacity: .5; }
@@ -177,7 +185,8 @@
 
 @media (max-width: 960px) {
   .main { grid-template-columns: 1fr; }
-  .coach { position: static; max-height: none; }
+  /* Under the paper the sidebar keeps a fixed height and scrolls inside, so many fixes never stretch the page. */
+  .coach { position: static; contain: none; max-height: min(640px, 80vh); }
 }
 @media (max-width: 640px) {
   .tasks { width: 100%; }

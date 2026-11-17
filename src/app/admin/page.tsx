@@ -9,18 +9,19 @@ import { getSession } from "@/lib/session";
 import { getDb } from "@/lib/db";
 import { isAdmin,contentCatalog,databaseLatency } from "@/modules/admin/service";
 import { allPlans, findAnyPlan, subscriptionPlans } from "@/modules/subscriptions/plans";
-import { planPrices } from "@/modules/subscriptions/prices";
+import { planPrices, planSales } from "@/modules/subscriptions/prices";
 import { pageInfo,parsePage } from "@/modules/admin/paging";
 import { AdminShell,Pager,StatusPill,SubTabs,adminGroups,adminTabInfo,adminTabs,auditActions,auditLabel,adminDate as date,money,statusLabel,type AdminTab } from "@/modules/admin/ui";
 import { AdminPriceForm } from "@/components/admin-price-form";
 import { AdminCreditForm } from "@/components/admin-credit-form";
-import { AdminCreditPackForm } from "@/components/admin-credit-pack-form";
+import { AdminCreditPacksForm } from "@/components/admin-credit-pack-form";
+import { AdminSaleForm } from "@/components/admin-sale-form";
 import { creditAllowances } from "@/modules/credits/service";
-import { creditPack } from "@/modules/credits/purchase";
+import { creditPacks } from "@/modules/credits/purchase";
 import { creditMonths, creditUsage } from "@/modules/admin/credits";
 import { AdminAnnouncementForm, AdminAnnouncementWithdraw } from "@/components/admin-announcement-form";
 import { NOTIFICATION_LIMITS, announcementKey } from "@/modules/notifications/rules";
-import { AI_ACTIONS, CREDIT_USD, DEEPSEEK_PRICE, DEFAULT_CREDIT_PACK, creditPeriod, creditRangeLabel, defaultAllowances, formatCredits, formatUsd, isAiAction } from "@/modules/credits/pricing";
+import { AI_ACTIONS, CREDIT_USD, DEEPSEEK_PRICE, DEFAULT_CREDIT_PACKS, creditPeriod, creditRangeLabel, defaultAllowances, formatCredits, formatUsd, isAiAction } from "@/modules/credits/pricing";
 
 export const metadata:Metadata={title:"Удирдлагын төв",robots:{index:false,follow:false}};
 const one=(value:string|string[]|undefined)=>typeof value==="string"?value:"";
@@ -184,24 +185,31 @@ export default async function AdminPage({searchParams}:{searchParams:Promise<Rec
   }
 
   if(tab==="pricing") {
-    const [prices,history,allowances,creditHistory,pack,packHistory]=await Promise.all([planPrices(),db.adminAudit.findMany({where:{action:"set-price"},orderBy:[{createdAt:"desc"},{id:"desc"}],take:20}),creditAllowances(),db.adminAudit.findMany({where:{action:"set-credits"},orderBy:[{createdAt:"desc"},{id:"desc"}],take:20}),creditPack(),db.adminAudit.findMany({where:{action:"set-credit-pack"},orderBy:[{createdAt:"desc"},{id:"desc"}],take:20})]);
+    const [prices,sales,history,saleHistory,allowances,creditHistory,packs,packHistory]=await Promise.all([planPrices(),planSales(),db.adminAudit.findMany({where:{action:"set-price"},orderBy:[{createdAt:"desc"},{id:"desc"}],take:20}),db.adminAudit.findMany({where:{action:"set-sale"},orderBy:[{createdAt:"desc"},{id:"desc"}],take:20}),creditAllowances(),db.adminAudit.findMany({where:{action:"set-credits"},orderBy:[{createdAt:"desc"},{id:"desc"}],take:20}),creditPacks(),db.adminAudit.findMany({where:{action:{in:["set-credit-packs","set-credit-pack"]}},orderBy:[{createdAt:"desc"},{id:"desc"}],take:20})]);
+    const packsCustom=JSON.stringify(packs)!==JSON.stringify(DEFAULT_CREDIT_PACKS);
+    const packList=(value:unknown)=>Array.isArray(value)?value.map(item=>`${formatCredits((item as {credits?:number}).credits??0)} / ${money((item as {amountMnt?:number}).amountMnt??0)}`).join(", "):value==="default"?"анхны багцууд":"—";
     const defaults=defaultAllowances();
     return <AdminShell tab={tab} title={title} name={name} description={description}>
       <p className="admin-help">Шинэ болон төлөгдөөгүй захиалгад шууд үйлчилнэ. Төлөгдсөн захиалга анхны дүнгээрээ үлдэнэ.</p>
       <div className="admin-prices">{subscriptionPlans.map(plan=><AdminPriceForm key={plan.program} program={plan.program} title={plan.title} amount={prices[plan.program]} fallback={plan.amountMnt}/>)}</div>
       <h3 className="admin-subhead">Үнийн өөрчлөлтийн түүх</h3>
-      <div className="admin-table-wrap"><table><thead><tr><th>Огноо</th><th>Багц</th><th>Өмнө → дараа</th><th>Шалтгаан</th></tr></thead><tbody>{history.map(row=>{const d=row.details as {program?:string;before?:number;after?:number};return <tr key={row.id}><td>{date(row.createdAt)}</td><td>{d.program?.toUpperCase()}</td><td>{money(d.before??0)} → {money(d.after??0)}</td><td>{row.reason}<small><code>{row.actorId}</code></small></td></tr>;})}</tbody></table>{!history.length&&<p className="admin-empty">Үнэ өөрчлөгдөөгүй. Анхны үнэ үйлчилж байна.</p>}</div>
-      <p className="fine-print">Нэг mock шалгалтын үнэ ₮10,000 хэвээр (кодонд тогтмол).</p>
+      <div className="admin-table-wrap"><table><thead><tr><th>Огноо</th><th>Багц</th><th>Өмнө → дараа</th><th>Шалтгаан</th></tr></thead><tbody>{history.map(row=>{const d=row.details as {program?:string;before?:number;after?:number};return <tr key={row.id}><td>{date(row.createdAt)}</td><td>{findAnyPlan(d.program)?.title??d.program}</td><td>{money(d.before??0)} → {money(d.after??0)}</td><td>{row.reason}<small><code>{row.actorId}</code></small></td></tr>;})}</tbody></table>{!history.length&&<p className="admin-empty">Үнэ өөрчлөгдөөгүй. Анхны үнэ үйлчилж байна.</p>}</div>
+      <h3 className="admin-subhead" id="plan-sales">Хямдрал</h3>
+      <p className="admin-help">Хямдралтай үнийг Багцууд хуудас, шалгалтын хуудас, нүүр хуудсанд энгийн үнийн хажууд (зураастай) харуулж, шинэ захиалгад хямдралтай үнээр авна. Дуусах өдрийг (Улаанбаатарын цагаар, тэр өдрийн төгсгөл хүртэл) заавал өгөх албагүй; өгөөгүй бол «Хямдрал цуцлах» хүртэл үргэлжилнэ. Төлөгдсөн захиалга анхны дүнгээрээ үлдэнэ.</p>
+      <div className="admin-prices">{subscriptionPlans.map(plan=><AdminSaleForm key={plan.program} program={plan.program} title={plan.title} regular={prices[plan.program]} sale={sales[plan.program]?.saleAmountMnt??null} saleEndsAt={sales[plan.program]?.saleEndsAt?.toISOString()??null} ended={Boolean(sales[plan.program]?.saleEndsAt&&sales[plan.program]!.saleEndsAt!.getTime()<=now.getTime())}/>)}</div>
+      <h3 className="admin-subhead">Хямдралын түүх</h3>
+      <div className="admin-table-wrap"><table><thead><tr><th>Огноо</th><th>Багц</th><th>Өмнө → дараа</th><th>Шалтгаан</th></tr></thead><tbody>{saleHistory.map(row=>{const d=row.details as {program?:string;before?:{amount?:number|null};after?:{amount?:number|null;endsAt?:string|null}};return <tr key={row.id}><td>{date(row.createdAt)}</td><td>{findAnyPlan(d.program)?.title??d.program}</td><td>{d.before?.amount?money(d.before.amount):"—"} → {d.after?.amount?money(d.after.amount)+(d.after.endsAt?" · "+date(new Date(d.after.endsAt)):""):"цуцалсан"}</td><td>{row.reason}<small><code>{row.actorId}</code></small></td></tr>;})}</tbody></table>{!saleHistory.length&&<p className="admin-empty">Хямдрал тавиагүй.</p>}</div>
+      <p className="fine-print">Нэг mock шалгалтын үнэ ₮10,000 / 7 хоног (кодонд тогтмол): төлсөн мөчөөс 7 хоногийн турш нээлттэй, дараа нь дахин авна. 2026-11-17-ноос өмнөх худалдан авалт хугацаагүй хэвээр.</p>
       <h3 className="admin-subhead" id="credit-allowances">AI кредит / сар</h3>
       <p className="admin-help">Үнэгүй кредит бүх баталгаажсан бүртгэлд сар бүрийн 1-нд шинэчлэгдэнэ. Багцын кредит багцын сар бүр нэмэгдэж, ашиглаагүй нь багц дуустал хадгалагдана; багц дуусахад тэглэгдэнэ. Өөрчлөлт одоогийн үлдэгдэлд шууд нөлөөлнө; зарцуулсан кредит буцахгүй. Үйлдэл бүрийн кредитийн үнэ DeepSeek-ийн токены үнээр кодонд тогтмол (<Link href="/admin?tab=credits">AI кредит</Link>).</p>
       <div className="admin-prices admin-credit-allowances">{([["free","Үнэгүй (бүх бүртгэл)"],...subscriptionPlans.map(plan=>[plan.program,plan.title] as const)] as const).map(([key,label])=><AdminCreditForm key={key} allowanceKey={key} title={label} credits={allowances[key as keyof typeof allowances]} fallback={defaults[key as keyof typeof defaults]}/>)}</div>
       <h3 className="admin-subhead">Кредитийн хэмжээний түүх</h3>
       <div className="admin-table-wrap"><table><thead><tr><th>Огноо</th><th>Хэнд</th><th>Өмнө → дараа</th><th>Шалтгаан</th></tr></thead><tbody>{creditHistory.map(row=>{const d=row.details as {key?:string;before?:number;after?:number};return <tr key={row.id}><td>{date(row.createdAt)}</td><td>{d.key==="free"?"Үнэгүй":d.key?.toUpperCase()}</td><td>{formatCredits(d.before??0)} → {formatCredits(d.after??0)}</td><td>{row.reason}<small><code>{row.actorId}</code></small></td></tr>;})}</tbody></table>{!creditHistory.length&&<p className="admin-empty">Кредитийн хэмжээ өөрчлөгдөөгүй. Анхны хэмжээ үйлчилж байна.</p>}</div>
       <h3 className="admin-subhead" id="credit-pack">Кредит худалдаа</h3>
-      <p className="admin-help">Суралцагч Багцууд хуудаснаас энэ багцыг туршилтын төлбөрөөр авна. Худалдаж авсан кредит хугацаагүй, сарын болон багцын кредитийн дараа AI-д зарцуулагдана; үгсийн сангийн байнгын багтаамж авахад зөвхөн худалдаж авсан кредит ашиглана. Шинэ болон төлөгдөөгүй захиалгад шууд үйлчилнэ; төлөгдсөн захиалга анхны хэмжээ, дүнгээрээ үлдэнэ.</p>
-      <div className="admin-prices"><AdminCreditPackForm credits={pack.credits} amountMnt={pack.amountMnt} fallback={DEFAULT_CREDIT_PACK}/></div>
+      <p className="admin-help">Суралцагч Багцууд хуудаснаас эдгээр багцын аль нэгийг туршилтын төлбөрөөр авна. Багц нэмэх, хасах, өөрчлөхдөө жагсаалтыг бүхэлд нь хадгална. Худалдаж авсан кредит хугацаагүй, сарын болон багцын кредитийн дараа AI-д зарцуулагдана; үгсийн сангийн байнгын багтаамж авахад зөвхөн худалдаж авсан кредит ашиглана. Шинэ болон төлөгдөөгүй захиалгад шууд үйлчилнэ; төлөгдсөн захиалга анхны хэмжээ, дүнгээрээ үлдэнэ.</p>
+      <div className="admin-prices admin-pack-list"><AdminCreditPacksForm packs={packs} defaults={DEFAULT_CREDIT_PACKS} custom={packsCustom}/></div>
       <h3 className="admin-subhead">Кредит багцын түүх</h3>
-      <div className="admin-table-wrap"><table><thead><tr><th>Огноо</th><th>Өмнө → дараа</th><th>Шалтгаан</th></tr></thead><tbody>{packHistory.map(row=>{const d=row.details as {before?:{credits?:number;amountMnt?:number};after?:{credits?:number;amountMnt?:number}};return <tr key={row.id}><td>{date(row.createdAt)}</td><td>{formatCredits(d.before?.credits??0)} кредит · {money(d.before?.amountMnt??0)} → {formatCredits(d.after?.credits??0)} кредит · {money(d.after?.amountMnt??0)}</td><td>{row.reason}<small><code>{row.actorId}</code></small></td></tr>;})}</tbody></table>{!packHistory.length&&<p className="admin-empty">Кредит багц өөрчлөгдөөгүй. Анхны багц үйлчилж байна.</p>}</div>
+      <div className="admin-table-wrap"><table><thead><tr><th>Огноо</th><th>Өмнө → дараа</th><th>Шалтгаан</th></tr></thead><tbody>{packHistory.map(row=>{const d=row.details as {before?:unknown;after?:unknown};const old=row.action==="set-credit-pack";const one=(value:unknown)=>{const pack=value as {credits?:number;amountMnt?:number};return `${formatCredits(pack?.credits??0)} кредит · ${money(pack?.amountMnt??0)}`;};return <tr key={row.id}><td>{date(row.createdAt)}</td><td>{old?one(d.before)+" → "+one(d.after):packList(d.before)+" → "+packList(d.after)}</td><td>{row.reason}<small><code>{row.actorId}</code></small></td></tr>;})}</tbody></table>{!packHistory.length&&<p className="admin-empty">Кредит багц өөрчлөгдөөгүй. Анхны багц үйлчилж байна.</p>}</div>
     </AdminShell>;
   }
 

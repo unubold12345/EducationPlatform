@@ -1,17 +1,44 @@
 export const dynamic = "force-dynamic";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { cookies } from "next/headers";
+import { getSession } from "@/lib/session";
+import { WORKSHOP_EXAM_COOKIE, WORKSHOP_EXAMS, type WorkshopExam } from "@/modules/language-decks/catalog";
+import { ExamTabs } from "@/modules/language-decks/exam-tabs";
+import { deckSummaries, hasLanguageStudy, languageStudyPlans } from "@/modules/language-decks/service";
+import { LanguageWorkshop } from "@/modules/language-decks/workshop";
 import { listeningLabEnabled, readingLabEnabled, speakingLabEnabled, writingLabEnabled } from "@/lib/local-pilot";
 import { PartnerMark } from "@/modules/speaking-lab/partner";
 import { guidedTasks } from "@/modules/workshops/guided";
 import { Icon } from "@/modules/workspace/icons";
 export const metadata: Metadata = { title: "Workshop" };
 
-export default function WorkspaceWorkshop() {
+const isExam = (value: unknown): value is WorkshopExam => WORKSHOP_EXAMS.some(exam => exam.id === value);
+const LEAD: Record<WorkshopExam, string> = {
+  ielts: "AI хамтрагчтай ярих, эссэгээ засуулах, сонсгол, уншлагаа дасгалжуулах лабораториуд.",
+  jlpt: "Хирагана, катаканы хүснэгт ба JLPT N5, N4 түвшний үгсийн сан: ふりがな, romaji, дуудлага, карт ба quiz.",
+  hsk: "Pinyin ба аялгуу, HSK 1, 2 түвшний үгсийн сан: дуудлага, жишээ өгүүлбэр, карт ба quiz.",
+};
+
+// One tab per exam (owner rule 2026-11-18): ?exam= picks it, otherwise the last tab chosen (cookie), otherwise IELTS.
+export default async function WorkspaceWorkshop({ searchParams }: { searchParams: Promise<{ exam?: string }> }) {
+  const asked = (await searchParams).exam, stored = (await cookies()).get(WORKSHOP_EXAM_COOKIE)?.value;
+  const exam: WorkshopExam = isExam(asked) ? asked : isExam(stored) ? stored : "ielts";
+  if (exam !== "ielts") {
+    const session = await getSession();
+    const open = session ? await hasLanguageStudy(session.user.id, exam) : false;
+    const decks = await deckSummaries(session?.user.id ?? "", exam);
+    return <div className="wsp-page workshop-index">
+      <header className="wsp-page-head"><div><h1 className="sr-only">Workshop · {exam.toUpperCase()}</h1><p>{LEAD[exam]}</p></div></header>
+      <ExamTabs current={exam} />
+      <LanguageWorkshop exam={exam} decks={decks} open={open} plans={languageStudyPlans(exam)} />
+    </div>;
+  }
   const speaking = speakingLabEnabled(), writing = writingLabEnabled(), listening = listeningLabEnabled(), reading = readingLabEnabled();
   const tiles = [speaking, writing, listening, reading].filter(Boolean).length;
   return <div className="wsp-page workshop-index">
-    <header className="wsp-page-head"><div><h1 className="sr-only">Workshop</h1><p>AI хамтрагчтай ярих, эссэгээ засуулах, сонсгол, уншлагаа дасгалжуулах лабораториуд.</p></div></header>
+    <header className="wsp-page-head"><div><h1 className="sr-only">Workshop</h1><p>{LEAD.ielts}</p></div></header>
+    <ExamTabs current="ielts" />
     {tiles ? <div className={"workshop-index-grid wsp-workshop-grid" + (tiles === 4 ? " is-four" : "")}>
       {speaking && <Link className="workshop-tile" href="/labs/ielts-speaking" prefetch={false}><div className="workshop-tile-art"><PartnerMark voice="af_heart" wide className="workshop-partner" label="Ярианы хамтрагчийн дууны долгион" /></div><div className="workshop-tile-body"><span className="wsp-tag tone-violet">Speaking · AI хамтрагч</span><h2>Ярианы хамтрагч</h2><p>IELTS Speaking-ийн 3 хэсгийг AI хамтрагчтай бодитоор ярьж дасгалжуулна.</p><span className="text-link">Ярианы бэлтгэл эхлэх ↗</span></div></Link>}
       {writing && <Link className="workshop-tile" href="/labs/ielts-writing" prefetch={false}><div className="workshop-tile-art"><svg className="workshop-paper" viewBox="0 0 240 200" role="img" aria-label="Засвар тэмдэглэсэн эссэгийн хуудас"><rect x="44" y="18" width="152" height="182" rx="14" className="sheet" /><rect x="62" y="44" width="92" height="7" rx="3.5" className="ink" /><rect x="62" y="66" width="116" height="5" rx="2.5" className="line" /><rect x="62" y="82" width="38" height="5" rx="2.5" className="line" /><rect x="106" y="80" width="40" height="9" rx="3" className="mark" /><path d="M106 84.5h40" className="strike" /><rect x="152" y="82" width="26" height="5" rx="2.5" className="line" /><rect x="104" y="96" width="46" height="8" rx="4" className="fix" /><rect x="62" y="116" width="108" height="5" rx="2.5" className="line" /><rect x="62" y="132" width="116" height="5" rx="2.5" className="line" /><rect x="62" y="148" width="70" height="5" rx="2.5" className="line" /><circle cx="190" cy="40" r="22" className="badge" /><text x="190" y="46" textAnchor="middle" className="band">7.0</text><path d="M28 150l5 11 11 5-11 5-5 11-5-11-11-5 11-5z" className="spark" /></svg></div><div className="workshop-tile-body"><span className="wsp-tag tone-green">Writing · AI засвар</span><h2>Эссэ бичих студи</h2><p>Task 2 эссэ, захидал бичээд дүрэм, үгийн сан, бүтцийн засвар авна.</p><span className="text-link">Бичиж эхлэх ↗</span></div></Link>}
@@ -20,7 +47,7 @@ export default function WorkspaceWorkshop() {
     </div> : <div className="admin-empty"><p>Workshop одоогоор идэвхгүй байна.</p></div>}
 
     <section className="wsp-section" aria-labelledby="guided-heading">
-      <div className="wsp-section-head"><h2 id="guided-heading">IELTS даалгавар</h2><span className="wsp-muted">Гадаад хэл багцад багтана</span></div>
+      <div className="wsp-section-head"><h2 id="guided-heading">IELTS даалгавар</h2><span className="wsp-muted">Гадаад хэл Basic, Pro багцад багтана</span></div>
       <div className="wsp-list">{guidedTasks.map(task => <Link key={task.slug} className="wsp-row" href={"/workshops/" + task.slug}>
         <span className="wsp-row-icon" aria-hidden="true"><Icon name={task.skill === "Writing" ? "pen" : "mic"} /></span>
         <span className="wsp-row-main"><strong lang="en">{task.title}</strong><small>{task.skill} · {task.minutes} минут</small></span>

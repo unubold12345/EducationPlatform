@@ -13,7 +13,8 @@ import { findAnyPlan, planCovers, planMonth } from "./plans";
 export type MockMonth = { start: string; end: string; used: number; limit: number };
 export type MockAccess =
   | { kind: "free" }
-  | { kind: "purchase" }
+  /** A one-time purchase: open for 7 days from payment (`expiresAt`), or for good when it predates that rule (null). */
+  | { kind: "purchase"; expiresAt: string | null }
   | { kind: "plan"; program: string }
   /** Picked this plan month: sittings (retakes too) and practice are open until `month.end`. */
   | { kind: "picked"; program: string; month: MockMonth }
@@ -46,7 +47,8 @@ async function monthOf(db: Reader, userId: string, row: ActiveRow, slug: string,
 /** The student's access to one mock of `examProgram` right now. Pass the transaction client inside one. */
 export async function mockAccess(userId: string, slug: string, examProgram: string, db: Reader = getDb(), now = new Date()): Promise<MockAccess> {
   if (isFreeMock(slug)) return { kind: "free" };
-  if (await db.mockPurchase.findFirst({ where: { userId, examSlug: slug, status: "PAID" }, select: { id: true } })) return { kind: "purchase" };
+  const bought = await db.mockPurchase.findFirst({ where: { userId, examSlug: slug, status: "PAID", OR: [{ expiresAt: null }, { expiresAt: { gt: now } }] }, select: { expiresAt: true } });
+  if (bought) return { kind: "purchase", expiresAt: bought.expiresAt ? bought.expiresAt.toISOString() : null };
   const rows = await db.subscription.findMany({ where: { userId, startsAt: { lte: now }, endsAt: { gt: now } }, select: { id: true, program: true, startsAt: true, endsAt: true } });
   let picks: MockAccess | null = null;
   for (const row of rows) {
@@ -137,7 +139,7 @@ export async function hubAccess(userId: string | undefined, slugs: string[], exa
   const now = new Date();
   const db = getDb();
   const [purchases, rows] = await Promise.all([
-    db.mockPurchase.findMany({ where: { userId, examSlug: { in: slugs }, status: "PAID" }, select: { examSlug: true } }),
+    db.mockPurchase.findMany({ where: { userId, examSlug: { in: slugs }, status: "PAID", OR: [{ expiresAt: null }, { expiresAt: { gt: now } }] }, select: { examSlug: true } }),
     db.subscription.findMany({ where: { userId, startsAt: { lte: now }, endsAt: { gt: now } }, select: { id: true, program: true, startsAt: true, endsAt: true } }),
   ]);
   const bought = new Set(purchases.map(row => row.examSlug));

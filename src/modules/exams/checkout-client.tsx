@@ -1,7 +1,7 @@
 "use client";
 import { useRef,useState } from "react";
 import { useRouter } from "next/navigation";
-import { MOCK_PRICE_LABEL } from "./pricing";
+import { MOCK_PRICE_LABEL, MOCK_PURCHASE_DAYS } from "./pricing";
 
 export function MockCheckout({slug,declined=false,enabled}:{slug:string;declined?:boolean;enabled:boolean}) {
   const router=useRouter(); const busy=useRef(false);
@@ -26,6 +26,6 @@ export function MockCheckout({slug,declined=false,enabled}:{slug:string;declined
     {!enabled && <p className="error-message" role="alert">Туршилтын төлбөр энэ орчинд идэвхгүй байна.</p>}
     <button className="button checkout-pay" disabled={pending||!enabled} onClick={()=>pay("success")}>{pending?"Баталгаажуулж байна…":`Туршилтаар төлөх · ${MOCK_PRICE_LABEL}`}</button>
     <button className="text-link checkout-decline" disabled={pending||!enabled} onClick={()=>pay("decline")}>Амжилтгүй төлбөр турших</button>
-    <p className="fine-print">Нэг удаагийн эрх · Энэ шалгалтыг дахин өгч болно · Нөгөө шалгалт тусдаа эрхтэй</p>
+    <p className="fine-print">{MOCK_PURCHASE_DAYS} хоногийн эрх · Төлсөн мөчөөс {MOCK_PURCHASE_DAYS} хоногийн турш энэ шалгалтыг дахин өгч, цаггүй дадлага хийнэ · Хугацаа дуусвал дахин авна · Нөгөө шалгалт тусдаа эрхтэй</p>
   </div>;
 }

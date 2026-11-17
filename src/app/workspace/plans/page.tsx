@@ -9,31 +9,34 @@ import { entranceTotal } from "@/modules/exams/entrance/catalog";
 import { jlptMocks } from "@/modules/exams/jlpt/catalog";
 import { hskMocks } from "@/modules/exams/hsk/catalog";
 import { freeMocks } from "@/modules/exams/free/catalog";
-import { MOCK_PRICE_LABEL } from "@/modules/exams/pricing";
+import { MOCK_PRICE_LABEL, MOCK_PRICE_TERM, MOCK_PURCHASE_DAYS } from "@/modules/exams/pricing";
 import { mockPilotPaymentsEnabled } from "@/lib/local-pilot";
 import { creditAllowances, creditSummary } from "@/modules/credits/service";
-import { creditPack } from "@/modules/credits/purchase";
+import { creditPacks } from "@/modules/credits/purchase";
 import { CreditTopUp } from "@/modules/credits/purchase-client";
-import { DEFAULT_CREDIT_PACK, defaultAllowances, formatCredits } from "@/modules/credits/pricing";
+import { DEFAULT_CREDIT_PACKS, defaultAllowances, formatCredits } from "@/modules/credits/pricing";
 import { VOCABULARY_LIMITS } from "@/modules/vocabulary/contracts";
 import { MY_EXAM_LIMITS } from "@/modules/my-exams/contracts";
+import { READING_LIMITS } from "@/modules/reading-lab/contracts";
+import { EXPERT_LIMITS } from "@/modules/writing-lab/expert";
 import "./plans.css";
 
 export const metadata: Metadata = { title: "Сарын багцууд" };
 
 const count = (program: string) => examDefinitions.filter(exam => exam.program === program).length;
-// Mocks the Гадаад хэл plan can open: every paid mock that is not ЭЕШ.
+// Mocks the Гадаад хэл plans can open: every paid mock that is not ЭЕШ.
 const languageMocks = count("sat") + count("ielts") + jlptMocks.length + hskMocks.length;
 const badges: Record<string, string> = {
   entrance: `${entranceTotal} MOCK · ХЯЗГААРГҮЙ`,
-  language: `${languageMocks} MOCK-ООС САРД 15`,
+  language_basic: `${languageMocks} MOCK · ХЯЗГААРГҮЙ`,
+  language: `${languageMocks} MOCK · ХЯЗГААРГҮЙ`,
 };
 
-// Three plans (owner rule 2026-11-13): the free account, ЭЕШ and Гадаад хэл. The plans page moved from /plans into the
+// Three plans (owner rules 2026-11-13 and 2026-11-17): ЭЕШ, Гадаад хэл Basic and Гадаад хэл Pro, beside the free account. The plans page moved from /plans into the
 // Workspace on 2026-11-08; /plans redirects here. Guests can still compare plans.
 export default async function PlansPage() {
   // Credit amounts and the pack are admin-editable; a database without those tables falls back to the code defaults.
-  const [session, plans, allowances, pack] = await Promise.all([getSession(), pricedPlans(), creditAllowances().catch(() => defaultAllowances()), creditPack().catch(() => ({ ...DEFAULT_CREDIT_PACK }))]);
+  const [session, plans, allowances, packs] = await Promise.all([getSession(), pricedPlans(), creditAllowances().catch(() => defaultAllowances()), creditPacks().catch(() => DEFAULT_CREDIT_PACKS.map(item => ({ ...item })))]);
   const now = new Date();
   const active = session ? await getDb().subscription.findMany({ where: { userId: session.user.id, startsAt: { lte: now }, endsAt: { gt: now } }, select: { program: true, endsAt: true } }) : [];
   const owned = new Map(active.map(item => [item.program, item]));
@@ -41,24 +44,26 @@ export default async function PlansPage() {
   const [credits, picks] = session ? await Promise.all([creditSummary(session.user.id, now).catch(() => null), currentPicks(session.user.id, now).catch(() => null)]) : [null, null];
   const date = new Intl.DateTimeFormat("mn-MN", { timeZone: "Asia/Ulaanbaatar", dateStyle: "medium" });
   const words = (value: number) => value.toLocaleString("en-US");
-  const language = plans.find(plan => plan.program === "language");
   // What every verified account gets without a plan. The numbers are the ones the server enforces.
   const freeFeatures = [
     `${freeMocks.length} үнэгүй хагас mock: SAT, IELTS, ЭЕШ-ийн 5 хичээл, JLPT, HSK`,
     "Workspace: AI туслах, үгсийн сан, файлаас шалгалт",
     `Үгсийн санд ${words(VOCABULARY_LIMITS.freeWords)} үг, файлаас ${MY_EXAM_LIMITS.freeExams} шалгалт`,
-    `Бүтэн mock-ийг нэг бүрчлэн ${MOCK_PRICE_LABEL}-өөр авна`,
+    `Бүтэн mock-ийг нэг бүрчлэн ${MOCK_PRICE_LABEL}-өөр ${MOCK_PURCHASE_DAYS} хоногоор авна`,
   ];
   // Columns: the free account first, then the plans in their card order.
-  const mocksCell = (program: string) => program === "entrance" ? `${entranceTotal} ЭЕШ mock, хязгааргүй` : `Сард ${language?.mockPicks ?? 15} mock (SAT, IELTS, JLPT, HSK)`;
+  const mocksCell = (program: string) => program === "entrance" ? `${entranceTotal} ЭЕШ mock, хязгааргүй` : `${languageMocks} mock (SAT, IELTS, JLPT, HSK), хязгааргүй`;
+  const freeExpert = EXPERT_LIMITS.freeReviews ? `${EXPERT_LIMITS.freeReviews} удаа` : "—";
   const comparison: { label: string; values: string[] }[] = [
     { label: "Үнэгүй хагас mock", values: [String(freeMocks.length), ...plans.map(() => String(freeMocks.length))] },
-    { label: "Бүтэн mock", values: [`${MOCK_PRICE_LABEL} / mock`, ...plans.map(plan => mocksCell(plan.program))] },
+    { label: "Бүтэн mock", values: [`${MOCK_PRICE_TERM} / mock`, ...plans.map(plan => mocksCell(plan.program))] },
     { label: "Цаггүй дадлага + AI туслах", values: ["Авсан, үнэгүй mock-д", ...plans.map(plan => plan.mockPicks ? "Сонгосон mock-д" : "✓")] },
     { label: "Writing & Speaking workshop", values: ["—", ...plans.map(plan => plan.workshops ? "4" : "—")] },
     { label: "AI кредит / сар", values: [formatCredits(allowances.free), ...plans.map(plan => "+" + formatCredits(allowances[plan.program]))] },
     { label: "Үгсийн сан", values: [VOCABULARY_LIMITS.freeWords, ...plans.map(plan => plan.vocabularyWords)].map(value => `${words(value)} үг`) },
     { label: "Файлаас шалгалт хадгалах", values: [MY_EXAM_LIMITS.freeExams, ...plans.map(plan => plan.savedExams)].map(String) },
+    { label: "Reading Lab дасгал хадгалах", values: [READING_LIMITS.freePractices, ...plans.map(plan => plan.readingPractices)].map(String) },
+    { label: "Шинжээчийн эссэ үнэлгээ", values: [freeExpert, ...plans.map(plan => plan.expertReviews ? `${plan.expertReviews} / сар` : freeExpert)] },
     { label: "Хадгалсан явц, үр дүн", values: ["✓", ...plans.map(() => "✓")] },
   ];
   const normal = credits ? Math.max(0, credits.balance - credits.yellow) : 0;
@@ -92,7 +97,11 @@ export default async function PlansPage() {
               <span className={current ? "status access-unlocked" : "status"}>{current ? "✓ Идэвхтэй" : badges[plan.program]}</span>
             </header>
             <h3>{plan.title}</h3>
-            <div className="pricing-price"><strong>₮{plan.amountMnt.toLocaleString("en-US")}</strong><span>/ сар</span></div>
+            <div className="pricing-price" data-sale={plan.onSale ? "" : undefined}>
+              {plan.onSale ? <s aria-label="Энгийн үнэ">₮{plan.regularMnt.toLocaleString("en-US")}</s> : null}
+              <strong>₮{plan.amountMnt.toLocaleString("en-US")}</strong><span>/ сар</span>
+              {plan.onSale ? <p className="pricing-sale-note">Хямдарсан үнэ{plan.saleEndsAt ? ` · ${date.format(plan.saleEndsAt)} хүртэл` : ""}</p> : null}
+            </div>
             <p className="pricing-credits"><Bolt /><strong>{formatCredits(allowances[plan.program])}</strong> AI кредит / сар</p>
             <ul className="pricing-features">
               {plan.features.map(feature => <li key={feature}><span aria-hidden="true">✓</span>{feature}</li>)}
@@ -116,7 +125,7 @@ export default async function PlansPage() {
           <caption className="sr-only">Үнэгүй бүртгэл болон ЭЕШ, Гадаад хэл багцуудын харьцуулалт</caption>
           <thead><tr><th scope="col">Багц</th><th scope="col">Үнэгүй</th>{plans.map(plan => <th scope="col" key={plan.program}>{plan.shortTitle}</th>)}</tr></thead>
           <tbody>{comparison.map(row => <tr key={row.label}><th scope="row">{row.label}</th>{row.values.map((value, index) => <td key={index} data-out={value === "—" ? "" : undefined}>{value === "✓" ? <span className="pricing-check" aria-label="Багтсан">✓</span> : value}</td>)}</tr>)}</tbody>
-          <tfoot><tr><th scope="row">Сарын үнэ</th><td><strong>₮0</strong></td>{plans.map(plan => <td key={plan.program}><strong>₮{plan.amountMnt.toLocaleString("en-US")}</strong></td>)}</tr></tfoot>
+          <tfoot><tr><th scope="row">Сарын үнэ</th><td><strong>₮0</strong></td>{plans.map(plan => <td key={plan.program}>{plan.onSale ? <s className="plan-was">₮{plan.regularMnt.toLocaleString("en-US")}</s> : null} <strong>₮{plan.amountMnt.toLocaleString("en-US")}</strong></td>)}</tr></tfoot>
         </table>
       </div>
     </section>
@@ -129,15 +138,14 @@ export default async function PlansPage() {
         <h2 id="pricing-topup-heading"><span className="pricing-yellow-dot" aria-hidden="true" />Кредит</h2>
         {credits ? <p className="pricing-topup-balance"><Bolt />AI кредит <strong>{formatCredits(normal)}</strong><span className="pricing-yellow-balance"><span className="pricing-yellow-dot" aria-hidden="true" />Кредит <strong>{formatCredits(credits.yellow)}</strong></span></p> : null}
       </div>
-      <div className="pricing-single-price"><strong>₮{pack.amountMnt.toLocaleString("en-US")}</strong><span>/ {formatCredits(pack.credits)} кредит</span></div>
-      <CreditTopUp credits={pack.credits} amountMnt={pack.amountMnt} signedIn={Boolean(session)} enabled={mockPilotPaymentsEnabled()} />
+      <CreditTopUp packs={packs} signedIn={Boolean(session)} enabled={mockPilotPaymentsEnabled()} />
     </section>
 
     <section className="pricing-single" aria-labelledby="pricing-single-heading">
       <div>
         <h2 id="pricing-single-heading">Нэг шалгалт</h2>
       </div>
-      <div className="pricing-single-price"><strong>{MOCK_PRICE_LABEL}</strong><span>/ нэг mock</span></div>
+      <div className="pricing-single-price"><strong>{MOCK_PRICE_LABEL}</strong><span>/ нэг mock · {MOCK_PURCHASE_DAYS} хоног</span></div>
       <Link className="button secondary" href="/exams">Шалгалт сонгох <span aria-hidden="true">→</span></Link>
     </section>
   </div>;

@@ -24,7 +24,7 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
   const sharedDemo = features.hostedDemo && isDemoEmail(user.email);
   const [exams, purchases, officialExams, googleAccount] = await Promise.all([
     getDb().mockAttempt.count({ where: { userId: user.id, status: "SUBMITTED" } }),
-    getDb().mockPurchase.findMany({where:{userId:user.id,status:"PAID"},orderBy:{createdAt:"desc"},select:{id:true,examSlug:true,provider:true,amountMnt:true}}),
+    getDb().mockPurchase.findMany({where:{userId:user.id,status:"PAID"},orderBy:{createdAt:"desc"},select:{id:true,examSlug:true,provider:true,amountMnt:true,expiresAt:true}}),
     getDb().paperAttempt.count({where:{userId:user.id,status:"SUBMITTED"}}),
     features.google && !sharedDemo ? getDb().account.findFirst({ where: { userId: user.id, providerId: "google" }, select: { id: true } }) : Promise.resolve(null),
   ]);
@@ -54,8 +54,8 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
     <section className="ws-card profile-access">
       <h2>Шалгалтын эрх</h2>
       {purchases.length ? <div className="profile-rows">{purchases.map(purchase => <div className="purchase-row profile-row" key={purchase.id}>
-        <div>{findExam(purchase.examSlug)?<Link href={"/exams/"+purchase.examSlug}>{findExam(purchase.examSlug)!.title}</Link>:<span>Хасагдсан албан материал · {purchase.examSlug}</span>}<p>{purchase.provider==="LEGACY"?"Өмнөх шалгалтын эрх":"Туршилтын төлбөр · ₮"+purchase.amountMnt.toLocaleString("en-US")}</p></div>
-        <Link className="text-link" href={"/checkout/"+purchase.examSlug}>Баримт</Link>
+        <div>{findExam(purchase.examSlug)?<Link href={"/exams/"+purchase.examSlug}>{findExam(purchase.examSlug)!.title}</Link>:<span>Хасагдсан албан материал · {purchase.examSlug}</span>}<p>{purchase.provider==="LEGACY"?"Өмнөх шалгалтын эрх":"Туршилтын төлбөр · ₮"+purchase.amountMnt.toLocaleString("en-US")}{purchase.expiresAt?(purchase.expiresAt<=new Date()?" · Хугацаа дууссан":" · "+new Intl.DateTimeFormat("mn-MN",{timeZone:"Asia/Ulaanbaatar",dateStyle:"medium",timeStyle:"short"}).format(purchase.expiresAt)+" хүртэл"):""}</p></div>
+        <Link className="text-link" href={"/checkout/"+purchase.examSlug}>{purchase.expiresAt&&purchase.expiresAt<=new Date()?"Дахин авах":"Баримт"}</Link>
       </div>)}</div> : <div className="profile-empty">
         <p>Шалгалтын эрх хараахан аваагүй.</p>
         <Link className="text-link" href="/exams">Шалгалтууд үзэх</Link>

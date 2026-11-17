@@ -7,6 +7,7 @@ import {
   READING_LIMITS, allQuestions, choiceCount, gradeReading, inPassage, isReadingLanguage, passageWords, validAnswerFor,
   type FullGroup, type FullQuestion, type PublicGroup, type ReadingAnswers, type ReadingGrade, type ReadingLanguage,
 } from "./contracts.ts";
+import { allPlans, subscriptionPlans } from "../subscriptions/plans.ts";
 
 export type PracticeState = {
   answers: ReadingAnswers;
@@ -34,7 +35,25 @@ export type SavedPractice = {
   state: PracticeState;
 };
 
+/** The account ceiling's message (still read by the mobile app, which compares against `READING_LIMITS.practices`). */
 export const PRACTICES_FULL = `Бүртгэлд хамгийн ихдээ ${READING_LIMITS.practices} дасгал хадгална. Шинэ дасгал үүсгэхийн өмнө нэгийг нь устгана уу.`;
+/** How many practices the student may keep with these active plans: the largest plan's size, or the free size. */
+export function practiceCapacity(programs: readonly string[]) {
+  let practices: number = READING_LIMITS.freePractices;
+  for (const plan of allPlans) if (programs.includes(plan.program)) practices = Math.max(practices, plan.readingPractices);
+  return practices;
+}
+/** The plans on sale that keep the most practices, for the upgrade hint. */
+export function practiceUpgrade() {
+  const practices = Math.max(READING_LIMITS.freePractices, ...subscriptionPlans.map(plan => plan.readingPractices));
+  return { practices, plans: practices > READING_LIMITS.freePractices ? subscriptionPlans.filter(plan => plan.readingPractices === practices).map(plan => plan.shortTitle) : [] };
+}
+/** "No room for another practice", with the upgrade path while one exists. */
+export function practicesFullMessage(limit: number) {
+  const upgrade = practiceUpgrade();
+  const more = limit < upgrade.practices && upgrade.plans.length ? ` ${upgrade.plans.join(" эсвэл ")} багцтай бол ${upgrade.practices} дасгал хадгална.` : "";
+  return `Хадгалах ${limit} дасгалын хязгаарт хүрсэн. Шинэ дасгал үүсгэхийн өмнө нэгийг нь устгана уу.${more}`;
+}
 const ATTEMPTS_MAX = 9999;
 const SECONDS_MAX = 86_400;
 

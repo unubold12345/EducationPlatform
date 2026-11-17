@@ -10,7 +10,7 @@ import {AI_ACTIONS,writingCreditAction} from "@/modules/credits/pricing";
 
 const DAILY_LIMIT=40;
 
-async function requireWritingLab(userId:string) {
+export async function requireWritingLab(userId:string) {
  if(!writingLabEnabled())throw new ApiError(404,"Туршилтын хуудас идэвхгүй байна.");
  const db=getDb();
  const mock=await db.mockAttempt.findFirst({where:{userId,status:"IN_PROGRESS"},select:{id:true}});

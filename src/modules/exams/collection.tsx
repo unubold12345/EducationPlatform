@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { examDefinitions } from "./definitions";
 import { getExam } from "@/modules/content/published";
-import { MOCK_PRICE_LABEL } from "./pricing";
+import { MOCK_PRICE_LABEL, MOCK_PURCHASE_DAYS } from "./pricing";
 import { freeMocksOf } from "./free/catalog";
 import { FreeMockTile } from "./free/tile";
 import styles from "./collection.module.css";
@@ -32,6 +32,6 @@ export async function MockCollection({collection}:{collection:MockCollectionKey}
         <span className="text-link">Танилцах →</span>
       </Link>)}</div>
     </section>
-    <p className="fine-print">Нэг mock-ийн эрх {MOCK_PRICE_LABEL} · Эсвэл {text.plan} сарын багцаар сард 15 mock сонгоно. Эрхэд цагтай шалгалт болон цаггүй, AI туслахтай дадлагын горим хоёул багтана.</p>
+    <p className="fine-print">Нэг mock-ийн эрх {MOCK_PRICE_LABEL} / {MOCK_PURCHASE_DAYS} хоног · Эсвэл {text.plan} сарын багцаар бүх mock хязгааргүй. Эрхэд цагтай шалгалт болон цаггүй, AI туслахтай дадлагын горим хоёул багтана.</p>
   </div>;
 }

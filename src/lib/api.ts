@@ -1,6 +1,7 @@
 import "server-only";
 import { getAuth } from "./auth";
 import { verificationAllowed } from "./auth-features";
+import { fromMobileApp } from "./mobile-origin";
 
 export class ApiError extends Error {
   constructor(public status: number, message: string) { super(message); }
@@ -17,7 +18,11 @@ export async function apiUser(request: Request) {
 }
 export function checkOrigin(request: Request) {
   const expected = process.env.BETTER_AUTH_URL;
-  if (!expected || request.headers.get("origin") !== new URL(expected).origin) throw new ApiError(403, "Хүсэлт зөвшөөрөгдөөгүй.");
+  if (!expected) throw new ApiError(403, "Хүсэлт зөвшөөрөгдөөгүй.");
+  if (request.headers.get("origin") === new URL(expected).origin) return;
+  // The native app sends no browser Origin; it names its own scheme instead (see mobile-origin.ts).
+  if (fromMobileApp(request.headers)) return;
+  throw new ApiError(403, "Хүсэлт зөвшөөрөгдөөгүй.");
 }
 export async function readJson(request: Request, maxBytes = 8192): Promise<unknown> {
   if (!request.headers.get("content-type")?.includes("application/json")) throw new ApiError(415, "JSON хүсэлт шаардлагатай.");

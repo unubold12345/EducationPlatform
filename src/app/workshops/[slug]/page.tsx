@@ -18,7 +18,7 @@ export default async function WorkshopPage({ params }: { params: Promise<{ slug:
   const task = await getWorkshop(slug);
   if (!task) notFound();
   const session=await getSession();
-  if(!session||!await hasWorkshops(session.user.id))return <ProgramGate program="language" title={task.title}/>;
+  if(!session||!await hasWorkshops(session.user.id))return <ProgramGate program="language_basic" title={task.title}/>;
   return <div className="container practice-page workshop-page"><Link className="text-link" href="/workspace/workshop">← Workshop</Link>
     <div className="practice-heading"><p className="eyebrow">IELTS Academic · {task.skill}</p><h1>{task.title}</h1><p>Санал болгох хугацаа {task.minutes} минут · Өөрийгөө шалгах даалгавар</p></div>
     <div className="notice">Өөрсдийн зохиосон бэлтгэлийн даалгавар. Жишиг хариу болон шалгах жагсаалттай. Албан ёсны IELTS материал, band үнэлгээ биш.</div>

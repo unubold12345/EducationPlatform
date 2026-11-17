@@ -1,0 +1,92 @@
+/* JLPT/HSK word decks (Workshop → JLPT / HSK). Workspace tokens only; one accent colour. */
+.page { width: min(1120px, 100%); display: grid; gap: 18px; }
+
+.back { display: inline-flex; align-items: center; gap: 6px; width: fit-content; color: var(--wsp-muted); font-size: 14px; font-weight: 600; text-decoration: none; }
+.back:hover { color: var(--wsp-ink); }
+.backIcon { transform: rotate(180deg); }
+
+.head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px; }
+.head h1 { margin: 2px 0 0; font-size: clamp(26px, 4vw, 34px); letter-spacing: -0.02em; }
+.eyebrow { margin: 0; color: var(--wsp-muted); font-size: 13px; font-weight: 650; letter-spacing: 0.04em; }
+.stats { display: flex; gap: 10px; margin: 0; }
+.stats div { min-width: 86px; padding: 10px 14px; border: 1px solid var(--wsp-line); border-radius: 14px; background: var(--wsp-card); }
+.stats dt { color: var(--wsp-muted); font-size: 12px; }
+.stats dd { margin: 2px 0 0; font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.readingToggle { flex: none; padding: 7px 14px; border: 1px solid var(--wsp-line-strong); border-radius: 999px; background: var(--wsp-card); color: var(--wsp-muted); font: inherit; font-size: 13px; font-weight: 650; cursor: pointer; }
+.readingToggle[aria-pressed="true"] { border-color: var(--wsp-accent); background: var(--wsp-accent-soft); color: var(--wsp-accent); }
+.reading { color: var(--wsp-accent); font-size: 14px; overflow-wrap: anywhere; }
+.fine { margin: 0; color: var(--wsp-muted); font-size: 12px; }
+
+.locked { display: grid; gap: 10px; max-width: 560px; padding: 28px; border: 1px solid var(--wsp-line); border-radius: 18px; background: var(--wsp-card); }
+.locked h1 { margin: 0; font-size: 24px; }
+.locked p { margin: 0; color: var(--wsp-text); }
+.lockedLink { width: fit-content; padding: 9px 16px; border-radius: 999px; background: var(--wsp-accent); color: #fff; font-weight: 650; text-decoration: none; }
+@media (max-width: 560px) {
+  .stats { width: 100%; }
+  .stats div { flex: 1; min-width: 0; }
+}
+
+/* Kana and Pinyin workshops (2026-11-18): chart first, a practice bar above it. */
+.kanaBar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.segment { display: inline-flex; gap: 4px; width: fit-content; max-width: 100%; padding: 4px; overflow-x: auto; border: 1px solid var(--wsp-line); border-radius: 999px; background: var(--wsp-card); }
+.segment button { flex: none; padding: 7px 16px; border: 0; border-radius: 999px; background: none; color: var(--wsp-muted); font: inherit; font-size: 14px; font-weight: 650; cursor: pointer; }
+.segment button[aria-pressed="true"] { background: var(--wsp-accent); color: #fff; }
+.practice { display: grid; gap: 12px; padding: 16px; border: 1px solid var(--wsp-line); border-radius: 18px; background: var(--wsp-card); }
+.practiceHead { display: flex; align-items: baseline; gap: 10px; }
+.practice h2 { margin: 0; font-size: 17px; }
+.practiceNote { color: var(--wsp-muted); font-size: 13px; }
+.rowChips { display: flex; flex-wrap: wrap; gap: 6px; }
+.rowChips button { display: inline-flex; align-items: center; gap: 4px; min-width: 40px; justify-content: center; padding: 6px 10px; border: 1px solid var(--wsp-line-strong); border-radius: 10px; background: var(--wsp-card); color: var(--wsp-ink); font: inherit; font-size: 16px; cursor: pointer; }
+.rowChips button[aria-pressed="true"] { border-color: var(--wsp-accent); background: var(--wsp-accent-soft); color: var(--wsp-accent); }
+.rowChips svg { color: var(--wsp-good); }
+.practiceActions { display: flex; flex-wrap: wrap; gap: 8px; }
+.primaryButton, .ghostButton { padding: 9px 18px; border-radius: 999px; font: inherit; font-size: 14px; font-weight: 650; cursor: pointer; }
+.primaryButton { border: 0; background: var(--wsp-accent); color: #fff; }
+.primaryButton:disabled { opacity: .45; cursor: default; }
+.ghostButton { border: 1px solid var(--wsp-line-strong); background: var(--wsp-card); color: var(--wsp-ink); }
+.chartWrap { overflow-x: auto; border: 1px solid var(--wsp-line); border-radius: 18px; background: var(--wsp-card); }
+.chart { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.chart thead th { padding: 10px 4px 6px; color: var(--wsp-muted); font-size: 13px; font-weight: 650; }
+.chart thead th:first-child, .chart tbody th { width: 48px; }
+.chart td, .chart tbody th { padding: 4px; border-top: 1px solid var(--wsp-line); text-align: center; }
+.chart tr[data-chosen="true"] td, .chart tr[data-chosen="true"] th { background: var(--wsp-accent-soft); }
+.rowHead { width: 36px; height: 36px; border: 1px solid var(--wsp-line); border-radius: 10px; background: var(--wsp-chip); color: var(--wsp-muted); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+.rowHead[aria-pressed="true"] { border-color: var(--wsp-accent); background: var(--wsp-accent); color: #fff; }
+.kanaCell { display: grid; place-items: center; gap: 2px; width: 100%; min-height: 72px; padding: 8px 4px 6px; border: 0; border-radius: 12px; background: none; color: var(--wsp-ink); font: inherit; cursor: pointer; }
+.kanaCell:hover { background: var(--wsp-hover); }
+.kana { font-size: clamp(24px, 4vw, 32px); line-height: 1.1; }
+.kanaRomaji { color: var(--wsp-muted); font-size: 12px; }
+.kanaLevel { display: block; width: 28px; height: 3px; border-radius: 3px; background: var(--wsp-chip); overflow: hidden; }
+.kanaLevel b { display: block; height: 100%; background: var(--wsp-accent); }
+.kanaCell[data-box="5"] .kanaLevel b { background: var(--wsp-good); }
+.emptyCell { background: repeating-linear-gradient(135deg, transparent 0 6px, var(--wsp-chip) 6px 7px); }
+@media (max-width: 560px) {
+  .chart thead th:first-child, .chart tbody th { width: 34px; }
+  .rowHead { width: 28px; height: 28px; }
+  .kanaCell { min-height: 60px; padding: 6px 0 4px; }
+}
+
+/* Pinyin workshop. */
+.toneGrid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+.toneCard { display: grid; gap: 4px; justify-items: start; padding: 14px; border: 1px solid var(--wsp-line); border-radius: 16px; background: var(--wsp-card); color: var(--wsp-ink); font: inherit; text-align: left; cursor: pointer; }
+.toneCard:hover { border-color: var(--wsp-accent); }
+.toneCard svg { width: 100%; height: auto; margin-bottom: 4px; }
+.toneCard strong { font-size: 26px; line-height: 1; }
+.toneCard small { color: var(--wsp-muted); font-size: 12px; }
+.toneGuide { stroke: var(--wsp-line); stroke-width: 1; fill: none; }
+.toneLine { stroke: var(--wsp-accent); stroke-width: 5; stroke-linecap: round; fill: none; }
+.toneDot { fill: var(--wsp-accent); }
+.toneExample { color: var(--wsp-text); font-size: 13px; }
+.toneExample b { font-size: 18px; }
+.rules { display: grid; gap: 8px; margin: 0; }
+.rules div { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 12px; }
+.rules dt { font-weight: 700; }
+.rules dd { margin: 0; color: var(--wsp-text); }
+.chartInfo { margin: 0; min-height: 28px; color: var(--wsp-muted); font-size: 15px; }
+.chartInfo b { color: var(--wsp-ink); font-size: 22px; }
+.pinyinChart { min-width: 560px; }
+.pinyinChart tbody th { color: var(--wsp-muted); font-size: 13px; }
+.pinyinCell { width: 100%; min-height: 38px; border: 0; border-radius: 10px; background: none; color: var(--wsp-ink); font: inherit; font-size: 14px; cursor: pointer; }
+.pinyinCell:hover { background: var(--wsp-hover); }
+.pinyinCell[aria-pressed="true"] { background: var(--wsp-accent); color: #fff; }
+@media (max-width: 860px) { .toneGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .rules div { grid-template-columns: minmax(0, 1fr); gap: 2px; } }

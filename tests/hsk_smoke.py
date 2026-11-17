@@ -1,4 +1,4 @@
-"""Local HSK 1: library grid -> hub -> purchase -> practice (pictures, audio, reveal) -> two timed sections -> results.
+"""Local HSK 1 (full flow) and HSK 2 (its own page types, a full sitting): library grid -> hub -> purchase -> practice (pictures, audio, reveal) -> two timed sections -> results.
 Only disposable qa-exam-* rows use the existing trusted deadline fixture.
 """
 import json
@@ -44,7 +44,8 @@ with sync_playwright() as p:
     page.set_viewport_size({'width':390,'height':950});assert columns(page)==1
     fits(page,'library',(1440,1280,390,320))
     page.goto(BASE+'/exams/hsk')
-    expect(page.locator('.hsk-card')).to_have_count(3)
+    expect(page.locator('.hsk-card')).to_have_count(6)
+    expect(page.locator('.hsk-level')).to_have_count(2)
     fits(page,'hub')
     assert context.request.post(BASE+'/api/mock-attempts',headers=ORIGIN,data={'slug':SLUG}).status==401
     email='qa-exam-hsk-'+uuid4().hex[:12]+'@example.invalid'
@@ -135,9 +136,75 @@ with sync_playwright() as p:
     expect(page.locator('.practice-sections button[aria-current=true]')).to_contain_text('阅读')
     page.goto(BASE+'/workspace/review/'+attempt)
     expect(page.get_by_text('HSK 1 · Mock 01').first).to_be_visible()
+    # HSK 2 on the same views: two picture sets in Listening 2, the starred true/false part, ten groups.
+    slug2='hsk2-mock-01'
+    practice2=BASE+'/api/exam-practice/'+slug2
+    assert context.request.get(practice2).status==402
+    order=context.request.post(BASE+'/api/mock-payments',headers=ORIGIN,data={'slug':slug2})
+    assert order.ok
+    assert context.request.post(BASE+'/api/mock-payments/'+order.json()['id']+'/confirm',headers=ORIGIN,data={'decision':'success'}).ok
+    view=context.request.get(practice2).json()
+    assert len(view['form']['questions'])==60 and len(view['form']['sections'])==10
+    assert all(not any(field in q for field in ['answers','explanation','answerDisplay','listening','script']) for q in view['form']['questions'])
+    ranged=context.request.get(practice2+'/audio/hsk?part=4',headers={'Range':'bytes=0-127'})
+    assert ranged.status==206 and len(ranged.body())==128
+    page.goto(BASE+'/exams/'+slug2+'/practice?section=hsk-l-2a')
+    expect(page.locator('.hsk-practice-audio')).to_be_visible()
+    expect(page.locator('.hsk-picture-grid figure')).to_have_count(6)
+    expect(page.locator('.hsk-options-letters label')).to_have_count(6)
+    fits(page,'level2-practice-l2a')
+    page.goto(BASE+'/exams/'+slug2+'/practice?section=hsk-l-2b')
+    expect(page.locator('.hsk-picture-grid figure')).to_have_count(5)
+    page.goto(BASE+'/exams/'+slug2+'/practice?section=hsk-r-3')
+    expect(page.locator('.hsk-question .hsk-statement')).to_have_count(1)
+    expect(page.locator('.hsk-options-judge label')).to_have_count(2)
+    page.locator('.hsk-options-judge label').first.click()
+    page.get_by_role('button',name='Шалгах',exact=True).click()
+    expect(page.locator('.hsk-options label[data-correct]')).to_have_count(1)
+    fits(page,'level2-practice-r3')
+    page.goto(BASE+'/exams/'+slug2)
+    expect(page.get_by_text('HSK 2 · БҮТЭН MOCK',exact=False)).to_be_visible()
+    fits(page,'level2-briefing')
+    page.get_by_label('Дууг тод сонсож байна').check()
+    page.locator('.exam-agreement input').check()
+    page.get_by_role('button',name='Шалгалт эхлэх / үргэлжлүүлэх',exact=False).click()
+    page.wait_for_url('**/exams/attempts/*')
+    attempt2=page.url.rsplit('/',1)[1]
+    endpoint2=BASE+'/api/mock-attempts/'+attempt2
+    expect(page.locator('.hsk-parts button')).to_have_count(5)
+    expect(page.locator('.hsk-item')).to_have_count(10)
+    assert page.locator('[data-listening-player] audio').get_attribute('src').endswith('/audio/hsk?part=1')
+    fits(page,'level2-timed-l1')
+    page.locator('.hsk-parts button').nth(1).click()
+    expect(page.locator('.hsk-picture-grid figure')).to_have_count(6)
+    expect(page.locator('.hsk-item')).to_have_count(5)
+    for stage_id,count in [('hsk-l',35),('hsk-r',25)]:
+        data=context.request.get(endpoint2).json()
+        assert data['stage']['id']==stage_id and len(data['stage']['questions'])==count and data['report'] is None
+        stage=json.dumps(data['stage'],ensure_ascii=False)
+        for private in ['"answers":','"answerDisplay":','"explanation":','"script"','他起床了。']:assert private not in stage,private
+        if stage_id=='hsk-r':
+            page.goto(BASE+'/exams/attempts/'+attempt2)
+            page.locator('.hsk-parts button').nth(2).click()
+            expect(page.locator('.hsk-item .hsk-statement')).to_have_count(5)
+            fits(page,'level2-timed-r3')
+        answers=fixture('answers',attempt2)
+        response=context.request.patch(endpoint2,headers=ORIGIN,data={'revision':data['revision'],'stageId':stage_id,'responses':answers['responses'],'flags':[]})
+        assert response.ok,response.text()
+        fixture('deadline',attempt2)
+    done=context.request.get(endpoint2).json()
+    assert done['finishedAt'] and done['report']['points']=={'total':60,'earned':60}
+    assert [[s['correct'],s['total']] for s in done['report']['sections']]==[[35,35],[25,25]]
+    page.goto(BASE+'/exams/attempts/'+attempt2)
+    expect(page.locator('.hsk-score-line')).to_contain_text('200/200')
+    expect(page.locator('.hsk-results .eyebrow').first).to_contain_text('HSK 2')
+    expect(page.locator('.hsk-results .exam-review')).to_have_count(60)
+    page.locator('.hsk-results .exam-review').nth(45).locator('summary').first.click()
+    expect(page.locator('.hsk-results .exam-review').nth(45).locator('.hsk-statement')).to_have_count(1)
+    fits(page,'level2-results')
     other=browser.new_context()
     assert other.request.get(endpoint).status==401
     other.close()
     assert not errors,errors
     browser.close()
-print('HSK: 3-column library, hub, purchase, practice with pictures/audio, saved timed sections, no key or script leakage, 195/200 practice score and responsive views passed.')
+print('HSK 1 and HSK 2: library, two-level hub, purchase, practice with pictures/audio, saved timed sections, no key or script leakage, 195/200 practice score and responsive views passed.')

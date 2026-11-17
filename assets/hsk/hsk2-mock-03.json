@@ -1,0 +1,2672 @@
+{
+  "slug": "hsk2-mock-03",
+  "version": 1,
+  "program": "hsk",
+  "title": "HSK 2 · Mock 03",
+  "description": "生日快乐 · Төрсөн өдөр, гэр бүл, дэлгүүр, цаг агаар",
+  "points": 60,
+  "notes": [
+    "Албан бус, эх зохиомжтой дадлагын mock. Хятад хэлний багшийн хяналт хүлээгдэж байна.",
+    "Сонсох хэсэг нь хиймэл (Kokoro) хятад дуу хоолойтой; асуулт бүрийг хоёр удаа уншина.",
+    "Raw зөв хариултын тоо ба хэсэг бүрийн 100 онооны дадлагын хөрвүүлэлт (200-аас); HSK-ийн албан оноо, тэнцсэн эсэх биш."
+  ],
+  "sources": [
+    {
+      "label": "Chinese Testing International · HSK 2",
+      "url": "https://www.chinesetest.cn/HSK/2"
+    },
+    {
+      "label": "HSK 2 албан жишиг материал (бүтэц)",
+      "url": "https://www.chinesetest.cn/userfiles/file/HSK2.pdf"
+    }
+  ],
+  "stages": [
+    {
+      "id": "hsk-l",
+      "title": "听力 · Сонсох",
+      "kind": "listening",
+      "seconds": 1500,
+      "instructions": "Бичлэг нэг удаа, серверийн цагтай зэрэг тоглоно; асуулт бүрийг хоёр удаа уншина. Дөрвөн хэсэг дараалан тоглоно. Бичлэг дууссаны дараах хугацаанд хариугаа шалгана. Цаг дуусахад Унших хэсэг автоматаар эхэлнэ.",
+      "groups": [
+        {
+          "id": "hsk-l-1",
+          "title": "第一部分 · Зураг ба өгүүлбэр",
+          "section": "听力 · Сонсох",
+          "instructions": "听录音，判断对错。\nӨгүүлбэрийг хоёр удаа сонсоно. Зурагтай таарч байвал √, таарахгүй бол × сонгоно.",
+          "pageMode": "group",
+          "hsk": {
+            "layout": "L1",
+            "example": {
+              "pictures": [
+                {
+                  "src": "/exam-assets/hsk/hsk2-examples/listening-1.svg",
+                  "alt": "A woman reading a book on a sofa"
+                }
+              ],
+              "answer": "√"
+            }
+          }
+        },
+        {
+          "id": "hsk-l-2a",
+          "title": "第二部分 · Яриа ба зураг (11–15)",
+          "section": "听力 · Сонсох",
+          "instructions": "听对话，选择相应的图片。\nХоёр хүний яриаг хоёр удаа сонсоно. Тохирох зургийг сонгоно; нэг зураг жишээнд ашиглагдсан.",
+          "pageMode": "group",
+          "hsk": {
+            "layout": "L3",
+            "pictures": [
+              {
+                "label": "A",
+                "src": "/exam-assets/hsk/hsk2-mock-03/l2a-a.svg",
+                "alt": "A cooked fish on a plate"
+              },
+              {
+                "label": "B",
+                "src": "/exam-assets/hsk/hsk2-mock-03/l2a-b.svg",
+                "alt": "Two pencils on a notebook"
+              },
+              {
+                "label": "C",
+                "src": "/exam-assets/hsk/hsk2-mock-03/l2a-c.svg",
+                "alt": "A cup of tea"
+              },
+              {
+                "label": "D",
+                "src": "/exam-assets/hsk/hsk2-mock-03/l2a-d.svg",
+                "alt": "A woman giving a man a present"
+              },
+              {
+                "label": "E",
+                "src": "/exam-assets/hsk/hsk2-mock-03/l2a-e.svg",
+                "alt": "A woman washing clothes in a tub"
+              },
+              {
+                "label": "F",
+                "src": "/exam-assets/hsk/hsk2-mock-03/l2a-f.svg",
+                "alt": "A mobile phone"
+              }
+            ],
+            "example": {
+              "pictures": [
+                {
+                  "label": "C",
+                  "src": "/exam-assets/hsk/hsk2-mock-03/l2a-c.svg",
+                  "alt": "A cup of tea"
+                }
+              ],
+              "answer": "C"
+            }
+          }
+        },
+        {
+          "id": "hsk-l-2b",
+          "title": "第二部分 · Яриа ба зураг (16–20)",
+          "section": "听力 · Сонсох",
+          "instructions": "听对话，选择相应的图片。\nХоёр хүний яриаг хоёр удаа сонсоно. Таван зураг тус бүр нэг удаа таарна.",
+          "pageMode": "group",
+          "hsk": {
+            "layout": "L3",
+            "pictures": [
+              {
+                "label": "A",
+                "src": "/exam-assets/hsk/hsk2-mock-03/l2b-a.svg",
+                "alt": "A person feeling hot under a bright sun"
+              },
+              {
+                "label": "B",
+                "src": "/exam-assets/hsk/hsk2-mock-03/l2b-b.svg",
+                "alt": "A shop counter with fruit"
+              },
+              {
+                "label": "C",
+                "src": "/exam-assets/hsk/hsk2-mock-03/l2b-c.svg",
+                "alt": "A cinema screen and audience"
+              },
+              {
+                "label": "D",
+                "src": "/exam-assets/hsk/hsk2-mock-03/l2b-d.svg",
+                "alt": "A person watching television at home"
+              },
+              {
+                "label": "E",
+                "src": "/exam-assets/hsk/hsk2-mock-03/l2b-e.svg",
+                "alt": "A dog"
+              }
+            ]
+          }
+        },
+        {
+          "id": "hsk-l-3",
+          "title": "第三部分 · Богино яриа",
+          "section": "听力 · Сонсох",
+          "instructions": "听对话，选择答案。\nЯриа ба асуултыг хоёр удаа сонсоно. Асуулт бичигдээгүй; гурван хариултаас зөвийг сонгоно.",
+          "pageMode": "group",
+          "hsk": {
+            "layout": "L4",
+            "example": {
+              "choices": [
+                {
+                  "label": "A",
+                  "text": "椅子上",
+                  "pinyin": "yǐzi shang"
+                },
+                {
+                  "label": "B",
+                  "text": "电脑旁边",
+                  "pinyin": "diànnǎo pángbiān"
+                },
+                {
+                  "label": "C",
+                  "text": "房间外面",
+                  "pinyin": "fángjiān wàimiàn"
+                }
+              ],
+              "answer": "B"
+            }
+          }
+        },
+        {
+          "id": "hsk-l-4",
+          "title": "第四部分 · Урт яриа",
+          "section": "听力 · Сонсох",
+          "instructions": "听对话，选择答案。\nДөрвөн өгүүлбэртэй яриа ба асуултыг хоёр удаа сонсоно. Гурван хариултаас зөвийг сонгоно.",
+          "pageMode": "group",
+          "hsk": {
+            "layout": "L4",
+            "example": {
+              "choices": [
+                {
+                  "label": "A",
+                  "text": "今天上午",
+                  "pinyin": "jīntiān shàngwǔ"
+                },
+                {
+                  "label": "B",
+                  "text": "明天上午",
+                  "pinyin": "míngtiān shàngwǔ"
+                },
+                {
+                  "label": "C",
+                  "text": "明天晚上",
+                  "pinyin": "míngtiān wǎnshang"
+                }
+              ],
+              "answer": "B"
+            }
+          }
+        }
+      ],
+      "questions": [
+        {
+          "id": "hsk2-03-01",
+          "number": "1",
+          "domain": "听力一 · Зураг, өгүүлбэр (√/×)",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-1",
+          "explanation": "The sentence says today is her birthday; the picture shows a birthday cake.",
+          "answers": [
+            "√"
+          ],
+          "prompt": "Сонссон өгүүлбэр зурагтай таарч байна уу?",
+          "options": [
+            "√",
+            "×"
+          ],
+          "optionLabels": [
+            "√",
+            "×"
+          ],
+          "answerDisplay": "√",
+          "figure": {
+            "kind": "image",
+            "src": "/exam-assets/hsk/hsk2-mock-03/l1-01.svg",
+            "alt": "A girl in a party hat beside a birthday cake",
+            "width": 480,
+            "height": 360
+          },
+          "listening": {
+            "part": 1,
+            "script": "今天是她的生日。\nJīntiān shì tā de shēngrì."
+          }
+        },
+        {
+          "id": "hsk2-03-02",
+          "number": "2",
+          "domain": "听力一 · Зураг, өгүүлбэр (√/×)",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-1",
+          "explanation": "The sentence says she is singing; the picture shows that.",
+          "answers": [
+            "√"
+          ],
+          "prompt": "Сонссон өгүүлбэр зурагтай таарч байна уу?",
+          "options": [
+            "√",
+            "×"
+          ],
+          "optionLabels": [
+            "√",
+            "×"
+          ],
+          "answerDisplay": "√",
+          "figure": {
+            "kind": "image",
+            "src": "/exam-assets/hsk/hsk2-mock-03/l1-02.svg",
+            "alt": "A woman singing into a microphone",
+            "width": 480,
+            "height": 360
+          },
+          "listening": {
+            "part": 1,
+            "script": "她正在唱歌。\nTā zhèngzài chànggē."
+          }
+        },
+        {
+          "id": "hsk2-03-03",
+          "number": "3",
+          "domain": "听力一 · Зураг, өгүүлбэр (√/×)",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-1",
+          "explanation": "The sentence says they are playing basketball, but they are dancing.",
+          "answers": [
+            "×"
+          ],
+          "prompt": "Сонссон өгүүлбэр зурагтай таарч байна уу?",
+          "options": [
+            "√",
+            "×"
+          ],
+          "optionLabels": [
+            "√",
+            "×"
+          ],
+          "answerDisplay": "×",
+          "figure": {
+            "kind": "image",
+            "src": "/exam-assets/hsk/hsk2-mock-03/l1-03.svg",
+            "alt": "Two people dancing",
+            "width": 480,
+            "height": 360
+          },
+          "listening": {
+            "part": 1,
+            "script": "他们在打篮球。\nTāmen zài dǎ lánqiú."
+          }
+        },
+        {
+          "id": "hsk2-03-04",
+          "number": "4",
+          "domain": "听力一 · Зураг, өгүүлбэр (√/×)",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-1",
+          "explanation": "The sentence says the brother is taller than his sister; the picture shows that.",
+          "answers": [
+            "√"
+          ],
+          "prompt": "Сонссон өгүүлбэр зурагтай таарч байна уу?",
+          "options": [
+            "√",
+            "×"
+          ],
+          "optionLabels": [
+            "√",
+            "×"
+          ],
+          "answerDisplay": "√",
+          "figure": {
+            "kind": "image",
+            "src": "/exam-assets/hsk/hsk2-mock-03/l1-04.svg",
+            "alt": "A tall boy standing beside a small girl",
+            "width": 480,
+            "height": 360
+          },
+          "listening": {
+            "part": 1,
+            "script": "哥哥比妹妹高。\nGēge bǐ mèimei gāo."
+          }
+        },
+        {
+          "id": "hsk2-03-05",
+          "number": "5",
+          "domain": "听力一 · Зураг, өгүүлбэр (√/×)",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-1",
+          "explanation": "The sentence says there is a watermelon on the table; the picture shows one.",
+          "answers": [
+            "√"
+          ],
+          "prompt": "Сонссон өгүүлбэр зурагтай таарч байна уу?",
+          "options": [
+            "√",
+            "×"
+          ],
+          "optionLabels": [
+            "√",
+            "×"
+          ],
+          "answerDisplay": "√",
+          "figure": {
+            "kind": "image",
+            "src": "/exam-assets/hsk/hsk2-mock-03/l1-05.svg",
+            "alt": "A watermelon and a slice on a table",
+            "width": 480,
+            "height": 360
+          },
+          "listening": {
+            "part": 1,
+            "script": "桌子上有一个西瓜。\nZhuōzi shang yǒu yí gè xīguā."
+          }
+        },
+        {
+          "id": "hsk2-03-06",
+          "number": "6",
+          "domain": "听力一 · Зураг, өгүүлбэр (√/×)",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-1",
+          "explanation": "The sentence says “our little dog”, but the picture shows a cat.",
+          "answers": [
+            "×"
+          ],
+          "prompt": "Сонссон өгүүлбэр зурагтай таарч байна уу?",
+          "options": [
+            "√",
+            "×"
+          ],
+          "optionLabels": [
+            "√",
+            "×"
+          ],
+          "answerDisplay": "×",
+          "figure": {
+            "kind": "image",
+            "src": "/exam-assets/hsk/hsk2-mock-03/l1-06.svg",
+            "alt": "A cat",
+            "width": 480,
+            "height": 360
+          },
+          "listening": {
+            "part": 1,
+            "script": "这是我家的小狗。\nZhè shì wǒ jiā de xiǎo gǒu."
+          }
+        },
+        {
+          "id": "hsk2-03-07",
+          "number": "7",
+          "domain": "听力一 · Зураг, өгүүлбэр (√/×)",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-1",
+          "explanation": "The sentence says mother is cooking; the picture shows a woman cooking.",
+          "answers": [
+            "√"
+          ],
+          "prompt": "Сонссон өгүүлбэр зурагтай таарч байна уу?",
+          "options": [
+            "√",
+            "×"
+          ],
+          "optionLabels": [
+            "√",
+            "×"
+          ],
+          "answerDisplay": "√",
+          "figure": {
+            "kind": "image",
+            "src": "/exam-assets/hsk/hsk2-mock-03/l1-07.svg",
+            "alt": "A woman cooking at a stove",
+            "width": 480,
+            "height": 360
+          },
+          "listening": {
+            "part": 1,
+            "script": "妈妈正在做饭。\nMāma zhèngzài zuò fàn."
+          }
+        },
+        {
+          "id": "hsk2-03-08",
+          "number": "8",
+          "domain": "听力一 · Зураг, өгүүлбэр (√/×)",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-1",
+          "explanation": "The sentence says today is overcast; the picture shows dark clouds.",
+          "answers": [
+            "√"
+          ],
+          "prompt": "Сонссон өгүүлбэр зурагтай таарч байна уу?",
+          "options": [
+            "√",
+            "×"
+          ],
+          "optionLabels": [
+            "√",
+            "×"
+          ],
+          "answerDisplay": "√",
+          "figure": {
+            "kind": "image",
+            "src": "/exam-assets/hsk/hsk2-mock-03/l1-08.svg",
+            "alt": "Dark clouds over houses",
+            "width": 480,
+            "height": 360
+          },
+          "listening": {
+            "part": 1,
+            "script": "今天是阴天。\nJīntiān shì yīntiān."
+          }
+        },
+        {
+          "id": "hsk2-03-09",
+          "number": "9",
+          "domain": "听力一 · Зураг, өгүүлбэр (√/×)",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-1",
+          "explanation": "The sentence says the children are watching TV, but they are playing outside.",
+          "answers": [
+            "×"
+          ],
+          "prompt": "Сонссон өгүүлбэр зурагтай таарч байна уу?",
+          "options": [
+            "√",
+            "×"
+          ],
+          "optionLabels": [
+            "√",
+            "×"
+          ],
+          "answerDisplay": "×",
+          "figure": {
+            "kind": "image",
+            "src": "/exam-assets/hsk/hsk2-mock-03/l1-09.svg",
+            "alt": "Two children playing with a ball outside",
+            "width": 480,
+            "height": 360
+          },
+          "listening": {
+            "part": 1,
+            "script": "两个孩子在看电视。\nLiǎng gè háizi zài kàn diànshì."
+          }
+        },
+        {
+          "id": "hsk2-03-10",
+          "number": "10",
+          "domain": "听力一 · Зураг, өгүүлбэр (√/×)",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-1",
+          "explanation": "The sentence says “rice”, but the picture shows noodles.",
+          "answers": [
+            "×"
+          ],
+          "prompt": "Сонссон өгүүлбэр зурагтай таарч байна уу?",
+          "options": [
+            "√",
+            "×"
+          ],
+          "optionLabels": [
+            "√",
+            "×"
+          ],
+          "answerDisplay": "×",
+          "figure": {
+            "kind": "image",
+            "src": "/exam-assets/hsk/hsk2-mock-03/l1-10.svg",
+            "alt": "A bowl of noodles",
+            "width": 480,
+            "height": 360
+          },
+          "listening": {
+            "part": 1,
+            "script": "我中午吃的是米饭。\nWǒ zhōngwǔ chī de shì mǐfàn."
+          }
+        },
+        {
+          "id": "hsk2-03-11",
+          "number": "11",
+          "domain": "听力二 · Яриа, зураг",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-2a",
+          "explanation": "She gives him a birthday present; D shows a present being given.",
+          "answers": [
+            "D"
+          ],
+          "prompt": "Сонссон яриад тохирох зургийг сонгоно уу.",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "answerDisplay": "D",
+          "listening": {
+            "part": 2,
+            "script": "女：生日快乐！这是送给你的。\nShēngrì kuàilè! Zhè shì sòng gěi nǐ de.\n男：谢谢你！是什么东西？\nXièxie nǐ! Shì shénme dōngxi?"
+          }
+        },
+        {
+          "id": "hsk2-03-12",
+          "number": "12",
+          "domain": "听力二 · Яриа, зураг",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-2a",
+          "explanation": "She is washing clothes; E shows that.",
+          "answers": [
+            "E"
+          ],
+          "prompt": "Сонссон яриад тохирох зургийг сонгоно уу.",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "answerDisplay": "E",
+          "listening": {
+            "part": 2,
+            "script": "男：你在洗什么呢？\nNǐ zài xǐ shénme ne?\n女：洗衣服，孩子的衣服太多了。\nXǐ yīfu, háizi de yīfu tài duō le."
+          }
+        },
+        {
+          "id": "hsk2-03-13",
+          "number": "13",
+          "domain": "听力二 · Яриа, зураг",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-2a",
+          "explanation": "They are talking about a pencil; B shows pencils.",
+          "answers": [
+            "B"
+          ],
+          "prompt": "Сонссон яриад тохирох зургийг сонгоно уу.",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "answerDisplay": "B",
+          "listening": {
+            "part": 2,
+            "script": "女：这是谁的铅笔？\nZhè shì shéi de qiānbǐ?\n男：是我的，谢谢你，我找了很长时间。\nShì wǒ de, xièxie nǐ, wǒ zhǎo le hěn cháng shíjiān."
+          }
+        },
+        {
+          "id": "hsk2-03-14",
+          "number": "14",
+          "domain": "听力二 · Яриа, зураг",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-2a",
+          "explanation": "They are talking about the fish; A shows a fish dish.",
+          "answers": [
+            "A"
+          ],
+          "prompt": "Сонссон яриад тохирох зургийг сонгоно уу.",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "answerDisplay": "A",
+          "listening": {
+            "part": 2,
+            "script": "男：今天的鱼真好吃，是你做的吗？\nJīntiān de yú zhēn hǎochī, shì nǐ zuò de ma?\n女：不是，是我丈夫做的。\nBú shì, shì wǒ zhàngfu zuò de."
+          }
+        },
+        {
+          "id": "hsk2-03-15",
+          "number": "15",
+          "domain": "听力二 · Яриа, зураг",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-2a",
+          "explanation": "They are talking about a new phone; F shows a mobile phone.",
+          "answers": [
+            "F"
+          ],
+          "prompt": "Сонссон яриад тохирох зургийг сонгоно уу.",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "answerDisplay": "F",
+          "listening": {
+            "part": 2,
+            "script": "女：你的新手机是什么颜色的？\nNǐ de xīn shǒujī shì shénme yánsè de?\n男：黑的，你看，在这儿。\nHēi de, nǐ kàn, zài zhèr."
+          }
+        },
+        {
+          "id": "hsk2-03-16",
+          "number": "16",
+          "domain": "听力二 · Яриа, зураг",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-2b",
+          "explanation": "The film is about to start; C shows a cinema.",
+          "answers": [
+            "C"
+          ],
+          "prompt": "Сонссон яриад тохирох зургийг сонгоно уу.",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E"
+          ],
+          "answerDisplay": "C",
+          "listening": {
+            "part": 2,
+            "script": "男：电影快开始了，我们进去吧。\nDiànyǐng kuài kāishǐ le, wǒmen jìnqù ba.\n女：等一下，小李还没到呢。\nDěng yíxià, Xiǎo Lǐ hái méi dào ne."
+          }
+        },
+        {
+          "id": "hsk2-03-17",
+          "number": "17",
+          "domain": "听力二 · Яриа, зураг",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-2b",
+          "explanation": "They are talking about a dog; E shows a dog.",
+          "answers": [
+            "E"
+          ],
+          "prompt": "Сонссон яриад тохирох зургийг сонгоно уу.",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E"
+          ],
+          "answerDisplay": "E",
+          "listening": {
+            "part": 2,
+            "script": "女：你家的狗真漂亮，它几岁了？\nNǐ jiā de gǒu zhēn piàoliang, tā jǐ suì le?\n男：两岁了，它最喜欢和孩子玩。\nLiǎng suì le, tā zuì xǐhuan hé háizi wán."
+          }
+        },
+        {
+          "id": "hsk2-03-18",
+          "number": "18",
+          "domain": "听力二 · Яриа, зураг",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-2b",
+          "explanation": "It is sunny and too hot; A shows a hot sunny day.",
+          "answers": [
+            "A"
+          ],
+          "prompt": "Сонссон яриад тохирох зургийг сонгоно уу.",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E"
+          ],
+          "answerDisplay": "A",
+          "listening": {
+            "part": 2,
+            "script": "男：今天天气真好，是晴天。\nJīntiān tiānqì zhēn hǎo, shì qíngtiān.\n女：是的，但是太热了。\nShì de, dànshì tài rè le."
+          }
+        },
+        {
+          "id": "hsk2-03-19",
+          "number": "19",
+          "domain": "听力二 · Яриа, зураг",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-2b",
+          "explanation": "The child is watching TV in his room; D shows someone watching TV.",
+          "answers": [
+            "D"
+          ],
+          "prompt": "Сонссон яриад тохирох зургийг сонгоно уу.",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E"
+          ],
+          "answerDisplay": "D",
+          "listening": {
+            "part": 2,
+            "script": "女：孩子在做什么呢？\nHáizi zài zuò shénme ne?\n男：他在房间里看电视呢。\nTā zài fángjiān li kàn diànshì ne."
+          }
+        },
+        {
+          "id": "hsk2-03-20",
+          "number": "20",
+          "domain": "听力二 · Яриа, зураг",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-2b",
+          "explanation": "He is buying apples; B shows a shop with fruit.",
+          "answers": [
+            "B"
+          ],
+          "prompt": "Сонссон яриад тохирох зургийг сонгоно уу.",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E"
+          ],
+          "answerDisplay": "B",
+          "listening": {
+            "part": 2,
+            "script": "男：苹果怎么卖？\nPíngguǒ zěnme mài?\n女：这些苹果十块钱，很便宜。\nZhèxiē píngguǒ shí kuài qián, hěn piányi."
+          }
+        },
+        {
+          "id": "hsk2-03-21",
+          "number": "21",
+          "domain": "听力三 · Богино яриа, асуулт",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-3",
+          "explanation": "She wants to give her mother a red piece of clothing.",
+          "answers": [
+            "B"
+          ],
+          "prompt": "Сонссон асуултын хариултыг сонгоно уу.",
+          "options": [
+            "A",
+            "B",
+            "C"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C"
+          ],
+          "answerDisplay": "B · 衣服 (yīfu)",
+          "hsk": {
+            "choices": [
+              {
+                "label": "A",
+                "text": "手表",
+                "pinyin": "shǒubiǎo"
+              },
+              {
+                "label": "B",
+                "text": "衣服",
+                "pinyin": "yīfu"
+              },
+              {
+                "label": "C",
+                "text": "手机",
+                "pinyin": "shǒujī"
+              }
+            ]
+          },
+          "listening": {
+            "part": 3,
+            "script": "男：明天是你妈妈的生日，你准备送她什么？\nMíngtiān shì nǐ māma de shēngrì, nǐ zhǔnbèi sòng tā shénme?\n女：我想送她一件红衣服。\nWǒ xiǎng sòng tā yí jiàn hóng yīfu.\n问：女的想送妈妈什么？\nWèn: Nǚ de xiǎng sòng māma shénme?"
+          }
+        },
+        {
+          "id": "hsk2-03-22",
+          "number": "22",
+          "domain": "听力三 · Богино яриа, асуулт",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-3",
+          "explanation": "His brother is twenty and two years younger, so the man is twenty-two.",
+          "answers": [
+            "C"
+          ],
+          "prompt": "Сонссон асуултын хариултыг сонгоно уу.",
+          "options": [
+            "A",
+            "B",
+            "C"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C"
+          ],
+          "answerDisplay": "C · 二十二岁 (èrshí'èr suì)",
+          "hsk": {
+            "choices": [
+              {
+                "label": "A",
+                "text": "十八岁",
+                "pinyin": "shíbā suì"
+              },
+              {
+                "label": "B",
+                "text": "二十岁",
+                "pinyin": "èrshí suì"
+              },
+              {
+                "label": "C",
+                "text": "二十二岁",
+                "pinyin": "èrshí'èr suì"
+              }
+            ]
+          },
+          "listening": {
+            "part": 3,
+            "script": "女：你弟弟今年多大了？\nNǐ dìdi jīnnián duō dà le?\n男：他比我小两岁，今年二十岁。\nTā bǐ wǒ xiǎo liǎng suì, jīnnián èrshí suì.\n问：男的今年多大？\nWèn: Nán de jīnnián duō dà?"
+          }
+        },
+        {
+          "id": "hsk2-03-23",
+          "number": "23",
+          "domain": "听力三 · Богино яриа, асуулт",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-3",
+          "explanation": "She is a classmate of the woman's elder sister.",
+          "answers": [
+            "C"
+          ],
+          "prompt": "Сонссон асуултын хариултыг сонгоно уу.",
+          "options": [
+            "A",
+            "B",
+            "C"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C"
+          ],
+          "answerDisplay": "C · 女的姐姐的同学 (nǚ de jiějie de tóngxué)",
+          "hsk": {
+            "choices": [
+              {
+                "label": "A",
+                "text": "女的的姐姐",
+                "pinyin": "nǚ de de jiějie"
+              },
+              {
+                "label": "B",
+                "text": "女的的同学",
+                "pinyin": "nǚ de de tóngxué"
+              },
+              {
+                "label": "C",
+                "text": "女的姐姐的同学",
+                "pinyin": "nǚ de jiějie de tóngxué"
+              }
+            ]
+          },
+          "listening": {
+            "part": 3,
+            "script": "男：你认识那个穿白衣服的女孩子吗？\nNǐ rènshi nàge chuān bái yīfu de nǚ háizi ma?\n女：认识，她是我姐姐的同学。\nRènshi, tā shì wǒ jiějie de tóngxué.\n问：那个女孩子是谁？\nWèn: Nàge nǚ háizi shì shéi?"
+          }
+        },
+        {
+          "id": "hsk2-03-24",
+          "number": "24",
+          "domain": "听力三 · Богино яриа, асуулт",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-3",
+          "explanation": "The rain has stopped and it is overcast now.",
+          "answers": [
+            "B"
+          ],
+          "prompt": "Сонссон асуултын хариултыг сонгоно уу.",
+          "options": [
+            "A",
+            "B",
+            "C"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C"
+          ],
+          "answerDisplay": "B · 阴天 (yīntiān)",
+          "hsk": {
+            "choices": [
+              {
+                "label": "A",
+                "text": "晴天",
+                "pinyin": "qíngtiān"
+              },
+              {
+                "label": "B",
+                "text": "阴天",
+                "pinyin": "yīntiān"
+              },
+              {
+                "label": "C",
+                "text": "下雨",
+                "pinyin": "xià yǔ"
+              }
+            ]
+          },
+          "listening": {
+            "part": 3,
+            "script": "女：外面还在下雨吗？\nWàimiàn hái zài xià yǔ ma?\n男：不下了，现在是阴天。\nBú xià le, xiànzài shì yīntiān.\n问：现在天气怎么样？\nWèn: Xiànzài tiānqì zěnmeyàng?"
+          }
+        },
+        {
+          "id": "hsk2-03-25",
+          "number": "25",
+          "domain": "听力三 · Богино яриа, асуулт",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-3",
+          "explanation": "The watermelon costs twenty kuai.",
+          "answers": [
+            "C"
+          ],
+          "prompt": "Сонссон асуултын хариултыг сонгоно уу.",
+          "options": [
+            "A",
+            "B",
+            "C"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C"
+          ],
+          "answerDisplay": "C · 二十块 (èrshí kuài)",
+          "hsk": {
+            "choices": [
+              {
+                "label": "A",
+                "text": "十块",
+                "pinyin": "shí kuài"
+              },
+              {
+                "label": "B",
+                "text": "十二块",
+                "pinyin": "shí'èr kuài"
+              },
+              {
+                "label": "C",
+                "text": "二十块",
+                "pinyin": "èrshí kuài"
+              }
+            ]
+          },
+          "listening": {
+            "part": 3,
+            "script": "男：这个西瓜真大！多少钱？\nZhège xīguā zhēn dà! Duōshao qián?\n女：不贵，二十块。\nBú guì, èrshí kuài.\n问：西瓜多少钱？\nWèn: Xīguā duōshao qián?"
+          }
+        },
+        {
+          "id": "hsk2-03-26",
+          "number": "26",
+          "domain": "听力三 · Богино яриа, асуулт",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-3",
+          "explanation": "The man says his wife's fish is delicious.",
+          "answers": [
+            "A"
+          ],
+          "prompt": "Сонссон асуултын хариултыг сонгоно уу.",
+          "options": [
+            "A",
+            "B",
+            "C"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C"
+          ],
+          "answerDisplay": "A · 男的的妻子 (nán de de qīzi)",
+          "hsk": {
+            "choices": [
+              {
+                "label": "A",
+                "text": "男的的妻子",
+                "pinyin": "nán de de qīzi"
+              },
+              {
+                "label": "B",
+                "text": "男的的妈妈",
+                "pinyin": "nán de de māma"
+              },
+              {
+                "label": "C",
+                "text": "男的的姐姐",
+                "pinyin": "nán de de jiějie"
+              }
+            ]
+          },
+          "listening": {
+            "part": 3,
+            "script": "女：你妻子会做中国菜吗？\nNǐ qīzi huì zuò Zhōngguó cài ma?\n男：会，她做的鱼非常好吃。\nHuì, tā zuò de yú fēicháng hǎochī.\n问：谁做的鱼好吃？\nWèn: Shéi zuò de yú hǎochī?"
+          }
+        },
+        {
+          "id": "hsk2-03-27",
+          "number": "27",
+          "domain": "听力三 · Богино яриа, асуулт",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-3",
+          "explanation": "The man wishes Xiao Hong a happy birthday.",
+          "answers": [
+            "A"
+          ],
+          "prompt": "Сонссон асуултын хариултыг сонгоно уу.",
+          "options": [
+            "A",
+            "B",
+            "C"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C"
+          ],
+          "answerDisplay": "A · 小红 (Xiǎo Hóng)",
+          "hsk": {
+            "choices": [
+              {
+                "label": "A",
+                "text": "小红",
+                "pinyin": "Xiǎo Hóng"
+              },
+              {
+                "label": "B",
+                "text": "男的",
+                "pinyin": "nán de"
+              },
+              {
+                "label": "C",
+                "text": "小红的妈妈",
+                "pinyin": "Xiǎo Hóng de māma"
+              }
+            ]
+          },
+          "listening": {
+            "part": 3,
+            "script": "男：小红，生日快乐！你今天真漂亮。\nXiǎo Hóng, shēngrì kuàilè! Nǐ jīntiān zhēn piàoliang.\n女：谢谢你！快请进，大家都到了。\nXièxie nǐ! Kuài qǐng jìn, dàjiā dōu dào le.\n问：今天是谁的生日？\nWèn: Jīntiān shì shéi de shēngrì?"
+          }
+        },
+        {
+          "id": "hsk2-03-28",
+          "number": "28",
+          "domain": "听力三 · Богино яриа, асуулт",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-3",
+          "explanation": "He will cook noodles at home.",
+          "answers": [
+            "B"
+          ],
+          "prompt": "Сонссон асуултын хариултыг сонгоно уу.",
+          "options": [
+            "A",
+            "B",
+            "C"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C"
+          ],
+          "answerDisplay": "B · 面条 (miàntiáo)",
+          "hsk": {
+            "choices": [
+              {
+                "label": "A",
+                "text": "米饭",
+                "pinyin": "mǐfàn"
+              },
+              {
+                "label": "B",
+                "text": "面条",
+                "pinyin": "miàntiáo"
+              },
+              {
+                "label": "C",
+                "text": "羊肉",
+                "pinyin": "yángròu"
+              }
+            ]
+          },
+          "listening": {
+            "part": 3,
+            "script": "女：晚上我们去外面吃吧？\nWǎnshang wǒmen qù wàimiàn chī ba?\n男：别去了，外面太冷，我来做面条。\nBié qù le, wàimiàn tài lěng, wǒ lái zuò miàntiáo.\n问：他们晚上可能吃什么？\nWèn: Tāmen wǎnshang kěnéng chī shénme?"
+          }
+        },
+        {
+          "id": "hsk2-03-29",
+          "number": "29",
+          "domain": "听力三 · Богино яриа, асуулт",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-3",
+          "explanation": "He started at six and has studied for five years, so he is about eleven.",
+          "answers": [
+            "C"
+          ],
+          "prompt": "Сонссон асуултын хариултыг сонгоно уу.",
+          "options": [
+            "A",
+            "B",
+            "C"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C"
+          ],
+          "answerDisplay": "C · 十一岁 (shíyī suì)",
+          "hsk": {
+            "choices": [
+              {
+                "label": "A",
+                "text": "五岁",
+                "pinyin": "wǔ suì"
+              },
+              {
+                "label": "B",
+                "text": "六岁",
+                "pinyin": "liù suì"
+              },
+              {
+                "label": "C",
+                "text": "十一岁",
+                "pinyin": "shíyī suì"
+              }
+            ]
+          },
+          "listening": {
+            "part": 3,
+            "script": "男：你儿子唱歌唱得真好！\nNǐ érzi chànggē chàng de zhēn hǎo!\n女：他从六岁开始学唱歌，已经学了五年了。\nTā cóng liù suì kāishǐ xué chànggē, yǐjīng xué le wǔ nián le.\n问：女的的儿子今年可能多大？\nWèn: Nǚ de de érzi jīnnián kěnéng duō dà?"
+          }
+        },
+        {
+          "id": "hsk2-03-30",
+          "number": "30",
+          "domain": "听力三 · Богино яриа, асуулт",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-3",
+          "explanation": "He is looking for his mobile phone.",
+          "answers": [
+            "A"
+          ],
+          "prompt": "Сонссон асуултын хариултыг сонгоно уу.",
+          "options": [
+            "A",
+            "B",
+            "C"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C"
+          ],
+          "answerDisplay": "A · 手机 (shǒujī)",
+          "hsk": {
+            "choices": [
+              {
+                "label": "A",
+                "text": "手机",
+                "pinyin": "shǒujī"
+              },
+              {
+                "label": "B",
+                "text": "手表",
+                "pinyin": "shǒubiǎo"
+              },
+              {
+                "label": "C",
+                "text": "铅笔",
+                "pinyin": "qiānbǐ"
+              }
+            ]
+          },
+          "listening": {
+            "part": 3,
+            "script": "女：你在找什么？\nNǐ zài zhǎo shénme?\n男：我的手机，我早上起床的时候还看见它了。\nWǒ de shǒujī, wǒ zǎoshang qǐchuáng de shíhou hái kànjiàn tā le.\n问：男的在找什么？\nWèn: Nán de zài zhǎo shénme?"
+          }
+        },
+        {
+          "id": "hsk2-03-31",
+          "number": "31",
+          "domain": "听力四 · Урт яриа, асуулт",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-4",
+          "explanation": "He is still on the bus.",
+          "answers": [
+            "C"
+          ],
+          "prompt": "Сонссон асуултын хариултыг сонгоно уу.",
+          "options": [
+            "A",
+            "B",
+            "C"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C"
+          ],
+          "answerDisplay": "C · 公共汽车上 (gōnggòng qìchē shang)",
+          "hsk": {
+            "choices": [
+              {
+                "label": "A",
+                "text": "家里",
+                "pinyin": "jiā li"
+              },
+              {
+                "label": "B",
+                "text": "饭馆里",
+                "pinyin": "fànguǎn li"
+              },
+              {
+                "label": "C",
+                "text": "公共汽车上",
+                "pinyin": "gōnggòng qìchē shang"
+              }
+            ]
+          },
+          "listening": {
+            "part": 4,
+            "script": "女：喂，你到哪儿了？大家都在等你呢。\nWèi, nǐ dào nǎr le? Dàjiā dōu zài děng nǐ ne.\n男：对不起，我还在公共汽车上。\nDuìbuqǐ, wǒ hái zài gōnggòng qìchē shang.\n女：还要多长时间？\nHái yào duō cháng shíjiān?\n男：再等我十分钟，好吗？\nZài děng wǒ shí fēnzhōng, hǎo ma?\n问：男的现在在哪儿？\nWèn: Nán de xiànzài zài nǎr?"
+          }
+        },
+        {
+          "id": "hsk2-03-32",
+          "number": "32",
+          "domain": "听力四 · Урт яриа, асуулт",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-4",
+          "explanation": "The first one is too long; they choose the white one.",
+          "answers": [
+            "B"
+          ],
+          "prompt": "Сонссон асуултын хариултыг сонгоно уу.",
+          "options": [
+            "A",
+            "B",
+            "C"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C"
+          ],
+          "answerDisplay": "B · 白的 (bái de)",
+          "hsk": {
+            "choices": [
+              {
+                "label": "A",
+                "text": "长的",
+                "pinyin": "cháng de"
+              },
+              {
+                "label": "B",
+                "text": "白的",
+                "pinyin": "bái de"
+              },
+              {
+                "label": "C",
+                "text": "红的",
+                "pinyin": "hóng de"
+              }
+            ]
+          },
+          "listening": {
+            "part": 4,
+            "script": "男：这件衣服怎么样？\nZhè jiàn yīfu zěnmeyàng?\n女：颜色很好，但是太长了。\nYánsè hěn hǎo, dànshì tài cháng le.\n男：那这件白的呢？\nNà zhè jiàn bái de ne?\n女：这件好，就买这件吧。\nZhè jiàn hǎo, jiù mǎi zhè jiàn ba.\n问：他们要买哪件衣服？\nWèn: Tāmen yào mǎi nǎ jiàn yīfu?"
+          }
+        },
+        {
+          "id": "hsk2-03-33",
+          "number": "33",
+          "domain": "听力四 · Урт яриа, асуулт",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-4",
+          "explanation": "Tomorrow is her daughter's birthday.",
+          "answers": [
+            "A"
+          ],
+          "prompt": "Сонссон асуултын хариултыг сонгоно уу.",
+          "options": [
+            "A",
+            "B",
+            "C"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C"
+          ],
+          "answerDisplay": "A · 女的的女儿 (nǚ de de nǚ'ér)",
+          "hsk": {
+            "choices": [
+              {
+                "label": "A",
+                "text": "女的的女儿",
+                "pinyin": "nǚ de de nǚ'ér"
+              },
+              {
+                "label": "B",
+                "text": "女的的儿子",
+                "pinyin": "nǚ de de érzi"
+              },
+              {
+                "label": "C",
+                "text": "女的的丈夫",
+                "pinyin": "nǚ de de zhàngfu"
+              }
+            ]
+          },
+          "listening": {
+            "part": 4,
+            "script": "女：明天你有时间吗？来我家玩吧。\nMíngtiān nǐ yǒu shíjiān ma? Lái wǒ jiā wán ba.\n男：有什么事情吗？\nYǒu shénme shìqing ma?\n女：明天是我女儿的生日，我们准备了很多好吃的。\nMíngtiān shì wǒ nǚ'ér de shēngrì, wǒmen zhǔnbèi le hěn duō hǎochī de.\n男：好的，我下午就去。\nHǎo de, wǒ xiàwǔ jiù qù.\n问：明天是谁的生日？\nWèn: Míngtiān shì shéi de shēngrì?"
+          }
+        },
+        {
+          "id": "hsk2-03-34",
+          "number": "34",
+          "domain": "听力四 · Урт яриа, асуулт",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-4",
+          "explanation": "She agrees to eat a piece of watermelon.",
+          "answers": [
+            "C"
+          ],
+          "prompt": "Сонссон асуултын хариултыг сонгоно уу.",
+          "options": [
+            "A",
+            "B",
+            "C"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C"
+          ],
+          "answerDisplay": "C · 西瓜 (xīguā)",
+          "hsk": {
+            "choices": [
+              {
+                "label": "A",
+                "text": "米饭",
+                "pinyin": "mǐfàn"
+              },
+              {
+                "label": "B",
+                "text": "鱼",
+                "pinyin": "yú"
+              },
+              {
+                "label": "C",
+                "text": "西瓜",
+                "pinyin": "xīguā"
+              }
+            ]
+          },
+          "listening": {
+            "part": 4,
+            "script": "男：你怎么不吃了？菜不好吃吗？\nNǐ zěnme bù chī le? Cài bù hǎochī ma?\n女：不是，我已经吃了很多了。\nBú shì, wǒ yǐjīng chī le hěn duō le.\n男：再吃一点儿水果吧，西瓜很好吃。\nZài chī yìdiǎnr shuǐguǒ ba, xīguā hěn hǎochī.\n女：好，那我吃一块西瓜。\nHǎo, nà wǒ chī yí kuài xīguā.\n问：女的还要吃什么？\nWèn: Nǚ de hái yào chī shénme?"
+          }
+        },
+        {
+          "id": "hsk2-03-35",
+          "number": "35",
+          "domain": "听力四 · Урт яриа, асуулт",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-4",
+          "explanation": "His birthday is the tenth of August; today is the eighth.",
+          "answers": [
+            "B"
+          ],
+          "prompt": "Сонссон асуултын хариултыг сонгоно уу.",
+          "options": [
+            "A",
+            "B",
+            "C"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C"
+          ],
+          "answerDisplay": "B · 八月十号 (bā yuè shí hào)",
+          "hsk": {
+            "choices": [
+              {
+                "label": "A",
+                "text": "八月八号",
+                "pinyin": "bā yuè bā hào"
+              },
+              {
+                "label": "B",
+                "text": "八月十号",
+                "pinyin": "bā yuè shí hào"
+              },
+              {
+                "label": "C",
+                "text": "十月八号",
+                "pinyin": "shí yuè bā hào"
+              }
+            ]
+          },
+          "listening": {
+            "part": 4,
+            "script": "女：你知道小李的生日是几月几号吗？\nNǐ zhīdào Xiǎo Lǐ de shēngrì shì jǐ yuè jǐ hào ma?\n男：知道，是八月十号。\nZhīdào, shì bā yuè shí hào.\n女：今天已经八号了，我们送他什么呢？\nJīntiān yǐjīng bā hào le, wǒmen sòng tā shénme ne?\n男：他喜欢踢足球，我们送他一个足球吧。\nTā xǐhuan tī zúqiú, wǒmen sòng tā yí gè zúqiú ba.\n问：小李的生日是哪天？\nWèn: Xiǎo Lǐ de shēngrì shì nǎ tiān?"
+          }
+        }
+      ]
+    },
+    {
+      "id": "hsk-r",
+      "title": "阅读 · Унших",
+      "kind": "questions",
+      "seconds": 1320,
+      "instructions": "Дөрвөн хэсэг, 25 асуулт, 22 минут. Хэсгүүдийн хооронд чөлөөтэй шилжинэ. Цаг дуусахад шалгалт дуусна.",
+      "groups": [
+        {
+          "id": "hsk-r-1",
+          "title": "第一部分 · Өгүүлбэр ба зураг",
+          "section": "阅读 · Унших",
+          "instructions": "选择相应的图片。\nӨгүүлбэр бүрт тохирох зургийг сонгоно; нэг зураг жишээнд ашиглагдсан.",
+          "pageMode": "group",
+          "hsk": {
+            "layout": "R2",
+            "pictures": [
+              {
+                "label": "A",
+                "src": "/exam-assets/hsk/hsk2-mock-03/r1-a.svg",
+                "alt": "A glass of milk and a milk bottle"
+              },
+              {
+                "label": "B",
+                "src": "/exam-assets/hsk/hsk2-mock-03/r1-b.svg",
+                "alt": "A teacher at a blackboard"
+              },
+              {
+                "label": "C",
+                "src": "/exam-assets/hsk/hsk2-mock-03/r1-c.svg",
+                "alt": "An open book"
+              },
+              {
+                "label": "D",
+                "src": "/exam-assets/hsk/hsk2-mock-03/r1-d.svg",
+                "alt": "A person running in a park"
+              },
+              {
+                "label": "E",
+                "src": "/exam-assets/hsk/hsk2-mock-03/r1-e.svg",
+                "alt": "A person with an umbrella in the rain"
+              },
+              {
+                "label": "F",
+                "src": "/exam-assets/hsk/hsk2-mock-03/r1-f.svg",
+                "alt": "A person asleep in bed"
+              }
+            ],
+            "example": {
+              "pictures": [
+                {
+                  "label": "D",
+                  "src": "/exam-assets/hsk/hsk2-mock-03/r1-d.svg",
+                  "alt": "A person running in a park"
+                }
+              ],
+              "line": {
+                "text": "他每天早上都去跑步。",
+                "pinyin": "Tā měi tiān zǎoshang dōu qù pǎobù."
+              },
+              "answer": "D"
+            }
+          }
+        },
+        {
+          "id": "hsk-r-2",
+          "title": "第二部分 · Хоосон зай нөхөх",
+          "section": "阅读 · Унших",
+          "instructions": "选词填空。\nХоосон зайд тохирох үгийг сонгоно; нэг үг жишээнд ашиглагдсан.",
+          "pageMode": "group",
+          "hsk": {
+            "layout": "R4",
+            "choices": [
+              {
+                "label": "A",
+                "text": "颜色",
+                "pinyin": "yánsè"
+              },
+              {
+                "label": "B",
+                "text": "一起",
+                "pinyin": "yìqǐ"
+              },
+              {
+                "label": "C",
+                "text": "送",
+                "pinyin": "sòng"
+              },
+              {
+                "label": "D",
+                "text": "可能",
+                "pinyin": "kěnéng"
+              },
+              {
+                "label": "E",
+                "text": "虽然",
+                "pinyin": "suīrán"
+              },
+              {
+                "label": "F",
+                "text": "快乐",
+                "pinyin": "kuàilè"
+              }
+            ],
+            "example": {
+              "line": {
+                "text": "妈妈，生日（　）！这是我给您买的衣服。",
+                "pinyin": "Māma, shēngrì (　)! Zhè shì wǒ gěi nín mǎi de yīfu."
+              },
+              "answerLine": {
+                "label": "F",
+                "text": "快乐",
+                "pinyin": "kuàilè"
+              },
+              "answer": "F"
+            }
+          }
+        },
+        {
+          "id": "hsk-r-3",
+          "title": "第三部分 · Зөв, буруу",
+          "section": "阅读 · Унших",
+          "instructions": "判断对错。\nТекстийг уншаад ★ тэмдэгтэй өгүүлбэр зөв бол √, буруу бол × сонгоно.",
+          "pageMode": "group",
+          "hsk": {
+            "layout": "J",
+            "example": {
+              "line": {
+                "text": "我每天早上六点起床，七点坐公共汽车去学校。",
+                "pinyin": "Wǒ měi tiān zǎoshang liù diǎn qǐchuáng, qī diǎn zuò gōnggòng qìchē qù xuéxiào."
+              },
+              "statement": {
+                "text": "他每天早上七点起床。",
+                "pinyin": "Tā měi tiān zǎoshang qī diǎn qǐchuáng."
+              },
+              "answer": "×"
+            }
+          }
+        },
+        {
+          "id": "hsk-r-4a",
+          "title": "第四部分 · Өгүүлбэр холбох (51–55)",
+          "section": "阅读 · Унших",
+          "instructions": "选择相应的句子。\nӨгүүлбэр бүрт тохирох өгүүлбэрийг A–F-ээс сонгоно; нэг нь жишээнд ашиглагдсан.",
+          "pageMode": "group",
+          "hsk": {
+            "layout": "R3",
+            "choices": [
+              {
+                "label": "A",
+                "text": "是我哥哥，他比我大三岁。",
+                "pinyin": "Shì wǒ gēge, tā bǐ wǒ dà sān suì."
+              },
+              {
+                "label": "B",
+                "text": "太贵了，有便宜一点儿的吗？",
+                "pinyin": "Tài guì le, yǒu piányi yìdiǎnr de ma?"
+              },
+              {
+                "label": "C",
+                "text": "我也是，我们一起去吧。",
+                "pinyin": "Wǒ yě shì, wǒmen yìqǐ qù ba."
+              },
+              {
+                "label": "D",
+                "text": "因为今天是我妻子的生日。",
+                "pinyin": "Yīnwèi jīntiān shì wǒ qīzi de shēngrì."
+              },
+              {
+                "label": "E",
+                "text": "在桌子上，电脑旁边。",
+                "pinyin": "Zài zhuōzi shang, diànnǎo pángbiān."
+              },
+              {
+                "label": "F",
+                "text": "她去商店买东西了，还没回来。",
+                "pinyin": "Tā qù shāngdiàn mǎi dōngxi le, hái méi huílái."
+              }
+            ],
+            "example": {
+              "line": {
+                "text": "你看见我的手机了吗？",
+                "pinyin": "Nǐ kànjiàn wǒ de shǒujī le ma?"
+              },
+              "answerLine": {
+                "label": "E",
+                "text": "在桌子上，电脑旁边。",
+                "pinyin": "Zài zhuōzi shang, diànnǎo pángbiān."
+              },
+              "answer": "E"
+            }
+          }
+        },
+        {
+          "id": "hsk-r-4b",
+          "title": "第四部分 · Өгүүлбэр холбох (56–60)",
+          "section": "阅读 · Унших",
+          "instructions": "选择相应的句子。\nӨгүүлбэр бүрт тохирох өгүүлбэрийг A–E-ээс сонгоно; тус бүр нэг удаа таарна.",
+          "pageMode": "group",
+          "hsk": {
+            "layout": "R3",
+            "choices": [
+              {
+                "label": "A",
+                "text": "好的，我在家等你。",
+                "pinyin": "Hǎo de, wǒ zài jiā děng nǐ."
+              },
+              {
+                "label": "B",
+                "text": "她很高，眼睛很大，非常漂亮。",
+                "pinyin": "Tā hěn gāo, yǎnjing hěn dà, fēicháng piàoliang."
+              },
+              {
+                "label": "C",
+                "text": "不，这是我第一次来。",
+                "pinyin": "Bù, zhè shì wǒ dì-yī cì lái."
+              },
+              {
+                "label": "D",
+                "text": "没关系，我们明天再去吧。",
+                "pinyin": "Méi guānxi, wǒmen míngtiān zài qù ba."
+              },
+              {
+                "label": "E",
+                "text": "谢谢，是我妈妈给我买的。",
+                "pinyin": "Xièxie, shì wǒ māma gěi wǒ mǎi de."
+              }
+            ]
+          }
+        }
+      ],
+      "questions": [
+        {
+          "id": "hsk2-03-36",
+          "number": "36",
+          "domain": "阅读一 · Өгүүлбэр, зураг",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-r-1",
+          "explanation": "The sentence is about a book; C shows a book.",
+          "answers": [
+            "C"
+          ],
+          "prompt": "这本书是我生日的时候姐姐送的。",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "answerDisplay": "C",
+          "hsk": {
+            "line": {
+              "text": "这本书是我生日的时候姐姐送的。",
+              "pinyin": "Zhè běn shū shì wǒ shēngrì de shíhou jiějie sòng de."
+            }
+          }
+        },
+        {
+          "id": "hsk2-03-37",
+          "number": "37",
+          "domain": "阅读一 · Өгүүлбэр, зураг",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-r-1",
+          "explanation": "It is raining outside; E shows rain.",
+          "answers": [
+            "E"
+          ],
+          "prompt": "外面下雨了，我们今天别出去了。",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "answerDisplay": "E",
+          "hsk": {
+            "line": {
+              "text": "外面下雨了，我们今天别出去了。",
+              "pinyin": "Wàimiàn xià yǔ le, wǒmen jīntiān bié chūqù le."
+            }
+          }
+        },
+        {
+          "id": "hsk2-03-38",
+          "number": "38",
+          "domain": "阅读一 · Өгүүлбэр, зураг",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-r-1",
+          "explanation": "The child is asleep; F shows someone sleeping.",
+          "answers": [
+            "F"
+          ],
+          "prompt": "孩子已经睡觉了，我们别说话了。",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "answerDisplay": "F",
+          "hsk": {
+            "line": {
+              "text": "孩子已经睡觉了，我们别说话了。",
+              "pinyin": "Háizi yǐjīng shuìjiào le, wǒmen bié shuōhuà le."
+            }
+          }
+        },
+        {
+          "id": "hsk2-03-39",
+          "number": "39",
+          "domain": "阅读一 · Өгүүлбэр, зураг",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-r-1",
+          "explanation": "A glass of milk every morning; A shows milk.",
+          "answers": [
+            "A"
+          ],
+          "prompt": "我每天早上都要喝一杯牛奶。",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "answerDisplay": "A",
+          "hsk": {
+            "line": {
+              "text": "我每天早上都要喝一杯牛奶。",
+              "pinyin": "Wǒ měi tiān zǎoshang dōu yào hē yì bēi niúnǎi."
+            }
+          }
+        },
+        {
+          "id": "hsk2-03-40",
+          "number": "40",
+          "domain": "阅读一 · Өгүүлбэр, зураг",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-r-1",
+          "explanation": "Teacher Wang is teaching; B shows a teacher at the board.",
+          "answers": [
+            "B"
+          ],
+          "prompt": "王老师正在给学生上课。",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "answerDisplay": "B",
+          "hsk": {
+            "line": {
+              "text": "王老师正在给学生上课。",
+              "pinyin": "Wáng lǎoshī zhèngzài gěi xuésheng shàng kè."
+            }
+          }
+        },
+        {
+          "id": "hsk2-03-41",
+          "number": "41",
+          "domain": "阅读二 · Үг нөхөх",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-r-2",
+          "explanation": "The colour (颜色) of the clothes is pretty.",
+          "answers": [
+            "A"
+          ],
+          "prompt": "这件衣服的（　）很漂亮，我很喜欢。",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "answerDisplay": "A · 颜色",
+          "hsk": {
+            "line": {
+              "text": "这件衣服的（　）很漂亮，我很喜欢。",
+              "pinyin": "Zhè jiàn yīfu de (　) hěn piàoliang, wǒ hěn xǐhuan."
+            }
+          }
+        },
+        {
+          "id": "hsk2-03-42",
+          "number": "42",
+          "domain": "阅读二 · Үг нөхөх",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-r-2",
+          "explanation": "“Give him a watch”: C is 送.",
+          "answers": [
+            "C"
+          ],
+          "prompt": "明天是爸爸的生日，我想（　）他一块手表。",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "answerDisplay": "C · 送",
+          "hsk": {
+            "line": {
+              "text": "明天是爸爸的生日，我想（　）他一块手表。",
+              "pinyin": "Míngtiān shì bàba de shēngrì, wǒ xiǎng (　) tā yí kuài shǒubiǎo."
+            }
+          }
+        },
+        {
+          "id": "hsk2-03-43",
+          "number": "43",
+          "domain": "阅读二 · Үг нөхөх",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-r-2",
+          "explanation": "虽然 … 但是 … means “although … still …”.",
+          "answers": [
+            "E"
+          ],
+          "prompt": "（　）外面在下雪，但是孩子都想出去玩。",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "answerDisplay": "E · 虽然",
+          "hsk": {
+            "line": {
+              "text": "（　）外面在下雪，但是孩子都想出去玩。",
+              "pinyin": "(　) wàimiàn zài xià xuě, dànshì háizi dōu xiǎng chūqù wán."
+            }
+          }
+        },
+        {
+          "id": "hsk2-03-44",
+          "number": "44",
+          "domain": "阅读二 · Үг нөхөх",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-r-2",
+          "explanation": "It may (可能) rain this afternoon.",
+          "answers": [
+            "D"
+          ],
+          "prompt": "天阴了，下午（　）会下雨，你别去踢足球了。",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "answerDisplay": "D · 可能",
+          "hsk": {
+            "line": {
+              "text": "天阴了，下午（　）会下雨，你别去踢足球了。",
+              "pinyin": "Tiān yīn le, xiàwǔ (　) huì xià yǔ, nǐ bié qù tī zúqiú le."
+            }
+          }
+        },
+        {
+          "id": "hsk2-03-45",
+          "number": "45",
+          "domain": "阅读二 · Үг нөхөх",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-r-2",
+          "explanation": "“Let us go together”: B is 一起.",
+          "answers": [
+            "B"
+          ],
+          "prompt": "女：晚上我们（　）去看电影吧？男：好，几点的？",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "answerDisplay": "B · 一起",
+          "hsk": {
+            "line": {
+              "text": "女：晚上我们（　）去看电影吧？男：好，几点的？",
+              "pinyin": "Nǚ: Wǎnshang wǒmen (　) qù kàn diànyǐng ba? Nán: Hǎo, jǐ diǎn de?"
+            }
+          }
+        },
+        {
+          "id": "hsk2-03-46",
+          "number": "46",
+          "domain": "阅读三 · Зөв, буруу (√/×)",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-r-3",
+          "explanation": "Father bought her a new mobile phone.",
+          "answers": [
+            "√"
+          ],
+          "prompt": "今天是妹妹的生日，妈妈做了很多她爱吃的菜，爸爸给她买了一个新手机。\n★ 爸爸送给妹妹一个手机。",
+          "options": [
+            "√",
+            "×"
+          ],
+          "optionLabels": [
+            "√",
+            "×"
+          ],
+          "answerDisplay": "√",
+          "hsk": {
+            "line": {
+              "text": "今天是妹妹的生日，妈妈做了很多她爱吃的菜，爸爸给她买了一个新手机。",
+              "pinyin": "Jīntiān shì mèimei de shēngrì, māma zuò le hěn duō tā ài chī de cài, bàba gěi tā mǎi le yí gè xīn shǒujī."
+            },
+            "statement": {
+              "text": "爸爸送给妹妹一个手机。",
+              "pinyin": "Bàba sòng gěi mèimei yí gè shǒujī."
+            }
+          }
+        },
+        {
+          "id": "hsk2-03-47",
+          "number": "47",
+          "domain": "阅读三 · Зөв, буруу (√/×)",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-r-3",
+          "explanation": "The son is eight and the daughter three years younger: five.",
+          "answers": [
+            "√"
+          ],
+          "prompt": "我有两个孩子，儿子今年八岁，女儿比他小三岁，他们都很喜欢唱歌。\n★ 女儿今年五岁。",
+          "options": [
+            "√",
+            "×"
+          ],
+          "optionLabels": [
+            "√",
+            "×"
+          ],
+          "answerDisplay": "√",
+          "hsk": {
+            "line": {
+              "text": "我有两个孩子，儿子今年八岁，女儿比他小三岁，他们都很喜欢唱歌。",
+              "pinyin": "Wǒ yǒu liǎng gè háizi, érzi jīnnián bā suì, nǚ'ér bǐ tā xiǎo sān suì, tāmen dōu hěn xǐhuan chànggē."
+            },
+            "statement": {
+              "text": "女儿今年五岁。",
+              "pinyin": "Nǚ'ér jīnnián wǔ suì."
+            }
+          }
+        },
+        {
+          "id": "hsk2-03-48",
+          "number": "48",
+          "domain": "阅读三 · Зөв, буруу (√/×)",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-r-3",
+          "explanation": "It snowed last night, not from this morning.",
+          "answers": [
+            "×"
+          ],
+          "prompt": "昨天晚上下了很大的雪，今天早上起床的时候，我看见外面都白了，真漂亮。\n★ 今天早上开始下雪。",
+          "options": [
+            "√",
+            "×"
+          ],
+          "optionLabels": [
+            "√",
+            "×"
+          ],
+          "answerDisplay": "×",
+          "hsk": {
+            "line": {
+              "text": "昨天晚上下了很大的雪，今天早上起床的时候，我看见外面都白了，真漂亮。",
+              "pinyin": "Zuótiān wǎnshang xià le hěn dà de xuě, jīntiān zǎoshang qǐchuáng de shíhou, wǒ kànjiàn wàimiàn dōu bái le, zhēn piàoliang."
+            },
+            "statement": {
+              "text": "今天早上开始下雪。",
+              "pinyin": "Jīntiān zǎoshang kāishǐ xià xuě."
+            }
+          }
+        },
+        {
+          "id": "hsk2-03-49",
+          "number": "49",
+          "domain": "阅读三 · Зөв, буруу (√/×)",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-r-3",
+          "explanation": "The fruit there is very cheap.",
+          "answers": [
+            "×"
+          ],
+          "prompt": "我家旁边新开了一家商店，那儿的水果非常便宜，所以我每天下班都去买。\n★ 那家商店的水果很贵。",
+          "options": [
+            "√",
+            "×"
+          ],
+          "optionLabels": [
+            "√",
+            "×"
+          ],
+          "answerDisplay": "×",
+          "hsk": {
+            "line": {
+              "text": "我家旁边新开了一家商店，那儿的水果非常便宜，所以我每天下班都去买。",
+              "pinyin": "Wǒ jiā pángbiān xīn kāi le yì jiā shāngdiàn, nàr de shuǐguǒ fēicháng piányi, suǒyǐ wǒ měi tiān xiàbān dōu qù mǎi."
+            },
+            "statement": {
+              "text": "那家商店的水果很贵。",
+              "pinyin": "Nà jiā shāngdiàn de shuǐguǒ hěn guì."
+            }
+          }
+        },
+        {
+          "id": "hsk2-03-50",
+          "number": "50",
+          "domain": "阅读三 · Зөв, буруу (√/×)",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-r-3",
+          "explanation": "Her husband cannot cook; he helps with the washing.",
+          "answers": [
+            "×"
+          ],
+          "prompt": "我丈夫不会做饭，但是他每天都帮助我洗衣服。\n★ 她丈夫每天做饭。",
+          "options": [
+            "√",
+            "×"
+          ],
+          "optionLabels": [
+            "√",
+            "×"
+          ],
+          "answerDisplay": "×",
+          "hsk": {
+            "line": {
+              "text": "我丈夫不会做饭，但是他每天都帮助我洗衣服。",
+              "pinyin": "Wǒ zhàngfu bú huì zuò fàn, dànshì tā měi tiān dōu bāngzhù wǒ xǐ yīfu."
+            },
+            "statement": {
+              "text": "她丈夫每天做饭。",
+              "pinyin": "Tā zhàngfu měi tiān zuò fàn."
+            }
+          }
+        },
+        {
+          "id": "hsk2-03-51",
+          "number": "51",
+          "domain": "阅读四 · Өгүүлбэр холбох",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-r-4a",
+          "explanation": "B reacts to the price.",
+          "answers": [
+            "B"
+          ],
+          "prompt": "这块手表两千块。",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "answerDisplay": "B · 太贵了，有便宜一点儿的吗？",
+          "hsk": {
+            "line": {
+              "text": "这块手表两千块。",
+              "pinyin": "Zhè kuài shǒubiǎo liǎngqiān kuài."
+            }
+          }
+        },
+        {
+          "id": "hsk2-03-52",
+          "number": "52",
+          "domain": "阅读四 · Өгүүлбэр холбох",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-r-4a",
+          "explanation": "D gives the reason.",
+          "answers": [
+            "D"
+          ],
+          "prompt": "你今天为什么买了很多菜？",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "answerDisplay": "D · 因为今天是我妻子的生日。",
+          "hsk": {
+            "line": {
+              "text": "你今天为什么买了很多菜？",
+              "pinyin": "Nǐ jīntiān wèi shénme mǎi le hěn duō cài?"
+            }
+          }
+        },
+        {
+          "id": "hsk2-03-53",
+          "number": "53",
+          "domain": "阅读四 · Өгүүлбэр холбох",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-r-4a",
+          "explanation": "A says who the person is.",
+          "answers": [
+            "A"
+          ],
+          "prompt": "你左边的这个人是谁？",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "answerDisplay": "A · 是我哥哥，他比我大三岁。",
+          "hsk": {
+            "line": {
+              "text": "你左边的这个人是谁？",
+              "pinyin": "Nǐ zuǒbian de zhège rén shì shéi?"
+            }
+          }
+        },
+        {
+          "id": "hsk2-03-54",
+          "number": "54",
+          "domain": "阅读四 · Өгүүлбэр холбох",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-r-4a",
+          "explanation": "C: me too, let us go together.",
+          "answers": [
+            "C"
+          ],
+          "prompt": "我想去看那个新电影。",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "answerDisplay": "C · 我也是，我们一起去吧。",
+          "hsk": {
+            "line": {
+              "text": "我想去看那个新电影。",
+              "pinyin": "Wǒ xiǎng qù kàn nàge xīn diànyǐng."
+            }
+          }
+        },
+        {
+          "id": "hsk2-03-55",
+          "number": "55",
+          "domain": "阅读四 · Өгүүлбэр холбох",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-r-4a",
+          "explanation": "F says where she is.",
+          "answers": [
+            "F"
+          ],
+          "prompt": "你妈妈呢？",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "answerDisplay": "F · 她去商店买东西了，还没回来。",
+          "hsk": {
+            "line": {
+              "text": "你妈妈呢？",
+              "pinyin": "Nǐ māma ne?"
+            }
+          }
+        },
+        {
+          "id": "hsk2-03-56",
+          "number": "56",
+          "domain": "阅读四 · Өгүүлбэр холбох",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-r-4b",
+          "explanation": "D accepts the apology: go tomorrow.",
+          "answers": [
+            "D"
+          ],
+          "prompt": "对不起，我今天不能和你去看电影了。",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E"
+          ],
+          "answerDisplay": "D · 没关系，我们明天再去吧。",
+          "hsk": {
+            "line": {
+              "text": "对不起，我今天不能和你去看电影了。",
+              "pinyin": "Duìbuqǐ, wǒ jīntiān bù néng hé nǐ qù kàn diànyǐng le."
+            }
+          }
+        },
+        {
+          "id": "hsk2-03-57",
+          "number": "57",
+          "domain": "阅读四 · Өгүүлбэр холбох",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-r-4b",
+          "explanation": "E thanks for the compliment.",
+          "answers": [
+            "E"
+          ],
+          "prompt": "你的衣服真漂亮！",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E"
+          ],
+          "answerDisplay": "E · 谢谢，是我妈妈给我买的。",
+          "hsk": {
+            "line": {
+              "text": "你的衣服真漂亮！",
+              "pinyin": "Nǐ de yīfu zhēn piàoliang!"
+            }
+          }
+        },
+        {
+          "id": "hsk2-03-58",
+          "number": "58",
+          "domain": "阅读四 · Өгүүлбэр холбох",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-r-4b",
+          "explanation": "C: no, this is my first time.",
+          "answers": [
+            "C"
+          ],
+          "prompt": "你来过我们学校吗？",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E"
+          ],
+          "answerDisplay": "C · 不，这是我第一次来。",
+          "hsk": {
+            "line": {
+              "text": "你来过我们学校吗？",
+              "pinyin": "Nǐ lái guo wǒmen xuéxiào ma?"
+            }
+          }
+        },
+        {
+          "id": "hsk2-03-59",
+          "number": "59",
+          "domain": "阅读四 · Өгүүлбэр холбох",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-r-4b",
+          "explanation": "B describes her.",
+          "answers": [
+            "B"
+          ],
+          "prompt": "你姐姐漂亮吗？",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E"
+          ],
+          "answerDisplay": "B · 她很高，眼睛很大，非常漂亮。",
+          "hsk": {
+            "line": {
+              "text": "你姐姐漂亮吗？",
+              "pinyin": "Nǐ jiějie piàoliang ma?"
+            }
+          }
+        },
+        {
+          "id": "hsk2-03-60",
+          "number": "60",
+          "domain": "阅读四 · Өгүүлбэр холбох",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-r-4b",
+          "explanation": "A: fine, I will wait at home.",
+          "answers": [
+            "A"
+          ],
+          "prompt": "我下午四点去你家找你。",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E"
+          ],
+          "answerDisplay": "A · 好的，我在家等你。",
+          "hsk": {
+            "line": {
+              "text": "我下午四点去你家找你。",
+              "pinyin": "Wǒ xiàwǔ sì diǎn qù nǐ jiā zhǎo nǐ."
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

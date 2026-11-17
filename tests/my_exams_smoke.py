@@ -33,9 +33,9 @@ QUESTIONS = [
     for i in range(1, 11)
 ]
 
-def tokens(user_id, count=1, age_days=0):
+def tokens(user_id, count=1, age_days=0, shape="plain"):
     """Sealed exams like the ones a browser kept before the move, made for one disposable account."""
-    out = subprocess.check_output(["node", "tests/my_exams_fixture.mjs", user_id, str(count), str(age_days)], cwd=ROOT, text=True, encoding="utf-8")
+    out = subprocess.check_output(["node", "tests/my_exams_fixture.mjs", user_id, str(count), str(age_days), shape], cwd=ROOT, text=True, encoding="utf-8")
     return json.loads(out)
 
 def office_zip(kind):
@@ -111,11 +111,13 @@ with sync_playwright() as p:
         assert upload(context.request, count=bad_count).status == 400, "question count " + bad_count
     assert upload(context.request, structure="x" * 501).status == 400, "structure request too long"
     assert upload(context.request, language="ru").status == 400, "exam language"
+    for bad_kinds in ("essay", "choice,choice", "choice,"):
+        assert upload(context.request, kinds=bad_kinds).status == 400, "question formats " + bad_kinds
     # A page loaded before exams moved to the account still sends its own count: it is told to reload, before any credits.
     stale = upload(context.request, saved="0")
     assert stale.status == 409 and "дахин ачаалаад" in stale.json()["error"], stale.text()
-    # Any count from 5 to 40 with a structure request passes validation; the tiny file is refused after it.
-    tiny = upload(context.request, name="tiny.pdf", count="7", structure="Эхний 3 нь тодорхойлолт, дараагийнх нь бодлого.")
+    # Any count from 5 to 40 with a structure request and chosen formats passes validation; the tiny file is refused after it.
+    tiny = upload(context.request, name="tiny.pdf", count="7", structure="Эхний 3 нь тодорхойлолт, дараагийнх нь бодлого.", kinds="order,choice,truefalse")
     assert tiny.status == 422, tiny.status
     assert "хангалттай текст" in tiny.json()["error"], tiny.json()
     page.wait_for_timeout(3200)
@@ -299,11 +301,20 @@ with sync_playwright() as p:
     page.get_by_role("button", name="English", exact=True).click()
     page.get_by_label(re.compile("Шалгалтын бүтэц")).fill("Definitions first, then problems.")
     expect(page.get_by_text("33/500")).to_be_visible()
+    # Every question format is chosen at first; two are turned off and the five left are sent.
+    formats = page.get_by_role("group", name=re.compile("Асуултын төрөл"))
+    expect(formats.locator("button[aria-pressed='true']")).to_have_count(7)
+    formats.get_by_role("button", name="Дараалал").click()
+    formats.get_by_role("button", name="Нөхцөл байдал").click()
+    expect(formats.locator("button[aria-pressed='true']")).to_have_count(5)
+    expect(formats).to_contain_text("5/7")
+    page.locator("[class*='uploadCard']").screenshot(path=str(ART / "my-exams-formats-form-dark.png"))
     page.get_by_role("button", name="Шалгалт үүсгэх", exact=True).click()
     expect(page.get_by_role("heading", name="Cell biology exam 2")).to_be_visible(timeout=20000)
     assert generation_calls and b'name="count"' in generation_calls[0] and b'name="language"' in generation_calls[0], generation_calls[0][:300]
     assert b"\r\n10\r\n" in generation_calls[0] and b"\r\nen\r\n" in generation_calls[0], "selected count and language are sent"
     assert b'name="structure"\r\n\r\nDefinitions first, then problems.\r\n' in generation_calls[0], "the structure request is sent"
+    assert b'name="kinds"\r\n\r\nchoice,truefalse,blank,match,statements\r\n' in generation_calls[0], "the chosen formats are sent"
     assert b'name="saved"' not in generation_calls[0], "the browser no longer reports its own count"
     expect(page.get_by_text("10", exact=True).first).to_be_visible()
     expect(page.get_by_text("15 мин").first).to_be_visible()
@@ -547,6 +558,70 @@ with sync_playwright() as p:
     expect(clock_page.get_by_text("20 / 15 · бүртгэлд")).to_be_visible()
     clock_context.close()
 
+    # A mixed-format exam on its own account: the briefing counts each format, every question names its format,
+    # a true/false statement has two options answered with 1–2, list prompts keep their lines, grading is the
+    # same, and the review and the paper name the formats. Phone widths do not scroll sideways.
+    mixed_context = browser.new_context(viewport={"width": 1280, "height": 900}, color_scheme="light")
+    mixed_page = mixed_context.new_page()
+    mixed_page.on("pageerror", lambda error: errors.append(str(error)))
+    mixed_id = new_account(mixed_context, "Formats QA")
+    assert move(mixed_context.request, tokens(mixed_id, 1, 0, "mixed")[0]).json()["imported"] is True
+    mixed_page.goto(BASE + "/workspace/my-exams", wait_until="domcontentloaded")
+    mixed_page.get_by_text("Cell biology exam").first.click()
+    expect(mixed_page.locator("[class*='kindMix'] li")).to_have_count(7)
+    expect(mixed_page.locator("[class*='kindMix']")).to_contain_text("Үнэн / Худал 1")
+    expect(mixed_page.locator("[class*='briefMeta']")).to_contain_text("Төрөл")
+    mixed_page.screenshot(path=str(ART / "my-exams-formats-briefing.png"), full_page=True)
+    mixed_page.get_by_role("button", name="Цаггүй эхлэх").click()
+    expect(mixed_page.get_by_text("Асуулт 1 / 7")).to_be_visible()
+    expect(mixed_page.locator("[class*='kindTag']")).to_have_text("Сонголттой")
+    mixed_page.get_by_role("button", name="Дараах").click()
+    expect(mixed_page.get_by_text("Асуулт 2 / 7")).to_be_visible()
+    expect(mixed_page.locator("[class*='kindTag']")).to_have_text("Үнэн / Худал")
+    expect(mixed_page.locator("input[type=radio]")).to_have_count(2)
+    expect(mixed_page.locator("p[class*='keys']")).to_contain_text("1–2 — хариулах")
+    mixed_page.keyboard.press("3")
+    expect(mixed_page.locator("input[type=radio]:checked")).to_have_count(0)
+    mixed_page.keyboard.press("2")
+    expect(mixed_page.locator("label[class*='optionOn']")).to_contain_text("Худал")
+    mixed_page.locator("[class*='sheetCell']").nth(3).click()
+    expect(mixed_page.locator("[class*='kindTag']")).to_have_text("Харгалзуулах")
+    assert "job.\n1. Nucleus\n2. Ribosome\n3. Mitochondrion\na) energy" in mixed_page.locator("p[class*='prompt']").inner_text(), "a matching list keeps its lines"
+    mixed_page.screenshot(path=str(ART / "my-exams-formats-runner.png"), full_page=True)
+    for number, key in enumerate([0, 1, 0, 0, 1, 0, 0], start=1):
+        mixed_page.locator("[class*='sheetCell']").nth(number - 1).click()
+        expect(mixed_page.get_by_text(f"Асуулт {number} / 7")).to_be_visible()
+        mixed_page.keyboard.press(str(key + 1))
+    expect(mixed_page.get_by_text("7 / 7 хариулсан")).to_be_visible()
+    mixed_page.get_by_role("button", name="Шалгалт дуусгах").click()
+    mixed_page.get_by_role("button", name="Тийм, дуусгах").click()
+    expect(mixed_page.get_by_text("7 / 7 зөв")).to_be_visible(timeout=15000)
+    expect(mixed_page.locator("article[class*='review'] [class*='kindTag']")).to_have_count(7)
+    mixed_page.screenshot(path=str(ART / "my-exams-formats-result.png"), full_page=True)
+    mixed_page.evaluate("window.__printed = 0; window.print = () => { window.__printed++; }")
+    mixed_page.locator("button[data-pdf]").click()
+    mixed_page.wait_for_function("window.__printed === 1")
+    mixed_sheet = mixed_page.locator("[data-print-sheet]")
+    assert mixed_sheet.locator(".ps-kind").count() == 7, "the paper names each question's format"
+    assert "B · Худал" in mixed_sheet.locator("[data-print-key] li.ps-q").nth(1).text_content(), "a true/false key prints its word"
+    mixed_page.pdf(path=str(ART / "my-exams-formats-paper.pdf"), format="A4")
+    mixed_page.evaluate("dispatchEvent(new Event('afterprint'))")
+    for width in (390, 320):
+        mixed_page.set_viewport_size({"width": width, "height": 800})
+        mixed_page.get_by_role("button", name="Миний шалгалтууд").first.click()
+        expect(mixed_page.get_by_role("group", name=re.compile("Асуултын төрөл"))).to_be_visible()
+        assert mixed_page.evaluate("document.documentElement.scrollWidth <= window.innerWidth"), f"horizontal scroll on the form at {width}"
+        mixed_page.screenshot(path=str(ART / f"my-exams-formats-form-{width}.png"), full_page=True)
+        mixed_page.get_by_text("Cell biology exam").first.click()
+        # The first visit starts a new sitting from the briefing; the second opens the sitting left open by the first.
+        if width == 390: mixed_page.get_by_role("button", name="Цаггүй эхлэх").click()
+        mixed_page.locator("[class*='sheetCell']").nth(4).click()
+        expect(mixed_page.locator("[class*='kindTag']")).to_have_text("Дүгнэлт I–III")
+        assert mixed_page.evaluate("document.documentElement.scrollWidth <= window.innerWidth"), f"horizontal scroll in the runner at {width}"
+        mixed_page.screenshot(path=str(ART / f"my-exams-formats-runner-{width}.png"), full_page=True)
+        mixed_page.locator("[class*='runnerBar']").get_by_role("button", name="Гарах").click()
+    mixed_context.close()
+
     # Client-side file checks never reach the API.
     page.set_input_files('input[type="file"]', {"name": "notes.exe", "mimeType": "application/octet-stream", "buffer": b"MZ"})
     expect(page.locator("p[role='alert']")).to_contain_text("PDF, Word")
@@ -566,4 +641,4 @@ with sync_playwright() as p:
     expect(page.get_by_text("Одоогоор шалгалт алга")).to_be_visible()
     assert not errors, errors
     browser.close()
-print("PASS: my-exams guest redirect, signed-in/origin/multipart/file/count 5-40/structure/language/Office/oversize generation guards and the stale-page refusal (no provider call), session/origin/shape/ownership guards on grade, sitting, delete and import, a browser exam moved to the account once with its claimed score re-graded from the sealed key, an expired token moved, question-count slider up to 40 and per-question price badge, retry guards (session, origin, empty body, ownership, no kept material) and the retry button with only the server reply mocked, the whole-page processing screen while that reply is held (modal, covers the rail, Escape and scroll blocked, released by the reply), generation UI with only the provider reply mocked, briefing, the PDF sheet without the key before a sitting and with it after, timed runner, keyboard answers, flag, answer sheet, autosave to the account, reload and second-device resume, server grading from the stored key, result stats/review filters, score persistence, untimed retake saved on leaving, timed auto-submit on a fake clock, free 5 and IELTS 15 saved-exam limits counted on the account (cleared browser still full), 20-exam account ceiling, mobile drawer and no horizontal scroll, client file checks, delete from the account; no DeepSeek request made.")
+print("PASS: my-exams guest redirect, signed-in/origin/multipart/file/count 5-40/structure/language/Office/oversize generation guards and the stale-page refusal (no provider call), session/origin/shape/ownership guards on grade, sitting, delete and import, a browser exam moved to the account once with its claimed score re-graded from the sealed key, an expired token moved, question-count slider up to 40 and per-question price badge, retry guards (session, origin, empty body, ownership, no kept material) and the retry button with only the server reply mocked, the whole-page processing screen while that reply is held (modal, covers the rail, Escape and scroll blocked, released by the reply), generation UI with only the provider reply mocked, briefing, the PDF sheet without the key before a sitting and with it after, timed runner, keyboard answers, flag, answer sheet, autosave to the account, reload and second-device resume, server grading from the stored key, result stats/review filters, score persistence, untimed retake saved on leaving, timed auto-submit on a fake clock, free 5 and IELTS 15 saved-exam limits counted on the account (cleared browser still full), 20-exam account ceiling, mobile drawer and no horizontal scroll, question formats (format guard, chips sent, a mixed exam's briefing count, format tags, true/false keys 1–2, list prompts, grading, review tags, paper labels, 390/320 without sideways scroll), client file checks, delete from the account; no DeepSeek request made.")

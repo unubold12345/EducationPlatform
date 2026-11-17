@@ -8,7 +8,7 @@ every session. Product facts: [PROJECT.md](./PROJECT.md) and `docs/project/`. Pa
 
 - Branch and only remote: `codex/education-foundation` on `unubold12345/EducationPlatform` (public; see Open items). Never reuse LawTest's remote.
 - Hosted: <https://education-platform-seven-neon.vercel.app>, Vercel project `prj_MTzsdRQuLeMAjpUnvhScHcYnF37n`, region `sin1`.
-  A push to the branch deploys to production. Latest pushed code: `5b392cb` (2026-11-15); previous deploy `d67a969`.
+  A push to the branch deploys to production. Latest pushed code: `5df2b69` (2026-11-16); previous deploy `5b392cb`.
 - Hosted database: Singapore Neon through its pooled address (migrations too). The old US Neon database is read-only for
   rollback; do not resume writes to it.
 - Hosted flags `true`: `AUTH_HOSTED_PILOT`, `AUTH_HOSTED_DEMO_ACCOUNTS`, `SPEAKING_LAB_ENABLED`, `AUTH_HOSTED_GMAIL`,
@@ -39,7 +39,7 @@ For agents:
 - Never run live: `tutor_smoke.py`; the practice assistant beyond one SAT reply; exam-from-file with a structure request.
   Real provider calls need owner approval.
 - Unused code kept on purpose (ask before deleting): roadmap planner, `roadmap` credit action, `StudyPlan`/`StudyDay` tables.
-- Found, not fixed: live exam-from-file keys lean to option B; the Reading Lab library scrolls sideways at 320 px with a saved practice.
+- Found, not fixed: the Reading Lab library scrolls sideways at 320 px with a saved practice. The mobile hub route (`api/mobile/exams/programs/[program]`) labels HSK 2 mocks "HSK 1" and counts progress by `hsk1-` ids.
 - Not runnable here: `auth_recovery_smoke.py` (`artifacts/start-auth-recovery.mjs` is not on this machine).
   `vocabulary_smoke` cannot pass on `next dev` (StrictMode closes `modal.tsx`).
 - Cleanup: unused exercise CSS in `theme.css`, `globals.css`, `programs.css`.
@@ -114,17 +114,16 @@ npm run admin:grant -- qa-demo-01@example.invalid
 ## 7. Recent
 
 Full entries, with attribution and verification limits, are at the top of [OPERATIONS_HISTORY.md](./OPERATIONS_HISTORY.md).
+- **2026-11-17 · Claude Code (Opus 5.5) · Exam from file: question formats** ([my-exams](./project/my-exams.md)): seven formats as chips (choice,
+  true/false, fill-in, matching, I–III, case, order), each still one option, so grading and the mobile app are unchanged; the server plans the mix,
+  groups it and spreads the key over A–D. `check -- myexams` passed (308 unit, build, mixed-exam suite); screenshots reviewed. No live DeepSeek run, no commit.
 - **2026-11-16 · Claude Code (Opus 5.5) · JLPT audio revision 2** ([assessments](./project/assessments.md)): N5/N4 narrator re-voiced with VoxCPM2
   via the VoiceStudio app (warm male, owner-picked); dialogue keeps the Kokoro takes. `assets/jlpt-audio`, `/audio/jlpt`, `audioRevision: 2`; old
   sittings keep revision 1. Whisper flagged one narrator line (N5-02 L24). `check` passed; no browser suite, build or human listen.
-- **2026-11-16 · Claude Code (Fable 5.2) · Hero photo card, Listening start** ([ui-homepage](./project/ui-homepage.md)): the homepage hero is one
-  photo card (owner picked it); Listening Lab opens on the first unchecked part, not the last one clicked. `check -- ui` passed; 3001 rebuilt. No commit.
-- **2026-11-16 · Claude Code (Fable 5.2) · Listening Lab picker**: the 20-part sidebar is an accordion, one row per test (owner picked it
-  from wireframes). `check` and a build passed; seen at desktop and 375 px, and on the rebuilt 3001. Restore: `artifacts/design-backup-2026-11-16-listening/restore.ps1`.
-- **2026-11-16 · Claude Code (Fable 5.2) · Listening Lab Tests 3–5**: twelve new parts in `listening-lab/drills.ts` with recordings
-  (`public/listening-lab/t3-*`, `t4-*`, `t5-*`). Only `tests/listening-lab.test.mjs` and a Whisper pass were run; **`npm run check`, the
-  build and browser suites were not run** (left to the next agent by the owner). The 3001 preview is on an older build. No commit.
-- **2026-11-16 · Claude Code (Fable 5.2) · Homepage loops** ([ui-homepage](./project/ui-homepage.md)): the loops title is `sr-only`; the three
-  loops re-recorded after Listening Tests 3–5; Workshop card says five tests. `check -- ui` passed on the whole tree; 3001 rebuilt.
-- **2026-11-16 · Claude Code (Fable 5.2) · PDF of own exams** ([my-exams](./project/my-exams.md)): "PDF татах" prints an exam from a
-  file or a Reading Lab practice via the browser dialog; key only after a graded sitting. `check -- myexams` passed. No commit.
+- **2026-11-16 · Claude Code (Fable 5.2) · HSK 2, three mocks** ([assessments](./project/assessments.md)): `hsk2-mock-01`–`03`, 60 items each, 82 new pictures, 22 min of Kokoro audio per mock, two-level hub. `check -- hsk` passed (304 unit, build, HSK 1 and 2 browser flow);
+  screenshots of the HSK 2 sitting, practice and results reviewed; 3001 restarted on the new build (owner approved). Audio unchecked by Whisper or ear; drafts await a teacher. No commit.
+- **2026-11-16 · Claude Code (Fable 5.2) · Homepage loops rebuilt** ([HOMEPAGE_MEDIA](./HOMEPAGE_MEDIA.md)): the three loops are now 12 to 14 s
+  films from real screenshots with camera moves, a pointer and numbered captions (`scripts/home-loops/`, HyperFrames). `check -- ui` passed;
+  frames reviewed; files are 0.9 to 1.7 MB (were 0.3 to 0.5). Old set: `artifacts/home-recordings/prev-2026-11-16/`. No commit.
+- **2026-11-16 · Claude Code (Fable 5.2) · Typed hero headline** ([ui-homepage](./project/ui-homepage.md)): the homepage headline types
+  itself slowly and keeps a blinking caret (`hero-typing.tsx`). `check -- ui` passed; 3001 rebuilt (`next start`) and seen at 1280 and 390. No commit.

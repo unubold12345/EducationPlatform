@@ -15,7 +15,7 @@ LawTest/Lexlab is a separate service; this project only links to <https://lexlab
 
 | Area | Where | What | Detail |
 | --- | --- | --- | --- |
-| Full mocks | `/exams`, `/exams/{sat,ielts,jlpt,hsk,eesh}` | SAT 01–09, IELTS Academic 01–12, JLPT N5/N4 ×3 each, HSK 1 ×3, 194 ЭЕШ papers (Math 55, Physics 60, Chemistry 18, Biology 21, English 40); server-authoritative timers, immutable attempt snapshots | [assessments](./project/assessments.md) |
+| Full mocks | `/exams`, `/exams/{sat,ielts,jlpt,hsk,eesh}` | SAT 01–09, IELTS Academic 01–12, JLPT N5/N4 ×3 each, HSK 1 and 2 ×3 each, 194 ЭЕШ papers (Math 55, Physics 60, Chemistry 18, Biology 21, English 40); server-authoritative timers, immutable attempt snapshots | [assessments](./project/assessments.md) |
 | Free mocks | hub tiles | Ten half-length mocks, one per exam, open to every verified account | [assessments](./project/assessments.md) |
 | Practice mode | `/exams/<slug>/practice` | Any mock without a clock, instant checks, DeepSeek assistant; refused while a timed sitting is open | [exam-tools](./project/exam-tools.md) |
 | Plans and payments | `/workspace/plans`, `/subscribe/*`, `/checkout/*` | Free, ЭЕШ ₮40,000, Гадаад хэл ₮60,000 (15 picks a plan month), ₮10,000 per mock, yellow credit packs; all simulated | [pricing-access](./project/pricing-access.md) |

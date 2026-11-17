@@ -186,7 +186,8 @@ def main():
     model = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / 'artifacts' / 'speaking-voice-cache' / 'onnx-community' / 'Kokoro-82M-v1.0-ONNX'
     voice = Voice(model)
     OUT.mkdir(parents=True, exist_ok=True)
-    catalog = {}
+    # Other levels' entries (scripts/generate-hsk2-audio.py) are kept.
+    catalog = {slug: entry for slug, entry in json.loads(CATALOG.read_text(encoding='utf-8')).items() if not slug.startswith('hsk1-')} if CATALOG.exists() else {}
     for number in (1, 2, 3):
         folder = PACK / f'mock-{number:02}'
         source = json.loads((folder / 'mock.json').read_text(encoding='utf-8'))

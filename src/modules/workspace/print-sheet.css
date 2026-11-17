@@ -21,6 +21,9 @@
   .ps-num { flex: none; min-width: 20pt; font-weight: 700; }
   .ps-body { flex: 1; min-width: 0; overflow-wrap: anywhere; }
   .ps-body > p { margin: 0; }
+  /* An exam question's own line breaks (matching, ordering and statement lists) and, in a mixed exam, its format. */
+  .ps-prompt { white-space: pre-line; }
+  .ps-kind { color: #555; font-size: 9pt; font-weight: 600; }
   .ps-options { margin: 4pt 0 0; padding: 0; list-style: none; }
   .ps-options li { display: flex; gap: 6pt; margin-top: 2pt; }
   .ps-options b { flex: none; min-width: 14pt; }

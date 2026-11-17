@@ -61,10 +61,10 @@ export default async function ExamsPage(){
       copy:"Түвшин бүрт 3 mock. Үгийн сан, хэлзүй, унших ба япон аудиотой сонсох хэсэг. Алдсан чадвараа цаггүй давтаарай.",
       facts:[{label:"Агуулга",value:"N5 · 67 / N4 · 85 асуулт"},{label:"Хугацаа",value:"N5 · 90м / N4 · 115м"}],
       chips:["語彙","文法・読解","聴解"],count:6,href:"/exams/jlpt",cta:"Түвшин сонгох",plan:"Гадаад хэл"},
-    {id:"hsk",tone:"hsk",sub:"汉语水平考试",title:"HSK 1",
-      copy:"Хятад хэлний анхан шат. Хятад аудиотой сонсох, зурагтай унших даалгавар; бүх ханз pinyin-тэй. Алдсан хэсгээ цаггүй давтаарай.",
-      facts:[{label:"Агуулга",value:"40 асуулт · 8 хэсэг"},{label:"Хугацаа",value:"15м сонсох · 17м унших"}],
-      chips:["听力 · 15м","阅读 · 17м"],count:hskMocks.length,href:"/exams/hsk",cta:"Mock сонгох",plan:"Гадаад хэл"},
+    {id:"hsk",tone:"hsk",sub:"汉语水平考试",title:"HSK 1–2",
+      copy:"Хятад хэлний анхан шат, түвшин бүрт 3 mock. Хятад аудиотой сонсох, зурагтай унших даалгавар; бүх ханз pinyin-тэй. Алдсан хэсгээ цаггүй давтаарай.",
+      facts:[{label:"Агуулга",value:"HSK 1 · 40 / HSK 2 · 60 асуулт"},{label:"Хугацаа",value:"HSK 1 · 32м / HSK 2 · 47м"}],
+      chips:["听力","阅读"],count:hskMocks.length,href:"/exams/hsk",cta:"Mock сонгох",plan:"Гадаад хэл"},
   ];
   return <div className="container page-space library-page">
     <header className="wsp-page-head library-head"><div><h1 className="sr-only">Шалгалтууд</h1><p>SAT, IELTS, ЭЕШ, JLPT, HSK-ийн бүтэн mock. Цагтай шалгалтаар өөрийгөө шалгах эсвэл цаггүй, AI туслахтай дадлагаар бэлдээрэй.</p></div><Link className="wsp-link" href="/workspace/review">Миний үр дүн →</Link></header>

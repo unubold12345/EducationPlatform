@@ -92,6 +92,23 @@
 .structure textarea::placeholder { color: var(--wsp-soft); }
 .structure textarea:focus { outline: 0; border-color: var(--wsp-accent); box-shadow: 0 0 0 3px var(--wsp-accent-soft); }
 .structure textarea:disabled { opacity: .6; }
+/* The question formats: toggle chips, at least one always on. */
+.kinds { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.kindChips { display: flex; flex-wrap: wrap; gap: 6px; }
+.kindChip {
+  display: inline-flex; align-items: center; gap: 4px; min-height: 30px; padding: 5px 11px;
+  border: 1px solid var(--wsp-line); border-radius: 999px; background: var(--wsp-card); color: var(--wsp-muted);
+  font-size: 12.5px; font-weight: 600; cursor: pointer; transition: border-color .15s, background .15s, color .15s;
+}
+.kindChip:hover:not(:disabled) { border-color: var(--wsp-line-strong); color: var(--wsp-ink); }
+.kindChip[aria-pressed="true"] { border-color: color-mix(in srgb, var(--wsp-accent) 55%, var(--wsp-line)); background: var(--wsp-accent-soft); color: var(--wsp-accent); }
+.kindChip:focus-visible { outline: 2px solid var(--wsp-accent); outline-offset: 2px; }
+.kindChip:disabled { opacity: .55; cursor: not-allowed; }
+/* A question's format in an exam that mixes them, and the briefing's count of each. */
+.kindTag { padding: 2px 9px; border: 1px solid var(--wsp-line); border-radius: 999px; color: var(--wsp-muted); font-size: 11px; font-weight: 600; }
+.kindMix { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin: -12px 0 22px; padding: 0; list-style: none; }
+.kindMix li { padding: 3px 10px; border-radius: 999px; background: var(--wsp-chip); color: var(--wsp-muted); font-size: 12px; font-weight: 600; }
+.kindMix b { color: var(--wsp-ink); font-weight: 700; }
 .segmented { display: inline-flex; padding: 3px; border: 1px solid var(--wsp-line); border-radius: 10px; background: var(--wsp-chip); }
 .segmented button {
   flex: 1; min-width: 52px; padding: 7px 11px; border: 0; border-radius: 7px;

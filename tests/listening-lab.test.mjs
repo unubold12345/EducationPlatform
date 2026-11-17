@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {existsSync,readFileSync} from "node:fs";
-import {listeningDrills,numberedQuestions,totalMarks,recordingLines,evidenceOf,gapCorrect,questionMarks,questionCorrect,normalizeListeningAnswer} from "../src/modules/listening-lab/drills.ts";
+import {listeningDrills,numberedQuestions,totalMarks,recordingLines,recordingPhases,evidenceOf,gapCorrect,questionMarks,questionCorrect,normalizeListeningAnswer} from "../src/modules/listening-lab/drills.ts";
 import {drillAudioKey} from "../src/modules/listening-lab/audio-key.ts";
 
 const timings=JSON.parse(readFileSync(new URL("../src/modules/listening-lab/timings.json",import.meta.url),"utf8"));
@@ -67,4 +67,14 @@ test("mock listening prompts show their title and instruction once per part",asy
  assert.deepEqual(splitListeningPrompt("Recommended public car park: the ____ car park (ONE WORD)"),{title:null,text:"Recommended public car park: the ____ car park (ONE WORD)",instruction:null});
  const info=listeningPartInfo(["Part 2 · Tour\nA: Complete the notes. Write ONE.","Part 2 · Tour\nB: Choose ONE answer.","Part 2 · Tour\nC: Choose ONE answer."]);
  assert.equal(info.title,"Tour");assert.deepEqual(info.instructions,["Complete the notes. Write ONE.","Choose ONE answer."]);
+});
+
+test("player phases: narrator, three breaks and two stretches of talk cover the whole recording",()=>{
+ for(const drill of listeningDrills){
+  const timing=timings[drill.id],phases=recordingPhases(recordingLines(drill),timing.starts,timing.duration);
+  assert.deepEqual(phases.map(p=>p.kind),["intro","break","talk","intro","break","talk","intro","break"],drill.id);
+  assert.equal(phases[0].start,0);assert.equal(phases.at(-1).end,timing.duration);
+  phases.forEach((p,i)=>{assert.ok(p.end>p.start);if(i)assert.equal(p.start,phases[i-1].end);});
+  assert.deepEqual(phases.filter(p=>p.kind==="break").map(p=>Math.round(p.end-p.start)),[21,16,16],drill.id);
+ }
 });

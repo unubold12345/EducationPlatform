@@ -5,8 +5,8 @@ import { Icon } from "@/modules/workspace/icons";
 import { ScoreRing } from "@/modules/workspace/score";
 import { MathText } from "@/modules/exams/math-text";
 import {
-  EXAM_COUNT, MY_EXAM_LIMITS, examUpgrade, examsFullMessage, readDraft, readSavedExam,
-  type ExamDraft, type ExamLanguage, type ExamResult, type GradeItem, type SavedExam,
+  EXAM_COUNT, KIND_HINTS, KIND_LABELS, MY_EXAM_LIMITS, QUESTION_KINDS, examKinds, examUpgrade, examsFullMessage, kindOf, readDraft, readSavedExam,
+  type ExamDraft, type ExamLanguage, type ExamQuestion, type ExamResult, type GradeItem, type QuestionKind, type SavedExam,
 } from "./contracts";
 import { forgetLegacyExam, legacyExams } from "./store";
 import styles from "./my-exams.module.css";
@@ -34,6 +34,11 @@ const clock = (seconds: number) => {
 };
 const kindLabel = (kind: string) => kind === "pdf" ? "PDF" : kind === "docx" ? "Word" : kind === "pptx" ? "PowerPoint" : kind === "image" ? "Зураг" : "Текст";
 const EXAM_API = "/api/workspace/my-exams";
+/** A question's format is named only in an exam that mixes formats; an exam of one format needs no label. */
+const mixed = (exam: SavedExam) => examKinds(exam.questions).length > 1;
+function KindTag({ question }: { question: ExamQuestion }) {
+  return <span className={styles.kindTag} title={KIND_HINTS[kindOf(question)]}>{KIND_LABELS[kindOf(question)]}</span>;
+}
 
 type View =
   | { kind: "list" }
@@ -72,6 +77,8 @@ export function MyExams({ userKey, limit: planLimit, initialExams }: { userKey: 
   const [countText, setCountText] = useState(String(EXAM_COUNT.default));
   const [language, setLanguage] = useState<ExamLanguage>("mn");
   const [structure, setStructure] = useState("");
+  // Every format is chosen at first, so a new exam mixes them; at least one always stays chosen.
+  const [kinds, setKinds] = useState<QuestionKind[]>([...QUESTION_KINDS]);
   // The server sends the plan's current size with every exam; a plan bought or ended meanwhile shows at once.
   const [limit, setLimit] = useState(planLimit);
   const [pending, setPending] = useState(false);
@@ -144,6 +151,12 @@ export function MyExams({ userKey, limit: planLimit, initialExams }: { userKey: 
     chooseCount(countText.trim() && Number.isFinite(value) ? value : count);
   }
 
+  function toggleKind(kind: QuestionKind) {
+    setKinds(current => current.includes(kind)
+      ? current.length > 1 ? current.filter(item => item !== kind) : current
+      : QUESTION_KINDS.filter(item => item === kind || current.includes(item)));
+  }
+
   async function pick(next: ArrayLike<File> | null | undefined) {
     setError("");
     setError(await material.choose(next));
@@ -162,6 +175,7 @@ export function MyExams({ userKey, limit: planLimit, initialExams }: { userKey: 
       form.append("count", String(count));
       form.append("language", language);
       form.append("structure", structure.trim());
+      form.append("kinds", kinds.join(","));
       // The server counts the exams on the account and decides from the plan whether one more fits.
       const response = await fetch(EXAM_API, { method: "POST", body: form, signal: AbortSignal.timeout(175_000) });
       const data = await jsonObject(response);
@@ -289,6 +303,15 @@ export function MyExams({ userKey, limit: planLimit, initialExams }: { userKey: 
         <span className={styles.settingLabel}>Шалгалтын бүтэц <em>сонголтоор · {structure.length}/{MY_EXAM_LIMITS.structure}</em></span>
         <textarea value={structure} onChange={event => setStructure(event.target.value)} maxLength={MY_EXAM_LIMITS.structure} rows={2} placeholder="жишээ нь: 5 тодорхойлолт, 10 бодлого; хялбараас хүнд рүү." disabled={pending} />
       </label>
+      <div className={styles.kinds} role="group" aria-labelledby="mx-kinds-label">
+        <span id="mx-kinds-label" className={styles.settingLabel}>Асуултын төрөл <em>{kinds.length}/{QUESTION_KINDS.length}</em></span>
+        <div className={styles.kindChips}>{QUESTION_KINDS.map(kind => {
+          const on = kinds.includes(kind);
+          return <button key={kind} type="button" className={styles.kindChip} aria-pressed={on} title={KIND_HINTS[kind]} onClick={() => toggleKind(kind)} disabled={pending}>
+            {on ? <Icon name="check" size={13} /> : null}{KIND_LABELS[kind]}
+          </button>;
+        })}</div>
+      </div>
       </div>
 
       <div className={styles.settings}>
@@ -355,6 +378,7 @@ function Renew({ exam, busy, renewing, onRenew }: { exam: SavedExam; busy: boole
 function ExamPdf({ exam }: { exam: SavedExam }) {
   const { printing, job, print, done } = usePrintSheet();
   const key = exam.last ? new Map(exam.last.results.map(item => [item.id, item])) : null;
+  const named = mixed(exam);
   return <>
     <button type="button" className={styles.ghost} onClick={print} data-pdf=""><Icon name="download" size={17} />PDF татах</button>
     {printing ? <PrintSheet title={exam.title} job={job} onDone={done}>
@@ -365,7 +389,8 @@ function ExamPdf({ exam }: { exam: SavedExam }) {
       <ol className="ps-list">{exam.questions.map((question, order) => <li key={question.id} className="ps-q">
         <span className="ps-num">{order + 1}.</span>
         <div className="ps-body">
-          <p><MathText text={question.prompt} /></p>
+          {named ? <p className="ps-kind">{KIND_LABELS[kindOf(question)]}</p> : null}
+          <p className="ps-prompt"><MathText text={question.prompt} /></p>
           <ul className="ps-options">{question.options.map((option, index) => <li key={index}><b>{LETTERS[index]}.</b><span><MathText text={option} /></span></li>)}</ul>
         </div>
       </li>)}</ol>
@@ -375,7 +400,7 @@ function ExamPdf({ exam }: { exam: SavedExam }) {
           const item = key.get(question.id);
           return item ? <li key={question.id} className="ps-q">
             <span className="ps-num">{order + 1}.</span>
-            <div className="ps-body"><p><b>{LETTERS[item.answer]}</b></p><p><MathText text={item.explanation} /></p></div>
+            <div className="ps-body"><p><b>{LETTERS[item.answer]}</b>{kindOf(question) === "truefalse" ? <> · {question.options[item.answer]}</> : null}</p><p><MathText text={item.explanation} /></p></div>
           </li> : null;
         })}</ol>
       </section> : null}
@@ -397,6 +422,8 @@ function Briefing({ exam, busy, error, onBack, onStart, onResume, onResult, onDe
   onDelete: () => void;
 }) {
   const draft = exam.draft;
+  // How many questions of each format the exam has, in list order.
+  const mix = examKinds(exam.questions).map(kind => ({ kind, count: exam.questions.filter(question => kindOf(question) === kind).length }));
   const restart = (mode: ExamDraft["mode"]) => {
     if (window.confirm("Одоогийн хариултууд устаж, шалгалт шинээр эхэлнэ. Үргэлжлүүлэх үү?")) onStart(mode);
   };
@@ -411,8 +438,9 @@ function Briefing({ exam, busy, error, onBack, onStart, onResume, onResult, onDe
         <div><dt>Асуулт</dt><dd>{exam.questions.length}</dd></div>
         <div><dt>Санал болгох хугацаа</dt><dd>{minutes(exam.suggestedSeconds)}</dd></div>
         <div><dt>Хэл</dt><dd>{exam.language === "mn" ? "Монгол" : "English"}</dd></div>
-        <div><dt>Сонголт</dt><dd>4</dd></div>
+        <div><dt>Төрөл</dt><dd>{mix.length > 1 ? mix.length : KIND_LABELS[mix[0]?.kind ?? "choice"]}</dd></div>
       </dl>
+      {mix.length > 1 ? <ul className={styles.kindMix} aria-label="Асуултын төрөл">{mix.map(item => <li key={item.kind} title={KIND_HINTS[item.kind]}>{KIND_LABELS[item.kind]} <b>{item.count}</b></li>)}</ul> : null}
 
       {draft ? <div className={styles.draftBox}>
         <div>
@@ -516,6 +544,7 @@ function Runner({ exam, mode, startedAt, onExit, onDraft, onGraded }: {
   const submitRef = useRef<() => Promise<void>>(async () => {});
   const confirmRef = useRef<HTMLButtonElement>(null);
   const question = exam.questions[Math.min(index, exam.questions.length - 1)];
+  const named = mixed(exam);
   const answered = exam.questions.filter(item => Object.prototype.hasOwnProperty.call(answers, item.id)).length;
   const elapsed = Math.max(0, Math.floor((now - startedAt) / 1000));
   const remaining = mode === "timed" ? Math.max(0, exam.suggestedSeconds - elapsed) : elapsed;
@@ -612,6 +641,7 @@ function Runner({ exam, mode, startedAt, onExit, onDraft, onGraded }: {
         <article className={styles.questionCard}>
           <div className={styles.questionHead}>
             <span className={styles.questionNum}>Асуулт {index + 1} / {exam.questions.length}</span>
+            {named ? <KindTag question={question} /> : null}
             {question.topic ? <span className={styles.topic}>{question.topic}</span> : null}
             <button type="button" className={`${styles.flagButton} ${flagged.includes(question.id) ? styles.flagOn : ""}`} onClick={toggleFlag} aria-pressed={flagged.includes(question.id)} title="Дараа эргэж үзэх">
               <Icon name="flag" size={16} />{flagged.includes(question.id) ? "Тэмдэглэсэн" : "Тэмдэглэх"}
@@ -641,7 +671,7 @@ function Runner({ exam, mode, startedAt, onExit, onDraft, onGraded }: {
           </div>
         </div> : null}
         {error ? <div className={styles.errorBox} role="alert"><p>{error}</p><button type="button" className={styles.ghost} onClick={() => { submitted.current = false; setSubmitting(false); void submit(); }}>Дахин оролдох</button></div> : null}
-        <p className={styles.keys}>1–4 — хариулах · ← → — асуулт солих · F — тэмдэглэх · Esc — гарах</p>
+        <p className={styles.keys}>1–{question.options.length} — хариулах · ← → — асуулт солих · F — тэмдэглэх · Esc — гарах</p>
       </section>
 
       <aside className={styles.sheet} aria-labelledby="mx-sheet-title">
@@ -680,6 +710,7 @@ function Result({ exam, result, busy, error, onBack, onRetake, onDelete, renewin
   const shown = filter === "all" ? entries : filter === "wrong" ? wrong : blank;
   const status = (item: GradeItem | undefined) => !item || item.chosen === null ? "blank" : item.correct ? "correct" : "wrong";
   const statusLabel = (value: string) => value === "correct" ? "Зөв" : value === "wrong" ? "Алдсан" : "Хариулаагүй";
+  const named = mixed(exam);
 
   return <div className={`wsp-page ${styles.page} ${styles.resultPage}`}>
     <button type="button" className={styles.back} onClick={onBack}><Icon name="back" size={18} />Миний шалгалтууд</button>
@@ -726,6 +757,7 @@ function Result({ exam, result, busy, error, onBack, onRetake, onDelete, renewin
           <div className={styles.reviewHead}>
             <span className={styles.questionNum}>Асуулт {order + 1}</span>
             <span className={`${styles.statusPill} ${styles["status" + value[0].toUpperCase() + value.slice(1)]}`}>{statusLabel(value)}</span>
+            {named ? <KindTag question={question} /> : null}
             {question.topic ? <span className={styles.topic}>{question.topic}</span> : null}
           </div>
           <p className={styles.prompt}><MathText text={question.prompt} /></p>

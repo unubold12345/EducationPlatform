@@ -857,6 +857,26 @@ export function recordingLines(drill:ListeningDrill):ListeningLine[] {
  ];
 }
 
+// What the recording is doing over time, for the player: the narrator speaking ("intro"), silent reading or
+// checking time ("break") and the conversation or talk itself ("talk"). Built from the line start times; a
+// narrator line ends with its pause, and the generator adds one second of gap before that pause.
+export type RecordingPhase={kind:"intro"|"break"|"talk";start:number;end:number};
+export function recordingPhases(lines:ListeningLine[],starts:number[],duration:number):RecordingPhase[] {
+ const out:RecordingPhase[]=[];
+ const add=(kind:RecordingPhase["kind"],start:number,end:number)=>{
+  const last=out.at(-1);
+  if(end<=start)return;
+  if(last&&last.kind===kind)last.end=end;else out.push({kind,start,end});
+ };
+ lines.forEach((line,i)=>{
+  const start=i===0?0:starts[i],end=i<lines.length-1?starts[i+1]:duration;
+  if(line.voice!=="narrator"){add("talk",start,end);return;}
+  const rest=Math.max(start,end-(line.pauseAfter??0)-1);
+  add("intro",start,rest);add("break",rest,end);
+ });
+ return out;
+}
+
 // Lower-case, trim and drop spacing, currency/percent signs and trailing full stops so "BS9 4RJ" = "bs94rj".
 export function normalizeListeningAnswer(value:string){
  return value.normalize("NFKC").toLowerCase().replace(/[\s\-–£$%]/g,"").replace(/\.+$/,"");

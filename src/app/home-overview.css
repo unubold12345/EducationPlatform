@@ -218,6 +218,13 @@
 .home-page .hero-card .hero-copy { max-width: 600px; padding: 58px 56px 0; }
 .home-page .hero.hero-card h1 { color: #fff; }
 .home-page .hero.hero-card h1 > span { color: #6db3ff; }
+/* Typed headline (hero-typing.tsx): untyped letters keep their space; the caret takes none. */
+.hero-type-line { font-style: normal; }
+.hero-type-rest { visibility: hidden; }
+.hero-type-caret { position: relative; display: inline-block; width: 0; height: .82em; vertical-align: -.06em; }
+.hero-type-caret::after { content: ""; position: absolute; inset: 0 auto 0 .07em; width: .07em; border-radius: 2px; background: currentColor; animation: hero-caret 1.05s steps(1) infinite; }
+@keyframes hero-caret { 50% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .hero-type-caret::after { animation: none; } }
 .home-page .hero-card .hero-description { color: #ffffffc7; }
 .home-page .hero-card .hero-actions { margin: 28px 0 0; }
 .home-page .hero-card .home-watch-link { color: #fff; }

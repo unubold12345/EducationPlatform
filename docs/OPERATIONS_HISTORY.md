@@ -25,6 +25,23 @@ Before 2026-10-25 agents were not recorded. Commits and details are in the full 
 
 ## Archived recent entries
 
+- **2026-11-16 · Claude Code (Fable 5.2) · Listening Lab picker and player** ([product-surface](./project/product-surface.md)): test rows are
+  cards with a numbered header; the top intro text is gone; the player marks breaks on the track and names the phase. `check` passed (301
+  unit); seen on `next dev` 3008 at 1280/390/320, signed out; 3001 rebuilt later. No commit. Restore: `artifacts/design-backup-2026-11-16-listening-2/restore.ps1`.
+- **2026-11-16 · Claude Code (Fable 5.2) · Release `5df2b69`,** owner-authorized push and deploy of `399c46e`, `31e4d30`, `5df2b69` (not the
+  mobile files) after `check:push -- ui notifications` passed. Vercel READY; live health, public routes, new hero and media checked. No
+  signed-in hosted look, no `hosted_demo_smoke`; the notifications migration ran with the build. This entry is not committed.
+- **2026-11-16 · Claude Code (Fable 5.2) · Hero photo card, Listening start** ([ui-homepage](./project/ui-homepage.md)): the homepage hero is one
+  photo card (owner picked it); Listening Lab opens on the first unchecked part, not the last one clicked. `check -- ui` passed; 3001 rebuilt. No commit.
+- **2026-11-16 · Claude Code (Fable 5.2) · Listening Lab picker**: the 20-part sidebar is an accordion, one row per test (owner picked it
+  from wireframes). `check` and a build passed; seen at desktop and 375 px, and on the rebuilt 3001. Restore: `artifacts/design-backup-2026-11-16-listening/restore.ps1`.
+- **2026-11-16 · Claude Code (Fable 5.2) · Listening Lab Tests 3–5**: twelve new parts in `listening-lab/drills.ts` with recordings
+  (`public/listening-lab/t3-*`, `t4-*`, `t5-*`). Only `tests/listening-lab.test.mjs` and a Whisper pass were run; **`npm run check`, the
+  build and browser suites were not run** (left to the next agent by the owner). The 3001 preview is on an older build. No commit.
+- **2026-11-16 · Claude Code (Fable 5.2) · Homepage loops** ([ui-homepage](./project/ui-homepage.md)): the loops title is `sr-only`; the three
+  loops re-recorded after Listening Tests 3–5; Workshop card says five tests. `check -- ui` passed on the whole tree; 3001 rebuilt.
+- **2026-11-16 · Claude Code (Fable 5.2) · PDF of own exams** ([my-exams](./project/my-exams.md)): "PDF татах" prints an exam from a
+  file or a Reading Lab practice via the browser dialog; key only after a graded sitting. `check -- myexams` passed. No commit.
 - **2026-11-15 · Claude Code (Fable 5.2) · Page titles and phone inbox**: the large `h1` on the Workspace rail pages and labs is
   `sr-only` (collection, exam and result titles stay); the phone inbox covers the screen. `check` + 8 browser groups passed.
 - **2026-11-15 · Claude Code (Fable 5.2) · In-app notifications** ([notifications](./project/notifications.md)): rail inbox, purchase and

@@ -3,10 +3,11 @@ export type ExamProgram = "sat" | "ielts" | "entrance" | "jlpt" | "hsk";
 /** HSK picture and pinyin display data (answer-free). Words the student hears stay in `listening.script`. */
 export type HskPicture = { label?: string; src: string; alt: string };
 export type HskLine = { label?: string; text: string; pinyin: string };
-/** A question's own printed material: picture choices (Listening 2), its sentence (Reading) or text choices (Listening 4). */
-export type HskItem = { pictures?: HskPicture[]; line?: HskLine; choices?: HskLine[] };
+/** A question's own printed material: picture choices (Listening 2), its sentence (Reading), text choices (Listening 4) or the HSK 2 starred statement judged against its text. */
+export type HskItem = { pictures?: HskPicture[]; line?: HskLine; choices?: HskLine[]; statement?: HskLine };
 /** A part's shared six pictures or six answers/words, and its worked example with the example's printed answer. */
-export type HskGroup = { pictures?: HskPicture[]; choices?: HskLine[]; example?: { pictures?: HskPicture[]; line?: HskLine; choices?: HskLine[]; answerLine?: HskLine; answer: string } };
+/** `layout` (HSK 2) names the page type a group is drawn as when its id does not: an HSK 1 part or J, the text-only true/false part. */
+export type HskGroup = { layout?: "L1"|"L2"|"L3"|"L4"|"R1"|"R2"|"R3"|"R4"|"J"; pictures?: HskPicture[]; choices?: HskLine[]; example?: { pictures?: HskPicture[]; line?: HskLine; statement?: HskLine; choices?: HskLine[]; answerLine?: HskLine; answer: string } };
 export type EntranceSubject = "math" | "physics" | "chemistry" | "biology" | "english";
 /** A site-drawn diagram (legacy mock content) or a stored, self-contained SVG diagram. */
 export type ExamFigure =

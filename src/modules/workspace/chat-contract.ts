@@ -133,7 +133,7 @@ const subjectGuides: Record<ChatSubject, string> = {
   "eesh-biology": "Mongolian university entrance exam (ЭЕШ) biology: explain the concept behind each option in Mongolian school terminology and show genetics or statistics calculations step by step.",
   "eesh-english": "Mongolian university entrance exam (ЭЕШ) English: explain the grammar or vocabulary point and why the other options fail; explain in Mongolian when the student writes in Mongolian.",
   jlpt: "JLPT N5/N4 Japanese: explain vocabulary, kanji readings, particles and grammar; keep Japanese examples in Japanese with kana readings for kanji. Never predict an official JLPT score or pass.",
-  hsk: "HSK 1 Chinese: explain characters, pinyin and tones, word meanings, measure words and simple sentence patterns; keep Chinese examples in simplified characters with pinyin. HSK pictures are given as descriptions; never claim to see an image. Never predict an official HSK score, level or pass.",
+  hsk: "HSK 1–2 Chinese: explain characters, pinyin and tones, word meanings, measure words and simple sentence patterns; keep Chinese examples in simplified characters with pinyin. HSK pictures are given as descriptions; never claim to see an image. Never predict an official HSK score, level or pass.",
 };
 const modeGuides: Record<ChatMode | ReviewMode, string> = {
   ask: "Answer the student's question directly and clearly, then suggest one useful next step.",

@@ -23,7 +23,7 @@ export default function ProgramsPage() {
 
     <div className="program-grid program-picker">{programs.map((program, index) => <ProgramSpotlight key={program.slug} program={program} index={index} />)}</div>
 
-    <p className="fine-print">Мөн нэг шалгалтын эрхээр: <Link className="text-link" href="/exams/jlpt">JLPT N5 / N4 · {jlptMocks.length} mock</Link> · <Link className="text-link" href="/exams/hsk">HSK 1 · {hskMocks.length} mock</Link></p>
+    <p className="fine-print">Мөн нэг шалгалтын эрхээр: <Link className="text-link" href="/exams/jlpt">JLPT N5 / N4 · {jlptMocks.length} mock</Link> · <Link className="text-link" href="/exams/hsk">HSK 1–2 · {hskMocks.length} mock</Link></p>
 
     <section className="programs-steps" aria-labelledby="programs-steps-heading">
       <div><p className="eyebrow">ХЭРХЭН БЭЛДЭХ ВЭ</p><h2 id="programs-steps-heading">Нэг алхамаас<br />эхэл. Дараа нь<br />өдөр бүр.</h2></div>

@@ -34,19 +34,35 @@ Assets: `public/home/eesh-cover.webp`, `hsk-cover.webp`, `workshop-cover.webp` (
 - **hsk-cover:** still-life on ivory: bamboo brush on a ceramic rest, ink stone, blank rice paper, small red paper lantern, celadon tea cup, white plum blossom twig, blank cobalt notebook; no Chinese characters.
 - **workshop-cover:** a young Mongolian university student in a headset with a boom microphone, speaking with an open-hand gesture to a laptop in a bright study room.
 
-## Product recordings
+## Product loops
 
-Three silent, real local-browser recordings made with reserved QA data. MP4/H.264, 1440 × 900 at 24 fps, with WebP posters in `public/home/`. No real user data, microphone recordings, live AI calls or fabricated AI outputs. The review clip uses an explicitly labelled sample result. The current homepage uses silent, inline, autoplaying loops without player controls or click/keyboard interaction, with adjacent text descriptions. Playback pauses automatically offscreen, in a hidden tab or for a reduced-motion preference; posters remain available if autoplay is blocked.
+Three silent films built from real screenshots of the local product (since 2026-11-16, owner request: faster, animated, captioned).
+MP4/H.264, 1440 × 900 at 30 fps, with WebP posters in `public/home/`. Each film is a camera over 2880 × 1800 stills: it settles on
+the page, pushes in on the control being used, a pointer clicks it and the film cuts to the next real screen; a numbered Mongolian
+caption names each step. Nothing on a screen is drawn or edited: only the pointer, the blue focus frame and the caption are added.
+No real user data, microphone recordings, live AI calls or fabricated AI outputs; the review film uses a sample result from the
+guarded local QA fixture. The homepage plays them as silent, inline, autoplaying loops without controls, with adjacent text
+descriptions; playback pauses offscreen, in a hidden tab or for a reduced-motion preference, and posters remain if autoplay is blocked.
 
-| File | Duration | Actual actions |
+| File | Duration | Steps (caption) |
 | --- | --- | --- |
-| `public/home/exam-practice.mp4` | 23 s | Browse the library, select SAT, open practice, select/check an answer, move to the next question |
-| `public/home/workspace-review.mp4` | 18.5 s | Open Workspace, open Review, select a completed sample, inspect questions and explanations |
-| `public/home/workshop.mp4` | 28.6 s | Open Workshop, choose a Speaking partner/part, open Essay Studio and type a sample paragraph |
+| `public/home/exam-practice.mp4` | 13.8 s | Шалгалтаа сонго · Бүтэн mock-оо нээ · Дадлагын горим: цаггүй · Хариулаад шууд шалга · Алдаа бүр тайлбартай |
+| `public/home/workspace-review.mp4` | 11.8 s | Бүх бэлтгэл нэг дор · Өгсөн шалгалтаа нээ · Оноо, сул чадвараа хар · Асуулт бүр тайлбартай |
+| `public/home/workshop.mp4` | 12.6 s | Workshop: дөрвөн чадвар · Speaking: AI хамтрагчаа сонго · Writing: бичээд зөвлөгөө ав · Listening: таван бүрэн тест |
 
-Regenerate with `python scripts/record-homepage-demos.py` while the local preview and database are running (re-recorded 2026-11-16 against that day's build, so the loops show the notification row, the current Exams, Review and Workshop layouts and the five-test Listening card; the 2026-11-13 set is kept in ignored `artifacts/home-recordings/prev-2026-11-13/`; the Speaking Lab session-type locator was loosened because the button's name now includes its description). The script creates a disposable `qa-exam-home-demo-…@example.invalid` account, uses simulated SAT payment and the existing guarded local QA deadline fixture to prepare a sample submitted result. It never changes an application timer or access check. Raw captures stay ignored under `artifacts/home-recordings/`; only compressed media is used by the page.
+Regenerate, with the local preview (3001) and database running:
 
-The original click-to-play version was verified locally for decoding, seeking and deferred video requests. Videos and posters remain unchanged in the new autoplay version. Responsive artwork is served by Next Image. Original screenshots are in ignored `artifacts/home-final/`; hand-drawn variant screenshots are in `artifacts/home-handdrawn/`.
+1. `python -X utf8 scripts/home-loops/capture.py`: stills and `shots.json` (the boxes the films point at) in ignored
+   `artifacts/home-loops/capture/`. It creates a disposable `qa-exam-home-demo-…@example.invalid` account, uses the simulated SAT
+   payment and the guarded local deadline fixture for the sample result. It never changes an application timer or access check.
+2. `node scripts/home-loops/build.mjs`: writes one HyperFrames project per film under `artifacts/home-loops/<film>/`. The shot
+   list (order, durations, captions, zoom targets, pointer stops) is the `FILMS` table at the top of that script.
+3. `npx hyperframes render artifacts/home-loops/<film> -o artifacts/home-loops/<film>.mp4 -q high` for each film.
+4. `node scripts/home-loops/build.mjs --publish`: compresses to `public/home/` (CRF 27) and cuts the posters.
+
+A layout change that moves a pictured control needs step 1 again; a caption or timing change needs only steps 2 to 4. The earlier
+real-time browser recordings (18 to 29 s, `scripts/record-homepage-demos.py`) are kept in ignored
+`artifacts/home-recordings/prev-2026-11-16/`; copy the six files back into `public/home/` to restore them.
 
 
 ## Hand-drawn variant · 2026-11-08

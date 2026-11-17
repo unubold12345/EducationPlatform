@@ -1,9 +1,10 @@
-/* HSK 1 hub, briefing, sitting, practice and results. Scoped under .hsk-*; colours come from the site tokens. */
+/* HSK 1–2 hub, briefing, sitting, practice and results. Scoped under .hsk-*; colours come from the site tokens. */
 .hsk-hub,.hsk-work,.hsk-results,.practice-session{--hsk-accent:var(--blue)}
 .hsk-hub,.hsk-work,.hsk-results{min-width:0}
 .hsk-hub-head{max-width:760px;margin:30px 0}.hsk-hub-head h1{font-size:clamp(32px,5vw,58px);margin:10px 0}.hsk-hub-head>p{color:var(--muted);line-height:1.8}
 .wsp-content .hsk-hub-head h1{font-size:clamp(28px,3.2vw,38px);font-weight:720;line-height:1.12;letter-spacing:-.02em}
 .hsk-format{color:var(--muted);font-size:14px;margin:0 0 18px}
+.hsk-level{font-size:22px;margin:34px 0 6px}
 .hsk-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
 .hsk-card{display:flex;flex-direction:column;gap:12px;padding:24px;border:1px solid var(--line);border-radius:16px;background:var(--panel,var(--paper));min-width:0}
 .hsk-card h2{font-size:26px;margin:0;font-family:'Noto Sans SC','Microsoft YaHei','PingFang SC',sans-serif}
@@ -67,6 +68,9 @@
 .hsk-item header>button{background:none;border:0;color:var(--muted);font-size:12px;padding:6px;cursor:pointer}
 .hsk-question{display:grid;gap:10px;min-width:0}
 .hsk-line{margin:0;font-size:18px}
+/* HSK 2 Reading 3: the starred statement judged against the text above it. */
+.hsk-statement{display:flex;gap:8px;align-items:flex-start;margin:0;font-weight:600}.hsk-statement>span[aria-hidden]{color:var(--hsk-accent)}
+.hsk-items-J .hsk-options-judge{max-width:280px}
 .hsk-items-R2 .hsk-question,.hsk-items-R3 .hsk-question,.hsk-items-R4 .hsk-question,.hsk-items-L3 .hsk-question{grid-template-columns:minmax(0,1fr) auto;align-items:center}
 
 .hsk-options{display:flex;flex-wrap:wrap;gap:8px;border:0;padding:0;margin:0;min-width:0}

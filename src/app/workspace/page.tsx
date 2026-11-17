@@ -37,7 +37,7 @@ export default async function WorkspaceHome() {
     { program: "ielts", href: "/exams/ielts", label: "IELTS Academic", detail: `${count("ielts")} бүтэн mock · 4 чадвар`, tone: "tone-violet", tag: "Listening · Speaking" },
     { program: "entrance", href: "/exams/eesh", label: "ЭЕШ", detail: `${entranceTotal} mock · 5 хичээл`, tone: "tone-green", tag: "Мат · Физик · Хими · Био · Англи" },
     { program: "jlpt", href: "/exams/jlpt", label: "JLPT N5・N4", detail: "6 бүтэн mock · япон audio", tone: "tone-amber", tag: "語彙 · 文法 · 聴解" },
-    { program: "hsk", href: "/exams/hsk", label: "HSK 1", detail: `${hskMocks.length} бүтэн mock · хятад audio`, tone: "tone-amber", tag: "听力 · 阅读" },
+    { program: "hsk", href: "/exams/hsk", label: "HSK 1–2", detail: `${hskMocks.length} бүтэн mock · хятад audio`, tone: "tone-amber", tag: "听力 · 阅读" },
   ];
   const labs: HomeLab[] = [
     ...(speakingLabEnabled() ? [{ href: "/labs/ielts-speaking", label: "Ярианы хамтрагч", detail: "AI-тай IELTS Speaking", icon: "mic" as const }] : []),

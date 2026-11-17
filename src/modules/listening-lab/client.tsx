@@ -1,7 +1,7 @@
 "use client";
 import {Fragment,useEffect,useMemo,useRef,useState,useSyncExternalStore,type CSSProperties} from "react";
 import Link from "next/link";
-import {evidenceOf,findListeningDrill,listeningDrills,numberedQuestions,questionCorrect,questionMarks,recordingLines,totalMarks,type ListeningLine,type NumberedQuestion} from "./drills";
+import {evidenceOf,findListeningDrill,listeningDrills,numberedQuestions,questionCorrect,questionMarks,recordingLines,recordingPhases,totalMarks,type ListeningLine,type NumberedQuestion} from "./drills";
 import {blankDrillState,getLab,getServerLab,LISTENING_SPEEDS,subscribeLab,updateLab,type Answer,type DrillState,type ListeningMode} from "./progress";
 import timingData from "./timings.json";
 import styles from "./listening.module.css";
@@ -43,6 +43,9 @@ export function ListeningLab() {
  const duration=timing?.duration??0;
  const active=timing?timing.starts.findLastIndex(start=>start<=time+0.05):-1;
  const answered=items.filter(q=>filled(state.answers[q.index])).length;
+ // Breaks (reading and checking time) are drawn on the track; the chip names what is playing now.
+ const phases=useMemo(()=>timing?recordingPhases(lines,timing.starts,timing.duration):[],[lines,timing]);
+ const phase=phases.find(p=>time<p.end)??phases.at(-1);
 
  const setDrill=(change:Partial<DrillState>)=>updateLab(l=>({...l,drills:{...l.drills,[l.drill]:{...(l.drills[l.drill]??blankDrillState()),...change}}}));
  const answer=(index:number,value:Answer)=>{if(!state.checked)setDrill({answers:{...state.answers,[index]:value}});};
@@ -107,7 +110,6 @@ export function ListeningLab() {
    <div>
     <p className={styles.kicker}><Link href="/workspace/workshop">Workshop</Link> · Listening</p>
     <h1 className="sr-only">Сонсгол лаб</h1>
-    <p className={styles.lede}>IELTS Listening-ийн бүрэн хэсгүүд: таван тест, тус бүр Part 1–4, 40 асуулт. Бичлэг нь жинхэнэ шалгалтын адил танилцуулга, асуулт унших болон шалгах хугацаатай. Дадлагын горимд дахин сонсож хурдыг өөрчилнө; шалгалтын горимд бичлэг нэг л удаа тоглоно.</p>
    </div>
    <div className={styles.modes} role="tablist" aria-label="Горим">
     {(["practice","exam"] as const).map(mode=><button key={mode} type="button" role="tab" aria-selected={lab.mode===mode} onClick={()=>chooseMode(mode)}>
@@ -124,9 +126,10 @@ export function ListeningLab() {
      const best=tried.reduce((n,d)=>n+(lab.drills[d.id].best??0),0),total=parts.reduce((n,d)=>n+totalMarks(d),0),isOpen=test===openTest;
      return <div key={test} className={styles.test}>
       <button type="button" className={styles.testHead} aria-expanded={isOpen} aria-controls={`listening-test-${test}`} data-test={test} data-current={test===drill.test?"":undefined} onClick={()=>setOpen(isOpen?0:test)}>
-       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
-       <strong>Test {test}</strong>
+       <span className={styles.testNo} aria-hidden="true">{test}</span>
+       <span className={styles.testText}><strong>Test {test}</strong><small>{tried.length>0?`${tried.length}/${parts.length} хэсэг шалгасан`:`${parts.length} хэсэг · ${total} асуулт`}</small></span>
        {tried.length>0&&<em data-full={tried.length===parts.length&&best===total?"":undefined}>{best}/{total}</em>}
+       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
       </button>
       {isOpen&&<div className={styles.testParts} id={`listening-test-${test}`}>
        {parts.map(d=>{const s=lab.drills[d.id],marks=totalMarks(d);return <button key={d.id} type="button" aria-current={d.id===drill.id?"true":undefined} onClick={()=>chooseDrill(d.id)} data-drill={d.id}>
@@ -154,8 +157,15 @@ export function ListeningLab() {
        :<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.6-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>}
      </button>
      <div className={styles.track}>
-      <input type="range" min={0} max={duration||1} step={0.1} value={Math.min(time,duration)} disabled={exam} aria-label="Бичлэгийн байрлал"
-       onChange={e=>seek(Number(e.currentTarget.value))} style={{"--progress":`${duration?Math.min(100,time/duration*100):0}%`} as CSSProperties}/>
+      <div className={styles.rail}>
+       <input type="range" min={0} max={duration||1} step={0.1} value={Math.min(time,duration)} disabled={exam} aria-label="Бичлэгийн байрлал"
+        onChange={e=>seek(Number(e.currentTarget.value))} style={{"--progress":`${duration?Math.min(100,time/duration*100):0}%`} as CSSProperties}/>
+       {duration>0&&phases.filter(p=>p.kind==="break").map(p=><i key={p.start} className={styles.breakMark} aria-hidden="true"
+        style={{left:`${p.start/duration*100}%`,width:`${(p.end-p.start)/duration*100}%`}}/>)}
+      </div>
+      {phase&&<span className={styles.phase} data-kind={phase.kind} data-listening-phase={phase.kind} role="status">
+       <i aria-hidden="true"/>{phase.kind==="talk"?"Яриа":phase.kind==="break"?`Завсарлага · ${clock(Math.max(0,Math.ceil(phase.end-time)))}`:"Заавар"}
+      </span>}
       <span className={styles.time}>{clock(time)} / {clock(duration)}</span>
      </div>
      {!exam&&<div className={styles.tools}>

@@ -20,9 +20,9 @@ Part of the [project guide](../PROJECT.md) (was PROJECT.md section 8). "Section 
 | `scripts/build-entrance-mocks.mjs` | Converter from `MockExmps` to ЭЕШ site content, diagrams and catalogue (name the subjects to rebuild) |
 | `scripts/build-ielts-mocks.mjs` | Converter from the local `MockExmps/IELTS` pack to IELTS Mocks 07–12, their visuals and 48 kbps audio |
 | `public/ielts-mocks` | Answer-free IELTS Writing visuals and Listening plans |
-| `src/modules/exams/hsk` | HSK 1 catalogue, loader, sitting, practice audio, results and picture/pinyin views |
+| `src/modules/exams/hsk` | HSK 1–2 catalogue, loader, sitting, practice audio, results and picture/pinyin views |
 | `assets/hsk`, `assets/hsk-audio` | Private HSK definitions with keys; Mandarin tracks, hashes and provenance |
-| `scripts/build-hsk-mocks.mjs`, `scripts/generate-hsk-audio.py` | HSK pack converter (definitions, pictures, catalogue) and local Mandarin audio generator |
+| `scripts/build-hsk-mocks.mjs`, `scripts/generate-hsk-audio.py`, `scripts/generate-hsk2-audio.py` | HSK 1–2 pack converter (definitions, pictures, catalogue) and the local Mandarin audio generators |
 | `reference/official-papers` | Withdrawn official papers, kept as a format guide only; never served, built or deployed |
 | `reference/retired-site-mocks` | Retired site mocks (the first four Mathematics forms and the old English set); never built |
 | `src/modules/workspace` | Workspace shell, home, AI chat (contract, service, account-stored threads and their browser import), review and styles |

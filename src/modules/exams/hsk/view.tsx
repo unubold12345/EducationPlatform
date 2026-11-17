@@ -1,15 +1,20 @@
 import type { ExamFigure, HskGroup, HskItem, HskLine, HskPicture } from "../types";
 
-/** The eight HSK 1 parts, from the immutable group id: hsk-l-1 … hsk-l-4 (Listening), hsk-r-1 … hsk-r-4 (Reading). */
-export type HskPart = "L1" | "L2" | "L3" | "L4" | "R1" | "R2" | "R3" | "R4";
-export function hskPart(groupId: string | undefined): HskPart | undefined {
+/**
+ * The page type of a group. HSK 1 has eight parts, read from the immutable group id: hsk-l-1 … hsk-l-4 (Listening),
+ * hsk-r-1 … hsk-r-4 (Reading). An HSK 2 group names the type it is drawn as in `layout`; J is its text-only √/× part.
+ */
+export type HskPart = "L1" | "L2" | "L3" | "L4" | "R1" | "R2" | "R3" | "R4" | "J";
+const judged = (part: HskPart) => part === "L1" || part === "R1" || part === "J";
+export function hskPart(groupId: string | undefined, group?: HskGroup): HskPart | undefined {
+  if (group?.layout) return group.layout;
   const match = /^hsk-([lr])-([1-4])$/.exec(groupId ?? "");
   return match ? (match[1].toUpperCase() + match[2]) as HskPart : undefined;
 }
 const judgeNames: Record<string, string> = { "√": "Таарч байна", "×": "Таарахгүй" };
 /** The answer labels of a part, for a review entry that does not carry its options. */
 export function hskOptionLabels(part: HskPart, item?: HskItem, group?: HskGroup) {
-  if (part === "L1" || part === "R1") return ["√", "×"];
+  if (judged(part)) return ["√", "×"];
   const set = group?.pictures ?? group?.choices ?? item?.pictures ?? item?.choices ?? [];
   return set.map(entry => entry.label ?? "");
 }
@@ -46,11 +51,12 @@ export function HskQuestion({ question, part, value, disabled, readings, correct
   const options = question.options ?? [];
   const pictures = question.hsk?.pictures;
   const choices = question.hsk?.choices;
-  const judge = part === "L1" || part === "R1";
+  const judge = judged(part);
   const variant = judge ? "judge" : pictures ? "pictures" : choices ? "choices" : "letters";
   return <div className="hsk-question" data-part={part}>
     {question.figure?.kind === "image" ? <HskImage picture={question.figure}/> : null}
     {question.hsk?.line ? <p className="hsk-line"><ChineseText line={question.hsk.line} readings={readings}/></p> : null}
+    {question.hsk?.statement ? <p className="hsk-line hsk-statement"><span aria-hidden="true">★</span><ChineseText line={question.hsk.statement} readings={readings}/></p> : null}
     <fieldset className={"hsk-options hsk-options-" + variant} disabled={disabled}>
       <legend className="sr-only">{number} · хариулт сонгох</legend>
       {options.map(option => {
@@ -79,13 +85,14 @@ export function HskMaterial({ group, readings, example = true }: { group: HskGro
         {sample.pictures?.map(picture => <div key={picture.src} className="hsk-example-picture" data-answer={picture.label === sample.answer ? "" : undefined}><HskImage picture={picture} label={picture.label}/></div>)}
         {sample.line || sample.choices || sample.answerLine ? <div className="hsk-example-text">
           {sample.line ? <p><ChineseText line={sample.line} readings={readings}/></p> : null}
+          {sample.statement ? <p className="hsk-statement"><span aria-hidden="true">★</span><ChineseText line={sample.statement} readings={readings}/></p> : null}
           {sample.choices ? <ol className="hsk-example-choices">{sample.choices.map(choice => <li key={choice.label} data-answer={choice.label === sample.answer ? "" : undefined}><span className="hsk-option-label">{choice.label}</span><ChineseText line={choice} readings={readings}/></li>)}</ol> : null}
           {sample.answerLine ? <p className="hsk-example-answer-line"><span className="hsk-option-label">{sample.answerLine.label}</span><ChineseText line={sample.answerLine} readings={readings}/></p> : null}
         </div> : null}
         <p className="hsk-example-answer">Хариу: <strong>{sample.answer}</strong></p>
       </div>
     </aside> : null}
-    {group.pictures ? <div className="hsk-picture-grid" role="group" aria-label="Зургууд A–F">{group.pictures.map(picture => <HskImage key={picture.label} picture={picture} label={picture.label}/>)}</div> : null}
-    {group.choices ? <ol className="hsk-bank" aria-label="Сонголтууд A–F">{group.choices.map(choice => <li key={choice.label}><span className="hsk-option-label">{choice.label}</span><ChineseText line={choice} readings={readings}/></li>)}</ol> : null}
+    {group.pictures ? <div className="hsk-picture-grid" role="group" aria-label="Зургууд">{group.pictures.map(picture => <HskImage key={picture.label} picture={picture} label={picture.label}/>)}</div> : null}
+    {group.choices ? <ol className="hsk-bank" aria-label="Сонголтууд">{group.choices.map(choice => <li key={choice.label}><span className="hsk-option-label">{choice.label}</span><ChineseText line={choice} readings={readings}/></li>)}</ol> : null}
   </>;
 }

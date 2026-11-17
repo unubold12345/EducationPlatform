@@ -11,10 +11,10 @@ import { cleanSourceText, displayFileName } from "@/modules/documents/text";
 import { extractDocument } from "@/modules/documents/extract";
 import { readUploadedSource } from "@/modules/documents/upload";
 import {
-  EXAM_COUNT, MY_EXAM_LIMITS, cleanStructureRequest, examCapacity, examMessages, examParts, examsFullMessage, gradeExam, isExamId, isExamLanguage,
-  mergeExamParts, nextQuestionStart, parseGeneratedExam, promptKey, publicExam, readBest, readDraft, readExamCount, readFullQuestions, readGradeRequest,
-  readImportRequest, readResult, readSittingRequest, suggestedSeconds,
-  type ExamBest, type ExamDraft, type ExamLanguage, type ExamResult, type GeneratedExam, type SavedExam,
+  EXAM_COUNT, MY_EXAM_LIMITS, cleanStructureRequest, examCapacity, examKinds, examMessages, examParts, examsFullMessage, gradeExam, isExamId, isExamLanguage,
+  kindPlan, mergeExamParts, nextQuestionStart, parseGeneratedExam, promptKey, publicExam, readBest, readDraft, readExamCount, readExamKinds, readFullQuestions,
+  readGradeRequest, readImportRequest, readResult, readSittingRequest, splitKindPlan, spreadAnswers, suggestedSeconds,
+  type ExamBest, type ExamDraft, type ExamLanguage, type ExamResult, type GeneratedExam, type QuestionKind, type SavedExam,
 } from "./contracts";
 import { ExamTokenError, openExam } from "./token";
 
@@ -118,23 +118,30 @@ function titleFromFile(name: string) {
   return base ? base.slice(0, 80) : "Шинэ шалгалт";
 }
 
-type ExamInput = { text?: string; images?: readonly string[]; count: number; language: ExamLanguage; truncated: boolean; structure: string; avoid?: readonly string[] };
+type ExamInput = {
+  text?: string; images?: readonly string[]; count: number; language: ExamLanguage; truncated: boolean; structure: string;
+  /** The question formats: the student's choice for a new exam, the ones its questions use for a retry. */
+  kinds: readonly QuestionKind[];
+  avoid?: readonly string[];
+};
 
 /**
  * Ask the model for the exam: one reply up to 20 questions, otherwise parallel parts of at most 20 that each read
  * the whole material and write about their own portion of it, so a 40-question exam takes no longer than a
- * 20-question one. A malformed or too-short part is written once more. Null when the exam is still unusable.
+ * 20-question one. The mix of formats is worked out for the whole exam and dealt to the parts. A malformed or
+ * too-short part is written once more. Null when the exam is still unusable.
  */
 async function writeExam(input: ExamInput, fallbackTitle: string, start: number, meter: UsageMeter): Promise<GeneratedExam | null> {
   const sizes = examParts(input.count);
+  const plans = splitKindPlan(kindPlan(input.count, input.kinds), sizes);
   const skip = new Set((input.avoid ?? []).map(promptKey));
   const started = Date.now();
   const settled = await Promise.allSettled(sizes.map(async (size, index) => {
-    const messages = examMessages({ ...input, count: size, ...(sizes.length > 1 ? { part: { index, of: sizes.length } } : {}) });
+    const messages = examMessages({ ...input, count: size, plan: plans[index], ...(sizes.length > 1 ? { part: { index, of: sizes.length } } : {}) });
     // One silent retry when the model returns a malformed or too-short part; the daily count is charged once.
     for (let attempt = 0; attempt < 2; attempt++) {
       if (attempt && Date.now() - started > RETRY_BEFORE_MS) break;
-      const part = parseGeneratedExam(await deepseekExam(messages, size, meter), { count: size, fallbackTitle, skip });
+      const part = parseGeneratedExam(await deepseekExam(messages, size, meter), { count: size, fallbackTitle, skip, language: input.language });
       if (part) return part;
     }
     return null;
@@ -146,7 +153,9 @@ async function writeExam(input: ExamInput, fallbackTitle: string, start: number,
     if (!result.value) return null;
     parts.push(result.value);
   }
-  return mergeExamParts(parts, input.count, start);
+  // Grouped by format unless the student arranged the exam themselves; then the key is spread evenly over A–D.
+  const exam = mergeExamParts(parts, input.count, start, !input.structure);
+  return exam && { ...exam, questions: spreadAnswers(exam.questions) };
 }
 
 /** The daily budget and the one-request-in-flight lease shared by a new exam and a retry. */
@@ -183,7 +192,7 @@ export async function createMyExam(userId: string, request: Request): Promise<Ex
   catch { throw new ApiError(400, "Файлыг уншиж чадсангүй. Дахин оролдоно уу."); }
   // A page loaded before exams moved to the account still reports its own count; it reloads before it can spend credits.
   if (form.has("saved")) throw new ApiError(409, "Хуудас шинэчлэгдсэн байна. Хуудсаа дахин ачаалаад оролдоно уу.");
-  for (const key of form.keys()) if (!["file", "count", "language", "structure"].includes(key)) throw new ApiError(400, "Хүсэлтийн бүтэц буруу байна.");
+  for (const key of form.keys()) if (!["file", "count", "language", "structure", "kinds"].includes(key)) throw new ApiError(400, "Хүсэлтийн бүтэц буруу байна.");
   // One document, or up to four page photos; their size and real kind are proven before credits are held.
   const upload = await readUploadedSource(form, "Шалгалт үүсгэх файл эсвэл зургаа сонгоно уу.");
   const count = readExamCount(field(form, "count"));
@@ -193,6 +202,9 @@ export async function createMyExam(userId: string, request: Request): Promise<Ex
   const rawStructure = field(form, "structure") ?? "";
   if (rawStructure.length > MY_EXAM_LIMITS.structure) throw new ApiError(400, `Бүтцийн заавар ${MY_EXAM_LIMITS.structure} тэмдэгтээс ихгүй байна.`);
   const structure = cleanStructureRequest(rawStructure);
+  // The question formats; a client that sends none gets four-option questions only, as before formats.
+  const kinds = readExamKinds(field(form, "kinds"));
+  if (!kinds) throw new ApiError(400, "Асуултын төрөл буруу байна.");
   const language: ExamLanguage = languageValue;
   const name = upload.name;
 
@@ -217,14 +229,14 @@ export async function createMyExam(userId: string, request: Request): Promise<Ex
     if (upload.kind === "images") {
       // Photos of pages: the model reads them directly, so there is no text to measure first (or to keep for a retry).
       readChars = 0;
-      input = { images: upload.images, count, language, truncated: false, structure };
+      input = { images: upload.images, count, language, truncated: false, structure, kinds };
       source = { name, kind: "image", pages: upload.images.length, truncated: false };
     } else {
       const extracted = await extractDocument(name, upload.bytes);
       const cleaned = cleanSourceText(extracted.text);
       if (cleaned.text.length < MIN_TEXT) throw new ApiError(422, "Файлаас шалгалт үүсгэх хангалттай текст олдсонгүй. Илүү бүрэн файл оруулна уу.");
       readChars = cleaned.text.length;
-      input = { text: cleaned.text, count, language, truncated: cleaned.truncated, structure };
+      input = { text: cleaned.text, count, language, truncated: cleaned.truncated, structure, kinds };
       source = { name, kind: extracted.kind, pages: extracted.pages ?? null, truncated: cleaned.truncated };
     }
     const fallbackTitle = upload.kind === "images" ? "Зурагнаас үүсгэсэн шалгалт" : titleFromFile(name);
@@ -273,7 +285,8 @@ export async function regenerateMyExam(userId: string, id: string, body: unknown
     const ids = questions.map(question => question.id);
     const exam = await writeExam({
       text, count, language, truncated: text.length >= MY_EXAM_LIMITS.textChars, structure: row.sourceStructure ?? "",
-      avoid: questions.map(question => question.prompt),
+      // The formats the exam already uses: nothing in the request can choose them.
+      kinds: examKinds(questions), avoid: questions.map(question => question.prompt),
     }, row.title, nextQuestionStart(ids, count), meter);
     if (!exam) throw new ApiError(503, "AI шинэ асуулт үүсгэж чадсангүй. Дахин оролдоно уу.");
     // Another tab may start a timed exam while the provider is answering.

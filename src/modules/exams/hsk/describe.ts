@@ -8,6 +8,7 @@ export function hskDescription(question: { figure?: ExamFigure; hsk?: HskItem; h
   const lines: string[] = [];
   if (question.figure?.kind === "image") lines.push(`Picture: ${question.figure.alt}`);
   if (question.hsk?.line) lines.push(`Printed: ${question.hsk.line.text} (${question.hsk.line.pinyin})`);
+  if (question.hsk?.statement) lines.push(`Statement to judge: ★ ${question.hsk.statement.text} (${question.hsk.statement.pinyin})`);
   return lines.join("\n");
 }
 /** The answer choices with what each shows or says, e.g. "B: picture of A cup of tea" or "A: 商店 (shāngdiàn)". */

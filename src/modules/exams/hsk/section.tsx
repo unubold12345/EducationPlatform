@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import type { PublicStage } from '../types';
 import { LockedListeningPlayer } from '../listening-section';
-import { listeningPosition } from '../audio-files';
+import { hskPlayingItem, listeningPosition } from '../audio-files';
 import { useQuestionShortcuts } from '../session-tools';
 import { HskMaterial, HskQuestion, hskPart } from './view';
 import player from '@/modules/listening-lab/listening.module.css';
@@ -10,17 +10,21 @@ import './hsk.css';
 
 type Props={stage:PublicStage;slug:string;attemptId:string;elapsed:number;answers:Record<string,string>;flags:string[];disabled:boolean;onChange:(id:string,value:string)=>void;onFlag:(id:string)=>void};
 
-/** One HSK 1 section in a timed sitting: a page per part, as on the paper. Listening follows the part now playing. */
+/** One HSK section in a timed sitting: a page per part (or per set of a part), as on the paper. Listening follows the item now playing. */
 export function HskSection({stage,slug,attemptId,elapsed,answers,flags,disabled,onChange,onFlag}:Props){
  const listening=stage.kind==='listening';
  const groups=stage.groups??[];
  const position=listening?listeningPosition(slug,elapsed):null;
- const livePart=position&&!position.ended?position.part:null;
+ // The page that holds the item being read; a part with two picture sets (HSK 2) turns between them.
+ const liveItem=position&&!position.ended?hskPlayingItem(slug,position.part,position.offset):undefined;
+ const liveGroup=liveItem?stage.questions.find(q=>q.id===liveItem)?.groupId:undefined;
+ const found=liveGroup?groups.findIndex(g=>g.id===liveGroup):-1;
+ const livePart=position&&!position.ended?(found>=0?found+1:position.part):null;
  const [selected,setSelected]=useState(livePart?livePart-1:0),[followed,setFollowed]=useState(livePart),[readings,setReadings]=useState(true),[focused,setFocused]=useState('');
  // The page turns with the recording; the student can still look back at an earlier part of this section.
  if(livePart!==followed){setFollowed(livePart);if(livePart)setSelected(livePart-1);}
  const group=groups[Math.min(selected,groups.length-1)];
- const part=hskPart(group?.id);
+ const part=hskPart(group?.id,group?.hsk);
  const questions=stage.questions.filter(q=>q.groupId===group?.id);
  const active=questions.find(q=>q.id===focused)??questions.find(q=>!answers[q.id])??questions[0];
  const go=(at:number)=>{if(at>=0&&at<groups.length){setSelected(at);requestAnimationFrame(()=>document.getElementById('hsk-page-heading')?.focus());}};

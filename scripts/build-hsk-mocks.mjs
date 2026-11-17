@@ -1,6 +1,7 @@
-// Convert the offline HSK 1 pack (MockExmps/HSK) into private site definitions, answer-free pictures and a
-// client-safe catalogue. Never ship MockExmps itself. Run after editing the pack, then
-// `python scripts/generate-hsk-audio.py` if the listening texts changed (its timings feed the Listening stage).
+// Convert the offline HSK 1 and HSK 2 packs (MockExmps/HSK, MockExmps/HSK2) into private site definitions,
+// answer-free pictures and a client-safe catalogue. Never ship MockExmps itself. Run after editing a pack; if its
+// listening texts changed, first run `python scripts/generate-hsk-audio.py` (HSK 1) or
+// `python scripts/generate-hsk2-audio.py` (HSK 2), whose timings feed the Listening stage.
 import { mkdirSync, readFileSync, writeFileSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -153,7 +154,140 @@ for (const number of [1, 2, 3]) {
   const count = definition.stages.reduce((sum, stage) => sum + stage.questions.length, 0);
   if (count !== 40 || listening.questions.length !== 20) throw Error(`${slug}: ${count} questions`);
   writeFileSync(join(target, slug + '.json'), JSON.stringify(definition, null, 2) + '\n');
-  catalog.push({ slug, number, title: definition.title, titleZh: source.title, titlePinyin: source.titlePinyin, titleEn: source.titleEn, theme: themes[number], questions: count, minutes: (LISTENING_SECONDS + READING_SECONDS) / 60, recordedMinutes: Math.ceil(recorded / 60) });
+  catalog.push({ slug, level: 1, number, title: definition.title, titleZh: source.title, titlePinyin: source.titlePinyin, titleEn: source.titleEn, theme: themes[number], questions: count, minutes: (LISTENING_SECONDS + READING_SECONDS) / 60, recordedMinutes: Math.ceil(recorded / 60) });
+}
+// ---------------------------------------------------------------------------------------------------------------
+// HSK 2: 60 items. Listening 35 (10 + 10 + 10 + 5) in 25 minutes, Reading 25 (5 + 5 + 5 + 10) in 22.
+// Group ids keep the paper's part numbers (2a/2b and 4a/4b are the two sets of one part); `hsk.layout` names the
+// HSK 1 page type each group is drawn as, so the views need no level switch: J is the text-only √/× part.
+const pack2 = join('MockExmps', 'HSK2');
+const LISTENING2 = 25 * 60, READING2 = 22 * 60;
+const parts2 = {
+  L1: { id: 'hsk-l-1', layout: 'L1', title: '第一部分 · Зураг ба өгүүлбэр', domain: '听力一 · Зураг, өгүүлбэр (√/×)', task: '听录音，判断对错。', note: 'Өгүүлбэрийг хоёр удаа сонсоно. Зурагтай таарч байвал √, таарахгүй бол × сонгоно.', prompt: 'Сонссон өгүүлбэр зурагтай таарч байна уу?' },
+  L2a: { id: 'hsk-l-2a', layout: 'L3', title: '第二部分 · Яриа ба зураг (11–15)', domain: '听力二 · Яриа, зураг', task: '听对话，选择相应的图片。', note: 'Хоёр хүний яриаг хоёр удаа сонсоно. Тохирох зургийг сонгоно; нэг зураг жишээнд ашиглагдсан.', prompt: 'Сонссон яриад тохирох зургийг сонгоно уу.' },
+  L2b: { id: 'hsk-l-2b', layout: 'L3', title: '第二部分 · Яриа ба зураг (16–20)', domain: '听力二 · Яриа, зураг', task: '听对话，选择相应的图片。', note: 'Хоёр хүний яриаг хоёр удаа сонсоно. Таван зураг тус бүр нэг удаа таарна.', prompt: 'Сонссон яриад тохирох зургийг сонгоно уу.' },
+  L3: { id: 'hsk-l-3', layout: 'L4', title: '第三部分 · Богино яриа', domain: '听力三 · Богино яриа, асуулт', task: '听对话，选择答案。', note: 'Яриа ба асуултыг хоёр удаа сонсоно. Асуулт бичигдээгүй; гурван хариултаас зөвийг сонгоно.', prompt: 'Сонссон асуултын хариултыг сонгоно уу.' },
+  L4: { id: 'hsk-l-4', layout: 'L4', title: '第四部分 · Урт яриа', domain: '听力四 · Урт яриа, асуулт', task: '听对话，选择答案。', note: 'Дөрвөн өгүүлбэртэй яриа ба асуултыг хоёр удаа сонсоно. Гурван хариултаас зөвийг сонгоно.', prompt: 'Сонссон асуултын хариултыг сонгоно уу.' },
+  R1: { id: 'hsk-r-1', layout: 'R2', title: '第一部分 · Өгүүлбэр ба зураг', domain: '阅读一 · Өгүүлбэр, зураг', task: '选择相应的图片。', note: 'Өгүүлбэр бүрт тохирох зургийг сонгоно; нэг зураг жишээнд ашиглагдсан.' },
+  R2: { id: 'hsk-r-2', layout: 'R4', title: '第二部分 · Хоосон зай нөхөх', domain: '阅读二 · Үг нөхөх', task: '选词填空。', note: 'Хоосон зайд тохирох үгийг сонгоно; нэг үг жишээнд ашиглагдсан.' },
+  R3: { id: 'hsk-r-3', layout: 'J', title: '第三部分 · Зөв, буруу', domain: '阅读三 · Зөв, буруу (√/×)', task: '判断对错。', note: 'Текстийг уншаад ★ тэмдэгтэй өгүүлбэр зөв бол √, буруу бол × сонгоно.' },
+  R4a: { id: 'hsk-r-4a', layout: 'R3', title: '第四部分 · Өгүүлбэр холбох (51–55)', domain: '阅读四 · Өгүүлбэр холбох', task: '选择相应的句子。', note: 'Өгүүлбэр бүрт тохирох өгүүлбэрийг A–F-ээс сонгоно; нэг нь жишээнд ашиглагдсан.' },
+  R4b: { id: 'hsk-r-4b', layout: 'R3', title: '第四部分 · Өгүүлбэр холбох (56–60)', domain: '阅读四 · Өгүүлбэр холбох', task: '选择相应的句子。', note: 'Өгүүлбэр бүрт тохирох өгүүлбэрийг A–E-ээс сонгоно; тус бүр нэг удаа таарна.' },
+};
+const themes2 = {
+  1: 'Спорт, эрүүл мэнд, эмч, өдөр тутмын хэвшил',
+  2: 'Ажил, зам тээвэр, зочид буудал, аялал',
+  3: 'Төрсөн өдөр, гэр бүл, дэлгүүр, цаг агаар',
+};
+function picture2(entry, slug, label) {
+  const shared = entry.image.startsWith('../examples/');
+  const name = entry.image.split('/').at(-1);
+  const folder = shared ? 'hsk2-examples' : slug;
+  const out = join(pictures, folder, name);
+  if (!copied.has(out)) {
+    const body = readFileSync(shared ? join(pack2, 'examples', name) : join(pack2, slug.replace('hsk2-', ''), 'images', name));
+    if (!/^<svg[^>]*viewBox="0 0 480 360"/.test(body.toString('utf8'))) throw Error(`${name}: expected a 480×360 SVG`);
+    mkdirSync(join(pictures, folder), { recursive: true });
+    writeFileSync(out, body);
+    copied.add(out);
+  }
+  return { ...(label ? { label } : {}), src: `/exam-assets/hsk/${folder}/${name}`, alt: entry.alt };
+}
+const turns = dialogue => dialogue.map(turn => [`${turn.speaker}：${turn.text}`, turn.pinyin]);
+for (const number of [1, 2, 3]) {
+  const source = JSON.parse(readFileSync(join(pack2, `mock-0${number}`, 'mock.json'), 'utf8'));
+  const slug = `hsk2-mock-0${number}`;
+  if (source.id !== slug) throw Error(`${slug}: pack id ${source.id}`);
+  if (Object.keys(audio[slug]?.questions ?? {}).length !== 35) throw Error(`${slug}: run scripts/generate-hsk2-audio.py first (no item timings)`);
+  const recorded = audio[slug].seconds.reduce((sum, seconds) => sum + seconds, 0);
+  if (recorded > LISTENING2 - 60) throw Error(`${slug}: ${recorded}s of audio leaves under a minute to check`);
+  const definition = {
+    slug, version: 1, program: 'hsk', title: `HSK 2 · Mock 0${number}`,
+    description: `${source.title} · ${themes2[number]}`,
+    points: 60,
+    notes: [
+      'Албан бус, эх зохиомжтой дадлагын mock. Хятад хэлний багшийн хяналт хүлээгдэж байна.',
+      'Сонсох хэсэг нь хиймэл (Kokoro) хятад дуу хоолойтой; асуулт бүрийг хоёр удаа уншина.',
+      'Raw зөв хариултын тоо ба хэсэг бүрийн 100 онооны дадлагын хөрвүүлэлт (200-аас); HSK-ийн албан оноо, тэнцсэн эсэх биш.',
+    ],
+    sources: [
+      { label: 'Chinese Testing International · HSK 2', url: 'https://www.chinesetest.cn/HSK/2' },
+      { label: 'HSK 2 албан жишиг материал (бүтэц)', url: 'https://www.chinesetest.cn/userfiles/file/HSK2.pdf' },
+    ],
+    stages: [],
+  };
+  const listening = {
+    id: 'hsk-l', title: '听力 · Сонсох', kind: 'listening', seconds: LISTENING2,
+    instructions: 'Бичлэг нэг удаа, серверийн цагтай зэрэг тоглоно; асуулт бүрийг хоёр удаа уншина. Дөрвөн хэсэг дараалан тоглоно. Бичлэг дууссаны дараах хугацаанд хариугаа шалгана. Цаг дуусахад Унших хэсэг автоматаар эхэлнэ.',
+    groups: [], questions: [],
+  };
+  const reading = {
+    id: 'hsk-r', title: '阅读 · Унших', kind: 'questions', seconds: READING2,
+    instructions: 'Дөрвөн хэсэг, 25 асуулт, 22 минут. Хэсгүүдийн хооронд чөлөөтэй шилжинэ. Цаг дуусахад шалгалт дуусна.',
+    groups: [], questions: [],
+  };
+  const judge = ['√', '×'];
+  const add = (stage, key, group, example, items, build) => {
+    const meta = parts2[key];
+    stage.groups.push({ id: meta.id, title: meta.title, section: stage.title, instructions: `${meta.task}\n${meta.note}`, pageMode: 'group', hsk: { layout: meta.layout, ...group, ...(example ? { example } : {}) } });
+    for (const item of items) {
+      const id = `hsk2-0${number}-${String(item.n).padStart(2, '0')}`;
+      if (ids.has(id)) throw Error('duplicate ' + id);
+      ids.add(id);
+      const question = { id, number: String(item.n), domain: meta.domain, kind: 'choice', points: 1, groupId: meta.id, explanation: item.explanation, answers: [item.answer], ...build(item, meta) };
+      if (!question.options.includes(question.answers[0])) throw Error(`${id}: answer ${question.answers[0]} not in options`);
+      if (stage === listening && audio[slug].questions[id]?.part !== question.listening.part) throw Error(`${id}: no audio timing`);
+      stage.questions.push(question);
+    }
+  };
+  const L = source.listening, R = source.reading, ex = source.examples;
+  const textOf = (list, label) => list.find(option => option.label === label);
+  add(listening, 'L1', {}, { pictures: [picture2(ex.listening.part1, slug)], answer: ex.listening.part1.answer }, L.part1, (item, meta) => ({
+    prompt: meta.prompt, options: judge, optionLabels: judge, answerDisplay: item.answer,
+    figure: { kind: 'image', ...picture2(item, slug), width: 480, height: 360 }, listening: { part: 1, script: spoken([[item.sentence, item.pinyin]]) },
+  }));
+  for (const [key, set] of [['L2a', L.part2.setA], ['L2b', L.part2.setB]]) {
+    const shown = set.pictures.map(p => picture2(p, slug, p.label));
+    const example = set.example ? { pictures: [shown.find(p => p.label === set.example.answer)], answer: set.example.answer } : undefined;
+    add(listening, key, { pictures: shown }, example, set.items, (item, meta) => ({
+      prompt: meta.prompt, options: labels(set.pictures), optionLabels: labels(set.pictures), answerDisplay: item.answer,
+      listening: { part: 2, script: spoken(turns(item.dialogue)) },
+    }));
+  }
+  for (const [key, part, list] of [['L3', 3, L.part3], ['L4', 4, L.part4]]) {
+    const sample = ex.listening['part' + part];
+    add(listening, key, {}, { choices: choices(sample.options), answer: sample.answer }, list, (item, meta) => {
+      const chosen = textOf(item.options, item.answer);
+      return {
+        prompt: meta.prompt, options: labels(item.options), optionLabels: labels(item.options), answerDisplay: `${item.answer} · ${chosen.text} (${chosen.pinyin})`,
+        hsk: { choices: choices(item.options) },
+        listening: { part, script: spoken([...turns(item.dialogue), [`问：${item.question}`, `Wèn: ${item.questionPinyin}`]]) },
+      };
+    });
+  }
+  const shownR1 = R.part1.pictures.map(p => picture2(p, slug, p.label));
+  add(reading, 'R1', { pictures: shownR1 }, { pictures: [shownR1.find(p => p.label === R.part1.example.answer)], line: line(R.part1.example.sentence, R.part1.example.pinyin), answer: R.part1.example.answer }, R.part1.items, item => ({
+    prompt: item.sentence, options: labels(R.part1.pictures), optionLabels: labels(R.part1.pictures), answerDisplay: item.answer,
+    hsk: { line: line(item.sentence, item.pinyin) },
+  }));
+  const bank = (key, set) => {
+    const sample = set.example && textOf(set.options, set.example.answer);
+    add(reading, key, { choices: choices(set.options) }, sample ? { line: line(set.example.sentence, set.example.pinyin), answerLine: line(sample.text, sample.pinyin, sample.label), answer: sample.label } : undefined, set.items, item => ({
+      prompt: item.sentence, options: labels(set.options), optionLabels: labels(set.options), answerDisplay: `${item.answer} · ${textOf(set.options, item.answer).text}`,
+      hsk: { line: line(item.sentence, item.pinyin) },
+    }));
+  };
+  bank('R2', R.part2);
+  add(reading, 'R3', {}, { line: line(ex.reading.part3.text, ex.reading.part3.pinyin), statement: line(ex.reading.part3.statement, ex.reading.part3.statementPinyin), answer: ex.reading.part3.answer }, R.part3, item => ({
+    prompt: `${item.text}\n★ ${item.statement}`, options: judge, optionLabels: judge, answerDisplay: item.answer,
+    hsk: { line: line(item.text, item.pinyin), statement: line(item.statement, item.statementPinyin) },
+  }));
+  bank('R4a', R.part4.setA);
+  bank('R4b', R.part4.setB);
+  definition.stages.push(listening, reading);
+  if (listening.questions.length !== 35 || reading.questions.length !== 25) throw Error(`${slug}: wrong item counts`);
+  writeFileSync(join(target, slug + '.json'), JSON.stringify(definition, null, 2) + '\n');
+  catalog.push({ slug, level: 2, number, title: definition.title, titleZh: source.title, titlePinyin: source.titlePinyin, titleEn: source.titleEn, theme: themes2[number], questions: 60, minutes: (LISTENING2 + READING2) / 60, recordedMinutes: Math.ceil(recorded / 60) });
 }
 writeFileSync(join('src', 'modules', 'exams', 'hsk', 'catalog.json'), JSON.stringify(catalog, null, 2) + '\n');
-console.log(`Built three private HSK 1 definitions (120 questions) and ${copied.size} answer-free pictures.`);
+console.log(`Built ${catalog.length} private HSK definitions (${ids.size} questions) and ${copied.size} answer-free pictures.`);

@@ -118,6 +118,31 @@ Part of the [project guide](../PROJECT.md) (was PROJECT.md section 3). "Section 
   pictures as their descriptions (`hsk/describe.ts`). Tests: `tests/hsk.test.mjs`, browser group `hsk` (`tests/hsk_smoke.py`).
 - All items, pictures and keys are DeepSeek Harness drafts (2026-11-10) awaiting a Chinese teacher's review; not HSK 3.0.
 
+### HSK 2 (2026-11-16)
+
+- The owner asked for three HSK 2 mocks. `hsk2-mock-01`–`03` (program `hsk`) follow the regular HSK 2 (2.0) paper: Listening 35
+  items in 25 minutes, then Reading 25 items in 22 (47 minutes on screen). Ten groups keep the paper's numbering: `hsk-l-1`
+  (sentence and picture, √/×, 10), `hsk-l-2a`/`2b` (dialogue to a picture; six pictures with one used by the example, then five),
+  `hsk-l-3` (two-turn dialogue, question, three printed answers, 10), `hsk-l-4` (four-turn dialogue, 5); `hsk-r-1` (sentence to a
+  picture), `hsk-r-2` (word into a gap), `hsk-r-3` (a text and a ★ statement, √/×), `hsk-r-4a`/`4b` (sentence to its matching
+  sentence; six with one in the example, then five).
+- Authoring pack `MockExmps/HSK2` (never deployed; in `.vercelignore`): `_source/content.py` (items, keys, pinyin, explanations),
+  `_source/scenes2.py` (35 new drawings on the HSK 1 primitives) and `_source/build.py`, which checks counts, keys, that every
+  set entry is used once, and that every sentence stays inside the 300-word HSK 1–2 list plus a short documented list of extras
+  (plural pronouns, split verbs such as 游, 天, 分, 杯), then writes `mock.json` and the pictures. No PDFs or printable booklets.
+- The same `scripts/build-hsk-mocks.mjs` converts both levels (HSK 1 output is unchanged). An HSK 2 group carries
+  `hsk.layout`, the HSK 1 page type it is drawn as (`J` is the text-only √/× part), so `hskPart(groupId, group)` and the views
+  need no level switch; `question.hsk.statement` holds the ★ statement. The catalogue has `level`; `hskLevel(slug)` reads it from
+  the slug. 200 pictures are served (`hsk2-mock-0N/`, `hsk2-examples/`).
+- Audio: `scripts/generate-hsk2-audio.py` loads the HSK 1 generator for synthesis (same model, voices, pinyin-driven speech) and
+  merges its timings into the shared `audio-catalog.json`; the HSK 1 script keeps other levels' entries. Every item is read twice
+  (3 s, then 8 s in Parts 1–2 and 10 s in Parts 3–4); about 22 minutes per mock, four tracks, 23 MB more in `assets/hsk-audio`
+  (35 MB in all, same `/audio/hsk` route). In a sitting the page follows the item being read (`hskPlayingItem`), so Part 2 turns
+  from its first picture set to its second. No Whisper round trip and no human listening has been done for these tracks.
+- Results use the same conversion: each section out of 100 (a correct answer is 2.86 in Listening, 4 in Reading), 200 in all.
+- All items, pictures and keys are Claude Code (Fable 5.2) drafts awaiting a Chinese teacher's review. Tests: the
+  HSK 2 cases in `tests/hsk.test.mjs` and the HSK 2 section of `tests/hsk_smoke.py` (practice, a full sitting, results).
+
 ### ЭЕШ mocks (the ЭЕШ plan; called University Prep before 2026-11-13)
 
 - 194 imported papers live on the site, all with program `entrance`:

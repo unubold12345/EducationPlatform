@@ -7,7 +7,7 @@ Part of the [project guide](../PROJECT.md) (was PROJECT.md section 2). "Section 
 | IELTS workshops | Four focused workshops with saved work and grading |
 | Full mocks | Nine Digital SAT (01–09) and twelve IELTS Academic mocks (01–12), with server-authoritative timers |
 | JLPT | Three N5 and three N4 mocks, 456 original items, Japanese synthetic listening, timed sections and focused practice |
-| HSK 1 | Three original HSK 1 mocks (120 items), picture tasks, pinyin, Mandarin synthetic listening and practice (section 3) |
+| HSK 1–2 | Three original HSK 1 mocks (120 items) and three HSK 2 mocks (180 items), picture tasks, pinyin, Mandarin synthetic listening and practice (section 3) |
 | ЭЕШ mocks | 194 imported practice papers: 55 Mathematics, 60 Physics, 18 Chemistry, 21 Biology and 40 English (2015–2026), opened by the ЭЕШ plan |
 | Free mocks | Ten free half-length mocks, one per exam (ЭЕШ ×5, SAT, IELTS, JLPT N5/N4, HSK 1), open to every signed-in account (section 3, "Free half-length mocks") |
 | Practice mode | Untimed practice on every mock, with instant checks and a DeepSeek assistant |
@@ -17,7 +17,7 @@ Part of the [project guide](../PROJECT.md) (was PROJECT.md section 2). "Section 
 | AI tutor | DeepSeek math hints, explanations and mistake review; students can attach photos of a problem or their working (section 7) |
 | Speaking Lab | Isolated IELTS speaking studio at `/labs/ielts-speaking` |
 | Essay Studio | Workshop writing practice with AI corrections at `/labs/ielts-writing` |
-| Listening Lab | Five original IELTS Listening practice tests (Parts 1–4, mock-style recordings) at `/labs/ielts-listening`; the sidebar is one collapsible row per test (only the open test lists its parts; on phones a row of test chips over a sideways strip of parts). A visit opens on a part left half-answered, otherwise on the first part not yet checked (`startDrill` in `progress.ts`), not on the part clicked last |
+| Listening Lab | Five original IELTS Listening practice tests (Parts 1–4, mock-style recordings) at `/labs/ielts-listening`; the sidebar is one collapsible card per test (numbered header with checked parts and score; only the open test lists its parts; on phones a row of test chips over a sideways strip of parts). The page has no intro text. The player draws reading and checking breaks as hatched blocks on the track and a chip names what is playing (Заавар, Завсарлага with a countdown, Яриа), from `recordingPhases` in `drills.ts`. A visit opens on a part left half-answered, otherwise on the first part not yet checked (`startDrill` in `progress.ts`), not on the part clicked last |
 | Reading Lab | Five original IELTS Academic passages (62 questions, seven question types) and credit-paid AI practices (8–24 questions, half-price retry) from the student's own file, page photos or pasted text at `/labs/ielts-reading` (section 7) |
 | Workspace | `/workspace`: the signed-in study app, separate from the marketing site, with left tabs for Home, AI chat, Vocabulary, Exams, Review, Workshop and Plans, plus the profile (section 7) |
 | Daily streak | Removed 2026-11-14 (owner request): no rail row, Home card or check-in route. The study roadmap page was removed on 2026-11-13 (section 7) |

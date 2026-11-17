@@ -29,11 +29,11 @@ export const homePrograms: Program[] = [...programs, {
   topics: ["Үгийн сан", "Хэлзүй", "Унших", "Сонсох"],
   highlights: ["3 N5 + 3 N4 mock", "Япон сонсголын бичлэг"], available: true,
 }, {
-  slug: "hsk", title: "HSK", subtitle: "Хятад хэл · HSK 1", symbol: "汉", color: "blue",
+  slug: "hsk", title: "HSK", subtitle: "Хятад хэл · HSK 1–2", symbol: "汉", color: "blue",
   status: `${hskMocks.length} бүтэн mock`, audience: "Хятад хэлний анхан шатаа бататгах бол",
-  description: "HSK 1 түвшний сонсох, унших бэлтгэл.",
+  description: "HSK 1, HSK 2 түвшний сонсох, унших бэлтгэл.",
   topics: ["Сонсох", "Унших", "Зурагтай даалгавар", "Pinyin"],
-  highlights: [`${hskMocks.length} HSK 1 mock`, "Хятад сонсголын бичлэг"], available: true,
+  highlights: [`${hskMocks.length} HSK 1–2 mock`, "Хятад сонсголын бичлэг"], available: true,
 }];
 
 const formats: Record<string, { href: string; artwork: keyof typeof homeArtwork; summary: string; facts: [string, string][] }> = {
@@ -41,7 +41,7 @@ const formats: Record<string, { href: string; artwork: keyof typeof homeArtwork;
   ielts: { href: "/exams/ielts", artwork: "languageCover", summary: "Сонсох, унших, бичих, ярих. Дөрвөн чадвар, нэг зорилго.", facts: [["Бүтэн mock", String(count("ielts"))], ["Listening · Reading", "40 + 40 асуулт"], ["Writing · Speaking", "2 бичвэр · 3 хэсэг"]] },
   entrance: { href: "/exams/eesh", artwork: "eeshCover", summary: "Математик, физик, хими, биологи, англи хэл. 2015–2026 оны бүтэцтэй, хугацаатай mock.", facts: [["Математик", `${subjectCounts.math} mock · 100 минут`], ["Физик", `${subjectCounts.physics} mock · 100 минут`], ["Хими", `${subjectCounts.chemistry} mock · 100 минут`], ["Биологи", `${subjectCounts.biology} mock · 80 минут`], ["Англи хэл", `${subjectCounts.english} mock · 80 минут`]] },
   jlpt: { href: "/exams/jlpt", artwork: "japaneseCover", summary: "N5-аас N4 рүү. Япон хэлний сууриа алхам алхмаар.", facts: [["N5", "3 mock · 67 асуулт · 90 минут"], ["N4", "3 mock · 85 асуулт · 115 минут"], ["Сонсгол", "Япон бичлэг · 3 үе шат"]] },
-  hsk: { href: "/exams/hsk", artwork: "hskCover", summary: "Хятад хэлний анхны алхам. Сонсох, унших, бүх ханз pinyin-тэй.", facts: [["HSK 1", `${hskMocks.length} mock · 40 асуулт · 32 минут`], ["Сонсох", "20 асуулт · 15 минут"], ["Унших", "20 асуулт · 17 минут"]] },
+  hsk: { href: "/exams/hsk", artwork: "hskCover", summary: "Хятад хэлний анхны алхам. Сонсох, унших, бүх ханз pinyin-тэй.", facts: [["HSK 1", `${hskMocks.filter(mock => mock.level === 1).length} mock · 40 асуулт · 32 минут`], ["HSK 2", `${hskMocks.filter(mock => mock.level === 2).length} mock · 60 асуулт · 47 минут`], ["Сонсох, унших", "Хятад audio · pinyin"]] },
 };
 
 export function HomeProgramDetails({ plans }: { plans: Plans }) {

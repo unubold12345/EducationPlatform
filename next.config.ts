@@ -23,7 +23,7 @@ const nextConfig: NextConfig = {
   // `/audio/forms` reads assets/ielts-forms (IELTS 07–12) through audio-response-forms.ts:
   "/api/mock-attempts/*/audio/forms":["./assets/ielts-forms/*.mp3"],
   "/api/exam-practice/*/audio/forms":["./assets/ielts-forms/*.mp3"],
-  // `/audio/hsk` reads assets/hsk-audio (HSK 1, about 12 MB) through audio-response-hsk.ts:
+  // `/audio/hsk` reads assets/hsk-audio (HSK 1–2, about 35 MB) through audio-response-hsk.ts:
   "/api/mock-attempts/*/audio/hsk":["./assets/hsk-audio/*.mp3"],
   "/api/exam-practice/*/audio/hsk":["./assets/hsk-audio/*.mp3"],
   // `/audio/free` reads assets/free-audio (the free half-length mocks) through audio-response-free.ts:

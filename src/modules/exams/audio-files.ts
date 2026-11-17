@@ -13,7 +13,7 @@ const jlptAudio = jlptData as ItemTimings;
 import jlptV2Data from './jlpt/audio-catalog-v2.json' with { type: 'json' };
 const jlptAudioV2 = jlptV2Data as ItemTimings;
 const jlptRevised = (slug:string,version:number)=>version>=2&&Object.hasOwn(jlptAudioV2,slug);
-// HSK 1 (scripts/generate-hsk-audio.py): four part tracks per mock in assets/hsk-audio, each item read twice.
+// HSK 1 and 2 (scripts/generate-hsk-audio.py, generate-hsk2-audio.py): four part tracks per mock in assets/hsk-audio, each item read twice.
 const hskAudio = hskData as ItemTimings;
 // The free half-length mocks (scripts/generate-free-audio.py): IELTS Parts 1–2, JLPT N5/N4 and HSK 1 tracks in
 // assets/free-audio, with the same per-item timings as the paid JLPT and HSK catalogues.
@@ -21,7 +21,7 @@ const freeAudio = freeData as ItemTimings;
 /**
  * Which audio route serves a mock. Each route bundles one recording folder into its server function, which must
  * stay under Vercel's 250 MB: `…/audio` serves assets/exams (IELTS 01–06, JLPT), `…/audio/forms` serves
- * assets/ielts-forms (IELTS 07–12), `…/audio/hsk` serves assets/hsk-audio (HSK 1) and `…/audio/free` serves
+ * assets/ielts-forms (IELTS 07–12), `…/audio/hsk` serves assets/hsk-audio (HSK 1–2) and `…/audio/free` serves
  * assets/free-audio (the free mocks) and `…/audio/jlpt` serves assets/jlpt-audio (JLPT audio revision 2). A new
  * recording set should get its own folder and route segment. `version` is the attempt's or practice form's audio revision.
  */
@@ -32,6 +32,13 @@ const timed=(catalog:ItemTimings,slug:string,id:string)=>Object.hasOwn(catalog,s
 export function jlptQuestionAudio(slug:string,id:string,version=2) { return (jlptRevised(slug,version)?timed(jlptAudioV2,slug,id):timed(jlptAudio,slug,id))??timed(freeAudio,slug,id); }
 /** Where one HSK item (its number and both readings) sits in its part's track, for practice replay. */
 export function hskQuestionAudio(slug:string,id:string) { return timed(hskAudio,slug,id)??timed(freeAudio,slug,id); }
+/** The HSK item being read at `offset` seconds of a part's track (the part's first item during its introduction), so the page can follow it. */
+export function hskPlayingItem(slug:string,part:number,offset:number):string|undefined {
+  const catalog=Object.hasOwn(hskAudio,slug)?hskAudio:Object.hasOwn(freeAudio,slug)?freeAudio:undefined;
+  if(!catalog)return undefined;
+  const items=Object.entries(catalog[slug].questions).filter(([,range])=>range.part===part).sort((a,b)=>a[1].start-b[1].start);
+  return (items.findLast(([,range])=>range.start<=offset)??items[0])?.[0];
+}
 const listeningFiles:Record<string,string>={
   "ielts-academic-01":"ielts-01",
   "ielts-academic-02":"ielts-02",

@@ -15,7 +15,7 @@ Part of the [project guide](../PROJECT.md) (was PROJECT.md section 7). "Section 
   prices and FAQs. `home-details.tsx` and `home-overview.css` keep this presentation scoped to the homepage;
   glyphs, sketches, ticker, atmosphere and a compact Lexlab link remain. Programme navigation opens `/#programs`.
   Media and prompts: `docs/HOMEPAGE_MEDIA.md`; optimised images/videos: `public/home/`.
-  `scripts/record-homepage-demos.py` records local disposable QA accounts only; no live AI calls.
+  `scripts/home-loops/capture.py` uses local disposable QA accounts only; no live AI calls.
   Artwork is selected by `HOME_ART_STYLE` in `src/components/home-art.ts`; the owner restored `editorial`.
   The `handdrawn` ink/watercolour alternative and both complete image sets remain available. Loops have no player controls;
   they stop offscreen, in hidden tabs and for reduced-motion preferences.
@@ -23,10 +23,10 @@ Part of the [project guide](../PROJECT.md) (was PROJECT.md section 7). "Section 
   so no picture repeats; slogan overlays, the hero seal and pill, filler eyebrows and side notes and the Workshop fine print are
   gone; the closing call to action is one line; the Workspace features are AI chat, vocabulary, exams from a file and review;
   a lone fifth programme card spans the row; the FAQ adds AI credits; the three loops were re-recorded on the current Workspace.
-  The loops section has no visible title (its `h2` is `sr-only`, owner request); the loops were last re-recorded 2026-11-16.
+  The loops section has no visible title (its `h2` is `sr-only`, owner request); since 2026-11-16 the loops are 12 to 14 s captioned films built from real screenshots (`scripts/home-loops/`, see `HOMEPAGE_MEDIA.md`).
   Hero since 2026-11-16 (owner picked from wireframes): one photo card (`.hero.hero-card` in `home-overview.css`). The photo fills the
   right two thirds, the headline and buttons sit on the dark left, the five exam links run along the card's bottom edge and the three
-  figures are a row beneath. The card is dark in both themes. Restore: `artifacts/design-backup-2026-11-16-hero/restore.ps1`.
+  figures are a row beneath. The card is dark in both themes. The headline types itself once, slowly, and keeps a blinking caret after the last letter (`hero-typing.tsx`): untyped letters stay in the layout hidden, the `h1` name is always the full sentence, and reduced motion shows it at once. Restore: `artifacts/design-backup-2026-11-16-hero/restore.ps1`.
 
 - The header theme switch defaults to the browser preference and saves an explicit choice in
   `education-theme` localStorage. The public site now shares the Workspace's blue/neutral palette and self-hosted Inter (`next/font/google`, fetched at build) with

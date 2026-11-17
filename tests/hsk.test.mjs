@@ -3,21 +3,22 @@ import assert from 'node:assert/strict';
 import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { findExam, allExamSlugs } from '../src/modules/exams/definitions.ts';
-import { hskMocks } from '../src/modules/exams/hsk/catalog.ts';
+import { hskMocks, hskLevel } from '../src/modules/exams/hsk/catalog.ts';
 import { createExamState, expireStages, makeReport, stageFor, validateExamEdit, editExam } from '../src/modules/exams/engine.ts';
 import { mockPractice } from '../src/modules/exam-practice/form.ts';
-import { audioPath, audioSetOf, listeningFile, listeningParts, listeningPosition, hskQuestionAudio } from '../src/modules/exams/audio-files.ts';
+import { audioPath, audioSetOf, listeningFile, listeningParts, listeningPosition, hskQuestionAudio, hskPlayingItem } from '../src/modules/exams/audio-files.ts';
 import { validateContentShape, validateAnswerKeys } from '../src/modules/content/validation.ts';
 import { hskChoices, hskDescription } from '../src/modules/exams/hsk/describe.ts';
 const json=path=>JSON.parse(readFileSync(path,'utf8'));
 const hash=body=>createHash('sha256').update(body).digest('hex');
 const stable=value=>JSON.stringify(value,(_,v)=>v&&typeof v==='object'&&!Array.isArray(v)?Object.fromEntries(Object.keys(v).sort().map(k=>[k,v[k]])):v);
 const parts=['L1','L2','L3','L4','R1','R2','R3','R4'];
+const hsk1=hskMocks.filter(meta=>meta.level===1),hsk2=hskMocks.filter(meta=>meta.level===2);
 const part=groupId=>{const m=/^hsk-([lr])-([1-4])$/.exec(groupId);return m[1].toUpperCase()+m[2];};
 
 test('HSK 1 has three 40-item forms: Listening 20 in 15 minutes, Reading 20 in 17, eight five-item parts',()=>{
- assert.equal(hskMocks.length,3);const ids=new Set();
- for(const meta of hskMocks){
+ assert.equal(hsk1.length,3);assert.equal(hskMocks.length,6);const ids=new Set();
+ for(const meta of hsk1){
   assert.ok(allExamSlugs().includes(meta.slug));
   const exam=findExam(meta.slug);assert.equal(exam.program,'hsk');assert.equal(exam.points,40);
   assert.deepEqual(exam.stages.map(s=>s.id),['hsk-l','hsk-r']);assert.deepEqual(exam.stages.map(s=>s.seconds),[900,1020]);
@@ -44,17 +45,17 @@ test('HSK pictures are served answer-free files, and printed Chinese always carr
   const pictures=[];const lines=[];
   for(const stage of exam.stages){
    for(const group of stage.groups){pictures.push(...(group.hsk.pictures??[]),...(group.hsk.example?.pictures??[]));lines.push(...(group.hsk.choices??[]),...(group.hsk.example?.choices??[]));if(group.hsk.example?.line)lines.push(group.hsk.example.line);}
-   for(const q of stage.questions){if(q.figure)pictures.push(q.figure);pictures.push(...(q.hsk?.pictures??[]));lines.push(...(q.hsk?.choices??[]));if(q.hsk?.line)lines.push(q.hsk.line);}
+   for(const q of stage.questions){if(q.figure)pictures.push(q.figure);pictures.push(...(q.hsk?.pictures??[]));lines.push(...(q.hsk?.choices??[]));if(q.hsk?.line)lines.push(q.hsk.line);if(q.hsk?.statement)lines.push(q.hsk.statement);}
   }
   for(const picture of pictures){
-   assert.match(picture.src,/^\/exam-assets\/hsk\/(hsk1-mock-0[1-3]|examples)\/[a-z0-9-]+\.svg$/);
+   assert.match(picture.src,/^\/exam-assets\/hsk\/(hsk[12]-mock-0[1-3]|examples|hsk2-examples)\/[a-z0-9-]+\.svg$/);
    const file='public'+picture.src;assert.ok(existsSync(file),file);files.add(file);
    const body=readFileSync(file,'utf8');assert.ok(!/[一-鿿]/.test(body),file+' prints Chinese');assert.ok(!/<script|href=|xlink/i.test(body),file);
    assert.ok(picture.alt.length>3);
   }
   for(const line of lines){assert.ok(/[一-鿿]/.test(line.text),line.text);assert.ok(line.pinyin.trim().length>0,line.text);}
   // The six shared pictures, answers and words keep one extra choice, as on the paper.
-  for(const group of exam.stages.flatMap(s=>s.groups).filter(g=>g.hsk.pictures||g.hsk.choices)){
+  if(meta.level===1)for(const group of exam.stages.flatMap(s=>s.groups).filter(g=>g.hsk.pictures||g.hsk.choices)){
    const used=new Set(exam.stages.flatMap(s=>s.questions).filter(q=>q.groupId===group.id).map(q=>q.answers[0]));
    assert.equal((group.hsk.pictures??group.hsk.choices).length,6);assert.equal(used.size,5,group.id);
   }
@@ -64,7 +65,7 @@ test('HSK pictures are served answer-free files, and printed Chinese always carr
 });
 
 test('HSK snapshots grade both sections, lock Listening after its deadline and keep transcripts for review',()=>{
- for(const meta of hskMocks){
+ for(const meta of hsk1){
   const exam=findExam(meta.slug),state=createExamState(exam,0);
   for(let i=0;i<2;i++){
    const stage=stageFor(state),responses=Object.fromEntries(stage.questions.map(q=>[q.id,q.answers[0]]));
@@ -85,7 +86,7 @@ test('HSK snapshots grade both sections, lock Listening after its deadline and k
 });
 
 test('HSK practice carries pictures and pinyin without keys or heard text, and reveals only after checking',()=>{
- for(const meta of hskMocks){
+ for(const meta of hsk1){
   const exam=findExam(meta.slug),source=mockPractice(exam);
   // Reading sentences may share words with what is heard, so the leak check reads the Listening pages only.
   const payload=JSON.stringify(source.form.questions.filter(item=>item.section.startsWith('hsk-l-')));
@@ -118,7 +119,7 @@ test('HSK practice carries pictures and pinyin without keys or heard text, and r
 });
 
 test('Twelve Mandarin tracks match the pack, their hashes, item timings, own route and allowlisted paths',()=>{
- for(const meta of hskMocks){
+ for(const meta of hsk1){
   const manifest=json('assets/hsk-audio/'+meta.slug+'-audio.json');
   const offline=json(`MockExmps/HSK/mock-0${meta.number}/mock.json`);
   assert.equal(manifest.parts.length,4);assert.deepEqual(listeningParts(meta.slug),manifest.parts.map(p=>p.seconds));
@@ -142,8 +143,113 @@ test('Twelve Mandarin tracks match the pack, their hashes, item timings, own rou
 });
 
 test('HSK slugs, pictures and audio stay out of the offline pack, and the pack stays out of deployment',()=>{
- assert.match(readFileSync('.vercelignore','utf8'),/^MockExmps\/HSK\/$/m);
+ assert.match(readFileSync('.vercelignore','utf8'),/^MockExmps\/HSK\/$/m);assert.match(readFileSync('.vercelignore','utf8'),/^MockExmps\/HSK2\/$/m);
  const config=readFileSync('next.config.ts','utf8');
  assert.ok(config.includes('"./assets/hsk/*.json"'));assert.ok(config.includes('"/api/mock-attempts/*/audio/hsk":["./assets/hsk-audio/*.mp3"]'));
  for(const meta of hskMocks)assert.ok(!JSON.stringify(meta).match(/answer|script/i));
+});
+
+// ---------------------------------------------------------------------------------------------------------------
+// HSK 2
+const groups2=['hsk-l-1','hsk-l-2a','hsk-l-2b','hsk-l-3','hsk-l-4','hsk-r-1','hsk-r-2','hsk-r-3','hsk-r-4a','hsk-r-4b'];
+const layouts2=['L1','L3','L3','L4','L4','R2','R4','J','R3','R3'];
+const sizes2=[10,5,5,10,5,5,5,5,5,5];
+
+test('HSK 2 has three 60-item forms: Listening 35 in 25 minutes, Reading 25 in 22, the paper\'s ten groups',()=>{
+ assert.equal(hsk2.length,3);const ids=new Set();
+ for(const meta of hsk2){
+  assert.equal(hskLevel(meta.slug),2);assert.equal(meta.questions,60);assert.equal(meta.minutes,47);
+  const exam=findExam(meta.slug);assert.equal(exam.program,'hsk');assert.equal(exam.points,60);
+  assert.deepEqual(exam.stages.map(s=>s.id),['hsk-l','hsk-r']);assert.deepEqual(exam.stages.map(s=>s.seconds),[1500,1320]);
+  assert.deepEqual(exam.stages.map(s=>s.questions.length),[35,25]);
+  const groups=exam.stages.flatMap(s=>s.groups);
+  assert.deepEqual(groups.map(g=>g.id),groups2);assert.deepEqual(groups.map(g=>g.hsk.layout),layouts2);
+  assert.ok(validateAnswerKeys(exam));assert.ok(validateContentShape(exam,structuredClone(exam)));
+  const all=exam.stages.flatMap(s=>s.questions);
+  assert.deepEqual(groups.map(g=>all.filter(q=>q.groupId===g.id).length),sizes2);
+  all.forEach((q,i)=>{
+   assert.equal(q.number,String(i+1));assert.equal(q.id,`hsk2-0${meta.number}-${String(i+1).padStart(2,'0')}`);assert.ok(!ids.has(q.id));ids.add(q.id);
+   assert.equal(q.points,1);assert.equal(q.kind,'choice');assert.ok(q.options.includes(q.answers[0]),q.id);
+   const group=groups.find(g=>g.id===q.groupId),layout=group.hsk.layout;
+   if(layout==='L1'){assert.deepEqual(q.options,['√','×']);assert.equal(q.figure.kind,'image');}
+   else if(layout==='J'){assert.deepEqual(q.options,['√','×']);assert.ok(q.hsk.line.text&&q.hsk.statement.text&&q.hsk.statement.pinyin);assert.ok(q.prompt.includes('★ '+q.hsk.statement.text));}
+   else if(layout==='L4'){assert.deepEqual(q.options,['A','B','C']);assert.equal(q.hsk.choices.length,3);}
+   else assert.deepEqual(q.options,(group.hsk.pictures??group.hsk.choices).map(entry=>entry.label));
+   assert.equal(Boolean(q.listening),q.groupId.startsWith('hsk-l-'));
+  });
+  // A six-entry set gives one entry to its worked example; a five-entry set uses every entry once.
+  for(const group of groups.filter(g=>g.hsk.pictures||g.hsk.choices)){
+   const entries=(group.hsk.pictures??group.hsk.choices).map(entry=>entry.label);
+   const used=all.filter(q=>q.groupId===group.id).map(q=>q.answers[0]);
+   assert.equal(new Set(used).size,5,group.id);
+   if(entries.length===6){assert.ok(group.hsk.example,group.id);assert.deepEqual([...used,group.hsk.example.answer].sort(),entries);}
+   else{assert.equal(entries.length,5);assert.equal(group.hsk.example,undefined);assert.deepEqual([...used].sort(),entries);}
+  }
+ }
+ assert.equal(ids.size,180);
+});
+
+test('HSK 2 snapshots grade both sections and keep transcripts; practice hides keys and heard text until a check',()=>{
+ for(const meta of hsk2){
+  const exam=findExam(meta.slug),state=createExamState(exam,0);
+  for(let i=0;i<2;i++){
+   const stage=stageFor(state),responses=Object.fromEntries(stage.questions.map(q=>[q.id,q.answers[0]]));
+   assert.ok(validateExamEdit(state,{revision:0,stageId:stage.id,responses,flags:[]}));
+   assert.equal(validateExamEdit(state,{revision:0,stageId:stage.id,responses:{[stage.questions[0].id]:'G'},flags:[]}),false);
+   editExam(state,{responses,flags:[]});expireStages(state,Date.parse(state.deadline));
+  }
+  const report=makeReport(state);
+  assert.equal(report.points.earned,60);assert.deepEqual(report.sections.map(s=>[s.correct,s.total]),[[35,35],[25,25]]);
+  assert.ok(report.reviews.filter(q=>q.groupId.startsWith('hsk-l-')).every(q=>q.transcript&&/[一-鿿]/.test(q.transcript)));
+  assert.ok(report.reviews.filter(q=>q.groupId.startsWith('hsk-r-')).every(q=>!q.transcript));
+  assert.ok(report.reviews.every(q=>q.hskGroup?.layout));
+  assert.equal(makeReport(createExamState(exam,0)).points.earned,0);
+  const source=mockPractice(exam);
+  assert.equal(source.form.subject,'hsk');assert.equal(source.form.questions.length,60);assert.equal(source.form.sections.length,10);
+  const payload=JSON.stringify(source.form.questions.filter(item=>item.section.startsWith('hsk-l-')));
+  for(const q of exam.stages.flatMap(s=>s.questions)){
+   const publicQuestion=source.form.questions.find(item=>item.id===q.id);
+   for(const field of ['answers','answerDisplay','explanation','listening','script'])assert.equal(field in publicQuestion,false,field);
+   assert.ok(publicQuestion.hskGroup?.layout,q.id);
+   const result=source.grade(q.id,q.answers[0]);assert.equal(result.correct,true);
+   assert.equal(source.grade(q.id,q.options.find(option=>option!==q.answers[0])).correct,false);
+   assert.equal(source.reveal(q.id,result).answerValue,q.answers[0]);
+   const material=source.material(q.id);assert.equal(material.transcript,undefined);
+   if(q.listening){
+    for(const line of q.listening.script.split('\n').filter((_,i)=>i%2===0))assert.ok(!payload.includes(line.replace(/^[男女]：/,'').replace(/^问：/,'')),q.id+' leaks '+line);
+    assert.equal(source.reveal(q.id,result).transcript,q.listening.script);assert.equal(publicQuestion.audioPart,q.listening.part);
+   }
+   if(q.hsk?.statement)assert.match(material.context,/Statement to judge: ★ /);
+  }
+ }
+});
+
+test('Twelve HSK 2 tracks match the pack, their hashes and item timings, and the page follows the item being read',()=>{
+ for(const meta of hsk2){
+  const manifest=json('assets/hsk-audio/'+meta.slug+'-audio.json');
+  const offline=json(`MockExmps/HSK2/mock-0${meta.number}/mock.json`);
+  assert.equal(manifest.parts.length,4);assert.deepEqual(listeningParts(meta.slug),manifest.parts.map(p=>p.seconds));
+  assert.ok(manifest.parts.reduce((sum,p)=>sum+p.seconds,0)<1440);
+  assert.equal(audioSetOf(meta.slug),'hsk');assert.equal(audioPath(meta.slug),'/audio/hsk');
+  for(const part of manifest.parts){
+   assert.equal(hash(stable([offline.listening['part'+part.part],part.part===2?null:offline.examples.listening['part'+part.part]])),part.scriptSha256);
+   const filename=listeningFile(meta.slug,part.part);assert.equal(filename,part.file);
+   assert.equal(hash(readFileSync('assets/hsk-audio/'+filename)),part.sha256);
+  }
+  const exam=findExam(meta.slug);let before=-1;
+  for(const q of exam.stages[0].questions){
+   const range=hskQuestionAudio(meta.slug,q.id);assert.ok(range,q.id);assert.equal(range.part,q.listening.part);
+   assert.ok(range.end>range.start);assert.ok(range.end<manifest.parts[range.part-1].seconds);
+   assert.equal(hskPlayingItem(meta.slug,range.part,range.start+1),q.id);
+   if(range.part===before)assert.equal(hskPlayingItem(meta.slug,range.part,range.start-0.5)===q.id,false);
+   before=range.part;
+  }
+  // Part 2 opens on its first set (item 11) and turns to the second set when item 16 starts.
+  assert.equal(hskPlayingItem(meta.slug,2,0),`hsk2-0${meta.number}-11`);
+  assert.equal(hskQuestionAudio(meta.slug,`hsk2-0${meta.number}-36`),undefined);
+  assert.equal(listeningPosition(meta.slug,0).part,1);assert.equal(listeningPosition(meta.slug,9999).ended,true);
+ }
+ assert.equal(listeningFile('hsk2-mock-01',5),undefined);assert.equal(hskPlayingItem('sat-01',1,0),undefined);
+ // HSK 1 pages still follow their part: one group per track.
+ assert.equal(hskPlayingItem('hsk1-mock-01',3,0),'hsk1-01-11');
 });

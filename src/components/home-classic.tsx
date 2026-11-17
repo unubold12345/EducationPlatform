@@ -5,10 +5,11 @@ import { homePrograms, totalMocks, labCount, HomeProgramDetails, HomeWorkspaceDe
 import { LawTestRecommendation } from "@/components/lawtest";
 import { HomeAtmosphere } from "@/components/home-atmosphere";
 import { HomeMotion } from "@/components/home-motion";
+import { HeroTyping } from "@/components/hero-typing";
 import { HOME_ART_STYLE, homeArtwork } from "@/components/home-art";
 import { entranceTotal } from "@/modules/exams/entrance/catalog";
 
-const tickerItems = ["Digital SAT", "IELTS Academic", `ЭЕШ · ${entranceTotal} mock`, "JLPT · N5 / N4", "HSK 1", "AI туслах", "Үгсийн сан", "Speaking", "Reading"];
+const tickerItems = ["Digital SAT", "IELTS Academic", `ЭЕШ · ${entranceTotal} mock`, "JLPT · N5 / N4", "HSK 1–2", "AI туслах", "Үгсийн сан", "Speaking", "Reading"];
 
 export async function HomeClassic() {
   const plans = await pricedPlans();
@@ -20,7 +21,7 @@ export async function HomeClassic() {
         <div className="hero-card-frame" data-reveal>
           <Image className="hero-card-photo" src={homeArtwork.studyHero.src} alt={homeArtwork.studyHero.alt} fill sizes="(max-width: 1320px) 100vw, 1280px" loading="eager" fetchPriority="high" />
           <div className="hero-copy">
-            <h1>Том зорилго.<br /><span>Өдөр бүрийн</span><br />жижиг алхам.</h1>
+            <HeroTyping />
             <p className="hero-description">Шалгалтаа давт. Алдаагаа ойлго.<br />Өөрийн хэмнэлээр урагшил.</p>
             <div className="hero-actions"><Link className="button" href="/workspace">Workspace нээх <span aria-hidden="true">↗</span></Link><Link className="home-watch-link" href="#demos"><span aria-hidden="true">▶</span> Хэрхэн ажилладаг вэ?</Link></div>
           </div>

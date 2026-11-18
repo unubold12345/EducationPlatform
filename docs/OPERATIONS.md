@@ -115,6 +115,11 @@ npm run admin:grant -- qa-demo-01@example.invalid
 ## 7. Recent
 
 Full entries, with attribution and verification limits, are at the top of [OPERATIONS_HISTORY.md](./OPERATIONS_HISTORY.md).
+- **2026-11-18 · Claude Code (Opus 5.5) · Next.js 16.4.6 security bump**: `next`, `eslint-config-next` 16.4.2 → 16.4.6; lockfile
+  changes only `next`/`@next/*`. 16.4.5 fixes seven moderate advisories (`use cache` leaks, SVG image bypass, Edge cookie
+  header); 16.4.6 compresses route-handler responses; none breaking. Build showed no security notice. `npm run check` and all
+  17 browser groups passed in worktree `dazzling-perlman-f7175e` (3001 left running). Committed on branch
+  `claude/dazzling-perlman-f7175e`, not merged, pushed or deployed.
 - **2026-11-18 · Claude Code (Opus 5.5) · TOEFL iBT mocks on the site** ([assessments](./project/assessments.md)): nine forms at
   `/exams/toefl` (Basic/Pro or 7-day buy): routed Reading/Listening modules, listening answer windows on the server clock,
   one-clip audio allowlist, letter-box gaps, Build a Sentence, writing, recorded speaking, raw results, practice. Audio
@@ -132,7 +137,3 @@ Full entries, with attribution and verification limits, are at the top of [OPERA
 - **2026-11-18 · Claude Code (Opus 5.5) · JLPT/HSK word decks, Workshop exam tabs** ([language-decks](./project/language-decks.md)):
   N5/N4/HSK 1/HSK 2 decks (1,248 words, DeepSeek drafts for review), Basic/Pro only, progress table (migration `20261118120000`).
   `check -- decks vocabulary writing` passed; 3001 rebuilt. Apply the migration on Neon before deploying. No commit.
-- **2026-11-18 · Claude Code (Opus 5.5) · TOEFL offline recordings** ([assessments](./project/assessments.md)): 459 Kokoro
-  MP3s for the nine `MockExmps/TOEFL` forms, manifests, `AUDIO.md`; modules 19–20/8/10.5 min (blueprint 18/7/11). Validator:
-  structure passed, Whisper flags 23 recordings for words and 17 for names. `build.py` 0 errors. Not listened to; no commit.
-  Site build plan (no code): [plans/2026-11-18-toefl-mocks-on-site.md](./superpowers/plans/2026-11-18-toefl-mocks-on-site.md).

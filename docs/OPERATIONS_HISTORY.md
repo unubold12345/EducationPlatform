@@ -25,6 +25,10 @@ Before 2026-10-25 agents were not recorded. Commits and details are in the full 
 
 ## Archived recent entries
 
+- **2026-11-18 · Claude Code (Opus 5.5) · TOEFL offline recordings** ([assessments](./project/assessments.md)): 459 Kokoro
+  MP3s for the nine `MockExmps/TOEFL` forms, manifests, `AUDIO.md`; modules 19–20/8/10.5 min (blueprint 18/7/11). Validator:
+  structure passed, Whisper flags 23 recordings for words and 17 for names. `build.py` 0 errors. Not listened to; no commit.
+  Site build plan (no code): [plans/2026-11-18-toefl-mocks-on-site.md](./superpowers/plans/2026-11-18-toefl-mocks-on-site.md).
 - **2026-11-18 · Claude Code (Fable 5.2) · Nine offline TOEFL iBT mocks, 2026 format** ([assessments](./project/assessments.md)):
   `MockExmps/TOEFL` forms 01–09, each with both adaptive second modules (127 scored items), writing, speaking, model answers and
   recording scripts. Not on the site; no audio. `build.py` valid 9/9; gaps screened against a word list; a key-free solve agreed on

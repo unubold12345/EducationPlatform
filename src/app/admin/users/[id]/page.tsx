@@ -12,50 +12,90 @@ import { creditSummary } from "@/modules/credits/service";
 import { AI_ACTIONS, formatCredits, formatUsd, isAiAction } from "@/modules/credits/pricing";
 
 export const metadata = { title: "Хэрэглэгч", robots: { index: false, follow: false } };
-const views = [["activity", "Нэвтрэлт, үйлдэл"], ["payments", "Төлбөр"], ["attempts", "Оролдлого"], ["credits", "AI кредит"], ["sessions", "Идэвхтэй сесс"], ["admin", "Админы түүх"]] as const;
+// The record opens on the overview (facts, actions, notes); each history list is its own tab.
+const views = [["overview", "Тойм"], ["activity", "Нэвтрэлт, үйлдэл"], ["payments", "Төлбөр"], ["attempts", "Оролдлого"], ["credits", "AI кредит"], ["sessions", "Идэвхтэй сесс"], ["admin", "Админы түүх"]] as const;
 type View = typeof views[number][0];
+type ListView = Exclude<View, "overview">;
 const device = (agent: string | null) => {
   if (!agent) return "—";
   const os = /Windows/.test(agent) ? "Windows" : /Android/.test(agent) ? "Android" : /iPhone|iPad/.test(agent) ? "iOS" : /Mac OS/.test(agent) ? "macOS" : /Linux/.test(agent) ? "Linux" : "Бусад";
   const browser = /Edg\//.test(agent) ? "Edge" : /OPR\//.test(agent) ? "Opera" : /Chrome\//.test(agent) ? "Chrome" : /Firefox\//.test(agent) ? "Firefox" : /Safari\//.test(agent) ? "Safari" : "Бусад";
   return `${browser} · ${os}`;
 };
+const initials = (name: string) => {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  return ((parts[0]?.[0] ?? "") + (parts[1]?.[0] ?? "")).toUpperCase() || "?";
+};
 
 export default async function AdminUserPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const session = await getSession(); if (!session) redirect("/login?next=%2Fadmin");
   if (!await isAdmin(session.user.id)) notFound();
   const [{ id }, query] = await Promise.all([params, searchParams]);
-  const view: View = views.some(([key]) => key === query.view) ? query.view as View : "activity";
+  const view: View = views.some(([key]) => key === query.view) ? query.view as View : "overview";
   const requested = parsePage(query.page);
   const db = getDb(); const now = new Date();
-  const user = await db.user.findUnique({ where: { id }, select: {
-    id: true, name: true, email: true, emailVerified: true, createdAt: true, updatedAt: true, suspendedAt: true, suspendedReason: true,
-    adminMembership: { select: { createdAt: true } }, accounts: { select: { providerId: true, createdAt: true } },
-    subscriptions: { orderBy: { endsAt: "desc" }, select: { program: true, startsAt: true, endsAt: true } },
-    _count: { select: { sessions: true, events: true, mockAttempts: true, paperAttempts: true, subscriptionOrders: true, mockPurchases: true, creditOrders: true, creditCharges: true } },
-  } });
-  if (!user) notFound();
-  const [lastEvent, ipRows, paidOrders, paidPurchases, paidCredits, declined, notes, auditTotal, credits] = await Promise.all([
-    db.userEvent.findFirst({ where: { userId: id, type: "sign-in" }, orderBy: { createdAt: "desc" } }),
-    db.userEvent.groupBy({ by: ["ipAddress"], where: { userId: id, ipAddress: { not: null } }, _count: true, orderBy: { _count: { ipAddress: "desc" } }, take: 5 }),
-    db.subscriptionOrder.aggregate({ where: { userId: id, status: "PAID" }, _sum: { amountMnt: true }, _count: true }),
-    db.mockPurchase.aggregate({ where: { userId: id, status: "PAID" }, _sum: { amountMnt: true }, _count: true }),
-    db.creditOrder.aggregate({ where: { userId: id, status: "PAID" }, _sum: { amountMnt: true }, _count: true }).catch(() => ({ _sum: { amountMnt: 0 }, _count: 0 })),
-    db.subscriptionOrder.count({ where: { userId: id, status: "DECLINED" } }),
-    db.adminNote.findMany({ where: { userId: id }, orderBy: { createdAt: "desc" }, take: 10 }),
+  const [user, auditTotal] = await Promise.all([
+    db.user.findUnique({ where: { id }, select: {
+      id: true, name: true, email: true, emailVerified: true, createdAt: true, updatedAt: true, suspendedAt: true, suspendedReason: true,
+      adminMembership: { select: { createdAt: true } }, accounts: { select: { providerId: true, createdAt: true } },
+      subscriptions: { orderBy: { endsAt: "desc" }, select: { program: true, startsAt: true, endsAt: true } },
+      _count: { select: { sessions: true, events: true, mockAttempts: true, paperAttempts: true, subscriptionOrders: true, mockPurchases: true, creditOrders: true, creditCharges: true } },
+    } }),
     db.adminAudit.count({ where: { target: id } }),
-    creditSummary(id, now).catch(() => null),
   ]);
-  // Other accounts that signed in from this user's IP addresses: a common sign of shared or farmed accounts.
-  const sharedIps = ipRows.length ? await db.userEvent.groupBy({ by: ["userId"], where: { ipAddress: { in: ipRows.map(row => row.ipAddress!) }, userId: { not: id } }, _count: true, orderBy: { _count: { userId: "desc" } }, take: 6 }) : [];
-  const sharedUsers = sharedIps.length ? await db.user.findMany({ where: { id: { in: sharedIps.map(row => row.userId) } }, select: { id: true, email: true, suspendedAt: true } }) : [];
+  if (!user) notFound();
 
   const href = (next: Partial<{ view: string; page: number }>) => `/admin/users/${id}?` + new URLSearchParams({ view: next.view ?? view, page: String(next.page ?? 1) });
-  const counts: Record<View, number> = { activity: user._count.events, payments: user._count.subscriptionOrders + user._count.mockPurchases + user._count.creditOrders, attempts: user._count.mockAttempts + user._count.paperAttempts, credits: user._count.creditCharges, sessions: user._count.sessions, admin: auditTotal };
-  const info = pageInfo(counts[view], requested);
+  const counts: Record<ListView, number> = { activity: user._count.events, payments: user._count.subscriptionOrders + user._count.mockPurchases + user._count.creditOrders, attempts: user._count.mockAttempts + user._count.paperAttempts, credits: user._count.creditCharges, sessions: user._count.sessions, admin: auditTotal };
+  const info = pageInfo(view === "overview" ? 0 : counts[view], requested);
   let body: React.ReactNode = null;
 
-  if (view === "activity") {
+  if (view === "overview") {
+    const [lastEvent, ipRows, paidOrders, paidPurchases, paidCredits, declined, notes, credits] = await Promise.all([
+      db.userEvent.findFirst({ where: { userId: id, type: "sign-in" }, orderBy: { createdAt: "desc" } }),
+      db.userEvent.groupBy({ by: ["ipAddress"], where: { userId: id, ipAddress: { not: null } }, _count: true, orderBy: { _count: { ipAddress: "desc" } }, take: 5 }),
+      db.subscriptionOrder.aggregate({ where: { userId: id, status: "PAID" }, _sum: { amountMnt: true }, _count: true }),
+      db.mockPurchase.aggregate({ where: { userId: id, status: "PAID" }, _sum: { amountMnt: true }, _count: true }),
+      db.creditOrder.aggregate({ where: { userId: id, status: "PAID" }, _sum: { amountMnt: true }, _count: true }).catch(() => ({ _sum: { amountMnt: 0 }, _count: 0 })),
+      db.subscriptionOrder.count({ where: { userId: id, status: "DECLINED" } }),
+      db.adminNote.findMany({ where: { userId: id }, orderBy: { createdAt: "desc" }, take: 10 }),
+      creditSummary(id, now).catch(() => null),
+    ]);
+    // Other accounts that signed in from this user's IP addresses: a common sign of shared or farmed accounts.
+    const sharedIps = ipRows.length ? await db.userEvent.groupBy({ by: ["userId"], where: { ipAddress: { in: ipRows.map(row => row.ipAddress!) }, userId: { not: id } }, _count: true, orderBy: { _count: { userId: "desc" } }, take: 6 }) : [];
+    const sharedUsers = sharedIps.length ? await db.user.findMany({ where: { id: { in: sharedIps.map(row => row.userId) } }, select: { id: true, email: true, suspendedAt: true } }) : [];
+    const active = user.subscriptions.filter(plan => plan.startsAt <= now && plan.endsAt > now);
+    const providers = user.accounts.map(account => account.providerId === "credential" ? "Имэйл + нууц үг" : account.providerId === "google" ? "Google" : account.providerId);
+    body = <div className="admin-user">
+      <section className="ws-card admin-user-card">
+        <h3>Бүртгэл</h3>
+        <dl className="admin-facts">
+          <div><dt>Бүртгүүлсэн</dt><dd>{adminDate(user.createdAt)}</dd></div>
+          <div><dt>Сүүлд нэвтэрсэн</dt><dd>{lastEvent ? adminDate(lastEvent.createdAt) : "—"}</dd></div>
+          <div><dt>Нэвтрэх арга</dt><dd>{providers.join(", ") || "—"}</dd></div>
+          <div><dt>Төлсөн нийт</dt><dd>{money((paidOrders._sum.amountMnt ?? 0) + (paidPurchases._sum.amountMnt ?? 0) + (paidCredits._sum.amountMnt ?? 0))}<small>{paidOrders._count + paidPurchases._count + paidCredits._count} гүйлгээ{declined ? ` · ${declined} амжилтгүй` : ""}</small></dd></div>
+          <div><dt>Идэвхтэй эрх</dt><dd>{active.length ? active.map(plan => `${plan.program.toUpperCase()} → ${adminDate(plan.endsAt)}`).join(", ") : "Алга"}</dd></div>
+          <div><dt>ID</dt><dd><code>{user.id}</code></dd></div>
+          <div className="admin-fact-wide"><dt>AI кредит</dt><dd>{credits ? <>{formatCredits(credits.balance)} / {formatCredits(credits.allowance)} үлдсэн<small>энэ сар: үнэгүй {formatCredits(credits.free)}{credits.bonus ? ` + урамшуулал ${formatCredits(credits.bonus)}` : ""}, {formatCredits(credits.monthLeft)} үлдсэн{credits.plans.map(plan => ` · ${plan.title}: ${formatCredits(plan.left)} / ${formatCredits(plan.credits)} (${adminDate(new Date(plan.endsAt))} хүртэл)`).join("")}{credits.purchased ? ` · худалдаж авсан ${formatCredits(credits.purchased)}` : ""}</small></> : "—"}</dd></div>
+        </dl>
+        {(ipRows.length > 0 || sharedUsers.length > 0) && <div className="admin-signals">
+          <h4>Ижил IP хаяг</h4>
+          {ipRows.length > 0 && <p>IP хаягууд: {ipRows.map(row => <code key={row.ipAddress}>{row.ipAddress} ×{row._count}</code>)}</p>}
+          {sharedUsers.length > 0 ? <p>Ижил IP-ээс нэвтэрсэн бусад бүртгэл: {sharedUsers.map(other => <Link key={other.id} href={"/admin/users/" + other.id}>{other.email}{other.suspendedAt ? " (хаасан)" : ""}</Link>)}</p> : <p>Ижил IP-ээс өөр бүртгэл нэвтрээгүй.</p>}
+        </div>}
+      </section>
+      <div className="admin-user-side">
+        <section className="ws-card">
+          <h3>Үйлдэл</h3>
+          <AdminUserActions target={user.id} suspended={!!user.suspendedAt} protectedUser={user.id === session.user.id || !!user.adminMembership}/>
+        </section>
+        <section className="ws-card">
+          <h3>Тэмдэглэл</h3>
+          {notes.length ? <ul className="admin-log">{notes.map(note => <li key={note.id}>{note.text}<small>{adminDate(note.createdAt)} · {note.authorId === session.user.id ? "Та" : note.authorId}</small></li>)}</ul> : <p className="admin-help">Тэмдэглэл алга.</p>}
+        </section>
+      </div>
+    </div>;
+  } else if (view === "activity") {
     const rows = await db.userEvent.findMany({ where: { userId: id }, orderBy: [{ createdAt: "desc" }, { id: "desc" }], skip: info.skip, take: info.size });
     body = <Table head={["Огноо", "Үйлдэл", "IP хаяг", "Төхөөрөмж"]} empty="Бүртгэгдсэн үйлдэл алга. Шинэчлэлтээс хойшхи нэвтрэлт энд харагдана." rows={rows.map(row => cells(adminDate(row.createdAt), <><strong>{eventLabel(row.type)}</strong><small>{(row.details as { path?: string } | null)?.path ?? ""}</small></>, <code>{row.ipAddress ?? "—"}</code>, <span title={row.userAgent ?? ""}>{device(row.userAgent)}</span>))}/>;
   } else if (view === "payments") {
@@ -92,44 +132,21 @@ export default async function AdminUserPage({ params, searchParams }: { params: 
     body = <Table head={["Огноо", "Үйлдэл", "Шалтгаан", "Админ"]} empty="Админы үйлдэл алга." rows={rows.map(row => cells(adminDate(row.createdAt), <><strong>{auditLabel(row.action)}</strong><small>{row.action}</small></>, <>{row.reason}<details><summary>Дэлгэрэнгүй</summary><pre>{JSON.stringify(row.details, null, 2)}</pre></details></>, <code>{row.actorId}</code>))}/>;
   }
 
-  const active = user.subscriptions.filter(plan => plan.startsAt <= now && plan.endsAt > now);
-  const providers = user.accounts.map(account => account.providerId === "credential" ? "Имэйл + нууц үг" : account.providerId === "google" ? "Google" : account.providerId);
   return <AdminShell tab="users" title={user.name} name={session.user.name} actions={<Link href="/admin?tab=users" className="text-link">← Бүх хэрэглэгч</Link>}>
+    <section className="admin-idbar">
+      <span className="wsp-avatar" aria-hidden="true">{initials(user.name)}</span>
+      <p className="admin-user-email">{user.email}</p>
+      <div className="admin-badges">
+        <span className={"ws-pill " + (user.adminMembership ? "info" : "")}>{user.adminMembership ? "Админ" : "Суралцагч"}</span>
+        <span className={"ws-pill " + (user.emailVerified ? "ok" : "warn")}>{user.emailVerified ? "Имэйл баталгаажсан" : "Имэйл баталгаажаагүй"}</span>
+        {user.suspendedAt ? <span className="ws-pill bad">Хаасан</span> : <span className="ws-pill ok">Идэвхтэй</span>}
+        {user.email.endsWith(".invalid") && <span className="ws-pill">Тест бүртгэл</span>}
+      </div>
+    </section>
     {user.suspendedAt && <p className="admin-warning" role="note"><strong>Түр хаасан</strong> · {adminDate(user.suspendedAt)} · {user.suspendedReason}</p>}
-    <div className="admin-user">
-      <section className="ws-card admin-user-card">
-        <p className="admin-user-email">{user.email}</p>
-        <div className="admin-badges">
-          <span className={"ws-pill " + (user.adminMembership ? "info" : "")}>{user.adminMembership ? "Админ" : "Суралцагч"}</span>
-          <span className={"ws-pill " + (user.emailVerified ? "ok" : "warn")}>{user.emailVerified ? "Имэйл баталгаажсан" : "Имэйл баталгаажаагүй"}</span>
-          {user.suspendedAt ? <span className="ws-pill bad">Хаасан</span> : <span className="ws-pill ok">Идэвхтэй</span>}
-          {user.email.endsWith(".invalid") && <span className="ws-pill">Тест бүртгэл</span>}
-        </div>
-        <dl className="admin-facts">
-          <div><dt>Бүртгүүлсэн</dt><dd>{adminDate(user.createdAt)}</dd></div>
-          <div><dt>Сүүлд нэвтэрсэн</dt><dd>{lastEvent ? adminDate(lastEvent.createdAt) : "—"}</dd></div>
-          <div><dt>Нэвтрэх арга</dt><dd>{providers.join(", ") || "—"}</dd></div>
-          <div><dt>Төлсөн нийт</dt><dd>{money((paidOrders._sum.amountMnt ?? 0) + (paidPurchases._sum.amountMnt ?? 0) + (paidCredits._sum.amountMnt ?? 0))}<small>{paidOrders._count + paidPurchases._count + paidCredits._count} гүйлгээ{declined ? ` · ${declined} амжилтгүй` : ""}</small></dd></div>
-          <div><dt>AI кредит</dt><dd>{credits ? <>{formatCredits(credits.balance)} / {formatCredits(credits.allowance)} үлдсэн<small>энэ сар: үнэгүй {formatCredits(credits.free)}{credits.bonus ? ` + урамшуулал ${formatCredits(credits.bonus)}` : ""}, {formatCredits(credits.monthLeft)} үлдсэн{credits.plans.map(plan => ` · ${plan.title}: ${formatCredits(plan.left)} / ${formatCredits(plan.credits)} (${adminDate(new Date(plan.endsAt))} хүртэл)`).join("")}{credits.purchased ? ` · худалдаж авсан ${formatCredits(credits.purchased)}` : ""}</small></> : "—"}</dd></div>
-          <div><dt>Идэвхтэй эрх</dt><dd>{active.length ? active.map(plan => `${plan.program.toUpperCase()} → ${adminDate(plan.endsAt)}`).join(", ") : "Алга"}</dd></div>
-          <div><dt>ID</dt><dd><code>{user.id}</code></dd></div>
-        </dl>
-        {(ipRows.length > 0 || sharedUsers.length > 0) && <div className="admin-signals">
-          <h4>Ижил IP хаяг</h4>
-          {ipRows.length > 0 && <p>IP хаягууд: {ipRows.map(row => <code key={row.ipAddress}>{row.ipAddress} ×{row._count}</code>)}</p>}
-          {sharedUsers.length > 0 ? <p>Ижил IP-ээс нэвтэрсэн бусад бүртгэл: {sharedUsers.map(other => <Link key={other.id} href={"/admin/users/" + other.id}>{other.email}{other.suspendedAt ? " (хаасан)" : ""}</Link>)}</p> : <p>Ижил IP-ээс өөр бүртгэл нэвтрээгүй.</p>}
-        </div>}
-      </section>
-      <section className="ws-card">
-        <h3>Үйлдэл</h3>
-        <AdminUserActions target={user.id} suspended={!!user.suspendedAt} protectedUser={user.id === session.user.id || !!user.adminMembership}/>
-        <h4>Тэмдэглэл</h4>
-        {notes.length ? <ul className="admin-log">{notes.map(note => <li key={note.id}>{note.text}<small>{adminDate(note.createdAt)} · {note.authorId === session.user.id ? "Та" : note.authorId}</small></li>)}</ul> : <p className="admin-help">Тэмдэглэл алга.</p>}
-      </section>
-    </div>
-    <SubTabs items={views.map(([key, label]) => [key, label, counts[key]] as const)} current={view} href={key => href({ view: key })}/>
+    <SubTabs items={views.map(([key, label]) => key === "overview" ? [key, label] as const : [key, label, counts[key]] as const)} current={view} href={key => href({ view: key })}/>
     {body}
-    <Pager info={info} href={page => href({ page })}/>
+    {view !== "overview" && <Pager info={info} href={page => href({ page })}/>}
   </AdminShell>;
 }
 

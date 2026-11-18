@@ -135,6 +135,11 @@ Claude's and keep Claude as a plan feature.
 - First live run (2026-11-17, 3001, the same 212-word essay Claude graded 6.0): 34 s, 21 credits, bands 5.5/6/5.5/5.5 (overall
   5.5), 15 corrections, 10 vocabulary items, a 239-word model answer.
 
+- Mock essays (2026-11-18): `createStrongReview`/`createExpertReview` validate the studio input and resolve it to a
+  `ReviewSubject` (`subjectOf`), then the shared `strongReview`/`expertReview` do the rest; a finished IELTS mock's results
+  call the same two with a subject read from the attempt (`exams/ai-grading/essay-review.ts`, see assessments.md). The task
+  criterion also covers an Academic Task 1 "report"; `ExpertReport` is exported (no apply button without a draft).
+
 #### Expert review by Claude Opus (2026-11-17)
 
 Owner request: a stronger essay reviewer on Claude Opus; quota revised the same day to none for free accounts, Basic 2, Pro 5

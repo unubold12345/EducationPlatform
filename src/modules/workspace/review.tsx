@@ -19,7 +19,7 @@ import { IMAGE_ONLY_REQUEST } from "@/modules/ai-images/contracts";
 type Review = NonNullable<PublicExamAttempt["report"]>["reviews"][number];
 type Status = "correct" | "wrong" | "blank" | "pending";
 type Filter = "all" | Status;
-type TextKind = "math" | "ja" | "zh" | "en";
+type TextKind = "math" | "ja" | "zh" | "ko" | "en";
 /** A coach turn; a student's message may show previews of the photos it carried. */
 type CoachTurn = ChatTurn & { images?: string[] };
 const statusOf = (review: Review): Status => review.correct === null ? "pending" : review.correct ? "correct" : review.selected.trim() ? "wrong" : "blank";
@@ -41,8 +41,8 @@ function Answer({ text, kind }: { text: string; kind: TextKind }) {
 /** Review of one finished mock: scores, weakest skills, every question with its key, and an AI coach beside it. */
 export function ReviewView({ attempt, options, finishedLabel }: { attempt: PublicExamAttempt; options: Record<string, string[]>; finishedLabel: string }) {
   const report = attempt.report!;
-  const kind: TextKind = attempt.program === "jlpt" ? "ja" : attempt.program === "hsk" ? "zh" : attempt.program === "entrance" && attempt.subject !== "english" ? "math" : "en";
-  const lang = kind === "ja" ? "ja" : kind === "zh" ? "zh-CN" : kind === "math" ? "mn" : "en";
+  const kind: TextKind = attempt.program === "jlpt" ? "ja" : attempt.program === "hsk" ? "zh" : attempt.program === "topik" ? "ko" : attempt.program === "entrance" && attempt.subject !== "english" ? "math" : "en";
+  const lang = kind === "ja" ? "ja" : kind === "zh" ? "zh-CN" : kind === "ko" ? "ko" : kind === "math" ? "mn" : "en";
   const reviews = report.reviews;
   const counts = useMemo(() => {
     const value: Record<Filter, number> = { all: reviews.length, correct: 0, wrong: 0, blank: 0, pending: 0 };
@@ -140,7 +140,7 @@ export function ReviewView({ attempt, options, finishedLabel }: { attempt: Publi
             <div className="wsp-question-foot"><button type="button" className="wsp-ask" onClick={() => askAbout(review.id)} aria-pressed={active === review.id}><Icon name="spark" size={16} />AI-аас асуух</button></div>
           </li>;
         })}</ol>
-        <p className="wsp-fine">{attempt.program === "entrance" ? "Хэвлэсэн онооны нийлбэр. Албан ЭЕШ-ийн жинлэсэн оноо биш." : attempt.program === "jlpt" ? "Raw зөв хариултын тоо. JLPT-ийн албан оноо, тэнцсэн эсэхийг тооцохгүй." : attempt.program === "toefl" ? "Reading, Listening, Build a Sentence-ийн raw зөв хариултын тоо. TOEFL-ийн band болон албан оноо биш." : attempt.program === "hsk" ? "Зөв хариултын тоо. Дадлагын хөрвүүлэлт нь зөв × 5 (200-аас); HSK-ийн албан оноо, тэнцсэн эсэх биш." : attempt.program === "sat" ? "Raw оноо. 400–1600 SAT оноонд хөрвүүлэхгүй; pretest асуулт оноонд орохгүй." : "Listening, Reading-ийн raw оноо. Writing, Speaking-д band өгөхгүй."}</p>
+        <p className="wsp-fine">{attempt.program === "entrance" ? "Хэвлэсэн онооны нийлбэр. Албан ЭЕШ-ийн жинлэсэн оноо биш." : attempt.program === "jlpt" ? "Raw зөв хариултын тоо. JLPT-ийн албан оноо, тэнцсэн эсэхийг тооцохгүй." : attempt.program === "toefl" ? "Reading, Listening, Build a Sentence-ийн raw зөв хариултын тоо; Writing, Speaking-ийн AI оноо (0–5) үр дүнгийн хуудсанд. TOEFL-ийн албан оноо биш." : attempt.program === "hsk" ? "Зөв хариултын тоо. Дадлагын хөрвүүлэлт нь зөв × 5 (200-аас); HSK-ийн албан оноо, тэнцсэн эсэх биш." : attempt.program === "topik" ? "Сонсох, унших хэсгийн асуултын оноо (албан хуудасны адил 2–4). Бичих хэсгийг жишиг хариутай харьцуулж өөрөө үнэлнэ. Албан TOPIK оноо, түвшин биш." : attempt.program === "sat" ? "Raw оноо. 400–1600 SAT оноонд хөрвүүлэхгүй; pretest асуулт оноонд орохгүй." : "Listening, Reading-ийн raw оноо. Writing, Speaking-ийн AI band үр дүнгийн хуудсанд гарна."}</p>
       </section>
       <ReviewCoach key={active ?? "none"} attemptId={attempt.id} review={activeReview} number={activeReview ? activeReview.number ?? String(activeIndex + 1) : ""} kind={kind}
         open={panelOpen} onClose={() => setPanelOpen(false)} turns={active ? conversations[active] ?? [] : []}

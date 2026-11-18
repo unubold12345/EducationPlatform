@@ -42,7 +42,9 @@ export type ExpertReview={
  paragraphs:ExpertParagraph[];corrections:WritingFix[];vocabulary:WritingWord[];modelAnswer:string;
 };
 /** A review as the page lists it. */
-export type ExpertSummary={id:string;createdAt:number;kind:EssayReviewKind;task:WritingTask;title:string;words:number;overall:number};
+/** What a review judged: a studio task, or "report" for an IELTS Academic Task 1 sent from a mock's results (2026-11-18). */
+export type ReviewTask=WritingTask|"report";
+export type ExpertSummary={id:string;createdAt:number;kind:EssayReviewKind;task:ReviewTask;title:string;words:number;overall:number};
 /** A review as the page opens it: the text it reviewed and the review. */
 export type SavedExpertReview=ExpertSummary&{prompt:string;essay:string;language:"mn"|"en";model:string;review:ExpertReview};
 /** How many reviews are left: from the largest plan that adds them, else the one free review. */
@@ -104,7 +106,7 @@ export function expertSystem(language:"mn"|"en") {
  return `You are a senior IELTS Writing examiner and an experienced writing teacher. A Mongolian learner has asked for a detailed, honest review of one practice text. Your review must be more useful than a quick automated check: specific, calibrated, and focused on what will raise the band.
 
 Assess the text against the four public IELTS Writing criteria as the public band descriptors describe them:
-- task: Task Response for an essay (a clear position held throughout, every part of the question answered, ideas extended and supported) or Task Achievement for a letter (purpose and tone clear and consistent, every bullet point covered and developed).
+- task: Task Response for an essay (a clear position held throughout, every part of the question answered, ideas extended and supported), Task Achievement for a letter (purpose and tone clear and consistent, every bullet point covered and developed) or Task Achievement for an Academic Task 1 report (a clear overview, key features selected and reported accurately with the data, relevant comparisons, no personal opinion).
 - coherence: Coherence and Cohesion (logical progression, one central idea per paragraph, referencing and linking that help rather than intrude).
 - lexical: Lexical Resource (range, precision, collocation, spelling and word formation).
 - grammar: Grammatical Range and Accuracy (variety of complex structures, proportion of error-free sentences, punctuation).
@@ -123,7 +125,7 @@ Write the review as JSON that matches the given schema:
 - paragraphs: one item per paragraph of the student's text, in order ("paragraph" is its number from 1): its role (for example "Introduction", "Body 1", "Conclusion", "Opening", "Closing"), what works and what does not, and one concrete suggestion.
 - corrections: up to 25 real errors or clear improvements, most important first. "original" is copied character for character from the student's text, the smallest span that shows the problem (usually a few words, never a whole paragraph); "better" is its replacement; "why" is a short reason; "kind" is grammar, spelling, punctuation, vocabulary or style. Only flag real errors or clear improvements; keep the student's voice.
 - vocabulary: up to 10 plain, repeated or imprecise words or phrases from the text, each with a stronger alternative and a short example sentence.
-- model_answer: the whole text rewritten as a band 8 to 9 response to the same task. Keep the student's position and main ideas where they are sound, fix what is weak, keep about the target length (for free writing, about the student's length), and separate paragraphs with a blank line. Do not add statistics, studies or quotations.
+- model_answer: the whole text rewritten as a band 8 to 9 response to the same task. Keep the student's position and main ideas where they are sound, fix what is weak, keep about the target length (for free writing, about the student's length), and separate paragraphs with a blank line. Do not add statistics, studies or quotations that the task does not give.
 
 Language: write "summary", "evidence", "next", "priorities", "role", "comment", "suggestion" and "why" in ${explain}. Keep quotations, corrections, vocabulary, examples and the model answer in English.
 
@@ -142,15 +144,32 @@ Return ONE JSON object only, with exactly these keys and value types:
 ${STRONG_SHAPE}`;
 }
 
-export function expertUser(input:ExpertInput) {
+/**
+ * One text to review, whichever page sent it: the studio (a bank prompt or the student's topic, resolved on the server)
+ * or a finished mock's results (the task and the essay read from the attempt snapshot, so neither can be altered).
+ */
+export type ReviewSubject={task:ReviewTask;promptId:string|null;title:string;prompt:string;taskType:string;essay:string;language:"mn"|"en";
+ /** Set for a mock essay: the attempt and the question it answers. */
+ attemptId?:string;questionId?:string};
+export function subjectOf(input:ExpertInput):ReviewSubject {
+ return {task:input.task,promptId:input.task==="free"?null:findWritingPrompt(input.promptId!)!.id,title:expertTitle(input),
+  prompt:writingPromptText({...input,action:"feedback"}),taskType:TASK_NAME[input.task],essay:input.essay,language:input.language};
+}
+/** The mock tasks the studio's reviews accept (IELTS Academic Writing). */
+export const MOCK_TASK_NAME={
+ report:"IELTS Academic Writing Task 1 report describing visual data (at least 150 words, 20 minutes)",
+ essay:"IELTS Academic Writing Task 2 essay (at least 250 words, 40 minutes)",
+} as const;
+export function reviewUser(subject:ReviewSubject) {
  return JSON.stringify({
-  task_type:TASK_NAME[input.task],
-  task:writingPromptText({...input,action:"feedback"}),
-  word_count:countWords(input.essay),
-  paragraph_count:countParagraphs(input.essay),
-  student_text:input.essay,
+  task_type:subject.taskType,
+  task:subject.prompt,
+  word_count:countWords(subject.essay),
+  paragraph_count:countParagraphs(subject.essay),
+  student_text:subject.essay,
  });
 }
+export function expertUser(input:ExpertInput) {return reviewUser(subjectOf(input));}
 
 const str={type:"string"} as const;
 const record=(properties:Record<string,unknown>)=>({type:"object",additionalProperties:false,required:Object.keys(properties),properties});

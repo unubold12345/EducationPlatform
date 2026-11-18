@@ -61,6 +61,15 @@
         "../educationplatform-mobile/scripts/dev-proxy.mjs"
       ],
       "port": 8090
+    },
+    {
+      "name": "dev3011",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": [
+        "/c",
+        "set BETTER_AUTH_URL=http://localhost:3011&& set DEV_PRACTICE_DURING_MOCK=false&& set ANTHROPIC_API_KEY=check-mock-key&& set ANTHROPIC_BASE_URL=http://127.0.0.1:8471&& set DEEPSEEK_BASE_URL=http://127.0.0.1:8471&& set GRADING_TRANSCRIBE=off&& npx next dev -p 3011"
+      ],
+      "port": 3011
     }
   ]
 }

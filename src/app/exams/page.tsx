@@ -5,13 +5,14 @@ import { examDefinitions } from "@/modules/exams/definitions";
 import { MOCK_PRICE_LABEL, MOCK_PURCHASE_DAYS } from "@/modules/exams/pricing";
 import { entranceCounts, entranceTotal } from "@/modules/exams/entrance/catalog";
 import { hskMocks } from "@/modules/exams/hsk/catalog";
+import { topikMocks } from "@/modules/exams/topik/catalog";
 import { toeflMocks } from "@/modules/exams/toefl/catalog";
 import "./library.css";
 export const metadata:Metadata={title:"Бүтэн шалгалтууд"};
 
 type Programme = {
-  id: "sat" | "ielts" | "toefl" | "eesh" | "jlpt" | "hsk";
-  tone: "sat" | "ielts" | "toefl" | "entrance" | "jlpt" | "hsk";
+  id: "sat" | "ielts" | "toefl" | "eesh" | "jlpt" | "hsk" | "topik";
+  tone: "sat" | "ielts" | "toefl" | "entrance" | "jlpt" | "hsk" | "topik";
   /** The exam's full or native name, shown small beside the title when it adds something. */
   sub?: string;
   title: string;
@@ -73,9 +74,13 @@ export default async function ExamsPage(){
       copy:"Хятад хэлний анхан шат, түвшин бүрт 3 mock. Хятад аудиотой сонсох, зурагтай унших даалгавар; бүх ханз pinyin-тэй. Алдсан хэсгээ цаггүй давтаарай.",
       facts:[{label:"Агуулга",value:"HSK 1 · 40 / HSK 2 · 60 асуулт"},{label:"Хугацаа",value:"HSK 1 · 32м / HSK 2 · 47м"}],
       chips:["听力","阅读"],count:hskMocks.length,href:"/exams/hsk",cta:"Mock сонгох",plan:"Гадаад хэл"},
+    {id:"topik",tone:"topik",sub:"한국어능력시험",title:"TOPIK Ⅰ–Ⅱ",
+      copy:"Солонгос хэлний TOPIK Ⅰ (1–2-р түвшин), TOPIK Ⅱ (3–6-р түвшин), тус бүр 3 mock. Албан PBT бүтэц, асуултын оноо, солонгос аудиотой сонсох, TOPIK Ⅱ-т бичих хэсэг.",
+      facts:[{label:"Агуулга",value:"Ⅰ · 70 / Ⅱ · 104 асуулт"},{label:"Хугацаа",value:"Ⅰ · 100м / Ⅱ · 180м"}],
+      chips:["듣기","쓰기","읽기"],count:topikMocks.length,href:"/exams/topik",cta:"Mock сонгох",plan:"Гадаад хэл"},
   ];
   return <div className="container page-space library-page">
-    <header className="wsp-page-head library-head"><div><h1 className="sr-only">Шалгалтууд</h1><p>SAT, IELTS, TOEFL, ЭЕШ, JLPT, HSK-ийн бүтэн mock. Цагтай шалгалтаар өөрийгөө шалгах эсвэл цаггүй, AI туслахтай дадлагаар бэлдээрэй.</p></div><Link className="wsp-link" href="/workspace/review">Миний үр дүн →</Link></header>
+    <header className="wsp-page-head library-head"><div><h1 className="sr-only">Шалгалтууд</h1><p>SAT, IELTS, TOEFL, ЭЕШ, JLPT, HSK, TOPIK-ийн бүтэн mock. Цагтай шалгалтаар өөрийгөө шалгах эсвэл цаггүй, AI туслахтай дадлагаар бэлдээрэй.</p></div><Link className="wsp-link" href="/workspace/review">Миний үр дүн →</Link></header>
 
     {/* One row per programme (owner request 2026-11-15): what it is, how a sitting runs, what it costs. */}
     <section className="library-list" aria-label="Шалгалтын хөтөлбөрүүд">
@@ -98,7 +103,7 @@ export default async function ExamsPage(){
     </section>
 
     <footer className="library-note">
-      <p>Бүх даалгаврыг энэ сайтад зориулж зохиосон; College Board, IELTS, ETS (TOEFL), JLPT, HSK, БҮТ-ийн албан материал биш. SAT, IELTS, TOEFL-ийн албан оноо, band тооцохгүй.</p>
+      <p>Бүх даалгаврыг энэ сайтад зориулж зохиосон; College Board, IELTS, ETS (TOEFL), JLPT, HSK, TOPIK, БҮТ-ийн албан материал биш. SAT, IELTS, TOEFL-ийн албан оноо, band тооцохгүй.</p>
       <div><Link className="text-link" href="/workspace/plans">Сарын багцууд →</Link><Link className="text-link" href="/programs">Хөтөлбөрүүд →</Link></div>
     </footer>
   </div>;

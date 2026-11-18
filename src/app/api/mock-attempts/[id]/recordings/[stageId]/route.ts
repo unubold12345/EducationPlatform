@@ -14,7 +14,7 @@ export async function PUT(request:Request,{params}:Context) {
     // Route-aware lengths: a TOEFL Listening Module 2 is longer on the Upper route.
     const start=Date.parse(row.createdAt.toISOString())+state.definition.stages.slice(0,index).reduce((n,_,at)=>n+stageSeconds(state,at)*1000,0);
     const end=start+stageSeconds(state,index)*1000;
-    if(Date.now()>end+120000)throw new ApiError(409,"Бичлэг илгээх хугацаа дууссан байна. Татаж авч багшдаа өгнө үү.");
+    if(Date.now()>end+120000)throw new ApiError(409,"Бичлэг илгээх хугацаа дууссан байна. Бичлэгээ татаж хадгална уу.");
     const mime=request.headers.get("content-type")?.split(";")[0]??"";
     if(!["audio/webm","audio/ogg","audio/mp4"].includes(mime))throw new ApiError(415,"Дэмжихгүй аудио төрөл.");
     const reader=request.body?.getReader();if(!reader)throw new ApiError(400,"Бичлэг хоосон байна.");
@@ -25,7 +25,7 @@ export async function PUT(request:Request,{params}:Context) {
     try{await getDb().mockRecording.create({data:{attemptId:id,stageId,mime,data}});}catch(error){
       const old=await getDb().mockRecording.findUnique({where:{attemptId_stageId:{attemptId:id,stageId}},select:{data:true,mime:true}});
       if(!old)throw error;
-      if(old.mime!==mime||!Buffer.from(old.data).equals(data))throw new ApiError(409,"Энэ хэсгийн өмнөх клип хадгалагдсан. Шинэ клипээ татаж авч багшдаа өгнө үү.");
+      if(old.mime!==mime||!Buffer.from(old.data).equals(data))throw new ApiError(409,"Энэ хэсгийн өмнөх клип хадгалагдсан. Шинэ клипээ татаж хадгална уу.");
     }
     return privateJson({saved:true});
   }catch(error){return apiFailure(error);}

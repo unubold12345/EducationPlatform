@@ -1,16 +1,17 @@
-// The JLPT/HSK word decks (Workshop → JLPT / HSK). Client-safe: names and shapes only. The words are private,
+// The JLPT/HSK/TOPIK word decks (Workshop → JLPT / HSK / TOPIK). Client-safe: names and shapes only. The words are private,
 // plan-gated content read on the server from assets/language-decks/<id>.json (built by scripts/build-language-decks.mjs).
 
-export const LANGUAGE_EXAMS = ["jlpt", "hsk"] as const;
+export const LANGUAGE_EXAMS = ["jlpt", "hsk", "topik"] as const;
 export type LanguageExam = (typeof LANGUAGE_EXAMS)[number];
 export const isLanguageExam = (value: unknown): value is LanguageExam => LANGUAGE_EXAMS.includes(value as LanguageExam);
 
 /** Workshop's exam tabs (owner rule 2026-11-18: each exam shows only its own labs). */
-export const WORKSHOP_EXAMS = [{ id: "ielts", label: "IELTS" }, { id: "jlpt", label: "JLPT" }, { id: "hsk", label: "HSK" }] as const;
+export const WORKSHOP_EXAMS = [{ id: "ielts", label: "IELTS" }, { id: "jlpt", label: "JLPT" }, { id: "hsk", label: "HSK" }, { id: "topik", label: "TOPIK" }] as const;
 export type WorkshopExam = (typeof WORKSHOP_EXAMS)[number]["id"];
 export const WORKSHOP_EXAM_COOKIE = "workshop-exam";
 
-// kind: "words" decks are tiles of their own; "kana" decks are the Kana workshop's two charts (/labs/kana).
+// kind: "words" decks are tiles of their own; "kana" decks are the Kana workshop's two charts (/labs/kana); "hangul" is
+// the Hangul workshop's syllable chart (/labs/hangul).
 export const LANGUAGE_DECKS = [
   { id: "jlpt-n5", exam: "jlpt", kind: "words", level: "N5", title: "JLPT N5", lang: "ja-JP" },
   { id: "jlpt-n4", exam: "jlpt", kind: "words", level: "N4", title: "JLPT N4", lang: "ja-JP" },
@@ -20,25 +21,32 @@ export const LANGUAGE_DECKS = [
   { id: "kana-katakana", exam: "jlpt", kind: "kana", level: "Kana", title: "Катакана", lang: "ja-JP" },
   // The Pinyin workshop's tone drill (/labs/pinyin): HSK 1/2 words split into syllables with tones.
   { id: "hsk-tones", exam: "hsk", kind: "tones", level: "Pinyin", title: "Аялгуу таних", lang: "zh-CN" },
-] as const satisfies readonly { id: string; exam: LanguageExam; kind: "words" | "kana" | "tones"; level: string; title: string; lang: string }[];
+  // TOPIK (2026-11-18): author-selected core words per level (TOPIK publishes no word list) and the Hangul chart.
+  { id: "topik-1", exam: "topik", kind: "words", level: "TOPIK Ⅰ", title: "TOPIK Ⅰ", lang: "ko-KR" },
+  { id: "topik-2", exam: "topik", kind: "words", level: "TOPIK Ⅱ", title: "TOPIK Ⅱ", lang: "ko-KR" },
+  { id: "hangul", exam: "topik", kind: "hangul", level: "Hangul", title: "Хангыль", lang: "ko-KR" },
+] as const satisfies readonly { id: string; exam: LanguageExam; kind: "words" | "kana" | "tones" | "hangul"; level: string; title: string; lang: string }[];
 export type LanguageDeckId = (typeof LANGUAGE_DECKS)[number]["id"];
 export type LanguageDeckInfo = (typeof LANGUAGE_DECKS)[number];
 export const findLanguageDeck = (id: string): LanguageDeckInfo | undefined => LANGUAGE_DECKS.find(deck => deck.id === id);
 
-/** How the reading aid is named per exam: furigana for Japanese, pinyin for Chinese. */
-export const READING_LABEL: Record<LanguageExam, string> = { jlpt: "ふりがな", hsk: "Pinyin" };
+/** How the reading aid is named per exam: furigana for Japanese, pinyin for Chinese, romanization for Korean. */
+export const READING_LABEL: Record<LanguageExam, string> = { jlpt: "ふりがな", hsk: "Pinyin", topik: "Romanization" };
 
 export type DeckWord = {
   /** Stable across list edits: a hash of the term, so progress survives reordering. */
   id: string;
   term: string;
-  /** Hiragana (JLPT) or pinyin with tone marks (HSK). */
+  /** Hiragana (JLPT), pinyin with tone marks (HSK) or the romanization of the pronunciation (TOPIK, hangul.ts). */
   reading: string;
+  /** TOPIK only: the standard pronunciation in Hangul, where it differs from the spelling (읽다 → 익따). */
+  pronunciation?: string;
   meaning: string;
   example: string;
   exampleReading: string;
   exampleMeaning: string;
-  /** JLPT only: romaji of the word and the example, and the romaji spellings the quiz accepts. */
+  /** JLPT only: romaji of the word and the example. `answers`: the romaji (JLPT, kana) or romanization (TOPIK,
+   * Hangul) spellings the quiz accepts. */
   romaji?: string;
   exampleRomaji?: string;
   answers?: string[];

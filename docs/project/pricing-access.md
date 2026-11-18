@@ -8,7 +8,7 @@ Owner rules 2026-11-13 and 2026-11-17: the free account and three plans — ЭЕ
 | --- | --- | --- |
 | Free account | 0 | The ten free half-length mocks, Workspace tools with 100 AI credits a month, a 100-word vocabulary bank and 5 saved file exams; full mocks by per-exam purchase |
 | ЭЕШ (`entrance`) | 29,900 MNT/month | All 194 ЭЕШ papers, sittings and practice, no limit; 1,200 AI credits a month, a 500-word bank, 5 saved file exams |
-| Гадаад хэл Basic (`language_basic`) | 29,900 MNT/month | Every mock that is not ЭЕШ (SAT, IELTS, TOEFL, JLPT, HSK), sittings and practice, no limit; the IELTS workshops; 1,200 AI credits a month, a 1,500-word bank, 5 saved file exams |
+| Гадаад хэл Basic (`language_basic`) | 29,900 MNT/month | Every mock that is not ЭЕШ (SAT, IELTS, TOEFL, JLPT, HSK, TOPIK), sittings and practice, no limit; the IELTS workshops; 1,200 AI credits a month, a 1,500-word bank, 5 saved file exams |
 | Гадаад хэл Pro (`language`, was "Гадаад хэл") | 59,900 MNT/month | The same mocks and workshops as Basic; 3,000 AI credits a month, a 3,000-word bank, 15 saved file exams |
 | Full mock | 10,000 MNT per 7 days | One-time purchase of any paid mock: sittings (retakes too) and practice for 7 days from payment, then it is bought again; free mocks are never sold |
 | Yellow credit packs | 200 / 500 / 1,000 / 2,000 / 5,000 credits at 5 MNT a credit | An admin-edited list of 1–12 packs; purchased ("yellow") credits never expire |

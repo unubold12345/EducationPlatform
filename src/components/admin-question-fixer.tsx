@@ -24,7 +24,7 @@ export function AdminQuestionFixer({ contentKey, questions, revision, draftPendi
       <input id="fixer-search" value={query} onChange={event => { setQuery(event.target.value); setPage(1); }} placeholder="ID, асуулт, сонголт эсвэл хариугаар хайх…"/>
       <span>{shown.length} / {questions.length} асуулт</span>
     </div>
-    {draftPending && <p className="admin-warning" role="note">Нийтлээгүй ноорог байна. Асуулт засахаас өмнө доорх “Бүтэн засварлагч” хэсэгт нийтэлнэ үү.</p>}
+    {draftPending && <p className="admin-warning" role="note">Нийтлээгүй ноорог байна. Асуулт засахаас өмнө “Бүтэн засварлагч” таб дээр нийтэлнэ үү.</p>}
     <ol className="admin-questions" start={(current - 1) * PAGE + 1}>
       {slice.map(item => {
         const key = item.path.join(".");

@@ -434,9 +434,16 @@ test("every DeepSeek call is charged against credits, with its budget from the p
     assert.ok(source.includes(action), path);
     assert.match(source, /meter/, path);
   }
+  // Owner decision 2026-11-18: AI grading of a finished mock's Writing and Speaking is part of the mock's price, so it
+  // charges no credits; it is bounded instead by tries per attempt and part and a daily cap per student.
+  const included = { "src/modules/exams/ai-grading/service.ts": ["tries:{lt:GRADE_LIMITS.tries}", "count:{lt:GRADE_LIMITS.daily}"] };
+  for (const [path, bounds] of Object.entries(included)) {
+    for (const bound of bounds) assert.ok(text(path).includes(bound), path + ": " + bound);
+    assert.doesNotMatch(text(path), /chargeCredits\(/, path);
+  }
   // A new provider call must be added here (and charged) rather than bypass credits.
   const callers = sourceFiles("src").filter(path => !path.startsWith("src/generated/") && /api\.deepseek\.com|deepseekChat\(|deepseekTutor\(/.test(text(path)));
-  assert.deepEqual(callers.sort(), [...Object.keys(charged), "src/modules/tutor/provider.ts"].sort());
+  assert.deepEqual(callers.sort(), [...Object.keys(charged), ...Object.keys(included), "src/modules/tutor/provider.ts"].sort());
   for (const path of ["src/modules/writing-lab/service.ts", "src/modules/writing-lab/expert-service.ts", "src/modules/vocabulary/service.ts", "src/modules/my-exams/service.ts", "src/modules/reading-lab/service.ts"]) {
     assert.match(text(path), /AI_ACTIONS\[/, path);
     assert.doesNotMatch(text(path), /max_tokens:\s*\d/, path);
@@ -519,8 +526,10 @@ test("admin credit actions are validated, audited and kept server-side", () => {
   assert.match(ui, /\["set-credit-packs", "AI кредит багцууд өөрчилсөн"\]/);
   assert.match(ui, /\["set-sale", "Хямдрал өөрчилсөн"\]/);
   const page = text("src/app/admin/page.tsx");
-  // The price history stays the first table on the Prices tab; credit amounts follow it.
-  assert.ok(page.indexOf("Үнийн өөрчлөлтийн түүх") < page.indexOf("Кредитийн хэмжээний түүх"));
+  // The Prices section is one tab per job; the four kinds of change share its History tab, and the credit amounts tab links there.
+  assert.match(page, /\["plans","Багцын үнэ"\],\["sales","Хямдрал"\],\["credits","AI кредит"\],\["packs","Кредит багц"\],\["history","Түүх"\]/);
+  assert.match(page, /lastChange\(\["set-credits"\],"Кредитийн түүх"\)/);
+  assert.match(page, /"set-price":"Багцын үнэ","set-sale":"Хямдрал","set-credits":"AI кредит","set-credit-packs":"Кредит багц"/);
   assert.match(text("src/app/api/admin/export/route.ts"), /kind==="credits"/);
 });
 

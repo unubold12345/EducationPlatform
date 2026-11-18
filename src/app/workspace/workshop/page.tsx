@@ -18,6 +18,7 @@ const LEAD: Record<WorkshopExam, string> = {
   ielts: "AI хамтрагчтай ярих, эссэгээ засуулах, сонсгол, уншлагаа дасгалжуулах лабораториуд.",
   jlpt: "Хирагана, катаканы хүснэгт ба JLPT N5, N4 түвшний үгсийн сан: ふりがな, romaji, дуудлага, карт ба quiz.",
   hsk: "Pinyin ба аялгуу, HSK 1, 2 түвшний үгсийн сан: дуудлага, жишээ өгүүлбэр, карт ба quiz.",
+  topik: "Хангыль үсэг ба дуудлагын дүрэм, TOPIK Ⅰ, Ⅱ түвшний үгсийн сан: дуудлага, жишээ өгүүлбэр, карт ба quiz.",
 };
 
 // One tab per exam (owner rule 2026-11-18): ?exam= picks it, otherwise the last tab chosen (cookie), otherwise IELTS.

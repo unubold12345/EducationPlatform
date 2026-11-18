@@ -17,7 +17,7 @@ import re
 from common import Figures, write_json
 
 SLUG = "ielts-academic-free"
-SPEAK_NOTE = "A qualified human should review fluency and coherence, vocabulary, grammar and pronunciation. This recorded simulation does not assign an automatic band score."
+SPEAK_NOTE = "Speaking is assessed on fluency and coherence, vocabulary, grammar and pronunciation. After the test, AI grades the Speaking test on these criteria and gives a practice band."
 ONE_WORD_NUMBER = "Complete the notes. Write ONE WORD AND/OR A NUMBER for each answer."
 
 PART1_TITLE = "Part 1 · Enquiry about a weekend photography course"
@@ -320,7 +320,7 @@ def build(program_dir):
         "prompt": "You should spend about 20 minutes on this task. The bar chart shows the percentage of households in the fictional country of Norland that owned a desktop computer, a laptop and a tablet in 2005, 2015 and 2025. Summarise the information by selecting and reporting the main features, and make comparisons where relevant. Write at least 150 words.",
         "passage": table,
         "figure": figures.add("writing-1", chart_svg(), "Households owning a desktop computer, a laptop and a tablet in Norland, 2005, 2015 and 2025", expandable=True),
-        "explanation": "An overview can contrast the steady fall in desktop ownership with the rise of laptops and tablets, and note that laptops overtook desktops by 2015 and were the most common device in 2025. Useful details: desktops 48% → 22%; laptops 12% → 71%; tablets from none in 2005 to 46%. Percentages can exceed 100 in total because households own several devices. Causes are not shown, so do not invent them. A qualified human reviewer should assess task achievement, coherence and cohesion, lexical resource and grammatical range and accuracy; no automatic band is assigned.",
+        "explanation": "An overview can contrast the steady fall in desktop ownership with the rise of laptops and tablets, and note that laptops overtook desktops by 2015 and were the most common device in 2025. Useful details: desktops 48% → 22%; laptops 12% → 71%; tablets from none in 2005 to 46%. Percentages can exceed 100 in total because households own several devices. Causes are not shown, so do not invent them. AI grades task achievement, coherence and cohesion, lexical resource and grammatical range and accuracy after the test and gives a practice band.",
     }]
     # The site's examiner says "Let's talk about <topic in lower case>", so the topic reads as a phrase ("your home town").
     part1 = [("Your home town", "Where is your home town?"), ("Your home town", "What do you like most about living there?"),
@@ -367,7 +367,7 @@ def build(program_dir):
              "instructions": "26 questions · 40 minutes, including answer entry. Two original texts. Follow each task's instructions. For TRUE/FALSE/NOT GIVEN, distinguish contradiction from missing information. You may move between both passages until time ends.",
              "questions": reading(), "passages": [{"title": P1_TITLE, "text": P1}, {"title": P2_TITLE, "text": P2}]},
             {"id": "ielts-writing", "title": "Academic Writing · Task 1", "seconds": 1200, "kind": "writing",
-             "instructions": "20 minutes. Write at least 150 words about the chart. Your response is saved for review; no automated band is claimed.",
+             "instructions": "20 minutes. Write at least 150 words about the chart. Your response is saved, and AI grades it after the test.",
              "questions": writing},
             {"id": "ielts-speaking-1", "title": "Speaking · Part 1 interview", "seconds": 240, "kind": "speaking",
              "instructions": "Four minutes. Enable your microphone and answer these familiar-topic questions aloud, in order. Aim for natural, developed answers. Do not include identity documents or private contact details.",

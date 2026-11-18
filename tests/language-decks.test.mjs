@@ -15,7 +15,8 @@ const text = path => readFileSync(new URL("../" + path, import.meta.url), "utf8"
 const asset = id => JSON.parse(text(`assets/language-decks/${id}.json`));
 
 test("every deck file matches its list: same lessons and terms, stable ids, complete entries", () => {
-  assert.deepEqual(LANGUAGE_DECKS.filter(deck => deck.kind === "words").map(deck => deck.id), DECKS.map(deck => deck.id));
+  // TOPIK decks have their own build (scripts/build-topik-decks.mjs) and test (tests/topik.test.mjs).
+  assert.deepEqual(LANGUAGE_DECKS.filter(deck => deck.kind === "words" && deck.exam !== "topik").map(deck => deck.id), DECKS.map(deck => deck.id));
   const sizes = {};
   for (const deck of DECKS) {
     const file = asset(deck.id);
@@ -83,11 +84,11 @@ test("only plans with workshops and the exam open a deck: Basic and Pro, not fre
 });
 
 test("Workshop shows one exam at a time, and the shared Vocabulary page has no JLPT/HSK tab", () => {
-  assert.deepEqual(WORKSHOP_EXAMS.map(exam => exam.id), ["ielts", "jlpt", "hsk"]);
+  assert.deepEqual(WORKSHOP_EXAMS.map(exam => exam.id), ["ielts", "jlpt", "hsk", "topik"]);
   // Deck pages sit inside the Workspace frame, under the Workshop tab.
   assert.equal(inWorkspace("/labs/words/jlpt-n5"), true);
   assert.equal(workspaceTab("/labs/words/hsk-1"), "workshop");
-  for (const path of ["/labs/kana", "/labs/pinyin"]) { assert.equal(inWorkspace(path), true); assert.equal(workspaceTab(path), "workshop"); }
+  for (const path of ["/labs/kana", "/labs/pinyin", "/labs/hangul"]) { assert.equal(inWorkspace(path), true); assert.equal(workspaceTab(path), "workshop"); }
   const page = text("src/app/workspace/workshop/page.tsx");
   assert.match(page, /isExam\(asked\) \? asked : isExam\(stored\) \? stored : "ielts"/);
   assert.match(page, /if \(exam !== "ielts"\) \{[\s\S]*return <div className="wsp-page workshop-index">[\s\S]*<LanguageWorkshop/);
@@ -231,6 +232,7 @@ test("quiz engine: smart order, kana tiles and lenient typing", async () => {
   const items = [item("known", { box: 4, correct: 4, wrong: 0, dueAt: now + 9e8 }), item("new", null), item("due", { box: 2, correct: 2, wrong: 0, dueAt: now - 1000 })];
   assert.deepEqual(pickTargets(items, "smart", 3, now, seeded()).map(entry => entry.id), ["due", "new", "known"]);
   assert.deepEqual(pickTargets(items, "new", 1, now, seeded()).map(entry => entry.id), ["new"]);
+  assert.equal(pickTargets(items, "all", 0, now, seeded()).length, 3, "count 0 = every item");
   assert.deepEqual(morae("しゃしん"), ["しゃ", "し", "ん"]);
   assert.deepEqual(morae("きって"), ["き", "っ", "て"]);
   assert.ok(typedMatches("Xue sheng", ["xuésheng"]));
@@ -238,4 +240,30 @@ test("quiz engine: smart order, kana tiles and lenient typing", async () => {
   assert.ok(typedMatches(" si ", ["shi", "si"]));
   assert.ok(!typedMatches("", ["a"]));
   assert.ok(!typedMatches("ka", ["ga"]));
+});
+
+test("kana test: all letters of both scripts, four distinct romaji with the right one, sections and counts", async () => {
+  const { buildKanaTest, kanaLetters } = await import("../src/modules/language-decks/kana-test.ts");
+  const scripts = ["kana-hiragana", "kana-katakana"].map(asset);
+  const every = kanaLetters(scripts, ["basic", "voiced", "combo"]);
+  assert.equal(every.length, 208);
+  assert.equal(kanaLetters(scripts.slice(0, 1), ["basic"]).length, 46);
+  assert.equal(kanaLetters(scripts, ["voiced"]).length, 50);
+  assert.equal(kanaLetters(scripts.slice(1), ["combo"]).length, 33);
+  const test = buildKanaTest(every, "all", every, seeded());
+  assert.equal(test.length, 208);
+  assert.equal(new Set(test.map(question => question.letter.deckId + question.letter.id)).size, 208, "each letter once");
+  assert.deepEqual(new Set(test.map(question => question.letter.deckId)), new Set(["kana-hiragana", "kana-katakana"]));
+  for (const question of test) {
+    assert.equal(question.options.length, 4, question.letter.kana);
+    assert.equal(new Set(question.options).size, 4, question.letter.kana + " options distinct");
+    assert.equal(question.options[question.answer], question.letter.romaji);
+  }
+  // A small choice still gets three wrong answers (from the whole chart), and a count caps the test.
+  const one = kanaLetters(scripts.slice(0, 1), ["basic"]).filter(letter => letter.row === "a");
+  assert.ok(buildKanaTest(one, "all", every, seeded()).every(question => new Set(question.options).size === 4));
+  assert.equal(buildKanaTest(every, 20, every, seeded()).length, 20);
+  // お and を share "o": を's options never show "o" twice.
+  const wo = buildKanaTest(every.filter(letter => letter.kana === "を" || letter.kana === "お"), "all", every, seeded());
+  assert.ok(wo.every(question => question.options.filter(option => option === "o").length === 1));
 });

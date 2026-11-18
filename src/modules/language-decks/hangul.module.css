@@ -1,0 +1,49 @@
+/* Workshop → TOPIK → Hangul (hangul-client.tsx). Workspace tokens only; one accent colour; Korean text in a sans stack. */
+.block { display: grid; gap: 12px; padding: 18px; border: 1px solid var(--wsp-line); border-radius: 18px; background: var(--wsp-card); }
+.block h2 { margin: 0; font-size: 18px; }
+.block h3 { margin: 6px 0 0; font-size: 15px; }
+.lead { margin: 0; color: var(--wsp-text); font-size: 14px; line-height: 1.55; }
+.block :lang(ko), .block[lang="ko"] { font-family: 'Noto Sans KR', 'Malgun Gothic', 'Apple SD Gothic Neo', var(--font-sans, sans-serif); }
+
+.letters { display: grid; grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); gap: 8px; }
+.letter { display: grid; gap: 2px; justify-items: start; align-content: start; padding: 12px; border: 1px solid var(--wsp-line); border-radius: 14px; background: none; color: var(--wsp-ink); font: inherit; text-align: left; cursor: pointer; }
+.letter:hover { border-color: var(--wsp-accent); }
+.letter strong { font-size: 30px; line-height: 1.1; font-weight: 600; }
+.letter span { color: var(--wsp-accent); font-size: 14px; font-weight: 650; }
+.letter small { color: var(--wsp-muted); font-size: 12px; line-height: 1.4; }
+
+.triplets { display: grid; gap: 8px; }
+.triplets > div { display: grid; grid-template-columns: repeat(3, minmax(0, 160px)); gap: 8px; }
+.gap { border-radius: 12px; background: repeating-linear-gradient(135deg, transparent 0 6px, var(--wsp-chip) 6px 7px); }
+
+.word { display: inline-grid; gap: 1px; justify-items: start; padding: 8px 12px; border: 1px solid var(--wsp-line); border-radius: 12px; background: none; color: var(--wsp-ink); font: inherit; text-align: left; cursor: pointer; }
+.word:hover { border-color: var(--wsp-accent); }
+.word b { font-size: 20px; font-weight: 600; }
+.word span { color: var(--wsp-text); font-size: 13px; }
+.word small { color: var(--wsp-accent); font-size: 13px; font-weight: 600; }
+.words { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.finals { display: grid; gap: 0; }
+.finalRow { display: grid; grid-template-columns: 96px 150px minmax(0, 1fr); align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid var(--wsp-line); }
+.finalRow:first-child { border-top: 0; }
+.finalSound { color: var(--wsp-muted); font-size: 14px; }
+.finalSound b { color: var(--wsp-ink); font-size: 24px; margin-right: 4px; }
+.finalLetters { color: var(--wsp-text); font-size: 18px; letter-spacing: .08em; }
+
+.rules { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; }
+.rules > div { display: grid; gap: 6px; align-content: start; padding: 14px; border: 1px solid var(--wsp-line); border-radius: 14px; }
+.rules h3 { margin: 0; }
+.rules p { margin: 0; color: var(--wsp-text); font-size: 13px; line-height: 1.5; }
+
+.try { display: grid; gap: 6px; max-width: 520px; }
+.try span { color: var(--wsp-muted); font-size: 13px; font-weight: 650; }
+.try input { padding: 10px 12px; border: 1px solid var(--wsp-line-strong); border-radius: 12px; background: var(--wsp-card); color: var(--wsp-ink); font: inherit; font-size: 18px; }
+.try input:focus { outline: 2px solid var(--wsp-accent); outline-offset: 1px; }
+.tryOut { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0; font-size: 17px; }
+.tryOut b { color: var(--wsp-accent); }
+
+@media (max-width: 640px) {
+  .finalRow { grid-template-columns: 76px minmax(0, 1fr); }
+  .finalRow .words { grid-column: 1 / -1; }
+  .triplets > div { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}

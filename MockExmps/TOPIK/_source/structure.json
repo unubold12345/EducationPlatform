@@ -1,0 +1,1584 @@
+{
+ "I": {
+  "title": "TOPIK Ⅰ",
+  "minutes": {
+   "listening": 40,
+   "reading": 60
+  },
+  "counts": {
+   "listening": 30,
+   "reading": 40
+  },
+  "numbering": {
+   "listening": [
+    1,
+    30
+   ],
+   "reading": [
+    31,
+    70
+   ]
+  },
+  "levels": [
+   {
+    "level": 1,
+    "min": 80
+   },
+   {
+    "level": 2,
+    "min": 140
+   }
+  ],
+  "total": 200,
+  "sections": {
+   "listening": [
+    {
+     "from": 1,
+     "to": 4,
+     "task": "answer",
+     "instruction": "다음을 듣고 <보기>와 같이 물음에 맞는 대답을 고르십시오.",
+     "example": {
+      "script": [
+       {
+        "speaker": "남자",
+        "text": "물이에요?"
+       }
+      ],
+      "options": [
+       "네, 물이에요.",
+       "네, 물이 없어요.",
+       "아니요, 물이 차가워요.",
+       "아니요, 물을 마셔요."
+      ],
+      "answer": 1
+     },
+     "questions": {
+      "1": {
+       "points": 4,
+       "task": "yes-no"
+      },
+      "2": {
+       "points": 4,
+       "task": "yes-no"
+      },
+      "3": {
+       "points": 3,
+       "task": "wh"
+      },
+      "4": {
+       "points": 3,
+       "task": "wh"
+      }
+     }
+    },
+    {
+     "from": 5,
+     "to": 6,
+     "task": "continue",
+     "instruction": "다음을 듣고 <보기>와 같이 이어지는 말을 고르십시오.",
+     "example": {
+      "script": [
+       {
+        "speaker": "여자",
+        "text": "생일 축하해요."
+       }
+      ],
+      "options": [
+       "괜찮아요.",
+       "고마워요.",
+       "실례합니다.",
+       "처음 뵙겠습니다."
+      ],
+      "answer": 2
+     },
+     "questions": {
+      "5": {
+       "points": 4
+      },
+      "6": {
+       "points": 3
+      }
+     }
+    },
+    {
+     "from": 7,
+     "to": 10,
+     "task": "place",
+     "instruction": "여기는 어디입니까? <보기>와 같이 알맞은 것을 고르십시오.",
+     "example": {
+      "script": [
+       {
+        "speaker": "남자",
+        "text": "이 우유 얼마예요?"
+       },
+       {
+        "speaker": "여자",
+        "text": "천오백 원이에요."
+       }
+      ],
+      "options": [
+       "서점",
+       "가게",
+       "극장",
+       "은행"
+      ],
+      "answer": 2
+     },
+     "questions": {
+      "7": {
+       "points": 3
+      },
+      "8": {
+       "points": 3
+      },
+      "9": {
+       "points": 3
+      },
+      "10": {
+       "points": 4
+      }
+     }
+    },
+    {
+     "from": 11,
+     "to": 14,
+     "task": "topic",
+     "instruction": "다음은 무엇에 대해 말하고 있습니까? <보기>와 같이 알맞은 것을 고르십시오.",
+     "example": {
+      "script": [
+       {
+        "speaker": "여자",
+        "text": "동생이 있어요?"
+       },
+       {
+        "speaker": "남자",
+        "text": "네, 남동생이 한 명 있어요."
+       }
+      ],
+      "options": [
+       "가족",
+       "친구",
+       "학교",
+       "운동"
+      ],
+      "answer": 1
+     },
+     "questions": {
+      "11": {
+       "points": 3
+      },
+      "12": {
+       "points": 3
+      },
+      "13": {
+       "points": 4
+      },
+      "14": {
+       "points": 3
+      }
+     }
+    },
+    {
+     "from": 15,
+     "to": 16,
+     "task": "picture",
+     "instruction": "다음 대화를 듣고 알맞은 그림을 고르십시오.",
+     "questions": {
+      "15": {
+       "points": 4
+      },
+      "16": {
+       "points": 4
+      }
+     }
+    },
+    {
+     "from": 17,
+     "to": 21,
+     "task": "match",
+     "instruction": "다음을 듣고 <보기>와 같이 대화 내용과 같은 것을 고르십시오.",
+     "example": {
+      "script": [
+       {
+        "speaker": "남자",
+        "text": "주말에 뭐 했어요?"
+       },
+       {
+        "speaker": "여자",
+        "text": "언니하고 같이 산에 갔어요."
+       }
+      ],
+      "options": [
+       "남자는 산에 갔습니다.",
+       "여자는 언니가 있습니다.",
+       "남자는 언니와 등산을 했습니다.",
+       "여자는 주말에 집에 있었습니다."
+      ],
+      "answer": 2
+     },
+     "questions": {
+      "17": {
+       "points": 3
+      },
+      "18": {
+       "points": 3
+      },
+      "19": {
+       "points": 3
+      },
+      "20": {
+       "points": 3
+      },
+      "21": {
+       "points": 3
+      }
+     }
+    },
+    {
+     "from": 22,
+     "to": 24,
+     "task": "woman-idea",
+     "instruction": "다음을 듣고 여자의 중심 생각을 고르십시오.",
+     "questions": {
+      "22": {
+       "points": 3
+      },
+      "23": {
+       "points": 3
+      },
+      "24": {
+       "points": 3
+      }
+     }
+    },
+    {
+     "from": 25,
+     "to": 26,
+     "set": true,
+     "task": "announcement",
+     "instruction": "다음을 듣고 물음에 답하십시오.",
+     "questions": {
+      "25": {
+       "points": 3,
+       "task": "purpose",
+       "pattern": "(남자|여자)가 왜 이 이야기를 하고 있는지 고르십시오\\."
+      },
+      "26": {
+       "points": 4,
+       "task": "match",
+       "prompt": "들은 내용과 같은 것을 고르십시오."
+      }
+     }
+    },
+    {
+     "from": 27,
+     "to": 28,
+     "set": true,
+     "task": "dialogue",
+     "instruction": "다음을 듣고 물음에 답하십시오.",
+     "questions": {
+      "27": {
+       "points": 3,
+       "task": "topic-phrase",
+       "prompt": "두 사람이 무엇에 대해 이야기를 하고 있는지 고르십시오."
+      },
+      "28": {
+       "points": 4,
+       "task": "match",
+       "prompt": "들은 내용과 같은 것을 고르십시오."
+      }
+     }
+    },
+    {
+     "from": 29,
+     "to": 30,
+     "set": true,
+     "task": "interview",
+     "instruction": "다음을 듣고 물음에 답하십시오.",
+     "questions": {
+      "29": {
+       "points": 3,
+       "task": "reason",
+       "pattern": "(남자|여자)가? .+(이유|까닭)를 고르십시오\\."
+      },
+      "30": {
+       "points": 4,
+       "task": "match",
+       "prompt": "들은 내용과 같은 것을 고르십시오."
+      }
+     }
+    }
+   ],
+   "reading": [
+    {
+     "from": 31,
+     "to": 33,
+     "task": "topic",
+     "instruction": "무엇에 대한 이야기입니까? <보기>와 같이 알맞은 것을 고르십시오.",
+     "example": {
+      "passage": "저는 의사입니다. 언니는 간호사입니다.",
+      "options": [
+       "직업",
+       "나이",
+       "날씨",
+       "취미"
+      ],
+      "answer": 1
+     },
+     "questions": {
+      "31": {
+       "points": 2
+      },
+      "32": {
+       "points": 2
+      },
+      "33": {
+       "points": 2
+      }
+     }
+    },
+    {
+     "from": 34,
+     "to": 39,
+     "task": "blank",
+     "instruction": "<보기>와 같이 (    )에 들어갈 가장 알맞은 것을 고르십시오.",
+     "example": {
+      "passage": "날씨가 덥습니다. (    )을 엽니다.",
+      "options": [
+       "창문",
+       "가방",
+       "냉장고",
+       "책"
+      ],
+      "answer": 1
+     },
+     "questions": {
+      "34": {
+       "points": 2,
+       "task": "particle"
+      },
+      "35": {
+       "points": 2,
+       "task": "noun"
+      },
+      "36": {
+       "points": 2,
+       "task": "adverb"
+      },
+      "37": {
+       "points": 3,
+       "task": "adjective"
+      },
+      "38": {
+       "points": 3,
+       "task": "verb"
+      },
+      "39": {
+       "points": 2,
+       "task": "verb"
+      }
+     }
+    },
+    {
+     "from": 40,
+     "to": 42,
+     "task": "doc-not",
+     "instruction": "다음을 읽고 맞지 않는 것을 고르십시오.",
+     "questions": {
+      "40": {
+       "points": 3
+      },
+      "41": {
+       "points": 3
+      },
+      "42": {
+       "points": 3
+      }
+     }
+    },
+    {
+     "from": 43,
+     "to": 45,
+     "task": "match",
+     "instruction": "다음의 내용과 같은 것을 고르십시오.",
+     "questions": {
+      "43": {
+       "points": 3
+      },
+      "44": {
+       "points": 2
+      },
+      "45": {
+       "points": 3
+      }
+     }
+    },
+    {
+     "from": 46,
+     "to": 48,
+     "task": "main-idea",
+     "instruction": "다음을 읽고 중심 생각을 고르십시오.",
+     "questions": {
+      "46": {
+       "points": 3
+      },
+      "47": {
+       "points": 3
+      },
+      "48": {
+       "points": 2
+      }
+     }
+    },
+    {
+     "from": 49,
+     "to": 50,
+     "set": true,
+     "task": "passage",
+     "instruction": "다음을 읽고 물음에 답하십시오.",
+     "questions": {
+      "49": {
+       "points": 2,
+       "task": "blank",
+       "prompt": "㉠에 들어갈 알맞은 말을 고르십시오."
+      },
+      "50": {
+       "points": 2,
+       "task": "match",
+       "prompt": "이 글의 내용과 같은 것을 고르십시오."
+      }
+     }
+    },
+    {
+     "from": 51,
+     "to": 52,
+     "set": true,
+     "task": "passage",
+     "instruction": "다음을 읽고 물음에 답하십시오.",
+     "questions": {
+      "51": {
+       "points": 3,
+       "task": "blank",
+       "prompt": "㉠에 들어갈 알맞은 말을 고르십시오."
+      },
+      "52": {
+       "points": 2,
+       "task": "topic-phrase",
+       "prompt": "무엇에 대한 이야기인지 맞는 것을 고르십시오."
+      }
+     }
+    },
+    {
+     "from": 53,
+     "to": 54,
+     "set": true,
+     "task": "passage",
+     "instruction": "다음을 읽고 물음에 답하십시오.",
+     "questions": {
+      "53": {
+       "points": 2,
+       "task": "blank",
+       "prompt": "㉠에 들어갈 알맞은 말을 고르십시오."
+      },
+      "54": {
+       "points": 3,
+       "task": "match",
+       "prompt": "이 글의 내용과 같은 것을 고르십시오."
+      }
+     }
+    },
+    {
+     "from": 55,
+     "to": 56,
+     "set": true,
+     "task": "passage",
+     "instruction": "다음을 읽고 물음에 답하십시오.",
+     "questions": {
+      "55": {
+       "points": 2,
+       "task": "blank",
+       "prompt": "㉠에 들어갈 알맞은 말을 고르십시오."
+      },
+      "56": {
+       "points": 3,
+       "task": "match",
+       "prompt": "이 글의 내용과 같은 것을 고르십시오."
+      }
+     }
+    },
+    {
+     "from": 57,
+     "to": 58,
+     "task": "order",
+     "instruction": "다음을 순서대로 맞게 나열한 것을 고르십시오.",
+     "questions": {
+      "57": {
+       "points": 3
+      },
+      "58": {
+       "points": 2
+      }
+     }
+    },
+    {
+     "from": 59,
+     "to": 60,
+     "set": true,
+     "task": "passage",
+     "instruction": "다음을 읽고 물음에 답하십시오.",
+     "questions": {
+      "59": {
+       "points": 2,
+       "task": "insert",
+       "prompt": "다음 문장이 들어갈 곳을 고르십시오."
+      },
+      "60": {
+       "points": 3,
+       "task": "match",
+       "prompt": "이 글의 내용과 같은 것을 고르십시오."
+      }
+     }
+    },
+    {
+     "from": 61,
+     "to": 62,
+     "set": true,
+     "task": "passage",
+     "instruction": "다음을 읽고 물음에 답하십시오.",
+     "questions": {
+      "61": {
+       "points": 2,
+       "task": "blank",
+       "prompt": "㉠에 들어갈 알맞은 말을 고르십시오."
+      },
+      "62": {
+       "points": 2,
+       "task": "match",
+       "prompt": "이 글의 내용과 같은 것을 고르십시오."
+      }
+     }
+    },
+    {
+     "from": 63,
+     "to": 64,
+     "set": true,
+     "task": "doc",
+     "instruction": "다음을 읽고 물음에 답하십시오.",
+     "questions": {
+      "63": {
+       "points": 2,
+       "task": "purpose",
+       "prompt": "왜 이 글을 썼는지 맞는 것을 고르십시오."
+      },
+      "64": {
+       "points": 3,
+       "task": "match",
+       "prompt": "이 글의 내용과 같은 것을 고르십시오."
+      }
+     }
+    },
+    {
+     "from": 65,
+     "to": 66,
+     "set": true,
+     "task": "passage",
+     "instruction": "다음을 읽고 물음에 답하십시오.",
+     "questions": {
+      "65": {
+       "points": 2,
+       "task": "blank",
+       "prompt": "㉠에 들어갈 알맞은 말을 고르십시오."
+      },
+      "66": {
+       "points": 3,
+       "task": "match",
+       "prompt": "이 글의 내용과 같은 것을 고르십시오."
+      }
+     }
+    },
+    {
+     "from": 67,
+     "to": 68,
+     "set": true,
+     "task": "passage",
+     "instruction": "다음을 읽고 물음에 답하십시오.",
+     "questions": {
+      "67": {
+       "points": 3,
+       "task": "blank",
+       "prompt": "㉠에 들어갈 알맞은 말을 고르십시오."
+      },
+      "68": {
+       "points": 3,
+       "task": "match",
+       "prompt": "이 글의 내용과 같은 것을 고르십시오."
+      }
+     }
+    },
+    {
+     "from": 69,
+     "to": 70,
+     "set": true,
+     "task": "passage",
+     "instruction": "다음을 읽고 물음에 답하십시오.",
+     "questions": {
+      "69": {
+       "points": 3,
+       "task": "blank",
+       "prompt": "㉠에 들어갈 알맞은 말을 고르십시오."
+      },
+      "70": {
+       "points": 3,
+       "task": "infer",
+       "prompt": "이 글의 내용으로 알 수 있는 것을 고르십시오."
+      }
+     }
+    }
+   ]
+  },
+  "repeats": {
+   "1": 2,
+   "2": 2,
+   "3": 2,
+   "4": 2,
+   "5": 2,
+   "6": 2,
+   "7": 2,
+   "8": 2,
+   "9": 2,
+   "10": 2,
+   "11": 2,
+   "12": 2,
+   "13": 2,
+   "14": 2,
+   "15": 2,
+   "16": 2,
+   "17": 2,
+   "18": 2,
+   "19": 2,
+   "20": 2,
+   "21": 2,
+   "22": 2,
+   "23": 2,
+   "24": 2,
+   "25": 2,
+   "26": 2,
+   "27": 2,
+   "28": 2,
+   "29": 2,
+   "30": 2,
+   "31": 2,
+   "32": 2,
+   "33": 2,
+   "34": 2,
+   "35": 2,
+   "36": 2,
+   "37": 2,
+   "38": 2,
+   "39": 2,
+   "40": 2,
+   "41": 2,
+   "42": 2,
+   "43": 2,
+   "44": 2,
+   "45": 2,
+   "46": 2,
+   "47": 2,
+   "48": 2,
+   "49": 2,
+   "50": 2
+  }
+ },
+ "II": {
+  "title": "TOPIK Ⅱ",
+  "minutes": {
+   "listening": 60,
+   "writing": 50,
+   "reading": 70
+  },
+  "counts": {
+   "listening": 50,
+   "writing": 4,
+   "reading": 50
+  },
+  "numbering": {
+   "listening": [
+    1,
+    50
+   ],
+   "writing": [
+    51,
+    54
+   ],
+   "reading": [
+    1,
+    50
+   ]
+  },
+  "levels": [
+   {
+    "level": 3,
+    "min": 120
+   },
+   {
+    "level": 4,
+    "min": 150
+   },
+   {
+    "level": 5,
+    "min": 190
+   },
+   {
+    "level": 6,
+    "min": 230
+   }
+  ],
+  "total": 300,
+  "sections": {
+   "listening": [
+    {
+     "from": 1,
+     "to": 3,
+     "task": "picture",
+     "instruction": "다음을 듣고 알맞은 그림 또는 그래프를 고르십시오.",
+     "questions": {
+      "1": {
+       "points": 2,
+       "task": "picture"
+      },
+      "2": {
+       "points": 2,
+       "task": "picture"
+      },
+      "3": {
+       "points": 2,
+       "task": "graph"
+      }
+     }
+    },
+    {
+     "from": 4,
+     "to": 8,
+     "task": "next-line",
+     "instruction": "다음 대화를 잘 듣고 이어질 수 있는 말로 가장 알맞은 것을 고르십시오.",
+     "questions": {
+      "4": {
+       "points": 2
+      },
+      "5": {
+       "points": 2
+      },
+      "6": {
+       "points": 2
+      },
+      "7": {
+       "points": 2
+      },
+      "8": {
+       "points": 2
+      }
+     }
+    },
+    {
+     "from": 9,
+     "to": 12,
+     "task": "next-action",
+     "instruction": "다음 대화를 잘 듣고 여자가 이어서 할 행동으로 알맞은 것을 고르십시오.",
+     "questions": {
+      "9": {
+       "points": 2
+      },
+      "10": {
+       "points": 2
+      },
+      "11": {
+       "points": 2
+      },
+      "12": {
+       "points": 2
+      }
+     }
+    },
+    {
+     "from": 13,
+     "to": 16,
+     "task": "match",
+     "instruction": "다음을 듣고 들은 내용과 같은 것을 고르십시오.",
+     "questions": {
+      "13": {
+       "points": 2,
+       "task": "dialogue"
+      },
+      "14": {
+       "points": 2,
+       "task": "announcement"
+      },
+      "15": {
+       "points": 2,
+       "task": "news"
+      },
+      "16": {
+       "points": 2,
+       "task": "interview"
+      }
+     }
+    },
+    {
+     "from": 17,
+     "to": 20,
+     "task": "man-idea",
+     "instruction": "다음을 듣고 남자의 중심 생각을 고르십시오.",
+     "questions": {
+      "17": {
+       "points": 2
+      },
+      "18": {
+       "points": 2
+      },
+      "19": {
+       "points": 2
+      },
+      "20": {
+       "points": 2
+      }
+     }
+    },
+    {
+     "from": 21,
+     "to": 22,
+     "set": true,
+     "task": "dialogue",
+     "kind": "dialogue",
+     "instruction": "다음을 듣고 물음에 답하십시오.",
+     "questions": {
+      "21": {
+       "points": 2,
+       "task": "idea",
+       "prompt": "남자의 중심 생각으로 가장 알맞은 것을 고르십시오."
+      },
+      "22": {
+       "points": 2,
+       "task": "match",
+       "prompt": "들은 내용으로 맞는 것을 고르십시오."
+      }
+     }
+    },
+    {
+     "from": 23,
+     "to": 24,
+     "set": true,
+     "task": "dialogue",
+     "kind": "dialogue",
+     "instruction": "다음을 듣고 물음에 답하십시오.",
+     "questions": {
+      "23": {
+       "points": 2,
+       "task": "doing",
+       "prompt": "남자가 무엇을 하고 있는지 고르십시오."
+      },
+      "24": {
+       "points": 2,
+       "task": "match",
+       "prompt": "들은 내용으로 맞는 것을 고르십시오."
+      }
+     }
+    },
+    {
+     "from": 25,
+     "to": 26,
+     "set": true,
+     "task": "interview",
+     "kind": "dialogue",
+     "instruction": "다음을 듣고 물음에 답하십시오.",
+     "questions": {
+      "25": {
+       "points": 2,
+       "task": "idea",
+       "prompt": "남자의 중심 생각으로 가장 알맞은 것을 고르십시오."
+      },
+      "26": {
+       "points": 2,
+       "task": "match",
+       "prompt": "들은 내용으로 맞는 것을 고르십시오."
+      }
+     }
+    },
+    {
+     "from": 27,
+     "to": 28,
+     "set": true,
+     "task": "dialogue",
+     "kind": "dialogue",
+     "instruction": "다음을 듣고 물음에 답하십시오.",
+     "questions": {
+      "27": {
+       "points": 2,
+       "task": "intention",
+       "pattern": "남자가 여자에게 말하는 의도로 (가장 )?알맞은 것을 고르십시오\\."
+      },
+      "28": {
+       "points": 2,
+       "task": "match",
+       "prompt": "들은 내용으로 맞는 것을 고르십시오."
+      }
+     }
+    },
+    {
+     "from": 29,
+     "to": 30,
+     "set": true,
+     "task": "interview",
+     "kind": "dialogue",
+     "instruction": "다음을 듣고 물음에 답하십시오.",
+     "questions": {
+      "29": {
+       "points": 2,
+       "task": "who",
+       "prompt": "남자가 누구인지 고르십시오."
+      },
+      "30": {
+       "points": 2,
+       "task": "match",
+       "prompt": "들은 내용으로 맞는 것을 고르십시오."
+      }
+     }
+    },
+    {
+     "from": 31,
+     "to": 32,
+     "set": true,
+     "task": "debate",
+     "kind": "dialogue",
+     "instruction": "다음을 듣고 물음에 답하십시오.",
+     "questions": {
+      "31": {
+       "points": 2,
+       "task": "idea",
+       "prompt": "남자의 중심 생각으로 가장 알맞은 것을 고르십시오."
+      },
+      "32": {
+       "points": 2,
+       "task": "attitude",
+       "prompt": "남자의 태도로 가장 알맞은 것을 고르십시오."
+      }
+     }
+    },
+    {
+     "from": 33,
+     "to": 34,
+     "set": true,
+     "task": "lecture",
+     "kind": "monologue",
+     "instruction": "다음을 듣고 물음에 답하십시오.",
+     "questions": {
+      "33": {
+       "points": 2,
+       "task": "topic",
+       "prompt": "무엇에 대한 내용인지 가장 알맞은 것을 고르십시오."
+      },
+      "34": {
+       "points": 2,
+       "task": "match",
+       "prompt": "들은 내용으로 맞는 것을 고르십시오."
+      }
+     }
+    },
+    {
+     "from": 35,
+     "to": 36,
+     "set": true,
+     "task": "speech",
+     "kind": "monologue",
+     "instruction": "다음을 듣고 물음에 답하십시오.",
+     "questions": {
+      "35": {
+       "points": 2,
+       "task": "doing",
+       "prompt": "남자가 무엇을 하고 있는지 고르십시오."
+      },
+      "36": {
+       "points": 2,
+       "task": "match",
+       "prompt": "들은 내용으로 맞는 것을 고르십시오."
+      }
+     }
+    },
+    {
+     "from": 37,
+     "to": 38,
+     "set": true,
+     "task": "program",
+     "kind": "dialogue",
+     "instruction": "다음은 교양 프로그램입니다. 잘 듣고 물음에 답하십시오.",
+     "questions": {
+      "37": {
+       "points": 2,
+       "task": "idea",
+       "prompt": "여자의 중심 생각으로 가장 알맞은 것을 고르십시오."
+      },
+      "38": {
+       "points": 2,
+       "task": "match",
+       "prompt": "들은 내용과 같은 것을 고르십시오."
+      }
+     }
+    },
+    {
+     "from": 39,
+     "to": 40,
+     "set": true,
+     "task": "talk",
+     "kind": "dialogue",
+     "instruction": "다음은 대담입니다. 잘 듣고 물음에 답하십시오.",
+     "questions": {
+      "39": {
+       "points": 2,
+       "task": "before",
+       "prompt": "이 담화 앞의 내용으로 가장 알맞은 것을 고르십시오."
+      },
+      "40": {
+       "points": 2,
+       "task": "match",
+       "prompt": "들은 내용과 같은 것을 고르십시오."
+      }
+     }
+    },
+    {
+     "from": 41,
+     "to": 42,
+     "set": true,
+     "task": "lecture",
+     "kind": "monologue",
+     "instruction": "다음은 강연입니다. 잘 듣고 물음에 답하십시오.",
+     "questions": {
+      "41": {
+       "points": 2,
+       "task": "central",
+       "prompt": "이 강연의 중심 내용으로 가장 알맞은 것을 고르십시오."
+      },
+      "42": {
+       "points": 2,
+       "task": "match",
+       "prompt": "들은 내용과 같은 것을 고르십시오."
+      }
+     }
+    },
+    {
+     "from": 43,
+     "to": 44,
+     "set": true,
+     "task": "documentary",
+     "kind": "monologue",
+     "instruction": "다음은 다큐멘터리입니다. 잘 듣고 물음에 답하십시오.",
+     "questions": {
+      "43": {
+       "points": 2,
+       "task": "central",
+       "prompt": "이 이야기의 중심 내용으로 가장 알맞은 것을 고르십시오."
+      },
+      "44": {
+       "points": 2,
+       "task": "detail",
+       "pattern": ".+(에 대한 설명으로 맞는 것을|(이유|까닭)로 (가장 )?(맞는|알맞은) 것을) 고르십시오\\."
+      }
+     }
+    },
+    {
+     "from": 45,
+     "to": 46,
+     "set": true,
+     "task": "lecture",
+     "kind": "monologue",
+     "instruction": "다음은 강연입니다. 잘 듣고 물음에 답하십시오.",
+     "questions": {
+      "45": {
+       "points": 2,
+       "task": "match",
+       "prompt": "들은 내용과 같은 것을 고르십시오."
+      },
+      "46": {
+       "points": 2,
+       "task": "manner",
+       "pattern": "(남자|여자)가 말하는 방식으로 가장 알맞은 것을 고르십시오\\."
+      }
+     }
+    },
+    {
+     "from": 47,
+     "to": 48,
+     "set": true,
+     "task": "talk",
+     "kind": "dialogue",
+     "instruction": "다음은 대담입니다. 잘 듣고 물음에 답하십시오.",
+     "questions": {
+      "47": {
+       "points": 2,
+       "task": "match",
+       "prompt": "들은 내용과 같은 것을 고르십시오."
+      },
+      "48": {
+       "points": 2,
+       "task": "attitude",
+       "prompt": "남자의 태도로 가장 알맞은 것을 고르십시오."
+      }
+     }
+    },
+    {
+     "from": 49,
+     "to": 50,
+     "set": true,
+     "task": "lecture",
+     "kind": "monologue",
+     "instruction": "다음은 강연입니다. 잘 듣고 물음에 답하십시오.",
+     "questions": {
+      "49": {
+       "points": 2,
+       "task": "match",
+       "prompt": "들은 내용과 같은 것을 고르십시오."
+      },
+      "50": {
+       "points": 2,
+       "task": "attitude",
+       "pattern": "(남자|여자)의 태도로 가장 알맞은 것을 고르십시오\\."
+      }
+     }
+    }
+   ],
+   "writing": [
+    {
+     "from": 51,
+     "to": 52,
+     "task": "sentence-gaps",
+     "instruction": "다음 글의 ㉠과 ㉡에 알맞은 말을 각각 쓰십시오.",
+     "questions": {
+      "51": {
+       "points": 10,
+       "task": "practical"
+      },
+      "52": {
+       "points": 10,
+       "task": "explanatory"
+      }
+     }
+    },
+    {
+     "from": 53,
+     "to": 53,
+     "task": "graph-essay",
+     "instruction": "다음을 참고하여 ‘{topic}’에 대한 글을 200～300자로 쓰십시오. 단, 글의 제목을 쓰지 마십시오.",
+     "questions": {
+      "53": {
+       "points": 30
+      }
+     }
+    },
+    {
+     "from": 54,
+     "to": 54,
+     "task": "essay",
+     "instruction": "다음을 주제로 하여 자신의 생각을 600～700자로 글을 쓰십시오. 단, 문제를 그대로 옮겨 쓰지 마십시오.",
+     "questions": {
+      "54": {
+       "points": 50
+      }
+     }
+    }
+   ],
+   "reading": [
+    {
+     "from": 1,
+     "to": 2,
+     "task": "blank-grammar",
+     "instruction": "(    )에 들어갈 가장 알맞은 것을 고르십시오.",
+     "questions": {
+      "1": {
+       "points": 2
+      },
+      "2": {
+       "points": 2
+      }
+     }
+    },
+    {
+     "from": 3,
+     "to": 4,
+     "task": "similar",
+     "instruction": "밑줄 친 부분과 의미가 비슷한 것을 고르십시오.",
+     "questions": {
+      "3": {
+       "points": 2
+      },
+      "4": {
+       "points": 2
+      }
+     }
+    },
+    {
+     "from": 5,
+     "to": 8,
+     "task": "what-about",
+     "instruction": "다음은 무엇에 대한 글인지 고르십시오.",
+     "questions": {
+      "5": {
+       "points": 2
+      },
+      "6": {
+       "points": 2
+      },
+      "7": {
+       "points": 2
+      },
+      "8": {
+       "points": 2
+      }
+     }
+    },
+    {
+     "from": 9,
+     "to": 12,
+     "task": "match",
+     "instruction": "다음 글 또는 그래프의 내용과 같은 것을 고르십시오.",
+     "questions": {
+      "9": {
+       "points": 2,
+       "task": "notice"
+      },
+      "10": {
+       "points": 2,
+       "task": "graph"
+      },
+      "11": {
+       "points": 2,
+       "task": "article"
+      },
+      "12": {
+       "points": 2,
+       "task": "article"
+      }
+     }
+    },
+    {
+     "from": 13,
+     "to": 15,
+     "task": "order",
+     "instruction": "다음을 순서대로 맞게 배열한 것을 고르십시오.",
+     "questions": {
+      "13": {
+       "points": 2
+      },
+      "14": {
+       "points": 2
+      },
+      "15": {
+       "points": 2
+      }
+     }
+    },
+    {
+     "from": 16,
+     "to": 18,
+     "task": "blank-content",
+     "instruction": "다음을 읽고 (    )에 들어갈 내용으로 가장 알맞은 것을 고르십시오.",
+     "questions": {
+      "16": {
+       "points": 2
+      },
+      "17": {
+       "points": 2
+      },
+      "18": {
+       "points": 2
+      }
+     }
+    },
+    {
+     "from": 19,
+     "to": 20,
+     "set": true,
+     "task": "passage",
+     "kind": "dialogue",
+     "instruction": "다음을 읽고 물음에 답하십시오.",
+     "questions": {
+      "19": {
+       "points": 2,
+       "task": "blank",
+       "prompt": "(    )에 들어갈 알맞은 것을 고르십시오."
+      },
+      "20": {
+       "points": 2,
+       "task": "theme",
+       "prompt": "위 글의 주제로 가장 알맞은 것을 고르십시오."
+      }
+     }
+    },
+    {
+     "from": 21,
+     "to": 22,
+     "set": true,
+     "task": "passage",
+     "kind": "dialogue",
+     "instruction": "다음을 읽고 물음에 답하십시오.",
+     "questions": {
+      "21": {
+       "points": 2,
+       "task": "idiom",
+       "prompt": "(    )에 들어갈 가장 알맞은 것을 고르십시오."
+      },
+      "22": {
+       "points": 2,
+       "task": "match",
+       "prompt": "위 글의 내용과 같은 것을 고르십시오."
+      }
+     }
+    },
+    {
+     "from": 23,
+     "to": 24,
+     "set": true,
+     "task": "essay",
+     "kind": "dialogue",
+     "instruction": "다음을 읽고 물음에 답하십시오.",
+     "questions": {
+      "23": {
+       "points": 2,
+       "task": "feeling",
+       "prompt": "밑줄 친 부분에 나타난 ‘나’의 심정으로 가장 알맞은 것을 고르십시오."
+      },
+      "24": {
+       "points": 2,
+       "task": "match",
+       "prompt": "위 글의 내용과 같은 것을 고르십시오."
+      }
+     }
+    },
+    {
+     "from": 25,
+     "to": 27,
+     "task": "headline",
+     "instruction": "다음은 신문 기사의 제목입니다. 가장 잘 설명한 것을 고르십시오.",
+     "questions": {
+      "25": {
+       "points": 2
+      },
+      "26": {
+       "points": 2
+      },
+      "27": {
+       "points": 2
+      }
+     }
+    },
+    {
+     "from": 28,
+     "to": 31,
+     "task": "blank-content",
+     "instruction": "다음을 읽고 (    )에 들어갈 내용으로 가장 알맞은 것을 고르십시오.",
+     "questions": {
+      "28": {
+       "points": 2
+      },
+      "29": {
+       "points": 2
+      },
+      "30": {
+       "points": 2
+      },
+      "31": {
+       "points": 2
+      }
+     }
+    },
+    {
+     "from": 32,
+     "to": 34,
+     "task": "match",
+     "instruction": "다음을 읽고 내용이 같은 것을 고르십시오.",
+     "questions": {
+      "32": {
+       "points": 2
+      },
+      "33": {
+       "points": 2
+      },
+      "34": {
+       "points": 2
+      }
+     }
+    },
+    {
+     "from": 35,
+     "to": 38,
+     "task": "theme",
+     "instruction": "다음 글의 주제로 가장 알맞은 것을 고르십시오.",
+     "questions": {
+      "35": {
+       "points": 2
+      },
+      "36": {
+       "points": 2
+      },
+      "37": {
+       "points": 2
+      },
+      "38": {
+       "points": 2
+      }
+     }
+    },
+    {
+     "from": 39,
+     "to": 41,
+     "task": "insert",
+     "instruction": "주어진 문장이 들어갈 곳으로 가장 알맞은 것을 고르십시오.",
+     "questions": {
+      "39": {
+       "points": 2
+      },
+      "40": {
+       "points": 2
+      },
+      "41": {
+       "points": 2
+      }
+     }
+    },
+    {
+     "from": 42,
+     "to": 43,
+     "set": true,
+     "task": "story",
+     "kind": "dialogue",
+     "instruction": "다음을 읽고 물음에 답하십시오.",
+     "questions": {
+      "42": {
+       "points": 2,
+       "task": "feeling",
+       "pattern": "밑줄 친 부분에 나타난 ‘[^’]+’의 심정으로 가장 알맞은 것을 고르십시오\\."
+      },
+      "43": {
+       "points": 2,
+       "task": "match",
+       "pattern": "위 글의 내용(과 같은 것을|으로 알 수 있는 것을) 고르십시오\\."
+      }
+     }
+    },
+    {
+     "from": 44,
+     "to": 45,
+     "set": true,
+     "task": "passage",
+     "kind": "dialogue",
+     "instruction": "다음을 읽고 물음에 답하십시오.",
+     "questions": {
+      "44": {
+       "points": 2,
+       "task": "blank",
+       "prompt": "(    )에 들어갈 내용으로 가장 알맞은 것을 고르십시오."
+      },
+      "45": {
+       "points": 2,
+       "task": "theme",
+       "prompt": "위 글의 주제로 가장 알맞은 것을 고르십시오."
+      }
+     }
+    },
+    {
+     "from": 46,
+     "to": 47,
+     "set": true,
+     "task": "passage",
+     "kind": "dialogue",
+     "instruction": "다음을 읽고 물음에 답하십시오.",
+     "questions": {
+      "46": {
+       "points": 2,
+       "task": "attitude",
+       "prompt": "위 글에 나타난 필자의 태도로 가장 알맞은 것을 고르십시오."
+      },
+      "47": {
+       "points": 2,
+       "task": "match",
+       "prompt": "위 글의 내용과 같은 것을 고르십시오."
+      }
+     }
+    },
+    {
+     "from": 48,
+     "to": 50,
+     "set": true,
+     "task": "passage",
+     "instruction": "다음을 읽고 물음에 답하십시오.",
+     "questions": {
+      "48": {
+       "points": 2,
+       "task": "purpose",
+       "prompt": "필자가 이 글을 쓴 목적으로 가장 알맞은 것을 고르십시오."
+      },
+      "49": {
+       "points": 2,
+       "task": "blank",
+       "prompt": "(    )에 들어갈 내용으로 가장 알맞은 것을 고르십시오."
+      },
+      "50": {
+       "points": 2,
+       "task": "attitude",
+       "prompt": "밑줄 친 부분에 나타난 필자의 태도로 가장 알맞은 것을 고르십시오."
+      }
+     }
+    }
+   ]
+  },
+  "repeats": {
+   "1": 1,
+   "2": 1,
+   "3": 1,
+   "4": 1,
+   "5": 1,
+   "6": 1,
+   "7": 1,
+   "8": 1,
+   "9": 1,
+   "10": 1,
+   "11": 1,
+   "12": 1,
+   "13": 1,
+   "14": 1,
+   "15": 1,
+   "16": 1,
+   "17": 1,
+   "18": 1,
+   "19": 1,
+   "20": 1,
+   "21": 2,
+   "22": 2,
+   "23": 2,
+   "24": 2,
+   "25": 2,
+   "26": 2,
+   "27": 2,
+   "28": 2,
+   "29": 2,
+   "30": 2,
+   "31": 2,
+   "32": 2,
+   "33": 2,
+   "34": 2,
+   "35": 2,
+   "36": 2,
+   "37": 2,
+   "38": 2,
+   "39": 2,
+   "40": 2,
+   "41": 2,
+   "42": 2,
+   "43": 2,
+   "44": 2,
+   "45": 2,
+   "46": 2,
+   "47": 2,
+   "48": 2,
+   "49": 2,
+   "50": 2
+  }
+ }
+}

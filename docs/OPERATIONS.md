@@ -26,7 +26,7 @@ every session. Product facts: [PROJECT.md](./PROJECT.md) and `docs/project/`. Pa
 Owner actions:
 1. Make the repository private. `reference/` holds the withdrawn БҮТ papers; 2018 A and 2019 A print a no-copying notice.
 2. Confirm plan figures (2026-11-17): ЭЕШ ₮29,900, Гадаад хэл Basic ₮29,900, Pro ₮59,900; 7-day mock purchases; and that Basic and Pro open every non-ЭЕШ mock with no picks.
-3. Audio: listen to the free mocks (HSK free item 1 was misheard by Whisper) and to JLPT audio revision 2 (VoxCPM2 narrator, 2026-11-16).
+3. Audio: listen to the free mocks (HSK free item 1 was misheard by Whisper) and to JLPT audio revision 2 (VoxCPM2 narrator, 2026-11-16), and to the TOPIK mocks (VoxCPM2, 2026-11-18).
 4. Complete one real Google sign-in with an owner-controlled account (only the authorization start is verified).
 5. Buy a sender domain if wanted, then switch to Resend ([troubleshooting](./project/troubleshooting.md)).
 6. Listen to one Speaking Lab partner on the hosted site from a phone. The DeepInfra key was pasted into a chat; consider replacing it.
@@ -40,7 +40,7 @@ For agents:
 - Never run live: `tutor_smoke.py`; the practice assistant beyond one SAT reply; exam-from-file with a structure request.
   Real provider calls need owner approval.
 - Unused code kept on purpose (ask before deleting): roadmap planner, `roadmap` credit action, `StudyPlan`/`StudyDay` tables.
-- Found, not fixed: the Reading Lab library scrolls sideways at 320 px with a saved practice. The mobile hub route (`api/mobile/exams/programs/[program]`) labels HSK 2 mocks "HSK 1" and counts progress by `hsk1-` ids.
+- Found, not fixed: the Reading Lab library scrolls sideways at 320 px with a saved practice. The mobile hub route (`api/mobile/exams/programs/[program]`) labels HSK 2 mocks "HSK 1" and counts progress by `hsk1-` ids. The mobile API has no TOEFL or TOPIK program. Checkout prints the IELTS format line for TOEFL mocks.
 - Not runnable here: `auth_recovery_smoke.py` (`artifacts/start-auth-recovery.mjs` is not on this machine).
   `vocabulary_smoke` cannot pass on `next dev` (StrictMode closes `modal.tsx`).
 - Cleanup: unused exercise CSS in `theme.css`, `globals.css`, `programs.css`.
@@ -71,7 +71,7 @@ Groups: `core` (routing, sessions, layout, exam engine) · `vocabulary` · `deck
 withdrawn-paper 404s) · `mocks` (added SAT/IELTS forms, Гадаад хэл picks) · `free` (free mocks, their audio) · `jlpt` · `hsk`
 (also the `/exams` grid) · `practice` (practice mode, assistant, sitting tools) · `admin` (admin, publishing) · `billing` (plans,
 prices, checkout, access, picks) · `account` (profile, password, demo accounts) · `ui` (theme, global CSS, chrome, homepage, copy) ·
-`writing` (Essay Studio) · `notifications` (inbox, announcements). Reading Lab and the mock AI examiner have no browser suite. When unsure, run the affected group, not every group.
+`writing` (Essay Studio) · `notifications` (inbox, announcements) · `topik` (TOPIK mocks and audio; not the Workshop tab). Reading Lab and the mock AI examiner have no browser suite. When unsure, run the affected group, not every group.
 
 Manual only, with owner approval: `tutor_smoke`, `speaking_lab_smoke` (real providers), `hosted_demo_smoke` (after a deployment),
 `auth_recovery_smoke` (3002). No pauses between suites (sign-up allows 60 per minute). Inspect screenshots when UI changes. Never
@@ -115,25 +115,26 @@ npm run admin:grant -- qa-demo-01@example.invalid
 ## 7. Recent
 
 Full entries, with attribution and verification limits, are at the top of [OPERATIONS_HISTORY.md](./OPERATIONS_HISTORY.md).
-- **2026-11-18 · Claude Code (Opus 5.5) · Next.js 16.4.6 security bump**: `next`, `eslint-config-next` 16.4.2 → 16.4.6; lockfile
-  changes only `next`/`@next/*`. 16.4.5 fixes seven moderate advisories (`use cache` leaks, SVG image bypass, Edge cookie
-  header); 16.4.6 compresses route-handler responses; none breaking. Build showed no security notice. `npm run check` and all
-  17 browser groups passed in worktree `dazzling-perlman-f7175e` (3001 left running). Merged into
-  `codex/education-foundation` and pushed; hosted site not checked.
-- **2026-11-18 · Claude Code (Opus 5.5) · TOEFL iBT mocks on the site** ([assessments](./project/assessments.md)): nine forms at
-  `/exams/toefl` (Basic/Pro or 7-day buy): routed Reading/Listening modules, listening answer windows on the server clock,
-  one-clip audio allowlist, letter-box gaps, Build a Sentence, writing, recorded speaking, raw results, practice. Audio
-  function traced at 88.5 MB (limit 250). `npm run check` and all 17 browser groups passed; committed with every agent's
-  pending work and pushed. Recordings not listened to; no teacher review.
-- **2026-11-18 · Claude Code (Opus 5.5) · Workshop quiz, deck page redesign** ([language-decks](./project/language-decks.md)):
-  Duolingo-style quiz maker and session for Kana, JLPT/HSK decks and the Pinyin tone drill (8 exercise kinds, retries,
-  results, grades saved); deck page now hero + lesson path + word cards. Restore script in
-  `artifacts/design-backup-2026-11-18`. Next.js 16.4.6 security bump verified in worktree `../educationplatform-security`,
-  not merged. Deck/vocabulary tests and both browser suites passed on 3001 (full unit step fails on TOEFL work in progress). No commit.
-- **2026-11-18 · Claude Code (Opus 5.5) · Kana, Pinyin workshops, deck Romaji** ([language-decks](./project/language-decks.md)):
-  `/labs/kana` (hiragana/katakana charts, row cards and quiz) and `/labs/pinyin` (tones, 405-syllable chart, tone drill on 302
-  HSK words), chart first, Basic/Pro only, progress in the existing deck table (no migration). JLPT decks get a Romaji toggle;
-  two wrong example readings fixed. `check -- decks vocabulary` passed; local DB stalled once and was restarted; 3001 rebuilt. No commit.
-- **2026-11-18 · Claude Code (Opus 5.5) · JLPT/HSK word decks, Workshop exam tabs** ([language-decks](./project/language-decks.md)):
-  N5/N4/HSK 1/HSK 2 decks (1,248 words, DeepSeek drafts for review), Basic/Pro only, progress table (migration `20261118120000`).
-  `check -- decks vocabulary writing` passed; 3001 rebuilt. Apply the migration on Neon before deploying. No commit.
+- **2026-11-18 · Claude Code (Opus 5.5) · Next 16.4.6 installed, all work committed**: owner asked; `npm ci` (this checkout
+  had 16.4.2), eslint ignores `.claude/**` (worktree copies), exam-library tests count 7 programmes (TOPIK). `npm run
+  check:all` passed: build with no security notice, all 17 groups incl. `topik`. 3001 restarted on the new build. All
+  pending agent work committed, not pushed. `npm audit`: 16 dependency advisories, not addressed.
+- **2026-11-18 · Claude Code (Opus 5.5) · TOPIK Ⅰ/Ⅱ mocks and TOPIK Workshop** ([assessments](./project/assessments.md),
+  [language-decks](./project/language-decks.md)): three original forms per level on the official paper structure, VoxCPM2
+  Korean audio (Whisper-checked), `/exams/topik`; Workshop TOPIK tab with a Hangul chart and test and two 513-word decks.
+  Forms solved blind twice by subagents. Lint outside `.claude/`, typecheck, unit (367) and the `topik` suite on dev 3011
+  passed; deck pages checked by hand. Korean teacher review and listening pending. No build, no commit.
+- **2026-11-18 · Claude Code (Opus 5.5) · Mock grade = scores; detailed essay reviews** ([assessments](./project/assessments.md)):
+  the automatic grade is now bands/scores plus a one- or two-sentence note. IELTS results offer the Essay Studio reviews per
+  Writing task: Бүрэн үнэлгээ (21 credits) and Шинжээчийн (plan's monthly reviews), essay read from the attempt;
+  `EssayReview.attemptId/questionId` (migration applied locally). Shared Modal fixed for dev StrictMode. Unit, lint,
+  typecheck; stubbed server check, one live review, UI harness. Local DB dropped under QA load; restarted. No commit.
+- **2026-11-18 · Claude Code (Opus 5.5) · AI grading of mock Writing and Speaking** ([assessments](./project/assessments.md)):
+  IELTS/TOEFL results pages now grade Writing and Speaking with DeepSeek once per attempt (no credits; `MockGrade`, migration
+  applied locally): IELTS bands + overall, TOEFL 0–5; recordings via DeepInfra Whisper. Teacher-review copy removed. Unit, lint,
+  typecheck; live run on dev 3009; exams (copy expecting the TOPIK card), toefl, free_mocks suites on next dev. No build, no commit.
+- **2026-11-18 · Claude Code (Fable 5.2) · Admin redesign: tabs, one job per screen** ([admin-content](./project/admin-content.md)):
+  rail unchanged; each section: title, tab bar, toolbar, one table or list. Prices: five tabs, editors open in the
+  row, one History tab (7,400 px before, one screen now); AI credits, announcements, system, user and content records
+  tabbed. Restore: `artifacts/design-backup-2026-11-18-admin`. Lint outside `.claude/`, typecheck, unit passed; admin,
+  publishing, notifications suites passed on the rebuilt 3001. Build warns: installed Next is 16.4.2. No commit.

@@ -19,6 +19,7 @@ const groups = {
   jlpt: ["jlpt"],
   hsk: ["hsk"],
   toefl: ["toefl"],
+  topik: ["topik"],
   practice: ["exam_practice"],
   admin: ["admin", "publishing"],
   billing: ["payments", "subscriptions"],
@@ -85,10 +86,11 @@ if (await health()) {
 
 // Suites test the real open-sitting block, so the development override is always off here.
 // Browser suites never reach Claude, nor DeepSeek for the essay review: the server talks to the suites' local mock
-// (tests/writing_expert_smoke.py), Claude with a fake key. Only the essay review reads DEEPSEEK_BASE_URL.
+// (tests/writing_expert_smoke.py), Claude with a fake key. Only the essay review and mock grading read DEEPSEEK_BASE_URL,
+// and mock grading never sends the suites' recordings to the speech provider (GRADING_TRANSCRIBE=off).
 const mockBase = `http://127.0.0.1:${process.env.MOCK_ANTHROPIC_PORT ?? "8471"}`;
 const env = { ...process.env, TEST_BASE_URL: base, BETTER_AUTH_URL: base, PYTHONIOENCODING: "utf-8", DEV_PRACTICE_DURING_MOCK: "false",
-  ANTHROPIC_API_KEY: "check-mock-key", ANTHROPIC_BASE_URL: mockBase, DEEPSEEK_BASE_URL: mockBase };
+  ANTHROPIC_API_KEY: "check-mock-key", ANTHROPIC_BASE_URL: mockBase, DEEPSEEK_BASE_URL: mockBase, GRADING_TRANSCRIBE: "off" };
 const server = spawn(process.execPath, ["node_modules/next/dist/bin/next", "start", "-p", port], { env, stdio: "ignore" });
 function stopServer() {
   if (process.platform === "win32") spawnSync("taskkill", ["/pid", String(server.pid), "/T", "/F"], { stdio: "ignore" });

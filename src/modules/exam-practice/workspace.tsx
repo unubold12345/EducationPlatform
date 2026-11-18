@@ -13,6 +13,9 @@ import { audioPath } from "@/modules/exams/audio-files";
 import { JapaneseText } from "@/modules/exams/jlpt/text";
 import { JlptPracticeAudio } from "@/modules/exams/jlpt/practice-audio";
 import { HskPracticeAudio } from "@/modules/exams/hsk/practice-audio";
+import { TopikPracticeAudio } from "@/modules/exams/topik/practice-audio";
+import { TopikGroupHead, TopikQuestion, TopikWriting } from "@/modules/exams/topik/view";
+import { KoreanText } from "@/modules/exams/topik/text";
 import { ChineseText, HskMaterial, HskQuestion, hskPart, transcriptLines } from "@/modules/exams/hsk/view";
 import { ToeflPracticeItem } from "@/modules/exams/toefl/practice";
 import { examinerName, isTranscript, transcriptText } from "@/modules/exams/speaking-examiner";
@@ -163,7 +166,7 @@ export function PracticeWorkspace({initial,speakingLab,initialSection}:{initial:
   function openSection(id:string){const list=form.questions.filter(item=>item.section===id);go((list.find(item=>!reveals[item.id])??list[0]).id);}
   const choices=question.kind==="choice"?question.options??[]:[];
   // IELTS Listening shows a whole part in the Listening Lab layout, so single-question shortcuts are off there.
-  const listening=form.subject!=="jlpt"&&form.subject!=="hsk"&&sectionQuestions.length>1&&sectionQuestions.every(item=>item.audioPart);
+  const listening=form.subject!=="jlpt"&&form.subject!=="hsk"&&form.subject!=="topik"&&sectionQuestions.length>1&&sectionQuestions.every(item=>item.audioPart);
   useQuestionShortcuts(listening||examining?{}:{
     onPrevious:()=>{if(previous)go(previous.id);},
     onNext:()=>{if(next)go(next.id);},
@@ -187,8 +190,8 @@ export function PracticeWorkspace({initial,speakingLab,initialSection}:{initial:
   // Math and physics mocks are Mongolian; the English paper keeps its English questions and answers. Every ЭЕШ explanation is Mongolian.
   const mathPaper=form.subject==="eesh-math",physicsPaper=form.subject==="eesh-physics",entrance=form.subject.startsWith("eesh-");
   const toefl=form.subject==="toefl";
-  const jlpt=form.subject==="jlpt",hsk=form.subject==="hsk",part=hsk?hskPart(question.section,question.hskGroup):undefined;
-  const answerLang=jlpt?"ja":hsk?"zh-CN":entrance&&form.subject!=="eesh-english"?"mn":"en",explainLang=entrance?"mn":"en";
+  const jlpt=form.subject==="jlpt",hsk=form.subject==="hsk",topik=form.subject==="topik",part=hsk?hskPart(question.section,question.hskGroup):undefined;
+  const answerLang=jlpt?"ja":hsk?"zh-CN":topik?"ko":entrance&&form.subject!=="eesh-english"?"mn":"en",explainLang=entrance?"mn":"en";
   const hasAnswer=Boolean(value.replace(/_/g,"").trim());
   const optionContent=(option:string)=>jlpt?<JapaneseText text={option} readings={readings}/>:mathPaper?<MathFormula text={option}/>:form.subject==="eesh-english"?<RichText text={option}/>:option;
 
@@ -242,29 +245,32 @@ export function PracticeWorkspace({initial,speakingLab,initialSection}:{initial:
       {tools?<MathTools/>:null}
       {jlpt&&question.audioPart?<JlptPracticeAudio key={question.id} slug={form.slug} questionId={question.id} part={question.audioPart} revision={form.audioRevision}/>:null}
       {hsk&&question.audioPart?<HskPracticeAudio key={question.id} slug={form.slug} questionId={question.id} part={question.audioPart}/>:null}
-      {!jlpt&&!hsk&&question.audioPart?<section className="listening-player practice-audio"><div><strong>Listening · Part {question.audioPart} / {Math.max(...form.questions.map(item=>item.audioPart??0))}</strong></div><audio key={question.audioPart} controls preload="none" src={url+audioPath(form.slug)+"?part="+question.audioPart} aria-label={"Listening recording part "+question.audioPart}/></section>:null}
+      {topik&&question.audioPart?<TopikPracticeAudio key={question.id} slug={form.slug} questionId={question.id} part={question.audioPart}/>:null}
+      {!jlpt&&!hsk&&!topik&&question.audioPart?<section className="listening-player practice-audio"><div><strong>Listening · Part {question.audioPart} / {Math.max(...form.questions.map(item=>item.audioPart??0))}</strong></div><audio key={question.audioPart} controls preload="none" src={url+audioPath(form.slug)+"?part="+question.audioPart} aria-label={"Listening recording part "+question.audioPart}/></section>:null}
       <div className={"exam-question-layout "+(passage?"with-passage":"")}>
         {passage&&jlpt?<aside className="jlpt-passage" aria-label="Унших эх"><JapaneseText text={passage} readings={readings}/></aside>:null}
         {passage&&!jlpt?<PassagePane title={passageTitle} text={passage} caption={question.kind==="essay"?"Academic Writing · Task 1 data":undefined} controls={controls} scale={scale}/>:null}
         <section className="exam-answer-panel">
-          <div className="exam-question-number" ref={heading} tabIndex={-1}><strong>{person?"Task":answerLang==="en"?"Question":"Даалгавар"} {question.label}{hsk?"":" / "+sectionQuestions.length}{question.points?<span className="practice-points"> · {question.points} оноо</span>:null}</strong><button aria-pressed={flags.includes(question.id)} onClick={toggleFlag}>⚑ {flags.includes(question.id)?"Тэмдэглэсэн":"Дараа харах"}</button></div>
-          {question.instructions?<section className="practice-context practice-task"><p className="eyebrow">{jlpt?"問題":hsk?"说明 · Заавар":form.subject==="eesh-english"?(/^\d/.test(question.task??"")?"Task "+question.task:question.task??"Task"):"Даалгавар "+(question.task??"")}</p><div lang={answerLang}>{mathPaper||physicsPaper?<MathText text={question.instructions}/>:<RichText text={question.instructions}/>}</div></section>:null}
+          <div className="exam-question-number" ref={heading} tabIndex={-1}><strong>{person?"Task":answerLang==="en"?"Question":"Даалгавар"} {question.label}{hsk||topik?"":" / "+sectionQuestions.length}{question.points?<span className="practice-points"> · {question.points} оноо</span>:null}</strong><button aria-pressed={flags.includes(question.id)} onClick={toggleFlag}>⚑ {flags.includes(question.id)?"Тэмдэглэсэн":"Дараа харах"}</button></div>
+          {topik?<div className="practice-topik">{question.topikGroup?<TopikGroupHead group={question.topikGroup} note={(question.instructions??"").split("\n").slice(1).join(" ")}/>:null}{question.kind==="essay"?<TopikWriting question={question} value={value} disabled={Boolean(reveal)} onChange={change}/>:<TopikQuestion question={question} value={value} disabled={Boolean(reveal)} correct={reveal?.answerValue} onChange={change}/>}</div>:null}
+          {question.instructions&&!topik?<section className="practice-context practice-task"><p className="eyebrow">{jlpt?"問題":hsk?"说明 · Заавар":form.subject==="eesh-english"?(/^\d/.test(question.task??"")?"Task "+question.task:question.task??"Task"):"Даалгавар "+(question.task??"")}</p><div lang={answerLang}>{mathPaper||physicsPaper?<MathText text={question.instructions}/>:<RichText text={question.instructions}/>}</div></section>:null}
           {question.groupFigure?<ExamFigureView figure={question.groupFigure}/>:null}
           {toefl?<ToeflPracticeItem question={question} value={value} disabled={Boolean(reveal)} base={url} onChange={change}/>:null}
           {question.context&&!toefl?<section className="practice-context"><p className="eyebrow">{question.contextTitle??"Өгөгдөл"}</p><div lang="en"><RichText text={question.context}/></div></section>:null}
           {question.wordBank?.length?<section className="practice-bank" aria-label="Сонголтын сан"><p className="eyebrow">СОНГОЛТУУД</p><ol>{question.wordBank.map(item=><li key={item.label}><span>{item.label}</span><RichText text={item.text}/></li>)}</ol></section>:null}
           {hsk&&part?<div className="practice-hsk"><HskMaterial group={question.hskGroup} readings={readings} example={false}/><HskQuestion question={question} part={part} value={value} disabled={Boolean(reveal)} readings={readings} correct={reveal?.answerValue} onChange={change}/></div>:null}
-          {!hsk&&question.prompt?<h2 lang={answerLang}>{mathPaper||physicsPaper?<MathText text={question.prompt}/>:jlpt?<JapaneseText text={question.prompt} readings={readings}/>:form.subject==="eesh-english"?<RichText text={question.prompt}/>:question.prompt}</h2>:null}
+          {!hsk&&!topik&&question.prompt?<h2 lang={answerLang}>{mathPaper||physicsPaper?<MathText text={question.prompt}/>:jlpt?<JapaneseText text={question.prompt} readings={readings}/>:form.subject==="eesh-english"?<RichText text={question.prompt}/>:question.prompt}</h2>:null}
           {!hsk&&question.figure?<ExamFigureView figure={question.figure}/>:null}
-          {!hsk&&choices.length?<AnswerOptions name={question.id} selected={value} disabled={Boolean(reveal)} lang={answerLang} labels={question.optionLabels} onSelect={change} struck={struck[question.id]} onStrike={option=>toggle(question.id,option)} correctValue={reveal?.answerValue??reveal?.answer} options={choices.map(option=>({value:option,content:optionContent(option)}))}/>:null}
-          {person?<div className="exam-written-response"><label htmlFor="practice-text">{question.kind==="speaking"?"Санаа, тэмдэглэл":"Your response"}</label><textarea id="practice-text" lang="en" rows={question.kind==="essay"?15:5} maxLength={question.kind==="essay"?16000:4000} value={value} onChange={event=>change(event.target.value)}/><p className="fine-print">{words(value)} words{question.minWords?" · Minimum "+question.minWords:""}</p></div>:null}
+          {!hsk&&!topik&&choices.length?<AnswerOptions name={question.id} selected={value} disabled={Boolean(reveal)} lang={answerLang} labels={question.optionLabels} onSelect={change} struck={struck[question.id]} onStrike={option=>toggle(question.id,option)} correctValue={reveal?.answerValue??reveal?.answer} options={choices.map(option=>({value:option,content:optionContent(option)}))}/>:null}
+          {person&&!topik?<div className="exam-written-response"><label htmlFor="practice-text">{question.kind==="speaking"?"Санаа, тэмдэглэл":"Your response"}</label><textarea id="practice-text" lang="en" rows={question.kind==="essay"?15:5} maxLength={question.kind==="essay"?16000:4000} value={value} onChange={event=>change(event.target.value)}/><p className="fine-print">{words(value)} words{question.minWords?" · Minimum "+question.minWords:""}</p></div>:null}
           {(question.kind==="short"||question.kind==="number")&&!question.toefl?<div className="exam-short-response"><label htmlFor="practice-short">{entrance?"Хариу":question.kind==="number"?"Numerical response — integer, decimal or fraction":"Your answer — follow the word/number limit above"}</label><input id="practice-short" lang={answerLang} autoComplete="off" spellCheck={false} disabled={Boolean(reveal)} maxLength={160} value={value} onChange={event=>change(event.target.value)}/></div>:null}
 
           {reveal?<section className="practice-feedback" data-result={reveal.correct===null?"review":reveal.correct?"correct":"wrong"} role="status">
             <strong>{reveal.correct===null?"Зөвлөмж":reveal.correct?"Зөв":hasAnswer?"Буруу":"Хариулаагүй"}</strong>
-            {reveal.answer?<p>Зөв хариу: <b lang={answerLang}>{mathPaper?<MathFormula text={reveal.answer}/>:reveal.answer}</b></p>:null}
+            {reveal.answer&&topik&&person?<div className="topik-model"><p>Жишиг хариу:</p><div lang="ko">{reveal.answer.split("\n").map((line,i)=><p key={i}><KoreanText text={line} inline/></p>)}</div></div>:null}
+            {reveal.answer&&!(topik&&person)?<p>Зөв хариу: <b lang={answerLang}>{mathPaper?<MathFormula text={reveal.answer}/>:reveal.answer}</b></p>:null}
             {reveal.explanation?<p lang={explainLang}>{mathPaper||physicsPaper?<MathText text={reveal.explanation}/>:reveal.explanation}</p>:null}
-            {reveal.transcript?<details className="practice-transcript"><summary>Бичлэгийн текст</summary><div lang={answerLang}>{hsk?transcriptLines(reveal.transcript).map((line,i)=><p key={i}><ChineseText line={line} readings={readings}/></p>):reveal.transcript.split("\n\n").map((line,i)=><p key={i}>{line}</p>)}</div></details>:null}
+            {reveal.transcript?<details className="practice-transcript"><summary>Бичлэгийн текст</summary><div lang={answerLang}>{hsk?transcriptLines(reveal.transcript).map((line,i)=><p key={i}><ChineseText line={line} readings={readings}/></p>):reveal.transcript.split(topik?"\n":"\n\n").map((line,i)=><p key={i}>{line}</p>)}</div></details>:null}
             {person?null:<button type="button" className="text-link" onClick={()=>void retry([question.id])}>Энэ асуултыг дахин ажиллах</button>}
           </section>:null}
 

@@ -180,6 +180,10 @@ with sync_playwright() as p:
     form.get_by_label("Холбоос (заавал биш)").fill("/exams")
     form.get_by_role("button", name="Илгээх", exact=True).click()
     expect(form.locator("[role='status']")).to_have_text("Бүх хэрэглэгчид илгээлээ.")
+    # Sending and the sent list are two tabs of the section.
+    expect(admin_page.locator(".admin-table-wrap")).to_have_count(0)
+    admin_page.locator(".admin-subtabs a", has_text="Илгээсэн").click()
+    admin_page.wait_for_url("**kind=sent**")
     row = admin_page.locator(".admin-table-wrap tbody tr", has_text=title)
     expect(row).to_have_count(1)
     expect(row).to_contain_text("0 / 0")
@@ -201,6 +205,7 @@ with sync_playwright() as p:
 
     # To one member by email: it lands at once, in that inbox only.
     personal = "QA хувийн " + uuid4().hex[:8]
+    admin_page.goto(BASE + "/admin?tab=announcements")
     form.get_by_label("Гарчиг").fill(personal)
     form.get_by_label("Текст").fill("Зөвхөн танд.")
     form.get_by_label("Нэг хэрэглэгчийн имэйл (хоосон бол бүгдэд)").fill(email.upper())
@@ -209,6 +214,8 @@ with sync_playwright() as p:
     state = inbox(student)
     assert state["items"][0]["title"] == personal and state["items"][0]["href"] is None and state["unread"] == 3, state
     assert personal not in [item["title"] for item in inbox(other)["items"]]
+    admin_page.goto(BASE + "/admin?tab=announcements&kind=sent")
+    expect(row).to_have_count(1)
     expect(admin_page.locator(".admin-table-wrap tbody tr", has_text=personal)).to_have_count(0)
 
     # A notice without a link is marked read in place.

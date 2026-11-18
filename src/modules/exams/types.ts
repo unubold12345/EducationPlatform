@@ -1,5 +1,5 @@
 /** The ЭЕШ plan covers the "entrance" mocks: original ЭЕШ-style Mathematics, Physics, Chemistry, Biology and English. */
-export type ExamProgram = "sat" | "ielts" | "entrance" | "jlpt" | "hsk" | "toefl";
+export type ExamProgram = "sat" | "ielts" | "entrance" | "jlpt" | "hsk" | "toefl" | "topik";
 /** HSK picture and pinyin display data (answer-free). Words the student hears stay in `listening.script`. */
 export type HskPicture = { label?: string; src: string; alt: string };
 export type HskLine = { label?: string; text: string; pinyin: string };
@@ -20,6 +20,23 @@ export type ToeflGroup =
   | { layout: "email"; scenario: string; to: string; subject: string; bullets: string[] }
   | { layout: "discussion"; course: string; professor: { name: string; post: string }; students: { name: string; post: string }[] }
   | { layout: "speaking-intro"; part: "repeat" | "interview"; scenario: string; picture?: string; clip: string };
+/** TOPIK printed material (answer-free). A document, chart or picture is what the paper prints; writing model answers stay in `answerDisplay`. */
+export type TopikDoc = { kind: string; title?: string; lines: string[]; footer?: string; from?: string; to?: string };
+export type TopikChart = { type: "bar" | "hbar" | "line" | "pie" | "table"; title: string; unit?: string; labels: string[]; series: { name: string; values: number[] }[]; note?: string };
+export type TopikPicture = { src: string; alt: string };
+/** One TOPIK question's own print: its four choices (or four pictures / charts), the question line of a paired set, its text, and a writing task. */
+export type TopikItem = {
+  choices?: string[]; pictures?: TopikPicture[]; charts?: TopikChart[]; line?: string;
+  passage?: string; doc?: TopikDoc; chart?: TopikChart; sentence?: string;
+  /** Writing 51–52: the gaps to fill; 53: the topic, charts and notes; 54: the prompt and its three questions. Character range for 53–54. */
+  gaps?: string[]; topic?: string; notes?: string[]; prompt?: string; bullets?: string[]; chars?: [number, number];
+};
+/** A printed block ([1～4], [25～26] …): its number range, instruction, worked example (보기) and the text a paired set shares. `plays` is how often the recording is read. */
+export type TopikGroup = {
+  range: string; instruction: string; plays?: 1 | 2;
+  example?: { lines?: string[]; passage?: string; choices: string[]; answer: number };
+  passage?: string; doc?: TopikDoc; chart?: TopikChart;
+};
 export type EntranceSubject = "math" | "physics" | "chemistry" | "biology" | "english";
 /** A site-drawn diagram (legacy mock content) or a stored, self-contained SVG diagram. */
 export type ExamFigure =
@@ -35,6 +52,7 @@ export type ExamGroup = {
   kind?: "listening";
   hsk?: HskGroup;
   toefl?: ToeflGroup;
+  topik?: TopikGroup;
 };
 export type ExamQuestion = {
   id: string; domain: string; prompt: string; passage?: string; options?: string[];
@@ -65,6 +83,8 @@ export type ExamQuestion = {
   hsk?: HskItem;
   /** TOEFL printed material; answer-free. */
   toefl?: ToeflItem;
+  /** TOPIK printed material; answer-free. */
+  topik?: TopikItem;
   /** Seconds from the stage start during which a changed answer is accepted (TOEFL Listening plays each item once). */
   window?: { start: number; end: number };
 };
@@ -103,7 +123,9 @@ export type ExamReport = {
     /** The shared task text, figure and reading/listening material for a grouped page. */
     instructions?: string; context?: string; contextTitle?: string; transcript?: string;
     /** HSK pictures, pinyin and choices for the review. */
-    hsk?: HskItem; hskGroup?: HskGroup }[];
+    hsk?: HskItem; hskGroup?: HskGroup;
+    /** TOPIK print for the review. */
+    topik?: TopikItem; topikGroup?: TopikGroup }[];
   points: { total: number; earned: number };
 };
 export type PublicExamAttempt = {

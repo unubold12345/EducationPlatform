@@ -6,6 +6,7 @@ import { ownMock } from "@/modules/exams/service";
 import { activeTimedSitting } from "@/modules/exams/active-sitting";
 import { makeReport } from "@/modules/exams/engine";
 import { hskChoices, hskDescription } from "@/modules/exams/hsk/describe";
+import { topikChoices, topikDescription } from "@/modules/exams/topik/describe";
 import type { ExamQuestion, ExamState } from "@/modules/exams/types";
 import { deepseekChat } from "@/modules/tutor/provider";
 import { chargeCredits } from "@/modules/credits/service";
@@ -45,9 +46,9 @@ async function reviewContext(userId: string, target: ChatTarget): Promise<Review
     exam: state.definition.title, subject: subjectOf(state), number: review.number ?? "", domain: review.domain,
     result: review.correct === null ? "pending" : review.correct ? "correct" : review.selected.trim() ? "wrong" : "blank",
     prompt: clip(review.prompt, 4000) ?? "",
-    ...(options?.length ? { options: (hskChoices(review) ?? options).map(option => clip(option, 400)!) } : {}),
+    ...(options?.length ? { options: (hskChoices(review) ?? topikChoices(review) ?? options).map(option => clip(option, 400)!) } : {}),
     ...(review.instructions ? { instructions: clip(review.instructions, 2000) } : {}),
-    ...(review.context || review.passage ? { material: clip(review.context ?? review.passage, 8000) } : hskDescription(review) ? { material: hskDescription(review) } : {}),
+    ...(review.context || review.passage ? { material: clip(review.context ?? review.passage, 8000) } : hskDescription(review) ? { material: hskDescription(review) } : topikDescription(review) ? { material: topikDescription(review) } : {}),
     ...(review.transcript ? { transcript: clip(review.transcript, 6000) } : {}),
     savedAnswer: clip(review.selected, 6000) ?? "", referenceAnswer: clip(review.answer, 1000) ?? "", referenceExplanation: clip(review.explanation, 4000) ?? "",
     points: review.points, earned: review.earned,

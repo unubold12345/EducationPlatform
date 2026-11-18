@@ -1,0 +1,47 @@
+/* The Kana test (2026-11-18): one kana, four romaji, a score. One accent colour; green and red only for right and wrong. */
+.page { display: grid; align-content: start; gap: 28px; width: min(560px, 100%); margin: 0 auto; padding-bottom: 32px; }
+.primary, .secondary { min-height: 46px; padding: 0 24px; border-radius: 14px; font: inherit; font-size: 15px; font-weight: 700; cursor: pointer; }
+.primary { border: 0; background: var(--wsp-accent); color: #fff; }
+.secondary { border: 1px solid var(--wsp-line-strong); background: var(--wsp-card); color: var(--wsp-ink); }
+.textButton { padding: 0; border: 0; background: none; color: var(--wsp-accent); font: inherit; font-weight: 650; cursor: pointer; }
+.error { margin: 0; color: var(--wsp-bad); font-size: 14px; }
+
+.top { display: flex; align-items: center; gap: 14px; }
+.close { display: inline-grid; place-items: center; width: 38px; height: 38px; flex: none; border: 0; border-radius: 12px; background: none; color: var(--wsp-muted); cursor: pointer; }
+.close:hover { color: var(--wsp-ink); background: var(--wsp-hover); }
+.bar { flex: 1; height: 10px; border-radius: 999px; background: var(--wsp-chip); overflow: hidden; }
+.bar b { display: block; height: 100%; border-radius: inherit; background: var(--wsp-accent); transition: width .25s ease; }
+.count { flex: none; min-width: 56px; color: var(--wsp-muted); font-size: 14px; font-weight: 650; text-align: right; font-variant-numeric: tabular-nums; }
+
+.question { display: grid; gap: 24px; }
+.kana { display: grid; place-items: center; min-height: 200px; border: 1px solid var(--wsp-line); border-radius: 24px; background: var(--wsp-card); color: var(--wsp-ink); font-size: clamp(80px, 22vw, 120px); line-height: 1; }
+.options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.options button { position: relative; min-height: 64px; padding: 10px 16px; border: 2px solid var(--wsp-line); border-radius: 16px; background: var(--wsp-card); color: var(--wsp-ink); font: inherit; font-size: 22px; font-weight: 600; cursor: pointer; }
+.options button:hover:not(:disabled) { border-color: var(--wsp-accent); }
+.options button:disabled { cursor: default; opacity: 1; }
+.options kbd { position: absolute; top: 8px; left: 10px; color: var(--wsp-muted); font: inherit; font-size: 11px; font-weight: 650; }
+.options button[data-state="right"] { border-color: var(--wsp-good); background: color-mix(in srgb, var(--wsp-good) 14%, var(--wsp-card)); color: var(--wsp-good); }
+.options button[data-state="wrong"] { border-color: var(--wsp-bad); background: color-mix(in srgb, var(--wsp-bad) 12%, var(--wsp-card)); color: var(--wsp-bad); }
+.options button[data-state="dim"] { opacity: .45; }
+.feedback { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; min-height: 46px; color: var(--wsp-text); font-size: 16px; }
+.feedback strong { color: var(--wsp-ink); font-size: 20px; }
+
+.result { display: grid; justify-items: center; gap: 8px; padding: 32px 24px; border: 1px solid var(--wsp-line); border-radius: 24px; background: var(--wsp-card); text-align: center; }
+.result h1 { margin: 0; font-size: clamp(24px, 4vw, 30px); }
+.score { margin: 8px 0 0; color: var(--wsp-muted); font-size: 22px; font-weight: 650; }
+.score strong { color: var(--wsp-ink); font-size: 56px; line-height: 1; }
+.scoreNote { margin: 0; color: var(--wsp-muted); font-size: 15px; font-variant-numeric: tabular-nums; }
+.saveNote { min-height: 20px; margin: 0; color: var(--wsp-muted); font-size: 13px; }
+.missed { display: grid; gap: 10px; width: 100%; margin-top: 8px; }
+.missed h2 { margin: 0; font-size: 15px; }
+.missed ul { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.missed button { display: grid; gap: 2px; min-width: 58px; padding: 8px 10px; border: 1px solid var(--wsp-line-strong); border-radius: 12px; background: var(--wsp-card); color: var(--wsp-ink); font: inherit; cursor: pointer; }
+.missed button span { font-size: 26px; line-height: 1.1; }
+.missed button small { color: var(--wsp-muted); font-size: 12px; }
+.actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 16px; }
+
+@media (max-width: 420px) {
+  .kana { min-height: 160px; }
+  .options button { font-size: 19px; }
+  .actions > button { flex: 1 1 100%; }
+}

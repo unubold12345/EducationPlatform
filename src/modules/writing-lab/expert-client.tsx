@@ -3,7 +3,7 @@ import {useEffect,useRef,useState} from "react";
 import Link from "next/link";
 import {ProcessingOverlay} from "@/modules/workspace/processing";
 import {countWords,type WritingFix,type WritingKind,type WritingTask} from "./contracts";
-import {EXPERT_LIMITS,expertSpentMessage,type EssayReviewKind,type ExpertCriterion,type ExpertQuota,type ExpertSummary,type SavedExpertReview} from "./expert";
+import {EXPERT_LIMITS,expertSpentMessage,type EssayReviewKind,type ExpertCriterion,type ExpertQuota,type ExpertSummary,type ReviewTask,type SavedExpertReview} from "./expert";
 import styles from "./expert.module.css";
 import {subscriptionPlans} from "@/modules/subscriptions/plans";
 
@@ -11,7 +11,7 @@ const API="/api/labs/ielts-writing/expert";
 const basicReviews=subscriptionPlans.find(plan=>plan.program==="language_basic")?.expertReviews??0;
 const proReviews=subscriptionPlans.find(plan=>plan.program==="language")?.expertReviews??0;
 const KIND_LABEL:Record<WritingKind,string>={grammar:"Дүрэм",spelling:"Үсэг",punctuation:"Цэг тэмдэг",vocabulary:"Үг",style:"Найруулга"};
-const criterionLabel=(criterion:ExpertCriterion,task:WritingTask)=>({task:task==="letter"?"Task achievement":"Task response",coherence:"Coherence & cohesion",lexical:"Lexical resource",grammar:"Grammar range & accuracy"})[criterion];
+const criterionLabel=(criterion:ExpertCriterion,task:ReviewTask)=>({task:task==="letter"||task==="report"?"Task achievement":"Task response",coherence:"Coherence & cohesion",lexical:"Lexical resource",grammar:"Grammar range & accuracy"})[criterion];
 // Students see the kind of review, never the provider or model name (owner rule 2026-11-18).
 const modelLabel=(kind:EssayReviewKind)=>kind==="strong"?"Бүрэн үнэлгээ":"Шинжээчийн үнэлгээ";
 const KIND_TAG:Record<EssayReviewKind,string>={strong:"Бүрэн",expert:"Шинжээч"};
@@ -124,7 +124,8 @@ export function ExpertPanel({signedIn,initial,latest=null,draft,onApply}:{signed
  </section>;
 }
 
-function ExpertReport({saved,currentEssay,onApply,onClose}:{saved:SavedExpertReview;currentEssay:string;onApply:(fix:WritingFix)=>void;onClose:()=>void}) {
+/** One saved review in full. A finished mock's results show it too (`ai-grading/panel.tsx`): no draft there, so no apply button. */
+export function ExpertReport({saved,currentEssay="",onApply,onClose}:{saved:SavedExpertReview;currentEssay?:string;onApply?:(fix:WritingFix)=>void;onClose:()=>void}) {
  const review=saved.review;
  const [copied,setCopied]=useState(false);
  const copy=async()=>{try{await navigator.clipboard.writeText(review.modelAnswer);setCopied(true);window.setTimeout(()=>setCopied(false),1800);}catch{setCopied(false);}};
@@ -164,7 +165,7 @@ function ExpertReport({saved,currentEssay,onApply,onClose}:{saved:SavedExpertRev
      <span className={styles.kind} data-kind={fix.kind}>{KIND_LABEL[fix.kind]}</span>
      <p className={styles.diff}><s>{fix.original}</s><span aria-hidden="true">→</span><ins>{fix.better||"(устгах)"}</ins></p>
      {fix.why&&<p className={styles.why}>{fix.why}</p>}
-     {present?<button type="button" className={styles.apply} onClick={()=>onApply(fix)}>Бичвэрт засах</button>:<span className={styles.done}>Бичвэрт байхгүй</span>}
+     {!onApply?null:present?<button type="button" className={styles.apply} onClick={()=>onApply(fix)}>Бичвэрт засах</button>:<span className={styles.done}>Бичвэрт байхгүй</span>}
     </li>;
    })}</ul>
   </section>}

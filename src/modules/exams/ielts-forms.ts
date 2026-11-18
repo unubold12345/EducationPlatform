@@ -34,7 +34,7 @@ export function createIeltsForms(base: ExamDefinition): ExamDefinition[] {
     exam.stages[4].questions = form.speaking.part1;
     exam.stages[5].questions = [form.speaking.notes];
     exam.stages[6].questions = form.speaking.part2;
-    exam.stages[6].instructions = "Speak for up to two minutes about your prepared topic. If time remains, answer the one or two short rounding-off questions that follow the card. The recording is saved for human review.";
+    exam.stages[6].instructions = "Speak for up to two minutes about your prepared topic. If time remains, answer the one or two short rounding-off questions that follow the card. The recording is saved, and AI grades it after the test.";
     exam.stages[7].questions = form.speaking.part3;
     return exam;
   });

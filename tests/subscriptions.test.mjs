@@ -19,12 +19,12 @@ test("ЭЕШ opens every ЭЕШ mock; Basic and Pro open every non-ЭЕШ mock a
   const entrance=findSubscriptionPlan("entrance"),basic=findSubscriptionPlan("language_basic"),pro=findSubscriptionPlan("language");
   assert.equal(entrance.mockPicks,null);assert.deepEqual(entrance.exams,["entrance"]);assert.equal(entrance.workshops,false);
   for(const language of [basic,pro]){
-    assert.equal(language.mockPicks,null);assert.equal(language.workshops,true);assert.deepEqual(language.exams,["sat","ielts","toefl","jlpt","hsk"]);
-    for(const exam of ["sat","ielts","toefl","jlpt","hsk"])assert.ok(planCovers(language,exam),exam);
+    assert.equal(language.mockPicks,null);assert.equal(language.workshops,true);assert.deepEqual(language.exams,["sat","ielts","toefl","jlpt","hsk","topik"]);
+    for(const exam of ["sat","ielts","toefl","jlpt","hsk","topik"])assert.ok(planCovers(language,exam),exam);
     assert.ok(!planCovers(language,"entrance"),"Гадаад хэл never opens ЭЕШ mocks");
   }
   // The "or take the plan" link offers the cheapest plan that covers the programme.
-  for(const exam of ["sat","ielts","toefl","jlpt","hsk"])assert.equal(salePlanFor(exam)?.program,"language_basic",exam);
+  for(const exam of ["sat","ielts","toefl","jlpt","hsk","topik"])assert.equal(salePlanFor(exam)?.program,"language_basic",exam);
   assert.equal(planHomeHref("entrance"),"/programs/entrance");assert.equal(planHomeHref("language"),"/exams");assert.equal(planHomeHref("language_basic"),"/exams");
   assert.equal(salePlanFor("entrance")?.program,"entrance");
   assert.equal(salePlanFor("unknown"),undefined);

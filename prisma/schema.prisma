@@ -303,6 +303,7 @@ model MockAttempt {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   recordings MockRecording[]
+  grades MockGrade[]
   // A sitting started under a valid subscription may finish and retain private review.
   subscriptionAccess Boolean @default(false)
   @@index([userId, createdAt])
@@ -509,6 +510,26 @@ model MockRecording {
   @@id([attemptId, stageId])
 }
 
+// AI grading of a finished mock's Writing or Speaking (2026-11-18): one row per attempt and part, written by the server only.
+model MockGrade {
+  attemptId String
+  attempt MockAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  // "writing" or "speaking"
+  part String
+  // queued, running, done or failed
+  status String @default("queued")
+  tries Int @default(0)
+  leaseUntil DateTime?
+  result Json?
+  error String?
+  model String @default("")
+  inputTokens Int @default(0)
+  outputTokens Int @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@id([attemptId, part])
+}
+
 model MockPurchase {
   id String @id @default(cuid())
   userId String
@@ -678,8 +699,12 @@ model EssayReview {
   model String
   inputTokens Int
   outputTokens Int
+  // Set when the text is an essay from a finished mock (its results page sent it): the attempt and the question.
+  attemptId String?
+  questionId String?
   createdAt DateTime @default(now())
   @@index([userId, createdAt])
+  @@index([attemptId])
 }
 // Progress on one of the built-in Reading Lab samples.
 model ReadingSampleState {

@@ -18,7 +18,7 @@ function publicMock(row:Row,state:ExamState,now:number,knownStage?:string):Publi
     // A routed stage sends only its own route's pages (TOEFL Module 2 holds both routes' texts) and its own length.
     id:current.id,title:current.title,seconds:stageSeconds(state,state.stageIndex),kind:current.kind,instructions:current.instructions,passages:current.passages,
     groups:current.variants?current.groups?.filter(group=>current.questions.some(question=>question.groupId===group.id)):current.groups,
-    questions:current.questions.map(({id,number,domain,prompt,passage,options,kind,maxWords,minWords,figure,points,groupId,optionLabels,compactOptions,matcher,context,hsk,toefl,window})=>({id,number,domain,prompt,passage,options,kind,maxWords,minWords,points,groupId,optionLabels,compactOptions,matcher,context,...(figure?{figure}:{}),...(hsk?{hsk}:{}),...(toefl?{toefl}:{}),...(window?{window}:{})})),
+    questions:current.questions.map(({id,number,domain,prompt,passage,options,kind,maxWords,minWords,figure,points,groupId,optionLabels,compactOptions,matcher,context,hsk,toefl,topik,window})=>({id,number,domain,prompt,passage,options,kind,maxWords,minWords,points,groupId,optionLabels,compactOptions,matcher,context,...(figure?{figure}:{}),...(hsk?{hsk}:{}),...(toefl?{toefl}:{}),...(topik?{topik}:{}),...(window?{window}:{})})),
   } : null;
   return {id:row.id,slug:row.slug,title:state.definition.title,program:state.definition.program,subject:state.definition.subject,audioRevision:state.definition.audioRevision??1,revision:row.revision,stageIndex:state.stageIndex,
     stage,serverNow:new Date(now).toISOString(),deadline:state.deadline,stageStartedAt:state.stageStartedAt,responses:state.responses,flags:state.flags,

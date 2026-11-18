@@ -19,7 +19,7 @@ with sync_playwright() as p:
     expect(page.locator(".account-entry")).to_have_attribute("href","/login")
     assert context.request.post(BASE+"/api/mock-payments",headers=ORIGIN,data={"slug":"sat-full-01"}).status==401
     page.goto(BASE+"/exams")
-    expect(page.locator(".library-list .exam-price strong")).to_have_text(["₮10,000"] * 6)
+    expect(page.locator(".library-list .exam-price strong")).to_have_text(["₮10,000"] * 7)  # one card per programme, TOPIK included
     expect(page.locator(".library-list .exam-price span").first).to_contain_text("7 хоног")
     page.goto(BASE+"/checkout/sat-full-01")
     expect(page).to_have_url(BASE+"/login?next=%2Fcheckout%2Fsat-full-01")

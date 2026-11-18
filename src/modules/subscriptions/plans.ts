@@ -20,7 +20,7 @@
 // exams: the exam programmes whose mocks the plan opens. mockPicks: mocks a student may pick per plan month,
 // null when every covered mock is open. workshops: the IELTS Writing & Speaking workshops.
 export type SubscriptionProgram = "entrance" | "language" | "language_basic" | "ielts" | "sat";
-type ExamKey = "sat" | "ielts" | "entrance" | "jlpt" | "hsk" | "toefl";
+type ExamKey = "sat" | "ielts" | "entrance" | "jlpt" | "hsk" | "toefl" | "topik";
 type PlanDefinition = {
   program: SubscriptionProgram; title: string; shortTitle: string; amountMnt: number; aiCredits: number;
   vocabularyWords: number; savedExams: number; readingPractices: number; expertReviews: number; symbol: string; description: string; features: readonly string[];
@@ -31,12 +31,12 @@ export const subscriptionPlans = [
   { program:"entrance", title:"ЭЕШ", shortTitle:"ЭЕШ", amountMnt:29900, aiCredits:1200, vocabularyWords:500, savedExams:5, readingPractices:5, expertReviews:0, symbol:"∑", exams:["entrance"], mockPicks:null, workshops:false,
     description:"ЭЕШ-ийн бүх хичээлийн бүтэн mock шалгалт, дадлага хязгааргүй.",
     features:["Бүх 194 ЭЕШ mock: математик 55, физик 60, хими 18, биологи 21, англи 40", "Хязгааргүй өгөх, цаггүй дадлага", "AI туслах, тайлбартай үр дүн", "Хадгалсан явц, дахин өгөх боломж"] },
-  { program:"language_basic", title:"Гадаад хэл Basic", shortTitle:"Гадаад хэл Basic", amountMnt:29900, aiCredits:1200, vocabularyWords:1500, savedExams:5, readingPractices:5, expertReviews:2, symbol:"Aa", exams:["sat","ielts","toefl","jlpt","hsk"], mockPicks:null, workshops:true,
-    description:"SAT, IELTS, TOEFL, JLPT, HSK-ийн бүх mock, IELTS workshop. Үндсэн багц.",
-    features:["ЭЕШ-ээс бусад бүх mock: SAT, IELTS, TOEFL, JLPT, HSK", "Хязгааргүй өгөх, цаггүй дадлага", "Бүх IELTS Writing & Speaking workshop", "Шинжээчийн эссэ үнэлгээ: сард 2", "AI туслах, тайлбартай үр дүн"] },
-  { program:"language", title:"Гадаад хэл Pro", shortTitle:"Гадаад хэл Pro", amountMnt:59900, aiCredits:3000, vocabularyWords:3000, savedExams:15, readingPractices:15, expertReviews:5, symbol:"Aa+", exams:["sat","ielts","toefl","jlpt","hsk"], mockPicks:null, workshops:true,
+  { program:"language_basic", title:"Гадаад хэл Basic", shortTitle:"Гадаад хэл Basic", amountMnt:29900, aiCredits:1200, vocabularyWords:1500, savedExams:5, readingPractices:5, expertReviews:2, symbol:"Aa", exams:["sat","ielts","toefl","jlpt","hsk","topik"], mockPicks:null, workshops:true,
+    description:"SAT, IELTS, TOEFL, JLPT, HSK, TOPIK-ийн бүх mock, IELTS workshop. Үндсэн багц.",
+    features:["ЭЕШ-ээс бусад бүх mock: SAT, IELTS, TOEFL, JLPT, HSK, TOPIK", "Хязгааргүй өгөх, цаггүй дадлага", "Бүх IELTS Writing & Speaking workshop", "Шинжээчийн эссэ үнэлгээ: сард 2", "AI туслах, тайлбартай үр дүн"] },
+  { program:"language", title:"Гадаад хэл Pro", shortTitle:"Гадаад хэл Pro", amountMnt:59900, aiCredits:3000, vocabularyWords:3000, savedExams:15, readingPractices:15, expertReviews:5, symbol:"Aa+", exams:["sat","ielts","toefl","jlpt","hsk","topik"], mockPicks:null, workshops:true,
     description:"Basic-ийн бүх боломж, нэмээд 3,000 AI кредит, 3,000 үгийн сан, 15 файлаас шалгалт.",
-    features:["ЭЕШ-ээс бусад бүх mock: SAT, IELTS, TOEFL, JLPT, HSK", "Хязгааргүй өгөх, цаггүй дадлага", "Бүх IELTS Writing & Speaking workshop", "Шинжээчийн эссэ үнэлгээ: сард 5", "AI туслах, тайлбартай үр дүн"] },
+    features:["ЭЕШ-ээс бусад бүх mock: SAT, IELTS, TOEFL, JLPT, HSK, TOPIK", "Хязгааргүй өгөх, цаггүй дадлага", "Бүх IELTS Writing & Speaking workshop", "Шинжээчийн эссэ үнэлгээ: сард 5", "AI туслах, тайлбартай үр дүн"] },
 ] as const satisfies readonly PlanDefinition[];
 
 /** Retired 2026-11-13: not sold or renewed; active subscriptions keep these rules until they end. */

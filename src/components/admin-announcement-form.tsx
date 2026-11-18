@@ -16,7 +16,7 @@ export function AdminAnnouncementForm() {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const { title, body, href } = NOTIFICATION_LIMITS;
-  return <form className="admin-price admin-announce" onSubmit={async event => {
+  return <form className="admin-form admin-announce" onSubmit={async event => {
     event.preventDefault();
     const form = event.currentTarget, data = new FormData(form), email = String(data.get("email") ?? "").trim();
     if (!window.confirm(email ? `${email} хаягтай хэрэглэгчид илгээх үү?` : "Бүх хэрэглэгчид илгээх үү?")) return;
@@ -28,11 +28,15 @@ export function AdminAnnouncementForm() {
     finally { setBusy(false); }
   }}>
     <label>Гарчиг<input name="title" required minLength={title.min} maxLength={title.max} /></label>
-    <label>Текст<textarea name="body" required minLength={body.min} maxLength={body.max} rows={3} /></label>
-    <label>Холбоос (заавал биш)<input name="href" maxLength={href} placeholder="/workspace/plans" pattern="/[^\s\\]*" /></label>
-    <label>Нэг хэрэглэгчийн имэйл (хоосон бол бүгдэд)<input name="email" type="email" maxLength={254} autoComplete="off" /></label>
-    <button className="button primary" disabled={busy}>{busy ? "Илгээж байна…" : "Илгээх"}</button>
-    {message && <p role="status">{message}</p>}
+    <label>Текст<textarea name="body" required minLength={body.min} maxLength={body.max} rows={4} /></label>
+    <div className="admin-form-pair">
+      <label>Холбоос (заавал биш)<input name="href" maxLength={href} placeholder="/workspace/plans" pattern="/[^\s\\]*" /></label>
+      <label>Нэг хэрэглэгчийн имэйл (хоосон бол бүгдэд)<input name="email" type="email" maxLength={254} autoComplete="off" /></label>
+    </div>
+    <div className="admin-form-actions">
+      <button className="button primary" disabled={busy}>{busy ? "Илгээж байна…" : "Илгээх"}</button>
+      {message && <p role="status">{message}</p>}
+    </div>
   </form>;
 }
 

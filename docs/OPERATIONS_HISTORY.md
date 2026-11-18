@@ -25,6 +25,32 @@ Before 2026-10-25 agents were not recorded. Commits and details are in the full 
 
 ## Archived recent entries
 
+- **2026-11-18 · Claude Code (Opus 5.5) · Simple Kana test, more deck quiz counts** ([language-decks](./project/language-decks.md)):
+  Kana practice bar replaced by one test set up in a modal: ひらがな/カタカナ/both, sections, 10/20/50/all; kana → 4 romaji, score and missed
+  letters, saved per chart. Deck quiz adds 30/50/all. Typecheck, unit, lint outside `.claude/` and `decks` suite passed
+  (manual 3007; `npm run check` lint fails on leftover worktree `.claude/worktrees/dazzling-perlman-f7175e`). No commit.
+- **2026-11-18 · Claude Code (Opus 5.5) · Next.js 16.4.6 security bump**: `next`, `eslint-config-next` 16.4.2 → 16.4.6; lockfile
+  changes only `next`/`@next/*`. 16.4.5 fixes seven moderate advisories (`use cache` leaks, SVG image bypass, Edge cookie
+  header); 16.4.6 compresses route-handler responses; none breaking. Build showed no security notice. `npm run check` and all
+  17 browser groups passed in worktree `dazzling-perlman-f7175e` (3001 left running). Merged into
+  `codex/education-foundation` and pushed; hosted site not checked.
+- **2026-11-18 · Claude Code (Opus 5.5) · TOEFL iBT mocks on the site** ([assessments](./project/assessments.md)): nine forms at
+  `/exams/toefl` (Basic/Pro or 7-day buy): routed Reading/Listening modules, listening answer windows on the server clock,
+  one-clip audio allowlist, letter-box gaps, Build a Sentence, writing, recorded speaking, raw results, practice. Audio
+  function traced at 88.5 MB (limit 250). `npm run check` and all 17 browser groups passed; committed with every agent's
+  pending work and pushed. Recordings not listened to; no teacher review.
+- **2026-11-18 · Claude Code (Opus 5.5) · Workshop quiz, deck page redesign** ([language-decks](./project/language-decks.md)):
+  Duolingo-style quiz maker and session for Kana, JLPT/HSK decks and the Pinyin tone drill (8 exercise kinds, retries,
+  results, grades saved); deck page now hero + lesson path + word cards. Restore script in
+  `artifacts/design-backup-2026-11-18`. Next.js 16.4.6 security bump verified in worktree `../educationplatform-security`,
+  not merged. Deck/vocabulary tests and both browser suites passed on 3001 (full unit step fails on TOEFL work in progress). No commit.
+- **2026-11-18 · Claude Code (Opus 5.5) · Kana, Pinyin workshops, deck Romaji** ([language-decks](./project/language-decks.md)):
+  `/labs/kana` (hiragana/katakana charts, row cards and quiz) and `/labs/pinyin` (tones, 405-syllable chart, tone drill on 302
+  HSK words), chart first, Basic/Pro only, progress in the existing deck table (no migration). JLPT decks get a Romaji toggle;
+  two wrong example readings fixed. `check -- decks vocabulary` passed; local DB stalled once and was restarted; 3001 rebuilt. No commit.
+- **2026-11-18 · Claude Code (Opus 5.5) · JLPT/HSK word decks, Workshop exam tabs** ([language-decks](./project/language-decks.md)):
+  N5/N4/HSK 1/HSK 2 decks (1,248 words, DeepSeek drafts for review), Basic/Pro only, progress table (migration `20261118120000`).
+  `check -- decks vocabulary writing` passed; 3001 rebuilt. Apply the migration on Neon before deploying. No commit.
 - **2026-11-18 · Claude Code (Opus 5.5) · TOEFL offline recordings** ([assessments](./project/assessments.md)): 459 Kokoro
   MP3s for the nine `MockExmps/TOEFL` forms, manifests, `AUDIO.md`; modules 19–20/8/10.5 min (blueprint 18/7/11). Validator:
   structure passed, Whisper flags 23 recordings for words and 17 for names. `build.py` 0 errors. Not listened to; no commit.

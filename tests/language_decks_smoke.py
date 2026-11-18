@@ -126,6 +126,7 @@ with sync_playwright() as p:
  for name in ['Үг сонгох','Бичих','Бүрдүүлэх','Өгүүлбэр','Сонсох']:
   button=kinds.get_by_role('button',name=re.compile('^'+name))
   if button.count() and button.get_attribute('aria-pressed')=='true': button.click()
+ counts=page.get_by_role('group',name='Асуултын тоо');expect(counts.get_by_role('button')).to_have_text(['5','10','20','30','50','Бүгд'])
  page.get_by_role('group',name='Асуултын тоо').get_by_role('button',name='5',exact=True).click()
  page.get_by_role('group',name='Аль үгсийг').get_by_role('button',name='Бүгд').click()
  expect(page.get_by_text('5 асуулт · 23 үгнээс')).to_be_visible()
@@ -152,31 +153,45 @@ with sync_playwright() as p:
  page.goto(BASE+'/labs/words/hsk-1');expect(page.locator('[aria-labelledby="deck-words-heading"] li').first).to_contain_text('wǒ')
  expect(page.get_by_role('button',name='Pinyin')).to_be_visible();expect(page.locator('[lang="zh-CN"]').first).to_be_visible()
  page.screenshot(path=str(ART/'language-decks-desktop.png'))
- # Kana: chart first, romaji on, katakana, sections, row practice with cards (saved) and the quiz, look-alikes.
+ # Kana: chart first, romaji on, katakana, sections; one plain test (script or both, sections, count), answered and saved.
  page.goto(BASE+'/labs/kana');expect(page.get_by_role('heading',name='Хирагана · Катакана')).to_be_visible()
  chart=page.locator('table');expect(chart.get_by_role('button',name=re.compile('^し shi'))).to_be_visible();expect(chart).to_contain_text('shi')
  page.get_by_role('button',name='Romaji').click();expect(chart).not_to_contain_text('shi');page.get_by_role('button',name='Romaji').click()
- page.get_by_role('button',name='カタカナ').click();expect(chart.get_by_role('button',name=re.compile('^シ shi'))).to_be_visible()
+ page.get_by_role('navigation',name='Үсэг').get_by_role('button',name='カタカナ').click();expect(chart.get_by_role('button',name=re.compile('^シ shi'))).to_be_visible()
  page.get_by_role('navigation',name='Хүснэгтийн хэсэг').get_by_role('button',name='Дауны тэмдэг').click();expect(chart.get_by_role('button',name=re.compile('^ガ ga'))).to_be_visible()
  page.get_by_role('navigation',name='Хүснэгтийн хэсэг').get_by_role('button',name='Нийлмэл').click();expect(chart.get_by_role('button',name=re.compile('^キャ kya'))).to_be_visible()
- page.get_by_role('button',name='ひらがな').click();page.get_by_role('navigation',name='Хүснэгтийн хэсэг').get_by_role('button',name='Үндсэн').click()
- chips=page.get_by_role('group',name='Мөр сонгох');expect(chips.get_by_role('button')).to_have_count(11)
- chips.get_by_role('button',name='か').click();expect(page.get_by_text('1 мөр · 5 үсэг')).to_be_visible()
- page.get_by_role('button',name='Карт',exact=True).click();card=page.locator('[data-study-word]');expect(card).to_be_visible()
- page.get_by_role('button',name='Утгыг харах').click()
- with page.expect_response(lambda r:'/api/labs/words/kana-hiragana/review' in r.url) as hit:page.get_by_role('button',name='Мэдсэн').click()
- assert hit.value.ok and hit.value.json()['words'][0]['box']==1,hit.value.status
- page.reload();expect(page.locator('table [data-box="1"]')).to_have_count(1)
- page.get_by_role('group',name='Мөр сонгох').get_by_role('button',name='か').click()
- page.get_by_role('button',name='Quiz үүсгэх').click();expect(page.get_by_role('heading',name='Хирагана quiz')).to_be_visible()
- rows=page.get_by_role('group',name='Мөр');expect(rows.get_by_role('button',name=re.compile('^(?!Бүгд|Цэвэр)'))).to_have_count(27)
- expect(rows.get_by_role('button',name=re.compile('^か'))).to_have_attribute('aria-pressed','true');expect(page.get_by_text('5 асуулт · 5 үсгээс')).to_be_visible()
+ page.get_by_role('navigation',name='Үсэг').get_by_role('button',name='ひらがな').click()
+ page.get_by_role('button',name='Шалгалт өгөх').click();kana_test=page.get_by_role('dialog',name='Шалгалт');expect(kana_test.get_by_role('button',name='Эхлэх · 20 асуулт')).to_be_visible()
+ kana_test.get_by_role('button',name='Болих').click();expect(kana_test).to_be_hidden();page.get_by_role('button',name='Шалгалт өгөх').click()
+ kana_test.get_by_role('group',name='Асуулт').get_by_role('button',name='Бүгд').click();expect(kana_test.get_by_role('button',name='Эхлэх · 46 асуулт')).to_be_visible()
+ kana_test.get_by_role('group',name='Үсэг').get_by_role('button',name='Хоёулаа').click();expect(kana_test.get_by_role('button',name='Эхлэх · 92 асуулт')).to_be_visible()
+ sections=kana_test.get_by_role('group',name='Хэсэг');sections.get_by_role('button',name=re.compile('^Үндсэн')).click()
+ expect(kana_test.get_by_role('button',name='Хэсэг сонгоно уу')).to_be_disabled()
+ sections.get_by_role('button',name=re.compile('^Нийлмэл')).click();expect(kana_test.get_by_role('button',name='Эхлэх · 66 асуулт')).to_be_visible()
+ # All 66 combined kana of both scripts: the first answered wrong (the answer is shown), the rest right from the chart files.
+ romaji_of={w['term']:w['romaji'] for deck in ['kana-hiragana','kana-katakana'] for w in deck_words(deck)}
+ with page.expect_response(lambda r:'/api/labs/words/kana-hiragana/review' in r.url) as hira, page.expect_response(lambda r:'/api/labs/words/kana-katakana/review' in r.url) as kata:
+  kana_test.get_by_role('button',name='Эхлэх · 66 асуулт').click()
+  for i in range(66):
+   expect(page.get_by_text(f'{i+1} / 66',exact=True)).to_be_visible()
+   right=romaji_of[page.locator('[data-kana]').inner_text().strip()];options=page.get_by_role('group',name='Хариултууд').get_by_role('button')
+   expect(options).to_have_count(4)
+   if i==0:
+    wrong=next(k for k in range(4) if options.nth(k).inner_text()[1:].strip()!=right);options.nth(wrong).click();expect(page.get_by_text('Зөв хариулт:')).to_be_visible()
+    page.get_by_role('button',name='Дараах').click()
+   else:
+    page.get_by_role('group',name='Хариултууд').get_by_role('button',name=right,exact=True).click()
+    if i<65: page.keyboard.press('Enter')
+ expect(page.get_by_role('heading',name='Гайхалтай!')).to_be_visible();expect(page.locator('#kana-result-heading + p')).to_have_text('65 / 66')
+ assert hira.value.ok and kata.value.ok and len(hira.value.json()['words'])==33 and len(kata.value.json()['words'])==33,(hira.value.status,kata.value.status)
+ expect(page.get_by_text('Явц хадгалагдлаа.')).to_be_visible()
+ # The missed letter comes back alone; then the chart shows the saved progress.
+ page.get_by_role('button',name='Алдсанаа давтах').click();expect(page.get_by_text('1 / 1',exact=True)).to_be_visible()
+ page.get_by_role('group',name='Хариултууд').get_by_role('button',name=romaji_of[page.locator('[data-kana]').inner_text().strip()],exact=True).click()
+ expect(page.locator('#kana-result-heading + p')).to_have_text('1 / 1');expect(page.get_by_text('Явц хадгалагдлаа.')).to_be_visible()
  page.get_by_role('button',name='Буцах').click();expect(page.locator('table')).to_be_visible()
- # Look-alikes: a quiz of the 17 easily confused hiragana, answered from the chart file, saved through the kana route.
- with page.expect_response(lambda r:'/api/labs/words/kana-hiragana/review' in r.url) as hit:
-  page.get_by_role('button',name='Адилхан үсэг').click();run_drill(page,deck_words('kana-hiragana'))
- assert hit.value.ok and len(hit.value.json()['words'])==17,hit.value.status
- expect(page.get_by_text('100%')).to_be_visible();page.get_by_role('button',name='Дуусгах').click();expect(page.locator('table')).to_be_visible()
+ page.reload();page.get_by_role('navigation',name='Хүснэгтийн хэсэг').get_by_role('button',name='Нийлмэл').click()
+ expect(page.locator('table [data-box="1"]')).to_have_count(33)
  assert basic.request.post(REVIEW.format('kana-hiragana'),headers=ORIGIN,data={'results':[{'id':first_id,'grade':'good'}]}).status==400,'deck word on the kana chart'
  page.screenshot(path=str(ART/'language-kana-desktop.png'))
  # Pinyin: tones, chart cells play their example character, the tone drill saves through the route.
@@ -208,4 +223,4 @@ with sync_playwright() as p:
 print('PASS: Workshop exam tabs (remembered, one exam at a time), JLPT/HSK decks paid only (free: locked tiles/page, 403), '
  'guest sign-in redirect and 401, Basic opens N5/HSK 1, 18 lessons, furigana toggle remembered, examples, card grade saved through '
  'the deck route and kept after reload, shared quiz with lessons, origin/deck/word/grade/shape/size guards, pinyin, romaji toggle, '
- 'Kana chart (romaji, katakana, sections, row cards saved, quiz maker and a look-alike quiz answered and saved, paid), Pinyin (tones, chart, tone quiz saved, paid), deck quiz maker (kinds, count, remembered) and a 5-question quiz answered 100% and saved, phone layout')
+ 'Kana chart (romaji, katakana, sections, a test set up in a modal: 66 letters of both scripts with a miss and its retry, saved to both charts, paid), Pinyin (tones, chart, tone quiz saved, paid), deck quiz maker (kinds, count, remembered) and a 5-question quiz answered 100% and saved, phone layout')

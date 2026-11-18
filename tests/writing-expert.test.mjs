@@ -166,7 +166,10 @@ test("the studio's full review is the same examiner on DeepSeek, paid with credi
   assert.deepEqual([AI_ACTIONS["writing-review"].inputTokens, AI_ACTIONS["writing-review"].outputTokens], [4000, 16000]);
   assert.equal(creditCost("writing-review"), 21);
   const service = text("src/modules/writing-lab/expert-service.ts");
-  const start = service.indexOf("export async function createStrongReview(");
+  // The studio's entry validates, then the shared step (also used for a mock's essays) runs the rest in this order.
+  const start = service.indexOf("export function createStrongReview(");
+  assert.match(service, /return strongReview\(userId,subjectOf\(body\)\);/);
+  assert.match(service, /return expertReview\(userId,subjectOf\(body\)\);/);
   const strong = service.slice(start);
   const order = ["validExpertInput(body,STRONG_LIMITS.minWords)", "await requireWritingLab(userId);", "process.env.DEEPSEEK_API_KEY", 'chargeCredits(userId,"writing-review",',
     "count:{lt:STRONG_LIMITS.daily}", 'thinking:{type:"enabled"}', "normalizeExpertReview(", "await requireWritingLab(userId);\n", 'saveReview(userId,body,"strong"'].map((part, i, all) => {
@@ -187,4 +190,33 @@ test("the studio's full review is the same examiner on DeepSeek, paid with credi
   assert.match(client, /action==="feedback"\?"\/api\/labs\/ielts-writing\/review"/);
   assert.match(client, /<CreditCost action="writing-review" compact\/>/);
   assert.match(text("src/modules/writing-lab/service.ts"), /writingCreditAction\(body\.action\)/);
+});
+
+test("a finished IELTS mock's essays get the studio's reviews, read from the attempt and priced the same", () => {
+  const review = text("src/modules/exams/ai-grading/essay-review.ts");
+  assert.match(review, /^import "server-only";/);
+  // The essay and the task come from the attempt snapshot of the student's own finished IELTS mock, never the request.
+  assert.match(review, /\(await ownMock\(id,userId\)\)\.state/);
+  assert.match(review, /if\(!state\.finishedAt\)throw new ApiError\(409/);
+  assert.match(review, /state\.definition\.program!=="ielts"/);
+  assert.match(review, /Object\.keys\(input\)\.length!==2/);
+  assert.match(review, /writingItems\(state\)\.find\(entry=>entry\.id===input\.questionId\)/);
+  assert.match(review, /item\.response\.length>ESSAY_LIMIT/);
+  // The same paid steps as the studio: credits for the full review, the plan's monthly reviews for the expert one.
+  assert.match(review, /kind==="strong"\?strongReview\(userId,text\):expertReview\(userId,text\)/);
+  assert.doesNotMatch(review, /chargeCredits|fetch\(/);
+  const route = text("src/app/api/mock-attempts/[id]/essay-review/route.ts");
+  assert.match(route, /checkOrigin\(request\);const user=await apiUser\(request\)/);
+  assert.match(route, /export const maxDuration=300;/);
+  // Saved like a studio review, with the attempt and question, so it lists in both places and counts against the quota.
+  const service = text("src/modules/writing-lab/expert-service.ts");
+  assert.match(service, /attemptId:body\.attemptId\?\?null,questionId:body\.questionId\?\?null/);
+  assert.match(service, /where:\{userId,attemptId\}/);
+  assert.match(text("prisma/schema.prisma"), /model EssayReview \{[\s\S]*attemptId String\?[\s\S]*questionId String\?[\s\S]*@@index\(\[attemptId\]\)/);
+  assert.match(text("prisma/migrations/20261118190000_essay_review_mock/migration.sql"), /ADD COLUMN "attemptId" TEXT/);
+  // The report task is judged as Academic Task 1 (Task Achievement), and the page names no provider.
+  assert.match(expertSystem("mn"), /Task Achievement for an Academic Task 1 report/);
+  const page = text("src/modules/exams/ai-grading/essay-reviews.tsx");
+  assert.match(page, /<CreditCost action="writing-review" compact \/>/);
+  assert.doesNotMatch(page, /DeepSeek|Claude|Anthropic|Opus/);
 });

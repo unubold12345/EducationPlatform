@@ -21,6 +21,6 @@ test("IELTS briefing summary counts Listening and Reading once, then tasks and s
   assert.equal(summary.deliveredQuestions, 80);
   assert.equal(summary.totalSeconds, 9840);
   assert.equal(formatExamDuration(summary.totalSeconds), "2ц 44м");
-  assert.deepEqual(summary.facts.map(fact => fact.value), ["80 + 2 даалгавар", "4", "2ц 44м", "Listen/Read оноо"]);
+  assert.deepEqual(summary.facts.map(fact => fact.value), ["80 + 2 даалгавар", "4", "2ц 44м", "4 чадварын band"]);
   assert.match(summary.scoreNote, /band/);
 });

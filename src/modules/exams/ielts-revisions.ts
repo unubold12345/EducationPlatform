@@ -39,12 +39,12 @@ export function reviseIelts(exam:ExamDefinition):ExamDefinition {
  task.id=task.id.replace(/-v1$/,"")+"-v2";
  task.prompt=`You should spend about 20 minutes on this task. The table shows ${data.description}. All figures describe a fictional town. Summarise the information by selecting and reporting the main features, and make comparisons where relevant. Write at least 150 words.`;
  task.passage=data.table;
- task.explanation=`${data.overview} Include a clear overview and support selected comparisons with accurate figures. Do not invent causes. Assess task achievement, coherence/cohesion, lexical resource and grammatical range/accuracy through qualified human review. No automatic band is assigned.`;
+ task.explanation=`${data.overview} Include a clear overview and support selected comparisons with accurate figures. Do not invent causes. AI grades task achievement, coherence/cohesion, lexical resource and grammatical range/accuracy after the test. After the test, AI grades this task on these criteria and gives a practice band.`;
  if(paper===5){
    task.prompt="You should spend about 20 minutes on this task. The diagram shows how used glass bottles are recycled into new bottles. Summarise the information by selecting and reporting the main features, and make comparisons where relevant. Write at least 150 words.";
    task.passage=undefined;
    task.figure={kind:"image",src:"/ielts-mocks/bottle-recycling.svg",expandable:true,width:890,height:510,alt:"Used bottles are collected, sorted by colour, washed to remove labels, crushed, melted at 1,400°C, moulded into new bottles, cooled gradually and inspected. Approved bottles are distributed; rejected glass returns to crushing."};
-   task.explanation="Describe the main linear sequence from collection to distribution and the recycling loop from inspection back to crushing. Group the preparation and manufacturing stages; include the furnace temperature. Do not invent equipment, durations or additives. Human review should assess task achievement, organisation, vocabulary and grammar; no automatic band is assigned.";
+   task.explanation="Describe the main linear sequence from collection to distribution and the recycling loop from inspection back to crushing. Group the preparation and manufacturing stages; include the furnace temperature. Do not invent equipment, durations or additives. AI grades task achievement, organisation, vocabulary and grammar after the test and gives a practice band.";
  }
  if(paper===1){
    for(const q of revised.stages[2].questions){

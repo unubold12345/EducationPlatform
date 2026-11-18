@@ -44,14 +44,28 @@
 .primaryButton { border: 0; background: var(--wsp-accent); color: #fff; }
 .primaryButton:disabled { opacity: .45; cursor: default; }
 .ghostButton { border: 1px solid var(--wsp-line-strong); background: var(--wsp-card); color: var(--wsp-ink); }
+/* Kana test setup, in a modal: three plain rows, then Болих / Эхлэх. */
+.kanaTools { display: flex; align-items: center; gap: 8px; }
+.testModal { display: grid; gap: 16px; padding: 22px; border: 1px solid var(--wsp-line); border-radius: 20px; background: var(--wsp-card); color: var(--wsp-ink); box-shadow: 0 24px 60px -22px rgba(0, 0, 0, .5); }
+.testModal h2 { margin: 0; font-size: 19px; }
+.testActions { display: flex; justify-content: flex-end; gap: 8px; padding-top: 14px; border-top: 1px solid var(--wsp-line); }
+.testRow { display: grid; grid-template-columns: 64px minmax(0, 1fr); align-items: center; gap: 12px; }
+.testRow > span { color: var(--wsp-muted); font-size: 13px; font-weight: 650; }
+.testChips { display: flex; flex-wrap: wrap; gap: 6px; }
+.testChips button { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border: 1px solid var(--wsp-line-strong); border-radius: 999px; background: var(--wsp-card); color: var(--wsp-ink); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+.testChips button small { color: var(--wsp-muted); font-size: 12px; font-weight: 600; }
+.testChips button[aria-pressed="true"] { border-color: var(--wsp-accent); background: var(--wsp-accent-soft); color: var(--wsp-accent); }
+.testChips button[aria-pressed="true"] small { color: inherit; }
+@media (max-width: 560px) {
+  .testRow { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+  .testActions > .primaryButton { flex: 1; white-space: nowrap; }
+}
 .chartWrap { overflow-x: auto; border: 1px solid var(--wsp-line); border-radius: 18px; background: var(--wsp-card); }
 .chart { width: 100%; border-collapse: collapse; table-layout: fixed; }
 .chart thead th { padding: 10px 4px 6px; color: var(--wsp-muted); font-size: 13px; font-weight: 650; }
 .chart thead th:first-child, .chart tbody th { width: 48px; }
 .chart td, .chart tbody th { padding: 4px; border-top: 1px solid var(--wsp-line); text-align: center; }
-.chart tr[data-chosen="true"] td, .chart tr[data-chosen="true"] th { background: var(--wsp-accent-soft); }
-.rowHead { width: 36px; height: 36px; border: 1px solid var(--wsp-line); border-radius: 10px; background: var(--wsp-chip); color: var(--wsp-muted); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
-.rowHead[aria-pressed="true"] { border-color: var(--wsp-accent); background: var(--wsp-accent); color: #fff; }
+.rowName { color: var(--wsp-muted); font-size: 13px; font-weight: 700; }
 .kanaCell { display: grid; place-items: center; gap: 2px; width: 100%; min-height: 72px; padding: 8px 4px 6px; border: 0; border-radius: 12px; background: none; color: var(--wsp-ink); font: inherit; cursor: pointer; }
 .kanaCell:hover { background: var(--wsp-hover); }
 .kana { font-size: clamp(24px, 4vw, 32px); line-height: 1.1; }
@@ -62,7 +76,6 @@
 .emptyCell { background: repeating-linear-gradient(135deg, transparent 0 6px, var(--wsp-chip) 6px 7px); }
 @media (max-width: 560px) {
   .chart thead th:first-child, .chart tbody th { width: 34px; }
-  .rowHead { width: 28px; height: 28px; }
   .kanaCell { min-height: 60px; padding: 6px 0 4px; }
 }
 

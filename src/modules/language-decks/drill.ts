@@ -1,5 +1,5 @@
 // The Workshop quiz engine (owner request 2026-11-18: "a quiz maker like Duolingo" for Kana and the JLPT/HSK decks; the
-// Pinyin tone drill runs on it too). Pure and client-safe: it turns study items into a list of short exercises; the
+// Pinyin tone drill and the TOPIK decks run on it too). Pure and client-safe: it turns study items into a list of short exercises; the
 // session UI (drill-session.tsx) asks them one by one and saves one grade per item through the deck review route.
 import { isDue, isWeak, type Studied } from "../vocabulary/study.ts";
 import type { DeckProgress, LanguageDeck } from "./catalog.ts";
@@ -12,7 +12,8 @@ export type DrillItem = {
   meaning: string;
   /** Kana or pinyin of a word; null for kana and when the reading is the term itself. */
   reading: string | null;
-  /** Typed answers that count (kana: romaji spellings; JLPT words: kana and romaji; HSK words: pinyin). */
+  /** Typed answers that count (kana: romaji spellings; JLPT words: kana and romaji; HSK words: pinyin; TOPIK words:
+   * Hangul and romanization). */
   typed: readonly string[];
   example: string | null;
   exampleMeaning: string | null;
@@ -25,7 +26,7 @@ export type DrillItem = {
 export const DRILL_KINDS = ["meaning", "term", "listen", "match", "type", "build", "cloze", "tone"] as const;
 export type DrillKind = (typeof DRILL_KINDS)[number];
 export type DrillFocus = "smart" | "new" | "weak" | "all";
-export type DrillDomain = "kana" | "jlpt" | "hsk" | "tones";
+export type DrillDomain = "kana" | "jlpt" | "hsk" | "tones" | "topik";
 
 export type DrillOption = { text: string; sub: string | null };
 export type Exercise =
@@ -44,7 +45,7 @@ const shuffle = <T,>(list: readonly T[], random: Random) => {
   return copy;
 };
 
-/** Which items a session asks, in order. smart: due, then new, then weak, then the rest. */
+/** Which items a session asks, in order. smart: due, then new, then weak, then the rest. `count` 0 = every item. */
 export function pickTargets(items: readonly DrillItem[], focus: DrillFocus, count: number, now: number, random: Random = Math.random): DrillItem[] {
   const band = (item: DrillItem) => {
     const state = item.state;
@@ -53,7 +54,7 @@ export function pickTargets(items: readonly DrillItem[], focus: DrillFocus, coun
     if (focus === "weak") return state && (isWeak(state) || (state.box > 0 && state.box <= 2)) ? 0 : 1;
     return state && isDue(state, now) ? 0 : !state || state.box === 0 ? 1 : isWeak(state) ? 2 : 3;
   };
-  return shuffle(items, random).map(item => ({ item, band: band(item) })).sort((a, b) => a.band - b.band).slice(0, count).map(entry => entry.item);
+  return shuffle(items, random).map(item => ({ item, band: band(item) })).sort((a, b) => a.band - b.band).slice(0, count > 0 ? count : undefined).map(entry => entry.item);
 }
 
 /** Japanese reading split into tiles: a small ゃゅょ… joins the kana before it. */
@@ -82,6 +83,8 @@ const INSTRUCTIONS: Record<DrillDomain, Partial<Record<DrillKind, string>>> = {
   hsk: { meaning: "Энэ үг юу гэсэн утгатай вэ?", term: "Энэ утгатай үгийг сонго", listen: "Сонссон үгээ сонго", match: "Хосыг нь ол", type: "Pinyin-ээр бич (аялгуугүй ч болно)",
     build: "Үгийг ханзаар нь бүрдүүл", cloze: "Өгүүлбэрийн хоосон зайг нөх" },
   tones: { tone: "Зөв аялгууг сонго" },
+  topik: { meaning: "Энэ үг юу гэсэн утгатай вэ?", term: "Энэ утгатай үгийг сонго", listen: "Сонссон үгээ сонго", match: "Хосыг нь ол", type: "Дуудлагыг нь латинаар бич (эсвэл хангылаар)",
+    build: "Үгийг үеэр нь бүрдүүл", cloze: "Өгүүлбэрийн хоосон зайг нөх" },
 };
 export const instruction = (domain: DrillDomain, kind: DrillKind) => INSTRUCTIONS[domain][kind] ?? "";
 
@@ -142,6 +145,7 @@ export function buildDrill(targets: readonly DrillItem[], pool: readonly DrillIt
   const buildable = (item: DrillItem) => {
     if (domain === "jlpt") { const parts = morae(item.reading ?? item.term); return /^[぀-ヿー]+$/.test(item.reading ?? item.term) && parts.length >= 2 && parts.length <= 7; }
     if (domain === "hsk") return [...item.term].length >= 2 && [...item.term].length <= 5;
+    if (domain === "topik") return /^[가-힣]{2,5}$/.test(item.term);
     return false;
   };
   const fits = (kind: DrillKind, item: DrillItem) => kind === "cloze" ? sentenceGap(item) !== null : kind === "build" ? buildable(item)
@@ -154,16 +158,19 @@ export function buildDrill(targets: readonly DrillItem[], pool: readonly DrillIt
       case "term": return choice("term", item, item.meaning, null, null);
       case "listen": return choice("listen", item, "", null, item.term);
       case "cloze": return choice("cloze", item, sentenceGap(item)!, item.exampleMeaning, null);
-      case "type": return { kind, key: key(), itemId: item.id, prompt: domain === "kana" ? item.term : item.term, sub: domain === "kana" ? null : item.meaning,
-        speak: item.term, accepted: [...item.typed], shown: domain === "kana" ? item.meaning : item.reading ?? item.term };
+      case "type": { const chart = domain === "kana";
+        return { kind, key: key(), itemId: item.id, prompt: item.term, sub: chart ? null : item.meaning,
+          speak: item.term, accepted: [...item.typed], shown: chart ? item.meaning : item.reading ?? item.term }; }
       case "build": {
         const answer = domain === "jlpt" ? morae(item.reading ?? item.term) : [...item.term];
         const spare = shuffle(pool.filter(candidate => candidate.id !== item.id), random).flatMap(candidate => domain === "jlpt" ? morae(candidate.reading ?? candidate.term) : [...candidate.term])
-          .filter(part => !answer.includes(part) && (domain === "jlpt" ? /^[぀-ヿー]+$/.test(part) : true));
+          .filter(part => !answer.includes(part) && (domain === "jlpt" ? /^[぀-ヿー]+$/.test(part) : domain === "topik" ? /^[가-힣]$/.test(part) : true));
         const extra = [...new Set(spare)].slice(0, answer.length <= 3 ? 3 : 4);
         const kanaOnly = domain === "jlpt" && (item.reading ?? item.term) === item.term;
-        return { kind, key: key(), itemId: item.id, prompt: domain === "hsk" || kanaOnly ? item.meaning : item.term,
-          sub: domain === "hsk" ? (options.showReading ? item.reading : null) : kanaOnly ? null : item.meaning,
+        const bySyllable = domain === "hsk" || domain === "topik";
+        return { kind, key: key(), itemId: item.id, prompt: bySyllable || kanaOnly ? item.meaning : item.term,
+          // The romanization would spell a Korean word out, so TOPIK shows none.
+          sub: domain === "hsk" ? (options.showReading ? item.reading : null) : domain === "topik" || kanaOnly ? null : item.meaning,
           speak: item.term, tiles: shuffle([...answer, ...extra], random), answer, joiner: "" };
       }
       case "tone": {
@@ -209,7 +216,8 @@ export function rightAnswer(exercise: Exercise): string {
 
 export const toneText = (item: Pick<DrillItem, "syllables">) => spellTones(item.syllables ?? []);
 
-/** A deck, kana chart or tone drill as quiz items. Kana: the romaji is the meaning. Tones: the reading is the toned pinyin. */
+/** A deck, kana/Hangul chart or tone drill as quiz items. Kana and Hangul: the romanization is the meaning. Tones: the
+ * reading is the toned pinyin. TOPIK words: the reading is the romanization; Hangul or romanization may be typed. */
 export function deckDrillItems(deck: LanguageDeck, progress: Record<string, DeckProgress>): DrillItem[] {
   return deck.lessons.flatMap(lesson => lesson.words.map(word => {
     const base = { id: word.id, term: word.term, meaning: word.meaning, example: word.example || null, exampleMeaning: word.exampleMeaning || null,
@@ -217,6 +225,6 @@ export function deckDrillItems(deck: LanguageDeck, progress: Record<string, Deck
     if (deck.kind === "kana") return { ...base, reading: null, typed: word.answers ?? [word.meaning] };
     if (deck.kind === "tones") return { ...base, reading: spellTones(word.syllables ?? []), typed: [] };
     return { ...base, reading: word.reading && word.reading !== word.term ? word.reading : null,
-      typed: deck.exam === "jlpt" ? [word.reading, ...(word.answers ?? [])] : [word.reading] };
+      typed: deck.exam === "jlpt" ? [word.reading, ...(word.answers ?? [])] : deck.exam === "topik" ? [word.term, ...(word.answers ?? [word.reading])] : [word.reading] };
   }));
 }

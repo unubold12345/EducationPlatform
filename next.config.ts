@@ -3,7 +3,7 @@ const nextConfig: NextConfig = {
  poweredByHeader: false,
  serverExternalPackages: ["kokoro-js", "@huggingface/transformers", "onnxruntime-node", "phonemizer", "nodemailer"],
  outputFileTracingIncludes:{
-  "/*":["./assets/entrance-mocks/**/*.json","./assets/jlpt/*.json","./assets/hsk/*.json","./assets/free-mocks/*.json","./assets/language-decks/*.json","./assets/toefl/*.json"],
+  "/*":["./assets/entrance-mocks/**/*.json","./assets/jlpt/*.json","./assets/hsk/*.json","./assets/free-mocks/*.json","./assets/language-decks/*.json","./assets/toefl/*.json","./assets/topik/*.json"],
   // The IELTS mock's AI examiner uses the same local voice and transcription from its own routes.
   "/api/mock-attempts/*/speaking/*":[
    "./node_modules/kokoro-js/voices/bm_george.bin",
@@ -35,6 +35,9 @@ const nextConfig: NextConfig = {
   // `/audio/toefl` reads assets/toefl-audio (TOEFL iBT 01–09, about 65 MB) through audio-response-toefl.ts:
   "/api/mock-attempts/*/audio/toefl":["./assets/toefl-audio/*.mp3"],
   "/api/exam-practice/*/audio/toefl":["./assets/toefl-audio/*.mp3"],
+  // `/audio/topik` reads assets/topik-audio (TOPIK I and II 01–03, about 70 MB) through audio-response-topik.ts:
+  "/api/mock-attempts/*/audio/topik":["./assets/topik-audio/*.mp3"],
+  "/api/exam-practice/*/audio/topik":["./assets/topik-audio/*.mp3"],
   "/api/exams/audio-check":["./assets/exams/audio-check.mp3"],
  },
 };

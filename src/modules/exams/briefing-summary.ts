@@ -91,15 +91,15 @@ export function mockBriefingSummary(exam: ExamDefinition): MockBriefingSummary {
   const speakingStages = exam.stages.filter(stage => stage.kind === "speaking").length;
   return {
     eyebrow: free ? "ҮНЭГҮЙ ХАГАС MOCK · IELTS ACADEMIC" : "FULL MOCK · IELTS ACADEMIC",
-    chips: [`${readingListening} асуулт`, `${writingTasks} бичих даалгавар`, `${speakingStages} Speaking хэсэг`, "Band биш"],
+    chips: [`${readingListening} асуулт`, `${writingTasks} бичих даалгавар`, `${speakingStages} Speaking хэсэг`, "AI band"],
     facts: [
       { label: "Асуулт", value: `${readingListening} + ${writingTasks} даалгавар` },
       { label: "Чадвар", value: "4" },
       { label: "Хугацаа", value: formatExamDuration(totalSeconds) },
-      { label: "Үр дүн", value: "Listen/Read оноо" },
+      { label: "Үр дүн", value: free ? "Оноо + AI band" : "4 чадварын band" },
     ],
     priceNote,
-    scoreNote: "Writing, Speaking-д автомат band өгөхгүй.",
+    scoreNote: "Writing, Speaking-ийг шалгалтын дараа AI үнэлж band өгнө.",
     totalSeconds,
     breakSeconds,
     deliveredQuestions: readingListening,

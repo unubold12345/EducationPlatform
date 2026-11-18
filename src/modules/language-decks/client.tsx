@@ -48,7 +48,8 @@ export function DeckStudy({ deck, initialProgress, now: initialNow }: {
   const voiced = canSpeak(deck.lang);
   const reviewUrl = `/api/labs/words/${deck.id}/review`;
   const label = READING_LABEL[deck.exam];
-  const domain = deck.exam === "jlpt" ? "jlpt" as const : "hsk" as const;
+  const domain = deck.exam === "jlpt" ? "jlpt" as const : deck.exam === "hsk" ? "hsk" as const : "topik" as const;
+  const readingLang = deck.exam === "jlpt" ? "ja-Hira" : deck.exam === "hsk" ? "zh-Latn-pinyin" : "ko-Latn";
   const kinds = domainKinds(domain, voiced);
 
   // Deck words in the shape StudyCard reads; list order becomes `createdAt`, so new cards come in order.
@@ -60,7 +61,7 @@ export function DeckStudy({ deck, initialProgress, now: initialNow }: {
         id: word.id, term: word.term, translation: word.meaning, example: word.example, sourceName: null,
         createdAt: new Date(ORIGIN + order++ * 1000).toISOString(), deckId: item.id, starred: false,
         box: mine?.box ?? 0, correct: mine?.correct ?? 0, wrong: mine?.wrong ?? 0, reviewedAt: mine?.reviewedAt ?? null, dueAt: mine?.dueAt ?? null,
-        reading: [reading ? word.reading : "", romaji ? word.romaji ?? "" : ""].filter(Boolean).join(" · ") || null, lang: deck.lang,
+        reading: [word.pronunciation ? `[${word.pronunciation}]` : "", reading ? word.reading : "", romaji ? word.romaji ?? "" : ""].filter(Boolean).join(" · ") || null, lang: deck.lang,
       };
     }));
   }, [deck, progress, reading, romaji]);
@@ -162,8 +163,9 @@ export function DeckStudy({ deck, initialProgress, now: initialNow }: {
             return <li key={word.id} data-open={expanded ? "true" : undefined}>
               <button type="button" className={styles.wordMain} aria-expanded={expanded} onClick={() => setOpen(expanded ? null : word.id)}>
                 <span className={styles.term} lang={deck.lang}>{word.term}</span>
-                {(reading && word.reading !== word.term) || (romaji && word.romaji) ? <span className={styles.reading}>
-                  {reading && word.reading !== word.term ? <span lang={deck.exam === "jlpt" ? "ja-Hira" : "zh-Latn-pinyin"}>{word.reading}</span> : null}
+                {(reading && word.reading !== word.term) || (romaji && word.romaji) || word.pronunciation ? <span className={styles.reading}>
+                  {word.pronunciation ? <span lang="ko" title="Дуудлага">[{word.pronunciation}]</span> : null}
+                  {reading && word.reading !== word.term ? <span lang={readingLang}>{word.reading}</span> : null}
                   {romaji && word.romaji ? <span className={styles.romaji} lang="ja-Latn">{word.romaji}</span> : null}
                 </span> : null}
                 <span className={styles.meaning}>{word.meaning}</span>

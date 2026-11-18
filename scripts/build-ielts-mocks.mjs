@@ -209,7 +209,7 @@ for (const paper of PAPERS) {
   write(join(PUBLIC, visualFile), visualSvg);
   const visualTitle = clean(/<title>([^<]*)<\/title>/.exec(visualSvg)?.[1] ?? "Writing Task 1 visual");
   const [minimum1, minimum2] = mock.writingMinimumWords ?? [150, 250];
-  const humanReview = "A qualified human reviewer should assess task achievement or response, coherence and cohesion, lexical resource and grammatical range and accuracy. No automatic band is assigned.";
+  const humanReview = "Writing is assessed on task achievement or response, coherence and cohesion, lexical resource and grammatical range and accuracy. After the test, AI grades this task on these criteria and gives a practice band.";
   const writing = [
     { id: `iw-${pad(paper)}-1`, domain: "Writing", kind: "essay", minWords: minimum1, answers: [],
       prompt: `You should spend about 20 minutes on this task. ${clean(task1.prompt)}`, passage: visualText(task1.visual),
@@ -221,7 +221,7 @@ for (const paper of PAPERS) {
   ];
 
   // Speaking: three familiar topics, the cue card with its rounding-off questions, then the discussion.
-  const speakingNote = "A qualified human should review fluency and coherence, vocabulary, grammar and pronunciation. This recorded simulation does not assign an automatic band score.";
+  const speakingNote = "Speaking is assessed on fluency and coherence, vocabulary, grammar and pronunciation. After the test, AI grades the Speaking test on these criteria and gives a practice band.";
   const speak = (id, prompt) => ({ id: `is-${pad(paper)}-${id}`, domain: "Speaking", kind: "speaking", answers: [], prompt, explanation: speakingNote });
   const part1 = Object.entries(mock.speaking.part1).flatMap(([topic, prompts], topicIndex) => prompts.map((prompt, index) => speak(`p1-${topicIndex + 1}-${index + 1}`, `${topic} · ${clean(prompt)}`)));
   const card = mock.speaking.part2;

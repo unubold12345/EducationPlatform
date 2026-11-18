@@ -2,22 +2,24 @@ import Link from "next/link";
 import type { DeckSummary, LanguageExam } from "./catalog";
 import { READING_LABEL } from "./catalog";
 
-// Workshop → JLPT / HSK: the script/sound basics tile (Kana or Pinyin) first, then one tile per word deck. Server
+// Workshop → JLPT / HSK / TOPIK: the script/sound basics tile (Kana, Pinyin or Hangul) first, then one tile per word deck. Server
 // component; each page and the review route check the plan again.
-const ART: Record<string, string[]> = { "jlpt-n5": ["あ", "日", "食"], "jlpt-n4": ["語", "経", "験"], "hsk-1": ["你", "好", "学"], "hsk-2": ["快", "乐", "旅"] };
+const ART: Record<string, string[]> = { "jlpt-n5": ["あ", "日", "食"], "jlpt-n4": ["語", "経", "験"], "hsk-1": ["你", "好", "学"], "hsk-2": ["快", "乐", "旅"], "topik-1": ["가", "족", "밥"], "topik-2": ["경", "제", "환"] };
 
 const BASICS: Record<LanguageExam, { href: string; art: string[]; tag: string; title: string; text: string }> = {
   jlpt: { href: "/labs/kana", art: ["あ", "ア", "ん"], tag: "Хирагана · Катакана", title: "Үсгийн хүснэгт",
     text: "Хирагана, катаканы бүтэн хүснэгт: дарж сонсох, romaji, мөр мөрөөр карт ба quiz, адилхан үсгийн дасгал." },
   hsk: { href: "/labs/pinyin", art: ["mā", "má", "mǎ"], tag: "Pinyin · аялгуу", title: "Дуудлага ба аялгуу",
     text: "Дөрвөн аялгуу ба сул аялгуу, pinyin-ий бүтэн хүснэгт, HSK 1/2 үгсээр аялгуу таних дасгал." },
+  topik: { href: "/labs/hangul", art: ["한", "글", "ㄱ"], tag: "Хангыль · 한글", title: "Үсэг ба дуудлага",
+    text: "Эгшиг, гийгүүлэгч, үеийн хүснэгт, патчим ба дуудлагын дүрэм: дарж сонсох, мөр мөрөөр quiz." },
 };
 
 export function LanguageWorkshop({ exam, decks, open, plans }: { exam: LanguageExam; decks: DeckSummary[]; open: boolean; plans: string[] }) {
   return <>
     <div className="workshop-index-grid wsp-workshop-grid">
       <Link className="workshop-tile" href={open ? BASICS[exam].href : "/workspace/plans"} prefetch={false}>
-        <div className="workshop-tile-art workshop-glyphs" aria-hidden="true" lang={exam === "jlpt" ? "ja" : "zh-Latn"}>{BASICS[exam].art.map(glyph => <span key={glyph}>{glyph}</span>)}</div>
+        <div className="workshop-tile-art workshop-glyphs" aria-hidden="true" lang={exam === "jlpt" ? "ja" : exam === "hsk" ? "zh-Latn" : "ko"}>{BASICS[exam].art.map(glyph => <span key={glyph}>{glyph}</span>)}</div>
         <div className="workshop-tile-body">
           <span className="wsp-tag tone-blue">{BASICS[exam].tag}</span>
           <h2>{BASICS[exam].title}</h2>

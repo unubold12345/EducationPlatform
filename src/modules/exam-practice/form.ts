@@ -8,6 +8,7 @@ import { isFreeMock } from "../exams/free/catalog.ts";
 import { freeListeningScripts } from "../exams/free/content.ts";
 import { entranceSubjectOf } from "../exams/entrance/catalog.ts";
 import { hskChoices, hskDescription } from "../exams/hsk/describe.ts";
+import { topikChoices, topikDescription } from "../exams/topik/describe.ts";
 import type { ExamDefinition, ExamGroup, ExamQuestion, ExamStage } from "../exams/types.ts";
 import type { PracticeEdit, PracticeForm, PracticeKind, PracticeProgress, PracticeQuestion, PracticeResult, PracticeReveal, PracticeSection, PracticeSubject } from "./types.ts";
 
@@ -108,6 +109,19 @@ export function mockPractice(definition: ExamDefinition): PracticeSource {
           ...(figure?{figure}:{}),...(hsk?{hsk}:{}),...(group.hsk?{hskGroup:group.hsk}:{}),...(question.listening?{audioPart:question.listening.part}:{})});
       }
     }
+  } else if (definition.program === "topik") {
+    // One section per printed block ([1～4], [25～26] …), as the sitting pages them; writing tasks are self-checked against the model.
+    const names: Record<string, string> = { listening: "듣기", writing: "쓰기", questions: "읽기" };
+    for (const stage of definition.stages) for (const group of stage.groups ?? []) {
+      const kind = stage.kind === "listening" ? "listening" : stage.kind === "writing" ? "writing" : "questions";
+      sections.push({ id: group.id, title: `${names[kind]} · ${group.title}`, kind, math: false, hint: "" });
+      for (const question of stage.questions.filter(item => item.groupId === group.id)) {
+        authored.set(question.id, question);
+        const { id, number, domain, prompt, options, kind: questionKind, optionLabels, topik } = question;
+        questions.push({ id, section: group.id, label: number!, domain, prompt, options, kind: questionKind, optionLabels, points: pointsOf(question), instructions: group.instructions,
+          ...(topik ? { topik } : {}), ...(group.topik ? { topikGroup: group.topik } : {}), ...(question.listening ? { audioPart: question.listening.part } : {}) });
+      }
+    }
   } else if (definition.program === "toefl") {
     // One section per task page; Module 2 lists both routes. Practice shows every gap's prefix, so a paragraph reads whole.
     const moduleNames: Record<string, string> = { r1: "Reading 1", r2l: "Reading 2 Lower", r2u: "Reading 2 Upper", l1: "Listening 1", l2l: "Listening 2 Lower", l2u: "Listening 2 Upper", w: "Writing", s: "Speaking" };
@@ -172,7 +186,7 @@ export function mockPractice(definition: ExamDefinition): PracticeSource {
   };
   const partOf = (id: string) => questions.find(question => question.id === id)?.audioPart;
   const transcriptFor = (id: string) => {
-    if (definition.program === "jlpt" || definition.program === "hsk" || definition.program === "toefl") return authored.get(id)?.listening?.script;
+    if (definition.program === "jlpt" || definition.program === "hsk" || definition.program === "toefl" || definition.program === "topik") return authored.get(id)?.listening?.script;
     const part = partOf(id);
     return part ? transcripts[part - 1] : undefined;
   };
@@ -183,15 +197,15 @@ export function mockPractice(definition: ExamDefinition): PracticeSource {
     reveal(id, result) {
       const question = questionFor(id);
       const transcript = transcriptFor(id);
-      return { ...result, answer: question.answerDisplay ?? question.answers.join(" / "), ...(definition.program==="jlpt"||definition.program==="hsk"||(definition.program==="toefl"&&question.kind==="choice")?{answerValue:question.answers[0]}:{}), explanation: question.explanation, points: pointsOf(question), ...(transcript ? { transcript } : {}) };
+      return { ...result, answer: question.answerDisplay ?? question.answers.join(" / "), ...(definition.program==="jlpt"||definition.program==="hsk"||((definition.program==="toefl"||definition.program==="topik")&&question.kind==="choice")?{answerValue:question.answers[0]}:{}), explanation: question.explanation, points: pointsOf(question), ...(transcript ? { transcript } : {}) };
     },
     material(id) {
       const question = questionFor(id);
       const summary = questions.find(item => item.id === id)!;
       const passage = question.passage ? passages.find(item => item.title === question.passage)?.text ?? question.passage : undefined;
       // HSK pictures reach the assistant as their descriptions, with the printed Chinese and pinyin.
-      const context = [summary.instructions, summary.context, hskDescription(summary)].filter(Boolean).join("\n\n");
-      return { section: sections.find(section => section.id === summary.section)!.title, domain: question.domain, prompt: question.prompt, options: hskChoices(summary) ?? question.options, passage: passage || undefined, context: context || undefined };
+      const context = [summary.instructions, summary.context, hskDescription(summary), topikDescription(summary)].filter(Boolean).join("\n\n");
+      return { section: sections.find(section => section.id === summary.section)!.title, domain: question.domain, prompt: question.prompt, options: hskChoices(summary) ?? topikChoices(summary) ?? question.options, passage: passage || undefined, context: context || undefined };
     },
   };
 }

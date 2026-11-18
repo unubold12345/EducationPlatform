@@ -5,6 +5,7 @@ import { getDb } from "@/lib/db";
 import { examDefinitions } from "@/modules/exams/definitions";
 import { entranceTotal } from "@/modules/exams/entrance/catalog";
 import { hskMocks } from "@/modules/exams/hsk/catalog";
+import { topikMocks } from "@/modules/exams/topik/catalog";
 import { toeflMocks } from "@/modules/exams/toefl/catalog";
 import { listeningLabEnabled, readingLabEnabled, speakingLabEnabled, writingLabEnabled } from "@/lib/local-pilot";
 import { practiceSummaries } from "@/modules/exam-practice/service";
@@ -40,6 +41,7 @@ export default async function WorkspaceHome() {
     { program: "entrance", href: "/exams/eesh", label: "ЭЕШ", detail: `${entranceTotal} mock · 5 хичээл`, tone: "tone-green", tag: "Мат · Физик · Хими · Био · Англи" },
     { program: "jlpt", href: "/exams/jlpt", label: "JLPT N5・N4", detail: "6 бүтэн mock · япон audio", tone: "tone-amber", tag: "語彙 · 文法 · 聴解" },
     { program: "hsk", href: "/exams/hsk", label: "HSK 1–2", detail: `${hskMocks.length} бүтэн mock · хятад audio`, tone: "tone-amber", tag: "听力 · 阅读" },
+    { program: "topik", href: "/exams/topik", label: "TOPIK Ⅰ–Ⅱ", detail: `${topikMocks.length} бүтэн mock · солонгос audio`, tone: "tone-amber", tag: "듣기 · 쓰기 · 읽기" },
   ];
   const labs: HomeLab[] = [
     ...(speakingLabEnabled() ? [{ href: "/labs/ielts-speaking", label: "Ярианы хамтрагч", detail: "AI-тай IELTS Speaking", icon: "mic" as const }] : []),

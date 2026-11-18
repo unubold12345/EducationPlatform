@@ -1,0 +1,63 @@
+/* AI grades on the IELTS and TOEFL results pages (2026-11-18). Uses the site tokens of the results page. */
+.panel { margin: 32px 0; }
+.panel > h2 { font-size: 25px; }
+.panel :global(.exam-report-grid) { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin: 20px 0 14px; }
+/* The results page shrinks the third tile on (it was a text-only "pending" card); every grade here is a number. */
+.panel :global(.exam-report-grid) > section:nth-child(n) > strong { font-size: 34px; }
+.note { margin: 0 0 22px; color: var(--muted); font-size: 12px; line-height: 1.8; }
+.working { display: flex; align-items: center; gap: 10px; margin-top: 10px; color: var(--muted); font-size: 13px; line-height: 1.6; }
+.working span { width: 16px; height: 16px; flex: none; border: 2px solid var(--line); border-top-color: var(--blue); border-radius: 50%; animation: spin 0.9s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .working span { animation: none; } }
+.failed { margin-top: 10px; font-size: 13px; line-height: 1.6; }
+.failed p { margin: 0 0 6px; }
+.failed button { padding: 0; border: 0; background: none; font: inherit; font-weight: 600; cursor: pointer; }
+
+.details { margin: 16px 0; border: 1px solid var(--line); border-radius: 14px; padding: 18px 22px; background: var(--white); }
+.details > summary { cursor: pointer; font-size: 16px; font-weight: 600; }
+.task { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--line); }
+.task header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; }
+.task h3 { margin: 0; font-size: 18px; }
+.task header span { color: var(--muted); font-size: 12px; }
+.task header strong { margin-left: auto; font-size: 20px; }
+.criteria { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; margin: 14px 0 0; }
+.criteria div { display: flex; justify-content: space-between; gap: 10px; padding: 10px 14px; border-radius: 10px; background: var(--sky); font-size: 13px; }
+.criteria dt { line-height: 1.5; }
+.criteria dd { margin: 0; font-weight: 700; font-variant-numeric: tabular-nums; }
+.fine { margin: 8px 0 0; color: var(--muted); font-size: 12px; }
+.feedback { font-size: 14px; line-height: 1.8; }
+.feedback > p { margin: 14px 0 0; }
+.repeat { display: grid; gap: 10px; margin: 14px 0 0; padding-left: 20px; }
+.repeat li { position: relative; padding-right: 56px; font-size: 14px; line-height: 1.7; }
+.repeat li > div { display: grid; gap: 4px; }
+.repeat li > strong { position: absolute; top: 0; right: 0; font-variant-numeric: tabular-nums; }
+.repeat p { margin: 0; overflow-wrap: anywhere; }
+.repeat small { display: block; color: var(--muted); font-size: 11px; }
+
+/* The Essay Studio's detailed reviews of the mock's essays (credits / plan reviews). */
+.reviews { margin: 22px 0 0; padding: 20px 22px; border: 1px solid var(--line); border-radius: 14px; background: var(--white); }
+.reviews > h3 { margin: 0; font-size: 18px; }
+.lead { margin: 6px 0 0; color: var(--muted); font-size: 13px; line-height: 1.7; }
+.essays { display: grid; gap: 12px; margin: 16px 0 4px; padding: 0; list-style: none; }
+.essays > li { padding: 14px 16px; border-radius: 12px; background: var(--paper); }
+.essayHead { display: flex; align-items: baseline; gap: 10px; }
+.essayHead strong { font-size: 16px; }
+.essayHead span { color: var(--muted); font-size: 12px; }
+.essayActions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.essayActions :global(.button) { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; }
+.essayActions small { font-weight: 500; opacity: 0.85; }
+.saved { display: grid; gap: 6px; margin: 12px 0 0; padding: 0; list-style: none; }
+.saved button { display: flex; width: 100%; align-items: center; gap: 12px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--white); color: inherit; font: inherit; font-size: 13px; text-align: left; cursor: pointer; }
+.saved button:hover, .saved button:focus-visible { border-color: var(--blue); }
+.saved strong { min-width: 34px; font-size: 16px; font-variant-numeric: tabular-nums; }
+.saved em { margin-left: auto; color: var(--blue); font-style: normal; font-weight: 600; }
+.reportModal { padding: 22px 24px; border-radius: 20px; background: var(--surface); color: var(--ink); box-shadow: 0 24px 60px -22px rgba(0, 0, 0, .5); }
+.reportModal > article { margin-top: 0; padding-top: 0; border-top: 0; }
+.hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+@media (max-width: 560px) {
+  .details { padding: 16px; }
+  .reviews { padding: 16px; }
+  .reportModal { padding: 16px; }
+  .essayActions :global(.button) { width: 100%; justify-content: center; }
+  .task header strong { margin-left: 0; width: 100%; }
+}

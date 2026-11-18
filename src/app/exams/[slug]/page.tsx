@@ -12,6 +12,7 @@ import { mockBriefingSummary } from "@/modules/exams/briefing-summary";
 import { PracticeEntry } from "@/modules/exam-practice/entry";
 import { JlptBriefing } from "@/modules/exams/jlpt/briefing";
 import { HskBriefing } from "@/modules/exams/hsk/briefing";
+import { TopikBriefing } from "@/modules/exams/topik/briefing";
 import { ToeflBriefing } from "@/modules/exams/toefl/briefing";
 import { EntranceBriefing } from "@/modules/exams/entrance/briefing";
 import { speakingLabEnabled } from "@/lib/local-pilot";
@@ -35,6 +36,7 @@ export default async function ExamPage({params}:{params:Promise<{slug:string}>})
   const {hasAccess,activeAttemptId}=gate;
   if(exam.program==="jlpt")return <JlptBriefing exam={exam} gate={gate} loggedIn={Boolean(session)}/>;
   if(exam.program==="hsk")return <HskBriefing exam={exam} gate={gate} loggedIn={Boolean(session)}/>;
+  if(exam.program==="topik")return <TopikBriefing exam={exam} gate={gate} loggedIn={Boolean(session)}/>;
   if(exam.program==="toefl")return <ToeflBriefing exam={exam} gate={gate} loggedIn={Boolean(session)}/>;
   if(exam.program==="entrance")return <EntranceBriefing exam={exam} hasAccess={hasAccess} practice={gate.practice} free={gate.free} loggedIn={Boolean(session)} activeAttemptId={activeAttemptId}/>;
   const summary=mockBriefingSummary(exam);
@@ -81,7 +83,7 @@ export default async function ExamPage({params}:{params:Promise<{slug:string}>})
         <div className="briefing-rule-grid">
           <div><h3>Цаг ба хадгалалт</h3><ul><li>Цаг серверт хадгалагдана. Refresh хийсэн ч дахин эхлэхгүй.</li><li>Хариу автоматаар хадгалагдана. Цаг дуусахад эцэслэгдэнэ.</li><li>Нээлттэй оролдлого байвал үргэлжилнэ.</li></ul></div>
           <div><h3>Хэсгийн дүрэм</h3><ul><li>Одоогийн хэсэгт буцаж, хариугаа засаж болно. Дууссан хэсэг рүү буцахгүй.</li><li>Стандарт хугацаа дуусахаас өмнө хэсэг алгасах, шалгалтыг дуусгах боломжгүй.</li><li>Хариулаагүй асуулт байж болно.</li>{sat ? <li>Math-ийн турш тооны машин, томьёоны лавлах болон Desmos нээлттэй.</li> : <li>Listening бичлэг нэг удаа тоглоно. Speaking нь микрофонтой, {exam.stages.filter(stage=>stage.kind==="speaking"||stage.kind==="preparation").reduce((sum,stage)=>sum+stage.seconds,0)/60} минутын simulation{speakingLabEnabled()?"; AI шалгагчтай ярилцаж өгч болно":""}.</li>}</ul></div>
-          <div><h3>Үр дүн</h3><ul>{sat ? <><li>SAT raw оноо; 1600 хөрвүүлэлтгүй.</li><li>Албан ёсны College Board оноо биш.</li></> : <><li>Listening, Reading-ийн зөв хариултын тоо.</li><li>Writing, Speaking-д автомат band өгөхгүй.</li></>}<li>Эцсийн дүн таны бүртгэлд хадгалагдана.</li></ul></div>
+          <div><h3>Үр дүн</h3><ul>{sat ? <><li>SAT raw оноо; 1600 хөрвүүлэлтгүй.</li><li>Албан ёсны College Board оноо биш.</li></> : <><li>Listening, Reading-ийн зөв хариултын тоо.</li><li>Writing, Speaking-ийг шалгалтын дараа AI үнэлж band өгнө.</li></>}<li>Эцсийн дүн таны бүртгэлд хадгалагдана.</li></ul></div>
         </div>
         <p className="briefing-caveat">Энэ mock нь албан ёсны шалгалт эсвэл баталгаажсан оноо биш.</p>
     </section>

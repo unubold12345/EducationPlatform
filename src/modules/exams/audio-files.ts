@@ -6,6 +6,7 @@ const formsAudio=Object.values(formsData as Record<string,{prefix:string;seconds
 import jlptData from './jlpt/audio-catalog.json' with { type: 'json' };
 import hskData from './hsk/audio-catalog.json' with { type: 'json' };
 import freeData from './free/audio-catalog.json' with { type: 'json' };
+import topikData from './topik/audio-catalog.json' with { type: 'json' };
 type ItemTimings=Record<string,{seconds:number[];questions:Record<string,{start:number;end:number;part:number}>}>;
 const jlptAudio = jlptData as ItemTimings;
 // JLPT audio revision 2 (scripts/generate-jlpt-audio-v2.py, VoxCPM2 via VoiceStudio) in assets/jlpt-audio. Attempts
@@ -18,6 +19,10 @@ const hskAudio = hskData as ItemTimings;
 // The free half-length mocks (scripts/generate-free-audio.py): IELTS Parts 1–2, JLPT N5/N4 and HSK 1 tracks in
 // assets/free-audio, with the same per-item timings as the paid JLPT and HSK catalogues.
 const freeAudio = freeData as ItemTimings;
+// TOPIK Ⅰ and Ⅱ (scripts/generate-topik-audio.py, VoxCPM2 via VoiceStudio): four part tracks per mock in assets/topik-audio.
+// Every TOPIK mock uses this set, so a form whose recording is not made yet never falls back to another folder.
+const topikAudio = topikData as ItemTimings;
+const isTopik = (slug:string)=>/^topik[12]-mock-0[1-9]$/.test(slug);
 /**
  * Which audio route serves a mock. Each route bundles one recording folder into its server function, which must
  * stay under Vercel's 250 MB: `…/audio` serves assets/exams (IELTS 01–06, JLPT), `…/audio/forms` serves
@@ -26,13 +31,21 @@ const freeAudio = freeData as ItemTimings;
  * recording set should get its own folder and route segment. `version` is the attempt's or practice form's audio revision.
  */
 // TOEFL (assets/toefl-audio) plays one clip per item through `…/audio/toefl` and its own handlers in toefl/audio.ts, not this set.
-export type AudioSet="base"|"forms"|"hsk"|"free"|"jlpt";
-export const audioSetOf=(slug:string,version=2):AudioSet=>Object.hasOwn(formsData,slug)?"forms":Object.hasOwn(hskAudio,slug)?"hsk":Object.hasOwn(freeAudio,slug)?"free":jlptRevised(slug,version)?"jlpt":"base";
-export const audioPath=(slug:string,version=2)=>({base:"/audio",forms:"/audio/forms",hsk:"/audio/hsk",free:"/audio/free",jlpt:"/audio/jlpt"} as const)[audioSetOf(slug,version)];
+export type AudioSet="base"|"forms"|"hsk"|"free"|"jlpt"|"topik";
+export const audioSetOf=(slug:string,version=2):AudioSet=>Object.hasOwn(formsData,slug)?"forms":Object.hasOwn(hskAudio,slug)?"hsk":isTopik(slug)?"topik":Object.hasOwn(freeAudio,slug)?"free":jlptRevised(slug,version)?"jlpt":"base";
+export const audioPath=(slug:string,version=2)=>({base:"/audio",forms:"/audio/forms",hsk:"/audio/hsk",free:"/audio/free",jlpt:"/audio/jlpt",topik:"/audio/topik"} as const)[audioSetOf(slug,version)];
 const timed=(catalog:ItemTimings,slug:string,id:string)=>Object.hasOwn(catalog,slug)&&Object.hasOwn(catalog[slug].questions,id)?catalog[slug].questions[id]:undefined;
 export function jlptQuestionAudio(slug:string,id:string,version=2) { return (jlptRevised(slug,version)?timed(jlptAudioV2,slug,id):timed(jlptAudio,slug,id))??timed(freeAudio,slug,id); }
 /** Where one HSK item (its number and both readings) sits in its part's track, for practice replay. */
 export function hskQuestionAudio(slug:string,id:string) { return timed(hskAudio,slug,id)??timed(freeAudio,slug,id); }
+/** Where one TOPIK recording (its number and every reading) sits in its part's track, for practice replay. */
+export function topikQuestionAudio(slug:string,id:string) { return timed(topikAudio,slug,id); }
+/** The TOPIK item being read at `offset` seconds of a part's track (the part's first item before it starts), so the page can follow it. */
+export function topikPlayingItem(slug:string,part:number,offset:number):string|undefined {
+  if(!Object.hasOwn(topikAudio,slug))return undefined;
+  const items=Object.entries(topikAudio[slug].questions).filter(([,range])=>range.part===part).sort((a,b)=>a[1].start-b[1].start);
+  return (items.findLast(([,range])=>range.start<=offset)??items[0])?.[0];
+}
 /** The HSK item being read at `offset` seconds of a part's track (the part's first item during its introduction), so the page can follow it. */
 export function hskPlayingItem(slug:string,part:number,offset:number):string|undefined {
   const catalog=Object.hasOwn(hskAudio,slug)?hskAudio:Object.hasOwn(freeAudio,slug)?freeAudio:undefined;
@@ -64,7 +77,7 @@ const prefixOf=(slug:string)=>Object.hasOwn(listeningFiles,slug)?listeningFiles[
 // Exact allowlist keeps user input out of filesystem paths. A snapshot explicitly selects its original audio revision.
 export function listeningFile(slug:string,part:number,version=2):string|undefined {
   if(Object.hasOwn(freeAudio,slug))return Number.isInteger(part)&&part>=1&&part<=freeAudio[slug].seconds.length?`${slug}-part-${part}.mp3`:undefined;
-  if(Object.hasOwn(jlptAudio,slug)||Object.hasOwn(hskAudio,slug))return Number.isInteger(part)&&part>=1&&part<=4?`${slug}-part-${part}.mp3`:undefined;
+  if(Object.hasOwn(jlptAudio,slug)||Object.hasOwn(hskAudio,slug)||Object.hasOwn(topikAudio,slug))return Number.isInteger(part)&&part>=1&&part<=4?`${slug}-part-${part}.mp3`:undefined;
   const prefix=version>=2&&Object.hasOwn(revisedAudio,slug)?revisedAudio[slug].prefix:prefixOf(slug);
   return prefix&&Number.isInteger(part)&&part>=1&&part<=4?`${prefix}-part-${part}.mp3`:undefined;
 }
@@ -73,6 +86,7 @@ export function listeningParts(slug:string,version=2):readonly number[] {
   if(jlptRevised(slug,version))return jlptAudioV2[slug].seconds;
   if(Object.hasOwn(jlptAudio,slug))return jlptAudio[slug].seconds;
   if(Object.hasOwn(hskAudio,slug))return hskAudio[slug].seconds;
+  if(Object.hasOwn(topikAudio,slug))return topikAudio[slug].seconds;
   if(version>=2&&Object.hasOwn(revisedAudio,slug))return revisedAudio[slug].seconds;
   const prefix=prefixOf(slug);
   return prefix?listeningSeconds[prefix]:[450,450,450,450];

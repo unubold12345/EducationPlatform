@@ -50,7 +50,7 @@ with sync_playwright() as p:
 
     # The library and the ЭЕШ hub: five subjects, dense year cards, subject tabs.
     page.goto(BASE + "/exams")
-    expect(page.locator(".library-list .exam-card")).to_have_count(6)
+    expect(page.locator(".library-list .exam-card")).to_have_count(7)  # SAT, IELTS, ЭЕШ, JLPT, HSK, TOEFL, TOPIK
     expect(page.locator(".library-list .exam-card.entrance")).to_contain_text("194")
     page.screenshot(path=str(ART / "eesh-library-desktop.png"), full_page=True)
     page.goto(BASE + "/exams/eesh")

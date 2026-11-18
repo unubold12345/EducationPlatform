@@ -8,10 +8,10 @@ import {planMonth} from "@/modules/subscriptions/plans";
 import {chargeCredits} from "@/modules/credits/service";
 import {AI_ACTIONS} from "@/modules/credits/pricing";
 import {tutorDay} from "@/modules/tutor/contracts";
-import {countWords,findWritingPrompt,writingPromptText} from "./contracts";
+import {countWords} from "./contracts";
 import {
- EXPERT_LIMITS,EXPERT_MODEL,EXPERT_SCHEMA,STRONG_LIMITS,expertPlan,expertSpentMessage,expertSystem,expertTitle,expertUser,normalizeExpertReview,readExpertReview,strongSystem,validExpertInput,
- type EssayReviewKind,type ExpertInput,type ExpertQuota,type ExpertReview,type ExpertSummary,type SavedExpertReview,
+ EXPERT_LIMITS,EXPERT_MODEL,EXPERT_SCHEMA,STRONG_LIMITS,expertPlan,expertSpentMessage,expertSystem,normalizeExpertReview,readExpertReview,reviewUser,strongSystem,subjectOf,validExpertInput,
+ type EssayReviewKind,type ExpertQuota,type ExpertReview,type ExpertSummary,type ReviewSubject,type ReviewTask,type SavedExpertReview,
 } from "./expert";
 import {requireWritingLab} from "./service";
 
@@ -24,7 +24,7 @@ const NOT_FOUND="Энэ үнэлгээ олдсонгүй.";
 /** The list's columns: the band is its own column, so listing never reads the review JSON (about 15 KB each). */
 const LIST={id:true,createdAt:true,kind:true,task:true,title:true,words:true,overall:true} as const;
 type Row={id:string;createdAt:Date;kind:string;task:string;title:string;words:number;overall:number};
-const isTask=(value:string):value is "essay"|"letter"|"free"=>value==="essay"||value==="letter"||value==="free";
+const isTask=(value:string):value is ReviewTask=>value==="essay"||value==="letter"||value==="free"||value==="report";
 
 function summary(row:Row):ExpertSummary|null {
  return isTask(row.task)?{id:row.id,createdAt:row.createdAt.getTime(),kind:row.kind==="strong"?"strong":"expert",task:row.task,title:row.title,words:row.words,overall:row.overall}:null;
@@ -61,13 +61,26 @@ export async function expertLibrary(userId:string) {
  return {quota,reviews:rows.flatMap(row=>summary(row)??[])};
 }
 
+const FULL={...LIST,review:true,prompt:true,essay:true,language:true,model:true} as const;
+type FullRow=Row&{review:Prisma.JsonValue;prompt:string;essay:string;language:string;model:string};
+function full(row:FullRow):SavedExpertReview|null {
+ const head=summary(row),review=readExpertReview(row.review);
+ return head&&review?{...head,overall:review.overall,prompt:row.prompt,essay:row.essay,language:row.language==="en"?"en":"mn",model:row.model,review}:null;
+}
+
 /** One of the student's own reviews, with the text it reviewed. */
 export async function openExpertReview(userId:string,id:string):Promise<SavedExpertReview> {
  if(!/^[a-z0-9]{20,40}$/i.test(id))throw new ApiError(400,"Үнэлгээний түлхүүр буруу байна.");
- const row=await getDb().essayReview.findFirst({where:{id,userId},select:{...LIST,review:true,prompt:true,essay:true,language:true,model:true}});
- const head=row&&summary(row),review=row&&readExpertReview(row.review);
- if(!row||!head||!review)throw new ApiError(404,NOT_FOUND);
- return {...head,overall:review.overall,prompt:row.prompt,essay:row.essay,language:row.language==="en"?"en":"mn",model:row.model,review};
+ const row=await getDb().essayReview.findFirst({where:{id,userId},select:FULL});
+ const review=row&&full(row);
+ if(!review)throw new ApiError(404,NOT_FOUND);
+ return review;
+}
+
+/** The student's reviews of one mock attempt's essays, newest first (they also list in the studio). */
+export async function attemptReviews(userId:string,attemptId:string):Promise<(SavedExpertReview&{questionId:string})[]> {
+ const rows=await getDb().essayReview.findMany({where:{userId,attemptId},orderBy:{createdAt:"desc"},take:12,select:{...FULL,questionId:true}});
+ return rows.flatMap(row=>{const review=full(row);return review&&row.questionId?[{...review,questionId:row.questionId}]:[];});
 }
 
 /** Never echo a provider error body: it can carry request or credential details. */
@@ -85,6 +98,11 @@ function providerFailure(error:unknown):never {
  */
 export async function createExpertReview(userId:string,body:unknown) {
  if(!validExpertInput(body))throw new ApiError(400,`Бичвэрийн хүсэлт буруу байна. Шинжээчийн үнэлгээнд дор хаяж ${EXPERT_LIMITS.minWords} үг, сэдэв хэрэгтэй.`);
+ return expertReview(userId,subjectOf(body));
+}
+
+/** The Claude review of a resolved text: from the studio above, or a mock essay read from its attempt (`ai-grading`). */
+export async function expertReview(userId:string,body:ReviewSubject) {
  await requireWritingLab(userId);
  const key=process.env.ANTHROPIC_API_KEY?.trim();
  if(!key)throw new ApiError(503,"Шинжээчийн үнэлгээ одоогоор холбогдоогүй байна.");
@@ -105,7 +123,7 @@ export async function createExpertReview(userId:string,body:unknown) {
     betas:["server-side-fallback-2026-07-01"],fallbacks:"default",
     output_config:{effort:"high",format:{type:"json_schema",schema:EXPERT_SCHEMA}},
     system:expertSystem(body.language),
-    messages:[{role:"user",content:expertUser(body)}],
+    messages:[{role:"user",content:reviewUser(body)}],
    });
    message=await stream.finalMessage();
   }catch(error){providerFailure(error);}
@@ -127,16 +145,16 @@ export async function createExpertReview(userId:string,body:unknown) {
  }
 }
 
-async function saveReview(userId:string,body:ExpertInput,kind:EssayReviewKind,review:ExpertReview,model:string,inputTokens:number,outputTokens:number):Promise<SavedExpertReview> {
- const prompt=body.task==="free"?body.topic.trim():writingPromptText({...body,action:"feedback"});
+async function saveReview(userId:string,body:ReviewSubject,kind:EssayReviewKind,review:ExpertReview,model:string,inputTokens:number,outputTokens:number):Promise<SavedExpertReview> {
  const row=await getDb().essayReview.create({
   data:{
-   userId,kind,task:body.task,promptId:body.task==="free"?null:findWritingPrompt(body.promptId!)!.id,title:expertTitle(body),prompt,essay:body.essay,
+   userId,kind,task:body.task,promptId:body.promptId,title:body.title,prompt:body.prompt,essay:body.essay,
    words:countWords(body.essay),language:body.language,review:review as unknown as Prisma.InputJsonValue,overall:review.overall,model,inputTokens,outputTokens,
+   attemptId:body.attemptId??null,questionId:body.questionId??null,
   },
   select:LIST,
  });
- return {...summary(row)!,prompt,essay:body.essay,language:body.language,model,review};
+ return {...summary(row)!,prompt:body.prompt,essay:body.essay,language:body.language,model,review};
 }
 
 /** The DeepSeek call stops well before the route's limit (240 s); a review usually takes about a minute. */
@@ -148,8 +166,13 @@ const STRONG_LEASE_MS=230_000;
  * with credits. Credits are held first and returned if the provider, the reply or the exam check fails; one review is in
  * flight per student and the day has a cap. The review is saved with the Claude ones but never counts against their quota.
  */
-export async function createStrongReview(userId:string,body:unknown) {
+export function createStrongReview(userId:string,body:unknown) {
  if(!validExpertInput(body,STRONG_LIMITS.minWords))throw new ApiError(400,`Бичвэрийн хүсэлт буруу байна. Бүрэн үнэлгээнд дор хаяж ${STRONG_LIMITS.minWords} үг, сэдэв хэрэгтэй.`);
+ return strongReview(userId,subjectOf(body));
+}
+
+/** The credit-paid review of a resolved text: from the studio above, or a mock essay read from its attempt (`ai-grading`). */
+export async function strongReview(userId:string,body:ReviewSubject) {
  await requireWritingLab(userId);
  const key=process.env.DEEPSEEK_API_KEY?.trim();
  if(!key)throw new ApiError(503,"AI туслах одоогоор холбогдоогүй байна.");
@@ -166,7 +189,7 @@ export async function createStrongReview(userId:string,body:unknown) {
    try{
     response=await fetch(`${base}/chat/completions`,{method:"POST",cache:"no-store",redirect:"error",headers:{"Content-Type":"application/json",Authorization:`Bearer ${key}`},
      body:JSON.stringify({model:process.env.DEEPSEEK_MODEL||"deepseek-flash",thinking:{type:"enabled"},max_tokens:AI_ACTIONS["writing-review"].outputTokens,
-      response_format:{type:"json_object"},stream:false,messages:[{role:"system",content:strongSystem(body.language)},{role:"user",content:expertUser(body)}]}),
+      response_format:{type:"json_object"},stream:false,messages:[{role:"system",content:strongSystem(body.language)},{role:"user",content:reviewUser(body)}]}),
      signal:AbortSignal.timeout(STRONG_TIMEOUT_MS)});
    }catch(error){
     throw new ApiError(error instanceof Error&&error.name==="TimeoutError"?504:503,error instanceof Error&&error.name==="TimeoutError"?"Үнэлгээ хэт удлаа. Дахин оролдоно уу. Кредит хасагдаагүй.":"AI туслахтай холбогдож чадсангүй. Кредит хасагдаагүй.");

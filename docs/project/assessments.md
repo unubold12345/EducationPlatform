@@ -1,4 +1,4 @@
-# Assessments: SAT, IELTS, JLPT, HSK, ЭЕШ and free mocks
+# Assessments: SAT, IELTS, JLPT, HSK, TOPIK, ЭЕШ and free mocks
 
 Part of the [project guide](../PROJECT.md) (was PROJECT.md section 3). "Section N" in the text means that old numbering; the guide maps it to files.
 
@@ -33,7 +33,9 @@ Part of the [project guide](../PROJECT.md) (was PROJECT.md section 3). "Section 
 - Speaking: a 12-minute simulation in four timed stages (Part 1, the preparation minute, the long turn, Part 3). The whole
   stage is recorded and stored for review. Where the Speaking Lab is enabled the student can take it with the AI examiner
   ("AI examiner in the IELTS mocks" in section 7); otherwise the prompts are read from the screen as before.
-- No IELTS band score is calculated.
+- Bands (2026-11-18): Writing and Speaking are graded by AI after the sitting (see "AI grading of Writing and Speaking"
+  below); Listening and Reading raw /40 convert by the published Academic tables, and the overall band is their mean with
+  IELTS rounding. Shorter (free half) mocks show raw Listening/Reading and no overall band. Practice estimates only.
 - Authenticated audio serving resolves the exact mock slug to its own allowlisted recording files.
   Original and revised recordings are included in the production function trace. New audio provenance, script
   hashes, file hashes and durations live in `assets/exams/manifest.json`, `manifest-02.json` through
@@ -251,7 +253,7 @@ Part of the [project guide](../PROJECT.md) (was PROJECT.md section 3). "Section 
   during a sitting only the clip playing now on the server clock is served; practice serves any clip after the access check.
 - Views live in `src/modules/exams/toefl/` (hub, briefing, section, practice item, results, `toefl.css`): letter boxes for
   Complete the Words, tap-to-place boxes for Build a Sentence. Results are raw: Reading /50 and Listening /47 with the module
-  taken, Build a Sentence /10; the email, discussion and speaking wait for review, with model answers after the sitting.
+  taken, Build a Sentence /10; the email, discussion and speaking get AI scores (0–5) after the sitting, with model answers.
   Practice lists both routes per module; transcripts and model answers open after a check. Browser suite: `check -- toefl`.
 - The pack: `MockExmps/TOEFL` (never deployed; in `.vercelignore`) holds the nine original forms in the format ETS introduced
   on 21 January 2026.
@@ -275,3 +277,64 @@ Part of the [project guide](../PROJECT.md) (was PROJECT.md section 3). "Section 
   trip (small.en, medium.en second opinion; files over 25 s are cut at sentence pauses first, because long-file
   transcription dropped sentence-initial words), listing recordings that differ from their script, ordinary words before
   name spellings; the pack's `AUDIO.md` is the index. Files hold speech only; pauses come from ADMINISTRATION.md.
+
+### TOPIK Ⅰ and Ⅱ (2026-11-18)
+
+- Owner request: three mocks per level matching the official paper. `topik1-mock-01`–`03` and `topik2-mock-01`–`03` (program
+  `topik`) follow the paper-based TOPIK item by item: TOPIK Ⅰ 듣기 1–30 (40 min) and 읽기 31–70 (60 min); TOPIK Ⅱ 듣기 1–50
+  (60 min), 쓰기 51–54 (50 min) and 읽기 1–50 (70 min). Same blocks, printed Korean instructions, 보기 examples, paired sets and
+  points as the released papers (52nd and 60th TOPIK Ⅰ points: 3 or 4 per item, 100 per section; TOPIK Ⅱ 2 per item). Hub
+  `/exams/topik` (two level columns), `/exams` card, Гадаад хэл Basic/Pro or the usual per-mock purchase.
+- Pack `MockExmps/TOPIK` (never deployed): one JSON per form, `_source/structure.py` (the official structure),
+  `validate.py`, the picture kit, `README.md` and `SOURCES.md` (only structure was taken; every item is new).
+  `node scripts/build-topik-mocks.mjs [--only=…]` writes `assets/topik/<slug>.json` (server-only, with keys, scripts,
+  explanations and writing models), the answer-free SVG pictures in `public/exam-assets/topik/<slug>/` (TOPIK Ⅰ L15–16 and
+  TOPIK Ⅱ L1–2; TOPIK Ⅱ L3 and reading charts are drawn from data) and the client-safe `src/modules/exams/topik/catalog.json`.
+  Question ids `topik{1,2}-0N-{l,w,r}NN`; group ids such as `topik-l-15` are also the practice sections.
+- Views in `src/modules/exams/topik/` (hub, briefing, booklet-style section with ①–④, picture and chart options, practice
+  audio, results, `topik.css`). Writing 51–54 are essay questions left ungraded: results show the model answers and rubric,
+  and the student may score them for a TOPIK Ⅱ total out of 300 on the page (kept in the page only). Listening and Reading
+  are scored on the server: TOPIK Ⅰ out of 200 with level 1 from 80 and 2 from 140; TOPIK Ⅱ out of 200 plus the self-score,
+  levels 3–6 from 120/150/190/230. The page says it is a practice estimate, not an official score.
+- Audio: `scripts/generate-topik-audio.py` synthesises the paper's administration locally with VoxCPM2 (Apache-2.0,
+  through VoiceStudio): a narrator, a woman and a man (designed once, then cloned for each line), the opening, block
+  instructions and examples, item numbers, each recording read twice (TOPIK Ⅱ 1–20 once) and the answer time. Four part
+  tracks per mock in `assets/topik-audio/` (48 kbps mono, provenance and hashes in `<slug>-audio.json`), timings in
+  `src/modules/exams/topik/audio-catalog.json` for practice replay. Own routes `/audio/topik` (`audio-response-topik.ts`);
+  in a sitting only the part playing now is served. A faster-whisper large-v3 round trip compared every clip with its
+  text; 15 bad lines got new seeds in `scripts/topik-audio-lines.json` and then passed. No person has listened to the tracks.
+- Practice mode, the practice assistant and the review coach (`topik` chat subject) get pictures and charts as text
+  (`topik/describe.ts`). Tests: `tests/topik.test.mjs`, browser group `topik` (`tests/topik_smoke.py`).
+- Content: Claude Code (Opus 5.5) and Claude subagents. Each form is validated and was solved blind twice by a separate
+  checker from a key-free copy (last round: TOPIK Ⅰ 210/210, TOPIK Ⅱ 300/300); flagged items were fixed, and options were
+  rebalanced so length does not give the key away (key strictly the longest in 21–24% of items). Awaiting a Korean
+  teacher's review.
+
+### AI grading of Writing and Speaking (owner request 2026-11-18)
+
+Owner: "fully automated website", no teacher review. When an IELTS or TOEFL results page opens, it asks
+`POST /api/mock-attempts/[id]/grade` (`{part: "writing"|"speaking"}`; same origin, own attempt with its access rule, finished,
+no other open sitting) once per part; `GET` reads the saved grades. Included in the mock's price: no credits.
+- Code: `src/modules/exams/ai-grading/` (`contracts.ts` pure: what is graded, prompts, reply checks, band maths;
+  `service.ts`; `panel.tsx` on both results pages). Stored in `MockGrade` (migration `20261118180000_mock_grades`), one row per
+  attempt and part with status, tries, the result JSON, model and tokens.
+- IELTS Writing: each task to DeepSeek (thinking, JSON) on the four band descriptors, with the Task 1 data table; the task band
+  is the criteria mean, Writing = (Task 1 + 2 × Task 2) / 3, IELTS rounding. Speaking: Parts 1–3 from the AI examiner's
+  transcripts, else DeepInfra Whisper of the stage recording (WebM/MP4 as stored); four criteria, pronunciation estimated from
+  the transcript and labelled so. TOEFL: email and discussion 0–5 (ETS rubric); interview answers 0–5 each; Listen and Repeat
+  scored on the site by word edit distance against the sentence (no AI). Fewer than 5 written / 8 spoken words = 0 without a call.
+- The grade is scores and a short note only (owner 2026-11-18): criterion bands or 0–5 scores and one or two Mongolian sentences
+  per task or part; no lists or corrections (older saved grades with them show only the note).
+- Detailed reviews of IELTS essays (owner 2026-11-18): under the grade, each Writing task offers the Essay Studio's two reviews at
+  the studio's price: "Бүрэн үнэлгээ" (DeepSeek, `writing-review` credits, 50+ words) and "Шинжээчийн үнэлгээ" (Claude, the
+  plan's monthly reviews, 100+ words; free accounts see the plans link). `GET/POST /api/mock-attempts/[id]/essay-review`
+  (`ai-grading/essay-review.ts`): own finished IELTS attempt, body `{questionId, kind}` only; the task (Task 1 as "report" with its
+  data table, Task 2 as "essay") and the essay are read from the attempt snapshot, then `strongReview`/`expertReview` in
+  `writing-lab/expert-service.ts` run the studio's checks, charge and save. The `EssayReview` row carries `attemptId` and
+  `questionId` (migration `20261118190000_essay_review_mock`), so it lists on the results page (`essay-reviews.tsx`, report in a
+  modal) and in the studio. TOEFL keeps the score only (the studio's examiner is IELTS-specific).
+- Limits: 3 tries per part, a 6-minute lease, 16 parts per student per day (the free mock can be retaken); speaking waits up
+  to 75 s for a recording still uploading. Checks: `tests/mock-grading.test.mjs`; `scripts/check.mjs` points DeepSeek at the
+  suites' mock and sets `GRADING_TRANSCRIBE=off`, so suites never send recordings to DeepInfra.
+- First live run (2026-11-18, dev 3009, learner-style answers): IELTS Writing 6 (6.5 / 6), Speaking 6 in 38 s; TOEFL Writing
+  4 / 4, Speaking 3.5 in 21 s. The credit-priced Speaking report after a mock (`speaking/report`) is unchanged.

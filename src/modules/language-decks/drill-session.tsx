@@ -12,6 +12,7 @@ import styles from "./drill.module.css";
 // Check button, a green/red answer bar, missed exercises coming back at the end, and a result screen. Kana, the word decks
 // and the Pinyin tone drill all use it; grades go to the deck review route.
 
+/** `count` 0 = every word of the chosen groups. */
 export type DrillConfig = { groups: string[]; count: number; kinds: DrillKind[]; focus: DrillFocus };
 export type MakerGroup = { id: string; label: string; section?: string; count: number; lang?: string };
 export type DrillSessionState = { exercises: Exercise[]; startedAt: number; config: DrillConfig; ids: string[] | null };
@@ -37,7 +38,7 @@ export function startDrill(setup: Setup, config: DrillConfig, ids: string[] | nu
 }
 
 /** The maker, then the session, then the results; `initial` skips the maker (today's review, look-alikes). */
-export function DrillFlow({ setup, title, groups, groupLabel, initialGroups, kinds, counts = [5, 10, 15, 20], storageKey, lang, voiced, reviewUrl, initial, onStudied, onClose }: {
+export function DrillFlow({ setup, title, groups, groupLabel, initialGroups, kinds, counts = [5, 10, 20, 30, 50, 0], storageKey, lang, voiced, reviewUrl, initial, onStudied, onClose }: {
   setup: Setup; title: string; groups: MakerGroup[]; groupLabel: string; initialGroups: string[]; kinds: DrillKind[]; counts?: number[]; storageKey: string;
   lang: string; voiced: boolean; reviewUrl: string; initial?: DrillSessionState | null; onStudied: (updates: StudyUpdate[]) => void; onClose: () => void;
 }) {
@@ -57,7 +58,7 @@ function DrillMaker({ title, domain, groups, groupLabel, initialGroups, kinds, c
   // The last settings are kept per browser (the maker only renders after a click, so this never runs on the server).
   const [stored] = useState(() => readStored<Partial<DrillConfig>>("drill:" + storageKey) ?? {});
   const [chosen, setChosen] = useState<ReadonlySet<string>>(new Set(initialGroups.length ? initialGroups : groups.slice(0, 1).map(group => group.id)));
-  const [count, setCount] = useState(counts.includes(stored.count ?? 0) ? stored.count! : counts[Math.min(1, counts.length - 1)]);
+  const [count, setCount] = useState(stored.count !== undefined && counts.includes(stored.count) ? stored.count : counts[Math.min(1, counts.length - 1)]);
   const [picked, setPicked] = useState<ReadonlySet<DrillKind>>(new Set((stored.kinds ?? kinds).filter(kind => kinds.includes(kind)).length ? (stored.kinds ?? kinds).filter(kind => kinds.includes(kind)) : kinds));
   const [focus, setFocus] = useState<DrillFocus>(stored.focus ?? "smart");
   const label = (kind: DrillKind) => (domain === "kana" ? KANA_LABEL[kind] : undefined) ?? KIND_LABEL[kind];
@@ -101,7 +102,7 @@ function DrillMaker({ title, domain, groups, groupLabel, initialGroups, kinds, c
       <div className={styles.makerRow}>
         <div className={styles.block} role="group" aria-label="Асуултын тоо">
           <div className={styles.blockHead}><span>Асуулт</span></div>
-          <div className={styles.segment}>{counts.map(value => <button key={value} type="button" aria-pressed={count === value} onClick={() => setCount(value)}>{value}</button>)}</div>
+          <div className={styles.segment}>{counts.map(value => <button key={value} type="button" aria-pressed={count === value} onClick={() => setCount(value)}>{value || "Бүгд"}</button>)}</div>
         </div>
         <div className={styles.block} role="group" aria-label="Аль үгсийг">
           <div className={styles.blockHead}><span>Аль {domain === "kana" ? "үсгийг" : "үгсийг"}</span></div>
@@ -110,7 +111,7 @@ function DrillMaker({ title, domain, groups, groupLabel, initialGroups, kinds, c
       </div>
 
       <footer className={styles.makerFoot}>
-        <span>{ready ? `${Math.min(count, available)} асуулт · ${available} ${domain === "kana" ? "үсгээс" : "үгнээс"}` : "Нэг ч хэсэг эсвэл төрөл сонгоогүй байна."}</span>
+        <span>{ready ? `${count > 0 ? Math.min(count, available) : available} асуулт · ${available} ${domain === "kana" ? "үсгээс" : "үгнээс"}` : "Нэг ч хэсэг эсвэл төрөл сонгоогүй байна."}</span>
         <button type="button" className={styles.primary} disabled={!ready} onClick={start}>Эхлэх</button>
       </footer>
     </section>

@@ -15,9 +15,9 @@ export async function attemptAudio(request: Request, id: string, set: AudioSet, 
   try {
     const user = await apiUser(request); const attempt = await accessMock(id, user.id);
     const part = Number(new URL(request.url).searchParams.get("part"));
-    if (!Number.isInteger(part) || part < 1 || part > 4 || !["ielts", "jlpt", "hsk"].includes(attempt.program) || audioSetOf(attempt.slug, attempt.audioRevision ?? 1) !== set) throw notFound();
+    if (!Number.isInteger(part) || part < 1 || part > 4 || !["ielts", "jlpt", "hsk", "topik"].includes(attempt.program) || audioSetOf(attempt.slug, attempt.audioRevision ?? 1) !== set) throw notFound();
     const elapsed = (Date.parse(attempt.serverNow) - Date.parse(attempt.stageStartedAt)) / 1000;
-    const listeningStage = { jlpt: "jlpt-l", hsk: "hsk-l" }[attempt.program as string] ?? "ielts-listening";
+    const listeningStage = { jlpt: "jlpt-l", hsk: "hsk-l", topik: "topik-l" }[attempt.program as string] ?? "ielts-listening";
     if (!attempt.finishedAt && (attempt.stage?.id !== listeningStage || part !== listeningPosition(attempt.slug, elapsed, attempt.audioRevision ?? 1).part)) throw new ApiError(403, "Зөвхөн одоо тоглож буй хэсгийн бичлэгийг нээж болно.");
     const filename = listeningFile(attempt.slug, part, attempt.audioRevision ?? 1);
     if (!filename) throw notFound();

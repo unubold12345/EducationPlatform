@@ -110,11 +110,13 @@ export function AdminWorkspaceShell({
       </header>
       <div className="wsp-content">
         <div className="admin-main">
-          <header className="admin-section-heading admin-head">
-            <div className="admin-title"><h2>{title}</h2>{scope && <span className={"admin-live " + (testData ? "test" : "")}>{testData ? "Туршилтын өгөгдөл" : "Бодит өгөгдөл"}</span>}</div>
+          <header className="admin-head">
+            <div className="admin-title">
+              <div className="admin-title-line"><h2>{title}</h2>{scope && <span className={"admin-live " + (testData ? "test" : "")}>{testData ? "Туршилтын өгөгдөл" : "Бодит өгөгдөл"}</span>}</div>
+              {description && <p className="admin-lede">{description}</p>}
+            </div>
             <div className="admin-head-actions">{actions}{scope}</div>
           </header>
-          {description && <p className="admin-notice">{description}</p>}
           {children}
         </div>
       </div>

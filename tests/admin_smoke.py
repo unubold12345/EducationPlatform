@@ -39,6 +39,10 @@ with sync_playwright() as p:
     for tab in ["users","subscriptions","payments","attempts","content","pricing","credits","audit","settings"]:
         page.goto(BASE+"/admin?tab="+tab);page.wait_for_load_state("networkidle")
         assert page.locator(".admin-main").count()==1
+    # One job per tab: every sub-view has its own address and renders.
+    for view in ["pricing&kind=sales","pricing&kind=credits","pricing&kind=packs","pricing&kind=history","credits&view=ledger","announcements&kind=sent","settings&kind=notes"]:
+        page.goto(BASE+"/admin?tab="+view);page.wait_for_load_state("networkidle")
+        assert page.locator(".admin-main").count()==1 and page.locator(".admin-subtabs a[aria-current=page]").count()==1,view
     assert admin.request.get(BASE+"/api/admin/content/sat-algebra").status==404
     assert page.goto(BASE+"/admin/content/sat-algebra").status==404
     page.goto(BASE+"/admin/content/sat-full-01")
@@ -46,6 +50,10 @@ with sync_playwright() as p:
     page.locator(".admin-questions > li").first.get_by_role("button",name="Засах").click()
     expect(page.locator(".admin-fix-form")).to_be_visible();expect(page.locator('.admin-fix-form input[aria-label^="Сонголт"]')).to_have_count(4)
     page.locator(".admin-questions > li").first.get_by_role("button",name="Хаах").click()
+    # The other jobs on a content record are tabs: the full editor and the review status.
+    page.locator(".admin-subtabs a",has_text="Бүтэн засварлагч").click();expect(page.locator(".content-editor")).to_be_visible()
+    expect(page.locator(".admin-questions")).to_have_count(0)
+    page.locator(".admin-subtabs a",has_text="Хяналт").click();expect(page.locator(".admin-action form")).to_be_visible()
     page.goto(BASE+"/admin/content/sat-full-02");expect(page.locator(".admin-fixer-bar span")).to_contain_text("асуулт")
     expect(page.locator(".admin-questions > li")).to_have_count(15);expect(page.locator(".admin-fixer .admin-pager button[aria-current=page]")).to_have_text("1")
     for key in ["sat-full-01","ielts-academic-01","ielts-writing-data"]+[f"sat-full-{n:02}" for n in range(2,10)]+[f"ielts-academic-{n:02}" for n in range(2,7)]:
@@ -81,7 +89,10 @@ with sync_playwright() as p:
     expect(page.locator("tbody tr")).to_have_count(1)
     page.locator("tbody tr a").first.click();page.wait_for_url("**/admin/users/"+target)
     expect(page.locator(".admin-user-email")).to_have_text(response.json()["user"]["email"])
+    expect(page.locator(".admin-table-wrap")).to_have_count(0)
+    page.locator(".admin-subtabs a",has_text="Нэвтрэлт, үйлдэл").click();page.wait_for_url("**view=activity**")
     expect(page.locator(".admin-table-wrap tbody tr").last).to_contain_text("Бүртгүүлсэн")
+    page.locator(".admin-subtabs a",has_text="Тойм").click();expect(page.locator(".admin-user-actions")).to_be_visible()
     page.on("dialog",lambda dialog:dialog.accept())
     page.locator(".admin-user-actions textarea").fill("Local admin UI verification note")
     page.get_by_role("button",name="Тэмдэглэл нэмэх").click()
@@ -142,7 +153,10 @@ with sync_playwright() as p:
         r=admin.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":"set-price","target":"language","amount":value,"reason":reason});assert r.ok,(r.status,r.text())
     price(45500,"Local price change verification")
     page.goto(BASE+"/workspace/plans");expect(page.locator("main")).to_contain_text("45,500")
-    page.goto(BASE+"/admin?tab=pricing");expect(page.locator(".admin-table-wrap tbody tr").first).to_contain_text("₮45,500")
+    page.goto(BASE+"/admin?tab=pricing");expect(page.locator(".admin-rows")).to_contain_text("₮45,500")
+    page.locator(".admin-rows .admin-row",has_text="Гадаад хэл Pro").get_by_role("button",name="Засах").click()
+    expect(page.locator(".admin-row-form input[name=amount]")).to_have_value("45500")
+    page.goto(BASE+"/admin?tab=pricing&kind=history");expect(page.locator(".admin-table-wrap tbody tr").first).to_contain_text("₮45,500")
     price(59900,"Local price restored after verification")
     # Sales: validated, audited, shown beside the regular price, charged on new orders, and cancelled again.
     def sale(amount,reason,**extra):
@@ -159,7 +173,7 @@ with sync_playwright() as p:
     expect(card.locator(".pricing-sale-note")).to_contain_text("Хямдарсан үнэ")
     expect(page.locator('.pricing-card[data-program="entrance"] .pricing-price s')).to_have_count(0)
     page.screenshot(path=str(ART/"plans-sale.png"),full_page=True)
-    page.goto(BASE+"/admin?tab=pricing");expect(page.locator(".admin-sale[data-live]")).to_have_count(1)
+    page.goto(BASE+"/admin?tab=pricing&kind=sales");expect(page.locator(".admin-sale[data-live]")).to_have_count(1)
     expect(page.locator(".admin-sale[data-live]")).to_contain_text("Хямдарсан ₮39,900")
     # A new order is charged the sale price; once the sale is cancelled that order no longer matches and is refused.
     sale_order=student.request.post(BASE+"/api/subscriptions/orders",headers=ORIGIN,data={"program":"language"})
@@ -172,11 +186,11 @@ with sync_playwright() as p:
     fresh_order=student.request.post(BASE+"/api/subscriptions/orders",headers=ORIGIN,data={"program":"language"}).json()
     assert fresh_order["amountMnt"]==59900 and fresh_order["id"]==sale_order.json()["id"],fresh_order
     student.request.post(BASE+"/api/subscriptions/orders/"+fresh_order["id"]+"/confirm",headers=ORIGIN,data={"decision":"decline"})
-    page.goto(BASE+"/admin?tab=pricing");expect(page.locator(".admin-sale[data-live]")).to_have_count(0)
+    page.goto(BASE+"/admin?tab=pricing&kind=sales");expect(page.locator(".admin-sale[data-live]")).to_have_count(0)
     expect(page.locator("main")).to_contain_text("Хямдралын түүх")
     # A regular price at or below the sale clears the sale with it.
     assert sale(39900,"Local sale for the price change check").ok
-    price(35000,"Local price below the sale");page.goto(BASE+"/admin?tab=pricing");expect(page.locator(".admin-sale[data-live]")).to_have_count(0)
+    price(35000,"Local price below the sale");page.goto(BASE+"/admin?tab=pricing&kind=sales");expect(page.locator(".admin-sale[data-live]")).to_have_count(0)
     price(59900,"Local price restored after the sale check")
     # Credit packs: the whole list is validated and saved at once, shown on the plans page, and reset to the defaults.
     def packs(value,reason="Local credit pack list verification",target="packs"):
@@ -200,7 +214,7 @@ with sync_playwright() as p:
     # The one unpaid order follows the pack chosen last; it is paid at that pack's size.
     small=student.request.post(BASE+"/api/credits/orders",headers=ORIGIN,data={"credits":300,"amountMnt":1500}).json()
     assert small["id"]==big.json()["id"] and small["credits"]==300 and small["amountMnt"]==1500,small
-    admin_packs_page=page.goto(BASE+"/admin?tab=pricing");expect(page.locator(".admin-pack-row")).to_have_count(3)
+    admin_packs_page=page.goto(BASE+"/admin?tab=pricing&kind=packs");expect(page.locator(".admin-pack-row")).to_have_count(3)
     page.screenshot(path=str(ART/"admin-credit-packs.png"),full_page=True)
     # Removing the pack an unpaid order was opened for refuses its confirmation instead of adding credits.
     assert packs([{"credits":1000,"amountMnt":5000}]).ok
@@ -215,8 +229,8 @@ with sync_playwright() as p:
         r=admin.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":"set-credits","target":"language","amount":value,"reason":reason});assert r.ok,(r.status,r.text())
     credits(3500,"Local credit amount verification")
     page.goto(BASE+"/workspace/plans");expect(page.locator('.pricing-card[data-program="language"] .pricing-credits')).to_contain_text("3,500")
-    page.goto(BASE+"/admin?tab=pricing");expect(page.locator('.admin-credit-allowances [data-credit-key="language"]')).to_contain_text("Одоо 3,500")
-    expect(page.locator(".admin-table-wrap tbody tr").first).to_contain_text("₮59,900")
+    page.goto(BASE+"/admin?tab=pricing&kind=credits");expect(page.locator('.admin-credit-allowances [data-credit-key="language"]')).to_contain_text("3,500 кредит")
+    page.goto(BASE+"/admin?tab=pricing&kind=history&filter=set-price");expect(page.locator(".admin-table-wrap tbody tr").first).to_contain_text("₮59,900")
     credits(3000,"Local credit amount restored after verification")
     page.goto(BASE+"/workspace/plans");expect(page.locator('.pricing-card[data-program="language"] .pricing-credits')).to_contain_text("3,000")
     page.goto(BASE+"/workspace/plans");expect(page.locator("main")).to_contain_text("59,900")
@@ -242,6 +256,7 @@ with sync_playwright() as p:
             assert page.evaluate("document.documentElement.scrollWidth<=innerWidth")
             page.screenshot(path=str(ART/f"admin-{theme}-{width}.png"),full_page=True)
             page.goto(BASE+"/admin?tab=users");assert page.evaluate("document.documentElement.scrollWidth<=innerWidth")
+            page.goto(BASE+"/admin?tab=pricing");assert page.evaluate("document.documentElement.scrollWidth<=innerWidth")
     page.set_viewport_size({"width":1440,"height":1000});page.evaluate("localStorage.setItem('education-theme','light')")
     page.goto(BASE+"/")
     assert float(page.locator(".education-backdrop").evaluate("el=>getComputedStyle(el).opacity"))>=.4

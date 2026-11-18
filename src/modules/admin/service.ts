@@ -6,6 +6,7 @@ import { entranceMocks } from "@/modules/exams/entrance/catalog";
 import { freeMocks } from "@/modules/exams/free/catalog";
 import { jlptMocks } from "@/modules/exams/jlpt/catalog";
 import { hskMocks } from "@/modules/exams/hsk/catalog";
+import { topikMocks } from "@/modules/exams/topik/catalog";
 import { toeflMocks } from "@/modules/exams/toefl/catalog";
 import { guidedTasks } from "@/modules/workshops/guided";
 import { addCalendarMonth, findAnyPlan, findSubscriptionPlan, PLAN_SALE_MIN, saleEndFromDate, validPlanPrice, validSalePrice } from "@/modules/subscriptions/plans";
@@ -29,6 +30,7 @@ export function contentCatalog() {
     ...entranceMocks.map(exam=>({key:exam.slug,title:exam.title,program:"entrance" as const,kind:"ЭЕШ mock",count:exam.questionCount,href:"/exams/"+exam.slug})),
     ...jlptMocks.map(exam=>({key:exam.slug,title:exam.title,program:"jlpt" as const,kind:"JLPT mock",count:exam.questions,href:"/exams/"+exam.slug})),
     ...hskMocks.map(exam=>({key:exam.slug,title:exam.title,program:"hsk" as const,kind:"HSK mock",count:exam.questions,href:"/exams/"+exam.slug})),
+    ...topikMocks.map(exam=>({key:exam.slug,title:exam.title,program:"topik" as const,kind:"TOPIK mock",count:exam.questions,href:"/exams/"+exam.slug})),
     ...toeflMocks.map(exam=>({key:exam.slug,title:exam.title,program:"toefl" as const,kind:"TOEFL mock",count:exam.questions.reading+exam.questions.listening+exam.questions.writing+exam.questions.speaking,href:"/exams/"+exam.slug})),
     // The free half-length mocks can be fixed like any other mock (published versions, exact-version grading).
     ...freeMocks.map(exam=>({key:exam.slug,title:exam.title,program:exam.program,kind:"Үнэгүй хагас mock",count:exam.questions,href:"/exams/"+exam.slug})),

@@ -30,7 +30,9 @@ export function Modal({ labelledBy, onClose, busy = false, size = "wide", alert 
   return <dialog ref={dialog} className={SIZE[size]} data-modal="" role={alert ? "alertdialog" : undefined} aria-labelledby={labelledBy}
     onCancel={event => { event.preventDefault(); close(); }}
     // A browser may still close it (a second Escape with no click between): the page follows instead of keeping a hidden modal.
-    onClose={() => { if (live.current) latest.current.onClose(); }}
+    // The event is queued, so the one from React's development re-mount (cleanup closes, the effect reopens) arrives with the
+    // dialog open again; only a dialog that is really closed counts (2026-11-18).
+    onClose={() => { if (live.current && !dialog.current?.open) latest.current.onClose(); }}
     // Only a press that starts and ends on the backdrop closes it, so selecting text inside never does.
     onMouseDown={event => { pressed.current = event.target === event.currentTarget; }}
     onClick={event => { if (pressed.current && event.target === event.currentTarget) close(); pressed.current = false; }}>

@@ -65,14 +65,16 @@ export async function hostedVoice(key:string,request:HostedVoiceRequest,fetcher:
  return readAudio(response);
 }
 
-/** The words heard in a 16 kHz mono WAV answer (already validated by decodeSpeechWav). English is fixed, not detected. */
-export async function hostedTranscript(key:string,wav:ArrayBuffer,fetcher:Fetcher=fetch,retryMs=400):Promise<string> {
+/** The words heard in a 16 kHz mono WAV answer (already validated by decodeSpeechWav). English is fixed, not detected.
+ * `type` is set only for a mock's stored stage recording (WebM, Ogg or MP4 straight from the browser recorder), which
+ * can run for minutes, so it gets a longer timeout. */
+export async function hostedTranscript(key:string,wav:ArrayBuffer,fetcher:Fetcher=fetch,retryMs=400,type?:"audio/webm"|"audio/ogg"|"audio/mp4"):Promise<string> {
  const response=await call(ENDPOINT+HOSTED_TRANSCRIBE_MODEL,()=>{
   const form=new FormData();
-  form.append("audio",new Blob([wav],{type:"audio/wav"}),"answer.wav");
+  form.append("audio",new Blob([wav],{type:type??"audio/wav"}),"answer."+(type==="audio/mp4"?"m4a":type==="audio/ogg"?"ogg":type?"webm":"wav"));
   form.append("language","en");
   return {headers:{Authorization:`Bearer ${key}`},body:form};
- },60000,fetcher,retryMs);
+ },type?110000:60000,fetcher,retryMs);
  let text:unknown;
  try{text=((await response.json()) as {text?:unknown}).text;}catch{throw new SpeechProviderError("shape");}
  if(typeof text!=="string")throw new SpeechProviderError("shape");

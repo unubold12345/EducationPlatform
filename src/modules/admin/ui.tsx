@@ -27,7 +27,7 @@ export const adminTabInfo: Record<AdminTab, string> = {
   announcements: "Суралцагчдын Workspace дахь мэдэгдлийн хайрцагт мессеж илгээнэ.",
   subscriptions: "Хэн аль багцыг хэдий хүртэл эзэмшиж байгаа.",
   payments: "Багц болон нэг шалгалтын төлбөрийн гүйлгээ.",
-  pricing: "Сарын багцын үнэ, AI кредитийн сарын хэмжээг өөрчилнө.",
+  pricing: "Багцын үнэ, хямдрал, AI кредитийн сарын хэмжээ, кредит багц.",
   credits: "AI-ийн зарцуулалт: кредит, бодит DeepSeek зардал, үйлдэл ба хэрэглэгчээр.",
   content: "Шалгалт, workshop-ын асуулт, хариуг засна.",
   audit: "Админууд юу хийсэн, ямар шалтгаанаар.",
@@ -72,7 +72,17 @@ export function Pager({ info, href, label = "мөр" }: { info: ReturnType<typeo
   </nav>;
 }
 
-// Sub-view switcher (e.g. subscription orders vs single-exam purchases) rendered as links.
+// The tab bar under the page title: one job per tab, each a link with its own address.
 export function SubTabs({ items, current, href }: { items: readonly (readonly [string, string, number?])[]; current: string; href: (key: string) => string }) {
   return <nav className="admin-subtabs" aria-label="Дэд хэсэг">{items.map(([key, label, count]) => <Link key={key} href={href(key)} aria-current={key === current ? "page" : undefined}>{label}{count !== undefined && <em>{count.toLocaleString("en-US")}</em>}</Link>)}</nav>;
+}
+
+// Background rules that the admin rarely needs: closed by default so the page stays short.
+export function How({ title = "Яаж үйлчилдэг вэ", children }: { title?: string; children: ReactNode }) {
+  return <details className="admin-how"><summary>{title}</summary><div>{children}</div></details>;
+}
+
+// The big-number cards at the top of a view.
+export function Metrics({ items, wide = false }: { items: readonly (readonly [label: string, value: ReactNode, sub?: string])[]; wide?: boolean }) {
+  return <div className={"admin-metrics" + (wide ? " admin-metrics-wide" : "")}>{items.map(([label, value, sub]) => <article key={label}><p>{label}</p><strong>{value}</strong>{sub ? <small>{sub}</small> : null}</article>)}</div>;
 }

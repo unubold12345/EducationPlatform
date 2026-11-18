@@ -8,7 +8,7 @@ every session. Product facts: [PROJECT.md](./PROJECT.md) and `docs/project/`. Pa
 
 - Branch and only remote: `codex/education-foundation` on `unubold12345/EducationPlatform` (public; see Open items). Never reuse LawTest's remote.
 - Hosted: <https://education-platform-seven-neon.vercel.app>, Vercel project `prj_MTzsdRQuLeMAjpUnvhScHcYnF37n`, region `sin1`.
-  A push to the branch deploys to production. Latest pushed code: `5df2b69` (2026-11-16); previous deploy `5b392cb`.
+  A push to the branch deploys to production. Latest pushed code: the Next.js 16.4.6 bump on `c032899` (2026-11-18); previous push `c032899`.
 - Hosted database: Singapore Neon through its pooled address (migrations too). The old US Neon database is read-only for
   rollback; do not resume writes to it.
 - Hosted flags `true`: `AUTH_HOSTED_PILOT`, `AUTH_HOSTED_DEMO_ACCOUNTS`, `SPEAKING_LAB_ENABLED`, `AUTH_HOSTED_GMAIL`,
@@ -118,8 +118,8 @@ Full entries, with attribution and verification limits, are at the top of [OPERA
 - **2026-11-18 · Claude Code (Opus 5.5) · Next.js 16.4.6 security bump**: `next`, `eslint-config-next` 16.4.2 → 16.4.6; lockfile
   changes only `next`/`@next/*`. 16.4.5 fixes seven moderate advisories (`use cache` leaks, SVG image bypass, Edge cookie
   header); 16.4.6 compresses route-handler responses; none breaking. Build showed no security notice. `npm run check` and all
-  17 browser groups passed in worktree `dazzling-perlman-f7175e` (3001 left running). Committed on branch
-  `claude/dazzling-perlman-f7175e`, not merged, pushed or deployed.
+  17 browser groups passed in worktree `dazzling-perlman-f7175e` (3001 left running). Merged into
+  `codex/education-foundation` and pushed; hosted site not checked.
 - **2026-11-18 · Claude Code (Opus 5.5) · TOEFL iBT mocks on the site** ([assessments](./project/assessments.md)): nine forms at
   `/exams/toefl` (Basic/Pro or 7-day buy): routed Reading/Listening modules, listening answer windows on the server clock,
   one-clip audio allowlist, letter-box gaps, Build a Sentence, writing, recorded speaking, raw results, practice. Audio

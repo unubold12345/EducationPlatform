@@ -32,5 +32,4 @@ repository at the same time. The permanent record stays in [OPERATIONS.md](./OPE
 
 | Agent | Started (UB) | Task | Files / areas | Shared resources | Status |
 | --- | --- | --- | --- | --- | --- |
-| Claude Code (Opus 5.5) | 2026-11-20 | Student dashboard preview for the owner on a private `next dev` (no file changes) | none | port 3014 (dev server; stopped when the owner is done) | running |
 | Claude Code (Fable 5.2) | 2026-11-15 | React Native (Expo) mobile app in sibling folder `../educationplatform-mobile`; additive mobile-client support in the web app | `src/lib/auth.ts`, `src/lib/api.ts`, new `src/app/api/mobile/**`, `src/modules/mobile/**`, `docs/project/mobile-app.md` | none (own preview port 3005 if needed; no build, no database change, no git) | in progress |

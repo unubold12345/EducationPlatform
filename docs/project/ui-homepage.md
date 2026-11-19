@@ -4,29 +4,34 @@ Part of the [project guide](../PROJECT.md) (was PROJECT.md section 7). "Section 
 
 ### Homepage, theme and scratchpad
 
-- The homepage has additional education sketches through the page, a dedicated Speaking invitation,
-  and one-time scroll reveals. Motion uses a small client component around server-rendered content,
-  respects reduced-motion settings (including live changes), and leaves content readable without JS.
-  The owner chose the Classic concept on 2026-11-07; `src/app/page.tsx` renders `HomeClassic`
-  directly, and the earlier simple/index/practice experiments and their `/designs` preview routes
-  were removed.
-  Since 2026-11-08 it uses generated editorial images, concise programme cards with expandable formats,
-  three silent autoplaying product loops (exam/practice, Workspace/review and Workshop), current server-read
-  prices and FAQs. `home-details.tsx` and `home-overview.css` keep this presentation scoped to the homepage;
-  glyphs, sketches, ticker, atmosphere and a compact Lexlab link remain. Programme navigation opens `/#programs`.
-  Media and prompts: `docs/HOMEPAGE_MEDIA.md`; optimised images/videos: `public/home/`.
-  `scripts/home-loops/capture.py` uses local disposable QA accounts only; no live AI calls.
-  Artwork is selected by `HOME_ART_STYLE` in `src/components/home-art.ts`; the owner restored `editorial`.
-  The `handdrawn` ink/watercolour alternative and both complete image sets remain available. Loops have no player controls;
-  they stop offscreen, in hidden tabs and for reduced-motion preferences.
-  2026-11-13 refresh (owner request): ЭЕШ, HSK and Workshop got their own photos (FLUX-2-pro via DeepInfra, owner-approved),
-  so no picture repeats; slogan overlays, the hero seal and pill, filler eyebrows and side notes and the Workshop fine print are
-  gone; the closing call to action is one line; the Workspace features are AI chat, vocabulary, exams from a file and review;
-  a lone fifth programme card spans the row; the FAQ adds AI credits; the three loops were re-recorded on the current Workspace.
-  The loops section has no visible title (its `h2` is `sr-only`, owner request); since 2026-11-16 the loops are 12 to 14 s captioned films built from real screenshots (`scripts/home-loops/`, see `HOMEPAGE_MEDIA.md`).
-  Hero since 2026-11-16 (owner picked from wireframes): one photo card (`.hero.hero-card` in `home-overview.css`). The photo fills the
-  right two thirds, the headline and buttons sit on the dark left, the five exam links run along the card's bottom edge and the three
-  figures are a row beneath. The card is dark in both themes. The headline types itself once, slowly, and keeps a blinking caret after the last letter (`hero-typing.tsx`): untyped letters stay in the layout hidden, the `h1` name is always the full sentence, and reduced motion shows it at once. Restore: `artifacts/design-backup-2026-11-16-hero/restore.ps1`.
+- **Layout since 2026-11-20** (owner: "change the layout, remove the typing title, add more details, keep the colours and
+  background"; three wireframes were turned down with "think different", so the concept was chosen by the agent).
+  `src/app/page.tsx` renders `HomeSheet` (`src/components/home-sheet.tsx`, styles in `src/app/home-sheet.css`), top to bottom:
+  - **Hero**: the dark card (graph-paper texture, blue glows; dark in both themes) holds a still two-sentence headline, the
+    total of full mocks, two links and the free-account facts on the left, and **a sample question to answer** on the right
+    (`home-try.tsx`, client): one tab per exam (SAT, IELTS, TOEFL, ЭЕШ, JLPT, HSK, TOPIK), answer bubbles like the mocks'
+    answer sheet, an instant verdict with the explanation and a link to that exam's hub. The seven items were written for the
+    homepage only, are not mock content, and their keys sit in the client on purpose: nothing is saved or scored. The seven
+    exam links with mock counts run along the card's bottom edge (`.launch-panel`, used by `theme_smoke`).
+  - **Structure** (`#programs`, rows `#program-<program>`, so old `#program-entrance` links still land): every level's
+    sections drawn to scale on one 0–180 minute axis, shaded by skill in tints of the one blue, with total time, question
+    detail, full mocks and free half mocks. Counts, questions and the TOEFL range come from the catalogues; the section
+    minutes are a table in `src/components/home-data.ts` (taken from each programme's first mock on 2026-11-20), so a format
+    change in a mock builder needs that table updated.
+  - **Films** (`#demos`): the three product loops in order, each with its captions as a numbered step list.
+  - **Workspace** (`#workspace`, `#workshop`): the sticky Workshop photo, six Workspace tools and six Workshop links.
+  - **Plans by goal** (`#plans`): Mongolian university (ЭЕШ), universities abroad (Англи хэл Basic/Pro) and Asian languages
+    (Ази хэл Basic/Pro) with server-read prices and photos, then free and single-mock rows and a folding limits table
+    (credits, word bank, saved file exams, expert reviews from the plan definitions).
+  - FAQ (`#questions`), a dark closing band and the Lexlab link.
+  Restore the 2026-11-16 page: `artifacts/design-backup-2026-11-20-home/restore.ps1` (old page files and the two browser
+  tests that assert the homepage).
+- The atmosphere layer (sketches, aura, grain; `home-atmosphere.css`) and one-time scroll reveals (`HomeMotion`, honours
+  reduced motion and leaves content readable without JS) are unchanged. Media and prompts: `docs/HOMEPAGE_MEDIA.md`;
+  optimised images/videos: `public/home/`. `scripts/home-loops/capture.py` uses local disposable QA accounts only; no live
+  AI calls. Artwork is selected by `HOME_ART_STYLE` in `src/components/home-art.ts` (`editorial`; the `handdrawn` set stays
+  on disk). Loops have no player controls; they stop offscreen, in hidden tabs and for reduced-motion preferences. TOEFL and
+  TOPIK have no photo of their own.
 
 - The header theme switch defaults to the browser preference and saves an explicit choice in
   `education-theme` localStorage. The public site now shares the Workspace's blue/neutral palette and self-hosted Inter (`next/font/google`, fetched at build) with

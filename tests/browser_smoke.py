@@ -14,7 +14,7 @@ with sync_playwright() as p:
     response = page.goto(BASE)
     assert response.status == 200
     page.wait_for_load_state("networkidle")
-    expect(page.get_by_role("heading", name="Том зорилго.")).to_be_visible()
+    expect(page.get_by_role("heading", name="Жинхэнэ шалгалт шиг.")).to_be_visible()
     assert page.locator("html").get_attribute("lang") == "mn"
     page.screenshot(path=str(artifacts / "homepage-desktop.png"), full_page=True)
     expect(page.get_by_role("link", name="Lexlab-ийн эрх үзэх")).to_have_attribute("href", "https://lexlab.site/plan")
@@ -31,10 +31,9 @@ with sync_playwright() as p:
     page.evaluate('(theme)=>document.documentElement.dataset.theme=theme', original_theme)
     page.get_by_role("link", name="Хөтөлбөрүүд", exact=True).click()
     expect(page).to_have_url(BASE + "/#programs")
-    expect(page.locator(".program-card")).to_have_count(5)
-    page.locator('a[href="#program-sat"]').click()
-    expect(page).to_have_url(BASE + "/#program-sat")
+    expect(page.locator(".home-exam")).to_have_count(7)  # SAT, IELTS, TOEFL, ЭЕШ, JLPT, HSK, TOPIK
     expect(page.locator('#program-sat a')).to_have_attribute("href", "/exams/sat")
+    expect(page.locator('#program-entrance a')).to_have_attribute("href", "/exams/eesh")
     # Existing public programme addresses remain available for saved links.
     page.goto(BASE + "/programs/sat")
     expect(page.get_by_role("heading", name="SAT", exact=True)).to_be_visible()

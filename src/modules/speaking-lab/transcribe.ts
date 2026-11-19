@@ -4,6 +4,7 @@ import {decodeSpeechWav} from "./pcm";
 import {whisperModel} from "./models";
 import {requireSpeakingLab,reserveSpeakingRequest,serialized} from "./service";
 import {hostedSpeechKey,hostedTranscript} from "./speech-provider";
+import {aiFetcher} from "@/modules/ai-usage/server";
 
 async function localTranscript(samples:Float32Array) {
  const recognizer=await whisperModel();
@@ -20,7 +21,7 @@ export async function transcribeSpeaking(userId:string,buffer:ArrayBuffer,allow:
  try {
   // Hosted provider when configured (no shared queue); otherwise the local model, one answer at a time.
   const key=hostedSpeechKey();
-  const text=(key?await hostedTranscript(key,buffer):await localTranscript(samples))?.replace(/\s+/g," ").trim();
+  const text=(key?await hostedTranscript(key,buffer,aiFetcher("deepinfra",{userId,source:"speaking-transcribe",units:Math.round(samples.length/16)})):await localTranscript(samples))?.replace(/\s+/g," ").trim();
   // Whisper emits bracketed non-speech tags such as [BLANK_AUDIO] or (music) on silence.
   const spoken=text?.replace(/[[(][^\])]*[\])]/g,"").trim();
   if(!spoken||spoken.length>2000)throw new ApiError(422,"Couldn’t make out the answer. Try again a little closer to the microphone, or type.");

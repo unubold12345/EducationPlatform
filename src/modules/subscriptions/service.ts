@@ -2,7 +2,7 @@ import "server-only";
 import { getDb } from "@/lib/db";
 import { ApiError } from "@/lib/api";
 import { mockPilotPaymentsEnabled } from "@/lib/local-pilot";
-import { addCalendarMonth } from "./plans";
+import { addCalendarMonth, findAnyPlan, PRO_OF } from "./plans";
 import { pricedPlan } from "./prices";
 import { hasSubscription } from "./access";
 import { notify } from "@/modules/notifications/service";
@@ -12,8 +12,9 @@ const fields={id:true,program:true,amountMnt:true,currency:true,provider:true,st
 export async function createSubscriptionOrder(program:string,userId:string) {
   if(!mockPilotPaymentsEnabled())throw new ApiError(403,"Туршилтын төлбөр идэвхгүй байна.");
   const plan=await pricedPlan(program);if(!plan)throw new ApiError(404,"Багц олдсонгүй.");
-  // Pro already covers everything Basic does; selling Basic on top of an active Pro would only waste the student's money.
-  if(plan.program==="language_basic"&&await hasSubscription(userId,"language"))throw new ApiError(409,"Танд Гадаад хэл Pro идэвхтэй байна. Basic багц шаардлагагүй.");
+  // Pro already covers everything Basic does; selling Basic on top of an active Pro (of the same family, or the retired
+  // Гадаад хэл Pro) would only waste the student's money.
+  for(const pro of PRO_OF[plan.program]??[])if(await hasSubscription(userId,pro))throw new ApiError(409,`Танд ${findAnyPlan(pro)?.shortTitle??"Pro"} идэвхтэй байна. Basic багц шаардлагагүй.`);
   // An unpaid order follows the current price; paid orders keep the amount they were paid at.
   await getDb().subscriptionOrder.updateMany({where:{activeKey:userId+":"+program,status:{not:"PAID"},amountMnt:{not:plan.amountMnt}},data:{amountMnt:plan.amountMnt}});
   return getDb().subscriptionOrder.upsert({where:{activeKey:userId+":"+program},update:{},create:{userId,program,amountMnt:plan.amountMnt,activeKey:userId+":"+program},select:fields});

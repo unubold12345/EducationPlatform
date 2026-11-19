@@ -112,7 +112,7 @@ try:
   page.reload();page.wait_for_load_state('networkidle')
   section=page.locator('section[aria-labelledby="expert-heading"]')
   expect(section.get_by_role('link',name='Basic, Pro багцад →')).to_have_attribute('href','/workspace/plans')
-  expect(section).to_contain_text('Гадаад хэл Basic (сард 2), Pro (сард 5) багцад багтана')
+  expect(section).to_contain_text('Англи хэл Basic (сард 2), Pro (сард 5) багцад багтана')
   expect(section).not_to_contain_text('үлдсэн');expect(section.get_by_role('button',name='Шинжээчээр үнэлүүлэх')).to_have_count(0)
 
   # The studio's "Бүрэн үнэлгээ" is the same examiner on DeepSeek, for 21 credits, open to a free account.
@@ -141,12 +141,12 @@ try:
   assert r.json()['credits']['balance']==first_balance-21 and r.json()['review']['kind']=='strong',(first_balance,r.json()['credits'])
 
   # Basic: 2 Claude reviews a plan month. A refusal and an overloaded provider cost nothing and hide provider text.
-  subscribe(context,'language_basic');settle()
+  subscribe(context,'english_basic');settle()
   state['mode']='refusal';r=context.request.post(API,headers=ORIGIN,data=VALID);assert r.status==422 and 'хасагдаагүй' in r.json()['error'],(r.status,r.text()[:200])
   settle();state['mode']='overloaded';r=context.request.post(API,headers=ORIGIN,data=VALID);assert r.status==503 and 'secret' not in r.text(),(r.status,r.text()[:200])
   claude_before=len(calls('anthropic'));state['mode']='ok';settle()
   page.reload();page.wait_for_load_state('networkidle')
-  expect(section).to_contain_text('2 / 2 үлдсэн');expect(section).to_contain_text('Гадаад хэл Basic')
+  expect(section).to_contain_text('2 / 2 үлдсэн');expect(section).to_contain_text('Англи хэл Basic')
   button=section.get_by_role('button',name='Шинжээчээр үнэлүүлэх')
   editor.fill('Too short for an expert review, but this many words is fine for nothing at all here.');expect(button).to_be_disabled();expect(section).to_contain_text('дор хаяж 100 үг')
   editor.fill(ESSAY);expect(button).to_be_enabled()
@@ -180,7 +180,7 @@ try:
   page.screenshot(path=str(ART/'writing-expert-report.png'),full_page=True)
   # The second review spends the month; the third is refused without calling Claude.
   settle();r=context.request.post(API,headers=ORIGIN,data=VALID);assert r.ok,(r.status,r.text()[:200])
-  quota=r.json()['quota'];assert quota['plan']=='Гадаад хэл Basic' and quota['limit']==2 and quota['used']==2 and quota['remaining']==0,quota
+  quota=r.json()['quota'];assert quota['plan']=='Англи хэл Basic' and quota['limit']==2 and quota['used']==2 and quota['remaining']==0,quota
   settle();r=context.request.post(API,headers=ORIGIN,data=VALID);assert r.status==403 and 'дууссан' in r.json()['error'] and 'Pro багц сард 5' in r.json()['error'],r.text()[:200]
   assert len(calls('anthropic'))==claude_before+2
   # Every review of both kinds is on the account: listed after a reload and reopened from the server.
@@ -202,9 +202,9 @@ try:
   other=browser.new_context();signup(other,'Expert QA Pro')
   assert other.request.get(API+'/'+review_id).status==404
   assert other.request.get(API+'/not-an-id!').status==400
-  subscribe(other,'language')
+  subscribe(other,'english_pro')
   r=other.request.post(API,headers=ORIGIN,data={**VALID,'language':'en'});assert r.ok,(r.status,r.text()[:200])
-  quota=r.json()['quota'];assert quota['plan']=='Гадаад хэл Pro' and quota['limit']==5 and quota['used']==1 and quota['remaining']==4 and quota['resetsAt'],quota
+  quota=r.json()['quota'];assert quota['plan']=='Англи хэл Pro' and quota['limit']==5 and quota['used']==1 and quota['remaining']==4 and quota['resetsAt'],quota
   assert 'in English' in json.dumps(calls('anthropic')[-1]['body']['system'])
   op=other.new_page();op.goto(BASE+'/labs/ielts-writing');op.wait_for_load_state('networkidle')
   expect(op.locator('section[aria-labelledby="expert-heading"]')).to_contain_text('4 / 5 үлдсэн')

@@ -1,6 +1,7 @@
 "use client";
 import {Fragment,useEffect,useMemo,useRef,useState,useSyncExternalStore,type CSSProperties} from "react";
 import Link from "next/link";
+import type {LabMock} from "@/modules/exam-practice/lab-mocks";
 import {evidenceOf,findListeningDrill,listeningDrills,numberedQuestions,questionCorrect,questionMarks,recordingLines,recordingPhases,totalMarks,type ListeningLine,type NumberedQuestion} from "./drills";
 import {blankDrillState,getLab,getServerLab,LISTENING_SPEEDS,subscribeLab,updateLab,type Answer,type DrillState,type ListeningMode} from "./progress";
 import timingData from "./timings.json";
@@ -23,7 +24,7 @@ function evidenceParts(line:ListeningLine,items:NumberedQuestion[]) {
  return parts;
 }
 
-export function ListeningLab() {
+export function ListeningLab({mocks=[]}:{mocks?:LabMock[]}) {
  const lab=useSyncExternalStore(subscribeLab,getLab,getServerLab);
  const drill=findListeningDrill(lab.drill)??listeningDrills[0],timing=timings[drill.id];
  const items=useMemo(()=>numberedQuestions(drill),[drill]),lines=useMemo(()=>recordingLines(drill),[drill]);
@@ -37,6 +38,9 @@ export function ListeningLab() {
  const [showText,setShowText]=useState(false);
  // The picker opens the current part's test until the student opens another (0 = all closed).
  const [open,setOpen]=useState<number|null>(null);
+ // The mock group is one more row of the same accordion: open === MOCKS opens it and closes the tests.
+ const MOCKS=-1,mocksOpen=open===MOCKS;
+ const mocksChecked=mocks.filter(mock=>mock.checked).length;
  const openTest=open??drill.test;
  const used=examUsed===drill.id;
  const textVisible=state.checked||(lab.mode==="practice"&&showText);
@@ -140,6 +144,19 @@ export function ListeningLab() {
       </div>}
      </div>;
     })}
+    {mocks.length?<div className={styles.test}>
+     <button type="button" className={styles.testHead} aria-expanded={mocksOpen} aria-controls="listening-mocks" onClick={()=>setOpen(mocksOpen?0:MOCKS)}>
+      <span className={styles.testNo} aria-hidden="true">M</span>
+      <span className={styles.testText}><strong><span className={styles.longLabel}>IELTS mock-ийн сонсгол</span><span className={styles.shortLabel}>Mock</span></strong><small>{mocksChecked?`${mocksChecked}/${mocks.length} mock эхэлсэн`:`${mocks.length} mock · Part 1–4`}</small></span>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+     </button>
+     {mocksOpen&&<div className={styles.testParts} id="listening-mocks">
+      {mocks.map(mock=><Link key={mock.slug} className={styles.mockRow} href={mock.href} prefetch={false} data-locked={mock.open?undefined:""} data-mock={mock.slug}>
+       <strong>{mock.title.replace(/^IELTS Academic · /,"").replace(/ · Free Half Mock$/," · үнэгүй")}</strong>
+       <small>{mock.open?`${mock.questions} асуулт`:mock.note}{mock.checked?<em data-full={mock.correct===mock.questions?"":undefined}>{mock.correct}/{mock.questions}</em>:null}</small>
+      </Link>)}
+     </div>}
+    </div>:null}
    </nav>
 
    <section className={styles.work} aria-labelledby="listening-title">

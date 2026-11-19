@@ -12,7 +12,7 @@ Part of the [project guide](../PROJECT.md) (was PROJECT.md section 2). "Section 
 | Free mocks | Ten free half-length mocks, one per exam (ЭЕШ ×5, SAT, IELTS, JLPT N5/N4, HSK 1), open to every signed-in account (section 3, "Free half-length mocks") |
 | Practice mode | Untimed practice on every mock, with instant checks and a DeepSeek assistant |
 | Accounts | Better Auth email/password, profile, Google OAuth, verification and password recovery |
-| Plans and payments | Three plans (2026-11-13): the free account, ЭЕШ and Гадаад хэл (15 picked mocks a plan month), plus per-mock simulated purchases and purchased "yellow" credits |
+| Plans and payments | Five plans (2026-11-19): the free account, ЭЕШ, Англи хэл Basic / Pro (SAT, IELTS, TOEFL) and Ази хэл Basic / Pro (JLPT, HSK, TOPIK), every covered mock with no limit, plus per-mock simulated purchases and purchased "yellow" credits ([pricing-access](./pricing-access.md)) |
 | Admin | Protected overview, members, subscriptions, payments, monitoring, content and audits |
 | AI tutor | DeepSeek math hints, explanations and mistake review; students can attach photos of a problem or their working (section 7) |
 | Speaking Lab | Isolated IELTS speaking studio at `/labs/ielts-speaking` |
@@ -25,10 +25,22 @@ Part of the [project guide](../PROJECT.md) (was PROJECT.md section 2). "Section 
 | Exam from file | Upload a PDF, Word, PowerPoint or text file, or up to four page photos, and get an AI multiple-choice exam of 5–40 questions at `/workspace/my-exams` (5 saved exams free, 15 with IELTS or SAT), with a half-price retry that writes new questions from the kept text; exams, sittings and scores are saved on the account and follow the student between devices |
 | Study tools | Light/dark theme and a browser-only mathematics scratchpad |
 
-Workshops require the Гадаад хэл plan (or a retired IELTS plan until it ends). Full mocks open with a free mock, a prior
-per-exam purchase, the ЭЕШ plan (ЭЕШ mocks) or a Гадаад хэл pick for the current plan month (section 4). Subscription- and
+Workshops follow the plan family (2026-11-19): the IELTS and TOEFL tabs with Англи хэл Basic / Pro, the JLPT, HSK and TOPIK tabs with
+Ази хэл Basic / Pro (and a retired Гадаад хэл or IELTS plan until it ends). Full mocks open with a free mock, a prior per-exam purchase
+or a plan that covers the programme (section 4). Subscription- and
 pick-backed sittings keep continuation and review access after the plan or month ends, but new starts remain gated.
 Existing purchases and LEGACY grants are preserved.
+
+**Mock skills in the labs (owner request 2026-11-19).** The Listening Lab lists the IELTS mocks' listening under its five tests
+(«IELTS mock-ийн сонсгол»), the Reading Lab the IELTS mocks' reading («Mock-ийн уншлага»), and the Workshop's TOEFL tab has two list pages,
+`/labs/toefl-listening` and `/labs/toefl-reading`, for the nine TOEFL mocks, after its speaking and writing practice pages
+(`/labs/toefl-speaking`, `/labs/toefl-writing`; [labs](./speaking-writing-labs.md)). JLPT, HSK and TOPIK get the mocks' reading under the AI
+reading texts (`/labs/reading/<exam>`) and, for HSK 2 and TOPIK Ⅱ, a writing page `/labs/writing/hsk|topik` (JLPT has no writing paper).
+A card opens `/labs/mock/<skill>/<slug>`: practice mode narrowed to that skill's sections (`exam-practice/skills.ts`: `sectionSkill`,
+`labView`, `labFor`), so access (`mayUseMock`), the open-sitting block, saves, checks, audio and the assistant are the practice routes'
+own; the JLPT/HSK/TOPIK pages also need an Ази хэл plan (`studyGate`). The lists (`exam-practice/lab-mocks.ts`) read access from the hub
+rule and send a locked mock to its briefing. In a lab, «Дахин эхлэх» retries only the questions shown, never the whole practice session.
+TOPIK writing and HSK sentence writing get AI feedback from the practice assistant's «Бичсэнд минь санал өг» on essay tasks.
 
 The mathematics tutor is offered when reviewing a submitted SAT Math mock. Every mock also has
 practice mode at `/exams/<slug>/practice`, with its own assistant (section 7).

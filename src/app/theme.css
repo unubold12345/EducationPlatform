@@ -788,6 +788,9 @@ body:has(.exam-session) .education-backdrop { display: none; }
 .exam-clock > span.urgent { color: #ff9a9f; }
 .exam-clock > button { font-size: 9px; letter-spacing: .08em; }
 .exam-session-meta { background: color-mix(in srgb, var(--white) 76%, transparent); border-bottom: 1px solid var(--line); font-family: var(--font-mono); font-size: 9px; letter-spacing: .06em; text-transform: uppercase; }
+/* «Шалгалтыг зогсоох» (end-mock.tsx): the one control in the bar that discards the sitting. */
+.exam-session-meta .exam-end-link { color: #9c2424; }
+[data-theme="dark"] .exam-session-meta .exam-end-link { color: #ffb8be; }
 .exam-workspace { padding-top: 22px; }
 .exam-directions { border-radius: 14px; background: color-mix(in srgb, var(--surface) 62%, transparent); }
 .exam-passage, .exam-answer-panel { border-radius: 20px; background: color-mix(in srgb, var(--surface) 82%, transparent); }

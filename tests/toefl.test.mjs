@@ -175,7 +175,11 @@ test('practice lists both routes, keeps keys server-side and shows transcripts a
 });
 
 test('Basic and Pro plans open TOEFL; the workspace and review lists know the programme',()=>{
- for(const plan of subscriptionPlans.filter(item=>item.program.startsWith('language')))assert.ok(planCovers(plan,'toefl'),plan.program);
+ // Англи хэл Basic and Pro (owner rule 2026-11-19); Ази хэл does not open TOEFL.
+ const english=subscriptionPlans.filter(item=>item.program.startsWith('english_'));
+ assert.equal(english.length,2);
+ for(const plan of english)assert.ok(planCovers(plan,'toefl'),plan.program);
+ for(const plan of subscriptionPlans.filter(item=>item.program.startsWith('asian_')))assert.ok(!planCovers(plan,'toefl'),plan.program);
  assert.ok(!planCovers(subscriptionPlans.find(item=>item.program==='entrance'),'toefl'));
  assert.equal(programOf('toefl-03'),'toefl');
 });

@@ -1,6 +1,6 @@
 import "server-only";
 import { getDb } from "@/lib/db";
-import { chargedPrice, findSubscriptionPlan, subscriptionPlans, type PlanSale } from "./plans";
+import { chargedPrice, findSubscriptionPlan, subscriptionPlans, type PlanDefinition, type PlanSale } from "./plans";
 
 // Current monthly prices: admin-set rows override the defaults. Orders store the amount they were
 // created with, so a price change never rewrites a paid receipt. A plan may also carry a sale: `amountMnt` on a
@@ -26,7 +26,7 @@ export async function planSales(): Promise<Record<string, PlanSale>> {
 export async function pricedPlans() {
   const rows = await getDb().planPrice.findMany({ select: priceFields });
   const now = new Date();
-  return subscriptionPlans.map(plan => priceOf(plan, rows.find(row => row.program === plan.program), now));
+  return (subscriptionPlans as readonly PlanDefinition[]).map(plan => priceOf(plan, rows.find(row => row.program === plan.program), now));
 }
 // Pass the transaction client when called inside one, so the read uses the same connection.
 export async function pricedPlan(program: unknown, db: Pick<ReturnType<typeof getDb>, "planPrice"> = getDb()) {

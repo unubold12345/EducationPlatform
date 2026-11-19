@@ -70,7 +70,7 @@ with sync_playwright() as p:
         assert student.request.post(API, headers=ORIGIN, data=bad).status == 400, bad
 
     # Three simulated purchases: a plan, a single mock and the credit pack. Each is reported once.
-    order = student.request.post(BASE + "/api/subscriptions/orders", headers=ORIGIN, data={"program": "language"}).json()
+    order = student.request.post(BASE + "/api/subscriptions/orders", headers=ORIGIN, data={"program": "english_pro"}).json()
     declined = student.request.post(BASE + "/api/subscriptions/orders/" + order["id"] + "/confirm", headers=ORIGIN, data={"decision": "decline"})
     assert declined.json()["status"] == "DECLINED"
     assert inbox(student)["items"] == [], "a declined payment reports nothing"
@@ -91,13 +91,13 @@ with sync_playwright() as p:
     assert state["unread"] == 3, state
     assert [item["kind"] for item in state["items"]] == ["credits-paid", "mock-paid", "plan-paid"], state
     plan_item, mock_item, credit_item = state["items"][2], state["items"][1], state["items"][0]
-    assert plan_item["title"] == "Багц идэвхжлээ" and "Гадаад хэл Pro багц" in plan_item["body"] and plan_item["href"] == "/workspace/plans"
+    assert plan_item["title"] == "Багц идэвхжлээ" and "Англи хэл Pro багц" in plan_item["body"] and plan_item["href"] == "/workspace/plans"
     assert mock_item["href"] == "/exams/sat-full-01" and mock_item["title"] == "Шалгалтын эрх нээгдлээ"
     assert f"{figures[1]:,} кредит" in credit_item["body"] and credit_item["href"] == "/workspace/plans#credits"
     assert all(not item["read"] and set(item) == {"id", "kind", "title", "body", "href", "read", "createdAt"} for item in state["items"])
 
     # A second month bought before the first ends is a renewal.
-    renewal = student.request.post(BASE + "/api/subscriptions/orders", headers=ORIGIN, data={"program": "language"}).json()
+    renewal = student.request.post(BASE + "/api/subscriptions/orders", headers=ORIGIN, data={"program": "english_pro"}).json()
     assert renewal["id"] != order["id"]
     assert student.request.post(BASE + "/api/subscriptions/orders/" + renewal["id"] + "/confirm", headers=ORIGIN, data={"decision": "success"}).json()["status"] == "PAID"
     state = inbox(student)
@@ -147,12 +147,12 @@ with sync_playwright() as p:
     expect(panel).to_have_count(0)
 
     # A plan in its last three days gets one reminder, however often the inbox is read.
-    fixture("ending", user_id, "language")
+    fixture("ending", user_id, "english_pro")
     for _ in range(2):
         state = inbox(student)
         assert [item["kind"] for item in state["items"]].count("plan-ending") == 1 and state["unread"] == 1, state
     ending = next(item for item in state["items"] if item["kind"] == "plan-ending")
-    assert ending["title"] == "Багц дуусах гэж байна" and ending["href"] == "/subscribe/language", ending
+    assert ending["title"] == "Багц дуусах гэж байна" and ending["href"] == "/subscribe/english_pro" and "Англи хэл Pro багц" in ending["body"], ending
 
     # Announcements: only an admin sends them.
     for body in [{"action": "send", "title": "Student title", "body": "Student body text"}, {"action": "withdraw", "id": "x"}]:

@@ -25,6 +25,103 @@ Before 2026-10-25 agents were not recorded. Commits and details are in the full 
 
 ## Archived recent entries
 
+- **2026-11-20 · Claude Code (Opus 5.5) · Yellow credit packs, pricing video** ([pricing](./project/pricing-access.md)): owner request. Default packs 200 credits ₮3,000, 500 ₮6,000, 1,000 ₮12,000 (2,000/5,000 dropped; word-bank space now ₮2,400 per 100 words); an admin-saved hosted list overrides them until reset. `npm run check`; `admin` smoke on dev 3012. Coworker video outside the repo (`../Reels/pricing-video`, 6:40; Mongolian copy in `pricing-video-mn`): credit cost, Workshop per plan, credits per action, assumed months, yellow credit uses; figures in `figures.py`. No commit.
+- **2026-11-20 · Claude Code (Opus 5.5) · Check of HSK 1/2 forms 04–06** ([assessments](./project/assessments.md)): owner request, read only. 3001 rebuilt (it now has the TOEFL report fixes). `npm run check -- hsk` passed. Audio script hashes and site keys match the pack. On 3001 each form scored full marks from its keys, with 172 pictures, every audio part and no key in the views. Fresh Sonnet blind solve: HSK 2 180/180, HSK 1 117/120 (one shifted row by the solver; keys right). Its four flags judged sound. Still no human listening or teacher review.
+- **2026-11-19 · Claude Code (Opus 5.5) · HSK 1 and 2 forms 04–06** ([assessments](./project/assessments.md)): owner request. `hsk1-mock-04`–`06`, `hsk2-mock-04`–`06` (`MockExmps/HSK3/_source/forms456.py`, 24 new drawings, Kokoro audio); 12 HSK mocks, 600 questions. Recheck: 31 items reworded, Whisper round trip, Sonnet blind solve 298/300 (one real double answer, fixed). Forms 01–03: 可能 and 米饭 audio fixed, texts unchanged. `npm run check`; `hsk` smoke on dev 3012 after the fixes. No teacher review. No commit.
+- **2026-11-19 · Claude Code (Opus 5.5) · TOEFL writing and speaking in the Workshop** ([labs](./project/speaking-writing-labs.md)): 4 TOEFL tiles. `/labs/toefl-writing`: Build a Sentence (30, no AI), Email, Discussion, ETS 0–5 reviews. `/labs/toefl-speaking`: Listen and Repeat (35, word match, no AI), Take an Interview (6×4, 45 s, paid AI report). `npm run check`, build, `core`/`writing`/`decks` passed; seen on 3001. Live: run 1 valid, 2 findings fixed; run 2 refunded: broken JSON (4 of 11 direct calls), now mended server-side, 11/11 offline; run 3 on the new build valid. No commit.
+- **2026-11-19 · Claude Code (Opus 5.5) · Англи хэл / Ази хэл plans, TOEFL and mock labs** ([pricing](./project/pricing-access.md), [surface](./project/product-surface.md)): Гадаад хэл split into Англи хэл (SAT/IELTS/TOEFL) and Ази хэл (JLPT/HSK/TOPIK) Basic/Pro, same prices and limits; running Гадаад хэл plans kept until they end. Additive migration. TOEFL Workshop tab; labs list the mocks' listening/reading; HSK/TOPIK writing. Mobile `billing/plans` still says `language`. Every `check:all` group passed over several runs. No commit.
+- **2026-11-19 · Claude Code (Opus 5.5) · Workshop IELTS tasks list removed** ([workspace](./project/workspace.md)): owner request; the IELTS tab keeps the four lab tiles. The guided `/workshops/<slug>` pages stay (programme pages, mobile API, tests). `npm run check`, build, checked on 3001. No commit.
+- **2026-11-19 · Claude Code (Opus 5.5) · HSK characters** ([decks](./project/language-decks.md)): a «Ханз» tab in the
+  HSK 1/2 word decks shows each lesson's new characters (248 + 123, from the word lists; official list not available) with
+  pinyin, meaning and deck words. Owner: no separate character decks, no writing drill. Pinyin and meanings DeepSeek-drafted,
+  checked against the deck words; await teacher review. Fixed: 可能 tone split, a clipped example line. `npm run check`,
+  build, `decks` smoke on 3001. No commit.
+- **2026-11-19 · Claude Code (Opus 5.5) · JLPT/HSK/TOPIK reading practice** ([reading](./project/language-reading.md)):
+  Workshop tile → `/labs/reading/<exam>`: DeepSeek writes a 4–15-sentence text at the chosen level (JLPT hiragana,
+  katakana, N5 kana, N5/N4 kanji; HSK 1–2; TOPIK simple syllables, Ⅰ, Ⅱ), checked against its script; readings,
+  translation, voice, no questions. 8/10/13 credits, Basic/Pro, closed in sittings. `npm run check`, build and
+  `language_reading` on dev 3011 (live calls, QA accounts) passed. No commit.
+- **2026-11-19 · Claude Code (Opus 5.5) · HSK 1–2 on HSK 3.0** ([assessments](./project/assessments.md), [decks](./project/language-decks.md)):
+  decks are the HSK 3.0 lists (300 / 198 entries; new words DeepSeek-drafted, 10 hand fixes); the six mocks were rebuilt from
+  pack `MockExmps/HSK3` (same slugs; 40 / 60 min; HSK 2 adds Writing), 21 Kokoro tracks. `npm run check`; `hsk`, `language_decks`,
+  `free_mocks` on dev 3011; build; 3001 restarted, `hsk` passed there. Old attempts share ids and audio names. Mobile API
+  HSK copy is still 2.0 (Fable row). No teacher review or listening. No commit.
+- **2026-11-19 · Claude Code (Opus 5.5) · JLPT N5/N4 forms 04–06** ([assessments](./project/assessments.md)):
+  six new original forms (456 items) in `MockExmps/JLPT` and on `/exams/jlpt`; forms 01–03 packs, definitions and audio
+  unchanged. Audio revision 2 only: Kokoro takes via `generate-jlpt-takes.py`, VoxCPM2 narrator; every new narrator line
+  Whisper-checked, 15 re-voiced. `npm run check` and `jlpt hsk ui free` passed; live on 3001 (restarted on that build):
+  buy, practice audio, sitting for n5-04 and n4-06. Mobile API copy left (Fable row). No teacher review or listening. No commit.
+- **2026-11-19 · Claude Code (Opus 5.5) · JLPT N5 / N4 kanji decks** ([decks](./project/language-decks.md)): 104 + 174
+  kanji (no repeats), on/kun, Mongolian meaning, example words from the word decks first; DeepSeek drafts, 19 hand fixes,
+  awaiting a teacher. Kanji quiz without voice or build. Deck unit tests, lint, typecheck and `language_decks` on dev 3011
+  passed. Owner OK: build passed, 3001 restarted on it, `language_decks` passed there.
+- **2026-11-19 · Claude Code (Opus 5.5) · JLPT word decks to 791 / 688** ([decks](./project/language-decks.md)): new
+  lessons only (N5 +237, N4 +298 words, no N5 repeats), DeepSeek drafts, 17 hand fixes; meanings still await a teacher.
+  Deck unit tests and `language_decks` on dev 3011 passed; `npm run check` fails only on another agent's in-progress
+  JLPT form 04 audio test. 3001 not rebuilt.
+- **2026-11-19 · Claude Code (Opus 5.5) · Answer-sheet sittings, study-split practice** ([assessments](./project/assessments.md)):
+  SAT/IELTS/TOEFL/HSK/TOPIK sittings use `exams/sheet.tsx`; practice (not ЭЕШ) is rail | question | check panel. Backup
+  in `artifacts/`. `npm run check` passed; dev 3011: `exam_practice`, `hsk`, `topik`, `toefl`, `jlpt`,
+  `additional_exams`, `free_mocks` passed; `exams` passed except the known dev-only `measure` page error. Build passed,
+  3001 restarted (owner OK): `hsk`, `topik`, `toefl` passed there.
+- **2026-11-19 · Claude Code (Opus 5.5) · Mock results in the Review layout** ([assessments](./project/assessments.md)):
+  finished mocks open `/workspace/review/[id]`, programme extras in a panel; old result pages removed. Backup in
+  `artifacts/`. `npm run check` passed; dev 3011: `jlpt`, `hsk`, `topik`, `toefl`,
+  `free_mocks`, `entrance_mocks`, `exam_practice`, `additional_exams` passed; `exams` (after a DB restart, owner OK)
+  fails only on a dev-only console error ([troubleshooting](./project/troubleshooting.md)). Owner OK: build passed,
+  3001 restarted, `jlpt` passed there. No commit.
+- **2026-11-19 · Claude Code (Opus 5.5) · Admin skip/finish in timed mocks** ([assessments](./project/assessments.md)):
+  owner-approved exception to the no-timer-bypass rule (AGENTS.md notes it). Admins get «Дараагийн хэсэг →» and «Дуусгаж
+  дүн харах» on their own sittings; `skipMock` checks `isAdmin`, saves answers, audits; results say «Админ алгассан».
+  `npm run check` passed; on dev 3011 `exams`, `entrance_mocks`, `hsk`, `toefl`, `topik`, `jlpt`, `admin` passed;
+  `additional_exams` passed once 3001 was stopped (its DB fixture lost the connection with two servers up). Owner OK:
+  build passed, 3001 restarted on it (non-admin skip 403 there). No commit.
+- **2026-11-19 · Claude Code (Opus 5.5) · JLPT sitting: answer-sheet sidebar** ([assessments](./project/assessments.md)):
+  owner picked it from three wireframes. The timed JLPT screen drops the task cards, question strip and toolbar; a sticky
+  right column holds clock, ふりがな, sections and a bubble answer sheet that jumps; phones get a top bar. Backup and
+  restore script in `artifacts/design-backup-2026-11-19-jlpt/`. `npm run check`, `jlpt` and `free` suites passed on dev
+  3011 (selectors updated); 1440/375/320 checked. Owner OK: build passed, 3001 restarted on it. No commit.
+- **2026-11-19 · Claude Code (Opus 5.5) · Deck word cards: example below the row** ([language-decks](./project/language-decks.md)):
+  opening a word card spanned it across the row, leaving the cards before it alone with empty space. The card now keeps its
+  place and the example opens as a full-width panel after its row with a pointer to the card. `npm run check -- decks`
+  passed (assertion updated); 1440/390 checked on dev 3008. The runner rebuilt `.next`; 3001 restarted on it (owner OK). No commit.
+- **2026-11-19 · Claude Code (Opus 5.5) · SAT/IELTS hub cards, wider TOPIK cards** ([assessments](./project/assessments.md)):
+  SAT and IELTS hubs now use the other exams' cards (facts, access, practice progress, continue/practice links). TOPIK's
+  grid left an empty fourth column (cards 262 × 787 px at 1440); both hubs now fit columns of 290 px+, topics clamp to three
+  lines and show in full on the briefing. `npm run check -- core mocks topik` passed; widths 1920–320 checked. 3001 restarted
+  on that build. No commit.
+- **2026-11-18 · Claude Code (Opus 5.5) · Stop an open mock, nothing saved** ([assessments](./project/assessments.md)):
+  exam screens (all programmes, ЭЕШ too) and `/workspace/review` offer a stop with a confirm modal; `POST .../end` marks the
+  sitting `ABANDONED`, deletes its recordings/grades; readers answer 410, pages return to the list. Expired time is saved as
+  finished. Unit, live DB and browser QA (dev 3011); `check:all` passed (373 unit, 17 groups); 3001 restarted on that build.
+  DB change log was 8.7 GB: moved aside, row counts identical. No commit.
+- **2026-11-18 · Claude Code (Opus 5.5) · Wider JLPT/HSK deck pages on desktop** ([language-decks](./project/language-decks.md)):
+  the shared 1000 px `.wsp-page` cap left word cards ~600 px wide; the deck page now fills the content area to 1440 px
+  (4 columns at 1440, 5 at 1920), Kana/Hangul/Pinyin get their intended 1120 px. CSS only. `npm run check` passed; widths
+  checked on 3001 with the rule injected (1440/1920/390, no sideways scroll). `decks` suite and a build not run. No commit.
+- **2026-11-18 · Claude Code (Opus 5.5) · Next 16.4.6 installed, all work committed**: owner asked; `npm ci` (this checkout
+  had 16.4.2), eslint ignores `.claude/**` (worktree copies), exam-library tests count 7 programmes (TOPIK). `npm run
+  check:all` passed: build with no security notice, all 17 groups incl. `topik`. 3001 restarted on the new build. All
+  pending agent work committed, not pushed. `npm audit`: 16 dependency advisories, not addressed.
+- **2026-11-18 · Claude Code (Opus 5.5) · TOPIK Ⅰ/Ⅱ mocks and TOPIK Workshop** ([assessments](./project/assessments.md),
+  [language-decks](./project/language-decks.md)): three original forms per level on the official paper structure, VoxCPM2
+  Korean audio (Whisper-checked), `/exams/topik`; Workshop TOPIK tab with a Hangul chart and test and two 513-word decks.
+  Forms solved blind twice by subagents. Lint outside `.claude/`, typecheck, unit (367) and the `topik` suite on dev 3011
+  passed; deck pages checked by hand. Korean teacher review and listening pending. No build, no commit.
+- **2026-11-18 · Claude Code (Opus 5.5) · Mock grade = scores; detailed essay reviews** ([assessments](./project/assessments.md)):
+  the automatic grade is now bands/scores plus a one- or two-sentence note. IELTS results offer the Essay Studio reviews per
+  Writing task: Бүрэн үнэлгээ (21 credits) and Шинжээчийн (plan's monthly reviews), essay read from the attempt;
+  `EssayReview.attemptId/questionId` (migration applied locally). Shared Modal fixed for dev StrictMode. Unit, lint,
+  typecheck; stubbed server check, one live review, UI harness. Local DB dropped under QA load; restarted. No commit.
+- **2026-11-18 · Claude Code (Opus 5.5) · AI grading of mock Writing and Speaking** ([assessments](./project/assessments.md)):
+  IELTS/TOEFL results pages now grade Writing and Speaking with DeepSeek once per attempt (no credits; `MockGrade`, migration
+  applied locally): IELTS bands + overall, TOEFL 0–5; recordings via DeepInfra Whisper. Teacher-review copy removed. Unit, lint,
+  typecheck; live run on dev 3009; exams (copy expecting the TOPIK card), toefl, free_mocks suites on next dev. No build, no commit.
+- **2026-11-18 · Claude Code (Fable 5.2) · Admin redesign: tabs, one job per screen** ([admin-content](./project/admin-content.md)):
+  rail unchanged; each section: title, tab bar, toolbar, one table or list. Prices: five tabs, editors open in the
+  row, one History tab (7,400 px before, one screen now); AI credits, announcements, system, user and content records
+  tabbed. Restore: `artifacts/design-backup-2026-11-18-admin`. Lint outside `.claude/`, typecheck, unit passed; admin,
+  publishing, notifications suites passed on the rebuilt 3001. Build warns: installed Next is 16.4.2. No commit.
 - **2026-11-18 · Claude Code (Opus 5.5) · Simple Kana test, more deck quiz counts** ([language-decks](./project/language-decks.md)):
   Kana practice bar replaced by one test set up in a modal: ひらがな/カタカナ/both, sections, 10/20/50/all; kana → 4 romaji, score and missed
   letters, saved per chart. Deck quiz adds 30/50/all. Typecheck, unit, lint outside `.claude/` and `decks` suite passed

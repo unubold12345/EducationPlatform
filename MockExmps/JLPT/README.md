@@ -1,15 +1,19 @@
 # Original JLPT N5 and N4 mock packs
 
-Three N5 forms and three N4 forms, written by Codex (GPT-6) on 2026-11-08. **Offline authoring source.** These files remain unserved and excluded from deployment. On 2026-11-08 the owner also requested website integration: `scripts/build-jlpt-mocks.mjs` converts the packs into private `assets/jlpt` definitions for `/exams/jlpt`. The offline booklets below remain independently usable.
+Six N5 forms and six N4 forms: forms 01–03 written by Codex (GPT-6) on 2026-11-08, forms 04–06 by Claude Code (Opus 5.5) on 2026-11-19. **Offline authoring source.** These files remain unserved and excluded from deployment. On 2026-11-08 the owner also requested website integration: `scripts/build-jlpt-mocks.mjs` converts the packs into private `assets/jlpt` definitions for `/exams/jlpt`. The offline booklets below remain independently usable.
 
 All questions, dialogues, passages, notices, keys and explanations are original. The JLPT's official section structure and ordinary daily-life settings are references; no official questions, recordings or answers were reproduced. These are independent, unofficial drafts awaiting Japanese-teacher review and learner-based difficulty calibration.
 
 ## Open a mock
 
-| Level | Form 01 | Form 02 | Form 03 |
-| --- | --- | --- | --- |
-| N5 | [New student and weekend outing](N5/mock-01/questions.md) | [Home, shopping and family visit](N5/mock-02/questions.md) | [Day trip and daily routines](N5/mock-03/questions.md) |
-| N4 | [Community events and study plans](N4/mock-01/questions.md) | [Travel, work and shared facilities](N4/mock-02/questions.md) | [Health, notices and learning a skill](N4/mock-03/questions.md) |
+| Form | N5 | N4 |
+| --- | --- | --- |
+| 01 | [New student and weekend outing](N5/mock-01/questions.md) | [Community events and study plans](N4/mock-01/questions.md) |
+| 02 | [Home, shopping and family visit](N5/mock-02/questions.md) | [Travel, work and shared facilities](N4/mock-02/questions.md) |
+| 03 | [Day trip and daily routines](N5/mock-03/questions.md) | [Health, notices and learning a skill](N4/mock-03/questions.md) |
+| 04 | [A birthday party and a new room](N5/mock-04/questions.md) | [Moving to a new town and meeting the neighbours](N4/mock-04/questions.md) |
+| 05 | [Winter days, a cold and a school trip](N5/mock-05/questions.md) | [A sports club, a summer festival and volunteering](N4/mock-05/questions.md) |
+| 06 | [Cooking, a restaurant and a weekend in town](N5/mock-06/questions.md) | [Shopping online, a homestay and travel plans](N4/mock-06/questions.md) |
 
 Each form directory contains:
 
@@ -19,7 +23,7 @@ Each form directory contains:
 - `examiner-listening.md`: private listening stimulus and spoken choices, ordered to match the booklet/key.
 - `mock.json`: complete structured authoring pack, including answers and scripts; never give this file to a candidate during a sitting.
 
-For these offline booklets, listening can be administered by a separate reader. The website also has 24 generated Japanese Kokoro tracks in the repository's private `assets/exams` directory, delivered through protected routes. Spoken-option choices and quick-response stimuli are absent from the candidate booklet. Verbal-expression items use written situation cues instead of the official format's illustrations. Some task-based listening items use text alternatives instead of picture alternatives. N4 grammar/reading includes parenthetical readings for selected less basic kanji. Recordings are shorter than the official listening window; the remaining website stage time is for checking answers. See [offline administration](ADMINISTRATION.md).
+For these offline booklets, listening can be administered by a separate reader. The website also has generated Japanese tracks, delivered through protected routes: revision 1 (Kokoro, forms 01–03) in the repository's private `assets/exams` directory and revision 2 (VoxCPM2 narrator with the same Kokoro dialogue voices, all twelve forms) in `assets/jlpt-audio`. Spoken-option choices and quick-response stimuli are absent from the candidate booklet. Verbal-expression items use written situation cues instead of the official format's illustrations. Some task-based listening items use text alternatives instead of picture alternatives. N4 grammar/reading includes parenthetical readings for selected less basic kanji. Recordings are shorter than the official listening window; the remaining website stage time is for checking answers. See [offline administration](ADMINISTRATION.md).
 
 ## Structure
 
@@ -59,4 +63,4 @@ The content has undergone an author review and automated structural checks. A qu
 
 From the repository root, run `python -B MockExmps/JLPT/_source/build.py` (Python standard library only). It deterministically rebuilds only this pack, checks the per-type counts, number and uniqueness of choices, answer membership, question IDs and repeated stimuli within each level, and writes SHA-256 file hashes to `manifest.json`. It neither reads nor changes website content or the database. Structural checks cannot prove linguistic correctness.
 
-Source: `_source/n5.py`, `_source/n4.py`; helper: `_source/common.py`; renderer/validator: `_source/build.py`. Keep answers and examiner scripts private during a sitting.
+Source: `_source/n5.py`, `_source/n4.py` (forms 04–06 in `_source/n5_more.py`, `_source/n4_more.py`); helper: `_source/common.py`; renderer/validator: `_source/build.py`. Keep answers and examiner scripts private during a sitting.

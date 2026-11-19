@@ -25,6 +25,7 @@ import { creditMonths, creditUsage } from "@/modules/admin/credits";
 import { AdminAnnouncementForm, AdminAnnouncementWithdraw } from "@/components/admin-announcement-form";
 import { NOTIFICATION_LIMITS, announcementKey } from "@/modules/notifications/rules";
 import { AI_ACTIONS, CREDIT_USD, DEEPSEEK_PRICE, DEFAULT_CREDIT_PACKS, creditPeriod, creditRangeLabel, defaultAllowances, formatCredits, formatUsd, isAiAction } from "@/modules/credits/pricing";
+import { AiUsagePanel } from "@/modules/ai-usage/admin-panel";
 
 export const metadata:Metadata={title:"Удирдлагын төв",robots:{index:false,follow:false}};
 const one=(value:string|string[]|undefined)=>typeof value==="string"?value:"";
@@ -157,7 +158,7 @@ export default async function AdminPage({searchParams}:{searchParams:Promise<Rec
 
   if(tab==="attempts") {
     const current=kind==="papers"?"papers":"mocks";
-    const statusWhere=["IN_PROGRESS","SUBMITTED"].includes(filter)?{status:filter as "IN_PROGRESS"|"SUBMITTED"}:{};
+    const statusWhere=["IN_PROGRESS","SUBMITTED","ABANDONED"].includes(filter)?{status:filter}:{};
     const where={user:userFilter,...statusWhere};
     const [mockTotal,paperTotal]=await Promise.all([db.mockAttempt.count({where}),db.paperAttempt.count({where})]);
     const info=pageInfo(current==="mocks"?mockTotal:paperTotal,requested);
@@ -167,7 +168,7 @@ export default async function AdminPage({searchParams}:{searchParams:Promise<Rec
       :(await db.paperAttempt.findMany({...page,select:{id:true,slug:true,status:true,createdAt:true,updatedAt:true,user:{select:{id:true,email:true}}}})).map(row=>({...row,label:"Хасагдсан албан материал · "+row.slug,result:"—"}));
     return frame(<>
       <SubTabs items={[["mocks","Бүтэн mock",mockTotal],["papers","Хасагдсан албан материал",paperTotal]]} current={current} href={key=>link({kind:key,page:1})}/>
-      {toolbar("Хэрэглэгчийн нэр эсвэл имэйл…",{filters:{name:"filter",value:filter,options:[["","Бүх төлөв"],["IN_PROGRESS","Үргэлжилж байна"],["SUBMITTED","Дууссан"]]}})}
+      {toolbar("Хэрэглэгчийн нэр эсвэл имэйл…",{filters:{name:"filter",value:filter,options:[["","Бүх төлөв"],["IN_PROGRESS","Үргэлжилж байна"],["SUBMITTED","Дууссан"],["ABANDONED","Зогсоосон"]]}})}
       {table(["Эхэлсэн","Суралцагч","Материал","Төлөв","Сүүлд"],rows.map(row=><tr key={row.id}><td>{date(row.createdAt)}</td><td>{userLink(row.user)}</td><td>{row.label}<small><code>{row.id}</code></small></td><td><StatusPill status={row.status}/><small>{row.result}</small></td><td>{date(row.updatedAt)}</td></tr>),empty("Оролдлого олдсонгүй."))}
       <Pager info={info} href={page=>link({page})} label="оролдлого"/>
     </>);
@@ -340,6 +341,8 @@ export default async function AdminPage({searchParams}:{searchParams:Promise<Rec
       <Pager info={info} href={page=>link({page})} label="үйлдэл"/>
     </>,picker);
   }
+
+  if(tab==="ai")return frame(<AiUsagePanel params={params}/>);
 
   if(tab==="audit") {
     const actions=auditActions.map(([key])=>key);

@@ -17,6 +17,7 @@ import {
   type ExamBest, type ExamDraft, type ExamLanguage, type ExamResult, type GeneratedExam, type QuestionKind, type SavedExam,
 } from "./contracts";
 import { ExamTokenError, openExam } from "./token";
+import { aiFetch } from "@/modules/ai-usage/server";
 
 const LEASE_MS = 300_000;
 const DAILY_LIMIT = MY_EXAM_LIMITS.daily;
@@ -448,7 +449,7 @@ async function deepseekExam(messages: ReturnType<typeof examMessages>, count: nu
   if (!key) throw new ApiError(503, "AI шалгалт үүсгэгч одоогоор холбогдоогүй байна.");
   let response: Response;
   try {
-    response = await fetch("https://api.deepseek.com/chat/completions", {
+    response = await aiFetch("deepseek", "https://api.deepseek.com/chat/completions", {
       method: "POST", cache: "no-store", redirect: "error",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
       body: JSON.stringify({

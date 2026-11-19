@@ -7,6 +7,10 @@ Part of the [project guide](../PROJECT.md) (was PROJECT.md section 7). "Section 
 - The owner asked for a Reading lab in the Workshop with five example practices and credit-paid practices made from the student's own
   files or text. `/labs/ielts-reading` is a Workshop tile, a home lab link and a sign-in return path; it shares the labs' pilot switch
   (`readingLabEnabled`) and is `noindex`. Module: `src/modules/reading-lab`.
+- Mock reading (owner request 2026-11-19): a «Mock-ийн уншлага» section above «Өөрийн дасгал үүсгэх» lists the IELTS mocks' reading
+  (40 questions each; the free half mock too), and the TOEFL tab's `/labs/toefl-reading` lists the nine TOEFL mocks' reading. A card
+  opens the mock's practice mode narrowed to reading (`/labs/mock/reading/<slug>`); a locked one links to its briefing. See
+  [product-surface](./product-surface.md).
 - Samples (`samples.ts`): five original passages written for this site (urban heat islands, the takhi's return, sleep and memory, the
   spread of paper, bird navigation), ordered Band 5.5–6.5 to 7+, each six paragraphs of about 520–550 words with 12–13 questions across
   seven IELTS types (matching headings, matching information, matching features, True/False/Not Given, multiple choice, sentence and
@@ -42,7 +46,7 @@ Part of the [project guide](../PROJECT.md) (was PROJECT.md section 7). "Section 
   is saved on the account with its key (`questions`); the browser gets only the passage and answer-free questions. The account holds
   20 practices; a full library is refused with 409 before credits are held, and counted again just before the row is written.
   Since 2026-11-17 the plan sets how many a student keeps (`readingPractices` in `subscriptions/plans.ts`, `practiceCapacity`
-  in `state.ts`): free, ЭЕШ and Гадаад хэл Basic 5, Pro (and retired IELTS/SAT) 15; 20 stays the account ceiling for practices
+  in `state.ts`): free, ЭЕШ and each Basic 5, each Pro (and retired Гадаад хэл Pro, IELTS, SAT) 15; 20 stays the account ceiling for practices
   moved from a browser. Practices already saved above the plan's size are kept; only new ones are refused, with an upgrade hint
   (`practicesFullMessage`). The page gets the size from `readingLibrary(...).limit`; the mobile app still compares against 20.
   `POST …/grade` marks from the stored key by id; `PATCH …/practices/[id]` saves answers and the timer (0.6 s after a change, retried,

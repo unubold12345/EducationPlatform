@@ -6,7 +6,7 @@ import { hasLanguageStudy, languageStudyPlans } from "./service";
 import styles from "./decks.module.css";
 
 /**
- * The page-side check shared by the deck, Kana and Pinyin pages: the plan (Гадаад хэл Basic or Pro), then no timed
+ * The page-side check shared by the deck, Kana and Pinyin pages: the plan (Ази хэл Basic or Pro), then no timed
  * sitting. Returns the panel to show instead of the page, or null when the student may study. The review route checks
  * the same again.
  */

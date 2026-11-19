@@ -11,8 +11,8 @@ import '@/modules/exams/hsk/hsk.css';
 export const dynamic='force-dynamic';
 export const metadata:Metadata={title:'HSK 1–2 · Хятад хэл'};
 const levels=[
- {level:1,format:'20 сонсох (≈15 мин) · 20 унших (17 мин) · 40 асуулт · 32 минут'},
- {level:2,format:'35 сонсох (≈25 мин) · 25 унших (22 мин) · 60 асуулт · 47 минут'},
+ {level:1,format:'20 сонсох (15 мин) · 20 унших (25 мин) · 40 асуулт · 40 минут'},
+ {level:2,format:'25 сонсох (20 мин) · 25 унших (30 мин) · 10 бичих (10 мин) · 60 асуулт · 60 минут'},
 ];
 export default async function HskHub(){
  const session=await getSession();
@@ -26,7 +26,7 @@ export default async function HskHub(){
  const free=freeMocksOf('hsk')[0];
  return <div className="container page-space hsk-hub">
   <Link className="text-link" href="/exams">← Бүх шалгалт</Link>
-  <header className="hsk-hub-head"><p className="eyebrow">汉语水平考试 · ХЯТАД ХЭЛ</p><h1>HSK 1–2</h1><p>Хятад хэлний анхан шатны HSK 1, HSK 2 шалгалтын бүтэн mock. Сонсох хэсэг хятад audio-той, бүх ханз pinyin-тэй. Хариу, тэмдэглэсэн асуулт, дадлагын явц таны бүртгэлд хадгалагдана.</p></header>
+  <header className="hsk-hub-head"><p className="eyebrow">汉语水平考试 · ХЯТАД ХЭЛ</p><h1>HSK 1–2</h1><p>Хятад хэлний анхан шатны HSK 1, HSK 2 шалгалтын бүтэн mock, 2026 оны HSK 3.0 шинэ бүтэц ба үгийн сангаар (300 + 200 үг). Сонсох хэсэг хятад audio-той, бүх ханз pinyin-тэй; HSK 2-т ханз бичих хэсэг нэмэгдсэн. Хариу, тэмдэглэсэн асуулт, дадлагын явц таны бүртгэлд хадгалагдана.</p></header>
   {free?<FreeMockTile mock={free}/>:null}
   {levels.map(({level,format})=><section key={level} aria-labelledby={'hsk-level-'+level}>
   <h2 className="hsk-level" id={'hsk-level-'+level}>HSK {level}</h2>

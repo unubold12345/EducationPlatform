@@ -4,6 +4,7 @@ import type { TutorContext, TutorInput } from "./contracts";
 import { tutorMessages } from "./contracts";
 import { AI_ACTIONS, type UsageMeter } from "@/modules/credits/pricing";
 import type { MessageContent } from "@/modules/ai-images/contracts";
+import {aiFetch} from "@/modules/ai-usage/server";
 
 /** Text-only messages, or a user message with images (`withImages`); DeepSeek accepts images in user messages only. */
 export async function deepseekChat(messages: { role: string; content: MessageContent }[], maxTokens = 1400, meter?: UsageMeter) {
@@ -11,7 +12,7 @@ export async function deepseekChat(messages: { role: string; content: MessageCon
   if (!key) throw new ApiError(503,"AI багш одоогоор холбогдоогүй байна. Үндсэн тайлбараа ашиглана уу.");
   let response: Response;
   try {
-    response=await fetch("https://api.deepseek.com/chat/completions",{
+    response=await aiFetch("deepseek","https://api.deepseek.com/chat/completions",{
       method:"POST", cache:"no-store", headers:{"Content-Type":"application/json",Authorization:`Bearer ${key}`},
       body:JSON.stringify({model:process.env.DEEPSEEK_MODEL||"deepseek-flash",messages,thinking:{type:"disabled"},max_tokens:maxTokens,stream:false}),
       signal:AbortSignal.timeout(60000),redirect:"error",

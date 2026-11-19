@@ -99,7 +99,8 @@ test("the free IELTS Speaking ends after Part 2, and briefings say the mock is f
   assert.match(sat.eyebrow, /ҮНЭГҮЙ ХАГАС MOCK/);
   assert.ok(!sat.chips.some(chip => chip.includes("завсарлага")), "no break chip without a break");
   assert.equal(sat.priceNote, "Үнэгүй · бүртгэлтэй бүх хүнд");
-  assert.equal(mockBriefingSummary(findExam("sat-full-01")).priceNote, "₮10,000 / 7 хоног эсвэл Гадаад хэл багц");
+  assert.equal(mockBriefingSummary(findExam("sat-full-01")).priceNote, "₮10,000 / 7 хоног эсвэл Англи хэл багц");
+  assert.equal(mockBriefingSummary(findExam("hsk1-mock-01")).priceNote, "₮10,000 / 7 хоног эсвэл Ази хэл багц");
   assert.match(mockBriefingSummary(findExam("ielts-academic-free")).eyebrow, /ҮНЭГҮЙ ХАГАС MOCK/);
 });
 

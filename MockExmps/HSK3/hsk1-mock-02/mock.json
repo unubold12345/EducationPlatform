@@ -1,0 +1,1573 @@
+{
+ "id": "hsk1-mock-02",
+ "level": 1,
+ "number": 2,
+ "title": "星期六，去北京",
+ "titlePinyin": "Xīngqīliù, qù Běijīng",
+ "titleEn": "Saturday, going to Beijing",
+ "theme": "Weekend, weather, family and travel",
+ "stages": [
+  {
+   "id": "hsk-l",
+   "sets": [
+    {
+     "key": "L1",
+     "id": "hsk-l-1",
+     "layout": "L2",
+     "title": "第一部分 · Үг ба зураг",
+     "domain": "听力一 · Үг, зураг",
+     "task": "听录音，选择对应的图片。",
+     "note": "Нэг үгийг хоёр удаа сонсоно. Гурван зургаас тохирохыг сонгоно.",
+     "prompt": "Сонссон үгэнд тохирох зургийг сонгоно уу.",
+     "audio": [
+      "听录音，选择对应的图片。",
+      "Tīng lùyīn, xuǎnzé duìyìng de túpiàn."
+     ],
+     "example": {
+      "pictures": [
+       {
+        "label": "A",
+        "image": "../examples/hsk1-listening-2-a.svg",
+        "alt": "An open book"
+       },
+       {
+        "label": "B",
+        "image": "../examples/hsk1-listening-2-b.svg",
+        "alt": "A computer"
+       },
+       {
+        "label": "C",
+        "image": "../examples/hsk1-listening-2-c.svg",
+        "alt": "A cat"
+       }
+      ],
+      "answer": "A",
+      "turns": [
+       {
+        "text": "书",
+        "pinyin": "shū",
+        "role": "woman"
+       }
+      ]
+     },
+     "items": [
+      {
+       "n": 1,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "A",
+       "answerDisplay": "A",
+       "pictures": [
+        {
+         "label": "A",
+         "image": "images/listening-06-a.svg",
+         "alt": "A doctor in a white coat"
+        },
+        {
+         "label": "B",
+         "image": "images/listening-06-b.svg",
+         "alt": "A teacher at a blackboard"
+        },
+        {
+         "label": "C",
+         "image": "images/listening-06-c.svg",
+         "alt": "A student reading"
+        }
+       ],
+       "turns": [
+        {
+         "text": "医生",
+         "pinyin": "yīshēng",
+         "role": "woman"
+        }
+       ],
+       "explanation": "The word is 医生 (yīshēng); A shows a doctor in a white coat."
+      },
+      {
+       "n": 2,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "C",
+       "answerDisplay": "C",
+       "pictures": [
+        {
+         "label": "A",
+         "image": "images/listening-07-a.svg",
+         "alt": "A person dressed for cold weather"
+        },
+        {
+         "label": "B",
+         "image": "images/listening-07-b.svg",
+         "alt": "A person in the rain"
+        },
+        {
+         "label": "C",
+         "image": "images/listening-07-c.svg",
+         "alt": "A sunny day"
+        }
+       ],
+       "turns": [
+        {
+         "text": "热",
+         "pinyin": "rè",
+         "role": "man"
+        }
+       ],
+       "explanation": "The word is 热 (rè); C shows a sunny day."
+      },
+      {
+       "n": 3,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "B",
+       "answerDisplay": "B",
+       "pictures": [
+        {
+         "label": "A",
+         "image": "images/listening-08-a.svg",
+         "alt": "A passenger plane"
+        },
+        {
+         "label": "B",
+         "image": "images/listening-08-b.svg",
+         "alt": "A train"
+        },
+        {
+         "label": "C",
+         "image": "images/listening-08-c.svg",
+         "alt": "A taxi"
+        }
+       ],
+       "turns": [
+        {
+         "text": "火车",
+         "pinyin": "huǒchē",
+         "role": "woman"
+        }
+       ],
+       "explanation": "The word is 火车 (huǒchē); B shows a train."
+      },
+      {
+       "n": 4,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "A",
+       "answerDisplay": "A",
+       "pictures": [
+        {
+         "label": "A",
+         "image": "images/listening-09-a.svg",
+         "alt": "A shop counter with fruit"
+        },
+        {
+         "label": "B",
+         "image": "images/listening-09-b.svg",
+         "alt": "Two people eating in a restaurant"
+        },
+        {
+         "label": "C",
+         "image": "images/listening-09-c.svg",
+         "alt": "A hospital building"
+        }
+       ],
+       "turns": [
+        {
+         "text": "水果",
+         "pinyin": "shuǐguǒ",
+         "role": "man"
+        }
+       ],
+       "explanation": "The word is 水果 (shuǐguǒ); A shows a shop counter with fruit."
+      },
+      {
+       "n": 5,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "C",
+       "answerDisplay": "C",
+       "pictures": [
+        {
+         "label": "A",
+         "image": "images/listening-10-a.svg",
+         "alt": "An open book"
+        },
+        {
+         "label": "B",
+         "image": "images/listening-10-b.svg",
+         "alt": "A computer"
+        },
+        {
+         "label": "C",
+         "image": "images/listening-10-c.svg",
+         "alt": "A television"
+        }
+       ],
+       "turns": [
+        {
+         "text": "电视",
+         "pinyin": "diànshì",
+         "role": "woman"
+        }
+       ],
+       "explanation": "The word is 电视 (diànshì); C shows a television."
+      }
+     ]
+    },
+    {
+     "key": "L2",
+     "id": "hsk-l-2",
+     "layout": "L4",
+     "title": "第二部分 · Үг сонгох",
+     "domain": "听力二 · Өгүүлбэр, үг",
+     "task": "听录音，选择正确的答案。",
+     "note": "Өгүүлбэрийг хоёр удаа сонсоно. Өгүүлбэрт хэлсэн үгийг гурван сонголтоос сонгоно.",
+     "prompt": "Сонссон өгүүлбэрт хэлсэн үгийг сонгоно уу.",
+     "audio": [
+      "听录音，选择正确的答案。",
+      "Tīng lùyīn, xuǎnzé zhèngquè de dá'àn."
+     ],
+     "example": {
+      "choices": [
+       {
+        "label": "A",
+        "text": "水",
+        "pinyin": "shuǐ"
+       },
+       {
+        "label": "B",
+        "text": "茶",
+        "pinyin": "chá"
+       },
+       {
+        "label": "C",
+        "text": "牛奶",
+        "pinyin": "niúnǎi"
+       }
+      ],
+      "answer": "A",
+      "turns": [
+       {
+        "text": "我想喝水。",
+        "pinyin": "Wǒ xiǎng hē shuǐ.",
+        "role": "woman"
+       }
+      ]
+     },
+     "items": [
+      {
+       "n": 6,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "C",
+       "answerDisplay": "C · 看电影 (kàn diànyǐng)",
+       "choices": [
+        {
+         "label": "A",
+         "text": "看电视",
+         "pinyin": "kàn diànshì"
+        },
+        {
+         "label": "B",
+         "text": "看书",
+         "pinyin": "kàn shū"
+        },
+        {
+         "label": "C",
+         "text": "看电影",
+         "pinyin": "kàn diànyǐng"
+        }
+       ],
+       "turns": [
+        {
+         "text": "星期天我和爸爸去看电影。",
+         "pinyin": "Xīngqītiān wǒ hé bàba qù kàn diànyǐng.",
+         "role": "woman"
+        }
+       ],
+       "explanation": "They will watch a film: C 看电影."
+      },
+      {
+       "n": 7,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "B",
+       "answerDisplay": "B · 下雪 (xià xuě)",
+       "choices": [
+        {
+         "label": "A",
+         "text": "下雨",
+         "pinyin": "xià yǔ"
+        },
+        {
+         "label": "B",
+         "text": "下雪",
+         "pinyin": "xià xuě"
+        },
+        {
+         "label": "C",
+         "text": "很热",
+         "pinyin": "hěn rè"
+        }
+       ],
+       "turns": [
+        {
+         "text": "今天很冷，下雪了。",
+         "pinyin": "Jīntiān hěn lěng, xià xuě le.",
+         "role": "man"
+        }
+       ],
+       "explanation": "It is snowing: B 下雪."
+      },
+      {
+       "n": 8,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "A",
+       "answerDisplay": "A · 飞机 (fēijī)",
+       "choices": [
+        {
+         "label": "A",
+         "text": "飞机",
+         "pinyin": "fēijī"
+        },
+        {
+         "label": "B",
+         "text": "火车",
+         "pinyin": "huǒchē"
+        },
+        {
+         "label": "C",
+         "text": "车",
+         "pinyin": "chē"
+        }
+       ],
+       "turns": [
+        {
+         "text": "我们坐飞机去中国。",
+         "pinyin": "Wǒmen zuò fēijī qù Zhōngguó.",
+         "role": "woman"
+        }
+       ],
+       "explanation": "They go to China by plane: A 飞机."
+      },
+      {
+       "n": 9,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "B",
+       "answerDisplay": "B · 医院 (yīyuàn)",
+       "choices": [
+        {
+         "label": "A",
+         "text": "学校",
+         "pinyin": "xuéxiào"
+        },
+        {
+         "label": "B",
+         "text": "医院",
+         "pinyin": "yīyuàn"
+        },
+        {
+         "label": "C",
+         "text": "商店",
+         "pinyin": "shāngdiàn"
+        }
+       ],
+       "turns": [
+        {
+         "text": "我姐姐在医院工作。",
+         "pinyin": "Wǒ jiějie zài yīyuàn gōngzuò.",
+         "role": "man"
+        }
+       ],
+       "explanation": "The sister works in a hospital: B 医院."
+      },
+      {
+       "n": 10,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "A",
+       "answerDisplay": "A · 九点 (jiǔ diǎn)",
+       "choices": [
+        {
+         "label": "A",
+         "text": "九点",
+         "pinyin": "jiǔ diǎn"
+        },
+        {
+         "label": "B",
+         "text": "五点",
+         "pinyin": "wǔ diǎn"
+        },
+        {
+         "label": "C",
+         "text": "十点",
+         "pinyin": "shí diǎn"
+        }
+       ],
+       "turns": [
+        {
+         "text": "晚上九点我回家。",
+         "pinyin": "Wǎnshang jiǔ diǎn wǒ huí jiā.",
+         "role": "woman"
+        }
+       ],
+       "explanation": "He goes home at nine: A 九点."
+      }
+     ]
+    },
+    {
+     "key": "L3",
+     "id": "hsk-l-3",
+     "layout": "L3",
+     "title": "第三部分 · Яриа ба зураг",
+     "domain": "听力三 · Яриа, зураг",
+     "task": "听对话，选择相应的图片。",
+     "note": "Хоёр хүний богино яриаг хоёр удаа сонсоно. Зургаан зургаас тохирохыг сонгоно; нэг зураг илүү.",
+     "prompt": "Сонссон яриад тохирох зургийг сонгоно уу.",
+     "audio": [
+      "听对话，选择相应的图片。",
+      "Tīng duìhuà, xuǎnzé xiāngyìng de túpiàn."
+     ],
+     "pictures": [
+      {
+       "label": "A",
+       "image": "images/listening-picture-a.svg",
+       "alt": "A train station with a clock"
+      },
+      {
+       "label": "B",
+       "image": "images/listening-picture-b.svg",
+       "alt": "A doctor and a patient"
+      },
+      {
+       "label": "C",
+       "image": "images/listening-picture-c.svg",
+       "alt": "Two people eating in a restaurant"
+      },
+      {
+       "label": "D",
+       "image": "images/listening-picture-d.svg",
+       "alt": "A school building"
+      },
+      {
+       "label": "E",
+       "image": "images/listening-picture-e.svg",
+       "alt": "A person watching television at home"
+      },
+      {
+       "label": "F",
+       "image": "images/listening-picture-f.svg",
+       "alt": "A shop counter with fruit"
+      }
+     ],
+     "example": {
+      "pictures": [
+       {
+        "label": "A",
+        "image": "../examples/hsk1-listening-3-a.svg",
+        "alt": "Two people shaking hands"
+       }
+      ],
+      "answer": "A",
+      "turns": [
+       {
+        "speaker": "女",
+        "text": "你好！",
+        "pinyin": "Nǐ hǎo!",
+        "role": "woman"
+       },
+       {
+        "speaker": "男",
+        "text": "你好！很高兴认识你。",
+        "pinyin": "Nǐ hǎo! Hěn gāoxìng rènshi nǐ.",
+        "role": "man"
+       }
+      ]
+     },
+     "items": [
+      {
+       "n": 11,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "A",
+       "answerDisplay": "A",
+       "turns": [
+        {
+         "speaker": "男",
+         "text": "火车几点开？",
+         "pinyin": "Huǒchē jǐ diǎn kāi?",
+         "role": "man"
+        },
+        {
+         "speaker": "女",
+         "text": "下午三点。",
+         "pinyin": "Xiàwǔ sān diǎn.",
+         "role": "woman"
+        }
+       ],
+       "explanation": "They are talking about a train time at a station; A shows a station."
+      },
+      {
+       "n": 12,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "B",
+       "answerDisplay": "B",
+       "turns": [
+        {
+         "speaker": "女",
+         "text": "你怎么了？",
+         "pinyin": "Nǐ zěnme le?",
+         "role": "woman"
+        },
+        {
+         "speaker": "男",
+         "text": "我很热。",
+         "pinyin": "Wǒ hěn rè.",
+         "role": "man"
+        }
+       ],
+       "explanation": "The woman asks how he feels and he says he is hot; B shows a doctor and patient."
+      },
+      {
+       "n": 13,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "F",
+       "answerDisplay": "F",
+       "turns": [
+        {
+         "speaker": "女",
+         "text": "这个苹果多少钱？",
+         "pinyin": "Zhège píngguǒ duōshao qián?",
+         "role": "woman"
+        },
+        {
+         "speaker": "男",
+         "text": "五块钱。",
+         "pinyin": "Wǔ kuài qián.",
+         "role": "man"
+        }
+       ],
+       "explanation": "They are asking about the price of apples in a shop; F shows a shop."
+      },
+      {
+       "n": 14,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "D",
+       "answerDisplay": "D",
+       "turns": [
+        {
+         "speaker": "男",
+         "text": "你在哪儿工作？",
+         "pinyin": "Nǐ zài nǎr gōngzuò?",
+         "role": "man"
+        },
+        {
+         "speaker": "女",
+         "text": "我在学校工作。",
+         "pinyin": "Wǒ zài xuéxiào gōngzuò.",
+         "role": "woman"
+        }
+       ],
+       "explanation": "She says she works at a school; D shows a school."
+      },
+      {
+       "n": 15,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "E",
+       "answerDisplay": "E",
+       "turns": [
+        {
+         "speaker": "女",
+         "text": "你在做什么？",
+         "pinyin": "Nǐ zài zuò shénme?",
+         "role": "woman"
+        },
+        {
+         "speaker": "男",
+         "text": "我在家看电视。",
+         "pinyin": "Wǒ zài jiā kàn diànshì.",
+         "role": "man"
+        }
+       ],
+       "explanation": "He says he is watching TV at home; E shows a person watching TV."
+      }
+     ]
+    },
+    {
+     "key": "L4",
+     "id": "hsk-l-4",
+     "layout": "L4",
+     "title": "第四部分 · Хариулт сонгох",
+     "domain": "听力四 · Богино асуулт",
+     "task": "听录音，选择答案。",
+     "note": "Өгүүлбэр ба асуултыг хоёр удаа сонсоно. Асуулт бичигдээгүй; гурван хариултаас зөвийг сонгоно.",
+     "prompt": "Сонссон асуултын хариултыг сонгоно уу.",
+     "audio": [
+      "听录音，选择答案。",
+      "Tīng lùyīn, xuǎnzé dá'àn."
+     ],
+     "example": {
+      "choices": [
+       {
+        "label": "A",
+        "text": "商店",
+        "pinyin": "shāngdiàn"
+       },
+       {
+        "label": "B",
+        "text": "医院",
+        "pinyin": "yīyuàn"
+       },
+       {
+        "label": "C",
+        "text": "学校",
+        "pinyin": "xuéxiào"
+       }
+      ],
+      "answer": "A",
+      "turns": [
+       {
+        "text": "下午我去商店，我想买一些水果。",
+        "pinyin": "Xiàwǔ wǒ qù shāngdiàn, wǒ xiǎng mǎi yìxiē shuǐguǒ.",
+        "role": "woman"
+       },
+       {
+        "text": "问：她去哪儿？",
+        "pinyin": "Wèn: Tā qù nǎr?",
+        "role": "narrator"
+       }
+      ]
+     },
+     "items": [
+      {
+       "n": 16,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "A",
+       "answerDisplay": "A · 七点 (qī diǎn)",
+       "choices": [
+        {
+         "label": "A",
+         "text": "七点",
+         "pinyin": "qī diǎn"
+        },
+        {
+         "label": "B",
+         "text": "六点",
+         "pinyin": "liù diǎn"
+        },
+        {
+         "label": "C",
+         "text": "八点",
+         "pinyin": "bā diǎn"
+        }
+       ],
+       "turns": [
+        {
+         "text": "我上午七点看电视。",
+         "pinyin": "Wǒ shàngwǔ qī diǎn kàn diànshì.",
+         "role": "man"
+        },
+        {
+         "text": "问：他上午几点看电视？",
+         "pinyin": "Wèn: Tā shàngwǔ jǐ diǎn kàn diànshì?",
+         "role": "narrator"
+        }
+       ],
+       "explanation": "The statement says seven o'clock; A is 七点."
+      },
+      {
+       "n": 17,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "B",
+       "answerDisplay": "B · 坐出租车 (zuò chūzūchē)",
+       "choices": [
+        {
+         "label": "A",
+         "text": "坐火车",
+         "pinyin": "zuò huǒchē"
+        },
+        {
+         "label": "B",
+         "text": "坐出租车",
+         "pinyin": "zuò chūzūchē"
+        },
+        {
+         "label": "C",
+         "text": "坐飞机",
+         "pinyin": "zuò fēijī"
+        }
+       ],
+       "turns": [
+        {
+         "text": "我坐出租车去医院。",
+         "pinyin": "Wǒ zuò chūzūchē qù yīyuàn.",
+         "role": "man"
+        },
+        {
+         "text": "问：他怎么去医院？",
+         "pinyin": "Wèn: Tā zěnme qù yīyuàn?",
+         "role": "narrator"
+        }
+       ],
+       "explanation": "The speaker says “坐出租车”; B is 坐出租车."
+      },
+      {
+       "n": 18,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "C",
+       "answerDisplay": "C · 医院 (yīyuàn)",
+       "choices": [
+        {
+         "label": "A",
+         "text": "学校",
+         "pinyin": "xuéxiào"
+        },
+        {
+         "label": "B",
+         "text": "商店",
+         "pinyin": "shāngdiàn"
+        },
+        {
+         "label": "C",
+         "text": "医院",
+         "pinyin": "yīyuàn"
+        }
+       ],
+       "turns": [
+        {
+         "text": "我妈妈是医生，她在医院工作。",
+         "pinyin": "Wǒ māma shì yīshēng, tā zài yīyuàn gōngzuò.",
+         "role": "man"
+        },
+        {
+         "text": "问：他妈妈在哪儿工作？",
+         "pinyin": "Wèn: Tā māma zài nǎr gōngzuò?",
+         "role": "narrator"
+        }
+       ],
+       "explanation": "The statement says she works in a hospital; C is 医院."
+      },
+      {
+       "n": 19,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "A",
+       "answerDisplay": "A · 四岁 (sì suì)",
+       "choices": [
+        {
+         "label": "A",
+         "text": "四岁",
+         "pinyin": "sì suì"
+        },
+        {
+         "label": "B",
+         "text": "五岁",
+         "pinyin": "wǔ suì"
+        },
+        {
+         "label": "C",
+         "text": "六岁",
+         "pinyin": "liù suì"
+        }
+       ],
+       "turns": [
+        {
+         "text": "我有一个儿子，他四岁。",
+         "pinyin": "Wǒ yǒu yí gè érzi, tā sì suì.",
+         "role": "man"
+        },
+        {
+         "text": "问：他儿子几岁？",
+         "pinyin": "Wèn: Tā érzi jǐ suì?",
+         "role": "narrator"
+        }
+       ],
+       "explanation": "The son is four years old; A is 四岁."
+      },
+      {
+       "n": 20,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "B",
+       "answerDisplay": "B · 很冷 (hěn lěng)",
+       "choices": [
+        {
+         "label": "A",
+         "text": "很热",
+         "pinyin": "hěn rè"
+        },
+        {
+         "label": "B",
+         "text": "很冷",
+         "pinyin": "hěn lěng"
+        },
+        {
+         "label": "C",
+         "text": "下雨",
+         "pinyin": "xià yǔ"
+        }
+       ],
+       "turns": [
+        {
+         "text": "今天天气太冷了，我不去商店。",
+         "pinyin": "Jīntiān tiānqì tài lěng le, wǒ bú qù shāngdiàn.",
+         "role": "woman"
+        },
+        {
+         "text": "问：今天天气怎么样？",
+         "pinyin": "Wèn: Jīntiān tiānqì zěnmeyàng?",
+         "role": "narrator"
+        }
+       ],
+       "explanation": "The statement says it is too cold; B is 很冷."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "hsk-r",
+   "sets": [
+    {
+     "key": "R1",
+     "id": "hsk-r-1",
+     "layout": "R2",
+     "title": "第一部分 · Өгүүлбэр ба зураг",
+     "domain": "阅读一 · Өгүүлбэр, зураг",
+     "task": "选择相应的图片。",
+     "note": "Өгүүлбэр бүрт тохирох зургийг A–F-ээс сонгоно; нэг зураг илүү.",
+     "pictures": [
+      {
+       "label": "A",
+       "image": "images/reading-picture-a.svg",
+       "alt": "A shop counter with fruit"
+      },
+      {
+       "label": "B",
+       "image": "images/reading-picture-b.svg",
+       "alt": "A doctor in a white coat"
+      },
+      {
+       "label": "C",
+       "image": "images/reading-picture-c.svg",
+       "alt": "A school building"
+      },
+      {
+       "label": "D",
+       "image": "images/reading-picture-d.svg",
+       "alt": "A person in the rain"
+      },
+      {
+       "label": "E",
+       "image": "images/reading-picture-e.svg",
+       "alt": "Two people eating in a restaurant"
+      },
+      {
+       "label": "F",
+       "image": "images/reading-picture-f.svg",
+       "alt": "A person watching television at home"
+      }
+     ],
+     "example": {
+      "pictures": [
+       {
+        "label": "A",
+        "image": "../examples/hsk1-reading-2-a.svg",
+        "alt": "An open book"
+       }
+      ],
+      "line": {
+       "text": "我很喜欢这本书。",
+       "pinyin": "Wǒ hěn xǐhuan zhè běn shū."
+      },
+      "answer": "A"
+     },
+     "items": [
+      {
+       "n": 21,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "A",
+       "answerDisplay": "A",
+       "line": {
+        "text": "妈妈在商店买水果。",
+        "pinyin": "Māma zài shāngdiàn mǎi shuǐguǒ."
+       },
+       "explanation": "The sentence mentions a shop and fruit; A shows a shop."
+      },
+      {
+       "n": 22,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "B",
+       "answerDisplay": "B",
+       "line": {
+        "text": "他是医生。",
+        "pinyin": "Tā shì yīshēng."
+       },
+       "explanation": "The sentence says he is a doctor; B shows a doctor."
+      },
+      {
+       "n": 23,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "C",
+       "answerDisplay": "C",
+       "line": {
+        "text": "学生在学校学习汉语。",
+        "pinyin": "Xuésheng zài xuéxiào xuéxí Hànyǔ."
+       },
+       "explanation": "The sentence mentions studying at school; C shows a school."
+      },
+      {
+       "n": 24,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "D",
+       "answerDisplay": "D",
+       "line": {
+        "text": "今天下雨了，天气很冷。",
+        "pinyin": "Jīntiān xià yǔ le, tiānqì hěn lěng."
+       },
+       "explanation": "The sentence says it is raining; D shows rain."
+      },
+      {
+       "n": 25,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "E",
+       "answerDisplay": "E",
+       "line": {
+        "text": "我们在饭店吃米饭。",
+        "pinyin": "Wǒmen zài fàndiàn chī mǐfàn."
+       },
+       "explanation": "The sentence mentions eating in a restaurant; E shows a restaurant."
+      }
+     ]
+    },
+    {
+     "key": "R2",
+     "id": "hsk-r-2",
+     "layout": "R3",
+     "title": "第二部分 · Асуулт ба хариулт",
+     "domain": "阅读二 · Асуулт, хариулт",
+     "task": "选择相应的回答。",
+     "note": "Асуулт бүрт тохирох хариултыг A–F-ээс сонгоно; нэг хариулт илүү.",
+     "choices": [
+      {
+       "label": "A",
+       "text": "我七岁。",
+       "pinyin": "Wǒ qī suì."
+      },
+      {
+       "label": "B",
+       "text": "我家有三个人。",
+       "pinyin": "Wǒ jiā yǒu sān gè rén."
+      },
+      {
+       "label": "C",
+       "text": "她在医院工作。",
+       "pinyin": "Tā zài yīyuàn gōngzuò."
+      },
+      {
+       "label": "D",
+       "text": "我喜欢苹果。",
+       "pinyin": "Wǒ xǐhuan píngguǒ."
+      },
+      {
+       "label": "E",
+       "text": "谢谢你。",
+       "pinyin": "Xièxie nǐ."
+      },
+      {
+       "label": "F",
+       "text": "现在下午三点。",
+       "pinyin": "Xiànzài xiàwǔ sān diǎn."
+      }
+     ],
+     "example": {
+      "line": {
+       "text": "你喝水吗？",
+       "pinyin": "Nǐ hē shuǐ ma?"
+      },
+      "answerLine": {
+       "label": "F",
+       "text": "好的，谢谢！",
+       "pinyin": "Hǎo de, xièxie!"
+      },
+      "answer": "F"
+     },
+     "items": [
+      {
+       "n": 26,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "C",
+       "answerDisplay": "C · 她在医院工作。",
+       "line": {
+        "text": "你妈妈在哪儿工作？",
+        "pinyin": "Nǐ māma zài nǎr gōngzuò?"
+       },
+       "explanation": "The question asks where the mother works; C says in a hospital."
+      },
+      {
+       "n": 27,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "A",
+       "answerDisplay": "A · 我七岁。",
+       "line": {
+        "text": "你多大了？",
+        "pinyin": "Nǐ duō dà le?"
+       },
+       "explanation": "The question asks an age; A says “I am seven”."
+      },
+      {
+       "n": 28,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "D",
+       "answerDisplay": "D · 我喜欢苹果。",
+       "line": {
+        "text": "你爱吃什么水果？",
+        "pinyin": "Nǐ ài chī shénme shuǐguǒ?"
+       },
+       "explanation": "The question asks about fruit; D says “I like apples”."
+      },
+      {
+       "n": 29,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "B",
+       "answerDisplay": "B · 我家有三个人。",
+       "line": {
+        "text": "你家有几个人？",
+        "pinyin": "Nǐ jiā yǒu jǐ gè rén?"
+       },
+       "explanation": "The question asks how many people are in the family; B says three."
+      },
+      {
+       "n": 30,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "F",
+       "answerDisplay": "F · 现在下午三点。",
+       "line": {
+        "text": "现在几点？",
+        "pinyin": "Xiànzài jǐ diǎn?"
+       },
+       "explanation": "The question asks the time; F says three in the afternoon."
+      }
+     ]
+    },
+    {
+     "key": "R3",
+     "id": "hsk-r-3",
+     "layout": "R4",
+     "title": "第三部分 · Хоосон зай нөхөх",
+     "domain": "阅读三 · Үг нөхөх",
+     "task": "选词填空。",
+     "note": "Хоосон зайд тохирох үгийг A–F-ээс сонгоно; нэг үг илүү.",
+     "choices": [
+      {
+       "label": "A",
+       "text": "谁",
+       "pinyin": "shéi"
+      },
+      {
+       "label": "B",
+       "text": "在",
+       "pinyin": "zài"
+      },
+      {
+       "label": "C",
+       "text": "漂亮",
+       "pinyin": "piàoliang"
+      },
+      {
+       "label": "D",
+       "text": "多少",
+       "pinyin": "duōshao"
+      },
+      {
+       "label": "E",
+       "text": "喝",
+       "pinyin": "hē"
+      },
+      {
+       "label": "F",
+       "text": "医院",
+       "pinyin": "yīyuàn"
+      }
+     ],
+     "example": {
+      "line": {
+       "text": "你叫什么（　）？",
+       "pinyin": "Nǐ jiào shénme (　)?"
+      },
+      "answerLine": {
+       "label": "D",
+       "text": "名字",
+       "pinyin": "míngzi"
+      },
+      "answer": "D"
+     },
+     "items": [
+      {
+       "n": 31,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "C",
+       "answerDisplay": "C · 漂亮",
+       "line": {
+        "text": "这个杯子（　）吗？",
+        "pinyin": "Zhège bēizi (　) ma?"
+       },
+       "explanation": "“这个杯子漂亮吗？” asks whether the cup is pretty; C is 漂亮."
+      },
+      {
+       "n": 32,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "A",
+       "answerDisplay": "A · 谁",
+       "line": {
+        "text": "（　）是王老师？",
+        "pinyin": "(　) shì Wáng lǎoshī?"
+       },
+       "explanation": "“谁是王老师？” asks who Teacher Wang is; A is 谁."
+      },
+      {
+       "n": 33,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "F",
+       "answerDisplay": "F · 医院",
+       "line": {
+        "text": "你妈妈在（　）工作。",
+        "pinyin": "Nǐ māma zài (　) gōngzuò."
+       },
+       "explanation": "The sentence needs a workplace; F is 医院."
+      },
+      {
+       "n": 34,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "D",
+       "answerDisplay": "D · 多少",
+       "line": {
+        "text": "你有（　）钱？",
+        "pinyin": "Nǐ yǒu (　) qián?"
+       },
+       "explanation": "“你有多少钱？” asks how much money you have; D is 多少."
+      },
+      {
+       "n": 35,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "E",
+       "answerDisplay": "E · 喝",
+       "line": {
+        "text": "我想（　）茶。",
+        "pinyin": "Wǒ xiǎng (　) chá."
+       },
+       "explanation": "“我想喝茶” needs the verb 喝; E."
+      }
+     ]
+    },
+    {
+     "key": "R4",
+     "id": "hsk-r-4",
+     "layout": "RQ",
+     "title": "第四部分 · Текст ба асуулт",
+     "domain": "阅读四 · Текст, асуулт",
+     "task": "阅读短文，选择正确的答案。",
+     "note": "Богино текстийг уншаад ★ асуултын зөв хариултыг гурван сонголтоос сонгоно.",
+     "example": {
+      "line": {
+       "text": "我今天很忙，上午工作，下午上课。",
+       "pinyin": "Wǒ jīntiān hěn máng, shàngwǔ gōngzuò, xiàwǔ shàngkè."
+      },
+      "statement": {
+       "text": "她下午做什么？",
+       "pinyin": "Tā xiàwǔ zuò shénme?"
+      },
+      "choices": [
+       {
+        "label": "A",
+        "text": "工作",
+        "pinyin": "gōngzuò"
+       },
+       {
+        "label": "B",
+        "text": "上课",
+        "pinyin": "shàngkè"
+       },
+       {
+        "label": "C",
+        "text": "睡觉",
+        "pinyin": "shuìjiào"
+       }
+      ],
+      "answer": "B"
+     },
+     "items": [
+      {
+       "n": 36,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "A",
+       "answerDisplay": "A · 十点 (shí diǎn)",
+       "line": {
+        "text": "星期天我们坐火车去北京。火车上午十点开，下午一点到。",
+        "pinyin": "Xīngqītiān wǒmen zuò huǒchē qù Běijīng. Huǒchē shàngwǔ shí diǎn kāi, xiàwǔ yī diǎn dào."
+       },
+       "statement": {
+        "text": "火车几点开？",
+        "pinyin": "Huǒchē jǐ diǎn kāi?"
+       },
+       "choices": [
+        {
+         "label": "A",
+         "text": "十点",
+         "pinyin": "shí diǎn"
+        },
+        {
+         "label": "B",
+         "text": "一点",
+         "pinyin": "yī diǎn"
+        },
+        {
+         "label": "C",
+         "text": "两点",
+         "pinyin": "liǎng diǎn"
+        }
+       ],
+       "explanation": "The train leaves at ten; one o'clock is when it arrives: A."
+      },
+      {
+       "n": 37,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "C",
+       "answerDisplay": "C · 下雨了 (xià yǔ le)",
+       "line": {
+        "text": "今天下雨了，很冷。我不想去外边，想在家看电视。",
+        "pinyin": "Jīntiān xià yǔ le, hěn lěng. Wǒ bù xiǎng qù wàibian, xiǎng zài jiā kàn diànshì."
+       },
+       "statement": {
+        "text": "今天天气怎么样？",
+        "pinyin": "Jīntiān tiānqì zěnmeyàng?"
+       },
+       "choices": [
+        {
+         "label": "A",
+         "text": "很热",
+         "pinyin": "hěn rè"
+        },
+        {
+         "label": "B",
+         "text": "很好",
+         "pinyin": "hěn hǎo"
+        },
+        {
+         "label": "C",
+         "text": "下雨了",
+         "pinyin": "xià yǔ le"
+        }
+       ],
+       "explanation": "It is raining and cold: C."
+      },
+      {
+       "n": 38,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "B",
+       "answerDisplay": "B · 写汉字 (xiě Hànzì)",
+       "line": {
+        "text": "我的女朋友是中国人。她会说汉语，也会写很多汉字。",
+        "pinyin": "Wǒ de nǚpéngyou shì Zhōngguó rén. Tā huì shuō Hànyǔ, yě huì xiě hěn duō Hànzì."
+       },
+       "statement": {
+        "text": "他的女朋友会做什么？",
+        "pinyin": "Tā de nǚpéngyou huì zuò shénme?"
+       },
+       "choices": [
+        {
+         "label": "A",
+         "text": "开车",
+         "pinyin": "kāichē"
+        },
+        {
+         "label": "B",
+         "text": "写汉字",
+         "pinyin": "xiě Hànzì"
+        },
+        {
+         "label": "C",
+         "text": "做饭",
+         "pinyin": "zuò fàn"
+        }
+       ],
+       "explanation": "She can write many Chinese characters: B."
+      },
+      {
+       "n": 39,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "C",
+       "answerDisplay": "C · 坐出租车 (zuò chūzūchē)",
+       "line": {
+        "text": "我爸爸开车上班，我妈妈坐出租车上班。",
+        "pinyin": "Wǒ bàba kāichē shàngbān, wǒ māma zuò chūzūchē shàngbān."
+       },
+       "statement": {
+        "text": "妈妈怎么上班？",
+        "pinyin": "Māma zěnme shàngbān?"
+       },
+       "choices": [
+        {
+         "label": "A",
+         "text": "开车",
+         "pinyin": "kāichē"
+        },
+        {
+         "label": "B",
+         "text": "坐火车",
+         "pinyin": "zuò huǒchē"
+        },
+        {
+         "label": "C",
+         "text": "坐出租车",
+         "pinyin": "zuò chūzūchē"
+        }
+       ],
+       "explanation": "The mother takes a taxi; the father drives: C."
+      },
+      {
+       "n": 40,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "A",
+       "answerDisplay": "A · 要多休息 (yào duō xiūxi)",
+       "line": {
+        "text": "昨天我去医院看病了。医生说我没事，要多休息。",
+        "pinyin": "Zuótiān wǒ qù yīyuàn kànbìng le. Yīshēng shuō wǒ méi shì, yào duō xiūxi."
+       },
+       "statement": {
+        "text": "医生说什么？",
+        "pinyin": "Yīshēng shuō shénme?"
+       },
+       "choices": [
+        {
+         "label": "A",
+         "text": "要多休息",
+         "pinyin": "yào duō xiūxi"
+        },
+        {
+         "label": "B",
+         "text": "要多吃饭",
+         "pinyin": "yào duō chī fàn"
+        },
+        {
+         "label": "C",
+         "text": "要去学校",
+         "pinyin": "yào qù xuéxiào"
+        }
+       ],
+       "explanation": "The doctor says to rest more: A."
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

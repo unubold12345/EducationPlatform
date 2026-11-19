@@ -33,7 +33,7 @@ def fits(page,label):
     page.set_viewport_size(previous)
 def open_section(page,title):
     page.locator(".practice-sections button",has_text=title).first.click()
-    expect(page.locator(".exam-toolbar h1")).to_contain_text(title)
+    expect(page.locator(":is(.exam-toolbar,.study-head,.sheet-head) h1")).to_contain_text(title)
 def check_button(page): return page.locator(".practice-actions .button").first
 
 with sync_playwright() as p:
@@ -86,7 +86,7 @@ with sync_playwright() as p:
     expect(page.get_by_role("radio").nth(1)).to_be_checked()
     page.keyboard.press("f")
     expect(page.locator(".question-strip button").first).to_have_attribute("data-flagged","")
-    expect(page.locator(".exam-session-meta [role=status]")).to_have_text("Хадгалсан")
+    expect(page.locator(":is(.exam-session-meta,.exam-sheet,.study-rail) [role=status]")).to_have_text("Хадгалсан")
     check_button(page).click()
     feedback=page.locator(".practice-feedback")
     expect(feedback).to_be_visible()
@@ -177,7 +177,7 @@ with sync_playwright() as p:
     expect(strike).to_have_attribute("aria-pressed","true")
     page.locator(".passage-scale button").nth(1).click()
     expect(page.locator(".exam-passage")).to_have_attribute("data-scaled","")
-    expect(page.locator(".exam-session-meta [role=status]")).to_have_text("Хадгалсан")
+    expect(page.locator(":is(.exam-session-meta,.exam-sheet,.study-rail) [role=status]")).to_have_text("Хадгалсан")
     page.screenshot(path=str(ART/"sat-sitting-tools-desktop.png"),full_page=True)
     page.reload()
     page.locator(".question-strip button").nth(1).click()
@@ -200,25 +200,28 @@ with sync_playwright() as p:
         assert context.request.patch(endpoint,headers=ORIGIN,data={"revision":data["revision"],"stageId":stage_id,"responses":answers["responses"],"flags":[]}).ok
         fixture("deadline",attempt,-1000)
     page.goto(BASE+"/exams/attempts/"+attempt)
-    expect(page.locator(".exam-results")).to_be_visible()
-    expect(page.locator(".review-domain").first).to_be_visible()
-    assert page.locator(".review-domain").count()>=4
-    reviews=page.locator(".exam-review")
+    # A finished mock's result is the Review page.
+    expect(page.locator(".wsp-review")).to_be_visible()
+    expect(page).to_have_url(BASE+"/workspace/review/"+attempt)
+    expect(page.locator(".wsp-domain").first).to_be_visible()
+    assert page.locator(".wsp-domain").count()>=4
+    reviews=page.locator(".wsp-question")
+    page.locator(".wsp-filter button",has_text="Бүгд").click()
     expect(reviews).to_have_count(98)
-    page.locator(".review-filter button",has_text="Зөв").click()
+    page.locator(".wsp-filter button",has_text="Зөв").click()
     assert reviews.count()>0 and reviews.count()<=98
-    page.locator(".review-filter button",has_text="Хоосон").click()
-    expect(reviews).to_have_count(0)
+    # Filters with nothing in them are not offered.
+    expect(page.locator(".wsp-filter button",has_text="Хоосон")).to_have_count(0)
     page.screenshot(path=str(ART/"sat-results-tools-desktop.png"),full_page=True)
     fits(page,"sat-results")
-    page.get_by_role("link",name="Дадлагын горимд давтах",exact=False).click()
+    page.get_by_role("link",name="Цаггүй дадлагаар давтах",exact=False).click()
     expect(page.locator(".practice-session")).to_be_visible()
 
     # IELTS: replayable audio, the transcript after a check, writing and speaking help.
     slug="ielts-academic-02"
     page.goto(BASE+"/exams/"+slug+"/practice")
     expect(page.locator(".practice-sections button")).to_have_count(6)
-    expect(page.locator(".exam-toolbar h1")).to_contain_text("Listening")
+    expect(page.locator(":is(.exam-toolbar,.study-head,.sheet-head) h1")).to_contain_text("Listening")
     audio=page.locator("[data-practice-audio] audio")
     expect(audio).to_have_attribute("src","/api/exam-practice/"+slug+"/audio?part=1")
     expect(page.locator("[data-practice-audio] input[type=range]")).to_be_enabled()
@@ -248,7 +251,7 @@ with sync_playwright() as p:
     expect(page.locator(".practice-feedback")).to_have_attribute("data-result","review")
     expect(page.locator("#practice-text")).to_be_enabled()
     page.locator("#practice-text").fill("The table compares four community facilities.")
-    expect(page.locator(".exam-session-meta [role=status]")).to_have_text("Хадгалсан")
+    expect(page.locator(":is(.exam-session-meta,.exam-sheet,.study-rail) [role=status]")).to_have_text("Хадгалсан")
     page.reload()
     open_section(page,"Academic Writing")
     # Opening a section lands on its first unchecked task, so Task 1 is one click back.

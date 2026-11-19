@@ -39,8 +39,8 @@ export default async function WorkspaceHome() {
     { program: "ielts", href: "/exams/ielts", label: "IELTS Academic", detail: `${count("ielts")} бүтэн mock · 4 чадвар`, tone: "tone-violet", tag: "Listening · Speaking" },
     { program: "toefl", href: "/exams/toefl", label: "TOEFL iBT", detail: `${toeflMocks.length} бүтэн mock · 2026 формат`, tone: "tone-violet", tag: "Reading · Listening · Speaking" },
     { program: "entrance", href: "/exams/eesh", label: "ЭЕШ", detail: `${entranceTotal} mock · 5 хичээл`, tone: "tone-green", tag: "Мат · Физик · Хими · Био · Англи" },
-    { program: "jlpt", href: "/exams/jlpt", label: "JLPT N5・N4", detail: "6 бүтэн mock · япон audio", tone: "tone-amber", tag: "語彙 · 文法 · 聴解" },
-    { program: "hsk", href: "/exams/hsk", label: "HSK 1–2", detail: `${hskMocks.length} бүтэн mock · хятад audio`, tone: "tone-amber", tag: "听力 · 阅读" },
+    { program: "jlpt", href: "/exams/jlpt", label: "JLPT N5・N4", detail: "12 бүтэн mock · япон audio", tone: "tone-amber", tag: "語彙 · 文法 · 聴解" },
+    { program: "hsk", href: "/exams/hsk", label: "HSK 1–2", detail: `${hskMocks.length} бүтэн HSK 3.0 mock · хятад audio`, tone: "tone-amber", tag: "听力 · 阅读 · 书写" },
     { program: "topik", href: "/exams/topik", label: "TOPIK Ⅰ–Ⅱ", detail: `${topikMocks.length} бүтэн mock · солонгос audio`, tone: "tone-amber", tag: "듣기 · 쓰기 · 읽기" },
   ];
   const labs: HomeLab[] = [

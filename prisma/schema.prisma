@@ -26,6 +26,8 @@ model User {
   readingSampleStates ReadingSampleState[]
   essayReviews EssayReview[]
   languageDeckProgress LanguageDeckProgress[]
+  examGoals ExamGoal[]
+  studyTasks StudyTask[]
   studyPlan StudyPlan?
   studyDays StudyDay[]
   creditPeriods CreditPeriod[]
@@ -796,4 +798,92 @@ model LanguageDeckProgress {
   updatedAt DateTime @updatedAt
   @@unique([userId, deck, wordId])
   @@index([userId, deck])
+}
+
+// Student dashboard (2026-11-20): the exams a student prepares for, each with its level and, once booked, the date.
+// At most four per student; the exams and levels are the fixed list in src/modules/dashboard/exams.ts.
+model ExamGoal {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // "sat", "ielts", "toefl", "jlpt", "hsk", "topik" or "eesh".
+  exam String
+  // One of that exam's levels ("n4", "academic", "math", ...).
+  level String
+  // Ulaanbaatar calendar date of a booked sitting, YYYY-MM-DD; null until the student books one.
+  examDate String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([userId, exam, level])
+}
+
+// The dashboard's day-by-day to-do list: the student's own tasks on Ulaanbaatar calendar days. Self-study notes
+// only; nothing grades or rewards them.
+model StudyTask {
+  id String @id @default(cuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // YYYY-MM-DD in Ulaanbaatar time.
+  day String
+  title String
+  done Boolean @default(false)
+  doneAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([userId, day])
+  @@index([userId, doneAt])
+}
+
+// One row per paid AI provider request (DeepSeek, Claude, DeepInfra), written by `src/modules/ai-usage` for the site and
+// by `scripts/lib/ai-call.mjs` for scripts and agent runs, so every cent on a provider bill has a source. Rows are kept
+// when a user is deleted (no relation), because the money was spent.
+model AiCall {
+  id String @id @default(cuid())
+  createdAt DateTime @default(now())
+  // "deepseek", "anthropic" or "deepinfra".
+  provider String
+  model String @default("")
+  // "app" (a site feature) or "script" (a repository script or an agent's run).
+  origin String
+  // The feature or script: a credit action ("exam", "writing-review"), "mock-grading", "speaking-voice", "script:build-language-decks"...
+  source String
+  // "local", "hosted" or "preview".
+  environment String
+  // False when the request went to a stand-in server (the checks' mock) instead of the provider's own host: no money.
+  billable Boolean @default(true)
+  userId String?
+  // The CreditCharge this call belongs to, when it was paid with credits.
+  chargeId String?
+  // "ok", "http" (non-2xx answer), "network" or "timeout".
+  status String
+  httpStatus Int @default(0)
+  durationMs Int @default(0)
+  promptTokens Int @default(0)
+  cachedTokens Int @default(0)
+  completionTokens Int @default(0)
+  reasoningTokens Int @default(0)
+  // Speech: characters read aloud or milliseconds of audio transcribed.
+  units Int @default(0)
+  costMicroUsd Int @default(0)
+  // How the cost was found: "provider" (the provider's own figure), "tokens" (token counts × list price at that hour) or "none".
+  costBasis String @default("none")
+  // A script's or agent's label (AI_USAGE_AGENT), so runs by different agents can be told apart.
+  agent String?
+  requestId String?
+  @@index([createdAt])
+  @@index([source, createdAt])
+  @@index([userId, createdAt])
+}
+
+// A reading of the DeepSeek account balance, so the admin page can compare money that left the account with the calls
+// recorded above and show anything spent outside them.
+model AiBalance {
+  id String @id @default(cuid())
+  createdAt DateTime @default(now())
+  provider String
+  currency String
+  // Balance in millionths of the currency unit.
+  totalMicros BigInt
+  environment String
+  @@index([provider, createdAt])
 }

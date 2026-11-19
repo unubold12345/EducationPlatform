@@ -1,0 +1,2061 @@
+{
+  "slug": "hsk1-mock-05",
+  "version": 2,
+  "program": "hsk",
+  "title": "HSK 1 · Mock 05",
+  "description": "去商店买东西 · Дэлгүүр, үнэ, хувцас, цаг агаар",
+  "points": 40,
+  "notes": [
+    "HSK 3.0 (2026 оны шинэ бүтэц, шинэ үгийн сан) дээр суурилсан албан бус, эх зохиомжтой дадлагын mock. Хятад хэлний багшийн хяналт хүлээгдэж байна.",
+    "Сонсох хэсэг нь хиймэл (Kokoro) хятад дуу хоолойтой; асуулт бүрийг хоёр удаа уншина.",
+    "Raw зөв хариултын тоо ба хэсэг бүрийн 100 онооны дадлагын хөрвүүлэлт (200-аас); HSK-ийн албан оноо, тэнцсэн эсэх биш."
+  ],
+  "sources": [
+    {
+      "label": "Chinese Testing International · HSK 1",
+      "url": "https://www.chinesetest.cn/HSK/1"
+    },
+    {
+      "label": "HSK 3.0 үгийн сан (HSK 1–2: 300 + 200 үг)",
+      "url": "https://hsk.wordswing.com/vocabulary/"
+    }
+  ],
+  "stages": [
+    {
+      "id": "hsk-l",
+      "title": "听力 · Сонсох",
+      "kind": "listening",
+      "seconds": 900,
+      "instructions": "Бичлэг нэг удаа, серверийн цагтай зэрэг тоглоно; асуулт бүрийг хоёр удаа уншина. Дөрвөн хэсэг дараалан тоглоно. Бичлэг дууссаны дараах хугацаанд хариугаа шалгана. Цаг дуусахад Унших хэсэг эхэлнэ.",
+      "groups": [
+        {
+          "id": "hsk-l-1",
+          "title": "第一部分 · Үг ба зураг",
+          "section": "听力 · Сонсох",
+          "instructions": "听录音，选择对应的图片。\nНэг үгийг хоёр удаа сонсоно. Гурван зургаас тохирохыг сонгоно.",
+          "pageMode": "group",
+          "hsk": {
+            "layout": "L2",
+            "example": {
+              "pictures": [
+                {
+                  "label": "A",
+                  "src": "/exam-assets/hsk/examples/hsk1-listening-2-a.svg",
+                  "alt": "An open book"
+                },
+                {
+                  "label": "B",
+                  "src": "/exam-assets/hsk/examples/hsk1-listening-2-b.svg",
+                  "alt": "A computer"
+                },
+                {
+                  "label": "C",
+                  "src": "/exam-assets/hsk/examples/hsk1-listening-2-c.svg",
+                  "alt": "A cat"
+                }
+              ],
+              "answer": "A"
+            }
+          }
+        },
+        {
+          "id": "hsk-l-2",
+          "title": "第二部分 · Үг сонгох",
+          "section": "听力 · Сонсох",
+          "instructions": "听录音，选择正确的答案。\nӨгүүлбэрийг хоёр удаа сонсоно. Өгүүлбэрт хэлсэн үгийг гурван сонголтоос сонгоно.",
+          "pageMode": "group",
+          "hsk": {
+            "layout": "L4",
+            "example": {
+              "choices": [
+                {
+                  "label": "A",
+                  "text": "水",
+                  "pinyin": "shuǐ"
+                },
+                {
+                  "label": "B",
+                  "text": "茶",
+                  "pinyin": "chá"
+                },
+                {
+                  "label": "C",
+                  "text": "牛奶",
+                  "pinyin": "niúnǎi"
+                }
+              ],
+              "answer": "A"
+            }
+          }
+        },
+        {
+          "id": "hsk-l-3",
+          "title": "第三部分 · Яриа ба зураг",
+          "section": "听力 · Сонсох",
+          "instructions": "听对话，选择相应的图片。\nХоёр хүний богино яриаг хоёр удаа сонсоно. Тохирох зургийг A–F-ээс сонгоно; нэг зураг жишээнд ашиглагдсан.",
+          "pageMode": "group",
+          "hsk": {
+            "layout": "L3",
+            "pictures": [
+              {
+                "label": "A",
+                "src": "/exam-assets/hsk/hsk1-mock-05/p-2a66d447f832.svg",
+                "alt": "A taxi at the roadside"
+              },
+              {
+                "label": "B",
+                "src": "/exam-assets/hsk/hsk1-mock-05/p-780189dae4d4.svg",
+                "alt": "A person working at a computer at night"
+              },
+              {
+                "label": "C",
+                "src": "/exam-assets/hsk/hsk1-mock-05/p-56b920969ccc.svg",
+                "alt": "A person in a coat and scarf with snowflakes"
+              },
+              {
+                "label": "D",
+                "src": "/exam-assets/hsk/hsk1-mock-05/p-9b1260343727.svg",
+                "alt": "A person with an umbrella in the rain"
+              },
+              {
+                "label": "E",
+                "src": "/exam-assets/hsk/hsk1-mock-05/p-fb848490c779.svg",
+                "alt": "A shop counter with fruit"
+              },
+              {
+                "label": "F",
+                "src": "/exam-assets/hsk/hsk1-mock-05/p-e2d58d325715.svg",
+                "alt": "Two people eating in a restaurant"
+              }
+            ],
+            "example": {
+              "pictures": [
+                {
+                  "label": "C",
+                  "src": "/exam-assets/hsk/hsk1-mock-05/p-56b920969ccc.svg",
+                  "alt": "A person in a coat and scarf with snowflakes"
+                }
+              ],
+              "answer": "C"
+            }
+          }
+        },
+        {
+          "id": "hsk-l-4",
+          "title": "第四部分 · Хариулт сонгох",
+          "section": "听力 · Сонсох",
+          "instructions": "听录音，选择答案。\nӨгүүлбэр ба асуултыг хоёр удаа сонсоно. Асуулт бичигдээгүй; гурван хариултаас зөвийг сонгоно.",
+          "pageMode": "group",
+          "hsk": {
+            "layout": "L4",
+            "example": {
+              "choices": [
+                {
+                  "label": "A",
+                  "text": "商店",
+                  "pinyin": "shāngdiàn"
+                },
+                {
+                  "label": "B",
+                  "text": "医院",
+                  "pinyin": "yīyuàn"
+                },
+                {
+                  "label": "C",
+                  "text": "学校",
+                  "pinyin": "xuéxiào"
+                }
+              ],
+              "answer": "A"
+            }
+          }
+        }
+      ],
+      "questions": [
+        {
+          "id": "hsk1-05-01",
+          "number": "1",
+          "domain": "听力一 · Үг, зураг",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-1",
+          "prompt": "Сонссон үгэнд тохирох зургийг сонгоно уу.",
+          "options": [
+            "A",
+            "B",
+            "C"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C"
+          ],
+          "answers": [
+            "C"
+          ],
+          "answerDisplay": "C",
+          "explanation": "The word is 衣服 (yīfu); C shows a shirt on a hanger.",
+          "hsk": {
+            "pictures": [
+              {
+                "label": "A",
+                "src": "/exam-assets/hsk/hsk1-mock-05/p-58b54ebb5db8.svg",
+                "alt": "A red apple with a leaf"
+              },
+              {
+                "label": "B",
+                "src": "/exam-assets/hsk/hsk1-mock-05/p-35fa615ffe33.svg",
+                "alt": "A mobile phone on a table"
+              },
+              {
+                "label": "C",
+                "src": "/exam-assets/hsk/hsk1-mock-05/p-80d85675a1d9.svg",
+                "alt": "A shirt on a hanger"
+              }
+            ]
+          },
+          "listening": {
+            "part": 1,
+            "script": "衣服\nyīfu"
+          }
+        },
+        {
+          "id": "hsk1-05-02",
+          "number": "2",
+          "domain": "听力一 · Үг, зураг",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-1",
+          "prompt": "Сонссон үгэнд тохирох зургийг сонгоно уу.",
+          "options": [
+            "A",
+            "B",
+            "C"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C"
+          ],
+          "answers": [
+            "A"
+          ],
+          "answerDisplay": "A",
+          "explanation": "The word is 面包 (miànbāo); A shows a loaf of bread.",
+          "hsk": {
+            "pictures": [
+              {
+                "label": "A",
+                "src": "/exam-assets/hsk/hsk1-mock-05/p-d7fa59aaf983.svg",
+                "alt": "A loaf of bread"
+              },
+              {
+                "label": "B",
+                "src": "/exam-assets/hsk/hsk1-mock-05/p-1c654a45badd.svg",
+                "alt": "Two eggs on a plate"
+              },
+              {
+                "label": "C",
+                "src": "/exam-assets/hsk/hsk1-mock-05/p-44cc7d297d15.svg",
+                "alt": "A bowl of noodles"
+              }
+            ]
+          },
+          "listening": {
+            "part": 1,
+            "script": "面包\nmiànbāo"
+          }
+        },
+        {
+          "id": "hsk1-05-03",
+          "number": "3",
+          "domain": "听力一 · Үг, зураг",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-1",
+          "prompt": "Сонссон үгэнд тохирох зургийг сонгоно уу.",
+          "options": [
+            "A",
+            "B",
+            "C"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C"
+          ],
+          "answers": [
+            "B"
+          ],
+          "answerDisplay": "B",
+          "explanation": "The word is 学生 (xuésheng); B shows a student reading at a desk.",
+          "hsk": {
+            "pictures": [
+              {
+                "label": "A",
+                "src": "/exam-assets/hsk/hsk1-mock-05/p-e6a884d5d04f.svg",
+                "alt": "A teacher at a blackboard"
+              },
+              {
+                "label": "B",
+                "src": "/exam-assets/hsk/hsk1-mock-05/p-180eb55d0096.svg",
+                "alt": "A student reading at a desk"
+              },
+              {
+                "label": "C",
+                "src": "/exam-assets/hsk/hsk1-mock-05/p-576e5d9ae081.svg",
+                "alt": "A doctor in a white coat"
+              }
+            ]
+          },
+          "listening": {
+            "part": 1,
+            "script": "学生\nxuésheng"
+          }
+        },
+        {
+          "id": "hsk1-05-04",
+          "number": "4",
+          "domain": "听力一 · Үг, зураг",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-1",
+          "prompt": "Сонссон үгэнд тохирох зургийг сонгоно уу.",
+          "options": [
+            "A",
+            "B",
+            "C"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C"
+          ],
+          "answers": [
+            "C"
+          ],
+          "answerDisplay": "C",
+          "explanation": "The word is 唱歌 (chàng gē); C shows a woman singing into a microphone.",
+          "hsk": {
+            "pictures": [
+              {
+                "label": "A",
+                "src": "/exam-assets/hsk/hsk1-mock-05/p-84542e3a9858.svg",
+                "alt": "Two people dancing"
+              },
+              {
+                "label": "B",
+                "src": "/exam-assets/hsk/hsk1-mock-05/p-301c7b65eabb.svg",
+                "alt": "A person running in a park"
+              },
+              {
+                "label": "C",
+                "src": "/exam-assets/hsk/hsk1-mock-05/p-6fa0a643ad52.svg",
+                "alt": "A woman singing into a microphone"
+              }
+            ]
+          },
+          "listening": {
+            "part": 1,
+            "script": "唱歌\nchàng gē"
+          }
+        },
+        {
+          "id": "hsk1-05-05",
+          "number": "5",
+          "domain": "听力一 · Үг, зураг",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-1",
+          "prompt": "Сонссон үгэнд тохирох зургийг сонгоно уу.",
+          "options": [
+            "A",
+            "B",
+            "C"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C"
+          ],
+          "answers": [
+            "B"
+          ],
+          "answerDisplay": "B",
+          "explanation": "The word is 钱 (qián); B shows banknotes and coins.",
+          "hsk": {
+            "pictures": [
+              {
+                "label": "A",
+                "src": "/exam-assets/hsk/hsk1-mock-05/p-bc77b27510be.svg",
+                "alt": "A wristwatch"
+              },
+              {
+                "label": "B",
+                "src": "/exam-assets/hsk/hsk1-mock-05/p-3314b9cbe323.svg",
+                "alt": "Banknotes and coins"
+              },
+              {
+                "label": "C",
+                "src": "/exam-assets/hsk/hsk1-mock-05/p-a05d007e50e3.svg",
+                "alt": "An open book"
+              }
+            ]
+          },
+          "listening": {
+            "part": 1,
+            "script": "钱\nqián"
+          }
+        },
+        {
+          "id": "hsk1-05-06",
+          "number": "6",
+          "domain": "听力二 · Өгүүлбэр, үг",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-2",
+          "prompt": "Сонссон өгүүлбэрт хэлсэн үгийг сонгоно уу.",
+          "options": [
+            "A",
+            "B",
+            "C"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C"
+          ],
+          "answers": [
+            "B"
+          ],
+          "answerDisplay": "B · 二百块 (èrbǎi kuài)",
+          "explanation": "The clothes cost two hundred: B 二百块.",
+          "hsk": {
+            "choices": [
+              {
+                "label": "A",
+                "text": "一百块",
+                "pinyin": "yìbǎi kuài"
+              },
+              {
+                "label": "B",
+                "text": "二百块",
+                "pinyin": "èrbǎi kuài"
+              },
+              {
+                "label": "C",
+                "text": "两千块",
+                "pinyin": "liǎngqiān kuài"
+              }
+            ]
+          },
+          "listening": {
+            "part": 2,
+            "script": "这件衣服二百块。\nZhè jiàn yīfu èrbǎi kuài."
+          }
+        },
+        {
+          "id": "hsk1-05-07",
+          "number": "7",
+          "domain": "听力二 · Өгүүлбэр, үг",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-2",
+          "prompt": "Сонссон өгүүлбэрт хэлсэн үгийг сонгоно уу.",
+          "options": [
+            "A",
+            "B",
+            "C"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C"
+          ],
+          "answers": [
+            "A"
+          ],
+          "answerDisplay": "A · 很便宜 (hěn piányi)",
+          "explanation": "The apples are cheap: A 很便宜.",
+          "hsk": {
+            "choices": [
+              {
+                "label": "A",
+                "text": "很便宜",
+                "pinyin": "hěn piányi"
+              },
+              {
+                "label": "B",
+                "text": "很贵",
+                "pinyin": "hěn guì"
+              },
+              {
+                "label": "C",
+                "text": "不好吃",
+                "pinyin": "bù hǎochī"
+              }
+            ]
+          },
+          "listening": {
+            "part": 2,
+            "script": "超市里的苹果很便宜。\nChāoshì li de píngguǒ hěn piányi."
+          }
+        },
+        {
+          "id": "hsk1-05-08",
+          "number": "8",
+          "domain": "听力二 · Өгүүлбэр, үг",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-2",
+          "prompt": "Сонссон өгүүлбэрт хэлсэн үгийг сонгоно уу.",
+          "options": [
+            "A",
+            "B",
+            "C"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C"
+          ],
+          "answers": [
+            "B"
+          ],
+          "answerDisplay": "B · 杯子 (bēizi)",
+          "explanation": "He wants a new cup: B 杯子.",
+          "hsk": {
+            "choices": [
+              {
+                "label": "A",
+                "text": "手机",
+                "pinyin": "shǒujī"
+              },
+              {
+                "label": "B",
+                "text": "杯子",
+                "pinyin": "bēizi"
+              },
+              {
+                "label": "C",
+                "text": "桌子",
+                "pinyin": "zhuōzi"
+              }
+            ]
+          },
+          "listening": {
+            "part": 2,
+            "script": "我想买一个新杯子。\nWǒ xiǎng mǎi yí ge xīn bēizi."
+          }
+        },
+        {
+          "id": "hsk1-05-09",
+          "number": "9",
+          "domain": "听力二 · Өгүүлбэр, үг",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-2",
+          "prompt": "Сонссон өгүүлбэрт хэлсэн үгийг сонгоно уу.",
+          "options": [
+            "A",
+            "B",
+            "C"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C"
+          ],
+          "answers": [
+            "A"
+          ],
+          "answerDisplay": "A · 姐姐 (jiějie)",
+          "explanation": "The elder sister wears new clothes: A 姐姐.",
+          "hsk": {
+            "choices": [
+              {
+                "label": "A",
+                "text": "姐姐",
+                "pinyin": "jiějie"
+              },
+              {
+                "label": "B",
+                "text": "妹妹",
+                "pinyin": "mèimei"
+              },
+              {
+                "label": "C",
+                "text": "妈妈",
+                "pinyin": "māma"
+              }
+            ]
+          },
+          "listening": {
+            "part": 2,
+            "script": "姐姐今天穿了一件新衣服。\nJiějie jīntiān chuān le yí jiàn xīn yīfu."
+          }
+        },
+        {
+          "id": "hsk1-05-10",
+          "number": "10",
+          "domain": "听力二 · Өгүүлбэр, үг",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-2",
+          "prompt": "Сонссон өгүүлбэрт хэлсэн үгийг сонгоно уу.",
+          "options": [
+            "A",
+            "B",
+            "C"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C"
+          ],
+          "answers": [
+            "C"
+          ],
+          "answerDisplay": "C · 上午 (shàngwǔ)",
+          "explanation": "They go shopping tomorrow morning: C 上午.",
+          "hsk": {
+            "choices": [
+              {
+                "label": "A",
+                "text": "下午",
+                "pinyin": "xiàwǔ"
+              },
+              {
+                "label": "B",
+                "text": "中午",
+                "pinyin": "zhōngwǔ"
+              },
+              {
+                "label": "C",
+                "text": "上午",
+                "pinyin": "shàngwǔ"
+              }
+            ]
+          },
+          "listening": {
+            "part": 2,
+            "script": "明天上午我和妈妈去买东西。\nMíngtiān shàngwǔ wǒ hé māma qù mǎi dōngxi."
+          }
+        },
+        {
+          "id": "hsk1-05-11",
+          "number": "11",
+          "domain": "听力三 · Яриа, зураг",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-3",
+          "prompt": "Сонссон яриад тохирох зургийг сонгоно уу.",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "answers": [
+            "E"
+          ],
+          "answerDisplay": "E",
+          "explanation": "They are buying apples; E shows a shop counter with fruit.",
+          "listening": {
+            "part": 3,
+            "script": "男：苹果多少钱？\nPíngguǒ duōshao qián?\n女：三块钱一个。\nSān kuài qián yí ge."
+          }
+        },
+        {
+          "id": "hsk1-05-12",
+          "number": "12",
+          "domain": "听力三 · Яриа, зураг",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-3",
+          "prompt": "Сонссон яриад тохирох зургийг сонгоно уу.",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "answers": [
+            "D"
+          ],
+          "answerDisplay": "D",
+          "explanation": "It is raining hard; D shows rain.",
+          "listening": {
+            "part": 3,
+            "script": "女：外边下雨了吗？\nWàibian xià yǔ le ma?\n男：是的，雨很大。\nShì de, yǔ hěn dà."
+          }
+        },
+        {
+          "id": "hsk1-05-13",
+          "number": "13",
+          "domain": "听力三 · Яриа, зураг",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-3",
+          "prompt": "Сонссон яриад тохирох зургийг сонгоно уу.",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "answers": [
+            "F"
+          ],
+          "answerDisplay": "F",
+          "explanation": "They talk about a restaurant's food; F shows a restaurant.",
+          "listening": {
+            "part": 3,
+            "script": "男：这个饭店的菜怎么样？\nZhège fàndiàn de cài zěnmeyàng?\n女：很好吃，也不贵。\nHěn hǎochī, yě bú guì."
+          }
+        },
+        {
+          "id": "hsk1-05-14",
+          "number": "14",
+          "domain": "听力三 · Яриа, зураг",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-3",
+          "prompt": "Сонссон яриад тохирох зургийг сонгоно уу.",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "answers": [
+            "B"
+          ],
+          "answerDisplay": "B",
+          "explanation": "He is still working late; B shows work at a computer at night.",
+          "listening": {
+            "part": 3,
+            "script": "女：你怎么还在工作？\nNǐ zěnme hái zài gōngzuò?\n男：我很忙，今天的工作很多。\nWǒ hěn máng, jīntiān de gōngzuò hěn duō."
+          }
+        },
+        {
+          "id": "hsk1-05-15",
+          "number": "15",
+          "domain": "听力三 · Яриа, зураг",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-3",
+          "prompt": "Сонссон яриад тохирох зургийг сонгоно уу.",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "answers": [
+            "A"
+          ],
+          "answerDisplay": "A",
+          "explanation": "They will take a taxi; A shows a taxi.",
+          "listening": {
+            "part": 3,
+            "script": "男：我们怎么去商店？\nWǒmen zěnme qù shāngdiàn?\n女：坐出租车去吧。\nZuò chūzūchē qù ba."
+          }
+        },
+        {
+          "id": "hsk1-05-16",
+          "number": "16",
+          "domain": "听力四 · Богино асуулт",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-4",
+          "prompt": "Сонссон асуултын хариултыг сонгоно уу.",
+          "options": [
+            "A",
+            "B",
+            "C"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C"
+          ],
+          "answers": [
+            "B"
+          ],
+          "answerDisplay": "B · 很好看 (hěn hǎokàn)",
+          "explanation": "She finds it pretty and not expensive: B.",
+          "hsk": {
+            "choices": [
+              {
+                "label": "A",
+                "text": "很贵",
+                "pinyin": "hěn guì"
+              },
+              {
+                "label": "B",
+                "text": "很好看",
+                "pinyin": "hěn hǎokàn"
+              },
+              {
+                "label": "C",
+                "text": "不漂亮",
+                "pinyin": "bú piàoliang"
+              }
+            ]
+          },
+          "listening": {
+            "part": 4,
+            "script": "这件衣服很好看，也不贵，我想买。\nZhè jiàn yīfu hěn hǎokàn, yě bú guì, wǒ xiǎng mǎi.\n问：她觉得这件衣服怎么样？\nWèn: Tā juéde zhè jiàn yīfu zěnmeyàng?"
+          }
+        },
+        {
+          "id": "hsk1-05-17",
+          "number": "17",
+          "domain": "听力四 · Богино асуулт",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-4",
+          "prompt": "Сонссон асуултын хариултыг сонгоно уу.",
+          "options": [
+            "A",
+            "B",
+            "C"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C"
+          ],
+          "answers": [
+            "A"
+          ],
+          "answerDisplay": "A · 他家前边 (tā jiā qiánbian)",
+          "explanation": "The supermarket is in front of his home: A.",
+          "hsk": {
+            "choices": [
+              {
+                "label": "A",
+                "text": "他家前边",
+                "pinyin": "tā jiā qiánbian"
+              },
+              {
+                "label": "B",
+                "text": "他家后边",
+                "pinyin": "tā jiā hòubian"
+              },
+              {
+                "label": "C",
+                "text": "学校前边",
+                "pinyin": "xuéxiào qiánbian"
+              }
+            ]
+          },
+          "listening": {
+            "part": 4,
+            "script": "我家前边有一个超市，东西很多。\nWǒ jiā qiánbian yǒu yí ge chāoshì, dōngxi hěn duō.\n问：超市在哪儿？\nWèn: Chāoshì zài nǎr?"
+          }
+        },
+        {
+          "id": "hsk1-05-18",
+          "number": "18",
+          "domain": "听力四 · Богино асуулт",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-4",
+          "prompt": "Сонссон асуултын хариултыг сонгоно уу.",
+          "options": [
+            "A",
+            "B",
+            "C"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C"
+          ],
+          "answers": [
+            "B"
+          ],
+          "answerDisplay": "B · 八十块 (bāshí kuài)",
+          "explanation": "The cup cost eighty; one hundred is what she had: B.",
+          "hsk": {
+            "choices": [
+              {
+                "label": "A",
+                "text": "二十块",
+                "pinyin": "èrshí kuài"
+              },
+              {
+                "label": "B",
+                "text": "八十块",
+                "pinyin": "bāshí kuài"
+              },
+              {
+                "label": "C",
+                "text": "一百块",
+                "pinyin": "yìbǎi kuài"
+              }
+            ]
+          },
+          "listening": {
+            "part": 4,
+            "script": "我有一百块钱，买了一个八十块的杯子。\nWǒ yǒu yìbǎi kuài qián, mǎi le yí ge bāshí kuài de bēizi.\n问：杯子多少钱？\nWèn: Bēizi duōshao qián?"
+          }
+        },
+        {
+          "id": "hsk1-05-19",
+          "number": "19",
+          "domain": "听力四 · Богино асуулт",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-4",
+          "prompt": "Сонссон асуултын хариултыг сонгоно уу.",
+          "options": [
+            "A",
+            "B",
+            "C"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C"
+          ],
+          "answers": [
+            "A"
+          ],
+          "answerDisplay": "A · 牛奶和面包 (niúnǎi hé miànbāo)",
+          "explanation": "She bought milk and bread: A.",
+          "hsk": {
+            "choices": [
+              {
+                "label": "A",
+                "text": "牛奶和面包",
+                "pinyin": "niúnǎi hé miànbāo"
+              },
+              {
+                "label": "B",
+                "text": "水果",
+                "pinyin": "shuǐguǒ"
+              },
+              {
+                "label": "C",
+                "text": "鸡蛋",
+                "pinyin": "jīdàn"
+              }
+            ]
+          },
+          "listening": {
+            "part": 4,
+            "script": "今天下午我去超市买了牛奶和面包。\nJīntiān xiàwǔ wǒ qù chāoshì mǎi le niúnǎi hé miànbāo.\n问：她买了什么？\nWèn: Tā mǎi le shénme?"
+          }
+        },
+        {
+          "id": "hsk1-05-20",
+          "number": "20",
+          "domain": "听力四 · Богино асуулт",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-l-4",
+          "prompt": "Сонссон асуултын хариултыг сонгоно уу.",
+          "options": [
+            "A",
+            "B",
+            "C"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C"
+          ],
+          "answers": [
+            "C"
+          ],
+          "answerDisplay": "C · 东西很便宜 (dōngxi hěn piányi)",
+          "explanation": "Its things are cheap and many people go: C.",
+          "hsk": {
+            "choices": [
+              {
+                "label": "A",
+                "text": "东西很贵",
+                "pinyin": "dōngxi hěn guì"
+              },
+              {
+                "label": "B",
+                "text": "人很少",
+                "pinyin": "rén hěn shǎo"
+              },
+              {
+                "label": "C",
+                "text": "东西很便宜",
+                "pinyin": "dōngxi hěn piányi"
+              }
+            ]
+          },
+          "listening": {
+            "part": 4,
+            "script": "那个商店的东西很便宜，很多人去那儿买东西。\nNàge shāngdiàn de dōngxi hěn piányi, hěn duō rén qù nàr mǎi dōngxi.\n问：那个商店怎么样？\nWèn: Nàge shāngdiàn zěnmeyàng?"
+          }
+        }
+      ]
+    },
+    {
+      "id": "hsk-r",
+      "title": "阅读 · Унших",
+      "kind": "questions",
+      "seconds": 1500,
+      "instructions": "Дөрвөн хэсэг, 20 асуулт, 25 минут. Хэсгүүдийн хооронд чөлөөтэй шилжинэ. Цаг дуусахад шалгалт дуусна.",
+      "groups": [
+        {
+          "id": "hsk-r-1",
+          "title": "第一部分 · Өгүүлбэр ба зураг",
+          "section": "阅读 · Унших",
+          "instructions": "选择相应的图片。\nӨгүүлбэр бүрт тохирох зургийг A–F-ээс сонгоно; нэг зураг жишээнд ашиглагдсан.",
+          "pageMode": "group",
+          "hsk": {
+            "layout": "R2",
+            "pictures": [
+              {
+                "label": "A",
+                "src": "/exam-assets/hsk/hsk1-mock-05/p-85095200901f.svg",
+                "alt": "A cup of tea on a saucer"
+              },
+              {
+                "label": "B",
+                "src": "/exam-assets/hsk/hsk1-mock-05/p-6b9d2f92d5b7.svg",
+                "alt": "A person making a phone call"
+              },
+              {
+                "label": "C",
+                "src": "/exam-assets/hsk/hsk1-mock-05/p-577047f05983.svg",
+                "alt": "A woman carrying shopping bags"
+              },
+              {
+                "label": "D",
+                "src": "/exam-assets/hsk/hsk1-mock-05/p-9be4370546ef.svg",
+                "alt": "A sunny day with a person fanning himself"
+              },
+              {
+                "label": "E",
+                "src": "/exam-assets/hsk/hsk1-mock-05/p-50e675320a92.svg",
+                "alt": "A cat sitting down"
+              },
+              {
+                "label": "F",
+                "src": "/exam-assets/hsk/hsk1-mock-05/p-223021928d79.svg",
+                "alt": "A woman reading a book on a sofa"
+              }
+            ],
+            "example": {
+              "pictures": [
+                {
+                  "label": "E",
+                  "src": "/exam-assets/hsk/hsk1-mock-05/p-50e675320a92.svg",
+                  "alt": "A cat sitting down"
+                }
+              ],
+              "line": {
+                "text": "这是我的猫，它很小。",
+                "pinyin": "Zhè shì wǒ de māo, tā hěn xiǎo."
+              },
+              "answer": "E"
+            }
+          }
+        },
+        {
+          "id": "hsk-r-2",
+          "title": "第二部分 · Асуулт ба хариулт",
+          "section": "阅读 · Унших",
+          "instructions": "选择相应的回答。\nАсуулт бүрт тохирох хариултыг A–F-ээс сонгоно; нэг хариулт жишээнд ашиглагдсан.",
+          "pageMode": "group",
+          "hsk": {
+            "layout": "R3",
+            "choices": [
+              {
+                "label": "A",
+                "text": "好的，我们去吧。",
+                "pinyin": "Hǎo de, wǒmen qù ba."
+              },
+              {
+                "label": "B",
+                "text": "不贵，很便宜。",
+                "pinyin": "Bú guì, hěn piányi."
+              },
+              {
+                "label": "C",
+                "text": "五十块钱。",
+                "pinyin": "Wǔshí kuài qián."
+              },
+              {
+                "label": "D",
+                "text": "是我妈妈给我买的。",
+                "pinyin": "Shì wǒ māma gěi wǒ mǎi de."
+              },
+              {
+                "label": "E",
+                "text": "在超市后边。",
+                "pinyin": "Zài chāoshì hòubian."
+              },
+              {
+                "label": "F",
+                "text": "我想买一件衣服。",
+                "pinyin": "Wǒ xiǎng mǎi yí jiàn yīfu."
+              }
+            ],
+            "example": {
+              "line": {
+                "text": "这件衣服真漂亮，是谁买的？",
+                "pinyin": "Zhè jiàn yīfu zhēn piàoliang, shì shéi mǎi de?"
+              },
+              "answerLine": {
+                "label": "D",
+                "text": "是我妈妈给我买的。",
+                "pinyin": "Shì wǒ māma gěi wǒ mǎi de."
+              },
+              "answer": "D"
+            }
+          }
+        },
+        {
+          "id": "hsk-r-3",
+          "title": "第三部分 · Хоосон зай нөхөх",
+          "section": "阅读 · Унших",
+          "instructions": "选词填空。\nХоосон зайд тохирох үгийг A–F-ээс сонгоно; нэг үг жишээнд ашиглагдсан.",
+          "pageMode": "group",
+          "hsk": {
+            "layout": "R4",
+            "choices": [
+              {
+                "label": "A",
+                "text": "一些",
+                "pinyin": "yìxiē"
+              },
+              {
+                "label": "B",
+                "text": "穿",
+                "pinyin": "chuān"
+              },
+              {
+                "label": "C",
+                "text": "喜欢",
+                "pinyin": "xǐhuan"
+              },
+              {
+                "label": "D",
+                "text": "块",
+                "pinyin": "kuài"
+              },
+              {
+                "label": "E",
+                "text": "卖",
+                "pinyin": "mài"
+              },
+              {
+                "label": "F",
+                "text": "商店",
+                "pinyin": "shāngdiàn"
+              }
+            ],
+            "example": {
+              "line": {
+                "text": "我想去（　）买东西。",
+                "pinyin": "Wǒ xiǎng qù (　) mǎi dōngxi."
+              },
+              "answerLine": {
+                "label": "F",
+                "text": "商店",
+                "pinyin": "shāngdiàn"
+              },
+              "answer": "F"
+            }
+          }
+        },
+        {
+          "id": "hsk-r-4",
+          "title": "第四部分 · Текст ба асуулт",
+          "section": "阅读 · Унших",
+          "instructions": "阅读短文，选择正确的答案。\nБогино текстийг уншаад ★ асуултын зөв хариултыг гурван сонголтоос сонгоно.",
+          "pageMode": "group",
+          "hsk": {
+            "layout": "RQ",
+            "example": {
+              "choices": [
+                {
+                  "label": "A",
+                  "text": "工作",
+                  "pinyin": "gōngzuò"
+                },
+                {
+                  "label": "B",
+                  "text": "上课",
+                  "pinyin": "shàngkè"
+                },
+                {
+                  "label": "C",
+                  "text": "睡觉",
+                  "pinyin": "shuìjiào"
+                }
+              ],
+              "line": {
+                "text": "我今天很忙，上午工作，下午上课。",
+                "pinyin": "Wǒ jīntiān hěn máng, shàngwǔ gōngzuò, xiàwǔ shàngkè."
+              },
+              "statement": {
+                "text": "她下午做什么？",
+                "pinyin": "Tā xiàwǔ zuò shénme?"
+              },
+              "answer": "B"
+            }
+          }
+        }
+      ],
+      "questions": [
+        {
+          "id": "hsk1-05-21",
+          "number": "21",
+          "domain": "阅读一 · Өгүүлбэр, зураг",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-r-1",
+          "prompt": "今天天气太热了！",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "answers": [
+            "D"
+          ],
+          "answerDisplay": "D",
+          "explanation": "A very hot day; D shows the sun and a fan.",
+          "hsk": {
+            "line": {
+              "text": "今天天气太热了！",
+              "pinyin": "Jīntiān tiānqì tài rè le!"
+            }
+          }
+        },
+        {
+          "id": "hsk1-05-22",
+          "number": "22",
+          "domain": "阅读一 · Өгүүлбэр, зураг",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-r-1",
+          "prompt": "我买了很多东西。",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "answers": [
+            "C"
+          ],
+          "answerDisplay": "C",
+          "explanation": "She bought many things; C shows shopping bags.",
+          "hsk": {
+            "line": {
+              "text": "我买了很多东西。",
+              "pinyin": "Wǒ mǎi le hěn duō dōngxi."
+            }
+          }
+        },
+        {
+          "id": "hsk1-05-23",
+          "number": "23",
+          "domain": "阅读一 · Өгүүлбэр, зураг",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-r-1",
+          "prompt": "她在打电话呢。",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "answers": [
+            "B"
+          ],
+          "answerDisplay": "B",
+          "explanation": "She is on the phone; B shows a phone call.",
+          "hsk": {
+            "line": {
+              "text": "她在打电话呢。",
+              "pinyin": "Tā zài dǎ diànhuà ne."
+            }
+          }
+        },
+        {
+          "id": "hsk1-05-24",
+          "number": "24",
+          "domain": "阅读一 · Өгүүлбэр, зураг",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-r-1",
+          "prompt": "你喝茶吗？",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "answers": [
+            "A"
+          ],
+          "answerDisplay": "A",
+          "explanation": "An offer of tea; A shows a cup of tea.",
+          "hsk": {
+            "line": {
+              "text": "你喝茶吗？",
+              "pinyin": "Nǐ hē chá ma?"
+            }
+          }
+        },
+        {
+          "id": "hsk1-05-25",
+          "number": "25",
+          "domain": "阅读一 · Өгүүлбэр, зураг",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-r-1",
+          "prompt": "她在看书，不想去商店。",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "answers": [
+            "F"
+          ],
+          "answerDisplay": "F",
+          "explanation": "She is reading; F shows a woman reading.",
+          "hsk": {
+            "line": {
+              "text": "她在看书，不想去商店。",
+              "pinyin": "Tā zài kàn shū, bù xiǎng qù shāngdiàn."
+            }
+          }
+        },
+        {
+          "id": "hsk1-05-26",
+          "number": "26",
+          "domain": "阅读二 · Асуулт, хариулт",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-r-2",
+          "prompt": "这本书多少钱？",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "answers": [
+            "C"
+          ],
+          "answerDisplay": "C · 五十块钱。",
+          "explanation": "A price question is answered with a price: C.",
+          "hsk": {
+            "line": {
+              "text": "这本书多少钱？",
+              "pinyin": "Zhè běn shū duōshao qián?"
+            }
+          }
+        },
+        {
+          "id": "hsk1-05-27",
+          "number": "27",
+          "domain": "阅读二 · Асуулт, хариулт",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-r-2",
+          "prompt": "你去商店做什么？",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "answers": [
+            "F"
+          ],
+          "answerDisplay": "F · 我想买一件衣服。",
+          "explanation": "What she will do at the shop: buy clothes, F.",
+          "hsk": {
+            "line": {
+              "text": "你去商店做什么？",
+              "pinyin": "Nǐ qù shāngdiàn zuò shénme?"
+            }
+          }
+        },
+        {
+          "id": "hsk1-05-28",
+          "number": "28",
+          "domain": "阅读二 · Асуулт, хариулт",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-r-2",
+          "prompt": "那个书店在哪儿？",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "answers": [
+            "E"
+          ],
+          "answerDisplay": "E · 在超市后边。",
+          "explanation": "“Where is it?” — E gives the place.",
+          "hsk": {
+            "line": {
+              "text": "那个书店在哪儿？",
+              "pinyin": "Nàge shūdiàn zài nǎr?"
+            }
+          }
+        },
+        {
+          "id": "hsk1-05-29",
+          "number": "29",
+          "domain": "阅读二 · Асуулт, хариулт",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-r-2",
+          "prompt": "苹果贵吗？",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "answers": [
+            "B"
+          ],
+          "answerDisplay": "B · 不贵，很便宜。",
+          "explanation": "“Are apples expensive?” — B: not expensive, cheap.",
+          "hsk": {
+            "line": {
+              "text": "苹果贵吗？",
+              "pinyin": "Píngguǒ guì ma?"
+            }
+          }
+        },
+        {
+          "id": "hsk1-05-30",
+          "number": "30",
+          "domain": "阅读二 · Асуулт, хариулт",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-r-2",
+          "prompt": "我们去超市买水果吧。",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "answers": [
+            "A"
+          ],
+          "answerDisplay": "A · 好的，我们去吧。",
+          "explanation": "A suggestion is accepted: A.",
+          "hsk": {
+            "line": {
+              "text": "我们去超市买水果吧。",
+              "pinyin": "Wǒmen qù chāoshì mǎi shuǐguǒ ba."
+            }
+          }
+        },
+        {
+          "id": "hsk1-05-31",
+          "number": "31",
+          "domain": "阅读三 · Үг нөхөх",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-r-3",
+          "prompt": "今天很冷，你多（　）一点儿衣服。",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "answers": [
+            "B"
+          ],
+          "answerDisplay": "B · 穿",
+          "explanation": "Clothes are put on: 穿, B.",
+          "hsk": {
+            "line": {
+              "text": "今天很冷，你多（　）一点儿衣服。",
+              "pinyin": "Jīntiān hěn lěng, nǐ duō (　) yìdiǎnr yīfu."
+            }
+          }
+        },
+        {
+          "id": "hsk1-05-32",
+          "number": "32",
+          "domain": "阅读三 · Үг нөхөх",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-r-3",
+          "prompt": "一个苹果三（　）钱。",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "answers": [
+            "D"
+          ],
+          "answerDisplay": "D · 块",
+          "explanation": "三块钱 “three yuan”: D.",
+          "hsk": {
+            "line": {
+              "text": "一个苹果三（　）钱。",
+              "pinyin": "Yí ge píngguǒ sān (　) qián."
+            }
+          }
+        },
+        {
+          "id": "hsk1-05-33",
+          "number": "33",
+          "domain": "阅读三 · Үг нөхөх",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-r-3",
+          "prompt": "这个超市（　）书吗？",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "answers": [
+            "E"
+          ],
+          "answerDisplay": "E · 卖",
+          "explanation": "Does the supermarket sell books: 卖, E.",
+          "hsk": {
+            "line": {
+              "text": "这个超市（　）书吗？",
+              "pinyin": "Zhège chāoshì (　) shū ma?"
+            }
+          }
+        },
+        {
+          "id": "hsk1-05-34",
+          "number": "34",
+          "domain": "阅读三 · Үг нөхөх",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-r-3",
+          "prompt": "我很（　）这个杯子。",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "answers": [
+            "C"
+          ],
+          "answerDisplay": "C · 喜欢",
+          "explanation": "很喜欢 “like very much”: C.",
+          "hsk": {
+            "line": {
+              "text": "我很（　）这个杯子。",
+              "pinyin": "Wǒ hěn (　) zhège bēizi."
+            }
+          }
+        },
+        {
+          "id": "hsk1-05-35",
+          "number": "35",
+          "domain": "阅读三 · Үг нөхөх",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-r-3",
+          "prompt": "我买了（　）水果。",
+          "options": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F"
+          ],
+          "answers": [
+            "A"
+          ],
+          "answerDisplay": "A · 一些",
+          "explanation": "一些水果 “some fruit”: A.",
+          "hsk": {
+            "line": {
+              "text": "我买了（　）水果。",
+              "pinyin": "Wǒ mǎi le (　) shuǐguǒ."
+            }
+          }
+        },
+        {
+          "id": "hsk1-05-36",
+          "number": "36",
+          "domain": "阅读四 · Текст, асуулт",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-r-4",
+          "prompt": "今天是星期六，商店里人很多。我买了一件衣服和一个杯子。\n★ 她买了什么？",
+          "options": [
+            "A",
+            "B",
+            "C"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C"
+          ],
+          "answers": [
+            "A"
+          ],
+          "answerDisplay": "A · 衣服和杯子 (yīfu hé bēizi)",
+          "explanation": "She bought clothes and a cup: A.",
+          "hsk": {
+            "choices": [
+              {
+                "label": "A",
+                "text": "衣服和杯子",
+                "pinyin": "yīfu hé bēizi"
+              },
+              {
+                "label": "B",
+                "text": "衣服和书",
+                "pinyin": "yīfu hé shū"
+              },
+              {
+                "label": "C",
+                "text": "杯子和茶",
+                "pinyin": "bēizi hé chá"
+              }
+            ],
+            "line": {
+              "text": "今天是星期六，商店里人很多。我买了一件衣服和一个杯子。",
+              "pinyin": "Jīntiān shì xīngqīliù, shāngdiàn li rén hěn duō. Wǒ mǎi le yí jiàn yīfu hé yí ge bēizi."
+            },
+            "statement": {
+              "text": "她买了什么？",
+              "pinyin": "Tā mǎi le shénme?"
+            }
+          }
+        },
+        {
+          "id": "hsk1-05-37",
+          "number": "37",
+          "domain": "阅读四 · Текст, асуулт",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-r-4",
+          "prompt": "这个手机是去年买的，现在不能打电话了。我想买一个新的。\n★ 他的手机怎么了？",
+          "options": [
+            "A",
+            "B",
+            "C"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C"
+          ],
+          "answers": [
+            "B"
+          ],
+          "answerDisplay": "B · 不能打电话了 (bù néng dǎ diànhuà le)",
+          "explanation": "The phone can no longer make calls: B.",
+          "hsk": {
+            "choices": [
+              {
+                "label": "A",
+                "text": "太小了",
+                "pinyin": "tài xiǎo le"
+              },
+              {
+                "label": "B",
+                "text": "不能打电话了",
+                "pinyin": "bù néng dǎ diànhuà le"
+              },
+              {
+                "label": "C",
+                "text": "太贵了",
+                "pinyin": "tài guì le"
+              }
+            ],
+            "line": {
+              "text": "这个手机是去年买的，现在不能打电话了。我想买一个新的。",
+              "pinyin": "Zhège shǒujī shì qùnián mǎi de, xiànzài bù néng dǎ diànhuà le. Wǒ xiǎng mǎi yí ge xīn de."
+            },
+            "statement": {
+              "text": "他的手机怎么了？",
+              "pinyin": "Tā de shǒujī zěnme le?"
+            }
+          }
+        },
+        {
+          "id": "hsk1-05-38",
+          "number": "38",
+          "domain": "阅读四 · Текст, асуулт",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-r-4",
+          "prompt": "我家后边有一个书店，那儿的书很多，也很便宜。我星期天去那儿看书。\n★ 他星期天去哪儿？",
+          "options": [
+            "A",
+            "B",
+            "C"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C"
+          ],
+          "answers": [
+            "C"
+          ],
+          "answerDisplay": "C · 书店 (shūdiàn)",
+          "explanation": "On Sundays he reads at the bookshop: C.",
+          "hsk": {
+            "choices": [
+              {
+                "label": "A",
+                "text": "商店",
+                "pinyin": "shāngdiàn"
+              },
+              {
+                "label": "B",
+                "text": "学校",
+                "pinyin": "xuéxiào"
+              },
+              {
+                "label": "C",
+                "text": "书店",
+                "pinyin": "shūdiàn"
+              }
+            ],
+            "line": {
+              "text": "我家后边有一个书店，那儿的书很多，也很便宜。我星期天去那儿看书。",
+              "pinyin": "Wǒ jiā hòubian yǒu yí ge shūdiàn, nàr de shū hěn duō, yě hěn piányi. Wǒ xīngqītiān qù nàr kàn shū."
+            },
+            "statement": {
+              "text": "他星期天去哪儿？",
+              "pinyin": "Tā xīngqītiān qù nǎr?"
+            }
+          }
+        },
+        {
+          "id": "hsk1-05-39",
+          "number": "39",
+          "domain": "阅读四 · Текст, асуулт",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-r-4",
+          "prompt": "我和妹妹去商店，妹妹想买衣服，我想买一本书。\n★ 妹妹想买什么？",
+          "options": [
+            "A",
+            "B",
+            "C"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C"
+          ],
+          "answers": [
+            "B"
+          ],
+          "answerDisplay": "B · 衣服 (yīfu)",
+          "explanation": "The sister wants clothes; the book is for the writer: B.",
+          "hsk": {
+            "choices": [
+              {
+                "label": "A",
+                "text": "书",
+                "pinyin": "shū"
+              },
+              {
+                "label": "B",
+                "text": "衣服",
+                "pinyin": "yīfu"
+              },
+              {
+                "label": "C",
+                "text": "杯子",
+                "pinyin": "bēizi"
+              }
+            ],
+            "line": {
+              "text": "我和妹妹去商店，妹妹想买衣服，我想买一本书。",
+              "pinyin": "Wǒ hé mèimei qù shāngdiàn, mèimei xiǎng mǎi yīfu, wǒ xiǎng mǎi yì běn shū."
+            },
+            "statement": {
+              "text": "妹妹想买什么？",
+              "pinyin": "Mèimei xiǎng mǎi shénme?"
+            }
+          }
+        },
+        {
+          "id": "hsk1-05-40",
+          "number": "40",
+          "domain": "阅读四 · Текст, асуулт",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "hsk-r-4",
+          "prompt": "小李在超市工作，他上午九点上班，下午六点下班。\n★ 小李几点下班？",
+          "options": [
+            "A",
+            "B",
+            "C"
+          ],
+          "optionLabels": [
+            "A",
+            "B",
+            "C"
+          ],
+          "answers": [
+            "C"
+          ],
+          "answerDisplay": "C · 六点 (liù diǎn)",
+          "explanation": "Nine is when he starts; he finishes at six: C.",
+          "hsk": {
+            "choices": [
+              {
+                "label": "A",
+                "text": "九点",
+                "pinyin": "jiǔ diǎn"
+              },
+              {
+                "label": "B",
+                "text": "五点",
+                "pinyin": "wǔ diǎn"
+              },
+              {
+                "label": "C",
+                "text": "六点",
+                "pinyin": "liù diǎn"
+              }
+            ],
+            "line": {
+              "text": "小李在超市工作，他上午九点上班，下午六点下班。",
+              "pinyin": "Xiǎo Lǐ zài chāoshì gōngzuò, tā shàngwǔ jiǔ diǎn shàngbān, xiàwǔ liù diǎn xiàbān."
+            },
+            "statement": {
+              "text": "小李几点下班？",
+              "pinyin": "Xiǎo Lǐ jǐ diǎn xiàbān?"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -17,10 +17,6 @@
 
 /* Sitting: task pages and questions. */
 .toefl-work>h2{margin:14px 0 6px;font-size:22px}
-.toefl-pages{display:flex;gap:8px;overflow:auto;padding:6px 0 14px;max-width:100%}
-.toefl-pages button{flex:0 0 180px;display:grid;text-align:left;gap:6px;border:1px solid var(--line);border-radius:10px;padding:11px 12px;background:transparent;color:inherit;cursor:pointer}
-.toefl-pages strong{font-size:13px;font-weight:550}.toefl-pages small{color:var(--muted);font-size:12px}
-.toefl-pages button[aria-current=true]{border-color:var(--toefl-accent);background:color-mix(in srgb,var(--toefl-accent) 8%,transparent)}
 .toefl-instructions{color:var(--muted);font-size:14px;line-height:1.7;margin:0 0 14px}
 .toefl-split{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:24px;align-items:start}
 .toefl-text{border:1px solid var(--line);border-radius:12px;padding:18px 20px;line-height:1.85;font-size:15.5px;max-height:70vh;overflow:auto;background:var(--paper)}
@@ -83,6 +79,6 @@
 .toefl-recordings>div{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
 
 @media (max-width:900px){.toefl-cards{grid-template-columns:repeat(2,minmax(0,1fr))}.toefl-split,.toefl-writing{grid-template-columns:1fr}.toefl-text{max-height:none}}
-@media (max-width:560px){.toefl-cards{grid-template-columns:1fr}.toefl-words p{font-size:16px;padding:14px;line-height:2.4}.toefl-slot{min-width:64px}.toefl-pages button{flex-basis:150px}}
+@media (max-width:560px){.toefl-cards{grid-template-columns:1fr}.toefl-words p{font-size:16px;padding:14px;line-height:2.4}.toefl-slot{min-width:64px}}
 .toefl-gap-other{font-weight:600;letter-spacing:.08em;white-space:nowrap}
 .toefl-practice{display:grid;gap:14px;margin:0 0 14px}.toefl-practice-audio p{margin:0 0 8px}

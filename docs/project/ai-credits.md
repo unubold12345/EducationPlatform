@@ -46,6 +46,13 @@ Part of the [project guide](../PROJECT.md) (was PROJECT.md section 7). "Section 
   material's known size and that count (pasted text by its length, photos by count, a document at 14 for 12 questions and 17 for
   24); the charge settles to what was read and written. The first live call (1,935 characters,
   351-word passage, 12 questions, $0.0027 real) now costs 6 instead of 15; a malformed-reply retry is not charged.
+- A JLPT/HSK/TOPIK reading text (Workshop → Унших дасгал, 2026-11-19; [language-reading](./language-reading.md)) is
+  priced by the length chosen, at 2× the DeepSeek peak list cost of its budget, and `language-reading` is in `MARGIN_ACTIONS`.
+  `languageReadingCredits` uses 5,000 prompt tokens and a reply of 300 + 240 tokens per sentence for the length's most
+  sentences, which is also the call's `max_tokens`. Short (4–6 sentences) is 8, medium (7–10) is 10 and long (11–15) is 13;
+  the listed range is 8–13. The price is known before the call, so the hold is the charge. A second call after a reply that
+  broke the level's script rules is included in the price, and when both calls fail the hold is refunded. Live calls
+  (2026-11-19) cost about 0.4–3.5 credits, so the price is about 4–20× the real cost. The owner did not name a figure.
 - Retries cost half (owner decision 2026-11-15; `RETRY_PRICE.percent` = 50, a code constant). `examRetryCredits` = half of
   `examCredits` for the kept text and the questions delivered, rounded up, and never below the DeepSeek peak list cost of the
   retry itself, which also reads the replaced prompts (85 tokens each): 10 questions = 10, 20 = 20, 40 = 40 on ordinary files;
@@ -62,7 +69,7 @@ Part of the [project guide](../PROJECT.md) (was PROJECT.md section 7). "Section 
     fixed while a plan is renewed before it ends). Every billing month of the term adds the plan's credits when that month begins;
     unused ones carry over and lapse only when the subscription ends. Nothing resets on the 1st. A plan bought again after it
     lapsed starts a new term with fresh credits. Plans stack; per-mock purchases add none.
-  - Purchased ("yellow", 2026-11-13): the credit packs (default list 200 / 500 / 1,000 / 2,000 / 5,000 credits at ₮5 a credit; an admin saves the whole list, 1–12 packs, in the Prices tab and the student picks one on the plans page; one `CreditPack` row per pack, key `p<credits>`; simulated payment like the plans; `CreditOrder`,
+  - Purchased ("yellow", 2026-11-13): the credit packs (default list since 2026-11-20: 200 credits ₮3,000, 500 ₮6,000, 1,000 ₮12,000, no discount above 500; was ₮5 a credit for 200–5,000; an admin saves the whole list, 1–12 packs, in the Prices tab and the student picks one on the plans page; one `CreditPack` row per pack, key `p<credits>`; simulated payment like the plans; `CreditOrder`,
     `CreditWallet`). They never lapse, are shown apart from the month's and plan's credits (a yellow chip in the rail meter, a yellow
     row on the plans page) and are the only credits that buy permanent vocabulary space. Receipts carry `yellow` (credits left); a reply
     without it keeps the page's figure.
@@ -97,6 +104,39 @@ Part of the [project guide](../PROJECT.md) (was PROJECT.md section 7). "Section 
   without the meter, but AI actions fail. Vercel applies migrations on deploy. Since 2026-11-09 `getDb()` (`src/lib/db.ts`)
   replaces a cached client whose generated models or columns differ, so a running dev server picks up `prisma generate`
   without a restart (before that, the admin Prices tab failed with `db.creditPack` undefined).
+
+### AI usage log (2026-11-20)
+
+- Every paid provider request is one `AiCall` row: provider, model, origin (`app` or `script`), source (the credit action
+  such as `exam`, or `mock-grading`, `speaking-voice`, `script:build-language-decks.mjs`), environment (`local`, `preview`,
+  `hosted`), student and credit charge, HTTP status, duration, tokens (prompt, cached, completion, reasoning) or units
+  (Kokoro characters, Whisper milliseconds), and the cost in micro-USD with its basis (`provider`, `tokens` or `none`).
+- Site code calls `aiFetch(provider, url, init, facts)` from `src/modules/ai-usage/server.ts`; the DeepInfra helpers take
+  `aiFetcher(...)` and the Claude SDK path calls `recordAiCall`. `chargeCredits` runs the work inside
+  `withAiContext({ userId, source: action, chargeId })`, and mock grading opens its own (`mock-grading`), so services pass
+  nothing extra. Usage is read from a copy of the JSON answer; callers are unchanged. A failed insert never breaks the
+  feature: the row goes to the server log and, locally, to `artifacts/ai-usage-unsaved.jsonl` (`npm run ai:usage -- flush`).
+- Pricing (`src/modules/ai-usage/core.ts`): DeepSeek rates come from `credits/pricing.ts`, full price 01–04 and 06–10 UTC on
+  weekdays and half otherwise (Chinese holidays are not listed, so they are priced as peak), with the v4-pro rates beside
+  them. Claude Opus 5.5 is $4 / $20 per 1M (cache read $0.20, write $5); an unknown Claude model gets the dearest rate.
+  DeepInfra uses its own `inference_status.cost` when given, else Whisper turbo $0.0002/min and Kokoro $0.99/1M characters.
+  The model comes from the body (DeepSeek) or the URL path (DeepInfra, whose bodies name none). Only the provider's real
+  host is billable, so the check runner's mock (127.0.0.1:8471) is recorded at $0. Failed calls cost $0; a timeout is
+  shown as "cost unknown".
+- Scripts use `aiFetch` from `scripts/lib/ai-call.mjs` (origin `script`, source `script:<file>`, agent from
+  `AI_USAGE_AGENT`). It writes to the local database only (a non-localhost URL is refused) and falls back to the unsaved
+  file. Python scripts use `ai_post_json` from `scripts/lib/ai_call.py`, which pipes each outcome to
+  `node scripts/ai-usage.mjs record`. `AI_USAGE_LOG=off` turns recording off for unit tests that stub `fetch`.
+- Balance check: `npm run ai:usage -- balance`, and the admin tab at most every 5 minutes, read DeepSeek's free
+  `GET /user/balance` into `AiBalance`. For each pair of readings the tab compares the money that left the account with the
+  DeepSeek cost recorded between them; a gap above $0.01 per segment is shown as unrecorded spend, and a rise is a top-up.
+  Local and hosted share one key today, so each side counts the other's spend as unrecorded until they get separate keys.
+- Admin `/admin?tab=ai` («AI зардал», Хяналт group): totals for 24 hours, 3, 7 or 30 days; site vs scripts; by source
+  (each links to its calls), Ulaanbaatar day, top 10 students, provider and model; balance segments; environment and agent.
+  «Дуудлагууд» lists calls with search (source, model, agent, email) and filters (site, script, failed, mock, provider).
+- Guards in `tests/ai-usage.test.mjs`: pricing cases, and a scan that fails when a file in `src/`, `scripts/` or
+  `MockExmps/` names a provider host and calls `fetch`/`urlopen` outside the recorders, when a Claude client is built
+  without `recordAiCall`, or when a DeepInfra helper is called without `aiFetcher`.
 
 ### Image input (2026-11-09)
 

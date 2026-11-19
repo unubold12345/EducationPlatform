@@ -89,6 +89,8 @@ body:has(.eesh-sit) .home-atmosphere { display: none; }
 .eesh-sit-progress { height: 2px; background: color-mix(in srgb, var(--ink) 9%, transparent); }
 .eesh-sit-progress i { display: block; height: 100%; background: var(--blue); transition: width .25s; }
 .eesh-sit-status { display: flex; justify-content: space-between; gap: 20px; max-width: 1120px; margin: 0 auto; padding: 9px 18px 0; font-family: var(--font-mono); font-size: 9px; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); }
+.eesh-sit-status .eesh-end-link { margin-left: auto; padding: 0; border: 0; background: none; font: inherit; letter-spacing: inherit; text-transform: inherit; color: #9c2424; text-decoration: underline; cursor: pointer; }
+:root[data-theme="dark"] .eesh-sit-status .eesh-end-link { color: #ffb8be; }
 .eesh-sit-error { max-width: 1120px; margin: 14px auto 0; padding: 14px 18px; border: 1px solid color-mix(in srgb, #d9534f 55%, var(--line)); border-radius: 14px; background: color-mix(in srgb, #d9534f 8%, var(--surface)); }
 .eesh-sit-error p { margin: 0 0 10px; font-size: 12.5px; }
 .eesh-sit-error > div { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; }

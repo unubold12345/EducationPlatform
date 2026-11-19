@@ -39,7 +39,12 @@ function stateOf(question: PracticeQuestion, reveal: PracticeReveal | undefined,
   return response?.replace(/_/g, "").trim() ? "answered" : undefined;
 }
 
-export function PracticeWorkspace({initial,speakingLab,initialSection}:{initial:PracticeView;speakingLab?:boolean;initialSection?:string}) {
+/**
+ * `lab`: the view is one skill of the mock opened from a Workshop lab (`exam-practice/skills.ts`). The rail then names the
+ * lab and links back to it, and "Дахин эхлэх" clears only the questions shown here, not the rest of the mock's practice.
+ */
+export type PracticeLab = { title: string; href: string };
+export function PracticeWorkspace({initial,speakingLab,initialSection,lab}:{initial:PracticeView;speakingLab?:boolean;initialSection?:string;lab?:PracticeLab}) {
   const {form}=initial;
   const url="/api/exam-practice/"+form.slug;
   const [responses,setResponses]=useState(initial.responses),[flags,setFlags]=useState(initial.flags),[reveals,setReveals]=useState(initial.reveals);
@@ -140,6 +145,11 @@ export function PracticeWorkspace({initial,speakingLab,initialSection}:{initial:
     }catch(reason){setError(reason instanceof Error&&reason.message?reason.message:"Холболтоо шалгана уу.");}
   }
   async function resetAll(){
+    if(lab){
+      const ids=form.questions.filter(item=>reveals[item.id]||responses[item.id]!==undefined).map(item=>item.id);
+      if(!ids.length||!confirm("Энд харагдаж буй асуултуудын хариу, шалгасан үр дүн устана. Үргэлжлүүлэх үү?"))return;
+      await retry(ids);setFilter("all");setCurrentId(form.questions[0].id);return;
+    }
     if(!confirm("Энэ шалгалтын дадлагын бүх хариу, шалгасан үр дүн устана. Үргэлжлүүлэх үү?"))return;
     clearTimeout(timer.current);pending.current={};flagsDirty.current=false;
     try{
@@ -203,7 +213,8 @@ export function PracticeWorkspace({initial,speakingLab,initialSection}:{initial:
     suggestions:person?[["hint","Санаа, бүтэц"],["review","Бичсэнд минь санал өг"],["followup","Төстэй даалгавар"]]:reveal?[["review","Алдаагаа ойлгох"],["explain","Алхам алхмаар"],["followup","Төстэй асуулт"]]:[["hint","Санаа өгөх"],["explain","Арга заах"],["followup","Төстэй асуулт"]],
   };
 
-  return <div className="exam-session practice-session">
+  // ЭЕШ keeps its own practice layout (the owner's pick, 2026-11-19).
+  if(entrance)return <div className="exam-session practice-session">
     <div className="exam-toolbar">
       <div><p className="eyebrow">Дадлагын горим · Цаггүй · {form.title}</p><h1>{section.title}</h1></div>
       <div className="practice-score">{entrance?<><strong>{summary.earned}<span> / {summary.points} оноо</span></strong><small>{summary.correct} / {summary.graded} зөв · {summary.checked} / {form.questions.length} шалгасан</small></>:<><strong>{summary.correct}<span> / {summary.graded}</span></strong><small>зөв · {summary.checked} / {form.questions.length} шалгасан</small></>}</div>
@@ -263,7 +274,7 @@ export function PracticeWorkspace({initial,speakingLab,initialSection}:{initial:
           {!hsk&&question.figure?<ExamFigureView figure={question.figure}/>:null}
           {!hsk&&!topik&&choices.length?<AnswerOptions name={question.id} selected={value} disabled={Boolean(reveal)} lang={answerLang} labels={question.optionLabels} onSelect={change} struck={struck[question.id]} onStrike={option=>toggle(question.id,option)} correctValue={reveal?.answerValue??reveal?.answer} options={choices.map(option=>({value:option,content:optionContent(option)}))}/>:null}
           {person&&!topik?<div className="exam-written-response"><label htmlFor="practice-text">{question.kind==="speaking"?"Санаа, тэмдэглэл":"Your response"}</label><textarea id="practice-text" lang="en" rows={question.kind==="essay"?15:5} maxLength={question.kind==="essay"?16000:4000} value={value} onChange={event=>change(event.target.value)}/><p className="fine-print">{words(value)} words{question.minWords?" · Minimum "+question.minWords:""}</p></div>:null}
-          {(question.kind==="short"||question.kind==="number")&&!question.toefl?<div className="exam-short-response"><label htmlFor="practice-short">{entrance?"Хариу":question.kind==="number"?"Numerical response — integer, decimal or fraction":"Your answer — follow the word/number limit above"}</label><input id="practice-short" lang={answerLang} autoComplete="off" spellCheck={false} disabled={Boolean(reveal)} maxLength={160} value={value} onChange={event=>change(event.target.value)}/></div>:null}
+          {(question.kind==="short"||question.kind==="number")&&!question.toefl&&!hsk?<div className="exam-short-response"><label htmlFor="practice-short">{entrance?"Хариу":question.kind==="number"?"Numerical response — integer, decimal or fraction":"Your answer — follow the word/number limit above"}</label><input id="practice-short" lang={answerLang} autoComplete="off" spellCheck={false} disabled={Boolean(reveal)} maxLength={160} value={value} onChange={event=>change(event.target.value)}/></div>:null}
 
           {reveal?<section className="practice-feedback" data-result={reveal.correct===null?"review":reveal.correct?"correct":"wrong"} role="status">
             <strong>{reveal.correct===null?"Зөвлөмж":reveal.correct?"Зөв":hasAnswer?"Буруу":"Хариулаагүй"}</strong>
@@ -284,5 +295,96 @@ export function PracticeWorkspace({initial,speakingLab,initialSection}:{initial:
       </>}
     </div>
     <footer className="exam-session-footer"><Link href="/workspace">Workspace →</Link><p>Дадлагын үр дүн шалгалтын түүхэнд орохгүй · Албан ёсны оноо биш</p></footer>
+  </div>;;
+
+  // Every other programme: "study split" — the parts and answer grid on the left, the question in the middle, and
+  // the check, answer, explanation, transcript and AI help on the right (owner's pick, 2026-11-19).
+  const sideless=listening||examining;
+  const results=sectionQuestions.filter(item=>reveals[item.id]).length;
+  return <div className="exam-session practice-session study-session">
+    {error?<div className="error-message study-error" role="alert"><p>{error}</p></div>:null}
+    <div className={"study-split"+(sideless?" is-wide":"")}>
+      <aside className="study-rail" aria-label="Дадлагын явц">
+        <div className="study-rail-head"><p className="eyebrow">{lab?"Workshop · "+lab.title:"Дадлага · Цаггүй"}</p><strong>{form.title}</strong></div>
+        <div className="practice-score">{entrance?<><strong>{summary.earned}<span> / {summary.points} оноо</span></strong><small>{summary.correct} / {summary.graded} зөв · {summary.checked} / {form.questions.length} шалгасан</small></>:<><strong>{summary.correct}<span> / {summary.graded}</span></strong><small>зөв · {summary.checked} / {form.questions.length} шалгасан</small></>}</div>
+        <p className="study-save" role="status">{status}</p>
+        <p className="study-label">Хэсгүүд</p>
+        <nav className="practice-sections" aria-label="Хэсгүүд">{form.sections.map(item=>{
+        const list=form.questions.filter(q=>q.section===item.id);
+        return <button key={item.id} type="button" aria-current={item.id===section.id?"true":undefined} onClick={()=>openSection(item.id)}><span>{item.title}</span><small>{list.filter(q=>reveals[q.id]).length} / {list.length}</small><i aria-hidden="true" style={{inlineSize:(list.length?100*list.filter(q=>reveals[q.id]).length/list.length:0)+"%"}}/></button>;
+      })}</nav>
+        {sideless?null:<>
+        <p className="study-label">Асуултууд</p>
+        <div className="practice-filter" role="group" aria-label="Асуулт шүүх">
+        {(Object.keys(filterNames) as Filter[]).map(name=><button key={name} type="button" aria-pressed={filter===name} onClick={()=>setFilter(name)}>{filterNames[name]}</button>)}
+      </div>
+      <QuestionStrip current={question.id} onSelect={go} items={strip.map(item=>({id:item.id,label:item.label,state:stateOf(item,reveals[item.id],responses[item.id]),flagged:flags.includes(item.id)}))}/>
+        <p className="study-legend"><i data-state="correct"/>зөв <i data-state="wrong"/>алдсан <i data-state="answered"/>хариулсан</p>
+        {wrongHere.length?<button type="button" className="practice-retry-all" onClick={()=>void retry(wrongHere)}>Алдсан {wrongHere.length} асуултаа дахин ажиллах</button>:null}
+        </>}
+        <div className="study-switches">{jlpt?<button type="button" aria-pressed={readings} onClick={()=>setReadings(!readings)}>ふりがな {readings?"✓":"—"}</button>:null}
+        {hsk?<button type="button" aria-pressed={readings} onClick={()=>setReadings(!readings)}>Pinyin {readings?"✓":"—"}</button>:null}
+        {section.math&&form.subject==="sat"?<button type="button" aria-pressed={tools} onClick={()=>setTools(open=>!open)}>Тооны машин / томьёо</button>:null}</div>
+        <div className="study-links">{lab?<Link className="text-link" href={lab.href}>← {lab.title}</Link>:null}<Link className="text-link" href={form.briefingHref}>Цагтай шалгалт</Link><button type="button" className="text-link" onClick={()=>void resetAll()}>Дахин эхлэх</button>{lab?null:<Link className="text-link" href="/workspace">Workspace</Link>}</div>
+      </aside>
+      <section className="study-main exam-workspace" aria-label={section.title}>
+        <header className="study-head"><p className="eyebrow">{form.title}</p><h1>{section.title}</h1><p className="practice-progress">{results} / {sectionQuestions.length} энэ хэсэгт шалгасан</p></header>
+        {section.hint||(section.kind==="speaking"&&speakingLab)?<p className="practice-hint">{section.hint}{section.kind==="speaking"&&speakingLab?<> <Link className="text-link" href="/labs/ielts-speaking">Speaking Lab-д чанга ярьж дасгал хийх →</Link></>:null}</p>:null}
+      {examinerOffered&&!examining?<div className="practice-examiner-offer"><div><strong>AI шалгагчтай ярих</strong><p>{examinerName(examinerVoice)} энэ хэсгийн асуултуудыг чанга уншиж, таны хариуг сонсоод бичвэр болгон хадгална. Цаггүй; хэсгийг дахин хийж болно. Хариуг бичвэр болгохын тулд дууг манай сервер рүү илгээнэ (тэндээс яриа таних үйлчилгээнд дамжиж болно).</p><ExaminerPicker/></div><button type="button" className="button" onClick={()=>setExaminer(true)}>AI шалгагчтай эхлэх →</button></div>:null}
+      {examining?<SpeakingExaminer base={url} recordId={"practice:"+form.slug} stage={examinerStage} answers={responses} disabled={false}
+        onChange={(id,value)=>{const target=sectionQuestions.find(item=>item.id===id);if(target)changeFor(target,value);}}
+        onRestart={ids=>{for(const id of ids){const target=sectionQuestions.find(item=>item.id===id);if(target)changeFor(target,"");}}}
+        onLeave={()=>setExaminer(false)}/>:null}
+      {examinerOffered?<SpeakingReportCard base={url} recordId={"practice:"+form.slug} transcripts={spoken} note="дадлагын үр дүнд орохгүй"/>:null}
+        {examining?null:listening?<ListeningPracticeView audio={url+audioPath(form.slug)} questions={sectionQuestions} currentId={question.id} responses={responses} reveals={reveals} flags={flags} checking={checking}
+        onSelect={setCurrentId} onChange={(id,value)=>{const target=sectionQuestions.find(item=>item.id===id);if(target)changeFor(target,value);}} onFlag={flagFor}
+        onCheck={ids=>void checkMany(ids)} onRetry={ids=>void retry(ids)}
+        assistant={<AssistantButton config={assistant} turns={conversations[question.id]??[]} setTurns={update=>setConversations(current=>({...current,[question.id]:update(current[question.id]??[])}))}/>}/>:<>
+        {section.math?<MathScratchpad key={"practice-"+form.slug} attemptId={"practice-"+form.slug}/>:null}
+      {tools?<MathTools/>:null}
+      {jlpt&&question.audioPart?<JlptPracticeAudio key={question.id} slug={form.slug} questionId={question.id} part={question.audioPart} revision={form.audioRevision}/>:null}
+      {hsk&&question.audioPart?<HskPracticeAudio key={question.id} slug={form.slug} questionId={question.id} part={question.audioPart}/>:null}
+      {topik&&question.audioPart?<TopikPracticeAudio key={question.id} slug={form.slug} questionId={question.id} part={question.audioPart}/>:null}
+      {!jlpt&&!hsk&&!topik&&question.audioPart?<section className="listening-player practice-audio"><div><strong>Listening · Part {question.audioPart} / {Math.max(...form.questions.map(item=>item.audioPart??0))}</strong></div><audio key={question.audioPart} controls preload="none" src={url+audioPath(form.slug)+"?part="+question.audioPart} aria-label={"Listening recording part "+question.audioPart}/></section>:null}
+      <div className={"exam-question-layout "+(passage?"with-passage":"")}>
+          {passage&&jlpt?<aside className="jlpt-passage" aria-label="Унших эх"><JapaneseText text={passage} readings={readings}/></aside>:null}
+        {passage&&!jlpt?<PassagePane title={passageTitle} text={passage} caption={question.kind==="essay"?"Academic Writing · Task 1 data":undefined} controls={controls} scale={scale}/>:null}
+        <section className="exam-answer-panel">
+            <div className="exam-question-number" ref={heading} tabIndex={-1}><strong>{person?"Task":answerLang==="en"?"Question":"Даалгавар"} {question.label}{hsk||topik?"":" / "+sectionQuestions.length}{question.points?<span className="practice-points"> · {question.points} оноо</span>:null}</strong><button aria-pressed={flags.includes(question.id)} onClick={toggleFlag}>⚑ {flags.includes(question.id)?"Тэмдэглэсэн":"Дараа харах"}</button></div>
+          {topik?<div className="practice-topik">{question.topikGroup?<TopikGroupHead group={question.topikGroup} note={(question.instructions??"").split("\n").slice(1).join(" ")}/>:null}{question.kind==="essay"?<TopikWriting question={question} value={value} disabled={Boolean(reveal)} onChange={change}/>:<TopikQuestion question={question} value={value} disabled={Boolean(reveal)} correct={reveal?.answerValue} onChange={change}/>}</div>:null}
+          {question.instructions&&!topik?<section className="practice-context practice-task"><p className="eyebrow">{jlpt?"問題":hsk?"说明 · Заавар":form.subject==="eesh-english"?(/^\d/.test(question.task??"")?"Task "+question.task:question.task??"Task"):"Даалгавар "+(question.task??"")}</p><div lang={answerLang}>{mathPaper||physicsPaper?<MathText text={question.instructions}/>:<RichText text={question.instructions}/>}</div></section>:null}
+          {question.groupFigure?<ExamFigureView figure={question.groupFigure}/>:null}
+          {toefl?<ToeflPracticeItem question={question} value={value} disabled={Boolean(reveal)} base={url} onChange={change}/>:null}
+          {question.context&&!toefl?<section className="practice-context"><p className="eyebrow">{question.contextTitle??"Өгөгдөл"}</p><div lang="en"><RichText text={question.context}/></div></section>:null}
+          {question.wordBank?.length?<section className="practice-bank" aria-label="Сонголтын сан"><p className="eyebrow">СОНГОЛТУУД</p><ol>{question.wordBank.map(item=><li key={item.label}><span>{item.label}</span><RichText text={item.text}/></li>)}</ol></section>:null}
+          {hsk&&part?<div className="practice-hsk"><HskMaterial group={question.hskGroup} readings={readings} example={false}/><HskQuestion question={question} part={part} value={value} disabled={Boolean(reveal)} readings={readings} correct={reveal?.answerValue} onChange={change}/></div>:null}
+          {!hsk&&!topik&&question.prompt?<h2 lang={answerLang}>{mathPaper||physicsPaper?<MathText text={question.prompt}/>:jlpt?<JapaneseText text={question.prompt} readings={readings}/>:form.subject==="eesh-english"?<RichText text={question.prompt}/>:question.prompt}</h2>:null}
+          {!hsk&&question.figure?<ExamFigureView figure={question.figure}/>:null}
+          {!hsk&&!topik&&choices.length?<AnswerOptions name={question.id} selected={value} disabled={Boolean(reveal)} lang={answerLang} labels={question.optionLabels} onSelect={change} struck={struck[question.id]} onStrike={option=>toggle(question.id,option)} correctValue={reveal?.answerValue??reveal?.answer} options={choices.map(option=>({value:option,content:optionContent(option)}))}/>:null}
+          {person&&!topik?<div className="exam-written-response"><label htmlFor="practice-text">{question.kind==="speaking"?"Санаа, тэмдэглэл":"Your response"}</label><textarea id="practice-text" lang="en" rows={question.kind==="essay"?15:5} maxLength={question.kind==="essay"?16000:4000} value={value} onChange={event=>change(event.target.value)}/><p className="fine-print">{words(value)} words{question.minWords?" · Minimum "+question.minWords:""}</p></div>:null}
+          {(question.kind==="short"||question.kind==="number")&&!question.toefl&&!hsk?<div className="exam-short-response"><label htmlFor="practice-short">{entrance?"Хариу":question.kind==="number"?"Numerical response — integer, decimal or fraction":"Your answer — follow the word/number limit above"}</label><input id="practice-short" lang={answerLang} autoComplete="off" spellCheck={false} disabled={Boolean(reveal)} maxLength={160} value={value} onChange={event=>change(event.target.value)}/></div>:null}
+            <div className="question-actions"><button className="button secondary" disabled={!previous} onClick={()=>previous&&go(previous.id)}>← Өмнөх</button>{next?<button className="button" onClick={()=>go(next.id)}>Дараах →</button>:nextSection?<button className="button" onClick={()=>openSection(nextSection.id)}>Дараагийн хэсэг →</button>:<Link className="button" href="/workspace">Дуусгах →</Link>}</div>
+        </section>
+      </div>
+      </>}
+      </section>
+      {sideless?null:<aside className="study-panel" aria-label="Шалгах, тайлбар">
+        <p className="study-label">{person?"Зөвлөмж":"Шалгах"} · {question.label}</p>
+            {reveal?<section className="practice-feedback" data-result={reveal.correct===null?"review":reveal.correct?"correct":"wrong"} role="status">
+            <strong>{reveal.correct===null?"Зөвлөмж":reveal.correct?"Зөв":hasAnswer?"Буруу":"Хариулаагүй"}</strong>
+            {reveal.answer&&topik&&person?<div className="topik-model"><p>Жишиг хариу:</p><div lang="ko">{reveal.answer.split("\n").map((line,i)=><p key={i}><KoreanText text={line} inline/></p>)}</div></div>:null}
+            {reveal.answer&&!(topik&&person)?<p>Зөв хариу: <b lang={answerLang}>{mathPaper?<MathFormula text={reveal.answer}/>:reveal.answer}</b></p>:null}
+            {reveal.explanation?<p lang={explainLang}>{mathPaper||physicsPaper?<MathText text={reveal.explanation}/>:reveal.explanation}</p>:null}
+            {reveal.transcript?<details className="practice-transcript"><summary>Бичлэгийн текст</summary><div lang={answerLang}>{hsk?transcriptLines(reveal.transcript).map((line,i)=><p key={i}><ChineseText line={line} readings={readings}/></p>):reveal.transcript.split(topik?"\n":"\n\n").map((line,i)=><p key={i}>{line}</p>)}</div></details>:null}
+            {person?null:<button type="button" className="text-link" onClick={()=>void retry([question.id])}>Энэ асуултыг дахин ажиллах</button>}
+          </section>:null}
+        {reveal?null:<p className="study-panel-note">{person?"Бичээд Зөвлөмж харах дарвал жишиг хариу, шалгах зүйлс энд гарна.":"Хариулаад Шалгах дарвал зөв хариу, тайлбар"+(question.audioPart?", бичлэгийн текст":"")+" энд гарна."}</p>}
+        <div className="practice-actions">
+              {reveal?null:<button type="button" className="button" disabled={checking} onClick={()=>void check()}>{checking?"Шалгаж байна…":person?"Зөвлөмж харах":hasAnswer?"Шалгах":"Хариуг харах"}</button>}
+          <AssistantButton config={assistant} turns={conversations[question.id]??[]} setTurns={update=>setConversations(current=>({...current,[question.id]:update(current[question.id]??[])}))}/>
+        </div>
+        <p className="study-keys fine-print">Товч: ← → асуулт · A–E сонголт · Enter шалгах · F тэмдэг</p>
+      </aside>}
+    </div>
   </div>;
 }

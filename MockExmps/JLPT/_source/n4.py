@@ -314,3 +314,7 @@ choices('''
 （返事を えらんでください。）|女：今度の 土曜日、空いていますか。|午後なら 大丈夫です。|土曜日に 入っていますか。|空は 青いです。|Specify available time in response to a schedule inquiry.
 ''')),
 ]
+
+# Forms 04-06 (Claude Code, Opus 5.5, 2026-11-19) live in n4_more.py.
+from n4_more import FORMS as _MORE  # noqa: E402
+FORMS += _MORE

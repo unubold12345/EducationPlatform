@@ -106,7 +106,7 @@ with sync_playwright() as p:
     page.wait_for_url('**/exams/attempts/*')
     attempt=page.url.rsplit('/',1)[1]
     endpoint=BASE+'/api/mock-attempts/'+attempt
-    expect(page.locator('.topik-sheet')).to_be_visible()
+    expect(page.locator('.exam-sheet')).to_be_visible()
     expect(page.locator('.topik-item').first).to_be_visible()
     source=page.locator('[data-listening-player] audio').get_attribute('src')
     assert source.endswith('/audio/topik?part=1'),source
@@ -116,7 +116,7 @@ with sync_playwright() as p:
     assert context.request.get(endpoint+'/audio?part=1').status==404
     if not PRACTICE_DURING_MOCK:assert context.request.get(practice).status==403
     page.locator('.topik-options label').first.click()
-    expect(page.locator('.exam-session-meta [role=status]')).to_have_text('Хадгалсан')
+    expect(page.locator(':is(.exam-session-meta,.exam-sheet,.study-rail) [role=status]')).to_have_text('Хадгалсан')
     page.reload()
     expect(page.locator('.topik-options input').first).to_be_checked()
     fits(page,'timed-l')
@@ -141,11 +141,13 @@ with sync_playwright() as p:
     assert done['finishedAt'] and done['report']['points']=={'total':200,'earned':198},done['report']['points']
     assert [[s['correct'],s['total']] for s in done['report']['sections']]==[[30,30],[39,40]]
     page.goto(BASE+'/exams/attempts/'+attempt)
-    expect(page.locator('.topik-results')).to_be_visible()
+    # A finished mock's result is the Review page, with the level in its TOPIK panel.
+    expect(page.locator('.wsp-review')).to_be_visible()
+    expect(page).to_have_url(BASE+'/workspace/review/'+attempt)
     expect(page.locator('.topik-score-line')).to_contain_text('198/200')
     expect(page.locator('.topik-score-line')).to_contain_text('2-р түвшин')
-    page.locator('.review-filter button',has_text='Бүгд').click()
-    expect(page.locator('.topik-results .exam-review')).to_have_count(70)
+    page.locator('.wsp-filter button',has_text='Бүгд').click()
+    expect(page.locator('.wsp-question')).to_have_count(70)
     fits(page,'results')
     page.goto(BASE+'/workspace/review/'+attempt)
     expect(page.get_by_text('TOPIK Ⅰ',exact=False).first).to_be_visible()
@@ -184,7 +186,7 @@ with sync_playwright() as p:
     assert done['finishedAt'] and done['report']['points']=={'total':200,'earned':200},done['report']['points']
     page.goto(BASE+'/exams/attempts/'+attempt2)
     expect(page.locator('.topik-score-line')).to_contain_text('бичих')
-    page.locator('.review-filter button',has_text='Бичих').click()
+    page.locator('.wsp-filter button',has_text='Бичих').click()
     expect(page.locator('.topik-writing-review')).to_have_count(4)
     expect(page.locator('.topik-model').first).to_be_visible()
     fits(page,'level2-results')

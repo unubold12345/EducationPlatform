@@ -9,7 +9,7 @@ const adminFont = Inter({ subsets: ["latin", "cyrillic", "cyrillic-ext"], variab
 
 export const adminTabs = [
   ["overview", "Тойм"], ["users", "Хэрэглэгчид"], ["attempts", "Оролдлого"], ["announcements", "Мэдэгдэл"], ["subscriptions", "Сарын эрх"], ["payments", "Төлбөр"],
-  ["pricing", "Үнэ"], ["credits", "AI кредит"], ["content", "Контент"], ["audit", "Үйлдлийн түүх"], ["settings", "Систем"],
+  ["pricing", "Үнэ"], ["credits", "AI кредит"], ["content", "Контент"], ["ai", "AI зардал"], ["audit", "Үйлдлийн түүх"], ["settings", "Систем"],
 ] as const;
 export type AdminTab = typeof adminTabs[number][0];
 
@@ -18,7 +18,7 @@ export const adminGroups: readonly { label: string; tabs: readonly AdminTab[] }[
   { label: "Хүмүүс", tabs: ["users", "attempts", "announcements"] },
   { label: "Орлого", tabs: ["subscriptions", "payments", "pricing", "credits"] },
   { label: "Агуулга", tabs: ["content"] },
-  { label: "Хяналт", tabs: ["audit", "settings"] },
+  { label: "Хяналт", tabs: ["ai", "audit", "settings"] },
 ];
 export const adminTabInfo: Record<AdminTab, string> = {
   overview: "Анхаарах зүйл, гол тоонууд.",
@@ -30,22 +30,23 @@ export const adminTabInfo: Record<AdminTab, string> = {
   pricing: "Багцын үнэ, хямдрал, AI кредитийн сарын хэмжээ, кредит багц.",
   credits: "AI-ийн зарцуулалт: кредит, бодит DeepSeek зардал, үйлдэл ба хэрэглэгчээр.",
   content: "Шалгалт, workshop-ын асуулт, хариуг засна.",
+  ai: "AI-ийн бодит зардал: дуудлага бүр хаанаас, хэнээс, хэдээр. DeepSeek-ийн үлдэгдэлтэй тулгана.",
   audit: "Админууд юу хийсэн, ямар шалтгаанаар.",
   settings: "Серверийн ачаалал, өгөгдлийн сангийн төлөв.",
 };
 export const adminDate = (value: Date) => new Intl.DateTimeFormat("mn-MN", { timeZone: "Asia/Ulaanbaatar", dateStyle: "short", timeStyle: "short" }).format(value);
 export const money = (value: number) => "₮" + value.toLocaleString("en-US");
-export const statusLabel = (value: string) => ({ PAID: "Төлөгдсөн", PENDING: "Хүлээгдэж байна", DECLINED: "Амжилтгүй", IN_PROGRESS: "Үргэлжилж байна", SUBMITTED: "Дууссан", IN_REVIEW: "Хянаж байна", REVIEWED: "Хянасан", CHANGES_NEEDED: "Засвар шаардлагатай", DRAFT: "Ноорог", PUBLISHED: "Нийтлэгдсэн" }[value] ?? value);
+export const statusLabel = (value: string) => ({ PAID: "Төлөгдсөн", PENDING: "Хүлээгдэж байна", DECLINED: "Амжилтгүй", IN_PROGRESS: "Үргэлжилж байна", SUBMITTED: "Дууссан", ABANDONED: "Зогсоосон", IN_REVIEW: "Хянаж байна", REVIEWED: "Хянасан", CHANGES_NEEDED: "Засвар шаардлагатай", DRAFT: "Ноорог", PUBLISHED: "Нийтлэгдсэн" }[value] ?? value);
 export const eventLabel = (value: string) => ({ "sign-in": "Нэвтэрсэн", "sign-up": "Бүртгүүлсэн", "password-change": "Нууц үг сольсон" }[value] ?? value);
 export const auditActions: readonly (readonly [string, string])[] = [
   ["grant-month", "Сарын эрх олгосон"], ["expire-plan", "Сарын эрх дуусгасан"], ["revoke-sessions", "Төхөөрөмжөөс гаргасан"],
   ["suspend", "Бүртгэл хаасан"], ["unsuspend", "Хаалт цуцалсан"], ["add-note", "Тэмдэглэл нэмсэн"], ["set-price", "Үнэ өөрчилсөн"], ["set-sale", "Хямдрал өөрчилсөн"], ["grant-credits", "AI кредит олгосон"], ["set-credits", "AI кредитийн хэмжээ өөрчилсөн"], ["set-credit-packs", "AI кредит багцууд өөрчилсөн"], ["set-credit-pack", "AI кредит багц өөрчилсөн"],
   ["announce", "Мэдэгдэл илгээсэн"], ["withdraw-announcement", "Мэдэгдэл буцаасан"],
-  ["content-fix", "Асуулт зассан"], ["content-save", "Ноорог хадгалсан"], ["content-review", "Ноорог хянасан"], ["content-publish", "Контент нийтэлсэн"], ["review-content", "Хяналтын төлөв өөрчилсөн"],
+  ["content-fix", "Асуулт зассан"], ["content-save", "Ноорог хадгалсан"], ["content-review", "Ноорог хянасан"], ["content-publish", "Контент нийтэлсэн"], ["review-content", "Хяналтын төлөв өөрчилсөн"], ["skip-mock-stage", "Mock хэсэг алгассан (админ)"],
 ];
 export const auditLabel = (action: string) => auditActions.find(([key]) => key === action)?.[1] ?? action;
 
-const statusTone: Record<string, string> = { PAID: "ok", SUBMITTED: "ok", PUBLISHED: "ok", REVIEWED: "ok", PENDING: "warn", CHANGES_NEEDED: "warn", DECLINED: "bad", IN_PROGRESS: "info", IN_REVIEW: "info" };
+const statusTone: Record<string, string> = { PAID: "ok", SUBMITTED: "ok", PUBLISHED: "ok", REVIEWED: "ok", PENDING: "warn", CHANGES_NEEDED: "warn", DECLINED: "bad", ABANDONED: "bad", IN_PROGRESS: "info", IN_REVIEW: "info" };
 export function StatusPill({ status, label }: { status: string; label?: string }) {
   return <span className={"ws-pill " + (statusTone[status] ?? "")}>{label ?? statusLabel(status)}</span>;
 }

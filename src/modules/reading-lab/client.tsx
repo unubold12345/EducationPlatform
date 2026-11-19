@@ -1,4 +1,6 @@
 "use client";
+import { LabMockList } from "@/modules/exam-practice/lab-mock-list";
+import type { LabMock } from "@/modules/exam-practice/lab-mocks";
 import Link from "next/link";
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type DragEvent, type ReactNode } from "react";
 import { Icon } from "@/modules/workspace/icons";
@@ -114,8 +116,10 @@ function ownPractice(own: SavedPractice, renew: (own: SavedPractice) => Promise<
   };
 }
 
-export function ReadingLab({ userKey, initialPractices = [], initialSamples = {}, initialLimit = READING_LIMITS.freePractices }: {
+export function ReadingLab({ userKey, initialPractices = [], initialSamples = {}, initialLimit = READING_LIMITS.freePractices, mocks = [] }: {
   userKey: string | null;
+  /** The IELTS mocks' reading, each opening in the lab mock page (2026-11-19). */
+  mocks?: LabMock[];
   /** A signed-in student's practices and sample progress, read from the account by the page. */
   initialPractices?: SavedPractice[];
   /** How many practices the student's plan keeps (owner rule 2026-11-17: free and Basic 5, Pro 15). */
@@ -279,6 +283,11 @@ export function ReadingLab({ userKey, initialPractices = [], initialSamples = {}
         })}
       </div>
     </section>
+
+    {mocks.length ? <section className={styles.section} aria-labelledby="rl-mocks">
+      <div className={styles.sectionHead}><h2 id="rl-mocks">Mock-ийн уншлага</h2><span>IELTS Academic mock-уудын 3 текст, 40 асуулт · цаггүй</span></div>
+      <LabMockList mocks={mocks} />
+    </section> : null}
 
     <section className={styles.section} aria-labelledby="rl-create">
       <div className={styles.sectionHead}><h2 id="rl-create">Өөрийн дасгал үүсгэх</h2><span>Файл, зураг, текст эсвэл сэдвээс</span></div>

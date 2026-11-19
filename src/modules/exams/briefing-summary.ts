@@ -2,6 +2,7 @@ import { MOCK_PRICE_TERM } from "./pricing.ts";
 import type { ExamDefinition, ExamStage } from "./types.ts";
 import { entranceSubjectLabels, subjectFromSlug } from "./entrance/subjects.ts";
 import { isFreeMock } from "./free/catalog.ts";
+import { salePlanFor } from "../subscriptions/plans.ts";
 
 export type BriefingFact = { label: string; value: string };
 
@@ -38,9 +39,11 @@ export function mockBriefingSummary(exam: ExamDefinition): MockBriefingSummary {
   const breakSeconds = exam.stages.filter(stage => stage.kind === "break").reduce((sum, stage) => sum + stage.seconds, 0);
   const activeSeconds = totalSeconds - breakSeconds;
 
-  // A free half mock is open to every signed-in account; SAT and IELTS mocks otherwise come with the Гадаад хэл plan.
+  // A free half mock is open to every signed-in account; other mocks come with the plan family that covers them
+  // (ЭЕШ, Англи хэл or Ази хэл).
   const free = isFreeMock(exam.slug);
-  const priceNote = free ? "Үнэгүй · бүртгэлтэй бүх хүнд" : `${MOCK_PRICE_TERM} эсвэл Гадаад хэл багц`;
+  const family = salePlanFor(exam.program)?.shortTitle.replace(/ Basic$/, "");
+  const priceNote = free ? "Үнэгүй · бүртгэлтэй бүх хүнд" : `${MOCK_PRICE_TERM} эсвэл ${family ?? "сарын"} багц`;
   if (exam.program === "sat") {
     const deliveredQuestions = exam.stages.reduce((sum, stage) => sum + questionsFor(stage), 0);
     const modules = exam.stages.filter(stage => stage.kind === "questions").length;

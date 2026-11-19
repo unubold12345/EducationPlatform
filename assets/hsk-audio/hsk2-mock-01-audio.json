@@ -1,5 +1,6 @@
 {
   "slug": "hsk2-mock-01",
+  "paper": "HSK 3.0",
   "source": "Original synthetic Mandarin practice audio; Kokoro-82M v1.0, Apache-2.0",
   "modelUrl": "https://huggingface.co/hexgrad/Kokoro-82M",
   "voices": {
@@ -8,35 +9,28 @@
     "man": "zm_yunxi"
   },
   "speed": 0.9,
-  "readings": "Every item twice: 3 s after the first reading, then 8 s (Parts 1-2) or 10 s (Parts 3-4).",
+  "readings": "Every item twice: 3 s after the first reading, then 8 s (Part 1), 8 s (Part 2), 10 s (Part 3).",
   "parts": [
     {
       "part": 1,
       "file": "hsk2-mock-01-part-1.mp3",
-      "seconds": 230.275,
-      "sha256": "b46b9538db83fde69048b5aef8e0a302c27669896f22d73f3d6c9a060f2929c9",
-      "scriptSha256": "3974b743234f5c3cffbbff95685fcb080902eebc351526026276148ea753c709"
+      "seconds": 130.6,
+      "sha256": "933edfdd7027838ca6ffb3f3aa9bc6a31ed7162eb9cca29ed83bf9c845266c8c",
+      "scriptSha256": "bba4d63ed366c6908823dfe1d0ddf9d834ffd98a9136c21d03e38bbaf1f6734b"
     },
     {
       "part": 2,
       "file": "hsk2-mock-01-part-2.mp3",
-      "seconds": 320.975,
-      "sha256": "05feff4ce82c2b64406b5395ce03f1986b3f7e7d4334c0a1b431bc34d04667df",
-      "scriptSha256": "dca1192ea35381b98adc18cbb9dfb8d9d5074111d2e7bee83f69e8abde159039"
+      "seconds": 320.1,
+      "sha256": "cdb0abb82ce702ecf376214d00aa23d795cfd353c4ee1de330e1e47ba0a0ce49",
+      "scriptSha256": "e3114407f440500911cda92ab88cb79c44b117448acdcc4f20bacc243a8d89ce"
     },
     {
       "part": 3,
       "file": "hsk2-mock-01-part-3.mp3",
-      "seconds": 433.075,
-      "sha256": "3ad5434ed724a58de84fa8d2c0d1b37e74179a35c19229c362be6a03fa0878cd",
-      "scriptSha256": "c698c9eae283ee0fe1b48be4a777ed60161d6f4e597526b565e7959834ba9c1e"
-    },
-    {
-      "part": 4,
-      "file": "hsk2-mock-01-part-4.mp3",
-      "seconds": 330.225,
-      "sha256": "7e926317f4a1f49fad3746e64de41a5a8d84cc90aa3d1e7a1bb95f23ed96c923",
-      "scriptSha256": "a0611059a5d4bd12212882c4fd9f440ee686ba69bee8d6267cd12863b51addd0"
+      "seconds": 436.65,
+      "sha256": "3d00bd30c2af522da78459abd5384fa03bd113769408320c7bf94b112dee19fa",
+      "scriptSha256": "a32b76d292645278a5e86930ed2d29333fe7f30e8af5fd106a881765cd4bd433"
     }
   ],
   "humanListeningReview": false

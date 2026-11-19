@@ -4,10 +4,15 @@ export type ExamProgram = "sat" | "ielts" | "entrance" | "jlpt" | "hsk" | "toefl
 export type HskPicture = { label?: string; src: string; alt: string };
 export type HskLine = { label?: string; text: string; pinyin: string };
 /** A question's own printed material: picture choices (Listening 2), its sentence (Reading), text choices (Listening 4) or the HSK 2 starred statement judged against its text. */
-export type HskItem = { pictures?: HskPicture[]; line?: HskLine; choices?: HskLine[]; statement?: HskLine };
+/** HSK 3.0 Writing 1: a word whose character `at` shows only the `given` component and a box on the `gap` side. */
+export type HskCompose = { word: string; pinyin: string; at: number; given: string; gap: "left" | "right" | "top" | "bottom" };
+/** HSK 3.0 Writing 2: a sentence with one missing character; `hint` is its pinyin, printed in the gap. */
+export type HskBlank = { before: string; after: string; hint: string; pinyin: string };
+export type HskItem = { pictures?: HskPicture[]; line?: HskLine; choices?: HskLine[]; statement?: HskLine; compose?: HskCompose; blank?: HskBlank };
 /** A part's shared six pictures or six answers/words, and its worked example with the example's printed answer. */
-/** `layout` (HSK 2) names the page type a group is drawn as when its id does not: an HSK 1 part or J, the text-only true/false part. */
-export type HskGroup = { layout?: "L1"|"L2"|"L3"|"L4"|"R1"|"R2"|"R3"|"R4"|"J"; pictures?: HskPicture[]; choices?: HskLine[]; example?: { pictures?: HskPicture[]; line?: HskLine; statement?: HskLine; choices?: HskLine[]; answerLine?: HskLine; answer: string } };
+/** `layout` names the page type a group is drawn as when its id does not: an HSK 1 part, J (the text-only true/false part),
+ * RQ (a text, a ★ question and three answers) or the HSK 3.0 Writing parts W1 (component) and W2 (typed character). */
+export type HskGroup = { layout?: "L1"|"L2"|"L3"|"L4"|"R1"|"R2"|"R3"|"R4"|"J"|"RQ"|"W1"|"W2"; pictures?: HskPicture[]; choices?: HskLine[]; example?: { pictures?: HskPicture[]; line?: HskLine; statement?: HskLine; choices?: HskLine[]; answerLine?: HskLine; compose?: HskCompose; blank?: HskBlank; answer: string } };
 /** TOEFL printed material (answer-free): a Complete the Words gap, a Build a Sentence task, or the recording a speaking item plays. */
 export type ToeflItem = { gap?: { prefix: string; missing: number }; build?: { context: string; prefix?: string; suffix?: string; end: string; chips: string[]; slots: number }; clip?: string };
 /** A TOEFL group's page: the paragraph with its gaps (`q` marks a gap), a text or passage, a recording, a writing task or a speaking introduction. Never answers or scripts. */
@@ -114,6 +119,8 @@ export type ExamState = {
   version: 1; definition: ExamDefinition; stageIndex: number; stageStartedAt: string; deadline: string;
   responses: Record<string, string>; flags: string[]; routes: Record<string, "lower" | "higher">;
   completed: string[]; finishedAt: string | null;
+  /** Stages an admin closed early (testing only; `skipStages`), with when. Absent on every student sitting. */
+  skipped?: { stageId: string; at: string }[];
 };
 export type PublicQuestion = Omit<ExamQuestion, "answers" | "explanation" | "pretest" | "listening" | "answerDisplay">;
 export type PublicStage = Omit<ExamStage, "questions" | "variants"> & { questions: PublicQuestion[] };
@@ -133,6 +140,8 @@ export type PublicExamAttempt = {
   stage: PublicStage | null; serverNow: string; deadline: string; stageStartedAt: string;
   responses: Record<string, string>; flags: string[]; completed: string[]; finishedAt: string | null;
   timeline: { title: string; seconds: number; kind: ExamStage["kind"] }[]; report: ExamReport | null;
+  /** Titles of the stages an admin skipped; the result says so. */
+  skipped?: string[];
   recordings: { stageId: string; mime: string }[];
   /** The caller said it already holds this stage, so `stage` is null and it keeps its own copy. */
   stageUnchanged?: boolean;

@@ -8,12 +8,13 @@ import {planMonth} from "@/modules/subscriptions/plans";
 import {chargeCredits} from "@/modules/credits/service";
 import {AI_ACTIONS} from "@/modules/credits/pricing";
 import {tutorDay} from "@/modules/tutor/contracts";
-import {countWords} from "./contracts";
+import {countWords,examTasks,type WritingExam} from "./contracts";
 import {
- EXPERT_LIMITS,EXPERT_MODEL,EXPERT_SCHEMA,STRONG_LIMITS,expertPlan,expertSpentMessage,expertSystem,normalizeExpertReview,readExpertReview,reviewUser,strongSystem,subjectOf,validExpertInput,
+ EXPERT_LIMITS,EXPERT_MODEL,EXPERT_SCHEMA,STRONG_LIMITS,expertMinWords,expertPlan,expertSpentMessage,expertSystem,normalizeExpertReview,readExpertReview,reviewExam,reviewUser,strongSystem,subjectOf,validExpertInput,
  type EssayReviewKind,type ExpertQuota,type ExpertReview,type ExpertSummary,type ReviewSubject,type ReviewTask,type SavedExpertReview,
 } from "./expert";
 import {requireWritingLab} from "./service";
+import {aiFetch,recordAiCall} from "@/modules/ai-usage/server";
 
 /** One review in flight per student; a review takes up to about three minutes. */
 const LEASE_MS=300_000;
@@ -24,7 +25,9 @@ const NOT_FOUND="Энэ үнэлгээ олдсонгүй.";
 /** The list's columns: the band is its own column, so listing never reads the review JSON (about 15 KB each). */
 const LIST={id:true,createdAt:true,kind:true,task:true,title:true,words:true,overall:true} as const;
 type Row={id:string;createdAt:Date;kind:string;task:string;title:string;words:number;overall:number};
-const isTask=(value:string):value is ReviewTask=>value==="essay"||value==="letter"||value==="free"||value==="report";
+const isTask=(value:string):value is ReviewTask=>["essay","letter","free","report","email","discussion"].includes(value);
+/** The tasks one studio lists: its own exam's (IELTS also lists the mocks' Academic Task 1 reports). */
+const listedTasks=(exam:WritingExam):string[]=>exam==="ielts"?[...examTasks("ielts"),"report"]:examTasks(exam);
 
 function summary(row:Row):ExpertSummary|null {
  return isTask(row.task)?{id:row.id,createdAt:row.createdAt.getTime(),kind:row.kind==="strong"?"strong":"expert",task:row.task,title:row.title,words:row.words,overall:row.overall}:null;
@@ -52,11 +55,14 @@ export async function expertQuota(userId:string,now=new Date()):Promise<ExpertQu
  return {plan:null,limit:EXPERT_LIMITS.freeReviews,used,remaining:Math.max(0,EXPERT_LIMITS.freeReviews-used),resetsAt:null,planEnds:false};
 }
 
-/** The page's first read: what is left and the student's past reviews, newest first. */
-export async function expertLibrary(userId:string) {
+/**
+ * The page's first read: what is left and the student's past reviews of this exam, newest first. The Claude quota is one
+ * per plan month across both studios.
+ */
+export async function expertLibrary(userId:string,exam:WritingExam="ielts") {
  const [quota,rows]=await Promise.all([
   expertQuota(userId),
-  getDb().essayReview.findMany({where:{userId},orderBy:{createdAt:"desc"},take:EXPERT_LIMITS.history,select:LIST}),
+  getDb().essayReview.findMany({where:{userId,task:{in:listedTasks(exam)}},orderBy:{createdAt:"desc"},take:EXPERT_LIMITS.history,select:LIST}),
  ]);
  return {quota,reviews:rows.flatMap(row=>summary(row)??[])};
 }
@@ -97,7 +103,10 @@ function providerFailure(error:unknown):never {
  * and a review only counts once it is saved: a refusal, a timeout or an unusable reply costs the student nothing.
  */
 export async function createExpertReview(userId:string,body:unknown) {
- if(!validExpertInput(body))throw new ApiError(400,`Бичвэрийн хүсэлт буруу байна. Шинжээчийн үнэлгээнд дор хаяж ${EXPERT_LIMITS.minWords} үг, сэдэв хэрэгтэй.`);
+ if(!validExpertInput(body)){
+  const task=body&&typeof body==="object"&&typeof (body as {task?:unknown}).task==="string"&&isTask((body as {task:string}).task)?(body as {task:ReviewTask}).task:"essay";
+  throw new ApiError(400,`Бичвэрийн хүсэлт буруу байна. Шинжээчийн үнэлгээнд дор хаяж ${expertMinWords(task)} үг, сэдэв хэрэгтэй.`);
+ }
  return expertReview(userId,subjectOf(body));
 }
 
@@ -115,6 +124,8 @@ export async function expertReview(userId:string,body:ReviewSubject) {
   if(quota.remaining<=0)throw new ApiError(403,expertSpentMessage(quota));
   const client=new Anthropic({apiKey:key,timeout:PROVIDER_TIMEOUT_MS,maxRetries:1});
   let message:Anthropic.Beta.BetaMessage;
+  // Logged in the AI usage log either way: the final message's usage, or the error the stream ended with.
+  const call={url:client.baseURL,startedAt:Date.now(),userId,source:"writing-expert",model:EXPERT_MODEL};
   try{
    // Streamed so a long review never meets an HTTP timeout; only the finished message is used.
    const stream=client.beta.messages.stream({
@@ -122,17 +133,21 @@ export async function expertReview(userId:string,body:ReviewSubject) {
     // A declined request is re-run once on Anthropic's recommended fallback model instead of failing.
     betas:["server-side-fallback-2026-07-01"],fallbacks:"default",
     output_config:{effort:"high",format:{type:"json_schema",schema:EXPERT_SCHEMA}},
-    system:expertSystem(body.language),
+    system:expertSystem(body.language,reviewExam(body.task)),
     messages:[{role:"user",content:reviewUser(body)}],
    });
    message=await stream.finalMessage();
-  }catch(error){providerFailure(error);}
+  }catch(error){
+   await recordAiCall("anthropic",{...call,error,httpStatus:error instanceof Anthropic.APIError?error.status:undefined});
+   providerFailure(error);
+  }
+  await recordAiCall("anthropic",{...call,body:message});
   if(message.stop_reason==="refusal")throw new ApiError(422,"Шинжээч энэ бичвэрийг үнэлэхээс татгалзлаа. Бичвэрээ шалгаад дахин оролдоно уу. Үнэлгээ хасагдаагүй.");
   if(message.stop_reason!=="end_turn")throw new ApiError(503,"Шинжээчийн хариу бүрэн ирсэнгүй. Дахин оролдоно уу. Үнэлгээ хасагдаагүй.");
   const raw=message.content.flatMap(block=>block.type==="text"?[block.text]:[]).join("");
   let parsed:unknown=null;
   try{parsed=JSON.parse(raw);}catch{parsed=null;}
-  const review=normalizeExpertReview(parsed,body.essay);
+  const review=normalizeExpertReview(parsed,body.essay,reviewExam(body.task));
   if(!review)throw new ApiError(503,"Шинжээчийн хариу бүрэн ирсэнгүй. Дахин оролдоно уу. Үнэлгээ хасагдаагүй.");
   // A timed exam may have started in another tab while the examiner was writing.
   await requireWritingLab(userId);
@@ -187,9 +202,9 @@ export async function strongReview(userId:string,body:ReviewSubject) {
   try{
    let response:Response;
    try{
-    response=await fetch(`${base}/chat/completions`,{method:"POST",cache:"no-store",redirect:"error",headers:{"Content-Type":"application/json",Authorization:`Bearer ${key}`},
+    response=await aiFetch("deepseek",`${base}/chat/completions`,{method:"POST",cache:"no-store",redirect:"error",headers:{"Content-Type":"application/json",Authorization:`Bearer ${key}`},
      body:JSON.stringify({model:process.env.DEEPSEEK_MODEL||"deepseek-flash",thinking:{type:"enabled"},max_tokens:AI_ACTIONS["writing-review"].outputTokens,
-      response_format:{type:"json_object"},stream:false,messages:[{role:"system",content:strongSystem(body.language)},{role:"user",content:reviewUser(body)}]}),
+      response_format:{type:"json_object"},stream:false,messages:[{role:"system",content:strongSystem(body.language,reviewExam(body.task))},{role:"user",content:reviewUser(body)}]}),
      signal:AbortSignal.timeout(STRONG_TIMEOUT_MS)});
    }catch(error){
     throw new ApiError(error instanceof Error&&error.name==="TimeoutError"?504:503,error instanceof Error&&error.name==="TimeoutError"?"Үнэлгээ хэт удлаа. Дахин оролдоно уу. Кредит хасагдаагүй.":"AI туслахтай холбогдож чадсангүй. Кредит хасагдаагүй.");
@@ -201,7 +216,7 @@ export async function strongReview(userId:string,body:ReviewSubject) {
     const data=await response.json();
     meter.add(data.usage);usage=data.usage??{};model=typeof data.model==="string"?data.model.slice(0,60):"";
     const choice=data.choices?.[0];
-    if(choice?.finish_reason==="stop"&&typeof choice.message?.content==="string"&&choice.message.content.length<=80000)review=normalizeExpertReview(JSON.parse(choice.message.content),body.essay);
+    if(choice?.finish_reason==="stop"&&typeof choice.message?.content==="string"&&choice.message.content.length<=80000)review=normalizeExpertReview(JSON.parse(choice.message.content),body.essay,reviewExam(body.task));
    }catch{review=null;}
    if(!review)throw new ApiError(503,"Үнэлгээний хариу бүрэн ирсэнгүй. Дахин оролдоно уу. Кредит хасагдаагүй.");
    // A timed exam may have started in another tab while the review was written.

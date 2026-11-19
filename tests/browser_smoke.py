@@ -58,7 +58,7 @@ with sync_playwright() as p:
     expect(page.locator(".library-list .exam-card")).to_have_count(7)  # SAT, IELTS, ЭЕШ, JLPT, HSK, TOEFL, TOPIK
     for program, prefix, last in [("sat", "sat-full", 9), ("ielts", "ielts-academic", 12)]:
         page.goto(BASE + "/exams/" + program)
-        expect(page.locator(".mock-variant")).to_have_count(last)
+        expect(page.locator(".mock-card")).to_have_count(last)
         expect(page.locator(f'a[href="/exams/{prefix}-{last:02}"]')).to_have_count(1)
     response = page.goto(BASE + "/programs/not-a-program")
     assert response.status == 404

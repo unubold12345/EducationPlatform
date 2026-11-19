@@ -1,4 +1,4 @@
-# IELTS Speaking Lab, the mock AI examiner and Essay Studio
+# IELTS Speaking Lab, the mock AI examiner and Essay Studio (also TOEFL)
 
 Part of the [project guide](../PROJECT.md) (was PROJECT.md section 7). "Section N" in the text means that old numbering; the guide maps it to files.
 
@@ -177,3 +177,66 @@ section under the studio (`expert-client.tsx`, `expert.module.css`) sends the cu
   price (about 680 reviews per $100). The review had bands 5.5/6/6/6 (overall 6.0), noted the 250-word shortfall, gave 16
   corrections (all found in the text), 10 vocabulary items and a 299-word model answer. Bands are practice estimates, not
   official IELTS scores.
+
+### TOEFL Essay Studio and TOEFL Speaking (2026-11-19)
+
+Owner request: make the IELTS Workshop's writing and speaking suitable for TOEFL users too. The Workshop's TOEFL tab now has
+four tiles in the IELTS order: speaking, writing, listening, reading (`workspace/workshop/page.tsx`, `is-four`). Both pages
+share the Speaking Lab pilot switch, sign-in, the open-sitting block and the credit prices, and are not plan-gated, like the
+IELTS labs. Practice content is original: no sentence or question repeats the nine TOEFL mocks.
+
+- **`/labs/toefl-writing`** is the same `WritingStudio` with `exam="toefl"` and three tabs (`writing-lab/progress.ts` keeps
+  `toefl: "build" | "email" | "discussion"`):
+  - Build a Sentence (`build-sentence.ts`, `build-client.tsx`): 3 sets of 10 replies built from boxes in the TOEFL mocks' own
+    view (`exams/toefl/view.tsx` `BuildTask`), with a fixed shuffle that is never already in order. Checked in the page, no
+    AI; the last score per set is kept in the browser.
+  - Write an Email (7 min, 8 prompts) and Academic Discussion (10 min, 8 prompts), printed like the mocks
+    (`ToeflWritingTask`). Ideas and the grammar check work as for IELTS. `action: "feedback"` (the IELTS band report kept for
+    mobile) is refused for TOEFL tasks.
+  - The task decides the exam on the server (`writingExam`, `reviewExam`), so the existing routes serve both studios unchanged.
+    Бүрэн үнэлгээ and Шинжээчийн үнэлгээ use an ETS rater prompt (`toeflSystem`): four criteria scored 0–5 in whole points
+    (Task completion or Contribution; Development & organization; Vocabulary & register; Grammar & accuracy), the overall
+    score is the rounded mean (`toeflScore`), and the model answer is a 120–170-word score-5 response. At least 60 words
+    (`EXPERT_LIMITS.toeflMinWords`).
+  - The expert quota is shared with IELTS (one plan count). Each studio lists only its own exam's reviews
+    (`expertLibrary(user, exam)`).
+- **`/labs/toefl-speaking`** (`modules/toefl-speaking`) has two tabs:
+  - Listen and Repeat: 5 scenes × 7 sentences, short to long, each with its own voice. The sentence plays through the Lab's
+    voice route, a beep follows, then about 15 s of recording, the Lab's transcription and the mock grader's word match
+    (`repeatAccuracy` and `repeatScore`, 0–5). Missed words are marked (`repeatDiff`). No AI, no credits. Without a
+    microphone the student types what they heard. The text stays hidden unless «урьдчилан харах» is on. Clips are cached for
+    the visit.
+  - Take an Interview: 6 topics × 4 questions, from experience to opinion, heard only (the text can be revealed). Each
+    answer is recorded for 45 s after a beep (it can end early) and transcribed; answers can be re-recorded, or typed
+    without a microphone. The report is `POST /api/labs/toefl-speaking`: same origin, session, strict shape, at least 20
+    words, `requireSpeakingLab` before and after the call, `speakingCompletion` with the `speaking-report` price. It gives
+    0–5 per answer, a summary, strengths, fixes that must quote the transcript, vocabulary, a model answer to an asked
+    question and a next task. It is judged from text only, and the page says so.
+  - Last scores are kept in the browser (`education-toefl-speaking-v1`). Nothing is stored on the server.
+- Tests: `tests/toefl-workshop.test.mjs`; the `decks` browser suite checks the four tiles and both pages' first screens.
+- First live report (2026-11-19, owner approved, 3001, a demo account): four typed B1-level answers on «Зам, тээвэр», 35 s
+  each. 10.8 s, 9 credits (the `speaking-report` price). Scores 3/3/4/4 (3.5), Mongolian comments naming real errors,
+  four fixes all quoted from the answers, five phrases, a 119-word model answer to question 3 built on the student's ideas.
+  It found two issues, fixed the same day. A typed answer had sent its typing time as its speaking length; it now sends the
+  time it would take to say (`spokenSeconds`, 2.2 words a second, at most 120), shown as «ярихад ≈N сек». And the model
+  called 35-second answers short of the 45-second task; the prompt now says about 30 seconds or more is full length and
+  only an answer under about 20 seconds is usually too short.
+- Second live report (same day, same answers extended to 72–76 words, sent as 33–35 s): both attempts failed and the 9
+  credits were refunded (ledger: about 1,600 output tokens an attempt, so not cut off). Six direct calls with the same
+  request (no credits) found the cause: 3 replies were unreadable JSON, each closing the summary as a list item
+  (`"],"strengths"`) straight after the answers list; the other 3 were accepted and followed the length rule (no length
+  complaint; one strength noted the answers ran past 30 seconds). `INTERVIEW_SHAPE` now puts `summary` first, as the
+  Essay Studio review does. Five direct calls on the new shape (same day): 4 accepted, 1 still unreadable, its summary
+  closed as a key (`":"","answers"`). Fewer failures, not none: the end of the long Mongolian summary is where the
+  model breaks the JSON. The Essay Studio review and AI mock grading run with thinking on; this report runs without it
+  through the shared `speakingCompletion`.
+- Repair (owner choice, 2026-11-20, over running the report with thinking): `speakingCompletion` takes an optional
+  `parse` (default `JSON.parse`, so every other Speaking Lab call is unchanged), and the interview report passes
+  `parseInterviewJson`. When the parser stops after a value in an object, where only `,` or `}` may follow, a stray `]` or
+  `:"…"` standing right before one of them is dropped and the text parsed again, at most three times; any other fault still
+  fails, and `normalizeInterviewReport` checks the result as before. Replayed offline, all 11 saved replies (the 4
+  unreadable ones included) parse and pass the checks with whole summaries. The 3001 build has both changes since 2026-11-20.
+- Third live report, on that build (2026-11-20, the second run's answers, sent as 33–35 s): valid on the first attempt,
+  9 credits, 10.6 s; scores 4/4/4/4, every fix quotes the transcript, and the summary says the answers were long enough,
+  so length did not count against them. The server does not record whether a reply needed mending, so this run shows the
+  page path working, not the repair itself at work (the slip came in about 1 of 3 replies).

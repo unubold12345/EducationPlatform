@@ -4,6 +4,7 @@ import { readingLabEnabled } from "@/lib/local-pilot";
 import { getSession } from "@/lib/session";
 import { ReadingLab } from "@/modules/reading-lab/client";
 import { readingLibrary } from "@/modules/reading-lab/service";
+import { labMocks } from "@/modules/exam-practice/lab-mocks";
 
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Reading Lab · Workshop", robots: { index: false, follow: false } };
@@ -15,6 +16,7 @@ export default async function ReadingLabPage() {
   if (!readingLabEnabled()) notFound();
   const session = await getSession();
   const userId = session?.user.id ?? null;
-  const library = userId ? await readingLibrary(userId) : null;
-  return <ReadingLab userKey={userId} initialPractices={library?.practices ?? []} initialSamples={library?.samples ?? {}} initialLimit={library?.limit} />;
+  const [library, mocks] = await Promise.all([userId ? readingLibrary(userId) : null, labMocks(userId ?? undefined, "ielts", "reading")]);
+  // Since 2026-11-19 (owner request) the IELTS mocks' reading is listed too; a mock opens in the lab mock page.
+  return <ReadingLab userKey={userId} initialPractices={library?.practices ?? []} initialSamples={library?.samples ?? {}} initialLimit={library?.limit} mocks={mocks} />;
 }

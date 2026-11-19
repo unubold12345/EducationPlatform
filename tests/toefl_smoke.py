@@ -107,12 +107,12 @@ with sync_playwright() as p:
     assert data['stage']['id']=='toefl-r1' and len(data['stage']['questions'])==35 and data['report'] is None
     private_free(data['stage'])
     expect(page.locator('.toefl-words')).to_be_visible()
-    expect(page.locator('.toefl-pages button')).to_have_count(7)
+    expect(page.locator('.exam-sheet-group')).to_have_count(7)
     page.locator('.toefl-gap-box').first.press_sequentially('q')
-    expect(page.locator('.exam-session-meta [role=status]')).to_have_text('Хадгалсан')
+    expect(page.locator(':is(.exam-session-meta,.exam-sheet,.study-rail) [role=status]')).to_have_text('Хадгалсан')
     page.reload()
     expect(page.locator('.toefl-gap-box').first).to_have_value('q')
-    page.locator('.toefl-pages button').nth(6).click()
+    page.locator('.exam-sheet-group').nth(6).locator('button').first.click()
     expect(page.locator('.toefl-text h3')).to_be_visible()
     fits(page,'timed-r1')
     data=context.request.get(endpoint).json()
@@ -167,7 +167,7 @@ with sync_playwright() as p:
     expect(page.locator('.toefl-build')).to_be_visible()
     page.locator('.toefl-chip').first.click()
     expect(page.locator('.toefl-slot[data-filled]')).to_have_count(1)
-    expect(page.locator('.exam-session-meta [role=status]')).to_have_text('Хадгалсан')
+    expect(page.locator(':is(.exam-session-meta,.exam-sheet,.study-rail) [role=status]')).to_have_text('Хадгалсан')
     fits(page,'timed-build')
     data=context.request.get(endpoint).json()
     answers=fixture('answers',attempt)
@@ -210,12 +210,15 @@ with sync_playwright() as p:
     assert [sections['Reading']['correct'],sections['Reading']['total']]==[50,50],sections['Reading']
     assert [sections['Listening']['correct'],sections['Listening']['total']]==[1,47],sections['Listening']
     assert [sections['Writing']['correct'],sections['Writing']['total']]==[10,10],sections['Writing']
-    assert len(done['recordings'])==1
+    assert len(done['recordings'])==1,done['recordings']
     page.goto(BASE+'/exams/attempts/'+attempt)
-    expect(page.locator('.toefl-results')).to_be_visible()
-    expect(page.locator('.toefl-results')).to_contain_text('50')
-    expect(page.locator('.toefl-recordings audio')).to_have_count(1)
-    expect(page.locator('.toefl-results .exam-review')).to_have_count(120)
+    # A finished mock's result is the Review page: modules, AI grades and recordings in its TOEFL panel.
+    expect(page.locator('.wsp-review')).to_be_visible()
+    expect(page).to_have_url(BASE+'/workspace/review/'+attempt)
+    expect(page.locator('.wsp-extras')).to_contain_text('50')
+    expect(page.locator('.wsp-recordings audio')).to_have_count(1)
+    page.locator('.wsp-filter button',has_text='Бүгд').click()
+    expect(page.locator('.wsp-question')).to_have_count(120)
     fits(page,'results')
     page.goto(BASE+'/workspace/review/'+attempt)
     expect(page.get_by_text('TOEFL').first).to_be_visible()

@@ -25,6 +25,7 @@ import {
   type PracticeState, type ProgressRequest, type SavedPractice,
 } from "./state";
 import { ReadingTokenError, openReading, readingImportKey, validGroups } from "./token";
+import { aiFetch } from "@/modules/ai-usage/server";
 
 const ACTION = "reading-practice" as const;
 const RETRY_ACTION = "reading-retry" as const;
@@ -452,7 +453,7 @@ async function deepseekReading(messages: ChatMessage[], maxTokens: number, meter
   if (!key) throw new ApiError(503, "AI дасгал үүсгэгч одоогоор холбогдоогүй байна.");
   let response: Response;
   try {
-    response = await fetch("https://api.deepseek.com/chat/completions", {
+    response = await aiFetch("deepseek", "https://api.deepseek.com/chat/completions", {
       method: "POST", cache: "no-store", redirect: "error",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
       body: JSON.stringify({

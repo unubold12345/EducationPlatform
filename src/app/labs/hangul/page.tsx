@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = { title: "Хангыль · Workshop", robots: { index: false, follow: false } };
 
 // Workshop → TOPIK → Hangul (2026-11-18): letters, the syllable chart, final consonants and sound-change rules, and a
-// quiz on the chart. Paid like the word decks (Гадаад хэл Basic or Pro); progress uses the same table and review route.
+// quiz on the chart. Paid like the word decks (Ази хэл Basic or Pro); progress uses the same table and review route.
 export default async function HangulPage() {
   const user = await requireUser("/workspace/workshop?exam=topik");
   const gate = await studyGate(user.id, "topik", "Хангыль · 한글");

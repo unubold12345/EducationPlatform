@@ -1,5 +1,7 @@
 /* JLPT/HSK word decks (Workshop → JLPT / HSK). Workspace tokens only; one accent colour. */
-.page { width: min(1120px, 100%); display: grid; gap: 18px; }
+/* Doubled class so the width beats the shared .wsp-page cap (1000px), which otherwise won. */
+.page.page { width: min(1120px, 100%); }
+.page { display: grid; gap: 18px; }
 
 .back { display: inline-flex; align-items: center; gap: 6px; width: fit-content; color: var(--wsp-muted); font-size: 14px; font-weight: 600; text-decoration: none; }
 .back:hover { color: var(--wsp-ink); }

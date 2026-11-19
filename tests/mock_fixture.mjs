@@ -8,7 +8,12 @@ if(target.hostname!=="127.0.0.1"||target.port!=="51214"||target.pathname!=="/tem
 const db=new PrismaClient({adapter:new PrismaPg({connectionString:process.env.DATABASE_URL,max:1,idleTimeoutMillis:1000})});
 try{
  const [action,id,offset]=process.argv.slice(2);
- const row=await db.mockAttempt.findUniqueOrThrow({where:{id},include:{user:{select:{email:true}}}});
+ // PGlite serves one client at a time; a read that meets a dropped connection is retried (it changes nothing).
+ let row;
+ for(let attempt=1;;attempt++){
+  try{row=await db.mockAttempt.findUniqueOrThrow({where:{id},include:{user:{select:{email:true}}}});break;}
+  catch(error){if(attempt>=6||error?.code!=="P1017")throw error;await new Promise(resolve=>setTimeout(resolve,1500));}
+ }
  if(!row.user.email.startsWith("qa-exam-")||!row.user.email.endsWith("@example.invalid"))throw Error("Fixture can only access its disposable QA attempts");
  const state=row.state;
  if(action==="answers"){

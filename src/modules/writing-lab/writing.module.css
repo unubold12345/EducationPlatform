@@ -183,6 +183,39 @@
 @keyframes grow { from { transform: scaleX(0); } }
 @media (prefers-reduced-motion: reduce) { .root * { animation: none !important; transition: none !important; } }
 
+/* TOEFL studio (2026-11-19): the task card is the mocks' own (toefl.css), and Build a Sentence uses the mocks' boxes. */
+.toeflTask { margin-top: 12px; }
+.toeflTask :global(.toefl-task) { border: 0; padding: 0; background: transparent; font-size: 16px; }
+.build { display: grid; gap: 16px; }
+.buildHead { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; flex-wrap: wrap; padding: 20px 22px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.buildHead h2 { margin: 0 0 6px; font-size: 20px; }
+.buildHead p { max-width: 640px; margin: 0; color: var(--muted); font-size: 14px; line-height: 1.6; }
+.buildSets { display: inline-flex; gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 14px; }
+.buildSets button { display: grid; gap: 1px; padding: 7px 12px; border: 0; border-radius: 10px; background: transparent; color: var(--muted); font: inherit; font-size: 13px; font-weight: 600; text-align: left; cursor: pointer; }
+.buildSets button small { font-size: 11px; font-weight: 500; opacity: .8; }
+.buildSets button[aria-selected="true"] { background: var(--soft); color: var(--ink); }
+.buildDots { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.buildDots button { width: 34px; height: 34px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); color: var(--muted); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+.buildDots li[data-state="current"] button { border-color: var(--ink); color: var(--ink); }
+.buildDots li[data-state="right"] button { border-color: transparent; background: color-mix(in srgb, var(--good) 16%, transparent); color: var(--good); }
+.buildDots li[data-state="wrong"] button { border-color: transparent; background: color-mix(in srgb, var(--bad) 14%, transparent); color: var(--bad); }
+.buildCard { display: grid; gap: 16px; padding: 22px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.buildCount { margin: 0; color: var(--muted); font-size: 12px; font-weight: 600; letter-spacing: .06em; }
+.buildResult { display: grid; gap: 4px; padding: 12px 14px; border-radius: 12px; background: color-mix(in srgb, var(--bad) 10%, transparent); }
+.buildResult[data-right] { background: color-mix(in srgb, var(--good) 12%, transparent); }
+.buildResult strong { color: var(--bad); font-size: 14px; }
+.buildResult[data-right] strong { color: var(--good); }
+.buildResult p { margin: 0; font-size: 16px; line-height: 1.6; }
+.buildResult .buildWhy { color: var(--muted); font-size: 13.5px; }
+.buildActions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.buildScore { margin: 0; font-size: 18px; }
+.buildScore strong { font-size: 36px; font-variant-numeric: tabular-nums; }
+.buildReview { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.buildReview li { display: flex; gap: 10px; align-items: baseline; color: var(--bad); }
+.buildReview li[data-right] { color: var(--good); }
+.buildReview p { margin: 0; color: var(--ink); line-height: 1.6; }
+.buildDots button:focus-visible, .buildSets button:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
 @media (max-width: 960px) {
   .main { grid-template-columns: 1fr; }
   /* Under the paper the sidebar keeps a fixed height and scrolls inside, so many fixes never stretch the page. */
@@ -200,4 +233,7 @@
   .actions { width: 100%; }
   .actions > * { flex: 1; justify-content: center; }
   .primary kbd { display: none; }
+  .buildHead, .buildCard { padding: 16px; }
+  .buildSets { width: 100%; }
+  .buildSets button { flex: 1; min-width: 0; }
 }

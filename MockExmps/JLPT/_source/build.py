@@ -1,4 +1,4 @@
-"""Rebuild the six offline packs with Python's standard library. No app or DB access."""
+"""Rebuild the offline packs (N5 and N4 forms 01-06) with Python's standard library. No app or DB access."""
 import copy
 import hashlib
 import json
@@ -80,12 +80,21 @@ READING_PATTERN = re.compile('|'.join(re.escape(word) for word in sorted(READING
 def support(text):
     return READING_PATTERN.sub(lambda match: f'{match[0]}（{READINGS[match[0]]}）', text)
 
+def supporter(extra):
+    """Forms 04-06 add their own readings ({word: kana}); forms 01-03 keep `support`, so their output never changes."""
+    if not extra:
+        return support
+    table = {word: kana for word, kana in {**READINGS, **extra}.items() if kana != '-'}  # '-' drops a shared reading
+    pattern = re.compile('|'.join(re.escape(word) for word in sorted(table, key=len, reverse=True)))
+    return lambda text: pattern.sub(lambda match: f'{match[0]}（{table[match[0]]}）', text)
+
 def make_pack(level, form_number, source):
     rng = random.Random(f'jlpt-offline-v1-{level}-{form_number}')
+    support = supporter(source.get('readings'))
     pack = dict(id=f'jlpt-{level.lower()}-{form_number:02}', level=level,
                 title=f'Original JLPT {level} Mock {form_number:02}', theme=source['theme'],
-                version=1, authoredDate='2026-11-08', status='draft-awaiting-Japanese-teacher-review',
-                author='Codex (GPT-6)', official=False, offlineOnly=True,
+                version=1, authoredDate=source.get('authoredDate', '2026-11-08'), status='draft-awaiting-Japanese-teacher-review',
+                author=source.get('author', 'Codex (GPT-6)'), official=False, offlineOnly=True,
                 referenceUrls=SOURCES, scoring='One raw practice mark per item; no scaled score or official pass prediction.',
                 listeningDelivery='Human reader script only; no audio recording. Written situation cues replace illustrations in verbal-expression items.',
                 sections=[])

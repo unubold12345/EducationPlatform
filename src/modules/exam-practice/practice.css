@@ -70,3 +70,82 @@
 .practice-examiner-offer>div { flex: 1 1 320px; min-width: 0; }
 .practice-examiner-offer strong { font-size: 16px; }
 .practice-examiner-offer p { margin-top: 4px; font-size: 13px; line-height: 1.6; color: var(--muted); }
+
+/* Study split (2026-11-19, the owner's pick for every programme but ЭЕШ): rail | question | check panel. */
+.study-session{padding-bottom:0}
+.study-error{margin:16px 24px 0}
+.study-split{display:grid;grid-template-columns:248px minmax(0,1fr) 320px;gap:24px;align-items:start;padding:24px;max-width:1640px;margin:0 auto}
+.study-split.is-wide{grid-template-columns:248px minmax(0,1fr)}
+.study-rail,.study-panel{position:sticky;top:calc(var(--wsp-top,0px) + 16px);max-height:calc(100dvh - var(--wsp-top,0px) - 32px);overflow:auto;overscroll-behavior:contain;border:1px solid var(--line);border-radius:16px;background:var(--panel,var(--paper));padding:16px;min-width:0}
+.study-rail-head strong{display:block;font-size:14px;line-height:1.4}
+.study-rail-head .eyebrow{font-size:10px;margin:0 0 4px}
+.study-rail .practice-score{text-align:left;margin-top:14px;padding:12px 0;border-block:1px solid var(--line)}
+.study-save{margin:8px 0 0;font-size:11px;color:var(--muted)}
+.study-label{margin:16px 0 6px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.study-rail .practice-sections{display:grid;gap:3px;overflow:visible;padding:0;margin:0}
+.study-rail .practice-sections button{position:relative;max-width:none;display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:6px 10px;font-size:12.5px;border-radius:10px;overflow:hidden}
+.study-rail .practice-sections button>small{flex:none;white-space:nowrap}
+.study-rail .practice-sections button>span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.study-rail .practice-sections button>i{position:absolute;left:0;bottom:0;height:2px;background:var(--blue);opacity:.7}
+.study-rail .practice-filter{margin-bottom:8px;gap:4px}
+.study-rail .practice-filter button{padding:4px 9px;font-size:11.5px}
+.study-rail .question-strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(34px,1fr));gap:5px;margin:0;overflow:visible}
+.study-rail .question-strip>button{min-width:0;height:32px;padding:0 2px;font-size:12px}
+.study-legend{display:flex;flex-wrap:wrap;gap:4px 10px;margin:10px 0 0;font-size:11px;color:var(--muted)}
+.study-legend i{display:inline-block;width:10px;height:10px;margin-right:4px;border-radius:3px;border:1px solid var(--line);vertical-align:-1px}
+.study-legend i[data-state=correct]{background:#22a06b;border-color:#22a06b}
+.study-legend i[data-state=wrong]{background:#d9534f;border-color:#d9534f}
+.study-legend i[data-state=answered]{background:color-mix(in srgb,var(--blue) 30%,transparent)}
+.study-rail .practice-retry-all{width:100%;margin-top:10px;padding:7px 10px;border:1px solid #d9534f;border-radius:10px;background:transparent;color:var(--ink);font:inherit;font-size:12px;cursor:pointer;text-align:left}
+.study-switches{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.study-switches:empty{display:none}
+.study-switches button{padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:transparent;color:inherit;font:inherit;font-size:12px;cursor:pointer}
+.study-switches button[aria-pressed=true]{border-color:var(--blue);background:color-mix(in srgb,var(--blue) 10%,transparent)}
+.study-links{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:14px;padding-top:12px;border-top:1px solid var(--line);font-size:12px}
+.study-links .text-link{background:none;border:0;padding:0;font-size:12px}
+
+.study-main,.wsp .study-main{min-width:0;max-width:none;width:auto;padding:0;margin:0;container-type:inline-size}
+.study-head{padding-bottom:14px;margin-bottom:18px;border-bottom:1px solid var(--line)}
+.study-head .eyebrow{font-size:10px;margin:0 0 6px}
+.study-head h1{font-size:24px;line-height:1.35;margin:0}
+.study-head .practice-progress{margin:6px 0 0;font-size:12px;color:var(--muted)}
+.study-main .exam-question-layout{margin-top:0}
+@container (max-width:760px){.study-main .exam-question-layout.with-passage{grid-template-columns:minmax(0,1fr)}}
+
+.study-panel .study-label{margin-top:0}
+.study-panel .practice-feedback{margin-top:0}
+.study-panel-note{margin:0;font-size:13px;line-height:1.7;color:var(--muted)}
+.study-panel .practice-actions{margin-top:14px}
+.study-panel .practice-actions>.button{flex:1 1 auto}
+.study-keys{margin:14px 0 0}
+
+/* Laptop: the panel drops under the question; the rail stays. */
+@media(max-width:1279px){
+  .study-split{grid-template-columns:232px minmax(0,1fr)}
+  .study-panel{grid-column:2;position:static;max-height:none}
+}
+/* Tablet and phone: one column — the rail becomes a block above the question, the panel follows it. */
+@media(max-width:900px){
+  .study-split,.study-split.is-wide{grid-template-columns:minmax(0,1fr);gap:16px;padding:16px}
+  .study-rail{position:static;max-height:none}
+  .study-panel{grid-column:auto}
+  .study-rail .practice-sections{display:flex;overflow-x:auto;gap:6px;padding-bottom:4px}
+  .study-rail .practice-sections button{flex:0 0 auto;max-width:220px}
+  .study-rail .question-strip{grid-template-columns:repeat(auto-fill,minmax(36px,1fr))}
+  .study-keys{display:none}
+  /* Keep the rail short so the question starts on the first screen. */
+  .study-rail{padding:12px 14px}
+  .study-rail-head .eyebrow,.study-legend{display:none}
+  .study-rail-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+  .study-rail .practice-score{display:flex;align-items:baseline;gap:8px;margin-top:8px;padding:8px 0}
+  .study-rail .practice-score strong{font-size:18px}
+  .study-save{margin-top:6px}
+  .study-label{margin:10px 0 6px}
+  .study-switches,.study-links{margin-top:10px}
+  .study-links{padding-top:8px}
+}
+@media(max-width:600px){
+  .study-split,.study-split.is-wide{padding:12px 16px}
+  .study-head h1{font-size:19px}
+  .study-error{margin:12px 16px 0}
+}

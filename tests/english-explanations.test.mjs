@@ -51,9 +51,10 @@ test("a short English key is named in its explanation, so a changed key cannot k
 });
 
 test("results and practice mark ЭЕШ explanations as Mongolian while English questions and answers stay English", () => {
-  const results = readFileSync(new URL("../src/modules/exams/entrance/results.tsx", import.meta.url), "utf8");
-  assert.match(results, /className="eesh-explanation" lang="mn"/);
-  assert.match(results, /const mongolian = subject !== "english";/);
+  // Every finished mock's result is the Review page (2026-11-19).
+  const results = readFileSync(new URL("../src/modules/workspace/review.tsx", import.meta.url), "utf8");
+  assert.match(results, /className="wsp-explanation" lang=\{attempt\.program === "entrance" \? "mn"/);
+  assert.match(results, /attempt\.program === "entrance" && attempt\.subject !== "english" \? "math"/);
   const practice = readFileSync(new URL("../src/modules/exam-practice/workspace.tsx", import.meta.url), "utf8");
   assert.match(practice, /explainLang=entrance\?"mn":"en"/);
   assert.match(practice, /answerLang=[^;]*entrance&&form\.subject!=="eesh-english"\?"mn":"en"/);

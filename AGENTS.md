@@ -20,7 +20,8 @@ Non-negotiables:
 - Preserve ignored `.env`/`.env.local` and all uncommitted work. Never print or commit secret values.
 - Read installed Next.js guides in `node_modules/next/dist/docs/` before framework-specific code.
 - Keep owner, plan, exam, active-exam, quota, same-origin, ownership and verified-email checks
-  server-side. Never add timer, payment, grading or AI bypasses.
+  server-side. Never add timer, payment, grading or AI bypasses. One owner-approved exception (2026-11-19): admins may
+  skip or finish their own timed sittings (`skipMock`, server-checked, audited, marked on the result).
 - Run only the checks `docs/OPERATIONS.md` requires for the change type (`npm run check`). Report only checks
   actually run.
 - Record outcomes in `docs/OPERATIONS.md` as one entry of at most 600 characters, naming your tool and model; put feature

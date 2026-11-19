@@ -1,0 +1,37 @@
+{
+  "slug": "hsk2-mock-04",
+  "paper": "HSK 3.0",
+  "source": "Original synthetic Mandarin practice audio; Kokoro-82M v1.0, Apache-2.0",
+  "modelUrl": "https://huggingface.co/hexgrad/Kokoro-82M",
+  "voices": {
+    "narrator": "zm_yunxia",
+    "woman": "zf_xiaoyi",
+    "man": "zm_yunxi"
+  },
+  "speed": 0.9,
+  "readings": "Every item twice: 3 s after the first reading, then 8 s (Part 1), 8 s (Part 2), 10 s (Part 3).",
+  "parts": [
+    {
+      "part": 1,
+      "file": "hsk2-mock-04-part-1.mp3",
+      "seconds": 132.3,
+      "sha256": "38d4be6a818566f554eb6839d5df2b937fb6106fe90649c059391c8e90cf49d8",
+      "scriptSha256": "df9b8bd435256e82753071c2a629d7e26fcd618b4f45aa0ff1b252efb86f3f30"
+    },
+    {
+      "part": 2,
+      "file": "hsk2-mock-04-part-2.mp3",
+      "seconds": 325.05,
+      "sha256": "3e113a13fdba334ad9a217cd2823d6d50a6372d1df00eb24cf0bbdfdbe7bdb2c",
+      "scriptSha256": "3b3bcb1c2d4c7bf1b90660bcbf18a00144de47b80ac10d59e1c184f2799b3904"
+    },
+    {
+      "part": 3,
+      "file": "hsk2-mock-04-part-3.mp3",
+      "seconds": 439.25,
+      "sha256": "995dd62adc2507017d0bed28b920dba16eec731eb37a8f152abb199e80e0a56d",
+      "scriptSha256": "8dd2020013ad81077d9748c9e184088302aa1f6f2e8b428b6f0daad7f597dec3"
+    }
+  ],
+  "humanListeningReview": false
+}

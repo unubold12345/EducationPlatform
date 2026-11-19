@@ -256,3 +256,7 @@ choices('''
 （へんじを えらんでください。）|男：また あした。|さようなら。|ただいま。|いらっしゃいませ。|A farewell fits see you tomorrow.
 ''')),
 ]
+
+# Forms 04-06 (Claude Code, Opus 5.5, 2026-11-19) live in n5_more.py.
+from n5_more import FORMS as _MORE  # noqa: E402
+FORMS += _MORE

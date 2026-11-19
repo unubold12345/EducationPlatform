@@ -1,18 +1,26 @@
 "use client";
 import {useEffect,useRef,useState,useSyncExternalStore} from "react";
 import Link from "next/link";
-import {countParagraphs,countWords,findWritingPrompt,MIN_WORDS,writingPrompts,writingTasks,type WritingAction,type WritingFix,type WritingKind,type WritingReply,type WritingTask} from "./contracts";
+import {countParagraphs,countWords,examTasks,findWritingPrompt,MIN_WORDS,writingPrompts,writingTasks,type WritingAction,type WritingExam,type WritingFix,type WritingKind,type WritingPrompt,type WritingReply,type WritingTask} from "./contracts";
 import {SpellEditor} from "./spell-editor";
-import {blankDraft,getServerStudio,getStudio,subscribeStudio,updateStudio,type Draft} from "./progress";
+import {blankDraft,getServerStudio,getStudio,subscribeStudio,updateStudio,type Draft,type ToeflView} from "./progress";
 import styles from "./writing.module.css";
 import {CreditCost,useCredits} from "@/modules/credits/client";
 import {ExpertPanel,type ExpertInitial} from "./expert-client";
 import {ProcessingOverlay} from "@/modules/workspace/processing";
-import {STRONG_LIMITS,type SavedExpertReview} from "./expert";
+import {STRONG_LIMITS,scoreScale,scoreText,type SavedExpertReview} from "./expert";
+import {BuildPractice} from "./build-client";
+import {ToeflWritingTask} from "@/modules/exams/toefl/view";
+import type {ToeflGroup} from "@/modules/exams/types";
 
 const KIND_LABEL:Record<WritingKind,string>={grammar:"Дүрэм",spelling:"Үсэг",punctuation:"Цэг тэмдэг",vocabulary:"Үг",style:"Найруулга"};
 const BUSY_LABEL:Record<WritingAction,string>={ideas:"Санаа боловсруулж байна",grammar:"Дүрэм шалгаж байна",feedback:"Шалгуур бүрээр нарийвчлан үнэлж байна · ~1 мин"};
 const clock=(seconds:number)=>`${seconds<0?"+":""}${Math.floor(Math.abs(seconds)/60)}:${String(Math.floor(Math.abs(seconds)%60)).padStart(2,"0")}`;
+
+// A TOEFL bank prompt as the mocks print it: the email situation with its points, or the professor and two classmates.
+const toeflGroup=(prompt:WritingPrompt):ToeflGroup=>prompt.task==="email"
+ ?{layout:"email",scenario:prompt.text,to:prompt.to??"",subject:prompt.subject??"",bullets:prompt.points??[]}
+ :{layout:"discussion",course:prompt.course??"",professor:{name:prompt.professor??"",post:prompt.text},students:prompt.students??[]};
 
 // Replaces the first occurrence without String.replace, whose "$" patterns would corrupt student text.
 function replaceOnce(text:string,original:string,better:string){const at=text.indexOf(original);return at<0?text:text.slice(0,at)+better+text.slice(at+original.length);}
@@ -39,9 +47,13 @@ function Timer({minutes}:{minutes:number}) {
  </div>;
 }
 
-export function WritingStudio({signedIn,expert=null}:{signedIn:boolean;expert?:ExpertInitial|null}) {
+export function WritingStudio({signedIn,expert=null,exam="ielts"}:{signedIn:boolean;expert?:ExpertInitial|null;exam?:WritingExam}) {
  const studio=useSyncExternalStore(subscribeStudio,getStudio,getServerStudio);
- const task=studio.task,info=writingTasks[task],draft=studio.drafts[task]??blankDraft(task);
+ // The TOEFL studio (2026-11-19) keeps its own tab: Build a Sentence (no AI) or one of its two written tasks.
+ const toefl=exam==="toefl",tab:WritingTask|"build"=toefl?studio.toefl:studio.task,building=tab==="build";
+ const task:WritingTask=tab==="build"?"email":tab,info=writingTasks[task],draft=studio.drafts[task]??blankDraft(task);
+ const home=toefl?"/labs/toefl-writing":"/labs/ielts-writing";
+ const tabs:{key:WritingTask|"build";label:string;note:string}[]=[...(toefl?[{key:"build" as const,label:"Build a Sentence",note:"10 өгүүлбэр"}]:[]),...examTasks(exam).map(key=>({key,label:writingTasks[key].label,note:writingTasks[key].note}))];
  const prompt=draft.promptId?findWritingPrompt(draft.promptId):undefined;
  const [busy,setBusy]=useState<WritingAction|null>(null);
  const {apply:applyCredits}=useCredits();
@@ -59,8 +71,8 @@ export function WritingStudio({signedIn,expert=null}:{signedIn:boolean;expert?:E
  const fixes=(reply?.fixes??[]).map((fix,index)=>({fix,index,done:!draft.essay.includes(fix.original),skipped:draft.dismissed.includes(fix.original)}));
  const open=fixes.filter(f=>!f.done&&!f.skipped);
 
- const edit=(change:Partial<Draft>)=>updateStudio(s=>({...s,drafts:{...s.drafts,[s.task]:{...(s.drafts[s.task]??blankDraft(s.task)),...change}}}));
- const switchTask=(next:WritingTask)=>{if(busy)return;setError("");setView("write");setActive(null);updateStudio(s=>({...s,task:next}));};
+ const edit=(change:Partial<Draft>)=>updateStudio(s=>({...s,drafts:{...s.drafts,[task]:{...(s.drafts[task]??blankDraft(task)),...change}}}));
+ const switchTask=(next:WritingTask|"build")=>{if(busy)return;setError("");setView("write");setActive(null);updateStudio(s=>toefl?{...s,toefl:next as ToeflView}:{...s,task:next as WritingTask});};
  const choosePrompt=(id:string)=>{
   if(id===draft.promptId)return;
   if(draft.essay.trim()&&!window.confirm("Сэдэв солиход одоогийн бичвэр арилна. Үргэлжлүүлэх үү?"))return;
@@ -127,11 +139,13 @@ export function WritingStudio({signedIn,expert=null}:{signedIn:boolean;expert?:E
 
  return <div className={`container page-space ${styles.root}`}>
   <header className={styles.top}>
-   <div><p className={styles.kicker}><Link href="/workspace/workshop">Workshop</Link> · Essay Studio</p><h1 className="sr-only">Бич. <span>Дараа нь сайжруул.</span></h1></div>
+   <div><p className={styles.kicker}><Link href={toefl?"/workspace/workshop?exam=toefl":"/workspace/workshop"}>Workshop</Link> · {toefl?"TOEFL Essay Studio":"Essay Studio"}</p><h1 className="sr-only">{toefl?"TOEFL Writing. ":"Бич. "}<span>Дараа нь сайжруул.</span></h1></div>
    <div className={styles.tasks} role="tablist" aria-label="Бичгийн төрөл">
-    {(Object.keys(writingTasks) as WritingTask[]).map(key=><button key={key} type="button" role="tab" aria-selected={task===key} disabled={!!busy} onClick={()=>switchTask(key)}>{writingTasks[key].label}<small>{writingTasks[key].note}</small></button>)}
+    {tabs.map(entry=><button key={entry.key} type="button" role="tab" aria-selected={tab===entry.key} disabled={!!busy} onClick={()=>switchTask(entry.key)}>{entry.label}<small>{entry.note}</small></button>)}
    </div>
   </header>
+
+  {building?<BuildPractice/>:<>
 
   <section className={styles.prompt} aria-label="Даалгавар">
    <div className={styles.promptMeta}>
@@ -142,7 +156,7 @@ export function WritingStudio({signedIn,expert=null}:{signedIn:boolean;expert?:E
      <button type="button" className={styles.ghost} disabled={!!busy} onClick={shuffle}>↻ Өөр сэдэв</button>
     </div>}
    </div>
-   {prompt?<p className={styles.promptText}>{prompt.text}</p>:<input className={styles.topic} value={draft.topic} maxLength={400} onChange={event=>edit({topic:event.target.value})} placeholder="Юуны тухай бичих вэ? Жишээ нь: My favourite place in Ulaanbaatar" aria-label="Өөрийн сэдэв"/>}
+   {prompt?(prompt.task==="email"||prompt.task==="discussion"?<div className={`toefl-practice ${styles.toeflTask}`}><ToeflWritingTask group={toeflGroup(prompt)}/></div>:<p className={styles.promptText}>{prompt.text}</p>):<input className={styles.topic} value={draft.topic} maxLength={400} onChange={event=>edit({topic:event.target.value})} placeholder="Юуны тухай бичих вэ? Жишээ нь: My favourite place in Ulaanbaatar" aria-label="Өөрийн сэдэв"/>}
   </section>
 
   <div className={styles.main}>
@@ -166,7 +180,7 @@ export function WritingStudio({signedIn,expert=null}:{signedIn:boolean;expert?:E
      ?<SpellEditor value={draft.essay} onChange={essay=>edit({essay})} dialect={studio.spelling} words={studio.words} onCount={setSpellCount}
        onAddWord={word=>updateStudio(s=>({...s,words:[...s.words.filter(w=>w.toLowerCase()!==word.toLowerCase()),word].slice(-300)}))}
        editorRef={editor} disabled={!!busy&&busy!=="ideas"} label="Таны бичвэр"
-       placeholder={task==="letter"?"Dear Sir or Madam,\n\nI am writing to…":"Эндээс бичиж эхлээрэй. Бичвэр тань энэ төхөөрөмж дээр автоматаар хадгалагдана."}
+       placeholder={task==="letter"?"Dear Sir or Madam,\n\nI am writing to…":task==="email"?`Dear ${prompt?.to??"…"},\n\nI am writing to…`:task==="discussion"?"In my opinion, …":"Эндээс бичиж эхлээрэй. Бичвэр тань энэ төхөөрөмж дээр автоматаар хадгалагдана."}
        onKeyDown={event=>{if(event.key==="Enter"&&(event.ctrlKey||event.metaKey)){event.preventDefault();void run("feedback");}}}/>
      :<div className={styles.marked} aria-label="Засвар тэмдэглэсэн бичвэр">{segments(draft.essay,open).map((part,i)=>part.index===null?<span key={i}>{part.text}</span>:<mark key={i} data-kind={reply!.fixes[part.index].kind} data-active={active===part.index?"":undefined} onClick={()=>{const at=part.index!;setActive(at);reveal(at);}}>{part.text}</mark>)}</div>}
     <footer className={styles.meter}>
@@ -179,7 +193,7 @@ export function WritingStudio({signedIn,expert=null}:{signedIn:boolean;expert?:E
       {signedIn?<>
        <button type="button" className={styles.secondary} disabled={!!busy} onClick={()=>void run("grammar")}>Дүрэм шалгах <CreditCost action="writing-grammar" compact/></button>
        <button type="button" className={styles.primary} disabled={!!busy} onClick={()=>void run("feedback")} title="Ctrl + Enter">{busy==="feedback"?"Үнэлж байна…":"Бүрэн үнэлгээ"} <CreditCost action="writing-review" compact/><kbd>⌃↵</kbd></button>
-      </>:<Link className={styles.primary} href="/login?next=%2Flabs%2Fielts-writing">Нэвтэрч AI-аар шалгуулах →</Link>}
+      </>:<Link className={styles.primary} href={"/login?next="+encodeURIComponent(home)}>Нэвтэрч AI-аар шалгуулах →</Link>}
      </div>
     </footer>
    </section>
@@ -225,17 +239,18 @@ export function WritingStudio({signedIn,expert=null}:{signedIn:boolean;expert?:E
       </div>
      </>}
     </div>
-    <p className={styles.note}>Илгээхэд даалгавар, бичвэр тань AI руу очно. Band нь албан ёсны IELTS үнэлгээ биш, дадлагын тооцоо.</p>
+    <p className={styles.note}>Илгээхэд даалгавар, бичвэр тань AI руу очно. {toefl?"Оноо (0–5) нь албан ёсны TOEFL оноо биш, дадлагын тооцоо.":"Band нь албан ёсны IELTS үнэлгээ биш, дадлагын тооцоо."}</p>
    </aside>
   </div>
 
   <ProcessingOverlay open={busy==="feedback"} title="Бүрэн үнэлгээ хийж байна…" detail="AI дөрвөн шалгуур бүрээр үнэлж, засвар, жишээ хариулт бичиж байна. Ихэвчлэн 1 минут орно. Үр дүн доорх хэсэгт нээгдэнэ."/>
-  <ExpertPanel signedIn={signedIn} initial={expert} latest={latest} onApply={fix=>{apply(fix);setView("write");}}
+  <ExpertPanel exam={exam} signedIn={signedIn} initial={expert} latest={latest} onApply={fix=>{apply(fix);setView("write");}}
    draft={{task,promptId:task==="free"?null:draft.promptId,topic:task==="free"?draft.topic:"",essay:draft.essay,language:studio.language}}/>
 
   {history.length>0&&<section className={styles.history} aria-label="Сүүлийн үнэлгээнүүд">
    <h2>Ахиц</h2>
-   <ol>{history.map(e=><li key={e.date} title={`${e.title} · ${e.words} үг`}><i style={{height:`${(e.overall/9)*100}%`}}/><strong>{e.overall.toFixed(1)}</strong><span>{new Date(e.date).toLocaleDateString("mn-MN",{month:"2-digit",day:"2-digit"})}</span></li>)}</ol>
+   <ol>{history.map(e=><li key={e.date} title={`${e.title} · ${e.words} үг`}><i style={{height:`${(e.overall/scoreScale(e.task))*100}%`}}/><strong>{scoreText(e.overall,e.task)}</strong><span>{new Date(e.date).toLocaleDateString("mn-MN",{month:"2-digit",day:"2-digit"})}</span></li>)}</ol>
   </section>}
+  </>}
  </div>;
 }

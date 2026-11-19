@@ -20,14 +20,6 @@
 .hsk-pinyin{font-size:.78em;line-height:1.4;color:var(--muted);overflow-wrap:anywhere}
 
 /* Sitting and practice. */
-.hsk-parts{display:flex;gap:8px;overflow:auto;padding:6px 0 14px;max-width:100%}
-.hsk-parts button{flex:0 0 190px;display:grid;text-align:left;gap:6px;border:1px solid var(--line);border-radius:10px;padding:11px 12px;background:transparent;color:inherit;cursor:pointer}
-.hsk-parts strong{font-size:13px;font-weight:550}.hsk-parts small{color:var(--muted);font-size:12px}
-.hsk-parts button[aria-current=true]{border-color:var(--hsk-accent);background:color-mix(in srgb,var(--hsk-accent) 8%,transparent)}
-.hsk-controls{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:8px 0 4px}
-.hsk-controls button{padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:transparent;color:inherit;cursor:pointer}
-.hsk-controls button[aria-pressed=true]{border-color:var(--hsk-accent);background:color-mix(in srgb,var(--hsk-accent) 10%,transparent)}
-.hsk-controls>span{margin-left:auto;color:var(--muted);font-size:12px}
 .hsk-work>h2{margin:14px 0 6px;font-size:22px}
 .hsk-task{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:baseline;margin:0 0 16px;color:var(--muted);font-size:14px;line-height:1.7}
 .hsk-task span[lang]{color:var(--ink,inherit);font-size:16px;font-weight:600}
@@ -50,10 +42,10 @@
 
 .hsk-picture-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin:0 0 18px;padding:6px 0}
 /* On wide screens the six shared pictures stay in view while the five answers are chosen. */
-/* They stick below the sitting's toolbar (108px) and, in Listening, below the sticky player (to 148px). */
+/* They stick below the workspace bar and, in Listening, below the sticky player (sheet layout, 2026-11-19). */
 @media(min-width:1101px){
- .hsk-work .hsk-picture-grid{position:sticky;top:114px;z-index:2;grid-template-columns:repeat(6,minmax(0,150px));justify-content:start;background:var(--white,#fff);box-shadow:0 8px 10px -10px rgb(0 0 0/.25)}
- .hsk-work:has([data-listening-player]) .hsk-picture-grid{top:154px}
+ .hsk-work .hsk-picture-grid{position:sticky;top:calc(var(--wsp-top,0px) + 8px);z-index:2;grid-template-columns:repeat(6,minmax(0,150px));justify-content:start;background:var(--white,#fff);box-shadow:0 8px 10px -10px rgb(0 0 0/.25)}
+ .hsk-work:has([data-listening-player]) .hsk-picture-grid{top:calc(var(--wsp-top,0px) + 76px)}
 }
 .hsk-bank{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;list-style:none;padding:12px;margin:0 0 18px;border:1px solid var(--line);border-radius:12px;background:var(--panel,var(--paper))}
 .hsk-bank li{display:flex;gap:10px;align-items:flex-start;min-width:0}
@@ -116,7 +108,6 @@
  .hsk-bank{grid-template-columns:repeat(2,minmax(0,1fr))}
  .hsk-items-R2 .hsk-question,.hsk-items-R3 .hsk-question,.hsk-items-R4 .hsk-question,.hsk-items-L3 .hsk-question{grid-template-columns:minmax(0,1fr)}
  .hsk-next>span{display:none}
- .hsk-parts button{flex-basis:160px}
 }
 @media(max-width:560px){
  .hsk-items-L1,.hsk-items-R1{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -126,4 +117,23 @@
  .hsk-item{padding:12px}
  .hsk-options-letters label{min-width:40px;min-height:42px}
 }
+/* HSK 3.0 Writing 1: the word with its missing component as a dashed box beside the shown one (data-gap = box side). */
+.hsk-compose-word .hsk-han{font-size:1.7em;letter-spacing:.08em}
+.hsk-compose{display:inline-flex;align-items:center;justify-content:center;gap:2px;vertical-align:-.12em;margin:0 .06em;padding:2px 3px;border:1px solid color-mix(in srgb,var(--hsk-accent) 35%,var(--line));border-radius:6px;background:color-mix(in srgb,var(--hsk-accent) 5%,transparent);letter-spacing:0}
+.hsk-compose[data-gap=right]{flex-direction:row-reverse}
+.hsk-compose[data-gap=top]{flex-direction:column}
+.hsk-compose[data-gap=bottom]{flex-direction:column-reverse}
+.hsk-compose-box{display:inline-block;width:.5em;height:.9em;border:2px dashed var(--hsk-accent);border-radius:4px}
+.hsk-compose[data-gap=top] .hsk-compose-box,.hsk-compose[data-gap=bottom] .hsk-compose-box{width:.9em;height:.42em}
+.hsk-compose-given{font-size:.72em;line-height:1}
+/* HSK 3.0 Writing 2: the gap's pinyin above a one-character answer line. */
+.hsk-blank-sentence .hsk-han{line-height:2.1}
+.hsk-blank{display:inline-flex;flex-direction:column;align-items:center;vertical-align:bottom;margin:0 .15em;min-width:2.2em;line-height:1.3}
+.hsk-blank-hint{font-size:.62em;color:var(--hsk-accent);font-weight:650;letter-spacing:0}
+.hsk-blank-filled{display:inline-block;min-width:1.6em;border-bottom:2px solid currentColor;text-align:center}
+.hsk-blank-input{width:2.4em;font:inherit;text-align:center;padding:1px 4px;border:0;border-bottom:2px solid var(--hsk-accent);border-radius:4px 4px 0 0;background:color-mix(in srgb,var(--hsk-accent) 6%,transparent);color:inherit}
+.hsk-blank-input:focus-visible{outline:2px solid var(--hsk-accent);outline-offset:2px}
+.hsk-blank-input:disabled{opacity:.75}
+.hsk-blank-key{margin:8px 0 0;font-size:13px;color:var(--muted)}.hsk-blank-key strong{font-size:18px;color:var(--ink,inherit);font-family:'Noto Sans SC','Microsoft YaHei','PingFang SC',sans-serif}
+.hsk-question[data-part=RQ] .hsk-line:first-child{padding:12px 14px;border-left:3px solid color-mix(in srgb,var(--hsk-accent) 40%,var(--line));background:color-mix(in srgb,var(--hsk-accent) 3%,transparent);border-radius:0 10px 10px 0}
 @media(max-width:360px){.hsk-items-L1,.hsk-items-R1{grid-template-columns:minmax(0,1fr)}.hsk-picture-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}

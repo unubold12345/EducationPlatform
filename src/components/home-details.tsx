@@ -40,13 +40,14 @@ const formats: Record<string, { href: string; artwork: keyof typeof homeArtwork;
   sat: { href: "/exams/sat", artwork: "stemCover", summary: "Унших, бичих, математикийн бэлтгэлээ нэгтгэ.", facts: [["Бүтэн mock", String(count("sat"))], ["Асуулт", "98 · 4 модуль"], ["Хугацаа", "2ц 14м + 10м завсарлага"]] },
   ielts: { href: "/exams/ielts", artwork: "languageCover", summary: "Сонсох, унших, бичих, ярих. Дөрвөн чадвар, нэг зорилго.", facts: [["Бүтэн mock", String(count("ielts"))], ["Listening · Reading", "40 + 40 асуулт"], ["Writing · Speaking", "2 бичвэр · 3 хэсэг"]] },
   entrance: { href: "/exams/eesh", artwork: "eeshCover", summary: "Математик, физик, хими, биологи, англи хэл. 2015–2026 оны бүтэцтэй, хугацаатай mock.", facts: [["Математик", `${subjectCounts.math} mock · 100 минут`], ["Физик", `${subjectCounts.physics} mock · 100 минут`], ["Хими", `${subjectCounts.chemistry} mock · 100 минут`], ["Биологи", `${subjectCounts.biology} mock · 80 минут`], ["Англи хэл", `${subjectCounts.english} mock · 80 минут`]] },
-  jlpt: { href: "/exams/jlpt", artwork: "japaneseCover", summary: "N5-аас N4 рүү. Япон хэлний сууриа алхам алхмаар.", facts: [["N5", "3 mock · 67 асуулт · 90 минут"], ["N4", "3 mock · 85 асуулт · 115 минут"], ["Сонсгол", "Япон бичлэг · 3 үе шат"]] },
+  jlpt: { href: "/exams/jlpt", artwork: "japaneseCover", summary: "N5-аас N4 рүү. Япон хэлний сууриа алхам алхмаар.", facts: [["N5", `${jlptMocks.filter(mock => mock.level === "N5").length} mock · 67 асуулт · 90 минут`], ["N4", `${jlptMocks.filter(mock => mock.level === "N4").length} mock · 85 асуулт · 115 минут`], ["Сонсгол", "Япон бичлэг · 3 үе шат"]] },
   hsk: { href: "/exams/hsk", artwork: "hskCover", summary: "Хятад хэлний анхны алхам. Сонсох, унших, бүх ханз pinyin-тэй.", facts: [["HSK 1", `${hskMocks.filter(mock => mock.level === 1).length} mock · 40 асуулт · 32 минут`], ["HSK 2", `${hskMocks.filter(mock => mock.level === 2).length} mock · 60 асуулт · 47 минут`], ["Сонсох, унших", "Хятад audio · pinyin"]] },
 };
 
 export function HomeProgramDetails({ plans }: { plans: Plans }) {
   return <><div className="home-detail-list">{homePrograms.map(program => {
-    // SAT, IELTS, JLPT and HSK come with the Гадаад хэл plans (Basic is the cheapest); ЭЕШ has its own plan.
+    // SAT, IELTS and TOEFL come with the Англи хэл plans, JLPT, HSK and TOPIK with the Ази хэл plans (Basic is the cheapest);
+    // ЭЕШ has its own plan.
     const format = formats[program.slug], plan = plans.find(item => item.program === salePlanFor(program.slug)?.program);
     return <article className={"home-program-detail home-program-" + program.slug} id={"program-" + program.slug} key={program.slug} data-reveal>
       <div className="home-program-image"><Image src={homeArtwork[format.artwork].src} alt={homeArtwork[format.artwork].alt} fill sizes="(max-width: 620px) 100vw, 50vw" /><i aria-hidden="true">{program.symbol}</i></div>
@@ -102,7 +103,7 @@ export function HomePlans({ plans }: { plans: Plans }) {
 
 const questions = [
   ["Шалгалт ба дадлага ямар ялгаатай вэ?", "Шалгалт хэсэг бүрийн хугацаатай. Дадлагад цаггүй ажиллаж, хариулсныхаа дараа тайлбарыг үзэж болно. Хоёр горимд ижил mock-ийн эрх үйлчилнэ."],
-  ["Сарын багц юуг нээх вэ?", "ЭЕШ багц бүх ЭЕШ mock-ийг хязгааргүй нээнэ. Гадаад хэл Basic болон Pro багц SAT, IELTS, JLPT, HSK-ийн бүх mock-ийг хязгааргүй нээж, 4 Workshop даалгавар багтана; Pro нь AI кредит, үгсийн сан, файлаас шалгалтын багтаамж илүү. Нэг mock-ийг тусад нь авбал 7 хоногийн турш нээлттэй. Үнэгүй бүртгэлд шалгалт бүрийн хагас mock бий."],
+  ["Сарын багц юуг нээх вэ?", "ЭЕШ багц бүх ЭЕШ mock-ийг хязгааргүй нээнэ. Англи хэл Basic, Pro багц SAT, IELTS, TOEFL-ийн бүх mock, IELTS ба TOEFL workshop-ийг; Ази хэл Basic, Pro багц JLPT, HSK, TOPIK-ийн бүх mock, тэдгээрийн workshop-ийг хязгааргүй нээнэ; Pro нь AI кредит, үгсийн сан, файлаас шалгалтын багтаамж илүү. Нэг mock-ийг тусад нь авбал 7 хоногийн турш нээлттэй. Үнэгүй бүртгэлд шалгалт бүрийн хагас mock бий."],
   ["AI туслахыг үнэгүй ашиглаж болох уу?", "Баталгаажсан бүртгэл бүр сар бүр 100 AI кредит авна. Сарын багц нэмэлт кредиттэй. Кредитийг тусад нь авч болно: хугацаагүй, AI-д зарцуулагдаж, үгсийн сангийн байнгын багтаамж авна. Хугацаатай шалгалтын үеэр AI хаалттай."],
   ["Хуудсаа хаавал цаг зогсох уу?", "Үгүй. Хугацаатай mock-ийн цаг үргэлжилнэ. Хадгалсан хариугаа үргэлжлүүлж болно; хугацаа дууссан хэсгийг өөрчлөхгүй."],
   ["Багц дуусвал үр дүнгээ үзэж болох уу?", "Болно. Багцтай үед эхэлсэн шалгалтаа үргэлжлүүлж, өмнөх үр дүнгээ үзнэ. Шинээр эхлэхэд хүчинтэй багц эсвэл тухайн mock-ийн эрх хэрэгтэй."],

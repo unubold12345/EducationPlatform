@@ -215,10 +215,11 @@ test("the plan sets how many practices are kept (free and Basic 5, Pro 15), and 
   assert.equal(READING_LIMITS.freePractices, 5);
   assert.match(PRACTICES_FULL, /20 дасгал/);
   // Owner rule 2026-11-17: the largest active plan wins; retired IELTS/SAT plans keep 15 until they end.
-  assert.deepEqual(subscriptionPlans.map(plan => [plan.program, plan.readingPractices]), [["entrance", 5], ["language_basic", 5], ["language", 15]]);
+  assert.deepEqual(subscriptionPlans.map(plan => [plan.program, plan.readingPractices]), [["entrance", 5], ["english_basic", 5], ["english_pro", 15], ["asian_basic", 5], ["asian_pro", 15]]);
   assert.deepEqual([[], ["entrance"], ["language_basic"], ["language"], ["language_basic", "language"], ["ielts"], ["sat"], ["unknown"]].map(practiceCapacity), [5, 5, 5, 15, 15, 15, 15, 5]);
-  assert.deepEqual(practiceUpgrade(), { practices: 15, plans: ["Гадаад хэл Pro"] });
-  assert.equal(practicesFullMessage(5), "Хадгалах 5 дасгалын хязгаарт хүрсэн. Шинэ дасгал үүсгэхийн өмнө нэгийг нь устгана уу. Гадаад хэл Pro багцтай бол 15 дасгал хадгална.");
+  assert.deepEqual(practiceUpgrade(), { practices: 15, plans: ["Англи хэл Pro", "Ази хэл Pro"] });
+  assert.deepEqual([["english_basic"], ["english_pro"], ["asian_pro"]].map(practiceCapacity), [5, 15, 15]);
+  assert.equal(practicesFullMessage(5), "Хадгалах 5 дасгалын хязгаарт хүрсэн. Шинэ дасгал үүсгэхийн өмнө нэгийг нь устгана уу. Англи хэл Pro эсвэл Ази хэл Pro багцтай бол 15 дасгал хадгална.");
   assert.equal(practicesFullMessage(15), "Хадгалах 15 дасгалын хязгаарт хүрсэн. Шинэ дасгал үүсгэхийн өмнө нэгийг нь устгана уу.");
   const service = text("src/modules/reading-lab/service.ts");
   const full = "const limit = await readingPracticeLimit(userId);\n  const saved = await db.readingPractice.count({ where: { userId } });\n  if (saved >= limit) throw new ApiError(409, practicesFullMessage(limit));";
@@ -266,7 +267,7 @@ test("the routes are same-origin, session-checked and bounded; the page reads th
   assert.ok(READING_LIMITS.progressBodyBytes <= 16 * 1024 && READING_LIMITS.importBodyBytes <= 320 * 1024);
   const page = text("src/app/labs/ielts-reading/page.tsx");
   assert.match(page, /if \(!readingLabEnabled\(\)\) notFound\(\);/);
-  assert.match(page, /const library = userId \? await readingLibrary\(userId\) : null;/);
+  assert.match(page, /const \[library, mocks\] = await Promise\.all\(\[userId \? readingLibrary\(userId\) : null, labMocks\(userId \?\? undefined, "ielts", "reading"\)\]\);/);
   assert.match(page, /initialPractices=\{library\?\.practices \?\? \[\]\} initialSamples=\{library\?\.samples \?\? \{\}\}/);
   // The samples stay open during a timed mock; only generation (a new practice or a retry) checks for an open sitting.
   const service = text("src/modules/reading-lab/service.ts");

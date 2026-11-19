@@ -1,5 +1,7 @@
 # Original HSK 2 mock exams — offline authoring pack
 
+> Superseded on 2026-11-19 by the HSK 3.0 pack (`MockExmps/HSK3`), which the site now builds from; this pack is the source of the items HSK 3.0 kept. `scripts/build-hsk-mocks.mjs` no longer reads it.
+
 Three complete HSK 2 forms written on 2026-11-16 with Claude Code (Fable 5.2). Every sentence, dialogue, key,
 explanation and picture is original; no official HSK question, recording, picture or answer key is reproduced.
 The pack is never deployed (`.vercelignore`); the site copies are built from it.

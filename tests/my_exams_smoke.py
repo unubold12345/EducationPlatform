@@ -529,14 +529,14 @@ with sync_playwright() as p:
     clock_page.screenshot(path=str(ART / "my-exams-limit-desktop.png"), full_page=True)
     full = upload(clock_context.request)
     assert full.status == 409, full.status
-    assert "5 шалгалтын хязгаарт" in full.json()["error"] and "Гадаад хэл Pro багцтай бол 15" in full.json()["error"], full.json()
+    assert "5 шалгалтын хязгаарт" in full.json()["error"] and "Англи хэл Pro эсвэл Ази хэл Pro багцтай бол 15" in full.json()["error"], full.json()
     # Clearing the browser changes nothing: the exams and the limit are on the account.
     clock_page.evaluate("() => { localStorage.clear(); sessionStorage.clear(); }")
     clock_page.reload(wait_until="domcontentloaded")
     expect(clock_page.get_by_text("5 / 5 · бүртгэлд")).to_be_visible()
     assert upload(clock_context.request).status == 409, "a cleared browser is still full"
-    # The Гадаад хэл plan raises the limit to fifteen, on the page and on the server.
-    order = clock_context.request.post(BASE + "/api/subscriptions/orders", headers=ORIGIN, data={"program": "language"}).json()
+    # A Pro plan (here Ази хэл Pro) raises the limit to fifteen, on the page and on the server.
+    order = clock_context.request.post(BASE + "/api/subscriptions/orders", headers=ORIGIN, data={"program": "asian_pro"}).json()
     assert clock_context.request.post(BASE + "/api/subscriptions/orders/" + order["id"] + "/confirm", headers=ORIGIN, data={"decision": "success"}).ok
     clock_page.reload(wait_until="domcontentloaded")
     expect(clock_page.get_by_text("5 / 15 · бүртгэлд")).to_be_visible()
@@ -544,7 +544,7 @@ with sync_playwright() as p:
     expect(clock_page.get_by_role("button", name="Шалгалт үүсгэх", exact=True)).to_be_enabled()
     expect(clock_page.get_by_text("Хадгалах 5 шалгалтын хязгаарт хүрсэн")).to_have_count(0)
     # With five saved the plan lets the request through to the file check; fifteen is the new ceiling.
-    assert upload(clock_context.request, name="tiny.pdf").status == 422, "a Гадаад хэл plan keeps more than five exams"
+    assert upload(clock_context.request, name="tiny.pdf").status == 422, "a Pro plan keeps more than five exams"
     for token in clock_tokens[5:15]:
         assert move(clock_context.request, token).json()["imported"] is True
     plan_full = upload(clock_context.request, name="tiny.pdf")

@@ -123,9 +123,11 @@ with sync_playwright() as p:
     assert saved.ok, (saved.status, saved.text())
     fixture("deadline", attempt, -1000)
     page.goto(BASE + "/exams/attempts/" + attempt)
-    expect(page.locator(".eesh-results")).to_be_visible()
-    expect(page.locator(".eesh-score")).to_contain_text("100")
-    expect(page.locator(".eesh-review")).to_have_count(len(answers["responses"]))
+    # A finished mock's result is the Review page.
+    expect(page.locator(".wsp-review")).to_be_visible()
+    expect(page).to_have_url(BASE + "/workspace/review/" + attempt)
+    expect(page.locator(".wsp-score-card")).to_contain_text("100")
+    expect(page.locator(".wsp-question")).to_have_count(len(answers["responses"]))
     page.screenshot(path=str(ART / "eesh-result-math-desktop.png"), full_page=True)
     fits(page, "result-math")
 

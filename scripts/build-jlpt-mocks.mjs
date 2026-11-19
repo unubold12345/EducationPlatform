@@ -13,7 +13,8 @@ const labels={
  'verbal-expressions':'発話表現 · Юу хэлэх вэ','quick-response':'即時応答 · Шуурхай хариу',
 };
 const catalog=[];
-for(const level of ['N5','N4'])for(let number=1;number<=3;number++){
+// Forms 01–03 (Codex, 2026-11-08) and 04–06 (Claude Code, 2026-11-19) per level.
+for(const level of ['N5','N4'])for(let number=1;number<=6;number++){
  const source=JSON.parse(readFileSync(join('MockExmps','JLPT',level,`mock-0${number}`,'mock.json'),'utf8'));
  const slug=source.id;
  const definition={slug,version:1,audioRevision:2,program:'jlpt',title:`JLPT ${level} · Mock 0${number}`,description:source.theme,
@@ -52,4 +53,4 @@ for(const level of ['N5','N4'])for(let number=1;number<=3;number++){
  catalog.push({slug,level,number,title:definition.title,theme:source.theme,questions:count,minutes:level==='N5'?90:115});
 }
 writeFileSync(join('src','modules','exams','jlpt','catalog.json'),JSON.stringify(catalog,null,2)+'\n');
-console.log('Built six private JLPT definitions, 456 questions.');
+console.log(`Built ${catalog.length} private JLPT definitions, ${catalog.reduce((sum,mock)=>sum+mock.questions,0)} questions.`);

@@ -7,6 +7,7 @@ import {tutorDay} from "@/modules/tutor/contracts";
 import {normalizeSpeakingReply,speakingMessages,tipQuotesAnswer,validSpeakingInput} from "./contracts";
 import {chargeCredits} from "@/modules/credits/service";
 import {AI_ACTIONS,speakingCreditAction,type AiAction} from "@/modules/credits/pricing";
+import {aiFetch} from "@/modules/ai-usage/server";
 
 // Daily per-student limits. A full mock uses ~18 chat calls, one voice stream per reply and one transcription per answer.
 const DAILY_LIMIT={chat:80,voice:200,transcribe:150} as const;
@@ -53,6 +54,8 @@ export async function serialized<T>(name:string,waitMs:number,work:()=>Promise<T
 type Completion<T>={messages:{role:string;content:string}[];maxTokens:number;temperature:number;timeoutMs:number;
  /** Turns the model's JSON into the reply, or null when it is malformed (one silent retry follows). */
  read:(json:unknown)=>T|null;
+ /** Turns the reply text into JSON: `JSON.parse` unless the caller mends known model slips (the TOEFL interview report). */
+ parse?:(content:string)=>unknown;
  /** The access check, repeated after the provider call so a result is never delivered into a state that forbids it. */
  recheck:()=>Promise<void>};
 
@@ -65,11 +68,11 @@ export async function speakingCompletion<T extends object>(userId:string,action:
  try {
   for(let attempt=0;attempt<2;attempt++){
    let response:Response;
-   try{response=await fetch("https://api.deepseek.com/chat/completions",{method:"POST",cache:"no-store",redirect:"error",headers:{"Content-Type":"application/json",Authorization:`Bearer ${key}`},body:JSON.stringify({model:process.env.DEEPSEEK_MODEL||"deepseek-flash",messages:request.messages,thinking:{type:"disabled"},max_tokens:request.maxTokens,temperature:request.temperature,response_format:{type:"json_object"},stream:false}),signal:AbortSignal.timeout(request.timeoutMs)});}
+   try{response=await aiFetch("deepseek","https://api.deepseek.com/chat/completions",{method:"POST",cache:"no-store",redirect:"error",headers:{"Content-Type":"application/json",Authorization:`Bearer ${key}`},body:JSON.stringify({model:process.env.DEEPSEEK_MODEL||"deepseek-flash",messages:request.messages,thinking:{type:"disabled"},max_tokens:request.maxTokens,temperature:request.temperature,response_format:{type:"json_object"},stream:false}),signal:AbortSignal.timeout(request.timeoutMs)});}
    catch{throw new ApiError(503,"AI-тай холбогдож чадсангүй. Хариу тань хэвээр байна.");}
    if(!response.ok)throw new ApiError(503,"AI түр ажиллахгүй байна. Дахин оролдоно уу.");
    let reply:T|null=null;
-   try{const data=await response.json();meter.add(data.usage);const choice=data.choices?.[0];if(choice?.finish_reason==="stop"&&typeof choice.message?.content==="string"&&choice.message.content.length<=16000)reply=request.read(JSON.parse(choice.message.content));}
+   try{const data=await response.json();meter.add(data.usage);const choice=data.choices?.[0];if(choice?.finish_reason==="stop"&&typeof choice.message?.content==="string"&&choice.message.content.length<=16000)reply=request.read((request.parse??JSON.parse)(choice.message.content));}
    catch{reply=null;}
    // One silent retry on malformed model output keeps the conversation flowing.
    if(reply){await request.recheck();return reply;}

@@ -15,6 +15,8 @@ import { programLabels } from "./programs";
 import { CreditCost, useCredits } from "@/modules/credits/client";
 import { AttachButton, ImageStrip, SentImages, imageFiles, useImageAttachments } from "@/modules/ai-images/client";
 import { IMAGE_ONLY_REQUEST } from "@/modules/ai-images/contracts";
+import { SkippedNotice } from "@/modules/exams/admin-skip";
+import { ReviewExtras, programQuestion, selfPoints, type SelfScores } from "./review-extras";
 
 type Review = NonNullable<PublicExamAttempt["report"]>["reviews"][number];
 type Status = "correct" | "wrong" | "blank" | "pending";
@@ -38,8 +40,19 @@ function Answer({ text, kind }: { text: string; kind: TextKind }) {
   return <Text text={text} kind={kind} />;
 }
 
-/** Review of one finished mock: scores, weakest skills, every question with its key, and an AI coach beside it. */
-export function ReviewView({ attempt, options, finishedLabel }: { attempt: PublicExamAttempt; options: Record<string, string[]>; finishedLabel: string }) {
+/** Programmes whose practice mode opens one section from a weak skill's link. */
+const SECTION_PRACTICE = new Set(["jlpt", "hsk", "topik"]);
+function download(attempt: PublicExamAttempt) {
+  const url = URL.createObjectURL(new Blob([JSON.stringify(attempt, null, 2)], { type: "application/json" }));
+  const link = document.createElement("a"); link.href = url; link.download = "mock-exam-result.json"; link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+/**
+ * The result of one finished mock (every programme opens here when it ends): scores, the programme's own details,
+ * weakest skills, every question with its key, and an AI coach beside it. `examiner`: the Speaking Lab is enabled.
+ */
+export function ReviewView({ attempt, options, finishedLabel, examiner = false }: { attempt: PublicExamAttempt; options: Record<string, string[]>; finishedLabel: string; examiner?: boolean }) {
   const report = attempt.report!;
   const kind: TextKind = attempt.program === "jlpt" ? "ja" : attempt.program === "hsk" ? "zh" : attempt.program === "topik" ? "ko" : attempt.program === "entrance" && attempt.subject !== "english" ? "math" : "en";
   const lang = kind === "ja" ? "ja" : kind === "zh" ? "zh-CN" : kind === "ko" ? "ko" : kind === "math" ? "mn" : "en";
@@ -53,13 +66,17 @@ export function ReviewView({ attempt, options, finishedLabel }: { attempt: Publi
   const [active, setActive] = useState<string | null>(null);
   const [panelOpen, setPanelOpen] = useState(false);
   const [conversations, setConversations] = useState<Record<string, CoachTurn[]>>({});
+  // TOPIK Writing self-scores (this page only, never saved) and HSK pinyin, shared by the panel and the questions.
+  const [self, setSelf] = useState<SelfScores>({});
+  const [readings, setReadings] = useState(true);
+  const pendingLabel = attempt.program === "topik" ? "Бичих" : statusLabels.pending;
   const visible = reviews.filter(review => filter === "all" || statusOf(review) === filter);
   const percent = report.points.total ? Math.round((report.points.earned / report.points.total) * 100) : null;
   const weakest = useMemo(() => {
-    const domains = new Map<string, { correct: number; total: number }>();
+    const domains = new Map<string, { correct: number; total: number; groupId?: string }>();
     for (const review of reviews) {
       if (review.pretest || review.correct === null) continue;
-      const entry = domains.get(review.domain) ?? { correct: 0, total: 0 };
+      const entry = domains.get(review.domain) ?? { correct: 0, total: 0, groupId: review.groupId };
       entry.total++; if (review.correct) entry.correct++;
       domains.set(review.domain, entry);
     }
@@ -72,38 +89,45 @@ export function ReviewView({ attempt, options, finishedLabel }: { attempt: Publi
 
   return <div className="wsp-page wsp-review">
     <Link className="wsp-back" href="/workspace/review"><Icon name="back" size={16} />Миний үр дүн</Link>
+    <SkippedNotice stages={attempt.skipped} className="wsp-skipped" />
     <header className="wsp-review-head">
       <div>
         <p className="wsp-eyebrow">{programLabels[attempt.program]} · {finishedLabel}</p>
         <h1>{attempt.title}</h1>
         <div className="wsp-review-actions">
           <Link className="wsp-primary" href={"/exams/" + attempt.slug + "/practice"}>Цаггүй дадлагаар давтах <Icon name="arrow" size={18} /></Link>
-          <Link className="wsp-ghost" href={"/exams/attempts/" + attempt.id}>Анхны үр дүнгийн хуудас</Link>
+          <button type="button" className="wsp-ghost" onClick={() => download(attempt)}>Хариу, үр дүнгээ татах ↓</button>
         </div>
       </div>
       <div className="wsp-score-card">
         <ScoreRing percent={percent} size={92} />
-        <div><strong>{round(report.points.earned)}<span> / {report.points.total}</span></strong><p>{counts.correct} зөв · {counts.wrong} алдсан · {counts.blank} хоосон{counts.pending ? ` · ${counts.pending} хяналт` : ""}</p></div>
+        <div><strong>{round(report.points.earned)}<span> / {report.points.total}</span></strong><p>{counts.correct} зөв · {counts.wrong} алдсан · {counts.blank} хоосон{counts.pending ? ` · ${counts.pending} ${pendingLabel.toLowerCase()}` : ""}</p></div>
       </div>
     </header>
 
     <section className="wsp-sections" aria-label="Хэсэг бүрийн үр дүн">{report.sections.map(section => <div key={section.title} className="wsp-section-score">
       <span lang={attempt.program === "jlpt" ? "ja" : undefined}>{section.title}</span>
       {section.total ? <><strong>{round(section.earned)} <small>/ {section.points}</small></strong><i className="wsp-bar" aria-hidden="true"><b style={{ width: (section.points ? Math.round((section.earned / section.points) * 100) : 0) + "%" }} /></i><small>{section.correct} / {section.total} зөв</small></>
-        : <><strong className="wsp-muted">Хяналт</strong><small>{section.pending} хариу · AI-аас санал авч болно</small></>}
+        : <><strong className="wsp-muted">{pendingLabel}</strong><small>{section.pending} хариу · {attempt.program === "topik" ? "жишиг хариутай харьцуулна" : "AI-аас санал авч болно"}</small></>}
     </div>)}</section>
+
+    <ReviewExtras attempt={attempt} examiner={examiner} self={self} readings={readings} onReadings={setReadings} />
 
     {weakest.length ? <section className="wsp-section" aria-labelledby="weak-heading">
       <div className="wsp-section-head"><h2 id="weak-heading">Анхаарах чадварууд</h2><span className="wsp-muted">Хамгийн сул нь эхэндээ</span></div>
-      <div className="wsp-domains">{weakest.map(([domain, value]) => <div key={domain} className="wsp-domain">
-        <span lang={kind === "math" ? "mn" : "en"}>{domain}</span><i className="wsp-bar" aria-hidden="true"><b style={{ width: Math.round((value.correct / value.total) * 100) + "%" }} /></i><small>{value.correct} / {value.total}</small>
-      </div>)}</div>
+      <div className="wsp-domains">{weakest.map(([domain, value]) => {
+        const inner = <><span lang={kind === "math" ? "mn" : "en"}>{domain}</span><i className="wsp-bar" aria-hidden="true"><b style={{ width: Math.round((value.correct / value.total) * 100) + "%" }} /></i><small>{value.correct} / {value.total}</small></>;
+        // JLPT, HSK and TOPIK practice opens the weak skill's own section.
+        return SECTION_PRACTICE.has(attempt.program) && value.groupId && value.correct < value.total
+          ? <Link key={domain} className="wsp-domain is-link" href={"/exams/" + attempt.slug + "/practice?section=" + encodeURIComponent(value.groupId)} title="Энэ хэсгийг дадлагаар давтах">{inner}</Link>
+          : <div key={domain} className="wsp-domain">{inner}</div>;
+      })}</div>
     </section> : null}
 
     <div className="wsp-review-grid">
       <section className="wsp-review-main" aria-labelledby="questions-heading">
         <div className="wsp-section-head"><h2 id="questions-heading">Асуулт бүрийн задаргаа</h2></div>
-        <div className="wsp-filter" role="group" aria-label="Хариу шүүх">{filterLabels.filter(([name]) => name === "all" || counts[name]).map(([name, label]) => <button key={name} type="button" aria-pressed={filter === name} onClick={() => setFilter(name)}>{label} · {counts[name]}</button>)}</div>
+        <div className="wsp-filter" role="group" aria-label="Хариу шүүх">{filterLabels.filter(([name]) => name === "all" || counts[name]).map(([name, label]) => <button key={name} type="button" aria-pressed={filter === name} onClick={() => setFilter(name)}>{name === "pending" ? pendingLabel : label} · {counts[name]}</button>)}</div>
         {!visible.length ? <p className="wsp-muted">Энэ шүүлтэд асуулт алга.</p> : null}
         <ol className="wsp-questions">{visible.map(review => {
           const status = statusOf(review);
@@ -111,14 +135,17 @@ export function ReviewView({ attempt, options, finishedLabel }: { attempt: Publi
           const choices = options[review.id];
           const answers = review.answer.split(" / ");
           const figure = questionFigure(review);
+          const special = programQuestion(attempt, review, { self, readings, onSelf: (number, value) => setSelf(current => ({ ...current, [number]: value })) });
+          const own = selfPoints(attempt, review, self);
           return <li key={review.id} className={"wsp-question" + (active === review.id ? " is-active" : "")} data-status={status} data-question={review.id}>
             <div className="wsp-question-head">
               <span className="wsp-question-number">{review.number ?? index + 1}</span>
-              <span className="wsp-status" data-status={status}>{statusLabels[status]}</span>
+              <span className="wsp-status" data-status={status}>{status === "pending" ? pendingLabel : statusLabels[status]}</span>
               <span className="wsp-question-domain" lang={kind === "math" ? "mn" : "en"}>{review.domain}</span>
               {review.pretest ? <span className="wsp-tag">Pretest</span> : null}
-              <span className="wsp-question-points">{review.earned === null ? "—" : round(review.earned)} / {review.points}</span>
+              <span className="wsp-question-points">{own ?? <>{review.earned === null ? "—" : round(review.earned)} / {review.points}</>}</span>
             </div>
+            {special ? special.body : <>
             {review.instructions ? <div className="wsp-question-note" lang={lang}><Text text={review.instructions} kind={kind} /></div> : null}
             {review.context ? <details className="wsp-material" open={review.context.length < 500}><summary>{review.contextTitle ?? "Өгөгдөл"}</summary><div lang={kind === "ja" ? "ja" : "en"}><Text text={review.context} kind={kind === "math" ? "en" : kind} /></div></details> : null}
             {review.passage ? <details className="wsp-material"><summary>Эх текст</summary><div lang={kind === "ja" ? "ja" : "en"}><Text text={review.passage} kind={kind === "math" ? "en" : kind} /></div></details> : null}
@@ -131,16 +158,17 @@ export function ReviewView({ attempt, options, finishedLabel }: { attempt: Publi
                 {right ? <span className="wsp-choice-mark"><Icon name="check" size={16} />Зөв</span> : mine ? <span className="wsp-choice-mark">Таны сонголт</span> : null}
               </li>;
             })}</ul> : <dl className="wsp-answers">
-              <div><dt>Таны хариу</dt><dd lang={lang}>{review.selected.trim() ? <Answer text={review.selected} kind={kind} /> : <span className="wsp-muted">Хариулаагүй</span>}</dd></div>
+              <div><dt>Таны хариу</dt><dd lang={lang}>{review.selected.trim() ? <Answer text={review.selected} kind={kind} /> : <span className="wsp-muted">{review.domain === "Speaking" && attempt.recordings.length ? "Бичлэгийг дээр сонсоно уу" : "Хариулаагүй"}</span>}</dd></div>
               {review.answer ? <div><dt>Зөв хариу</dt><dd lang={lang}><Answer text={review.answer} kind={kind} /></dd></div> : null}
             </dl>}
             {choices && !review.selected.trim() ? <p className="wsp-muted wsp-unanswered">Хариулаагүй</p> : null}
-            {review.explanation ? <div className="wsp-explanation" lang={attempt.program === "entrance" ? "mn" : kind === "ja" ? "en" : "en"}><span>Тайлбар</span><p><Text text={review.explanation} kind={kind === "ja" ? "en" : kind} /></p></div> : null}
-            {review.transcript ? <details className="wsp-material"><summary>Бичлэгийн текст</summary><div lang={kind === "ja" ? "ja" : kind === "zh" ? "zh-CN" : "en"}><Text text={review.transcript} kind={kind === "math" ? "en" : kind} /></div></details> : null}
+            </>}
+            {review.explanation && !special?.hideExplanation ? <div className="wsp-explanation" lang={attempt.program === "entrance" ? "mn" : kind === "ja" ? "en" : "en"}><span>Тайлбар</span><p><Text text={review.explanation} kind={kind === "ja" ? "en" : kind} /></p></div> : null}
+            {special?.transcript ?? (review.transcript ? <details className="wsp-material"><summary>Бичлэгийн текст</summary><div lang={kind === "ja" ? "ja" : kind === "zh" ? "zh-CN" : "en"}><Text text={review.transcript} kind={kind === "math" ? "en" : kind} /></div></details> : null)}
             <div className="wsp-question-foot"><button type="button" className="wsp-ask" onClick={() => askAbout(review.id)} aria-pressed={active === review.id}><Icon name="spark" size={16} />AI-аас асуух</button></div>
           </li>;
         })}</ol>
-        <p className="wsp-fine">{attempt.program === "entrance" ? "Хэвлэсэн онооны нийлбэр. Албан ЭЕШ-ийн жинлэсэн оноо биш." : attempt.program === "jlpt" ? "Raw зөв хариултын тоо. JLPT-ийн албан оноо, тэнцсэн эсэхийг тооцохгүй." : attempt.program === "toefl" ? "Reading, Listening, Build a Sentence-ийн raw зөв хариултын тоо; Writing, Speaking-ийн AI оноо (0–5) үр дүнгийн хуудсанд. TOEFL-ийн албан оноо биш." : attempt.program === "hsk" ? "Зөв хариултын тоо. Дадлагын хөрвүүлэлт нь зөв × 5 (200-аас); HSK-ийн албан оноо, тэнцсэн эсэх биш." : attempt.program === "topik" ? "Сонсох, унших хэсгийн асуултын оноо (албан хуудасны адил 2–4). Бичих хэсгийг жишиг хариутай харьцуулж өөрөө үнэлнэ. Албан TOPIK оноо, түвшин биш." : attempt.program === "sat" ? "Raw оноо. 400–1600 SAT оноонд хөрвүүлэхгүй; pretest асуулт оноонд орохгүй." : "Listening, Reading-ийн raw оноо. Writing, Speaking-ийн AI band үр дүнгийн хуудсанд гарна."}</p>
+        <p className="wsp-fine">{attempt.program === "entrance" ? "Хэвлэсэн онооны нийлбэр. Албан ЭЕШ-ийн жинлэсэн оноо биш." : attempt.program === "jlpt" ? "Raw зөв хариултын тоо. JLPT-ийн албан оноо, тэнцсэн эсэхийг тооцохгүй." : attempt.program === "toefl" ? "Reading, Listening, Build a Sentence-ийн raw зөв хариултын тоо; Writing, Speaking-ийн AI оноо (0–5) дээрх AI үнэлгээнд. TOEFL-ийн албан оноо биш." : attempt.program === "hsk" ? "Зөв хариултын тоо. Дадлагын хөрвүүлэлт нь зөв × 5 (200-аас); HSK-ийн албан оноо, тэнцсэн эсэх биш." : attempt.program === "topik" ? "Сонсох, унших хэсгийн асуултын оноо (албан хуудасны адил 2–4). Бичих хэсгийг жишиг хариутай харьцуулж өөрөө үнэлнэ. Албан TOPIK оноо, түвшин биш." : attempt.program === "sat" ? "Raw оноо. 400–1600 SAT оноонд хөрвүүлэхгүй; pretest асуулт оноонд орохгүй." : "Listening, Reading-ийн raw оноо. Writing, Speaking-ийн AI band дээрх AI үнэлгээнд гарна."}</p>
       </section>
       <ReviewCoach key={active ?? "none"} attemptId={attempt.id} review={activeReview} number={activeReview ? activeReview.number ?? String(activeIndex + 1) : ""} kind={kind}
         open={panelOpen} onClose={() => setPanelOpen(false)} turns={active ? conversations[active] ?? [] : []}

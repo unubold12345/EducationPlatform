@@ -23,20 +23,20 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
   if (!program) notFound();
   const workshops = await Promise.all(guidedTasks.map(task => getWorkshop(task.slug).then(value => value!)));
   const mockCount = slug === "entrance" ? entranceTotal : examDefinitions.filter(exam => exam.program === slug).length;
-  // SAT and IELTS come with the Гадаад хэл plans (Basic is shown, the cheapest); ЭЕШ has its own plan.
+  // SAT and IELTS come with the Англи хэл plans (Basic is shown, the cheapest); ЭЕШ has its own plan.
   const plan = (await pricedPlan(salePlanFor(slug)?.program))!;
   const mock = slug === "sat" ? {
     eyebrow: "БҮТЭН ШАЛГАЛТ · DIGITAL SAT",
     title: "98 асуулт. Бодит хугацаа.",
     copy: "Reading & Writing 2 модуль, Math 2 модуль. Серверийн цаг, хадгалагдах хариулт, эцсийн дүн.",
-    facts: ["98 асуулт", "2ц 14м + 10м завсарлага", "₮10,000 / 7 хоног эсвэл Гадаад хэл багц"],
+    facts: ["98 асуулт", "2ц 14м + 10м завсарлага", "₮10,000 / 7 хоног эсвэл Англи хэл багц"],
     href: "/exams/sat",
     cta: "Бүтэн шалгалт үзэх",
   } : slug === "ielts" ? {
     eyebrow: "БҮТЭН ШАЛГАЛТ · IELTS ACADEMIC",
     title: "Дөрвөн чадвар. Нэг бүтэн оролдлого.",
     copy: "Listening, Reading, Writing, Speaking. Бүтэн Academic mock, серверийн цаг, хадгалагдах хариулт.",
-    facts: ["4 чадвар", "Listening 40 · Reading 40", "₮10,000 / 7 хоног эсвэл Гадаад хэл багц"],
+    facts: ["4 чадвар", "Listening 40 · Reading 40", "₮10,000 / 7 хоног эсвэл Англи хэл багц"],
     href: "/exams/ielts",
     cta: "Бүтэн шалгалт үзэх",
   } : null;

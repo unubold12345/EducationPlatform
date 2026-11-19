@@ -482,7 +482,7 @@ with sync_playwright() as p:
     assert made.json()["total"] == 100 and made.json()["limit"] == 100, made.json()
     over = cap.request.post(API, headers=ORIGIN, data={"term": "one more", "translation": "дахин"})
     assert over.status == 409 and "100 үгийн хязгаартаа хүрсэн" in over.json()["error"], (over.status, over.text())
-    assert "Гадаад хэл Pro багцтай бол 3,000 үг" in over.json()["error"], over.json()
+    assert "Англи хэл Pro эсвэл Ази хэл Pro багцтай бол 3,000 үг" in over.json()["error"], over.json()
     assert "Кредитээр байнгын багтаамж нэмж болно" in over.json()["error"], over.json()
     many = cap.request.post(WORDS, headers=ORIGIN, data={"action": "add", "words": [{"term": "bulk word", "translation": "олон"}]})
     assert many.status == 409 and "100 үгийн хязгаартаа хүрсэн" in many.json()["error"], (many.status, many.text())

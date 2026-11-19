@@ -1,0 +1,2182 @@
+{
+ "id": "hsk2-mock-02",
+ "level": 2,
+ "number": 2,
+ "title": "上班和旅游",
+ "titlePinyin": "Shàngbān hé lǚyóu",
+ "titleEn": "Work and travel",
+ "theme": "Work, getting around, hotels and trips",
+ "stages": [
+  {
+   "id": "hsk-l",
+   "sets": [
+    {
+     "key": "L1",
+     "id": "hsk-l-1",
+     "layout": "L2",
+     "title": "第一部分 · Өгүүлбэр ба зураг",
+     "domain": "听力一 · Өгүүлбэр, зураг",
+     "task": "听录音，选择对应的图片。",
+     "note": "Өгүүлбэрийг хоёр удаа сонсоно. Гурван зургаас тохирохыг сонгоно.",
+     "prompt": "Сонссон өгүүлбэрт тохирох зургийг сонгоно уу.",
+     "audio": [
+      "听录音，选择对应的图片。",
+      "Tīng lùyīn, xuǎnzé duìyìng de túpiàn."
+     ],
+     "example": {
+      "pictures": [
+       {
+        "label": "A",
+        "image": "../examples/hsk2-listening-1.svg",
+        "alt": "A woman reading a book on a sofa"
+       },
+       {
+        "label": "B",
+        "image": "../examples/hsk1-listening-2-b.svg",
+        "alt": "A computer"
+       },
+       {
+        "label": "C",
+        "image": "../examples/hsk1-listening-2-c.svg",
+        "alt": "A cat"
+       }
+      ],
+      "answer": "A",
+      "turns": [
+       {
+        "text": "她在看书。",
+        "pinyin": "Tā zài kàn shū.",
+        "role": "woman"
+       }
+      ]
+     },
+     "items": [
+      {
+       "n": 1,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "A",
+       "answerDisplay": "A",
+       "pictures": [
+        {
+         "label": "A",
+         "image": "images/l1-01.svg",
+         "alt": "Three people waiting at a bus stop"
+        },
+        {
+         "label": "B",
+         "image": "images/l1-06.svg",
+         "alt": "A man reading a newspaper"
+        },
+        {
+         "label": "C",
+         "image": "images/l1-08.svg",
+         "alt": "A waiter carrying dishes on a tray"
+        }
+       ],
+       "turns": [
+        {
+         "text": "他们在等公交车。",
+         "pinyin": "Tāmen zài děng gōngjiāochē.",
+         "role": "woman"
+        }
+       ],
+       "explanation": "The sentence says 他们在等公交车。 (Tāmen zài děng gōngjiāochē.); A shows three people waiting at a bus stop."
+      },
+      {
+       "n": 2,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "C",
+       "answerDisplay": "C",
+       "pictures": [
+        {
+         "label": "A",
+         "image": "images/l1-04.svg",
+         "alt": "A passenger plane in the sky"
+        },
+        {
+         "label": "B",
+         "image": "images/l1-09.svg",
+         "alt": "A snowman on a snowy day"
+        },
+        {
+         "label": "C",
+         "image": "images/l1-02.svg",
+         "alt": "A person writing at a desk"
+        }
+       ],
+       "turns": [
+        {
+         "text": "他正在写字。",
+         "pinyin": "Tā zhèngzài xiě zì.",
+         "role": "man"
+        }
+       ],
+       "explanation": "The sentence says 他正在写字。 (Tā zhèngzài xiě zì.); C shows a person writing at a desk."
+      },
+      {
+       "n": 3,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "B",
+       "answerDisplay": "B",
+       "pictures": [
+        {
+         "label": "A",
+         "image": "images/l1-07.svg",
+         "alt": "A mobile phone on a table"
+        },
+        {
+         "label": "B",
+         "image": "images/l1-03.svg",
+         "alt": "A cup of coffee"
+        },
+        {
+         "label": "C",
+         "image": "images/l1-10.svg",
+         "alt": "An open door"
+        }
+       ],
+       "turns": [
+        {
+         "text": "这是一杯咖啡。",
+         "pinyin": "Zhè shì yì bēi kāfēi.",
+         "role": "woman"
+        }
+       ],
+       "explanation": "The sentence says 这是一杯咖啡。 (Zhè shì yì bēi kāfēi.); B shows a cup of coffee."
+      },
+      {
+       "n": 4,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "B",
+       "answerDisplay": "B",
+       "pictures": [
+        {
+         "label": "A",
+         "image": "images/l1-08.svg",
+         "alt": "A waiter carrying dishes on a tray"
+        },
+        {
+         "label": "B",
+         "image": "images/l1-05.svg",
+         "alt": "A doctor in a white coat"
+        },
+        {
+         "label": "C",
+         "image": "images/l1-02.svg",
+         "alt": "A person writing at a desk"
+        }
+       ],
+       "turns": [
+        {
+         "text": "他是医生，在医院工作。",
+         "pinyin": "Tā shì yīshēng, zài yīyuàn gōngzuò.",
+         "role": "man"
+        }
+       ],
+       "explanation": "The sentence says 他是医生，在医院工作。 (Tā shì yīshēng, zài yīyuàn gōngzuò.); B shows a doctor in a white coat."
+      },
+      {
+       "n": 5,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "A",
+       "answerDisplay": "A",
+       "pictures": [
+        {
+         "label": "A",
+         "image": "images/l1-10.svg",
+         "alt": "An open door"
+        },
+        {
+         "label": "B",
+         "image": "images/l1-01.svg",
+         "alt": "Three people waiting at a bus stop"
+        },
+        {
+         "label": "C",
+         "image": "images/l1-07.svg",
+         "alt": "A mobile phone on a table"
+        }
+       ],
+       "turns": [
+        {
+         "text": "门开着呢。",
+         "pinyin": "Mén kāi zhe ne.",
+         "role": "woman"
+        }
+       ],
+       "explanation": "The sentence says 门开着呢。 (Mén kāi zhe ne.); A shows an open door."
+      }
+     ]
+    },
+    {
+     "key": "L2a",
+     "id": "hsk-l-2a",
+     "layout": "L3",
+     "title": "第二部分 · Яриа ба зураг (6–10)",
+     "domain": "听力二 · Яриа, зураг",
+     "task": "听对话，选择相应的图片。",
+     "note": "Хоёр хүний яриаг хоёр удаа сонсоно. Тохирох зургийг сонгоно; нэг зураг жишээнд ашиглагдсан.",
+     "prompt": "Сонссон яриад тохирох зургийг сонгоно уу.",
+     "audio": [
+      "听对话，选择相应的图片。",
+      "Tīng duìhuà, xuǎnzé xiāngyìng de túpiàn."
+     ],
+     "pictures": [
+      {
+       "label": "A",
+       "image": "images/l2a-a.svg",
+       "alt": "A taxi"
+      },
+      {
+       "label": "B",
+       "image": "images/l2a-b.svg",
+       "alt": "Two people shaking hands"
+      },
+      {
+       "label": "C",
+       "image": "images/l2a-c.svg",
+       "alt": "A guest at a hotel reception desk"
+      },
+      {
+       "label": "D",
+       "image": "images/l2a-d.svg",
+       "alt": "A person making a phone call"
+      },
+      {
+       "label": "E",
+       "image": "images/l2a-e.svg",
+       "alt": "A wristwatch"
+      },
+      {
+       "label": "F",
+       "image": "images/l2a-f.svg",
+       "alt": "A person buying tickets at a ticket window"
+      }
+     ],
+     "example": {
+      "pictures": [
+       {
+        "label": "D",
+        "image": "images/l2a-d.svg",
+        "alt": "A person making a phone call"
+       }
+      ],
+      "answer": "D",
+      "turns": [
+       {
+        "speaker": "女",
+        "text": "喂，李先生在吗？",
+        "pinyin": "Wèi, Lǐ xiānsheng zài ma?",
+        "role": "woman"
+       },
+       {
+        "speaker": "男",
+        "text": "他不在，他去机场了。",
+        "pinyin": "Tā bú zài, tā qù jīchǎng le.",
+        "role": "man"
+       }
+      ]
+     },
+     "items": [
+      {
+       "n": 6,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "C",
+       "answerDisplay": "C",
+       "turns": [
+        {
+         "speaker": "男",
+         "text": "你好，我要一个房间。",
+         "pinyin": "Nǐ hǎo, wǒ yào yí gè fángjiān.",
+         "role": "man"
+        },
+        {
+         "speaker": "女",
+         "text": "好的，请等一下。",
+         "pinyin": "Hǎo de, qǐng děng yíxià.",
+         "role": "woman"
+        }
+       ],
+       "explanation": "He is asking for a room; C shows a hotel reception."
+      },
+      {
+       "n": 7,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "F",
+       "answerDisplay": "F",
+       "turns": [
+        {
+         "speaker": "女",
+         "text": "去北京的票多少钱？",
+         "pinyin": "Qù Běijīng de piào duōshao qián?",
+         "role": "woman"
+        },
+        {
+         "speaker": "男",
+         "text": "两百三十块。",
+         "pinyin": "Liǎngbǎi sānshí kuài.",
+         "role": "man"
+        }
+       ],
+       "explanation": "She is asking the price of a ticket; F shows a ticket window."
+      },
+      {
+       "n": 8,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "A",
+       "answerDisplay": "A",
+       "turns": [
+        {
+         "speaker": "男",
+         "text": "您要去哪儿？",
+         "pinyin": "Nín yào qù nǎr?",
+         "role": "man"
+        },
+        {
+         "speaker": "女",
+         "text": "去车站，请快一点儿。",
+         "pinyin": "Qù chēzhàn, qǐng kuài yìdiǎnr.",
+         "role": "woman"
+        }
+       ],
+       "explanation": "A driver asks where she is going; A shows a taxi."
+      },
+      {
+       "n": 9,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "B",
+       "answerDisplay": "B",
+       "turns": [
+        {
+         "speaker": "女",
+         "text": "我来介绍一下，这是我们公司的王先生。",
+         "pinyin": "Wǒ lái jièshào yíxià, zhè shì wǒmen gōngsī de Wáng xiānsheng.",
+         "role": "woman"
+        },
+        {
+         "speaker": "男",
+         "text": "您好，认识您很高兴。",
+         "pinyin": "Nín hǎo, rènshi nín hěn gāoxìng.",
+         "role": "man"
+        }
+       ],
+       "explanation": "People are being introduced; B shows a handshake."
+      },
+      {
+       "n": 10,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "E",
+       "answerDisplay": "E",
+       "turns": [
+        {
+         "speaker": "男",
+         "text": "现在几点了？我的手表慢了。",
+         "pinyin": "Xiànzài jǐ diǎn le? Wǒ de shǒubiǎo màn le.",
+         "role": "man"
+        },
+        {
+         "speaker": "女",
+         "text": "八点零五分。",
+         "pinyin": "Bā diǎn líng wǔ fēn.",
+         "role": "woman"
+        }
+       ],
+       "explanation": "He says his watch is slow; E shows a watch."
+      }
+     ]
+    },
+    {
+     "key": "L2b",
+     "id": "hsk-l-2b",
+     "layout": "L3",
+     "title": "第二部分 · Яриа ба зураг (11–15)",
+     "domain": "听力二 · Яриа, зураг",
+     "task": "听对话，选择相应的图片。",
+     "note": "Хоёр хүний яриаг хоёр удаа сонсоно. Таван зураг тус бүр нэг удаа таарна.",
+     "prompt": "Сонссон яриад тохирох зургийг сонгоно уу.",
+     "pictures": [
+      {
+       "label": "A",
+       "image": "images/l2b-a.svg",
+       "alt": "A traveller beside a plane at an airport"
+      },
+      {
+       "label": "B",
+       "image": "images/l2b-b.svg",
+       "alt": "A person working at a computer at night"
+      },
+      {
+       "label": "C",
+       "image": "images/l2b-c.svg",
+       "alt": "A traveller with a large suitcase"
+      },
+      {
+       "label": "D",
+       "image": "images/l2b-d.svg",
+       "alt": "A train"
+      },
+      {
+       "label": "E",
+       "image": "images/l2b-e.svg",
+       "alt": "Two people eating in a restaurant"
+      }
+     ],
+     "items": [
+      {
+       "n": 11,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+       ],
+       "answer": "D",
+       "answerDisplay": "D",
+       "turns": [
+        {
+         "speaker": "女",
+         "text": "你怎么去北京？",
+         "pinyin": "Nǐ zěnme qù Běijīng?",
+         "role": "woman"
+        },
+        {
+         "speaker": "男",
+         "text": "坐火车，五个小时就到了。",
+         "pinyin": "Zuò huǒchē, wǔ gè xiǎoshí jiù dào le.",
+         "role": "man"
+        }
+       ],
+       "explanation": "He is going by train; D shows a train."
+      },
+      {
+       "n": 12,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+       ],
+       "answer": "C",
+       "answerDisplay": "C",
+       "turns": [
+        {
+         "speaker": "男",
+         "text": "你的东西准备好了吗？",
+         "pinyin": "Nǐ de dōngxi zhǔnbèi hǎo le ma?",
+         "role": "man"
+        },
+        {
+         "speaker": "女",
+         "text": "准备好了，衣服都在这里面了。",
+         "pinyin": "Zhǔnbèi hǎo le, yīfu dōu zài zhè lǐmiàn le.",
+         "role": "woman"
+        }
+       ],
+       "explanation": "Her clothes are packed; C shows a suitcase."
+      },
+      {
+       "n": 13,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+       ],
+       "answer": "A",
+       "answerDisplay": "A",
+       "turns": [
+        {
+         "speaker": "女",
+         "text": "飞机几点到？",
+         "pinyin": "Fēijī jǐ diǎn dào?",
+         "role": "woman"
+        },
+        {
+         "speaker": "男",
+         "text": "十点到，我们在这儿等他吧。",
+         "pinyin": "Shí diǎn dào, wǒmen zài zhèr děng tā ba.",
+         "role": "man"
+        }
+       ],
+       "explanation": "They are waiting for a plane; A shows an airport."
+      },
+      {
+       "n": 14,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+       ],
+       "answer": "E",
+       "answerDisplay": "E",
+       "turns": [
+        {
+         "speaker": "男",
+         "text": "你们想吃什么？",
+         "pinyin": "Nǐmen xiǎng chī shénme?",
+         "role": "man"
+        },
+        {
+         "speaker": "女",
+         "text": "我们要一个鱼和两个米饭。",
+         "pinyin": "Wǒmen yào yí gè yú hé liǎng gè mǐfàn.",
+         "role": "woman"
+        }
+       ],
+       "explanation": "They are ordering food; E shows a restaurant."
+      },
+      {
+       "n": 15,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+       ],
+       "answer": "B",
+       "answerDisplay": "B",
+       "turns": [
+        {
+         "speaker": "女",
+         "text": "你还在工作？已经晚上九点了。",
+         "pinyin": "Nǐ hái zài gōngzuò? Yǐjīng wǎnshang jiǔ diǎn le.",
+         "role": "woman"
+        },
+        {
+         "speaker": "男",
+         "text": "事情太多了，我今天要做完。",
+         "pinyin": "Shìqing tài duō le, wǒ jīntiān yào zuò wán.",
+         "role": "man"
+        }
+       ],
+       "explanation": "He is still working at nine at night; B shows someone working late."
+      }
+     ]
+    },
+    {
+     "key": "L3",
+     "id": "hsk-l-3",
+     "layout": "L4",
+     "title": "第三部分 · Яриа ба асуулт",
+     "domain": "听力三 · Яриа, асуулт",
+     "task": "听对话，选择答案。",
+     "note": "Яриа ба асуултыг хоёр удаа сонсоно. Асуулт бичигдээгүй; гурван хариултаас зөвийг сонгоно.",
+     "prompt": "Сонссон асуултын хариултыг сонгоно уу.",
+     "audio": [
+      "听对话，选择答案。",
+      "Tīng duìhuà, xuǎnzé dá'àn."
+     ],
+     "example": {
+      "choices": [
+       {
+        "label": "A",
+        "text": "椅子上",
+        "pinyin": "yǐzi shang"
+       },
+       {
+        "label": "B",
+        "text": "电脑旁边",
+        "pinyin": "diànnǎo pángbiān"
+       },
+       {
+        "label": "C",
+        "text": "房间外面",
+        "pinyin": "fángjiān wàimiàn"
+       }
+      ],
+      "answer": "B",
+      "turns": [
+       {
+        "speaker": "女",
+        "text": "你看见我的笔了吗？",
+        "pinyin": "Nǐ kànjiàn wǒ de bǐ le ma?",
+        "role": "woman"
+       },
+       {
+        "speaker": "男",
+        "text": "在电脑旁边，那个红的是你的吗？",
+        "pinyin": "Zài diànnǎo pángbiān, nàge hóng de shì nǐ de ma?",
+        "role": "man"
+       },
+       {
+        "text": "问：笔在哪儿？",
+        "pinyin": "Wèn: Bǐ zài nǎr?",
+        "role": "narrator"
+       }
+      ]
+     },
+     "items": [
+      {
+       "n": 16,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "A",
+       "answerDisplay": "A · 酒店 (jiǔdiàn)",
+       "choices": [
+        {
+         "label": "A",
+         "text": "酒店",
+         "pinyin": "jiǔdiàn"
+        },
+        {
+         "label": "B",
+         "text": "饭馆",
+         "pinyin": "fànguǎn"
+        },
+        {
+         "label": "C",
+         "text": "机场",
+         "pinyin": "jīchǎng"
+        }
+       ],
+       "turns": [
+        {
+         "speaker": "男",
+         "text": "你在哪儿工作？",
+         "pinyin": "Nǐ zài nǎr gōngzuò?",
+         "role": "man"
+        },
+        {
+         "speaker": "女",
+         "text": "我在一家酒店工作。",
+         "pinyin": "Wǒ zài yì jiā jiǔdiàn gōngzuò.",
+         "role": "woman"
+        },
+        {
+         "text": "问：女的在哪儿工作？",
+         "pinyin": "Wèn: Nǚ de zài nǎr gōngzuò?",
+         "role": "narrator"
+        }
+       ],
+       "explanation": "She works in a hotel as an attendant."
+      },
+      {
+       "n": 17,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "C",
+       "answerDisplay": "C · 走路 (zǒu lù)",
+       "choices": [
+        {
+         "label": "A",
+         "text": "坐出租车",
+         "pinyin": "zuò chūzūchē"
+        },
+        {
+         "label": "B",
+         "text": "坐公交车",
+         "pinyin": "zuò gōngjiāochē"
+        },
+        {
+         "label": "C",
+         "text": "走路",
+         "pinyin": "zǒu lù"
+        }
+       ],
+       "turns": [
+        {
+         "speaker": "女",
+         "text": "你每天怎么去上班？",
+         "pinyin": "Nǐ měi tiān zěnme qù shàngbān?",
+         "role": "woman"
+        },
+        {
+         "speaker": "男",
+         "text": "公司离我家很近，我走路去。",
+         "pinyin": "Gōngsī lí wǒ jiā hěn jìn, wǒ zǒu lù qù.",
+         "role": "man"
+        },
+        {
+         "text": "问：男的怎么去上班？",
+         "pinyin": "Wèn: Nán de zěnme qù shàngbān?",
+         "role": "narrator"
+        }
+       ],
+       "explanation": "The company is near his home, so he walks."
+      },
+      {
+       "n": 18,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "A",
+       "answerDisplay": "A · 商店 (shāngdiàn)",
+       "choices": [
+        {
+         "label": "A",
+         "text": "商店",
+         "pinyin": "shāngdiàn"
+        },
+        {
+         "label": "B",
+         "text": "学校",
+         "pinyin": "xuéxiào"
+        },
+        {
+         "label": "C",
+         "text": "医院",
+         "pinyin": "yīyuàn"
+        }
+       ],
+       "turns": [
+        {
+         "speaker": "男",
+         "text": "你好，这件衣服多少钱？",
+         "pinyin": "Nǐ hǎo, zhè jiàn yīfu duōshao qián?",
+         "role": "man"
+        },
+        {
+         "speaker": "女",
+         "text": "三百块，这是今年最新的。",
+         "pinyin": "Sānbǎi kuài, zhè shì jīnnián zuì xīn de.",
+         "role": "woman"
+        },
+        {
+         "text": "问：他们最可能在哪儿？",
+         "pinyin": "Wèn: Tāmen zuì kěnéng zài nǎr?",
+         "role": "narrator"
+        }
+       ],
+       "explanation": "He is asking the price of clothes, so they are in a shop."
+      },
+      {
+       "n": 19,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "B",
+       "answerDisplay": "B · 妻子 (qīzi)",
+       "choices": [
+        {
+         "label": "A",
+         "text": "朋友",
+         "pinyin": "péngyou"
+        },
+        {
+         "label": "B",
+         "text": "妻子",
+         "pinyin": "qīzi"
+        },
+        {
+         "label": "C",
+         "text": "同学",
+         "pinyin": "tóngxué"
+        }
+       ],
+       "turns": [
+        {
+         "speaker": "女",
+         "text": "你去过北京吗？",
+         "pinyin": "Nǐ qù guo Běijīng ma?",
+         "role": "woman"
+        },
+        {
+         "speaker": "男",
+         "text": "去过，我去年和妻子一起去旅游的。",
+         "pinyin": "Qù guo, wǒ qùnián hé qīzi yìqǐ qù lǚyóu de.",
+         "role": "man"
+        },
+        {
+         "text": "问：男的和谁去北京旅游的？",
+         "pinyin": "Wèn: Nán de hé shéi qù Běijīng lǚyóu de?",
+         "role": "narrator"
+        }
+       ],
+       "explanation": "He went with his wife last year."
+      },
+      {
+       "n": 20,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "A",
+       "answerDisplay": "A · 咖啡 (kāfēi)",
+       "choices": [
+        {
+         "label": "A",
+         "text": "咖啡",
+         "pinyin": "kāfēi"
+        },
+        {
+         "label": "B",
+         "text": "牛奶",
+         "pinyin": "niúnǎi"
+        },
+        {
+         "label": "C",
+         "text": "茶",
+         "pinyin": "chá"
+        }
+       ],
+       "turns": [
+        {
+         "speaker": "男",
+         "text": "你好，我的咖啡怎么还没来？",
+         "pinyin": "Nǐ hǎo, wǒ de kāfēi zěnme hái méi lái?",
+         "role": "man"
+        },
+        {
+         "speaker": "女",
+         "text": "对不起，先生，我去问一下。",
+         "pinyin": "Duìbuqǐ, xiānsheng, wǒ qù wèn yíxià.",
+         "role": "woman"
+        },
+        {
+         "text": "问：男的在等什么？",
+         "pinyin": "Wèn: Nán de zài děng shénme?",
+         "role": "narrator"
+        }
+       ],
+       "explanation": "His coffee has not arrived yet."
+      },
+      {
+       "n": 21,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "C",
+       "answerDisplay": "C · 十点二十 (shí diǎn èrshí)",
+       "choices": [
+        {
+         "label": "A",
+         "text": "九点",
+         "pinyin": "jiǔ diǎn"
+        },
+        {
+         "label": "B",
+         "text": "九点二十",
+         "pinyin": "jiǔ diǎn èrshí"
+        },
+        {
+         "label": "C",
+         "text": "十点二十",
+         "pinyin": "shí diǎn èrshí"
+        }
+       ],
+       "turns": [
+        {
+         "speaker": "女",
+         "text": "我们坐几点的火车？",
+         "pinyin": "Wǒmen zuò jǐ diǎn de huǒchē?",
+         "role": "woman"
+        },
+        {
+         "speaker": "男",
+         "text": "十点二十的，现在九点，我们还有时间。",
+         "pinyin": "Shí diǎn èrshí de, xiànzài jiǔ diǎn, wǒmen hái yǒu shíjiān.",
+         "role": "man"
+        },
+        {
+         "text": "问：火车几点开？",
+         "pinyin": "Wèn: Huǒchē jǐ diǎn kāi?",
+         "role": "narrator"
+        }
+       ],
+       "explanation": "The train is the 10:20; it is nine o'clock now."
+      },
+      {
+       "n": 22,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "C",
+       "answerDisplay": "C · 医生 (yīshēng)",
+       "choices": [
+        {
+         "label": "A",
+         "text": "老师",
+         "pinyin": "lǎoshī"
+        },
+        {
+         "label": "B",
+         "text": "学生",
+         "pinyin": "xuésheng"
+        },
+        {
+         "label": "C",
+         "text": "医生",
+         "pinyin": "yīshēng"
+        }
+       ],
+       "turns": [
+        {
+         "speaker": "男",
+         "text": "你丈夫也在这个公司上班吗？",
+         "pinyin": "Nǐ zhàngfu yě zài zhège gōngsī shàngbān ma?",
+         "role": "man"
+        },
+        {
+         "speaker": "女",
+         "text": "不，他是医生，在医院工作。",
+         "pinyin": "Bù, tā shì yīshēng, zài yīyuàn gōngzuò.",
+         "role": "woman"
+        },
+        {
+         "text": "问：她丈夫做什么工作？",
+         "pinyin": "Wèn: Tā zhàngfu zuò shénme gōngzuò?",
+         "role": "narrator"
+        }
+       ],
+       "explanation": "Her husband is a doctor and works in a hospital."
+      },
+      {
+       "n": 23,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "B",
+       "answerDisplay": "B · 起床晚了 (qǐchuáng wǎn le)",
+       "choices": [
+        {
+         "label": "A",
+         "text": "生病了",
+         "pinyin": "shēngbìng le"
+        },
+        {
+         "label": "B",
+         "text": "起床晚了",
+         "pinyin": "qǐchuáng wǎn le"
+        },
+        {
+         "label": "C",
+         "text": "没有公交车",
+         "pinyin": "méiyǒu gōngjiāochē"
+        }
+       ],
+       "turns": [
+        {
+         "speaker": "女",
+         "text": "你今天为什么来晚了？",
+         "pinyin": "Nǐ jīntiān wèi shénme lái wǎn le?",
+         "role": "woman"
+        },
+        {
+         "speaker": "男",
+         "text": "对不起，我今天起床太晚了。",
+         "pinyin": "Duìbuqǐ, wǒ jīntiān qǐchuáng tài wǎn le.",
+         "role": "man"
+        },
+        {
+         "text": "问：男的为什么来晚了？",
+         "pinyin": "Wèn: Nán de wèi shénme lái wǎn le?",
+         "role": "narrator"
+        }
+       ],
+       "explanation": "He got up too late."
+      },
+      {
+       "n": 24,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "B",
+       "answerDisplay": "B · 四十分钟 (sìshí fēnzhōng)",
+       "choices": [
+        {
+         "label": "A",
+         "text": "一个小时",
+         "pinyin": "yí gè xiǎoshí"
+        },
+        {
+         "label": "B",
+         "text": "四十分钟",
+         "pinyin": "sìshí fēnzhōng"
+        },
+        {
+         "label": "C",
+         "text": "一个多小时",
+         "pinyin": "yí gè duō xiǎoshí"
+        }
+       ],
+       "turns": [
+        {
+         "speaker": "男",
+         "text": "从这儿到机场要多长时间？",
+         "pinyin": "Cóng zhèr dào jīchǎng yào duō cháng shíjiān?",
+         "role": "man"
+        },
+        {
+         "speaker": "女",
+         "text": "坐出租车四十分钟，坐公交车要一个多小时。",
+         "pinyin": "Zuò chūzūchē sìshí fēnzhōng, zuò gōngjiāochē yào yí gè duō xiǎoshí.",
+         "role": "woman"
+        },
+        {
+         "text": "问：坐出租车到机场要多长时间？",
+         "pinyin": "Wèn: Zuò chūzūchē dào jīchǎng yào duō cháng shíjiān?",
+         "role": "narrator"
+        }
+       ],
+       "explanation": "A taxi takes forty minutes; the bus takes more than an hour."
+      },
+      {
+       "n": 25,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "A",
+       "answerDisplay": "A · 酒店里有没有饭馆 (jiǔdiàn li yǒu méiyǒu fànguǎn)",
+       "choices": [
+        {
+         "label": "A",
+         "text": "酒店里有没有饭馆",
+         "pinyin": "jiǔdiàn li yǒu méiyǒu fànguǎn"
+        },
+        {
+         "label": "B",
+         "text": "房间在哪儿",
+         "pinyin": "fángjiān zài nǎr"
+        },
+        {
+         "label": "C",
+         "text": "机场远不远",
+         "pinyin": "jīchǎng yuǎn bù yuǎn"
+        }
+       ],
+       "turns": [
+        {
+         "speaker": "女",
+         "text": "王先生，这是您的房间，在三零二。",
+         "pinyin": "Wáng xiānsheng, zhè shì nín de fángjiān, zài sān líng èr.",
+         "role": "woman"
+        },
+        {
+         "speaker": "男",
+         "text": "谢谢，请问酒店里有饭馆吗？",
+         "pinyin": "Xièxie, qǐngwèn jiǔdiàn li yǒu fànguǎn ma?",
+         "role": "man"
+        },
+        {
+         "text": "问：男的想知道什么？",
+         "pinyin": "Wèn: Nán de xiǎng zhīdào shénme?",
+         "role": "narrator"
+        }
+       ],
+       "explanation": "He asks whether the hotel has a restaurant."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "hsk-r",
+   "sets": [
+    {
+     "key": "R1",
+     "id": "hsk-r-1",
+     "layout": "R2",
+     "title": "第一部分 · Өгүүлбэр ба зураг",
+     "domain": "阅读一 · Өгүүлбэр, зураг",
+     "task": "选择相应的图片。",
+     "note": "Өгүүлбэр бүрт тохирох зургийг сонгоно; нэг зураг жишээнд ашиглагдсан.",
+     "pictures": [
+      {
+       "label": "A",
+       "image": "images/r1-a.svg",
+       "alt": "A cinema screen and audience"
+      },
+      {
+       "label": "B",
+       "image": "images/r1-b.svg",
+       "alt": "A person eating at a table"
+      },
+      {
+       "label": "C",
+       "image": "images/r1-c.svg",
+       "alt": "A city bus"
+      },
+      {
+       "label": "D",
+       "image": "images/r1-d.svg",
+       "alt": "A person asleep in bed"
+      },
+      {
+       "label": "E",
+       "image": "images/r1-e.svg",
+       "alt": "A shop counter with fruit"
+      },
+      {
+       "label": "F",
+       "image": "images/r1-f.svg",
+       "alt": "A computer"
+      }
+     ],
+     "example": {
+      "pictures": [
+       {
+        "label": "B",
+        "image": "images/r1-b.svg",
+        "alt": "A person eating at a table"
+       }
+      ],
+      "line": {
+       "text": "中午他在公司吃米饭。",
+       "pinyin": "Zhōngwǔ tā zài gōngsī chī mǐfàn."
+      },
+      "answer": "B"
+     },
+     "items": [
+      {
+       "n": 26,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "C",
+       "answerDisplay": "C",
+       "line": {
+        "text": "我每天坐十路公交车去上班。",
+        "pinyin": "Wǒ měi tiān zuò shí lù gōngjiāochē qù shàngbān."
+       },
+       "explanation": "He goes to work by bus; C shows a bus."
+      },
+      {
+       "n": 27,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "F",
+       "answerDisplay": "F",
+       "line": {
+        "text": "这是我的新电脑，比去年那个快多了。",
+        "pinyin": "Zhè shì wǒ de xīn diànnǎo, bǐ qùnián nàge kuài duō le."
+       },
+       "explanation": "The sentence is about a new computer; F shows a computer."
+      },
+      {
+       "n": 28,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "E",
+       "answerDisplay": "E",
+       "line": {
+        "text": "这家商店的水果很便宜，我买了很多。",
+        "pinyin": "Zhè jiā shāngdiàn de shuǐguǒ hěn piányi, wǒ mǎi le hěn duō."
+       },
+       "explanation": "The fruit in this shop is cheap; E shows a shop with fruit."
+      },
+      {
+       "n": 29,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "D",
+       "answerDisplay": "D",
+       "line": {
+        "text": "他工作了一天，太累了，已经睡觉了。",
+        "pinyin": "Tā gōngzuò le yì tiān, tài lèi le, yǐjīng shuìjiào le."
+       },
+       "explanation": "He is already asleep; D shows someone sleeping."
+      },
+      {
+       "n": 30,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "A",
+       "answerDisplay": "A",
+       "line": {
+        "text": "今天晚上有新电影，我们一起去看吧。",
+        "pinyin": "Jīntiān wǎnshang yǒu xīn diànyǐng, wǒmen yìqǐ qù kàn ba."
+       },
+       "explanation": "There is a new film tonight; A shows a cinema."
+      }
+     ]
+    },
+    {
+     "key": "R2",
+     "id": "hsk-r-2",
+     "layout": "R4",
+     "title": "第二部分 · Хоосон зай нөхөх",
+     "domain": "阅读二 · Үг нөхөх",
+     "task": "选词填空。",
+     "note": "Хоосон зайд тохирох үгийг сонгоно; нэг үг жишээнд ашиглагдсан.",
+     "choices": [
+      {
+       "label": "A",
+       "text": "介绍",
+       "pinyin": "jièshào"
+      },
+      {
+       "label": "B",
+       "text": "便宜",
+       "pinyin": "piányi"
+      },
+      {
+       "label": "C",
+       "text": "时间",
+       "pinyin": "shíjiān"
+      },
+      {
+       "label": "D",
+       "text": "正在",
+       "pinyin": "zhèngzài"
+      },
+      {
+       "label": "E",
+       "text": "第一",
+       "pinyin": "dì-yī"
+      },
+      {
+       "label": "F",
+       "text": "旅游",
+       "pinyin": "lǚyóu"
+      }
+     ],
+     "example": {
+      "line": {
+       "text": "我去年去北京（　）了，那儿很漂亮。",
+       "pinyin": "Wǒ qùnián qù Běijīng (　) le, nàr hěn piàoliang."
+      },
+      "answerLine": {
+       "label": "F",
+       "text": "旅游",
+       "pinyin": "lǚyóu"
+      },
+      "answer": "F"
+     },
+     "items": [
+      {
+       "n": 31,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "B",
+       "answerDisplay": "B · 便宜",
+       "line": {
+        "text": "这家酒店的房间很大，也很（　），一天一百块。",
+        "pinyin": "Zhè jiā jiǔdiàn de fángjiān hěn dà, yě hěn (　), yì tiān yìbǎi kuài."
+       },
+       "explanation": "A hundred a day is cheap (便宜)."
+      },
+      {
+       "n": 32,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "A",
+       "answerDisplay": "A · 介绍",
+       "line": {
+        "text": "我来（　）一下，这是我的同学小李。",
+        "pinyin": "Wǒ lái (　) yíxià, zhè shì wǒ de tóngxué Xiǎo Lǐ."
+       },
+       "explanation": "“Let me introduce …”: A is 介绍."
+      },
+      {
+       "n": 33,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "E",
+       "answerDisplay": "E · 第一",
+       "line": {
+        "text": "这是我（　）次坐飞机，我很高兴。",
+        "pinyin": "Zhè shì wǒ (　) cì zuò fēijī, wǒ hěn gāoxìng."
+       },
+       "explanation": "“My first time on a plane”: E is 第一."
+      },
+      {
+       "n": 34,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "C",
+       "answerDisplay": "C · 时间",
+       "line": {
+        "text": "对不起，我今天太忙了，没有（　）和你去看电影。",
+        "pinyin": "Duìbuqǐ, wǒ jīntiān tài máng le, méiyǒu (　) hé nǐ qù kàn diànyǐng."
+       },
+       "explanation": "Too busy, so no time (时间)."
+      },
+      {
+       "n": 35,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "D",
+       "answerDisplay": "D · 正在",
+       "line": {
+        "text": "女：王先生在吗？男：他（　）打电话，请您等一下。",
+        "pinyin": "Nǚ: Wáng xiānsheng zài ma? Nán: Tā (　) dǎ diànhuà, qǐng nín děng yíxià."
+       },
+       "explanation": "“He is on the phone right now”: D is 正在."
+      }
+     ]
+    },
+    {
+     "key": "R3a",
+     "id": "hsk-r-3a",
+     "layout": "R3",
+     "title": "第三部分 · Өгүүлбэр холбох (36–40)",
+     "domain": "阅读三 · Өгүүлбэр холбох",
+     "task": "选择相应的句子。",
+     "note": "Өгүүлбэр бүрт тохирох өгүүлбэрийг A–F-ээс сонгоно; нэг нь жишээнд ашиглагдсан.",
+     "choices": [
+      {
+       "label": "A",
+       "text": "不远，走五分钟就到了。",
+       "pinyin": "Bù yuǎn, zǒu wǔ fēnzhōng jiù dào le."
+      },
+      {
+       "label": "B",
+       "text": "是的，她已经在这儿工作三年了。",
+       "pinyin": "Shì de, tā yǐjīng zài zhèr gōngzuò sān nián le."
+      },
+      {
+       "label": "C",
+       "text": "对不起，今天的票已经卖完了。",
+       "pinyin": "Duìbuqǐ, jīntiān de piào yǐjīng mài wán le."
+      },
+      {
+       "label": "D",
+       "text": "我姓李，是新来的老师。",
+       "pinyin": "Wǒ xìng Lǐ, shì xīn lái de lǎoshī."
+      },
+      {
+       "label": "E",
+       "text": "我在看书呢，有什么事情吗？",
+       "pinyin": "Wǒ zài kàn shū ne, yǒu shénme shìqing ma?"
+      },
+      {
+       "label": "F",
+       "text": "八点开始，我们七点三十分从家走。",
+       "pinyin": "Bā diǎn kāishǐ, wǒmen qī diǎn sānshí fēn cóng jiā zǒu."
+      }
+     ],
+     "example": {
+      "line": {
+       "text": "喂，你在做什么呢？",
+       "pinyin": "Wèi, nǐ zài zuò shénme ne?"
+      },
+      "answerLine": {
+       "label": "E",
+       "text": "我在看书呢，有什么事情吗？",
+       "pinyin": "Wǒ zài kàn shū ne, yǒu shénme shìqing ma?"
+      },
+      "answer": "E"
+     },
+     "items": [
+      {
+       "n": 36,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "D",
+       "answerDisplay": "D · 我姓李，是新来的老师。",
+       "line": {
+        "text": "请问，您贵姓？",
+        "pinyin": "Qǐngwèn, nín guì xìng?"
+       },
+       "explanation": "D gives a surname."
+      },
+      {
+       "n": 37,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "A",
+       "answerDisplay": "A · 不远，走五分钟就到了。",
+       "line": {
+        "text": "请问，车站离这儿远吗？",
+        "pinyin": "Qǐngwèn, chēzhàn lí zhèr yuǎn ma?"
+       },
+       "explanation": "A says it is not far."
+      },
+      {
+       "n": 38,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "B",
+       "answerDisplay": "B · 是的，她已经在这儿工作三年了。",
+       "line": {
+        "text": "你妹妹也在这家公司上班吗？",
+        "pinyin": "Nǐ mèimei yě zài zhè jiā gōngsī shàngbān ma?"
+       },
+       "explanation": "B confirms she has worked here for three years."
+      },
+      {
+       "n": 39,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "C",
+       "answerDisplay": "C · 对不起，今天的票已经卖完了。",
+       "line": {
+        "text": "还有今天晚上的电影票吗？",
+        "pinyin": "Hái yǒu jīntiān wǎnshang de diànyǐng piào ma?"
+       },
+       "explanation": "C says today's tickets are sold out."
+      },
+      {
+       "n": 40,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "F",
+       "answerDisplay": "F · 八点开始，我们七点三十分从家走。",
+       "line": {
+        "text": "明天的课几点开始？",
+        "pinyin": "Míngtiān de kè jǐ diǎn kāishǐ?"
+       },
+       "explanation": "F gives the starting time."
+      }
+     ]
+    },
+    {
+     "key": "R3b",
+     "id": "hsk-r-3b",
+     "layout": "R3",
+     "title": "第三部分 · Өгүүлбэр холбох (41–45)",
+     "domain": "阅读三 · Өгүүлбэр холбох",
+     "task": "选择相应的句子。",
+     "note": "Өгүүлбэр бүрт тохирох өгүүлбэрийг A–E-ээс сонгоно; тус бүр нэг удаа таарна.",
+     "choices": [
+      {
+       "label": "A",
+       "text": "好的，请您等一下。",
+       "pinyin": "Hǎo de, qǐng nín děng yíxià."
+      },
+      {
+       "label": "B",
+       "text": "因为他的妻子生病了。",
+       "pinyin": "Yīnwèi tā de qīzi shēngbìng le."
+      },
+      {
+       "label": "C",
+       "text": "我也不知道，我们问问他们吧。",
+       "pinyin": "Wǒ yě bù zhīdào, wǒmen wènwen tāmen ba."
+      },
+      {
+       "label": "D",
+       "text": "太好了！我去机场等你。",
+       "pinyin": "Tài hǎo le! Wǒ qù jīchǎng děng nǐ."
+      },
+      {
+       "label": "E",
+       "text": "坐公交车去吧，出租车太贵了。",
+       "pinyin": "Zuò gōngjiāochē qù ba, chūzūchē tài guì le."
+      }
+     ],
+     "items": [
+      {
+       "n": 41,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+       ],
+       "answer": "D",
+       "answerDisplay": "D · 太好了！我去机场等你。",
+       "line": {
+        "text": "我明天上午十点到北京。",
+        "pinyin": "Wǒ míngtiān shàngwǔ shí diǎn dào Běijīng."
+       },
+       "explanation": "D: great, I will wait for you at the airport."
+      },
+      {
+       "n": 42,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+       ],
+       "answer": "B",
+       "answerDisplay": "B · 因为他的妻子生病了。",
+       "line": {
+        "text": "小王今天为什么没来上班？",
+        "pinyin": "Xiǎo Wáng jīntiān wèi shénme méi lái shàngbān?"
+       },
+       "explanation": "B gives the reason."
+      },
+      {
+       "n": 43,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+       ],
+       "answer": "A",
+       "answerDisplay": "A · 好的，请您等一下。",
+       "line": {
+        "text": "你好，请给我一杯水。",
+        "pinyin": "Nǐ hǎo, qǐng gěi wǒ yì bēi shuǐ."
+       },
+       "explanation": "A is the waiter's reply."
+      },
+      {
+       "n": 44,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+       ],
+       "answer": "E",
+       "answerDisplay": "E · 坐公交车去吧，出租车太贵了。",
+       "line": {
+        "text": "我们怎么去车站？",
+        "pinyin": "Wǒmen zěnme qù chēzhàn?"
+       },
+       "explanation": "E suggests taking the bus."
+      },
+      {
+       "n": 45,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+       ],
+       "answer": "C",
+       "answerDisplay": "C · 我也不知道，我们问问他们吧。",
+       "line": {
+        "text": "这个菜叫什么名字？",
+        "pinyin": "Zhège cài jiào shénme míngzi?"
+       },
+       "explanation": "C: I do not know either; let us ask the waiter."
+      }
+     ]
+    },
+    {
+     "key": "R4",
+     "id": "hsk-r-4",
+     "layout": "RQ",
+     "title": "第四部分 · Текст ба асуулт",
+     "domain": "阅读四 · Текст, асуулт",
+     "task": "阅读短文，选择正确的答案。",
+     "note": "Текстийг уншаад ★ асуултын зөв хариултыг гурван сонголтоос сонгоно.",
+     "example": {
+      "line": {
+       "text": "我昨天下午去商场买了一件衣服，是红色的，很漂亮，也不贵。",
+       "pinyin": "Wǒ zuótiān xiàwǔ qù shāngchǎng mǎi le yí jiàn yīfu, shì hóngsè de, hěn piàoliang, yě bú guì."
+      },
+      "statement": {
+       "text": "她买的衣服是什么颜色的？",
+       "pinyin": "Tā mǎi de yīfu shì shénme yánsè de?"
+      },
+      "choices": [
+       {
+        "label": "A",
+        "text": "白色",
+        "pinyin": "báisè"
+       },
+       {
+        "label": "B",
+        "text": "红色",
+        "pinyin": "hóngsè"
+       },
+       {
+        "label": "C",
+        "text": "黑色",
+        "pinyin": "hēisè"
+       }
+      ],
+      "answer": "B"
+     },
+     "items": [
+      {
+       "n": 46,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "B",
+       "answerDisplay": "B · 五点 (wǔ diǎn)",
+       "line": {
+        "text": "我在一家公司工作，每天早上八点上班，下午五点下班，星期六和星期日休息。",
+        "pinyin": "Wǒ zài yì jiā gōngsī gōngzuò, měi tiān zǎoshang bā diǎn shàngbān, xiàwǔ wǔ diǎn xiàbān, xīngqīliù hé xīngqīrì xiūxi."
+       },
+       "statement": {
+        "text": "他每天几点下班？",
+        "pinyin": "Tā měi tiān jǐ diǎn xiàbān?"
+       },
+       "choices": [
+        {
+         "label": "A",
+         "text": "八点",
+         "pinyin": "bā diǎn"
+        },
+        {
+         "label": "B",
+         "text": "五点",
+         "pinyin": "wǔ diǎn"
+        },
+        {
+         "label": "C",
+         "text": "六点",
+         "pinyin": "liù diǎn"
+        }
+       ],
+       "explanation": "Work ends at five in the afternoon: B."
+      },
+      {
+       "n": 47,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "A",
+       "answerDisplay": "A · 太贵了 (tài guì le)",
+       "line": {
+        "text": "从我家到公司，坐公交车要一个小时，坐出租车二十分钟就到了，但是太贵了。",
+        "pinyin": "Cóng wǒ jiā dào gōngsī, zuò gōngjiāochē yào yí gè xiǎoshí, zuò chūzūchē èrshí fēnzhōng jiù dào le, dànshì tài guì le."
+       },
+       "statement": {
+        "text": "他为什么不坐出租车？",
+        "pinyin": "Tā wèi shénme bú zuò chūzūchē?"
+       },
+       "choices": [
+        {
+         "label": "A",
+         "text": "太贵了",
+         "pinyin": "tài guì le"
+        },
+        {
+         "label": "B",
+         "text": "太慢了",
+         "pinyin": "tài màn le"
+        },
+        {
+         "label": "C",
+         "text": "太远了",
+         "pinyin": "tài yuǎn le"
+        }
+       ],
+       "explanation": "The taxi takes twenty minutes but is too expensive: A."
+      },
+      {
+       "n": 48,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "A",
+       "answerDisplay": "A · 去年 (qùnián)",
+       "line": {
+        "text": "这个手机是我去年买的，虽然不是最新的，但是我很喜欢它的颜色。",
+        "pinyin": "Zhège shǒujī shì wǒ qùnián mǎi de, suīrán bú shì zuì xīn de, dànshì wǒ hěn xǐhuan tā de yánsè."
+       },
+       "statement": {
+        "text": "这个手机是什么时候买的？",
+        "pinyin": "Zhège shǒujī shì shénme shíhou mǎi de?"
+       },
+       "choices": [
+        {
+         "label": "A",
+         "text": "去年",
+         "pinyin": "qùnián"
+        },
+        {
+         "label": "B",
+         "text": "今年",
+         "pinyin": "jīnnián"
+        },
+        {
+         "label": "C",
+         "text": "昨天",
+         "pinyin": "zuótiān"
+        }
+       ],
+       "explanation": "It was bought last year: A."
+      },
+      {
+       "n": 49,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "B",
+       "answerDisplay": "B · 坐飞机 (zuò fēijī)",
+       "line": {
+        "text": "我丈夫下个月要去北京工作，我和孩子也准备一起去，我们已经买好飞机票了。",
+        "pinyin": "Wǒ zhàngfu xià gè yuè yào qù Běijīng gōngzuò, wǒ hé háizi yě zhǔnbèi yìqǐ qù, wǒmen yǐjīng mǎi hǎo fēijī piào le."
+       },
+       "statement": {
+        "text": "他们准备怎么去北京？",
+        "pinyin": "Tāmen zhǔnbèi zěnme qù Běijīng?"
+       },
+       "choices": [
+        {
+         "label": "A",
+         "text": "坐火车",
+         "pinyin": "zuò huǒchē"
+        },
+        {
+         "label": "B",
+         "text": "坐飞机",
+         "pinyin": "zuò fēijī"
+        },
+        {
+         "label": "C",
+         "text": "开车",
+         "pinyin": "kāichē"
+        }
+       ],
+       "explanation": "They have bought plane tickets: B."
+      },
+      {
+       "n": 50,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "A",
+       "answerDisplay": "A · 菜很好吃 (cài hěn hǎochī)",
+       "line": {
+        "text": "这家饭馆的菜很好吃，也不贵，所以每天来吃饭的人非常多。",
+        "pinyin": "Zhè jiā fànguǎn de cài hěn hǎochī, yě bú guì, suǒyǐ měi tiān lái chī fàn de rén fēicháng duō."
+       },
+       "statement": {
+        "text": "为什么很多人来这家饭馆？",
+        "pinyin": "Wèi shénme hěn duō rén lái zhè jiā fànguǎn?"
+       },
+       "choices": [
+        {
+         "label": "A",
+         "text": "菜很好吃",
+         "pinyin": "cài hěn hǎochī"
+        },
+        {
+         "label": "B",
+         "text": "离家很近",
+         "pinyin": "lí jiā hěn jìn"
+        },
+        {
+         "label": "C",
+         "text": "人很少",
+         "pinyin": "rén hěn shǎo"
+        }
+       ],
+       "explanation": "The food is good and not expensive: A."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "hsk-w",
+   "sets": [
+    {
+     "key": "W1",
+     "id": "hsk-w-1",
+     "layout": "W1",
+     "title": "第一部分 · Ханзны бүрдэл",
+     "domain": "书写一 · Бүрдэл сонгох",
+     "task": "选择正确的部件，组成汉字。",
+     "note": "Үгийн нэг ханзны нэг хэсэг дутуу. Дутуу хэсгийг A–F-ээс сонгоно; нэг нь илүү.",
+     "choices": [
+      {
+       "label": "A",
+       "text": "口",
+       "pinyin": ""
+      },
+      {
+       "label": "B",
+       "text": "亻",
+       "pinyin": ""
+      },
+      {
+       "label": "C",
+       "text": "土",
+       "pinyin": ""
+      },
+      {
+       "label": "D",
+       "text": "讠",
+       "pinyin": ""
+      },
+      {
+       "label": "E",
+       "text": "女",
+       "pinyin": ""
+      },
+      {
+       "label": "F",
+       "text": "氵",
+       "pinyin": ""
+      }
+     ],
+     "example": {
+      "compose": {
+       "word": "你好",
+       "pinyin": "nǐ hǎo",
+       "at": 0,
+       "given": "尔",
+       "gap": "left"
+      },
+      "answer": "亻"
+     },
+     "items": [
+      {
+       "n": 51,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "E",
+       "answerDisplay": "E · 女 → 姐",
+       "compose": {
+        "word": "姐姐",
+        "pinyin": "jiějie",
+        "at": 0,
+        "given": "且",
+        "gap": "left"
+       },
+       "explanation": "女 + 且 = 姐, as in 姐姐 (jiějie)."
+      },
+      {
+       "n": 52,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "F",
+       "answerDisplay": "F · 氵 → 没",
+       "compose": {
+        "word": "没有",
+        "pinyin": "méiyǒu",
+        "at": 0,
+        "given": "殳",
+        "gap": "left"
+       },
+       "explanation": "氵 + 殳 = 没, as in 没有 (méiyǒu)."
+      },
+      {
+       "n": 53,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "D",
+       "answerDisplay": "D · 讠 → 语",
+       "compose": {
+        "word": "汉语",
+        "pinyin": "Hànyǔ",
+        "at": 1,
+        "given": "吾",
+        "gap": "left"
+       },
+       "explanation": "讠 + 吾 = 语, as in 汉语 (Hànyǔ)."
+      },
+      {
+       "n": 54,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "C",
+       "answerDisplay": "C · 土 → 地",
+       "compose": {
+        "word": "地铁",
+        "pinyin": "dìtiě",
+        "at": 0,
+        "given": "也",
+        "gap": "left"
+       },
+       "explanation": "土 + 也 = 地, as in 地铁 (dìtiě)."
+      },
+      {
+       "n": 55,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "A",
+       "answerDisplay": "A · 口 → 和",
+       "compose": {
+        "word": "你和我",
+        "pinyin": "nǐ hé wǒ",
+        "at": 1,
+        "given": "禾",
+        "gap": "right"
+       },
+       "explanation": "口 + 禾 = 和, as in 你和我 (nǐ hé wǒ)."
+      }
+     ]
+    },
+    {
+     "key": "W2",
+     "id": "hsk-w-2",
+     "layout": "W2",
+     "title": "第二部分 · Ханз бичих",
+     "domain": "书写二 · Ханз бичих",
+     "task": "看拼音，写汉字。",
+     "note": "Хоосон зайд pinyin-д тохирох ханзыг бичнэ (хятад гарны оролт).",
+     "example": {
+      "blank": {
+       "before": "我爱我",
+       "after": "。",
+       "hint": "jiā",
+       "pinyin": "Wǒ ài wǒ jiā."
+      },
+      "answer": "家"
+     },
+     "items": [
+      {
+       "n": 56,
+       "kind": "short",
+       "options": [],
+       "answer": "在",
+       "answerDisplay": "在 (zài)",
+       "blank": {
+        "before": "我",
+        "after": "公司工作。",
+        "hint": "zài",
+        "pinyin": "Wǒ zài gōngsī gōngzuò."
+       },
+       "explanation": "我在公司工作。 (Wǒ zài gōngsī gōngzuò.)"
+      },
+      {
+       "n": 57,
+       "kind": "short",
+       "options": [],
+       "answer": "中",
+       "answerDisplay": "中 (Zhōng)",
+       "blank": {
+        "before": "我想去",
+        "after": "国旅游。",
+        "hint": "Zhōng",
+        "pinyin": "Wǒ xiǎng qù Zhōngguó lǚyóu."
+       },
+       "explanation": "我想去中国旅游。 (Wǒ xiǎng qù Zhōngguó lǚyóu.)"
+      },
+      {
+       "n": 58,
+       "kind": "short",
+       "options": [],
+       "answer": "点",
+       "answerDisplay": "点 (diǎn)",
+       "blank": {
+        "before": "他每天八",
+        "after": "上班。",
+        "hint": "diǎn",
+        "pinyin": "Tā měi tiān bā diǎn shàngbān."
+       },
+       "explanation": "他每天八点上班。 (Tā měi tiān bā diǎn shàngbān.)"
+      },
+      {
+       "n": 59,
+       "kind": "short",
+       "options": [],
+       "answer": "工",
+       "answerDisplay": "工 (gōng)",
+       "blank": {
+        "before": "我很喜欢我的",
+        "after": "作。",
+        "hint": "gōng",
+        "pinyin": "Wǒ hěn xǐhuan wǒ de gōngzuò."
+       },
+       "explanation": "我很喜欢我的工作。 (Wǒ hěn xǐhuan wǒ de gōngzuò.)"
+      },
+      {
+       "n": 60,
+       "kind": "short",
+       "options": [],
+       "answer": "间",
+       "answerDisplay": "间 (jiān)",
+       "blank": {
+        "before": "这个房",
+        "after": "很大。",
+        "hint": "jiān",
+        "pinyin": "Zhège fángjiān hěn dà."
+       },
+       "explanation": "这个房间很大。 (Zhège fángjiān hěn dà.)"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

@@ -116,6 +116,20 @@ export function expireStages(state:ExamState,now:number) {
   }
   return changed;
 }
+/**
+ * Admin testing only (owner request 2026-11-19; the service checks admin membership): closes the current stage now, as
+ * if its time had run out, and starts the next one with its full time; "finish" closes every remaining stage. Routing
+ * (SAT/TOEFL Module 2) is decided from the answers exactly as on expiry. Each closed stage is recorded in `skipped`.
+ */
+export function skipStages(state:ExamState,now:number,mode:"stage"|"finish") {
+  // Time already ran out: that expiry is the step, and nothing is recorded as skipped.
+  if(expireStages(state,now)||state.finishedAt)return;
+  do {
+    state.skipped=[...(state.skipped??[]),{stageId:stageFor(state)!.id,at:new Date(now).toISOString()}];
+    state.deadline=new Date(now).toISOString();
+    expireStages(state,now);
+  } while(mode==="finish"&&!state.finishedAt);
+}
 /** Late saves get this many seconds after a question's window closes (TOEFL Listening). */
 export const WINDOW_GRACE_SECONDS=5;
 /** `now`: a question with a `window` accepts a changed answer only inside it (plus the grace); an unchanged value always passes. */
@@ -161,9 +175,9 @@ export function makeReport(state:ExamState):ExamReport {
   }
   // ЭЕШ papers report marks by subject skill; SAT and IELTS keep their existing section names.
   const program=state.definition.program;
-  const names=program==="toefl" ? ["Reading","Listening","Writing","Speaking"] : program==="jlpt" ? ["文字・語彙", "文法・読解", "聴解"] : program==="hsk" ? ["听力 · Сонсох","阅读 · Унших"] : program==="topik" ? (state.definition.stages.some(s=>s.id==="topik-w") ? ["듣기 · Сонсох","쓰기 · Бичих","읽기 · Унших"] : ["듣기 · Сонсох","읽기 · Унших"]) : program==="sat" ? ["Reading & Writing","Math"] : program==="entrance" ? [...new Set(reviews.filter(q=>!q.pretest).map(q=>q.domain))] : ["Listening","Academic Reading","Writing","Speaking"];
+  const names=program==="toefl" ? ["Reading","Listening","Writing","Speaking"] : program==="jlpt" ? ["文字・語彙", "文法・読解", "聴解"] : program==="hsk" ? (state.definition.stages.some(s=>s.id==="hsk-w") ? ["听力 · Сонсох","阅读 · Унших","书写 · Бичих"] : ["听力 · Сонсох","阅读 · Унших"]) : program==="topik" ? (state.definition.stages.some(s=>s.id==="topik-w") ? ["듣기 · Сонсох","쓰기 · Бичих","읽기 · Унших"] : ["듣기 · Сонсох","읽기 · Унших"]) : program==="sat" ? ["Reading & Writing","Math"] : program==="entrance" ? [...new Set(reviews.filter(q=>!q.pretest).map(q=>q.domain))] : ["Listening","Academic Reading","Writing","Speaking"];
   const sections=names.map((title,sectionIndex)=>{
-    const list=reviews.filter(q=>!q.pretest&&(program==="jlpt" ? q.number?.startsWith(["V","G","L"][sectionIndex]) : program==="hsk" ? q.groupId?.startsWith(["hsk-l-","hsk-r-"][sectionIndex]) : program==="topik" ? q.groupId?.startsWith({"듣기":"topik-l-","쓰기":"topik-w-","읽기":"topik-r-"}[title.slice(0,2)]??"-") : program==="sat" ? (title==="Reading & Writing" ? q.id.startsWith("sat-rw") : q.id.startsWith("sat-math")) : q.domain===title));
+    const list=reviews.filter(q=>!q.pretest&&(program==="jlpt" ? q.number?.startsWith(["V","G","L"][sectionIndex]) : program==="hsk" ? q.groupId?.startsWith(["hsk-l-","hsk-r-","hsk-w-"][sectionIndex]) : program==="topik" ? q.groupId?.startsWith({"듣기":"topik-l-","쓰기":"topik-w-","읽기":"topik-r-"}[title.slice(0,2)]??"-") : program==="sat" ? (title==="Reading & Writing" ? q.id.startsWith("sat-rw") : q.id.startsWith("sat-math")) : q.domain===title));
     const graded=list.filter(q=>q.correct!==null);
     return {title,correct:list.filter(q=>q.correct===true).length,total:graded.length,pending:list.filter(q=>q.correct===null).length,points:graded.reduce((sum,q)=>sum+q.points,0),earned:graded.reduce((sum,q)=>sum+q.earned!,0)};
   });

@@ -3,7 +3,7 @@ import { getDb } from "@/lib/db";
 import { ApiError } from "@/lib/api";
 import { Prisma } from "@/generated/prisma/client";
 import { isFreeMock } from "@/modules/exams/free/catalog";
-import { findAnyPlan, planCovers, planMonth } from "./plans";
+import { findAnyPlan, planCovers, planMonth, planWorkshopFor } from "./plans";
 
 /**
  * Who may sit or practise a mock, decided on the server for every start, read, save, check, audio and AI path.
@@ -86,14 +86,14 @@ export async function pickMock(userId: string, slug: string, examProgram: string
   return getDb().$transaction(async tx => {
     const now = new Date();
     const current = await mockAccess(userId, slug, examProgram, tx, now);
-    if (current.kind === "none") throw new ApiError(402, "Энэ шалгалтыг сонгоход Гадаад хэл багц шаардлагатай.");
+    if (current.kind === "none") throw new ApiError(402, "Энэ шалгалтыг сонгоход сарын багц шаардлагатай.");
     if (current.kind !== "pickable" && current.kind !== "full") return current;
     const row = await tx.subscription.findFirst({ where: { userId, program: current.program, startsAt: { lte: now }, endsAt: { gt: now } }, select: { id: true, program: true, startsAt: true, endsAt: true } });
     const plan = findAnyPlan(current.program);
-    if (!row || !plan?.mockPicks) throw new ApiError(402, "Энэ шалгалтыг сонгоход Гадаад хэл багц шаардлагатай.");
+    if (!row || !plan?.mockPicks) throw new ApiError(402, "Энэ шалгалтыг сонгоход сарын багц шаардлагатай.");
     await tx.$queryRaw`SELECT "id" FROM "Subscription" WHERE "id" = ${row.id} FOR UPDATE`;
     const state = await monthOf(tx, userId, row, slug, plan.mockPicks, now.getTime());
-    if (!state) throw new ApiError(402, "Энэ шалгалтыг сонгоход Гадаад хэл багц шаардлагатай.");
+    if (!state) throw new ApiError(402, "Энэ шалгалтыг сонгоход сарын багц шаардлагатай.");
     if (state.picked) return { kind: "picked", program: row.program, month: state.month };
     if (state.month.used >= state.month.limit) throw new PicksUsedUp(state.month.limit, state.month.end);
     try {
@@ -122,10 +122,18 @@ export async function currentPicks(userId: string, now = new Date()) {
   return null;
 }
 
-/** Whether an active plan includes the IELTS Writing & Speaking workshops (Гадаад хэл, or the retired IELTS plan). */
-export async function hasWorkshops(userId: string, now = new Date()) {
+/**
+ * Whether an active plan opens an exam's workshops (owner rule 2026-11-19): a plan with workshops that covers the exam.
+ * IELTS and TOEFL: Англи хэл Basic / Pro; JLPT, HSK, TOPIK: Ази хэл Basic / Pro. The retired Гадаад хэл plans cover every
+ * exam and the retired IELTS plan IELTS, until they end. A free account and the other family's plans get none.
+ */
+export async function hasExamWorkshop(userId: string, exam: string, now = new Date()) {
   const rows = await getDb().subscription.findMany({ where: { userId, startsAt: { lte: now }, endsAt: { gt: now } }, select: { program: true } });
-  return rows.some(row => findAnyPlan(row.program)?.workshops);
+  return rows.some(row => planWorkshopFor(findAnyPlan(row.program), exam));
+}
+/** Whether an active plan includes the IELTS Writing & Speaking workshops (the guided `/workshops/<slug>` tasks). */
+export async function hasWorkshops(userId: string, now = new Date()) {
+  return hasExamWorkshop(userId, "ielts", now);
 }
 
 export type HubState = "bought" | "plan" | "picked" | "pickable" | null;

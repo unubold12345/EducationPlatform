@@ -159,10 +159,11 @@ test('TOPIK listening audio: four parts per mock, own route set, item timings in
  }
 });
 
-test('TOPIK stays out of the offline pack and deployment, and is sold with Гадаад хэл Basic and Pro',()=>{
+test('TOPIK stays out of the offline pack and deployment, and is sold with Ази хэл Basic and Pro',()=>{
  const ignore=readFileSync('.vercelignore','utf8');assert.match(ignore,/^MockExmps\/TOPIK\/$/m);assert.match(ignore,/^assets\/topik-audio\/voices\/$/m);
  for(const meta of topikMocks)assert.ok(!JSON.stringify(meta).match(/answer|script/i));
- for(const program of ['language_basic','language'])assert.ok(planCovers(subscriptionPlans.find(plan=>plan.program===program),'topik'),program);
+ for(const program of ['asian_basic','asian_pro'])assert.ok(planCovers(subscriptionPlans.find(plan=>plan.program===program),'topik'),program);
+ for(const program of ['english_basic','english_pro'])assert.ok(!planCovers(subscriptionPlans.find(plan=>plan.program===program),'topik'),program);
 });
 
 test('Hangul: composition and a pronunciation-based romanization in Revised Romanization letters',()=>{
@@ -176,7 +177,7 @@ test('Hangul: composition and a pronunciation-based romanization in Revised Roma
 });
 
 test('TOPIK Workshop: its own tab, a Hangul chart test and word decks with romanization',()=>{
- assert.deepEqual(WORKSHOP_EXAMS.map(exam=>exam.id),['ielts','jlpt','hsk','topik']);
+ assert.deepEqual(WORKSHOP_EXAMS.map(exam=>exam.id),['ielts','toefl','jlpt','hsk','topik','eesh']);
  assert.deepEqual(LANGUAGE_DECKS.filter(deck=>deck.exam==='topik').map(deck=>[deck.id,deck.kind]),[['topik-1','words'],['topik-2','words'],['hangul','hangul']]);
  const hangul=json('assets/language-decks/hangul.json');
  assert.equal(hangul.lessons.length,21);assert.equal(hangul.lessons.flatMap(lesson=>lesson.words).length,208);

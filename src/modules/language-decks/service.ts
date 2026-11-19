@@ -2,10 +2,11 @@ import "server-only";
 import { ApiError } from "@/lib/api";
 import { getDb } from "@/lib/db";
 import { activeTimedSitting } from "@/modules/exams/active-sitting";
-import { findAnyPlan, subscriptionPlans } from "@/modules/subscriptions/plans";
+import { workshopPlansFor } from "@/modules/subscriptions/plans";
+import { hasExamWorkshop } from "@/modules/subscriptions/mock-access";
 import { isDue, isStudyGrade, nextStudy, STUDY_BOX_MAX, type StudyGrade } from "@/modules/vocabulary/study";
 import {
-  DECK_REVIEW_WORDS, findLanguageDeck, isDeckWordId, LANGUAGE_DECKS,
+  DECK_REVIEW_WORDS, findLanguageDeck, isDeckWordId, isStudyDeck, LANGUAGE_DECKS,
   type DeckProgress, type DeckSummary, type LanguageDeck, type LanguageExam,
 } from "./catalog";
 import { deckWordIds, languageDeck } from "./content";
@@ -14,17 +15,16 @@ export const DECK_REVIEW_BODY_BYTES = 8 * 1024;
 
 /**
  * Whether the student may study an exam's word decks: an active plan that includes workshops and that exam's mocks
- * (Гадаад хэл Basic or Pro; owner rule 2026-11-18: no free level, not even N5 or HSK 1). The retired IELTS plan has
- * workshops but not these exams, so it does not open them.
+ * (Ази хэл Basic or Pro, owner rule 2026-11-19; no free level, not even N5 or HSK 1, owner rule 2026-11-18). The English
+ * plans and the retired IELTS plan have workshops but not these exams, so they do not open them; the retired Гадаад хэл
+ * plans do until they end.
  */
 export async function hasLanguageStudy(userId: string, exam: LanguageExam, now = new Date()) {
-  const rows = await getDb().subscription.findMany({ where: { userId, startsAt: { lte: now }, endsAt: { gt: now } }, select: { program: true } });
-  return rows.some(row => { const plan = findAnyPlan(row.program); return Boolean(plan?.workshops && (plan.exams as readonly string[]).includes(exam)); });
+  return hasExamWorkshop(userId, exam, now);
 }
 
 /** The plans to name on a locked tile, from the plan list so a price or plan change shows here too. */
-export const languageStudyPlans = (exam: LanguageExam) =>
-  subscriptionPlans.filter(plan => plan.workshops && (plan.exams as readonly string[]).includes(exam)).map(plan => plan.title);
+export const languageStudyPlans = (exam: LanguageExam) => workshopPlansFor(exam).map(plan => plan.title);
 
 /** A word list is a dictionary for the exam itself, so it stays closed during a timed sitting, like AI help. */
 async function requireStudy(userId: string, exam: LanguageExam) {
@@ -38,7 +38,7 @@ const toProgress = (row: { box: number; correct: number; wrong: number; reviewed
 
 /** The Workshop tab's tiles: each deck's size and the student's progress on it. */
 export async function deckSummaries(userId: string, exam: LanguageExam, now = Date.now()): Promise<DeckSummary[]> {
-  const decks = LANGUAGE_DECKS.filter(deck => deck.exam === exam && deck.kind === "words");
+  const decks = LANGUAGE_DECKS.filter(deck => deck.exam === exam && isStudyDeck(deck));
   const rows = await getDb().languageDeckProgress.findMany({
     where: { userId, deck: { in: decks.map(deck => deck.id) } }, select: { deck: true, wordId: true, box: true, correct: true, wrong: true, dueAt: true },
   });

@@ -1,4 +1,4 @@
-# JLPT/HSK/TOPIK word decks, Kana, Pinyin and Hangul workshops
+# JLPT/HSK/TOPIK word decks (HSK with their characters), JLPT kanji decks, Kana, Pinyin and Hangul workshops
 
 Part of the [project guide](../PROJECT.md).
 
@@ -6,11 +6,45 @@ Part of the [project guide](../PROJECT.md).
 
 - Owner rule: features for one exam show only to that exam's students. `/workspace/workshop` has tabs IELTS / JLPT / HSK / TOPIK
   (`?exam=`; the last tab is kept in the `workshop-exam` cookie, else IELTS). The shared Vocabulary page has no JLPT/HSK tab.
-- Decks: JLPT N5 (554 words, 18 lessons), N4 (390, 14), HSK 1 (154, 7), HSK 2 (150, 8), by topic. HSK lists are exactly the
-  2012 HSK 1/2 syllabus the HSK mock packs validate against. JLPT has had no official list since 2010: the N5/N4 lists are
+- Decks: JLPT N5 (791 words, 29 lessons), N4 (688 new words, 24; none repeats N5, so ~1,480 by N4), HSK 1 (300, 12),
+  HSK 2 (198, 11), by topic. JLPT grew 2026-11-19 (owner) toward the usual ~800 / ~700-more study targets: the new
+  words are lessons N5 l19–l29 and N4 l15–l24 only, so earlier drafts and their fixes stayed untouched (changing a
+  lesson's terms redrafts the whole lesson). pykakasi flags there were its own misreadings; 17 meanings/examples were
+  hand-fixed (Latin letters inside Cyrillic, typos, the 用 example reading the romaji check caught). Kanji decks: see below. HSK lists are the HSK 3.0
+  (2026) level 1 and 2 word lists (hsk.wordswing.com/vocabulary; 2026-11-19, owner request; 300 + 200 words; 花 and 过 are listed
+  twice at HSK 2, so 198 entries; 点 is in both levels; their senses are in `notes`), which the HSK 3.0 mock pack (`MockExmps/HSK3`) validates
+  against. The rebuild reused the drafted entry of every word already drafted in either HSK deck and drafted only the new
+  words (DeepSeek); a word with a `notes` sense is always redrafted, and an HSK example must be in characters only (a build
+  check, after one lesson came back in pinyin). Ten entries were hand-fixed (它们, 前, 万, 时, 游, 间, 坏, 花, 门票, 有时). JLPT has had no official list since 2010: the N5/N4 lists are
   author-selected core words (`scripts/language-decks/lists.mjs`), not an official syllabus.
-- Access (owner rule): paid only. A deck opens with an active plan that has workshops and includes the exam (Гадаад хэл
-  Basic and Pro; not free, not N5/HSK 1 alone, not the retired IELTS plan). Closed during an open timed sitting, like AI help.
+- Kanji decks (2026-11-19, owner request): `jlpt-kanji-n5` (104 kanji, 9 lessons) and `jlpt-kanji-n4` (174 more, 14;
+  none repeats N5), kind `kanji` in the catalog, author-selected from common study lists (`scripts/language-decks/kanji.mjs`;
+  no official list since 2010). Same page, access, progress and review route as the word decks (`isStudyDeck`). An entry is
+  the kanji, `on` (katakana) and `kun` (hiragana, okurigana in parentheses: た(べる)), a Mongolian meaning and 2–3 example
+  words. DeepSeek drafts readings, meaning and two example words per lesson into `MockExmps/Decks/jlpt-kanji-<level>.json`;
+  the build takes example words from the reviewed N5/N4 word decks first (regular reading and only learned kanji first, so
+  今日 きょう is not 日's first example) and fills the rest from the drafts (40 N5 / 108 N4 drafted words). The first example
+  is longer than the kanji and holds it once. Quiz domain `kanji`: meaning, kanji choice, pairs, typing any one reading (kana
+  or romaji, on also in hiragana) and a word gap (＿本 with にほん · Япон); no listening or reading-building, and nothing reads a
+  lone kanji aloud (the example words can be played). Readings in quiz prompts and choices are hidden. 19 readings/meanings were
+  hand-fixed after review (rare kun dropped, 茶 kun ちゃ wrong, okurigana forms); remaining special-reading examples (日本, 田舎,
+  昨日) are real words. Two N4 word glosses lost Russian wording (地下, 講堂).
+- HSK characters (2026-11-19, owner request after the HSK 3.0 move): HSK 3.0 asks for 246 characters to read at HSK 1 and
+  371 by HSK 2 (plus 100 to write by hand). The official character lists were not available, so the characters are those of
+  the deck word lists (`scripts/language-decks/hanzi.mjs`: every character of the HSK 1 words, then the new ones of the HSK 2
+  words), 248 rather than 246 at HSK 1. They are nothing new to learn, so the owner asked for them as a filter in the HSK word
+  decks rather than decks of their own, and dropped writing as useless: there are no character decks, no handwriting list
+  and no writing drill. Each lesson of `hsk-1`/`hsk-2` has `chars` (the characters first met in that lesson's words: 248 and
+  123), shown by a «Ханз» tab between Үгс and Карт: kanji-style cards with pinyin (hidden with the reading toggle) and a
+  meaning; a card opens up to three deck words that hold it (voiced, the longest once-words first). Reading only: no progress,
+  cards or quiz of their own, and nothing reads a lone character aloud. DeepSeek drafts pinyin and a Mongolian meaning per
+  lesson into `MockExmps/Decks/hsk-hanzi-<level>.json`; the build checks every reading against the syllables of the deck words
+  (`pinyin.json`): each must be one the words use and each toned one they use must be listed, with the character's own tone
+  (一 yī, 不 bù, 友 yǒu in 朋友). Fixed with it: the tone drill split 可能 as kěn·éng (`build_pinyin.py` now tries a split
+  without a vowel-initial later syllable first), and the kanji example panel no longer clips its first letter.
+- Access (owner rule): paid only. A deck opens with an active plan that has workshops and includes the exam (Ази хэл
+  Basic and Pro since 2026-11-19, and a retired Гадаад хэл plan until it ends; not free, not ЭЕШ, not Англи хэл, not the retired IELTS
+  plan; `hasExamWorkshop`). Closed during an open timed sitting, like AI help.
   The page (`/labs/words/[deck]`, inside the Workspace frame) and `POST /api/labs/words/[deck]/review` both check.
 - Page: lesson list, reading toggle (ふりがな / Pinyin, kept per browser), today's cards and quiz (the Vocabulary page's own
   `StudyCard` and `Quiz`, given the deck words, a `reviewUrl` and lessons instead of decks), word rows with the example,
@@ -55,8 +89,9 @@ Part of the [project guide](../PROJECT.md).
   character with that reading (browser voices read characters, not pinyin).
 - Data: `uv run --with pypinyin python MockExmps/Decks/build_pinyin.py [--draft]` writes `MockExmps/Decks/pinyin.json`:
   syllables that some character is read as (pypinyin), minus eight rare ones; example characters drafted by DeepSeek and kept
-  only when pypinyin confirms the reading; drill words = 302 HSK 1/2 words split one syllable per character (erhua words
-  skipped). `build-language-decks.mjs` publishes `pinyin-chart.json` and deck `hsk-tones` (kind `tones`).
+  only when pypinyin confirms the reading; drill words = the HSK 1/2 deck words split one syllable per character (erhua words
+  skipped; 477 since 2026-11-19, without the ten words that have only neutral syllables, such as 的, 们, 吗, which gave
+  the drill a one-choice question). `build-language-decks.mjs` publishes `pinyin-chart.json` and deck `hsk-tones` (kind `tones`).
 - Drill: 10 or 20 words from HSK 1 and/or 2, due and weak first; the word plays, the student picks its tones from four
   choices (one or two syllables' tones changed; neutral stays neutral). Without a Chinese voice the word is shown and the
   drill still works. Results save through the same review route.
@@ -72,8 +107,13 @@ Part of the [project guide](../PROJECT.md).
   v = ü; romaji spellings), building the reading from kana tiles (JLPT) or the word from characters (HSK), sentence gap
   (example holds the word once), and tones (Pinyin drill, which now runs on the same quiz).
 - Deck page: progress hero (ring, stats, Өнөөдрийн давталт = 10 smart questions, Quiz үүсгэх), a lesson path with progress
-  rings, and the lesson as word cards with an inline example panel, a Карт tab (StudyCard) and previous/next. The shared
+  rings, and the lesson as word cards, a Карт tab (StudyCard) and previous/next. An open card keeps its grid place; its
+  example opens as a full-width panel (`#deck-word-example`) after the last card of its row, with a pointer under the card
+  (the column count is measured from the grid). Spanning the card across the row had left earlier cards alone on theirs. The shared
   Vocabulary quiz is no longer used here. Old layout and a restore script: `artifacts/design-backup-2026-11-18/`.
+- Widths: the deck page fills the Workspace content area up to 1440 px (`.page.page` in `deck-page.module.css`); the Kana,
+  Hangul and Pinyin pages go to 1120 px (`decks.module.css`). Both use a doubled class because the shared `.wsp-page` cap
+  (1000 px) otherwise wins, which had left the word cards about 600 px beside the lesson path on every desktop.
 
 - Shared page gate: `src/modules/language-decks/gate.tsx` (plan, then timed sitting) for the deck, Kana and Pinyin pages.
 - Next (owner, 2026-11-18): Reading Lab for JLPT/HSK in the same tabs. TOPIK after TOEFL (TOPIK tab done, below).

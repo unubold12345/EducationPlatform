@@ -13,6 +13,7 @@ import { NotifyPanel, NotifyRailButton, NotifyTopButton, useInbox } from "@/modu
 
 const tabs: { id: WorkspaceTab; href: string; label: string; icon: IconName }[] = [
   { id: "home", href: "/workspace", label: "Нүүр", icon: "home" },
+  { id: "dashboard", href: "/workspace/dashboard", label: "Хянах самбар", icon: "dashboard" },
   { id: "chat", href: "/workspace/chat", label: "AI туслах", icon: "spark" },
   { id: "vocabulary", href: "/workspace/vocabulary", label: "Үгсийн сан", icon: "book" },
   { id: "myexams", href: "/workspace/my-exams", label: "Файлаас шалгалт", icon: "fileExam" },
@@ -64,7 +65,7 @@ export function WorkspaceShell({ account, fontClass, children }: { account: Shel
 
   // These pages redirect guests on the server. Do not stream parent chrome while that
   // child redirect resolves, including the first render before browser hydration.
-  const guestRedirect = !account && (active === "home" || active === "chat" || active === "vocabulary" || active === "myexams" || active === "review" || active === "profile");
+  const guestRedirect = !account && (active === "home" || active === "dashboard" || active === "chat" || active === "vocabulary" || active === "myexams" || active === "review" || active === "profile");
   const credits = account?.credits ?? null;
   if (!shown || guestRedirect) return <CreditsProvider initial={credits}>{children}</CreditsProvider>;
   const title = active === "profile" ? PROFILE_LABEL : tabs.find(tab => tab.id === active)?.label ?? "Workspace";

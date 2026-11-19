@@ -26,7 +26,7 @@ export type DrillItem = {
 export const DRILL_KINDS = ["meaning", "term", "listen", "match", "type", "build", "cloze", "tone"] as const;
 export type DrillKind = (typeof DRILL_KINDS)[number];
 export type DrillFocus = "smart" | "new" | "weak" | "all";
-export type DrillDomain = "kana" | "jlpt" | "hsk" | "tones" | "topik";
+export type DrillDomain = "kana" | "jlpt" | "kanji" | "hsk" | "tones" | "topik";
 
 export type DrillOption = { text: string; sub: string | null };
 export type Exercise =
@@ -82,15 +82,20 @@ const INSTRUCTIONS: Record<DrillDomain, Partial<Record<DrillKind, string>>> = {
     build: "Дуудлагыг нь хэсгүүдээр бүрдүүл", cloze: "Өгүүлбэрийн хоосон зайг нөх" },
   hsk: { meaning: "Энэ үг юу гэсэн утгатай вэ?", term: "Энэ утгатай үгийг сонго", listen: "Сонссон үгээ сонго", match: "Хосыг нь ол", type: "Pinyin-ээр бич (аялгуугүй ч болно)",
     build: "Үгийг ханзаар нь бүрдүүл", cloze: "Өгүүлбэрийн хоосон зайг нөх" },
+  // Kanji: the cloze gaps the kanji out of its first example word (＿本 にほん · Япон).
+  kanji: { meaning: "Энэ ханз юу гэсэн утгатай вэ?", term: "Энэ утгатай ханзыг сонго", match: "Хосыг нь ол", type: "Энэ ханзын нэг уншлагыг бич (кана эсвэл romaji)",
+    cloze: "Үгэнд орох ханзыг сонго" },
   tones: { tone: "Зөв аялгууг сонго" },
   topik: { meaning: "Энэ үг юу гэсэн утгатай вэ?", term: "Энэ утгатай үгийг сонго", listen: "Сонссон үгээ сонго", match: "Хосыг нь ол", type: "Дуудлагыг нь латинаар бич (эсвэл хангылаар)",
     build: "Үгийг үеэр нь бүрдүүл", cloze: "Өгүүлбэрийн хоосон зайг нөх" },
 };
 export const instruction = (domain: DrillDomain, kind: DrillKind) => INSTRUCTIONS[domain][kind] ?? "";
 
-/** Which exercise kinds a domain offers; listening only with a voice for the language. */
+/** Which exercise kinds a domain offers; listening only with a voice for the language. A lone kanji has several readings,
+ * so kanji decks have no listening or reading-building exercise. */
 export function domainKinds(domain: DrillDomain, voiced: boolean): DrillKind[] {
-  const kinds: DrillKind[] = domain === "tones" ? ["tone"] : domain === "kana" ? ["meaning", "term", "listen", "match", "type"] : ["meaning", "term", "listen", "match", "type", "build", "cloze"];
+  const kinds: DrillKind[] = domain === "tones" ? ["tone"] : domain === "kana" ? ["meaning", "term", "listen", "match", "type"]
+    : domain === "kanji" ? ["meaning", "term", "match", "type", "cloze"] : ["meaning", "term", "listen", "match", "type", "build", "cloze"];
   return voiced ? kinds : kinds.filter(kind => kind !== "listen");
 }
 
@@ -140,7 +145,7 @@ export function buildDrill(targets: readonly DrillItem[], pool: readonly DrillIt
   };
   const sentenceGap = (item: DrillItem) => {
     if (!item.example || item.example.split(item.term).length !== 2) return null;
-    return item.example.replace(item.term, "＿＿");
+    return item.example.replace(item.term, domain === "kanji" ? "＿" : "＿＿");
   };
   const buildable = (item: DrillItem) => {
     if (domain === "jlpt") { const parts = morae(item.reading ?? item.term); return /^[぀-ヿー]+$/.test(item.reading ?? item.term) && parts.length >= 2 && parts.length <= 7; }
@@ -216,7 +221,7 @@ export function rightAnswer(exercise: Exercise): string {
 
 export const toneText = (item: Pick<DrillItem, "syllables">) => spellTones(item.syllables ?? []);
 
-/** A deck, kana/Hangul chart or tone drill as quiz items. Kana and Hangul: the romanization is the meaning. Tones: the
+/** A deck, kanji deck, kana/Hangul chart or tone drill as quiz items. Kana and Hangul: the romanization is the meaning. Tones: the
  * reading is the toned pinyin. TOPIK words: the reading is the romanization; Hangul or romanization may be typed. */
 export function deckDrillItems(deck: LanguageDeck, progress: Record<string, DeckProgress>): DrillItem[] {
   return deck.lessons.flatMap(lesson => lesson.words.map(word => {
@@ -224,6 +229,8 @@ export function deckDrillItems(deck: LanguageDeck, progress: Record<string, Deck
       syllables: word.syllables ?? null, group: lesson.id, state: progress[word.id] ?? null };
     if (deck.kind === "kana") return { ...base, reading: null, typed: word.answers ?? [word.meaning] };
     if (deck.kind === "tones") return { ...base, reading: spellTones(word.syllables ?? []), typed: [] };
+    // Kanji: any one on or kun reading may be typed; the gapped example word shows its reading and meaning.
+    if (deck.kind === "kanji") return { ...base, reading: word.reading, typed: word.answers ?? [], exampleMeaning: word.example ? `${word.exampleReading} · ${word.exampleMeaning}` : null };
     return { ...base, reading: word.reading && word.reading !== word.term ? word.reading : null,
       typed: deck.exam === "jlpt" ? [word.reading, ...(word.answers ?? [])] : deck.exam === "topik" ? [word.term, ...(word.answers ?? [word.reading])] : [word.reading] };
   }));

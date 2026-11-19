@@ -4,6 +4,7 @@ import {encodeVoiceFrame,speechChunks,validVoiceInput,type VoiceInput} from "./c
 import {voiceModel} from "./models";
 import {requireSpeakingLab,reserveSpeakingRequest,serialized} from "./service";
 import {hostedSpeechKey,hostedVoice} from "./speech-provider";
+import {aiFetcher} from "@/modules/ai-usage/server";
 
 const MAX_SAMPLES=24000*70;
 
@@ -15,14 +16,14 @@ export async function speakingVoiceStream(userId:string,input:unknown,allow:(use
  await allow(userId);
  await reserveSpeakingRequest(userId,"voice");
  const key=hostedSpeechKey();
- return key?hostedStream(key,input,chunks):localStream(input,chunks);
+ return key?hostedStream(key,input,chunks,userId):localStream(input,chunks);
 }
 
 // Hosted provider: no process-wide queue, so students do not wait for each other. The next sentence is
 // requested while the current one is being sent, which keeps the gap between sentences short.
-async function hostedStream(key:string,input:VoiceInput,chunks:string[]):Promise<ReadableStream<Uint8Array>> {
+async function hostedStream(key:string,input:VoiceInput,chunks:string[],userId:string):Promise<ReadableStream<Uint8Array>> {
  let cancelled=false,index=0;
- const request=(at:number)=>{const audio=hostedVoice(key,{text:chunks[at],voice:input.voice,speed:input.speed});audio.catch(()=>{});return audio;};
+ const request=(at:number)=>{const audio=hostedVoice(key,{text:chunks[at],voice:input.voice,speed:input.speed},aiFetcher("deepinfra",{userId,source:"speaking-voice",units:chunks[at].length}));audio.catch(()=>{});return audio;};
  let ahead:Promise<ArrayBuffer>|null=request(0);
  // The first sentence is awaited before the response starts, so a provider failure is a 503 the page can
  // answer with the device voice, not a stream that breaks after a 200.

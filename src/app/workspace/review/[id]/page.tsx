@@ -7,6 +7,7 @@ import { accessMock } from "@/modules/exams/service";
 import { MockAccessRequired } from "@/modules/exams/payments";
 import type { ExamState } from "@/modules/exams/types";
 import { ReviewView } from "@/modules/workspace/review";
+import { speakingLabEnabled } from "@/lib/local-pilot";
 export const metadata: Metadata = { title: "Review" };
 
 export default async function ReviewPage({ params }: { params: Promise<{ id: string }> }) {
@@ -17,6 +18,8 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
   catch (error) {
     if (error instanceof MockAccessRequired) redirect("/checkout/" + error.slug);
     if (error instanceof ApiError && error.status === 404) notFound();
+    // A stopped sitting keeps nothing to review: back to the list, which says so.
+    if (error instanceof ApiError && error.status === 410) redirect("/workspace/review?ended=1");
     throw error;
   }
   // A sitting that is still open continues on the Workspace's timed screen.
@@ -32,5 +35,6 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
   }
   // Format once on the server: browser locale support can differ from Node and break hydration.
   const finishedLabel = attempt.finishedAt ? new Intl.DateTimeFormat("mn-MN", { timeZone: "Asia/Ulaanbaatar", dateStyle: "medium", timeStyle: "short" }).format(new Date(attempt.finishedAt)) : "Дууссан";
-  return <ReviewView attempt={attempt} options={options} finishedLabel={finishedLabel} />;
+  // The Speaking Lab report card is offered on IELTS results when the Lab's pilot switch is on.
+  return <ReviewView attempt={attempt} options={options} finishedLabel={finishedLabel} examiner={attempt.program === "ielts" && speakingLabEnabled()} />;
 }

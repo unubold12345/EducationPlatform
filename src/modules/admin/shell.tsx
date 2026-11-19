@@ -20,6 +20,7 @@ const adminIcon: Record<AdminTab, IconName> = {
   pricing: "tag",
   credits: "bolt",
   content: "pen",
+  ai: "spark",
   audit: "clock",
   settings: "settings",
 };

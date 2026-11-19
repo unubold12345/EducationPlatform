@@ -5,13 +5,16 @@ started on it keep it. Revision 2 changes only the narrator. Narrator lines (ins
 spoken answer choices) are read by VoxCPM2 (openbmb/VoxCPM2, Apache-2.0) as installed by VoiceStudio's one-click
 engine installer. The woman and man keep revision 1's exact Kokoro takes, read from its utterance cache
 (<system temp>/codex-jlpt-utterances-v1, keyed like scripts/generate-jlpt-audio.py); run that script first if the cache
-is gone. Same track layout and pauses as revision 1; each line is levelled so the two engines sit at one loudness.
+is gone. Forms 04-06 (2026-11-19) never had a revision 1: scripts/generate-jlpt-takes.py makes their takes in the same
+cache with the same voices. Same track layout and pauses as revision 1; each line is levelled so the two engines sit
+at one loudness.
 
 Setup: install VoiceStudio, then VoxCPM2 from its Model Manager (or POST /engines/sidecar/voxcpm2/install on the
 running app). Run from the repo root with that engine's venv, the VoiceStudio model cache and ffmpeg/ffprobe on PATH:
   $env:HF_HUB_CACHE="$env:LOCALAPPDATA/OmniVoice/hf_cache"; $env:HF_HUB_OFFLINE="1"
-  & "$env:APPDATA/OmniVoice/engines/voxcpm2/voxcpm2/.venv/Scripts/python.exe" scripts/generate-jlpt-audio-v2.py [--lines]
---lines only synthesizes and caches every line (for the Whisper check) without writing tracks.
+  & "$env:APPDATA/OmniVoice/engines/voxcpm2/voxcpm2/.venv/Scripts/python.exe" scripts/generate-jlpt-audio-v2.py [--lines] [--forms 4,5,6]
+--lines only synthesizes and caches every line (for the Whisper check) without writing tracks. --forms limits the run
+to those form numbers of both levels (default 1-6); the timing catalogue keeps every other form's entry.
 
 Narrator voice: one reference clip (assets/jlpt-audio/voices/narrator-*.wav, made once with VoxCPM2 voice design from
 the description in VOICES, picked by the owner) that every narrator line clones. Narrator lines are cached in
@@ -134,14 +137,15 @@ def even_out(x):
     return x * (LEVEL_RMS / rms) if rms > 1e-5 else x
 
 
-def mock_sources():
+def mock_sources(forms):
     for level in ['N5', 'N4']:
-        for number in [1, 2, 3]:
+        for number in forms:
             yield level, json.loads((ROOT / 'MockExmps' / 'JLPT' / level / f'mock-{number:02}' / 'mock.json').read_text(encoding='utf-8'))
 
 
 def main():
     lines_only = '--lines' in sys.argv
+    forms = [int(n) for n in sys.argv[sys.argv.index('--forms') + 1].split(',')] if '--forms' in sys.argv else [1, 2, 3, 4, 5, 6]
     spec = importlib.util.spec_from_file_location('voicestudio_voxcpm2', SIDECAR)
     side = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(side)
@@ -162,7 +166,8 @@ def main():
         assert 2.5 < seconds < 0.2 * len(ref_text) + 3, f'{path.name}: {seconds:.1f} s reference; delete it and change the seed'
         refs[role] = (path, ref_text)
 
-    index = {}
+    index_file = CACHE / 'index.json'
+    index = json.loads(index_file.read_text(encoding='utf-8')) if index_file.exists() else {}
 
     def say(text, role, level_name):
         if role in KOKORO_VOICES:
@@ -196,8 +201,8 @@ def main():
         return chunks
 
     OUT.mkdir(parents=True, exist_ok=True)
-    timing = {}
-    for level, source in mock_sources():
+    timing = json.loads(CATALOG.read_text(encoding='utf-8')) if CATALOG.exists() else {}
+    for level, source in mock_sources(forms):
         slug = source['id']
         parts = []
         for group in source['sections'][2]['groups']:
@@ -248,9 +253,10 @@ def main():
         (OUT / f'{slug}-audio.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
         timing[slug] = {'seconds': [p['seconds'] for p in parts], 'questions': {key: dict(value, part=p['part']) for p in parts for key, value in p['questions'].items()}}
         print(f'{slug}: {total:.0f} s', flush=True)
-    (CACHE / 'index.json').write_text(json.dumps(index, ensure_ascii=False, indent=1), encoding='utf-8')
+    index_file.write_text(json.dumps(index, ensure_ascii=False, indent=1), encoding='utf-8')
     if not lines_only:
-        CATALOG.write_text(json.dumps(timing, indent=2) + '\n', encoding='utf-8')
+        order = [source['id'] for _, source in mock_sources([1, 2, 3, 4, 5, 6])]
+        CATALOG.write_text(json.dumps({slug: timing[slug] for slug in order if slug in timing}, indent=2) + '\n', encoding='utf-8')
 
 
 if __name__ == '__main__':

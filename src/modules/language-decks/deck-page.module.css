@@ -1,4 +1,6 @@
 /* The JLPT/HSK deck page, redesign 2026-11-18: progress hero, lesson path, lesson panel with word cards. */
+/* Wider than the shared .wsp-page cap (1000px): beside the 290px lesson path the word cards had about 600px on any desktop. */
+.page.page { width: min(1440px, 100%); }
 .page { display: grid; gap: 20px; }
 .back { display: inline-flex; align-items: center; gap: 6px; width: fit-content; color: var(--wsp-muted); font-size: 14px; font-weight: 600; text-decoration: none; }
 .back:hover { color: var(--wsp-ink); }
@@ -56,9 +58,9 @@
 .toggle { padding: 7px 14px; border: 0; border-radius: 10px; background: none; color: var(--wsp-muted); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
 .toggle[aria-pressed="true"] { background: var(--wsp-accent); color: #fff; }
 
-.words ul { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; margin: 0; padding: 0; list-style: none; }
+.words ul { --gap: 12px; display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: var(--gap); margin: 0; padding: 0; list-style: none; }
 .words li { display: grid; grid-template-rows: 1fr auto; border: 1px solid var(--wsp-line); border-bottom-width: 3px; border-radius: 18px; background: var(--wsp-card); overflow: hidden; }
-.words li[data-open="true"] { grid-column: 1 / -1; grid-template-columns: minmax(200px, 280px) minmax(0, 1fr); grid-template-rows: 1fr auto; border-color: var(--wsp-accent); }
+.words li[data-open="true"] { border-color: var(--wsp-accent); }
 .wordMain { display: grid; align-content: start; gap: 4px; padding: 16px 16px 10px; border: 0; background: none; color: var(--wsp-ink); font: inherit; text-align: left; cursor: pointer; }
 .wordMain:hover { background: var(--wsp-hover); }
 .term { font-size: 30px; font-weight: 600; line-height: 1.2; }
@@ -66,14 +68,19 @@
 .romaji { color: var(--wsp-muted); font-weight: 500; }
 .meaning { margin-top: 4px; color: var(--wsp-text); font-size: 14px; }
 .wordFoot { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 12px 10px 16px; }
-.words li[data-open="true"] .wordFoot { grid-row: 2; }
 .speak, .speakSmall { display: inline-grid; place-items: center; border: 1px solid var(--wsp-line); border-radius: 10px; background: var(--wsp-card); color: var(--wsp-muted); cursor: pointer; }
 .speak { width: 34px; height: 34px; }
 .speakSmall { width: 26px; height: 26px; margin-left: 8px; vertical-align: middle; }
 .speak:hover, .speakSmall:hover { border-color: var(--wsp-accent); color: var(--wsp-accent); }
-.example { grid-column: 2; grid-row: 1 / span 2; display: grid; align-content: center; gap: 6px; padding: 18px 20px; border-left: 1px solid var(--wsp-line); background: var(--wsp-chip); }
+/* The open card's example: a full-width row after the card's row; the pointer sits under the card's column
+   (--col of --cols, set by the page). */
+.words li.example { position: relative; grid-column: 1 / -1; grid-template-rows: none; gap: 6px; padding: 18px 22px; overflow: visible;
+  border: 1px solid var(--wsp-accent); border-radius: 18px; background: var(--wsp-chip); }
+.example::before { content: ""; position: absolute; top: -7px; width: 12px; height: 12px; border-top: 1px solid var(--wsp-accent); border-left: 1px solid var(--wsp-accent);
+  background: var(--wsp-chip); transform: translateX(-50%) rotate(45deg);
+  left: calc((100% - (var(--cols) - 1) * var(--gap)) / var(--cols) * (var(--col) + .5) + var(--col) * var(--gap)); }
 .example p { margin: 0; }
-.example p:first-child { font-size: 19px; }
+.example p:first-child { color: var(--wsp-ink); font-size: 19px; }
 .exampleReading { color: var(--wsp-muted); font-size: 14px; }
 .exampleMeaning { color: var(--wsp-text); font-size: 14px; }
 .lessonNav { display: flex; justify-content: space-between; gap: 10px; }
@@ -91,8 +98,21 @@
   .hero { padding: 20px; }
   .heroRing { display: none; }
   .heroActions > button { flex: 1; justify-content: center; }
-  .words ul { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .words ul { --gap: 8px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .term { font-size: 24px; }
-  .words li[data-open="true"] { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto auto; }
-  .example { grid-column: 1; grid-row: 3; border-left: 0; border-top: 1px solid var(--wsp-line); }
+  .words li.example { padding: 16px; }
 }
+/* Kanji decks (2026-11-19): a larger kanji, its on and kun readings on their own lines, and the example words as a grid. */
+.kanji { font-size: 44px; line-height: 1.1; }
+.kanjiReadings { display: grid; gap: 2px; color: var(--wsp-accent); font-size: 14px; font-weight: 600; }
+.kanjiReadings > span { display: flex; gap: 8px; align-items: baseline; }
+/* Readings wrap between readings, never inside one (わたし・わたくし). */
+.readingList { display: flex; flex-wrap: wrap; }
+.readingList > span { white-space: nowrap; }
+.readingList > span:not(:last-child)::after { content: "・"; }
+.kanjiReadings abbr { min-width: 26px; color: var(--wsp-muted); font-size: 11px; font-weight: 600; text-decoration: none; text-transform: uppercase; letter-spacing: .04em; }
+.words ul.kanjiExamples { --gap: 14px 24px; display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px 24px; margin: 0; padding: 0; list-style: none; }
+/* Not a card: no rounded corner clipping the first letter of the last line (2026-11-19). */
+.words .kanjiExamples li { display: grid; gap: 2px; padding: 0; border: 0; border-radius: 0; background: none; box-shadow: none; overflow: visible; }
+.example .kanjiExamples p:first-child { color: var(--wsp-ink); font-size: 22px; }
+@media (max-width: 600px) { .kanji { font-size: 36px; } }

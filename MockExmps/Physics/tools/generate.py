@@ -1,15 +1,21 @@
 """Offline authoring generator for the physics mock exams.
 
-This folder is never imported by the application.  The generator emits one
-JSON paper per variant, using the item count and point split of the reference
-year.  Answers are calculated from the same data used to write the question.
+    python generate.py        (from this folder; writes ../<year>/mock-01.json … mock-05.json)
 
-Every Part I question draws on a pool of versions (contexts and numbers).  A
-paper takes version `slot % len(pool)`, where `slot` is the paper's place in a
-fixed per-question order of the 60 papers, so a pool of 20 or more puts any one
-version in at most three papers, and a pool of 60 in one (2026-11-13, finding
-H4 in docs/MOCK_REVIEW.md).  The Part II tasks 2.1–2.4 pick their scenario the
-same way, with orders 47–50 and 30 scenarios each, so each task is in two papers.
+Each year's papers follow ../<year>/blueprint.json: the template behind each of the 46 Part I questions, its
+points, and the four Part II tasks with their part points. The blueprints record the real paper's sequence for
+the years whose paper or bank was found (see ../README.md); 2024 has no source and copies 2026. The application
+does not import these tools; scripts/build-entrance-mocks.mjs reads the JSON papers they write.
+
+Templates are functions (rng, year, k) -> item data: q01–q46 and s21–s24 below (the 2026 paper's items), and the
+modules items_mechanics, items_fields and tasks_extra for the skills the 2026 paper lacks. k picks the version
+(context and numbers); rng is the item's own stream and only shuffles wording and distractors, except in a few
+2026 statement items that draw their statements from it. Answers are calculated from the same data used to
+write the question.
+
+H4 (docs/MOCK_REVIEW.md, 2026-11-13): a version appears in at most three papers. assign_versions gives every
+use of a template its own k so versions spread as thinly as the pool allows, and main stops if any version is in
+more than three papers. 2024 and 2026 keep the k they had before the blueprints, so those papers did not change.
 """
 from __future__ import annotations
 
@@ -18,196 +24,33 @@ import json
 import math
 import random
 import re
+import zlib
 from decimal import ROUND_HALF_UP, Decimal
 from fractions import Fraction
 from functools import lru_cache
 from pathlib import Path
 
+from common import *  # noqa: F401,F403 (helpers shared with the template modules)
+from common import _number_unit  # noqa: F401
 from figures import render_svg
+from items_fields import TEMPLATES as FIELDS
+from items_mechanics import TEMPLATES as MECHANICS
+from tasks_extra import TASKS
 
 ROOT = Path(__file__).resolve().parents[1]
 AUTHOR = "OpenCode (DeepSeek V4.1 Flash)"
-G = 10.0
-R = 8.31
+# Papers rebuilt on 2026-11-20 from their own year's blueprint use templates written by Claude Code as well.
+BLUEPRINT_AUTHOR = "OpenCode (DeepSeek V4.1 Flash); Claude Code (Opus 5.5)"
 
-# 2015-2016: 46 MCQ / 80 points + 4 constructed / 20 points.
-# 2017-2026: 46 MCQ / 76 points + 4 constructed / 24 points.
-# 2015 uses the one-point set printed in the official 2015 variant-A key.
-ONE_POINT_2015 = {1, 7, 9, 23, 24, 25, 27, 32, 36, 39, 44, 45}
-# The 2016 D paper marks questions 1-12 as one point and 13-46 as two points.
-ONE_POINT_2016 = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12}
-ONE_POINT_2017_2026 = {
-    2, 5, 7, 14, 16, 18, 21, 23, 25, 27, 31, 33, 37, 39, 40, 45,
-}
-
-
-def fmt(value: float, digits: int = 2) -> str:
-    """Format a number without trailing zeroes; keep integers clean."""
-    if abs(value - round(value)) < 1e-9:
-        return str(int(round(value)))
-    text = f"{value:.{digits}f}".rstrip("0").rstrip(".")
-    return text.replace("-", "−")
-
-
-def exact(value: Decimal) -> str:
-    """A Decimal written plainly, without trailing zeros: 1.6620 -> 1.662, 2.0 -> 2."""
-    text = format(value.normalize(), "f")
-    return text.rstrip("0").rstrip(".") if "." in text else text
-
-
-def roundings(value: Decimal, places: tuple[int, ...] = (2, 1)) -> list[str]:
-    """Half-up roundings a student may reasonably give besides the exact value (accepted as well)."""
-    out: list[str] = []
-    for place in places:
-        text = exact(value.quantize(Decimal(1).scaleb(-place), rounding=ROUND_HALF_UP))
-        if text != exact(value) and text not in out:
-            out.append(text)
-    return out
-
-
-def num(value, places: int = 4) -> str:
-    """A number as printed: exact, rounded half up to `places` decimals, no trailing zeros, a real minus sign."""
-    value = Fraction(repr(value)) if isinstance(value, float) else Fraction(value)
-    quantum = Decimal(1).scaleb(-places)
-    decimal = (Decimal(value.numerator) / Decimal(value.denominator)).quantize(quantum, rounding=ROUND_HALF_UP)
-    text = format(decimal, "f")
-    if "." in text:
-        text = text.rstrip("0").rstrip(".")
-    if text in ("-0", ""):
-        text = "0"
-    return text.replace("-", "−")
-
-
-def ratio(value) -> str:
-    """4, 1/9 or 2/3: a ratio written exactly."""
-    value = Fraction(value)
-    return str(value.numerator) if value.denominator == 1 else f"{value.numerator}/{value.denominator}"
-
-
-def sci(value: float, digits: int = 2) -> str:
-    """Scientific notation with a middle dot and superscripts."""
-    if value == 0:
-        return "0"
-    exponent = int(math.floor(math.log10(abs(value))))
-    mantissa = value / (10 ** exponent)
-    mantissa_text = fmt(mantissa, digits)
-    superscript = str(exponent).replace("-", "⁻").translate(
-        str.maketrans("0123456789", "⁰¹²³⁴⁵⁶⁷⁸⁹")
-    )
-    return f"{mantissa_text}·10{superscript}"
-
-
-def option(value) -> str:
-    if isinstance(value, str):
-        return value
-    if isinstance(value, (int, float)):
-        return fmt(float(value))
-    return str(value)
-
-
-NUMBER_UNIT = re.compile(r"^(−?\d+(?:\.\d+)?)(?:\s+(\S.*))?$")
-
-
-def _number_unit(text: str):
-    match = NUMBER_UNIT.match(text)
-    return (float(match.group(1).replace("−", "-")), match.group(2) or "") if match else None
-
-
-def balance_rank(answer: str, wrongs: list[str], rng: random.Random) -> list[str]:
-    """Four distractors with the key at a random rank among the numbers.
-
-    The templates' ×2, ÷2, ×1.5 and ×0.75 distractors always bracketed the key, so it was never the smallest or
-    largest option (and was the middle one in most items). The template's own distractors are kept first."""
-    key = _number_unit(answer)
-    parsed = [_number_unit(wrong) for wrong in wrongs]
-    if key is None or key[0] <= 0 or any(item is None or item[1] != key[1] for item in parsed):
-        return wrongs
-    unit = key[1]
-    pool = list(wrongs) + [f"{fmt(key[0] * factor)} {unit}".strip() for factor in (2, 0.5, 4, 0.25, 3, 1 / 3, 1.5, 0.75)]
-    seen, values, lower, upper = {answer}, [key[0]], [], []
-    for candidate in pool:
-        value = _number_unit(candidate)[0]
-        # Skip repeats and near-repeats (2.66 beside 2.67), which would read as the same answer.
-        if candidate in seen or value <= 0 or any(abs(value - other) <= 0.02 * max(value, other) for other in values):
-            continue
-        seen.add(candidate)
-        values.append(value)
-        (lower if value < key[0] else upper).append(candidate)
-    under = min(rng.randrange(5), len(lower))
-    if 4 - under > len(upper):
-        under = 4 - len(upper)
-    return lower[:under] + upper[: 4 - under]
-
-
-def pick_wrongs(answer, candidates) -> list[str]:
-    """Return four distinct wrong option strings."""
-    correct = option(answer)
-    result: list[str] = []
-    for candidate in candidates:
-        text = option(candidate)
-        if text != correct and text not in result:
-            result.append(text)
-        if len(result) == 4:
-            return result
-    raise ValueError(f"Could not build four distinct distractors for {correct!r}")
-
-
-def numeric_wrongs(answer: str, unit: str, candidates, places: int = 2) -> list[str]:
-    """Up to eight distractors in the key's unit, the template's own values first.
-
-    Paper.mc lets balance_rank choose four of them with the key at a random rank, so it seldom has to fall back
-    on bare ×4 and ÷4 multiples of the key."""
-    key = Fraction(_number_unit(answer)[0]) if _number_unit(answer) else Fraction(1)
-    values = [Fraction(value) for value in candidates if value is not None]
-    values += [key * 2, key / 2, key * 3, key / 3]
-    texts = []
-    for value in values:
-        text = f"{num(value, places)} {unit}".strip()
-        if value > 0 and text != answer and text not in texts:
-            texts.append(text)
-    if len(texts) < 4:
-        raise ValueError(f"Could not build four distinct distractors for {answer!r}")
-    return texts[:8]
-
-
-def combination_options(rng: random.Random, true_indices: list[int], total: int = 4):
-    """Build a correct combination and four distinct wrong combinations."""
-    answer = ", ".join(str(index) for index in sorted(true_indices))
-    candidates = []
-    for mask in range(1, 1 << total):
-        text = ", ".join(str(index + 1) for index in range(total) if mask & (1 << index))
-        if text != answer:
-            candidates.append(text)
-    return answer, rng.sample(candidates, 4)
-
-
-def text_wrongs(answer: str, pool, rng: random.Random, count: int = 4) -> list[str]:
-    """`count` distractors from `pool`. One is at least as long as the key whenever the pool allows, so the key
-    is never the one uniquely longest option."""
-    candidates = [item for item in dict.fromkeys(pool) if item != answer]
-    if len(candidates) < count:
-        raise ValueError(f"too few distractors for {answer!r}")
-    long_enough = [item for item in candidates if len(item) >= len(answer)]
-    if not long_enough:
-        return rng.sample(candidates, count)
-    first = rng.choice(long_enough)
-    return [first] + rng.sample([item for item in candidates if item != first], count - 1)
-
-
-def spread_wrongs(key, below, above, rng: random.Random) -> list:
-    """Four distractor values with the key at a random rank among them."""
-    below = [value for value in dict.fromkeys(below) if value < key]
-    above = [value for value in dict.fromkeys(above) if value > key]
-    under = min(rng.randrange(5), len(below))
-    if 4 - under > len(above):
-        under = 4 - len(above)
-    return rng.sample(below, under) + rng.sample(above, 4 - under)
+# Point values and the item sequence of each year are in <year>/blueprint.json.
 
 
 class Paper:
-    def __init__(self, year: int, variant: int):
+    def __init__(self, year: int, variant: int, reference_variant: str = "A", author: str = AUTHOR):
         self.year = year
         self.variant = variant
+        self.reference_variant = reference_variant
+        self.author = author
         self.items: list[dict] = []
 
     def mc(self, number: int, data: dict, points: int) -> None:
@@ -301,8 +144,8 @@ class Paper:
             "mockVariant": f"P{self.variant}",
             "title": f"ЭЕШ физик {self.year} оны жишиг — P{self.variant}",
             "official": False,
-            "author": AUTHOR,
-            "referenceVariant": "A",
+            "author": self.author,
+            "referenceVariant": self.reference_variant,
             "referenceDirectory": "reference",
             "durationMinutes": 100,
             "difficulty": {
@@ -316,8 +159,8 @@ class Paper:
                 ),
             },
             "answerProvenance": (
-                "Independently calculated by OpenCode from the stated data; "
-                "not an official answer key"
+                f"Independently calculated by {'OpenCode' if self.author == AUTHOR else 'OpenCode and Claude Code'} "
+                "from the stated data; not an official answer key"
             ),
             "responseFormat": (
                 "Part I: choose one of A–E. Part II: exact numeric values "
@@ -345,7 +188,6 @@ class Paper:
 # Version pools
 # ---------------------------------------------------------------------------
 
-PAPERS = 60
 
 
 def slot(year: int, variant: int, number: int) -> int:
@@ -353,38 +195,6 @@ def slot(year: int, variant: int, number: int) -> int:
     order = list(range(PAPERS))
     random.Random(7_919 * number + 104_729).shuffle(order)
     return order[(year - 2015) * 5 + (variant - 1)]
-
-
-def shuffled(seed: int, items) -> list:
-    items = list(items)
-    random.Random(seed).shuffle(items)
-    return items
-
-
-def distinct(items, key) -> list:
-    """Items in order, dropping any whose key (normally the prompt's data) was already seen."""
-    seen, out = set(), []
-    for item in items:
-        mark = key(item)
-        if mark not in seen:
-            seen.add(mark)
-            out.append(item)
-    return out
-
-
-def assign(combos, labels: list[str], total_of, count: int = PAPERS) -> list:
-    """Attach a context label to each combo so that no (label, total) pair repeats: the prompt names both."""
-    used, out = set(), []
-    for index, combo in enumerate(combos):
-        for shift in range(len(labels)):
-            label = labels[(index + shift) % len(labels)]
-            if (label, total_of(combo)) not in used:
-                used.add((label, total_of(combo)))
-                out.append((label,) + tuple(combo))
-                break
-        if len(out) == count:
-            break
-    return out
 
 
 # ---------------------------------------------------------------------------
@@ -1658,16 +1468,6 @@ def q26(rng: random.Random, year: int, k: int) -> dict:
     }
 
 
-def factor_text(factor: Fraction) -> str | None:
-    if factor == 1:
-        return "Өөрчлөгдөхгүй"
-    if factor > 1 and factor.denominator == 1:
-        return f"{factor} дахин ихэснэ"
-    if factor < 1 and factor.numerator == 1:
-        return f"{factor.denominator} дахин багасна"
-    return None
-
-
 @lru_cache(maxsize=None)
 def coulomb_versions() -> tuple:
     distances = [(f"{n} дахин багасгаж", Fraction(n * n), Fraction(n)) for n in (2, 3, 4)]
@@ -2634,37 +2434,6 @@ def q46(rng: random.Random, year: int, k: int) -> dict:
 # Thirty scenarios put each task text in two of the 60 papers; the first five of each pool are the earlier ones.
 # Keys are worked out in exact fractions, and a scenario that breaks a task's rule stops the generator.
 
-SUPERSCRIPT = str.maketrans("-0123456789", "⁻⁰¹²³⁴⁵⁶⁷⁸⁹")
-
-
-def given(value) -> Fraction:
-    """A scenario number as written (0.38, 2.5e-3, 8.31) as an exact fraction, free of binary float error."""
-    return Fraction(str(value))
-
-
-def places(value: Fraction, most: int, label: str) -> Fraction:
-    """`value` itself, after checking that it is a decimal ending within `most` places."""
-    if (Fraction(value) * 10 ** most).denominator != 1:
-        raise ValueError(f"{label} = {float(value)} does not end within {most} decimals")
-    return Fraction(value)
-
-
-def scientific(value: Fraction) -> tuple[Fraction, int]:
-    """The mantissa in [1, 10) and the power of ten of an exact positive value."""
-    mantissa, exponent = Fraction(value), 0
-    while mantissa >= 10:
-        mantissa, exponent = mantissa / 10, exponent + 1
-    while mantissa < 1:
-        mantissa, exponent = mantissa * 10, exponent - 1
-    return mantissa, exponent
-
-
-def sci_exact(value, label: str) -> str:
-    """Like `sci`, 1.5·10⁻⁸, for an exact value whose mantissa ends within two decimals."""
-    mantissa, exponent = scientific(given(value) if isinstance(value, float) else value)
-    return f"{num(places(mantissa, 2, label))}·10{str(exponent).translate(SUPERSCRIPT)}"
-
-
 CONNECTED_SCENARIOS = [
     # m2 holds while m1_initial < μs·m2 and slides once m1_test > μs·m2; a = (m1_test − μ·m2)g/(m1_test + m2)
     # ends within one decimal.
@@ -3026,43 +2795,152 @@ MCQ_GENERATORS = [
 STRUCTURED_GENERATORS = [s21, s22, s23, s24]
 
 
-def one_point(year: int, number: int) -> bool:
-    if year == 2015:
-        return number in ONE_POINT_2015
-    if year == 2016:
-        return number in ONE_POINT_2016
-    return number in ONE_POINT_2017_2026
+# Template ids used by the blueprints: q01–q46 and s21–s24 are the 2026 items above, the rest come from the
+# modules added on 2026-11-20 for skills the 2026 paper lacks.
+TEMPLATES = {f"q{n:02}": generator for n, generator in enumerate(MCQ_GENERATORS, start=1)}
+TEMPLATES.update({f"s{20 + n}": generator for n, generator in enumerate(STRUCTURED_GENERATORS, start=1)})
+for _extra in (MECHANICS, FIELDS, TASKS):
+    if TEMPLATES.keys() & _extra.keys():
+        raise ValueError(f"template ids defined twice: {sorted(TEMPLATES.keys() & _extra.keys())}")
+    TEMPLATES.update(_extra)
+
+YEARS = range(2015, 2027)
+VARIANTS = range(1, 6)
+# 2024 (no paper found) and 2026 follow the 2026 sequence and keep the paper orders used before 2026-11-20, so their
+# papers did not change when the other years moved to their own blueprints.
+LEGACY_YEARS = (2024, 2026)
+CANDIDATES = 480  # values of k tried for each template
+MOST_PAPERS = 3  # H4: a version may appear in at most three papers
 
 
-def part_points(year: int) -> list[int]:
-    return [2, 1, 1, 1] if year <= 2016 else [1, 1, 2, 2]
+def blueprint(year: int) -> dict:
+    return json.loads((ROOT / str(year) / "blueprint.json").read_text(encoding="utf-8"))
 
 
-def build(year: int, variant: int) -> None:
-    paper = Paper(year, variant)
-    for number, generator in enumerate(MCQ_GENERATORS, start=1):
-        data = generator(
-            random.Random(year * 100_000 + variant * 1_000 + number),
-            year,
-            slot(year, variant, number),
-        )
-        paper.mc(number, data, 1 if one_point(year, number) else 2)
-    for index, generator in enumerate(STRUCTURED_GENERATORS, start=1):
-        # Part II follows its own per-task paper orders, numbered on from the 46 choice questions (47–50).
-        data = generator(
-            random.Random(year * 100_000 + variant * 1_000 + 100 + index),
-            year,
-            slot(year, variant, 46 + index),
-        )
-        paper.structured(f"2.{index}", data, part_points(year))
+def stream(year: int, variant: int, order: int) -> random.Random:
+    """An item's own random stream: orders 1–46 are Part I, 47–50 the Part II tasks (seeds as before 2026-11-20)."""
+    return random.Random(year * 100_000 + variant * 1_000 + (order if order <= 46 else 100 + order - 46))
+
+
+def legacy_template(order: int) -> str:
+    return f"q{order:02}" if order <= 46 else f"s{20 + order - 46}"
+
+
+def plan_uses(plans: dict) -> list[dict]:
+    uses = []
+    for year, plan in plans.items():
+        items = [(item["number"], item["template"]) for item in plan["partI"]]
+        items += [(46 + index, task["template"]) for index, task in enumerate(plan["partII"], start=1)]
+        for variant in VARIANTS:
+            for order, template in items:
+                if template not in TEMPLATES:
+                    raise ValueError(f"{year}: unknown template {template!r}")
+                uses.append({"year": year, "variant": variant, "order": order, "template": template})
+    return uses
+
+
+def seen(data: dict) -> str:
+    """What a reader sees of a version: the prompt, the key, the Part II part prompts and the figure data (q37
+    keeps one lead-in for many versions and varies the statement that is the key)."""
+    parts = [part["prompt"] for part in data.get("parts", [])]
+    return json.dumps([data["prompt"], data.get("answer"), parts, data.get("figure")],
+                      ensure_ascii=False, sort_keys=True, default=str)
+
+
+@lru_cache(maxsize=None)
+def drawn_by_rng(template: str) -> bool:
+    """True when the item's own random stream, not k, picks what the reader sees (q22, q36 and q39 draw their
+    statements this way; q21 shuffles its figure)."""
+    function = TEMPLATES[template]
+    return any(seen(function(random.Random(0), 2020, k)) != seen(function(random.Random(99), 2020, k))
+               for k in (0, 7, 33))
+
+
+def assign_versions(uses: list[dict]) -> dict:
+    """Give every use of a template its own k so each version (prompt) is spread as thinly as the pool allows.
+
+    Uses in LEGACY_YEARS keep their old k. The others take, in a fixed shuffled order, the untaken k whose version
+    is in the fewest papers so far and not already in the same paper. Returns the most papers any version is in,
+    per template."""
+    groups: dict[str, list[dict]] = {}
+    for use in uses:
+        groups.setdefault(use["template"], []).append(use)
+    worst = {}
+    for template, group in sorted(groups.items()):
+        keys: dict = {}
+        counts: dict = {}
+        taken: set = set()
+        in_paper: dict = {}
+
+        def key(use: dict, k: int) -> str:
+            # The version is a function of (year, k), unless the item's stream draws it.
+            where = (use["year"], use["variant"], use["order"], k) if drawn_by_rng(template) else (use["year"], k)
+            if where not in keys:
+                rng = stream(use["year"], use["variant"], use["order"]) if drawn_by_rng(template) else random.Random(0)
+                keys[where] = seen(TEMPLATES[template](rng, use["year"], k))
+            return keys[where]
+
+        def take(use: dict, k: int) -> None:
+            version = key(use, k)
+            counts[version] = counts.get(version, 0) + 1
+            taken.add(k)
+            in_paper.setdefault((use["year"], use["variant"]), set()).add(version)
+            use["k"] = k
+
+        rest = []
+        for use in group:
+            if use["year"] in LEGACY_YEARS and legacy_template(use["order"]) == template:
+                take(use, slot(use["year"], use["variant"], use["order"]))
+            else:
+                rest.append(use)
+        random.Random(zlib.crc32(template.encode())).shuffle(rest)
+        for use in rest:
+            paper = in_paper.get((use["year"], use["variant"]), set())
+            best, best_count = None, None
+            for k in range(CANDIDATES):
+                if k in taken:
+                    continue
+                version = key(use, k)
+                if version in paper:
+                    continue
+                count = counts.get(version, 0)
+                if best is None or count < best_count:
+                    best, best_count = k, count
+                    if count == 0:
+                        break
+            if best is None:
+                raise ValueError(f"{template}: no free version for {use}")
+            take(use, best)
+        worst[template] = max(counts.values())
+    return worst
+
+
+def build(year: int, variant: int, plan: dict, ks: dict) -> None:
+    author = AUTHOR if year in LEGACY_YEARS else BLUEPRINT_AUTHOR
+    paper = Paper(year, variant, plan.get("referenceVariant") or "A", author)
+    for item in plan["partI"]:
+        number = item["number"]
+        data = TEMPLATES[item["template"]](stream(year, variant, number), year, ks[(year, variant, number)])
+        paper.mc(number, data, item["points"])
+    for index, task in enumerate(plan["partII"], start=1):
+        data = TEMPLATES[task["template"]](stream(year, variant, 46 + index), year, ks[(year, variant, 46 + index)])
+        paper.structured(f"2.{index}", data, task["partPoints"])
     paper.save()
 
 
 def main() -> None:
-    for year in range(2015, 2027):
-        for variant in range(1, 6):
-            build(year, variant)
-    print("Generated 60 physics mock papers.")
+    plans = {year: blueprint(year) for year in YEARS}
+    uses = plan_uses(plans)
+    worst = assign_versions(uses)
+    ks = {(use["year"], use["variant"], use["order"]): use["k"] for use in uses}
+    for year in YEARS:
+        for variant in VARIANTS:
+            build(year, variant, plans[year], ks)
+    crowded = {template: count for template, count in worst.items() if count > MOST_PAPERS}
+    print(f"Generated 60 physics mock papers from {len(worst)} templates; "
+          f"the most papers sharing one version: {max(worst.values())}.")
+    if crowded:
+        raise SystemExit(f"H4: versions in more than {MOST_PAPERS} papers: {crowded}")
 
 
 if __name__ == "__main__":

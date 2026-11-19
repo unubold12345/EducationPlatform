@@ -2,16 +2,15 @@
 import {useEffect,useRef,useState} from "react";
 import Link from "next/link";
 import {ProcessingOverlay} from "@/modules/workspace/processing";
-import {countWords,type WritingFix,type WritingKind,type WritingTask} from "./contracts";
-import {EXPERT_LIMITS,expertSpentMessage,type EssayReviewKind,type ExpertCriterion,type ExpertQuota,type ExpertSummary,type ReviewTask,type SavedExpertReview} from "./expert";
+import {countWords,type WritingExam,type WritingFix,type WritingKind,type WritingTask} from "./contracts";
+import {EXPERT_LIMITS,criterionLabel,expertMinWords,expertSpentMessage,reviewExam,scoreScale,scoreText,type EssayReviewKind,type ExpertQuota,type ExpertSummary,type SavedExpertReview} from "./expert";
 import styles from "./expert.module.css";
 import {subscriptionPlans} from "@/modules/subscriptions/plans";
 
 const API="/api/labs/ielts-writing/expert";
-const basicReviews=subscriptionPlans.find(plan=>plan.program==="language_basic")?.expertReviews??0;
-const proReviews=subscriptionPlans.find(plan=>plan.program==="language")?.expertReviews??0;
+const basicReviews=subscriptionPlans.find(plan=>plan.program==="english_basic")?.expertReviews??0;
+const proReviews=subscriptionPlans.find(plan=>plan.program==="english_pro")?.expertReviews??0;
 const KIND_LABEL:Record<WritingKind,string>={grammar:"Дүрэм",spelling:"Үсэг",punctuation:"Цэг тэмдэг",vocabulary:"Үг",style:"Найруулга"};
-const criterionLabel=(criterion:ExpertCriterion,task:ReviewTask)=>({task:task==="letter"||task==="report"?"Task achievement":"Task response",coherence:"Coherence & cohesion",lexical:"Lexical resource",grammar:"Grammar range & accuracy"})[criterion];
 // Students see the kind of review, never the provider or model name (owner rule 2026-11-18).
 const modelLabel=(kind:EssayReviewKind)=>kind==="strong"?"Бүрэн үнэлгээ":"Шинжээчийн үнэлгээ";
 const KIND_TAG:Record<EssayReviewKind,string>={strong:"Бүрэн",expert:"Шинжээч"};
@@ -34,7 +33,8 @@ const listed=(saved:SavedExpertReview):ExpertSummary=>({id:saved.id,createdAt:sa
  * both kinds and the open one. `latest` is a DeepSeek full review the studio just received; it opens here. The server
  * decides the quota; the counter here only follows its replies.
  */
-export function ExpertPanel({signedIn,initial,latest=null,draft,onApply}:{signedIn:boolean;initial:ExpertInitial|null;latest?:SavedExpertReview|null;draft:Draft;onApply:(fix:WritingFix)=>void}) {
+export function ExpertPanel({exam="ielts",signedIn,initial,latest=null,draft,onApply}:{exam?:WritingExam;signedIn:boolean;initial:ExpertInitial|null;latest?:SavedExpertReview|null;draft:Draft;onApply:(fix:WritingFix)=>void}) {
+ const toefl=exam==="toefl",least=expertMinWords(draft.task);
  const [quota,setQuota]=useState(initial?.quota??null);
  const [reviews,setReviews]=useState(initial?.reviews??[]);
  const [open,setOpen]=useState<SavedExpertReview|null>(null);
@@ -50,7 +50,7 @@ export function ExpertPanel({signedIn,initial,latest=null,draft,onApply}:{signed
  // A review handed over from the studio is shown at once: bring its report into view.
  useEffect(()=>{if(adopted)report.current?.scrollIntoView({behavior:"smooth",block:"start"});},[adopted]);
  const words=countWords(draft.essay);
- const missing=words<EXPERT_LIMITS.minWords?`Шинжээчийн үнэлгээнд дор хаяж ${EXPERT_LIMITS.minWords} үг хэрэгтэй (одоо ${words}).`:draft.task==="free"&&!draft.topic.trim()?"Эхлээд сэдвээ бичнэ үү.":"";
+ const missing=words<least?`Шинжээчийн үнэлгээнд дор хаяж ${least} үг хэрэгтэй (одоо ${words}).`:draft.task==="free"&&!draft.topic.trim()?"Эхлээд сэдвээ бичнэ үү.":"";
  const spent=!!quota&&quota.remaining<=0;
  // A free account has no Claude reviews at all: the section offers the plans instead of a counter.
  const none=!!quota&&quota.plan===null&&quota.limit===0;
@@ -95,10 +95,12 @@ export function ExpertPanel({signedIn,initial,latest=null,draft,onApply}:{signed
    <div>
     <p className={styles.badge}><span aria-hidden="true">✦</span> Хамгийн хүчтэй AI</p>
     <h2 id="expert-heading">Шинжээчийн үнэлгээ</h2>
-    <p className={styles.lead}>Хамгийн хүчтэй загвар хоёр дахь үзлэг хийнэ: шалгуур бүрийн band ба яагаад, догол мөр бүрийн тайлбар, дараагийн band-д хүрэх 3 алхам, 25 хүртэл засвар, band 8+ жишээ хариулт. Энгийн “Бүрэн үнэлгээ” ижил тайланг кредитээр гаргана.</p>
+    <p className={styles.lead}>{toefl
+     ?"Хамгийн хүчтэй загвар хоёр дахь үзлэг хийнэ: шалгуур бүрийн оноо (0–5) ба яагаад, догол мөр бүрийн тайлбар, дараагийн оноонд хүрэх 3 алхам, 25 хүртэл засвар, 5 онооны жишээ хариулт. Энгийн “Бүрэн үнэлгээ” ижил тайланг кредитээр гаргана."
+     :"Хамгийн хүчтэй загвар хоёр дахь үзлэг хийнэ: шалгуур бүрийн band ба яагаад, догол мөр бүрийн тайлбар, дараагийн band-д хүрэх 3 алхам, 25 хүртэл засвар, band 8+ жишээ хариулт. Энгийн “Бүрэн үнэлгээ” ижил тайланг кредитээр гаргана."}</p>
    </div>
    <div className={styles.cta}>
-    {!signedIn?<Link className={styles.primary} href="/login?next=%2Flabs%2Fielts-writing">Нэвтэрч үнэлүүлэх →</Link>
+    {!signedIn?<Link className={styles.primary} href={toefl?"/login?next=%2Flabs%2Ftoefl-writing":"/login?next=%2Flabs%2Fielts-writing"}>Нэвтэрч үнэлүүлэх →</Link>
     :none?<Link className={styles.primary} href="/workspace/plans">Basic, Pro багцад →</Link>
     :quota&&<>
      <p className={styles.quota} data-spent={spent?"":undefined}>
@@ -115,23 +117,23 @@ export function ExpertPanel({signedIn,initial,latest=null,draft,onApply}:{signed
 
   {reviews.length>0&&<ol className={styles.past} aria-label="Хадгалсан үнэлгээнүүд">
    {reviews.map(item=><li key={item.id}><button type="button" onClick={()=>void reopen(item.id)} aria-current={open?.id===item.id?"true":undefined} disabled={busy==="open"}>
-    <strong>{item.overall.toFixed(1)}</strong><span>{item.title}<small>{KIND_TAG[item.kind]} · {day(item.createdAt)} · {item.words} үг</small></span>
+    <strong>{scoreText(item.overall,item.task)}</strong><span>{item.title}<small>{KIND_TAG[item.kind]} · {day(item.createdAt)} · {item.words} үг</small></span>
    </button></li>)}
   </ol>}
 
   <div ref={report}>{open&&<ExpertReport saved={open} currentEssay={draft.essay} onApply={onApply} onClose={()=>setOpen(null)}/>}</div>
-  <p className={styles.fine}>Илгээхэд даалгавар, бичвэр тань AI үйлчилгээ рүү очно. Band нь албан ёсны IELTS үнэлгээ биш, дадлагын тооцоо. Үнэлгээ бүр таны бүртгэлд хадгалагдана. Алдаа, татгалзал, хугацаа хэтэрсэн тохиолдолд үнэлгээ, кредит хасагдахгүй. Шинжээчийн үнэлгээ: Гадаад хэл Basic сард {basicReviews}, Pro сард {proReviews}.</p>
+  <p className={styles.fine}>Илгээхэд даалгавар, бичвэр тань AI үйлчилгээ рүү очно. {toefl?"Оноо нь албан ёсны TOEFL оноо биш, дадлагын тооцоо.":"Band нь албан ёсны IELTS үнэлгээ биш, дадлагын тооцоо."} Үнэлгээ бүр таны бүртгэлд хадгалагдана. Алдаа, татгалзал, хугацаа хэтэрсэн тохиолдолд үнэлгээ, кредит хасагдахгүй. Шинжээчийн үнэлгээ: Англи хэл Basic сард {basicReviews}, Pro сард {proReviews}, IELTS ба TOEFL-д нийтдээ.</p>
  </section>;
 }
 
 /** One saved review in full. A finished mock's results show it too (`ai-grading/panel.tsx`): no draft there, so no apply button. */
 export function ExpertReport({saved,currentEssay="",onApply,onClose}:{saved:SavedExpertReview;currentEssay?:string;onApply?:(fix:WritingFix)=>void;onClose:()=>void}) {
- const review=saved.review;
+ const review=saved.review,toefl=reviewExam(saved.task)==="toefl",scale=scoreScale(saved.task);
  const [copied,setCopied]=useState(false);
  const copy=async()=>{try{await navigator.clipboard.writeText(review.modelAnswer);setCopied(true);window.setTimeout(()=>setCopied(false),1800);}catch{setCopied(false);}};
  return <article className={styles.report} aria-label={saved.kind==="strong"?"Бүрэн үнэлгээ":"Шинжээчийн үнэлгээ"}>
   <header className={styles.reportHead}>
-   <div className={styles.overall}><strong>{review.overall.toFixed(1)}</strong><span>Тооцоолсон band</span></div>
+   <div className={styles.overall}><strong>{scoreText(review.overall,saved.task)}</strong><span>{toefl?"Тооцоолсон оноо · 0–5":"Тооцоолсон band"}</span></div>
    <div className={styles.reportMeta}>
     <h3>{saved.title}</h3>
     <p>{day(saved.createdAt)} · {saved.words} үг · {modelLabel(saved.kind)}</p>
@@ -141,8 +143,8 @@ export function ExpertReport({saved,currentEssay="",onApply,onClose}:{saved:Save
   </header>
 
   <div className={styles.criteria}>{review.criteria.map(note=><section key={note.criterion} className={styles.criterion}>
-   <h4><span>{criterionLabel(note.criterion,saved.task)}</span><em>{note.band.toFixed(1)}</em></h4>
-   <i className={styles.bar} aria-hidden="true"><b style={{transform:`scaleX(${note.band/9})`}}/></i>
+   <h4><span>{criterionLabel(note.criterion,saved.task)}</span><em>{scoreText(note.band,saved.task)}</em></h4>
+   <i className={styles.bar} aria-hidden="true"><b style={{transform:`scaleX(${note.band/scale})`}}/></i>
    {note.evidence&&<p>{note.evidence}</p>}
    {note.next&&<p className={styles.next}><strong>Дараагийн түвшинд:</strong> {note.next}</p>}
   </section>)}</div>
@@ -176,7 +178,7 @@ export function ExpertReport({saved,currentEssay="",onApply,onClose}:{saved:Save
   </section>}
 
   <details className={styles.model}>
-   <summary>Band 8+ жишээ хариулт <small>· таны санаагаар</small></summary>
+   <summary>{toefl?"5 онооны жишээ хариулт":"Band 8+ жишээ хариулт"} <small>· таны санаагаар</small></summary>
    <div className={styles.modelText}>{review.modelAnswer.split("\n\n").map((part,i)=><p key={i}>{part}</p>)}</div>
    <button type="button" className={styles.secondary} onClick={()=>void copy()}>{copied?"Хуулсан ✓":"Хуулах"}</button>
   </details>

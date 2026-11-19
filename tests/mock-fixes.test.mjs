@@ -2,6 +2,7 @@
 // answers wrong (or any answer right), and the content defects fixed in the generators.
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { isCorrect } from "../src/modules/exams/engine.ts";
 import { sameMathValue } from "../src/modules/exams/math-value.ts";
 import { findExam } from "../src/modules/exams/definitions.ts";
@@ -9,6 +10,15 @@ import { entranceMocks } from "../src/modules/exams/entrance/catalog.ts";
 
 const question = (slug, number) => findExam(slug).stages[0].questions.find(item => item.number === number);
 const papers = subject => entranceMocks.filter(mock => mock.subject === subject).map(mock => findExam(mock.slug));
+// Since 2026-11-20 each Physics year follows its own paper (MockExmps/Physics/<year>/blueprint.json), so a check written for
+// a 2026 item runs on the papers whose position uses that item: "44" for Part I, "task-2" for Part II task 2.2.
+const physicsPlans = new Map();
+function physicsTemplate(exam, position) {
+  const year = /^eesh-physics-(\d{4})-/.exec(exam.slug)[1];
+  if (!physicsPlans.has(year)) physicsPlans.set(year, JSON.parse(readFileSync(`MockExmps/Physics/${year}/blueprint.json`, "utf8")));
+  const plan = physicsPlans.get(year), task = /^task-(\d)$/.exec(position);
+  return task ? plan.partII[Number(task[1]) - 1].template : plan.partI[Number(position) - 1].template;
+}
 const typed = (answers, extra = {}) => ({ id: "q", domain: "", prompt: "", kind: "short", matcher: "math", answers, explanation: "", ...extra });
 
 test("choices keep their case, so genotype options such as CcGg and ccGg are different answers", () => {
@@ -59,17 +69,23 @@ test("ЭЕШ Mathematics keys read naturally, form tasks are marked, and no opti
 });
 
 test("ЭЕШ Physics Part II accepts the exact values, and the period asks for the coefficient of π", () => {
-  const exactly = text => Number(text);
+  const exactly = text => Number(text), ran = { s21: 0, s22: 0, s23: 0, s24: 0 };
   for (const exam of papers("physics")) {
     const stage = exam.stages[0];
     const part = number => stage.questions.find(item => item.number === number);
     const task = id => stage.groups.find(group => group.id === id).instructions;
+    const uses = (id, template) => physicsTemplate(exam, id) === template && ++ran[template];
+    // Q39 named the condition instead of "poor near/far vision", which reads the other way round: no item says it.
+    for (const item of stage.questions) assert.doesNotMatch(item.prompt, /хараа муу/, `${exam.slug} ${item.number}`);
+    if (uses("task-1", "s21")) {
     // 2.1d: a = (m1·g − μ·m2·g)/(m1 + m2) from the printed values.
     const m2 = exactly(/m2 = (\d+) кг/.exec(task("task-1"))[1]);
     const mu = exactly(/гулсахын үрэлтийн коэффициент μ = ([\d.]*\d)/.exec(task("task-1"))[1]);
     assert.doesNotMatch(task("task-1"), /\d\.\d{4,}/, `${exam.slug}: givens are clean decimals`);
     const m1 = exactly(/m1 = (\d+) кг үед/.exec(part("2.1d").prompt)[1]);
     assert.equal(isCorrect(part("2.1d"), String((m1 * 10 - mu * m2 * 10) / (m1 + m2))), true, `${exam.slug} 2.1d`);
+    }
+    if (uses("task-2", "s22")) {
     // 2.2a: one state alone has the highest pressure, and the key names it.
     const pressures = /p1 = (\d+) кПа, p2 = (\d+) кПа, p3 = (\d+) кПа/.exec(part("2.2a").explanation).slice(1).map(Number);
     const highest = Math.max(...pressures);
@@ -83,6 +99,8 @@ test("ЭЕШ Physics Part II accepts the exact values, and the period asks for t
     const [p1, p2, v2, v1] = (isobar ? [isobar[1], isobar[1], isobar[2], isobar[3]] : slope.slice(1)).map(Number);
     assert.deepEqual([p1, p2], pressures.slice(0, 2), `${exam.slug} 2.2d uses the pressures of 2.2a`);
     assert.equal(isCorrect(part("2.2d"), String(Math.round((p1 + p2) / 2 * (v2 - v1)) / 1000)), true, `${exam.slug} 2.2d`);
+    }
+    if (uses("task-3", "s23")) {
     // 2.3b: the force as the key prints it (3.2·10⁻¹³) or as typed (3.2*10^-13) is the stored 3.2e-13; another power is not.
     const force = part("2.3b");
     // ¹²³ sit outside the ⁰–⁹ code-point range, so the superscripts are listed one by one.
@@ -94,13 +112,16 @@ test("ЭЕШ Physics Part II accepts the exact values, and the period asks for t
     // 2.3d: T = [d]·π·10ⁿ с, an integer coefficient.
     assert.match(part("2.3d").prompt, /T = \[d\]·π·10[⁻⁰-⁹]+ с/);
     assert.match(part("2.3d").answers[0], /^\d+$/);
+    }
+    if (uses("task-4", "s24")) {
     // 2.4d: E = ½·m·k²·A² (times π²) from x = A sin(kπt + φ).
     const shm = /([\d.]+) кг масстай бие x = ([\d.]+) sin\((\d*)πt/.exec(task("task-4"));
     const [mass, amplitude, k] = [Number(shm[1]), Number(shm[2]), Number(shm[3] || 1)];
     assert.equal(isCorrect(part("2.4d"), String(Math.round(0.5 * mass * k * k * amplitude * amplitude * 1e6) / 1e6)), true, `${exam.slug} 2.4d`);
-    // Q39 names the condition instead of "poor near/far vision", which reads the other way round.
-    assert.doesNotMatch(stage.questions.find(item => item.number === "39").prompt, /хараа муу/);
+    }
   }
+  // Each 2026 task is still in at least six years' papers.
+  for (const [template, count] of Object.entries(ran)) assert.ok(count >= 30, `${template} checked in only ${count} papers`);
 });
 
 test("a numeric answer may be typed as a power of ten, and only in an unambiguous form", () => {
@@ -141,10 +162,15 @@ test("ЭЕШ Physics and Biology choice items each appear in at most three paper
     assert.ok(Math.max(...seen.values()) <= 3, `${subject}: an item appears in ${Math.max(...seen.values())} papers`);
     assert.ok(seen.size >= least, `${subject}: only ${seen.size} distinct items`);
   }
-  // Q44 asks which numbered transition: the options are the five labels, never a doubled or halved label.
+  // The 2026 Q44 asks which numbered transition: the options are the five labels, never a doubled or halved label.
+  let transitions = 0;
   for (const exam of papers("physics")) {
-    assert.deepEqual([...exam.stages[0].questions.find(item => item.number === "44").options].sort(), ["1", "2", "3", "4", "5"], exam.slug);
+    for (const item of exam.stages[0].questions.filter(entry => entry.kind === "choice" && physicsTemplate(exam, entry.number) === "q44")) {
+      assert.deepEqual([...item.options].sort(), ["1", "2", "3", "4", "5"], `${exam.slug} ${item.number}`);
+      transitions += 1;
+    }
   }
+  assert.ok(transitions >= 10, `the transition item is in only ${transitions} papers`);
   // Matching keys use all six orders, not only the three cyclic codes a rotated column gives.
   const codes = new Set(papers("biology").flatMap(exam => exam.stages[0].questions)
     .map(item => item.answers[0]).filter(answer => /^1[abc], 2[abc], 3[abc]$/.test(answer)));
@@ -166,14 +192,16 @@ test("ЭЕШ Physics Part II tasks each appear in at most three papers, and 2.2a
     assert.ok(texts.size >= 20, `${task}: only ${texts.size} distinct tasks`);
     assert.ok(Math.max(...texts.values()) <= 3, `${task}: a task appears in ${Math.max(...texts.values())} papers`);
   }
-  // 2.2a ("which state has the highest pressure") was 3 in every paper; each state is now the key in about a third.
+  // 2.2a ("which state has the highest pressure") was 3 in every paper; each state is now the key in about a third of the
+  // papers whose 2.2 is that task.
   const keys = new Map();
-  for (const exam of papers("physics")) {
+  const states = papers("physics").filter(exam => physicsTemplate(exam, "task-2") === "s22");
+  for (const exam of states) {
     const key = exam.stages[0].questions.find(item => item.number === "2.2a").answers[0];
     keys.set(key, (keys.get(key) ?? 0) + 1);
   }
   assert.deepEqual([...keys.keys()].sort(), ["1", "2", "3"]);
-  for (const [state, count] of keys) assert.ok(count >= 15, `2.2a: state ${state} is the key in only ${count} of 60 papers`);
+  for (const [state, count] of keys) assert.ok(count >= states.length / 4, `2.2a: state ${state} is the key in only ${count} of ${states.length} papers`);
 });
 
 test("ЭЕШ text keeps its spaces and notation: Mathematics words, Chemistry numbers and statement lists", () => {

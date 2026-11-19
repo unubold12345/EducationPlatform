@@ -6,13 +6,14 @@ import { programLabels } from "@/modules/workspace/programs";
 import { ScoreRing } from "@/modules/workspace/score";
 import { Icon } from "@/modules/workspace/icons";
 import type { ExamProgram } from "@/modules/exams/types";
+import { EndMockButton } from "@/modules/exams/end-mock";
 export const metadata: Metadata = { title: "Миний үр дүн" };
 
 const PAGE = 12;
 const programs: ExamProgram[] = ["sat", "ielts", "toefl", "entrance", "jlpt", "hsk", "topik"];
 const date = new Intl.DateTimeFormat("mn-MN", { timeZone: "Asia/Ulaanbaatar", dateStyle: "medium" });
 
-export default async function ReviewList({ searchParams }: { searchParams: Promise<{ program?: string; page?: string }> }) {
+export default async function ReviewList({ searchParams }: { searchParams: Promise<{ program?: string; page?: string; ended?: string }> }) {
   const user = await requireUser("/workspace/review");
   const query = await searchParams;
   const program = programs.find(item => item === query.program);
@@ -32,13 +33,19 @@ export default async function ReviewList({ searchParams }: { searchParams: Promi
   return <div className="wsp-page wsp-review-list">
     <header className="wsp-page-head"><div><h1 className="sr-only">Миний үр дүн</h1><p>Дууссан mock бүрийн оноо, алдсан асуулт, тайлбарыг эргэн хараад AI багшаас асуугаарай.</p></div></header>
 
+    {query.ended === "1" ? <p className="wsp-notice" role="status">Шалгалтыг зогсоолоо. Энэ удаагийн хариу, оноо хадгалагдаагүй.</p> : null}
+
     {open.length ? <section className="wsp-section" aria-labelledby="open-heading">
-      <div className="wsp-section-head"><h2 id="open-heading">Дуусаагүй</h2><span className="wsp-muted">Цаг серверт үргэлжилж байна</span></div>
-      <div className="wsp-list">{open.map(item => <Link key={item.id} className="wsp-row" href={"/exams/attempts/" + item.id}>
-        <span className="wsp-row-icon is-warn" aria-hidden="true"><Icon name="clock" /></span>
-        <span className="wsp-row-main"><strong>{item.title}</strong><small>{item.program ? programLabels[item.program] + " · " : ""}{date.format(new Date(item.updatedAt))}</small></span>
-        <span className="wsp-row-cta">Үргэлжлүүлэх<Icon name="arrow" size={16} /></span>
-      </Link>)}</div>
+      <div className="wsp-section-head"><h2 id="open-heading">Дуусаагүй</h2><span className="wsp-muted">Цаг серверт үргэлжилж байна · Зогсоовол хадгалагдахгүй</span></div>
+      {/* The stop button sits beside the link, not in it (a button inside a link is invalid and would also open the exam). */}
+      <div className="wsp-list">{open.map(item => <div key={item.id} className="wsp-row wsp-open-row">
+        <Link className="wsp-open-link" href={"/exams/attempts/" + item.id}>
+          <span className="wsp-row-icon is-warn" aria-hidden="true"><Icon name="clock" /></span>
+          <span className="wsp-row-main"><strong>{item.title}</strong><small>{item.program ? programLabels[item.program] + " · " : ""}{date.format(new Date(item.updatedAt))}</small></span>
+          <span className="wsp-row-cta">Үргэлжлүүлэх<Icon name="arrow" size={16} /></span>
+        </Link>
+        <EndMockButton attemptId={item.id} title={item.title} label="Зогсоох" className="wsp-end-button" />
+      </div>)}</div>
     </section> : null}
 
     <section className="wsp-section" aria-labelledby="done-heading">

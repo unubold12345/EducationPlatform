@@ -1,12 +1,13 @@
-// Monthly plans (owner rules 2026-11-13 and 2026-11-17): the free account plus three plans.
+// Monthly plans (owner rules 2026-11-13, 2026-11-17 and 2026-11-19): the free account plus five plans.
 // - entrance (ЭЕШ, 29,900): every ЭЕШ mock and its practice mode, no limit.
-// - language_basic (Гадаад хэл Basic, 29,900): every mock that is not ЭЕШ (SAT, IELTS, JLPT, HSK), no limit, the IELTS
-//   workshops, 1,200 AI credits, a 1,500-word bank and 5 saved file exams.
-// - language (Гадаад хэл Pro, 59,900): the same mocks and workshops with 3,000 AI credits, a 3,000-word bank and 15 saved
-//   file exams. The key stays "language" so subscriptions bought before the rename keep working. Until 2026-11-17 this
-//   plan opened 15 picked mocks a month; the pick machinery (`mockPicks`, mock-access.ts) stays for any plan that sets it.
-// The IELTS and SAT plans are retired: they are no longer sold or renewed, and a subscription bought before the
-// change keeps its access, AI credits and limits until it ends (`legacyPlans`).
+// - english_basic / english_pro (Англи хэл Basic 29,900 / Pro 59,900): every SAT, IELTS and TOEFL mock, no limit, and the
+//   IELTS and TOEFL workshops.
+// - asian_basic / asian_pro (Ази хэл Basic 29,900 / Pro 59,900): every JLPT, HSK and TOPIK mock, no limit, and their
+//   workshops (word decks, kana/pinyin/hangul, reading and writing).
+// Basic and Pro differ only in limits: 1,200 / 3,000 AI credits, a 1,500 / 3,000-word bank, 5 / 15 saved file exams.
+// On 2026-11-19 the owner split Гадаад хэл Basic / Pro (`language_basic` / `language`, every non-ЭЕШ mock) into the two
+// families; those two are retired like the IELTS and SAT plans before them: no longer sold or renewed, and a subscription
+// bought before the change keeps every mock and workshop it opened, its AI credits and limits until it ends (`legacyPlans`).
 //
 // aiCredits: monthly AI credits the plan adds to the free allowance (see src/modules/credits/pricing.ts).
 // vocabularyWords: the vocabulary bank size while the plan is active; the largest active plan wins and the
@@ -17,30 +18,49 @@
 // largest active plan wins and a free account keeps READING_LIMITS.freePractices (see reading-lab/state.ts).
 // expertReviews: Essay Studio expert reviews by Claude Opus a plan month (owner rule 2026-11-17, revised the same day: Basic 2,
 // Pro 5); 0 means the plan adds none, and an account without one gets EXPERT_LIMITS.freeReviews (now 0; see writing-lab/expert.ts).
+// The Essay Studio is English, so only the English plans add reviews.
 // exams: the exam programmes whose mocks the plan opens. mockPicks: mocks a student may pick per plan month,
-// null when every covered mock is open. workshops: the IELTS Writing & Speaking workshops.
-export type SubscriptionProgram = "entrance" | "language" | "language_basic" | "ielts" | "sat";
-type ExamKey = "sat" | "ielts" | "entrance" | "jlpt" | "hsk" | "toefl" | "topik";
-type PlanDefinition = {
+// null when every covered mock is open. workshops: the plan opens the workshops of the exams it covers (IELTS and TOEFL
+// labs and guided tasks; JLPT, HSK and TOPIK decks, reading and writing); see `planWorkshopFor`.
+export type SubscriptionProgram = "entrance" | "english_basic" | "english_pro" | "asian_basic" | "asian_pro" | "language" | "language_basic" | "ielts" | "sat";
+export type ExamKey = "sat" | "ielts" | "entrance" | "jlpt" | "hsk" | "toefl" | "topik";
+export type PlanDefinition = {
   program: SubscriptionProgram; title: string; shortTitle: string; amountMnt: number; aiCredits: number;
   vocabularyWords: number; savedExams: number; readingPractices: number; expertReviews: number; symbol: string; description: string; features: readonly string[];
   exams: readonly ExamKey[]; mockPicks: number | null; workshops: boolean;
 };
+export const ENGLISH_EXAMS = ["sat", "ielts", "toefl"] as const satisfies readonly ExamKey[];
+export const ASIAN_EXAMS = ["jlpt", "hsk", "topik"] as const satisfies readonly ExamKey[];
 
 export const subscriptionPlans = [
   { program:"entrance", title:"ЭЕШ", shortTitle:"ЭЕШ", amountMnt:29900, aiCredits:1200, vocabularyWords:500, savedExams:5, readingPractices:5, expertReviews:0, symbol:"∑", exams:["entrance"], mockPicks:null, workshops:false,
     description:"ЭЕШ-ийн бүх хичээлийн бүтэн mock шалгалт, дадлага хязгааргүй.",
     features:["Бүх 194 ЭЕШ mock: математик 55, физик 60, хими 18, биологи 21, англи 40", "Хязгааргүй өгөх, цаггүй дадлага", "AI туслах, тайлбартай үр дүн", "Хадгалсан явц, дахин өгөх боломж"] },
-  { program:"language_basic", title:"Гадаад хэл Basic", shortTitle:"Гадаад хэл Basic", amountMnt:29900, aiCredits:1200, vocabularyWords:1500, savedExams:5, readingPractices:5, expertReviews:2, symbol:"Aa", exams:["sat","ielts","toefl","jlpt","hsk","topik"], mockPicks:null, workshops:true,
-    description:"SAT, IELTS, TOEFL, JLPT, HSK, TOPIK-ийн бүх mock, IELTS workshop. Үндсэн багц.",
-    features:["ЭЕШ-ээс бусад бүх mock: SAT, IELTS, TOEFL, JLPT, HSK, TOPIK", "Хязгааргүй өгөх, цаггүй дадлага", "Бүх IELTS Writing & Speaking workshop", "Шинжээчийн эссэ үнэлгээ: сард 2", "AI туслах, тайлбартай үр дүн"] },
-  { program:"language", title:"Гадаад хэл Pro", shortTitle:"Гадаад хэл Pro", amountMnt:59900, aiCredits:3000, vocabularyWords:3000, savedExams:15, readingPractices:15, expertReviews:5, symbol:"Aa+", exams:["sat","ielts","toefl","jlpt","hsk","topik"], mockPicks:null, workshops:true,
-    description:"Basic-ийн бүх боломж, нэмээд 3,000 AI кредит, 3,000 үгийн сан, 15 файлаас шалгалт.",
-    features:["ЭЕШ-ээс бусад бүх mock: SAT, IELTS, TOEFL, JLPT, HSK, TOPIK", "Хязгааргүй өгөх, цаггүй дадлага", "Бүх IELTS Writing & Speaking workshop", "Шинжээчийн эссэ үнэлгээ: сард 5", "AI туслах, тайлбартай үр дүн"] },
+  { program:"english_basic", title:"Англи хэл Basic", shortTitle:"Англи хэл Basic", amountMnt:29900, aiCredits:1200, vocabularyWords:1500, savedExams:5, readingPractices:5, expertReviews:2, symbol:"En", exams:ENGLISH_EXAMS, mockPicks:null, workshops:true,
+    description:"SAT, IELTS, TOEFL-ийн бүх mock, IELTS ба TOEFL workshop. Үндсэн багц.",
+    features:["SAT, IELTS, TOEFL-ийн бүх mock", "Хязгааргүй өгөх, цаггүй дадлага", "IELTS, TOEFL workshop: mock-ийн сонсгол, уншлага", "Шинжээчийн эссэ үнэлгээ: сард 2", "AI туслах, тайлбартай үр дүн"] },
+  { program:"english_pro", title:"Англи хэл Pro", shortTitle:"Англи хэл Pro", amountMnt:59900, aiCredits:3000, vocabularyWords:3000, savedExams:15, readingPractices:15, expertReviews:5, symbol:"En+", exams:ENGLISH_EXAMS, mockPicks:null, workshops:true,
+    description:"Англи хэл Basic-ийн бүх боломж, нэмээд 3,000 AI кредит, 3,000 үгийн сан, 15 файлаас шалгалт.",
+    features:["SAT, IELTS, TOEFL-ийн бүх mock", "Хязгааргүй өгөх, цаггүй дадлага", "IELTS, TOEFL workshop: mock-ийн сонсгол, уншлага", "Шинжээчийн эссэ үнэлгээ: сард 5", "AI туслах, тайлбартай үр дүн"] },
+  { program:"asian_basic", title:"Ази хэл Basic", shortTitle:"Ази хэл Basic", amountMnt:29900, aiCredits:1200, vocabularyWords:1500, savedExams:5, readingPractices:5, expertReviews:0, symbol:"あ", exams:ASIAN_EXAMS, mockPicks:null, workshops:true,
+    description:"JLPT, HSK, TOPIK-ийн бүх mock, үгсийн сан, унших, бичих workshop. Үндсэн багц.",
+    features:["JLPT, HSK, TOPIK-ийн бүх mock", "Хязгааргүй өгөх, цаггүй дадлага", "Үгсийн сан, хирагана, pinyin, хангыль", "Унших, бичих workshop", "AI туслах, тайлбартай үр дүн"] },
+  { program:"asian_pro", title:"Ази хэл Pro", shortTitle:"Ази хэл Pro", amountMnt:59900, aiCredits:3000, vocabularyWords:3000, savedExams:15, readingPractices:15, expertReviews:0, symbol:"あ+", exams:ASIAN_EXAMS, mockPicks:null, workshops:true,
+    description:"Ази хэл Basic-ийн бүх боломж, нэмээд 3,000 AI кредит, 3,000 үгийн сан, 15 файлаас шалгалт.",
+    features:["JLPT, HSK, TOPIK-ийн бүх mock", "Хязгааргүй өгөх, цаггүй дадлага", "Үгсийн сан, хирагана, pinyin, хангыль", "Унших, бичих workshop", "AI туслах, тайлбартай үр дүн"] },
 ] as const satisfies readonly PlanDefinition[];
 
-/** Retired 2026-11-13: not sold or renewed; active subscriptions keep these rules until they end. */
+/** Pro covers everything its Basic does, so Basic is not sold beside an active Pro of the same family (or the retired Pro). */
+export const PRO_OF: Partial<Record<SubscriptionProgram, readonly SubscriptionProgram[]>> = {
+  english_basic: ["english_pro", "language"], asian_basic: ["asian_pro", "language"],
+};
+
+/** Retired: not sold or renewed; active subscriptions keep these rules until they end. */
 export const legacyPlans = [
+  { program:"language_basic", title:"Гадаад хэл Basic (хуучин багц)", shortTitle:"Гадаад хэл Basic", amountMnt:29900, aiCredits:1200, vocabularyWords:1500, savedExams:5, readingPractices:5, expertReviews:2, symbol:"Aa", exams:["sat","ielts","toefl","jlpt","hsk","topik"], mockPicks:null, workshops:true,
+    description:"Хуучин Гадаад хэл Basic багц: хугацаа дуустал ЭЕШ-ээс бусад бүх mock, workshop нээлттэй.", features:["SAT, IELTS, TOEFL, JLPT, HSK, TOPIK-ийн бүх mock", "Бүх workshop"] },
+  { program:"language", title:"Гадаад хэл Pro (хуучин багц)", shortTitle:"Гадаад хэл Pro", amountMnt:59900, aiCredits:3000, vocabularyWords:3000, savedExams:15, readingPractices:15, expertReviews:5, symbol:"Aa+", exams:["sat","ielts","toefl","jlpt","hsk","topik"], mockPicks:null, workshops:true,
+    description:"Хуучин Гадаад хэл Pro багц: хугацаа дуустал ЭЕШ-ээс бусад бүх mock, workshop нээлттэй.", features:["SAT, IELTS, TOEFL, JLPT, HSK, TOPIK-ийн бүх mock", "Бүх workshop"] },
   { program:"ielts", title:"IELTS (хуучин багц)", shortTitle:"IELTS", amountMnt:60000, aiCredits:3000, vocabularyWords:3000, savedExams:15, readingPractices:15, expertReviews:5, symbol:"Aa", exams:["ielts"], mockPicks:null, workshops:true,
     description:"Хуучин IELTS багц: хугацаа дуустал IELTS mock, workshop нээлттэй.", features:["12 бүтэн IELTS Academic mock", "4 Writing & Speaking workshop"] },
   { program:"sat", title:"SAT (хуучин багц)", shortTitle:"SAT", amountMnt:60000, aiCredits:2000, vocabularyWords:3000, savedExams:15, readingPractices:15, expertReviews:0, symbol:"x²", exams:["sat"], mockPicks:null, workshops:false,
@@ -61,6 +81,10 @@ export function planCovers(plan:Pick<PlanDefinition,"exams">, examProgram:string
 export function salePlanFor(examProgram:string) { return subscriptionPlans.filter(plan=>planCovers(plan,examProgram)).sort((a,b)=>a.amountMnt-b.amountMnt)[0]; }
 /** Where a student goes to use a plan: the ЭЕШ programme page, or the exams hub for the language plans. */
 export function planHomeHref(program:string) { return program==="entrance"||program==="ielts"||program==="sat" ? "/programs/"+program : "/exams"; }
+/** Whether a plan opens the workshops of an exam: it has workshops and covers that exam's mocks. */
+export function planWorkshopFor(plan:Pick<PlanDefinition,"exams"|"workshops">|undefined, exam:string) { return Boolean(plan?.workshops&&planCovers(plan,exam)); }
+/** The plans on sale whose workshops include an exam, for "in the plan" notes on locked tiles. */
+export function workshopPlansFor(exam:string) { return subscriptionPlans.filter(plan=>planWorkshopFor(plan,exam)); }
 
 export function addCalendarMonth(value:Date) {
   if(!Number.isFinite(value.getTime()))throw new RangeError("Invalid date");

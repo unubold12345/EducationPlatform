@@ -5,6 +5,7 @@ import { examDefinitions } from "@/modules/exams/definitions";
 import { MOCK_PRICE_LABEL, MOCK_PURCHASE_DAYS } from "@/modules/exams/pricing";
 import { entranceCounts, entranceTotal } from "@/modules/exams/entrance/catalog";
 import { hskMocks } from "@/modules/exams/hsk/catalog";
+import { jlptMocks } from "@/modules/exams/jlpt/catalog";
 import { topikMocks } from "@/modules/exams/topik/catalog";
 import { toeflMocks } from "@/modules/exams/toefl/catalog";
 import "./library.css";
@@ -36,21 +37,21 @@ export default async function ExamsPage(){
       copy:"Reading & Writing-ээс Math хүртэл. Модуль бүрийн цаг, завсарлага болон сонгох/тоон хариулттай.",
       facts:[{label:"Агуулга",value:"98 асуулт · 4 модуль"},{label:"Хугацаа",value:"2ц 14м + 10м завсарлага"}],
       chips:["R&W · 64м","Break · 10м","Math · 70м"],
-      count:sat,href:"/exams/sat",cta:`${sat} mock үзэх`,plan:"Гадаад хэл",
+      count:sat,href:"/exams/sat",cta:`${sat} mock үзэх`,plan:"Англи хэл",
     },
     {
       id:"ielts",tone:"ielts",title:"IELTS Academic",
       copy:"Listening, Reading, Writing, Speaking. Бичлэг сонсож, эх уншиж, эсээ бичиж, яриагаа бичүүлээрэй.",
       facts:[{label:"Агуулга",value:"80 асуулт + 2 Writing task + Speaking"},{label:"Хугацаа",value:"32м Listening · 60м Reading · 60м Writing · 12м Speaking"}],
       chips:["Listen · 32м","Read · 60м","Write · 60м","Speak · 12м"],
-      count:ielts,href:"/exams/ielts",cta:`${ielts} mock үзэх`,plan:"Гадаад хэл",
+      count:ielts,href:"/exams/ielts",cta:`${ielts} mock үзэх`,plan:"Англи хэл",
     },
     {
       id:"toefl",tone:"toefl",sub:"2026 оны шинэ формат",title:"TOEFL iBT",
       copy:"Reading, Listening нь эхний модулийн дүнгээр Lower эсвэл Upper модуль руу шилжинэ. Complete the Words, Build a Sentence, имэйл, хэлэлцүүлэг, Listen and Repeat, ярилцлага.",
       facts:[{label:"Агуулга",value:"50 Reading · 47 Listening · 12 Writing · 11 Speaking"},{label:"Хугацаа",value:"≈86–89 мин"}],
       chips:["Read · 29м","Listen · 27–30м","Write · 23м","Speak · 8м"],
-      count:toeflMocks.length,href:"/exams/toefl",cta:"Mock сонгох",plan:"Гадаад хэл",
+      count:toeflMocks.length,href:"/exams/toefl",cta:"Mock сонгох",plan:"Англи хэл",
     },
     {
       id:"eesh",tone:"entrance",sub:"Элсэлтийн ерөнхий шалгалт",title:"ЭЕШ",
@@ -67,17 +68,17 @@ export default async function ExamsPage(){
       count:entranceTotal,href:"/exams/eesh",cta:`Бүх ${entranceTotal} mock`,plan:"ЭЕШ",
     },
     {id:"jlpt",tone:"jlpt",sub:"日本語能力試験",title:"JLPT N5・N4",
-      copy:"Түвшин бүрт 3 mock. Үгийн сан, хэлзүй, унших ба япон аудиотой сонсох хэсэг. Алдсан чадвараа цаггүй давтаарай.",
+      copy:"Түвшин бүрт 6 mock. Үгийн сан, хэлзүй, унших ба япон аудиотой сонсох хэсэг. Алдсан чадвараа цаггүй давтаарай.",
       facts:[{label:"Агуулга",value:"N5 · 67 / N4 · 85 асуулт"},{label:"Хугацаа",value:"N5 · 90м / N4 · 115м"}],
-      chips:["語彙","文法・読解","聴解"],count:6,href:"/exams/jlpt",cta:"Түвшин сонгох",plan:"Гадаад хэл"},
+      chips:["語彙","文法・読解","聴解"],count:jlptMocks.length,href:"/exams/jlpt",cta:"Түвшин сонгох",plan:"Ази хэл"},
     {id:"hsk",tone:"hsk",sub:"汉语水平考试",title:"HSK 1–2",
-      copy:"Хятад хэлний анхан шат, түвшин бүрт 3 mock. Хятад аудиотой сонсох, зурагтай унших даалгавар; бүх ханз pinyin-тэй. Алдсан хэсгээ цаггүй давтаарай.",
-      facts:[{label:"Агуулга",value:"HSK 1 · 40 / HSK 2 · 60 асуулт"},{label:"Хугацаа",value:"HSK 1 · 32м / HSK 2 · 47м"}],
-      chips:["听力","阅读"],count:hskMocks.length,href:"/exams/hsk",cta:"Mock сонгох",plan:"Гадаад хэл"},
+      copy:"HSK 3.0 (2026) шинэ бүтэц ба үгийн сангаар, түвшин бүрт 3 mock. Хятад аудиотой сонсох, зурагтай унших, HSK 2-т ханз бичих даалгавар; бүх ханз pinyin-тэй. Алдсан хэсгээ цаггүй давтаарай.",
+      facts:[{label:"Агуулга",value:"HSK 1 · 40 / HSK 2 · 60 асуулт"},{label:"Хугацаа",value:"HSK 1 · 40м / HSK 2 · 60м"}],
+      chips:["听力","阅读","书写"],count:hskMocks.length,href:"/exams/hsk",cta:"Mock сонгох",plan:"Ази хэл"},
     {id:"topik",tone:"topik",sub:"한국어능력시험",title:"TOPIK Ⅰ–Ⅱ",
       copy:"Солонгос хэлний TOPIK Ⅰ (1–2-р түвшин), TOPIK Ⅱ (3–6-р түвшин), тус бүр 3 mock. Албан PBT бүтэц, асуултын оноо, солонгос аудиотой сонсох, TOPIK Ⅱ-т бичих хэсэг.",
       facts:[{label:"Агуулга",value:"Ⅰ · 70 / Ⅱ · 104 асуулт"},{label:"Хугацаа",value:"Ⅰ · 100м / Ⅱ · 180м"}],
-      chips:["듣기","쓰기","읽기"],count:topikMocks.length,href:"/exams/topik",cta:"Mock сонгох",plan:"Гадаад хэл"},
+      chips:["듣기","쓰기","읽기"],count:topikMocks.length,href:"/exams/topik",cta:"Mock сонгох",plan:"Ази хэл"},
   ];
   return <div className="container page-space library-page">
     <header className="wsp-page-head library-head"><div><h1 className="sr-only">Шалгалтууд</h1><p>SAT, IELTS, TOEFL, ЭЕШ, JLPT, HSK, TOPIK-ийн бүтэн mock. Цагтай шалгалтаар өөрийгөө шалгах эсвэл цаггүй, AI туслахтай дадлагаар бэлдээрэй.</p></div><Link className="wsp-link" href="/workspace/review">Миний үр дүн →</Link></header>

@@ -100,7 +100,7 @@ export function mockPractice(definition: ExamDefinition): PracticeSource {
   if (definition.program === "hsk") {
     for (const stage of definition.stages) for (const group of stage.groups ?? []) {
       const listening = stage.kind === "listening";
-      sections.push({id:group.id,title:`${listening?"听力":"阅读"} · ${group.title}`,kind:listening?"listening":"questions",math:false,
+      sections.push({id:group.id,title:`${listening?"听力":stage.id==="hsk-w"?"书写":"阅读"} · ${group.title}`,kind:listening?"listening":"questions",math:false,
         hint:""});
       for (const question of stage.questions.filter(item=>item.groupId===group.id)) {
         authored.set(question.id,question);

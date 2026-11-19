@@ -2,6 +2,14 @@
 
 Part of the [project guide](../PROJECT.md) (was PROJECT.md section 3). "Section N" in the text means that old numbering; the guide maps it to files.
 
+### SAT and IELTS hubs (owner 2026-11-19)
+
+`/exams/sat` and `/exams/ielts` (`exams/collection.tsx`) use the same cards as the JLPT, HSK, TOEFL and TOPIK hubs: eyebrow,
+"Full Mock NN", the IELTS reading passage titles as the theme line (forms 02–12), questions, timed minutes, sections, the
+access label (`hubAccess`), practice progress (`practiceStats` of the practice form), «Танилцах / эхлэх» or «Шалгалтаа
+үргэлжлүүлэх» for an open sitting, and the practice link when the mock is open to the student. Cards take as many columns as
+fit at 290 px minimum (three at full width, two on a laptop, one on a phone); TOPIK's hub uses the same rule.
+
 ### Digital SAT
 
 - Mocks `sat-full-01` through `sat-full-09` are separately purchasable or picked with the Гадаад хэл plan
@@ -72,10 +80,10 @@ Part of the [project guide](../PROJECT.md) (was PROJECT.md section 3). "Section 
 
 ### JLPT N5 and N4
 
-- `/exams/jlpt?level=N5|N4` lists three forms per level, purchased access, saved practice progress and open attempts.
-- `jlpt-n5-01`–`03`: 21 vocabulary / 20 min, 22 grammar-reading / 40 min, 24 listening / 30 min.
-  `jlpt-n4-01`–`03`: 28 / 25 min, 29 / 55 min, 28 / 35 min. Server deadlines and attempt snapshots use the existing exam engine.
-- `scripts/build-jlpt-mocks.mjs` converts offline `MockExmps/JLPT` source into six private `assets/jlpt` definitions and an answer-free catalogue. Authoring packs and official format reference images stay excluded from deployment.
+- `/exams/jlpt?level=N5|N4` lists six forms per level, purchased access, saved practice progress and open attempts.
+- `jlpt-n5-01`–`06`: 21 vocabulary / 20 min, 22 grammar-reading / 40 min, 24 listening / 30 min.
+  `jlpt-n4-01`–`06`: 28 / 25 min, 29 / 55 min, 28 / 35 min. Server deadlines and attempt snapshots use the existing exam engine.
+- `scripts/build-jlpt-mocks.mjs` converts offline `MockExmps/JLPT` source into twelve private `assets/jlpt` definitions and an answer-free catalogue. Authoring packs and official format reference images stay excluded from deployment.
 - Audio revision 1: `scripts/generate-jlpt-audio.py` uses local Kokoro-82M Japanese voices (Apache-2.0) and Misaki Japanese G2P. The 24 MP3s in `assets/exams/jlpt-*-part-*.mp3` have script/file hashes, measured durations and per-item timings; protected mock/practice audio routes apply the existing access and active-sitting checks.
 - Audio revision 2 (2026-11-16, current): only the narrator changes (owner decision). `scripts/generate-jlpt-audio-v2.py`
   (setup in its header) reads instructions, item numbers, questions and spoken choices with VoxCPM2 (openbmb/VoxCPM2,
@@ -89,6 +97,20 @@ Part of the [project guide](../PROJECT.md) (was PROJECT.md section 3). "Section 
   `/audio/jlpt`. JLPT definitions carry `audioRevision: 2`, so new sittings and practice use revision 2; an attempt
   snapshot without it keeps the Kokoro files in `assets/exams`. Every narrator line was transcribed with Whisper large-v3
   and compared in kana; nobody has listened to it all yet.
+- Forms 04–06 per level (2026-11-19, Claude Code, Opus 5.5; source `MockExmps/JLPT/_source/n5_more.py`, `n4_more.py`)
+  follow the same blueprint, with their own themes and per-form extra kanji readings (`build.py` `supporter`, so forms
+  01–03 build byte for byte as before). They have only audio revision 2: `scripts/generate-jlpt-takes.py` makes their
+  woman/man Kokoro takes into revision 1's cache with the same voices and speeds (checked to reproduce an existing take
+  exactly), with speech-only kana for what misaki misreads (digits before counters, 一日, 箱, 階, 重そう, 泊/匹); then
+  `generate-jlpt-audio-v2.py --forms 4,5,6` adds the narrator and tracks and merges the timing catalogue.
+  `audio-files.ts` serves revision 2 to every attempt on a form that has no revision 1.
+- Timed sitting layout (2026-11-19, owner-picked "answer-sheet sidebar"; `jlpt/section.tsx`, `jlpt.css`): the runner hands
+  JLPT its clock, save status and stop button and drops the shared toolbar, meta row and footer. Left: section title,
+  問題N heading with instructions, the question page (reading passages sticky beside their questions when the column is
+  760 px+), options in two columns when the longest fits half the width. Right, sticky: clock, ふりがな, the three
+  sections, and a 解答用紙 with one row of numbered bubbles per question grouped by 問題 (filled = chosen, ⚑ = flagged;
+  a row jumps to its question), count, directions, stop. Under 1100 px it is a sticky top bar whose sheet opens on demand.
+  Restore the earlier layout with `artifacts/design-backup-2026-11-19-jlpt/restore.ps1`.
 - Timed listening follows the server clock, with no pause/replay; practice can replay one item and reveals its transcript only after checking. Written questions keep shared passages together, use numbered options and support optional authored furigana. Result skill links open focused practice.
 - Per-mock access uses the existing simulated ₮10,000 purchase, or a Гадаад хэл pick (2026-11-13). Raw scores only; no 180-point conversion or pass/fail claim.
 - All questions are original drafts awaiting Japanese-teacher review. Situational text replaces illustrations. Synthetic tracks are shorter than the official listening window; remaining time is answer checking. Native-speaker listening review and learner calibration remain pending.
@@ -119,6 +141,7 @@ Part of the [project guide](../PROJECT.md) (was PROJECT.md section 3). "Section 
   (correct × 5 per section, 200 in all; 120 is the usual pass mark), stated as not an official or equated score. Access is the ₮10,000 per-mock purchase or a Гадаад хэл pick (2026-11-13). Practice mode, the practice assistant and the review coach (`hsk` chat subject) get
   pictures as their descriptions (`hsk/describe.ts`). Tests: `tests/hsk.test.mjs`, browser group `hsk` (`tests/hsk_smoke.py`).
 - All items, pictures and keys are DeepSeek Harness drafts (2026-11-10) awaiting a Chinese teacher's review; not HSK 3.0.
+  Superseded on 2026-11-19 by the HSK 3.0 forms below (same slugs).
 
 ### HSK 2 (2026-11-16)
 
@@ -142,14 +165,79 @@ Part of the [project guide](../PROJECT.md) (was PROJECT.md section 3). "Section 
   (35 MB in all, same `/audio/hsk` route). In a sitting the page follows the item being read (`hskPlayingItem`), so Part 2 turns
   from its first picture set to its second. No Whisper round trip and no human listening has been done for these tracks.
 - Results use the same conversion: each section out of 100 (a correct answer is 2.86 in Listening, 4 in Reading), 200 in all.
-- All items, pictures and keys are Claude Code (Fable 5.2) drafts awaiting a Chinese teacher's review. Tests: the
-  HSK 2 cases in `tests/hsk.test.mjs` and the HSK 2 section of `tests/hsk_smoke.py` (practice, a full sitting, results).
+- All items, pictures and keys are Claude Code (Fable 5.2) drafts awaiting a Chinese teacher's review. Superseded on
+  2026-11-19 by the HSK 3.0 forms below (same slugs); the tests now cover 3.0.
+
+### HSK 3.0 HSK 1 and HSK 2 (2026-11-19)
+
+- The owner asked to move HSK 1–2 to HSK 3.0 (the 2026 paper and word list). The six mocks keep their slugs
+  (`hsk1-mock-01` … `hsk2-mock-03`) and question-id pattern; the content is replaced (definition version 2). HSK 1: Listening
+  20 in 15 minutes (word → 3 pictures, sentence → the word it contains, dialogue → picture bank, statement + question), Reading
+  20 in 25 (sentence → picture, question → answer, word into a gap, short text + ★ question with three answers; layout `RQ`).
+  HSK 2: Listening 25 in 20 (sentence → 3 pictures, dialogues → pictures in two sets, dialogue + question), Reading 25 in 30
+  (sentence → picture, word into a gap, sentence matching in two sets, `RQ`), and a new Writing stage `hsk-w`, 10 in 10:
+  `hsk-w-1` (layout `W1`: a word with one character drawn as its shown component and a dashed box, pick the missing component
+  from an A–F bank) and `hsk-w-2` (layout `W2`: type the character whose pinyin is printed in the gap; kind `short`, matcher
+  `text`, answers only from the 100 HSK 1–2 handwriting characters). 40 and 60 minutes, the papers' totals (owner,
+  2026-11-19; Listening follows the recording, Reading has the rest); 300 questions.
+- Forms 04–06 (owner request the same day): `hsk1-mock-04`–`06` and `hsk2-mock-04`–`06`, the same paper with wholly new
+  items (`MockExmps/HSK3/_source/forms456.py`) and pictures (`_source/scenes3.py`: the HSK 1–2 drawings plus 24 new scenes,
+  each form in its own palette). Twelve mocks, 600 questions. They repeat form 01's shared worked examples; every six-entry
+  bank gives one entry to the form's own example. `build.py` leaves forms 01–03 byte-identical, and the site code reads the
+  catalogue, so only the tests' counts changed. Audio: the six new slugs only (24 Kokoro tracks: HSK 1 671–684 s, HSK 2 897–902 s); forms 01–03
+  changed only by the audio fixes below. The new pictures are named by a hash of the drawing, so a URL never names the answer.
+  Recheck the same day (owner request): authored pinyin against pypinyin, every picture against its key and the figures'
+  gender, a key-free re-read and a near-duplicate scan against forms 01–03. 24 items were reworded or replaced
+  (replies that fitted two questions, lines that nearly repeated another form, 茶 split as 艹 + 余 and 多 as 夕 + 夕 in
+  Writing 1). The generator's `speech_pinyin` now keeps 可能 as ke-neng (its splitter read ken-eng). A faster-whisper
+  large-v3 round trip on all 135 new listening items: mean toneless match 0.968; the misses left are tone-only on single
+  words (下雪, 学生, 钱) and Whisper's trailing hallucinations. Forced-alignment scores of the single-word L1 items, with
+  forms 01–03 as the baseline, showed that Kokoro cannot say 饺子 on its own (heard as xiǎo in every voice, spelling and
+  speed tried): hsk1-mock-04 L1 1 is now 苹果, and hsk1-mock-06 L1 starts with the man (`L1StartsWithMan`), which every
+  word there suited better. Blind solve (owner request; a Sonnet subagent answered key-free sheets of the 300 questions
+  with transcripts and picture descriptions): 298/300 matched the key. One miss was real: hsk2-mock-05 W1 51, tāmen + 也,
+  is 他们 or 她们 with both 亻 and 女 in the bank (now 好看, 子 + 女). Its flags led to five more rewrites: 楼下 from the
+  sixth floor next to a 五楼 option (hsk2-05 R4 48), 走一个小时的路, colloquial 哪个楼, an HSK 1 sum (hsk1-05 L4 18), a
+  weak picture match (hsk1-04 R1 25) and 晚上六点下班. Its level flags (正在, 中学生, 下班, 妻子) were 2.0-list false
+  alarms. Forms 01–03 audio, fixed the same night: the 可能 narrator questions (hsk2-mock-01 L3 24, -02 L3 18, -03 L3
+  23–24; Part 3 regenerated, now heard as 可能) and form 01 L1, which now starts with the man (`OLD_L1_MAN_FIRST` in
+  `build.py`; 米饭 scored −14 in the woman's voice and +11 now). Their texts and the other parts' tracks are unchanged.
+  Not done: human listening and a teacher's review. `tests/hsk.test.mjs`,
+  `tests/hsk_smoke.py` and the pack check in `tests/language-decks.test.mjs` now expect 12 mocks / 600 ids.
+- Independent check of forms 04–06 (2026-11-20, Claude Code, Opus 5.5; owner request; read only, nothing changed):
+  every listening part's `scriptSha256` matches its current set, so no track is stale after the late rewrites, and the
+  site's keys match the pack's. On a fresh 3001 build `npm run check -- hsk` passed (it covers form 01 of each level), and a
+  scripted pass bought each of the six forms (simulated payment), found no key in the practice or timed views, loaded all
+  172 pictures and every audio part, and scored 40/40 or 60/60 from the server's keys. A second key-free Sonnet solve:
+  HSK 2 180/180; HSK 1 117/120, the three misses one shifted row in hsk1-mock-04 R3 (the keys 岁, 下雨, 漂亮 are right).
+  Its flags were judged sound: 好□ shown as 马 (女 would make 妈, but 好妈 is no word and the pinyin is toneless ma),
+  □电话 shown as 丁 (叮 is dīng), 丩 for 叫 (rare, but Noto Sans SC draws it at 1440 and 390) and 你怎么了？ → 我有点儿冷。
+  A near-duplicate scan among forms 04–06 found only four stock phrases. Still not done: human listening and a teacher's
+  review.
+- Pack `MockExmps/HSK3` (never deployed; README there): `_source/content.py` (new items, rewrites of kept 2.0 items, Writing
+  banks) and `_source/build.py`, which reads the deck lists from `scripts/language-decks/lists.mjs` and stops if any printed or
+  heard word is outside them. `scripts/build-hsk-mocks.mjs` now converts this pack only (the 2.0 packs `MockExmps/HSK` and
+  `MockExmps/HSK2` stay as sources; it still copies the 2.0 example pictures the free HSK 1 mock shows).
+- Audio: `scripts/generate-hsk3-audio.py` (same Kokoro voices and pinyin-driven speech as the HSK 1 generator) wrote 21 tracks
+  (HSK 1 four, HSK 2 three per mock; the HSK 2 part-4 files were removed) with `paper: 'HSK 3.0'` manifests and new timings.
+  `listeningFile` serves only the parts a mock has. No Whisper round trip or human listening yet.
+- Views: `hsk/view.tsx` draws `ComposeWord` (W1) and `BlankSentence` (W2, with its one-character input and the key after a
+  wrong check); the practice page hides its generic short-answer box for HSK; the engine adds the 书写 section; the result's
+  practice score is 100 per section (200 or 300) with a 60% guide mark (the 2.0 pass share; 3.0 thresholds are not published);
+  the briefing lists the structure from the paper's own groups. The AI description of a W1 item hides the gap character.
+- Caveats: old attempts and practice results share slugs, ids and audio file names with the new content (an HSK 2 sitting
+  started on 2.0 and still open would ask for a part 4 that is gone). The 3.0 layout follows public descriptions; no official
+  sample paper was available. All items await a Chinese teacher's review. The free HSK 1 half mock is still 2.0.
+- Tests: `tests/hsk.test.mjs` (rewritten for 3.0) and `tests/hsk_smoke.py` (3.0 practice incl. Writing, full sittings).
 
 ### ЭЕШ mocks (the ЭЕШ plan; called University Prep before 2026-11-13)
 
 - 194 imported papers live on the site, all with program `entrance`:
   - `eesh-math-<year>-m1`–`m5`: 55 Mathematics forms for 2015–2026 (2020 excluded).
-  - `eesh-physics-<year>-p1`–`p5`: 60 Physics forms for 2015–2026.
+  - `eesh-physics-<year>-p1`–`p5`: 60 Physics forms for 2015–2026. Since 2026-11-20 each year follows its own paper's
+    item order and points (`MockExmps/Physics/<year>/blueprint.json`, sources in the Physics README); 2024 (no paper
+    found) copies 2026, and the 2015, 2017, 2021 and 2022 Part II tasks follow 2026's. Each description says which.
+    `tests/mock-fixes.test.mjs` runs its checks for a 2026 item only on the papers whose blueprint uses that item.
   - `eesh-chemistry-<year>-c1`–`c3`: 18 Chemistry forms for 2020–2023, 2025 and 2026 (no 2024 reference was found).
     40 A–E items (68 points) and four Part II tasks of eight one-digit cells (32 points); 100 minutes.
     2020–2023 Part II tasks are provisional (no official Part II source); the task says so.
@@ -164,7 +252,8 @@ Part of the [project guide](../PROJECT.md) (was PROJECT.md section 3). "Section 
   `catalog-data.ts`. `next.config.ts` traces the content JSON for every server route. Rerun it after editing
   `MockExmps`, naming the subjects you changed (`node scripts/build-entrance-mocks.mjs biology chemistry`): the
   committed Mathematics/Physics output differs from what the script now produces from `MockExmps` (diagram sizes
-  were adjusted after generation), so a full rebuild rewrites those 115 papers. The catalogue is always rebuilt from
+  were adjusted after generation), so a full rebuild rewrites those 115 papers; the difference is the crop by `scripts/trim-figure-svgs.py`, so after
+  rebuilding Mathematics or Physics run it for that subject (`python scripts/trim-figure-svgs.py physics`). The catalogue is always rebuilt from
   every pack. Chemistry/Biology figures are the packs' own SVG files; an explanation shorter than 12 characters
   is shown after its answer ("H₂SO₄: +6."). Biology's generic "№ / Бүтэц / жишээ" tables are left out when every
   word in them is already in the question or its options (360 items); every other figure is shown. The Biology
@@ -291,6 +380,7 @@ Part of the [project guide](../PROJECT.md) (was PROJECT.md section 3). "Section 
   explanations and writing models), the answer-free SVG pictures in `public/exam-assets/topik/<slug>/` (TOPIK Ⅰ L15–16 and
   TOPIK Ⅱ L1–2; TOPIK Ⅱ L3 and reading charts are drawn from data) and the client-safe `src/modules/exams/topik/catalog.json`.
   Question ids `topik{1,2}-0N-{l,w,r}NN`; group ids such as `topik-l-15` are also the practice sections.
+- Hub cards show three lines of the topic list; the briefing shows it whole (2026-11-19).
 - Views in `src/modules/exams/topik/` (hub, briefing, booklet-style section with ①–④, picture and chart options, practice
   audio, results, `topik.css`). Writing 51–54 are essay questions left ungraded: results show the model answers and rubric,
   and the student may score them for a TOPIK Ⅱ total out of 300 on the page (kept in the page only). Listening and Reading
@@ -312,7 +402,7 @@ Part of the [project guide](../PROJECT.md) (was PROJECT.md section 3). "Section 
 
 ### AI grading of Writing and Speaking (owner request 2026-11-18)
 
-Owner: "fully automated website", no teacher review. When an IELTS or TOEFL results page opens, it asks
+Owner: "fully automated website", no teacher review. When an IELTS or TOEFL result (Review page) opens, it asks
 `POST /api/mock-attempts/[id]/grade` (`{part: "writing"|"speaking"}`; same origin, own attempt with its access rule, finished,
 no other open sitting) once per part; `GET` reads the saved grades. Included in the mock's price: no credits.
 - Code: `src/modules/exams/ai-grading/` (`contracts.ts` pure: what is graded, prompts, reply checks, band maths;
@@ -338,3 +428,73 @@ no other open sitting) once per part; `GET` reads the saved grades. Included in 
   suites' mock and sets `GRADING_TRANSCRIBE=off`, so suites never send recordings to DeepInfra.
 - First live run (2026-11-18, dev 3009, learner-style answers): IELTS Writing 6 (6.5 / 6), Speaking 6 in 38 s; TOEFL Writing
   4 / 4, Speaking 3.5 in 21 s. The credit-priced Speaking report after a mock (`speaking/report`) is unchanged.
+
+### Admin skip and finish (owner request 2026-11-19)
+
+Owner: "make admins can skip through parts during timed mock exam and can finish it to see result." The owner approved
+this as the one exception to the no-timer-bypass rule. On an open sitting, admins see «Дараагийн хэсэг →» (not on the last
+part) and «Дуусгаж дүн харах» beside «Шалгалтыг зогсоох» (shared status row, JLPT answer sheet, ЭЕШ status line), each with
+a confirm (`exams/admin-skip.tsx`). The attempt page passes `admin` from `isAdmin`; that only shows the buttons.
+- `POST /api/mock-attempts/[id]/skip` (same origin, body `{mode:"stage"|"finish", revision, stageId, responses, flags}`)
+  runs `skipMock`: `isAdmin` first (403 otherwise; hosted demo accounts never count), own sitting only, the usual 410 and
+  access checks, then the page's answers for the current stage are saved with the autosave's validation and revision check.
+  `skipStages` (engine) closes the stage now as if its time ran out (Module 2 routing from the answers, next stage with full
+  time); "finish" closes every remaining stage. A stage whose time had already run out just expires and nothing is skipped.
+- Each closed stage is kept in the sitting's `state.skipped` with its time, and one `skip-mock-stage` row goes to the admin
+  audit (History tab: «Mock хэсэг алгассан (админ)»). The result (Review page) shows «Админ алгассан» with the closed parts.
+- Skipped sittings are ordinary `SUBMITTED` results otherwise: they show in «Миний үр дүн», and IELTS/TOEFL mock grading
+  runs as after any finish. Checks: `tests/admin-skip.test.mjs`; live QA 2026-11-19 on dev 3011 (non-admin 403, JLPT
+  skip then finish, IELTS free finish, ЭЕШ finish-only, audit rows).
+
+### One result page: the Review layout (owner request 2026-11-19)
+
+Owner, on the plain JLPT result: "after finish the mock exams, result page should like the review"; scope picked: all mocks.
+Every finished mock now opens `/workspace/review/[id]` (`workspace/review.tsx`): score ring, section bars, the programme's
+panel, weak skills, question breakdown and the AI coach. The per-programme `results.tsx` files (JLPT, HSK, TOPIK, TOEFL, ЭЕШ)
+and the runner's generic result block are gone.
+- `/exams/attempts/[id]` redirects a finished sitting to the review page. A sitting that ends while open shows
+  `exams/open-review.tsx`, which moves there at once, but waits while a speaking recording is uploading or failed (its
+  download link stays on screen).
+- `workspace/review-extras.tsx` holds each programme's details: HSK /200 practice score and pinyin toggle; TOPIK level with the
+  Writing self-score (page only, never saved; «Бичих» filter); TOEFL modules, Build a Sentence, `MockGrades`, notes and
+  recordings; IELTS `MockGrades`, recordings and the Speaking Lab card when the Lab is on; SAT notes. HSK and TOPIK questions
+  keep their printed layout (`HskQuestion`, `TopikQuestion`, Writing grid with model answer and rubric).
+- Weak skills link to that section's practice for JLPT/HSK/TOPIK. «Админ алгассан» and the JSON download moved here.
+- Backup and restore script: `artifacts/design-backup-2026-11-19-results/`.
+
+### Answer-sheet sittings and study-split practice (owner request 2026-11-19)
+
+Owner: "change other exams design and layout also, and practice mode". Picks from wireframes: answer-sheet sidebar for the
+SAT, IELTS, TOEFL, HSK and TOPIK sittings (as JLPT), study split for practice in every programme including JLPT, ЭЕШ unchanged.
+- Sitting: `exams/sheet.tsx` (`SheetSitting`, `sheet.css`). The runner passes a `chrome` (title, stage list, directions,
+  clock, save status, stop/admin skip buttons); SAT/IELTS render it in the runner, HSK/TOPIK/TOEFL sections render it
+  themselves. Left: stage heading and page. Right, sticky: clock, save state, Pinyin (HSK), stages, numbered answer sheet per
+  part/task (HSK parts, TOEFL Reading tasks, TOPIK one 답안지 row, SAT/IELTS the stage) that jumps to a question; Listening
+  sheets only show progress where the page follows the recording (IELTS, TOEFL); calculator, directions, stop. Under
+  1100 px it is a sticky top bar whose sheet opens on demand. The old toolbar, meta row, question map, footer, HSK part tabs,
+  TOPIK side sheet and TOEFL page tabs are gone.
+- Practice (`exam-practice/workspace.tsx`, `practice.css`; `eesh-*` keep the old layout): left rail with form, score, save
+  state, parts with progress bars, filter, answer grid with legend, retry-wrong, ふりがな/Pinyin, calculator and links;
+  middle the question with prev/next; right panel with check, answer, explanation, transcript, retry and AI help. Under
+  1280 px the panel drops under the question; under 900 px everything stacks. IELTS Listening and the AI examiner use rail +
+  main only.
+- Backup and restore script: `artifacts/design-backup-2026-11-19-sheet/`.
+
+### Stopping an open mock (owner request 2026-11-18)
+
+Owner: "all timed ongoing mocks, users can force end the mocks, forced end mocks will not save in reviews. Can be force end
+during exams or in reviews page." Every timed programme (SAT, IELTS, TOEFL, JLPT, HSK, TOPIK, ЭЕШ, free mocks) offers
+«Шалгалтыг зогсоох» in the exam screen's status line (`runner.tsx`; ЭЕШ in `entrance/session.tsx`), and `/workspace/review`
+offers «Зогсоох» beside each open sitting (beside the link, not in it). Both open one confirm modal (`exams/end-mock.tsx`).
+- `POST /api/mock-attempts/[id]/end` (same origin, signed-in owner) runs `endMock` in `exams/service.ts`: under the revision
+  check, an open sitting becomes `status "ABANDONED"` with `activeKey` cleared, and its recordings and grades are deleted. A
+  sitting whose last deadline has already passed is saved as finished instead (`SUBMITTED`; the page opens its result), and a
+  finished one is never touched. Picks and purchases are not refunded: access is per plan month or 7 days, not per sitting, so a
+  new start is simply a fresh sitting with full time.
+- `accessMock` and `ownMock` (the only by-id readers: pages, saves, audio, recordings, grading, essay reviews, tutor, chat, mobile
+  review) refuse a stopped sitting with 410. The exam and review pages redirect to `/workspace/review?ended=1`, which says nothing
+  was kept; an exam left open in another tab leaves on its next save or poll. Lists already filter `SUBMITTED`/`IN_PROGRESS`, so a
+  stopped sitting never shows in results, counts or the open list. Admin «Оролдлого» shows it as «Зогсоосон» with its own filter.
+- Rule texts in the briefings and the exam detail page say a section cannot end early but the mock can be stopped unsaved.
+- Checks: `tests/end-mock.test.mjs`; live QA 2026-11-18 on dev 3011 (list, modal, exam screen, ЭЕШ, other-tab stop, stopped
+  URLs, no-Origin 403, dark, 320 px).

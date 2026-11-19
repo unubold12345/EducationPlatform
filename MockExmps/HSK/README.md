@@ -1,5 +1,7 @@
 # Original HSK 1 mock exams — offline pack
 
+> Superseded on 2026-11-19 by the HSK 3.0 pack (`MockExmps/HSK3`), which the site now builds from; this pack is the source of the items HSK 3.0 kept. `scripts/build-hsk-mocks.mjs` no longer reads it (it only copies its shared example pictures for the free HSK 1 mock).
+
 Three complete HSK 1 mock forms, prepared on 2026-11-10 with DeepSeek Harness (deepseek-flash). **Offline authoring pack only:** it is not imported by the website, has no database rows, and is excluded from deployment in `.vercelignore`. Every question, dialogue, key, explanation and picture is original; no official HSK question, recording, picture or answer key is reproduced.
 
 The forms follow the **current regular HSK 1 (HSK 2.0) paper used for 2026 test dates**: 40 items, Listening 20 and Reading 20, about 40 minutes including five minutes for personal information, with the picture-based tasks the official paper gives to candidates. The official section structure and the 150-word HSK 1 syllabus are references only. See [SOURCES.md](SOURCES.md) for the checked sources and [ADMINISTRATION.md](ADMINISTRATION.md) for how to run a sitting.

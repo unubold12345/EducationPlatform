@@ -79,7 +79,7 @@ with sync_playwright() as p:
     repeats=page.evaluate("""async () => Promise.all([1,2].map(async()=>{const r=await fetch('/api/mock-attempts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({slug:'sat-full-01'})});return r.json()}))""")
     assert all(r["id"]==sat_id for r in repeats)
     page.get_by_role("radio").first.check()
-    expect(page.locator(".exam-session-meta [role=status]")).to_have_text("Хадгалсан")
+    expect(page.locator(":is(.exam-session-meta,.exam-sheet,.study-rail) [role=status]")).to_have_text("Хадгалсан")
     saved=context.request.get(endpoint).json()
     deadline=saved["deadline"]
     page.reload()
@@ -120,7 +120,7 @@ with sync_playwright() as p:
             active_mobile(page,stage_id)
         fixture("deadline",sat_id,1500)
         page.reload()
-        expect(page.locator(".exam-toolbar h1")).not_to_have_text(data["stage"]["title"],timeout=15000) if stage_id!="sat-math-2" else expect(page.locator(".exam-results")).to_be_visible(timeout=15000)
+        expect(page.locator(":is(.exam-toolbar,.study-head,.sheet-head) h1")).not_to_have_text(data["stage"]["title"],timeout=15000) if stage_id!="sat-math-2" else expect(page.locator(".wsp-review")).to_be_visible(timeout=15000)
     report=context.request.get(endpoint).json()
     assert report["finishedAt"] and len(report["report"]["reviews"])==98
     assert [(s["correct"],s["total"]) for s in report["report"]["sections"]]==[(50,50),(40,40)]
@@ -183,8 +183,8 @@ with sync_playwright() as p:
             page.reload()
             expect(page.locator(".speaking-recorder")).to_contain_text("Яриа бичигдэж байна",timeout=10000)
             if stage_id=="ielts-speaking-2":page.screenshot(path=str(ART/"ielts-speaking-desktop.png"),full_page=True)
-            if stage_id=="ielts-speaking-3":expect(page.locator(".exam-results")).to_be_visible(timeout=15000)
-            else:expect(page.locator(".exam-toolbar h1")).not_to_have_text(data["stage"]["title"],timeout=15000)
+            if stage_id=="ielts-speaking-3":expect(page.locator(".wsp-review")).to_be_visible(timeout=20000)
+            else:expect(page.locator(":is(.exam-toolbar,.study-head,.sheet-head) h1")).not_to_have_text(data["stage"]["title"],timeout=15000)
             page.wait_for_timeout(1500)
         else:
             fixture("deadline",ielts_id)
@@ -199,7 +199,7 @@ with sync_playwright() as p:
         assert other.request.get(endpoint+"/recordings/"+recording["stageId"]).status==404
         upload_headers={**ORIGIN,"Content-Type":recorded.headers["content-type"]}
         retry=context.request.put(endpoint+"/recordings/"+recording["stageId"],headers=upload_headers,data=recorded.body())
-        assert retry.status==200
+        assert retry.status==200,(retry.status,retry.text()[:200])
         changed=context.request.put(endpoint+"/recordings/"+recording["stageId"],headers=upload_headers,data=recorded.body()+b"changed")
         assert changed.status==409
     page.reload()

@@ -34,17 +34,19 @@ const REPLY = {
 test("the Claude review is a plan feature: none for free accounts, Basic 2 and Pro 5 a plan month", () => {
   assert.equal(EXPERT_MODEL, "claude-opus-5-5");
   assert.equal(EXPERT_LIMITS.freeReviews, 0);
-  assert.deepEqual(subscriptionPlans.map(plan => [plan.program, plan.expertReviews]), [["entrance", 0], ["language_basic", 2], ["language", 5]]);
-  assert.deepEqual(legacyPlans.map(plan => [plan.program, plan.expertReviews]), [["ielts", 5], ["sat", 0]]);
+  assert.deepEqual(subscriptionPlans.map(plan => [plan.program, plan.expertReviews]), [["entrance", 0], ["english_basic", 2], ["english_pro", 5], ["asian_basic", 0], ["asian_pro", 0]]);
+  assert.deepEqual(legacyPlans.map(plan => [plan.program, plan.expertReviews]), [["language_basic", 2], ["language", 5], ["ielts", 5], ["sat", 0]]);
   assert.match(subscriptionPlans[1].features.join("|"), /Шинжээчийн эссэ үнэлгээ: сард 2/);
   assert.match(subscriptionPlans[2].features.join("|"), /Шинжээчийн эссэ үнэлгээ: сард 5/);
   assert.equal(expertPlan([]), null, "no plan: no Claude review");
   assert.equal(expertPlan(["entrance"]), null, "ЭЕШ adds no reviews");
   assert.equal(expertPlan(["language_basic"]).reviews, 2);
-  assert.deepEqual(expertPlan(["language_basic", "language"]), { program: "language", title: "Гадаад хэл Pro", reviews: 5 }, "the largest plan wins");
+  assert.deepEqual(expertPlan(["language_basic", "language"]), { program: "language", title: "Гадаад хэл Pro (хуучин багц)", reviews: 5 }, "the largest plan wins");
+  assert.deepEqual(expertPlan(["english_basic", "english_pro"]), { program: "english_pro", title: "Англи хэл Pro", reviews: 5 });
+  assert.equal(expertPlan(["asian_pro"]), null, "the Essay Studio is English: the Asian plans add no reviews");
   assert.equal(expertPlan(["ielts"]).reviews, 5);
   const free = expertSpentMessage({ plan: null, limit: 0, used: 0, remaining: 0, resetsAt: null, planEnds: false });
-  assert.match(free, /Гадаад хэл Basic \(сард 2\), Pro \(сард 5\) багцад багтана\. Бүрэн үнэлгээг кредитээр/);
+  assert.match(free, /Англи хэл Basic \(сард 2\), Pro \(сард 5\) багцад багтана\. Бүрэн үнэлгээг кредитээр/);
   assert.doesNotMatch(free, /Үнэгүй/);
   // Students never see a provider or model name (owner rule 2026-11-18).
   for (const message of [free, expertSpentMessage({ plan: "Гадаад хэл Basic", limit: 2, used: 2, remaining: 0, resetsAt: 1, planEnds: false })]) assert.doesNotMatch(message, /Claude|DeepSeek|Anthropic|Opus/i);
@@ -178,7 +180,9 @@ test("the studio's full review is the same examiner on DeepSeek, paid with credi
     });
   assert.ok(start > 0 && order.every((at, i) => at >= 0 && (i === 0 || at > order[i - 1])), `validate, plan check, key, hold credits, lease, think, check, re-check, save: ${order}`);
   assert.match(strong, /max_tokens:AI_ACTIONS\["writing-review"\]\.outputTokens/);
-  assert.match(strong, /role:"system",content:strongSystem\(body\.language\)/);
+  // The task picks the rater (2026-11-19): the IELTS examiner, or the ETS rater for a TOEFL email or discussion.
+  assert.match(strong, /role:"system",content:strongSystem\(body\.language,reviewExam\(body\.task\)\)/);
+  assert.match(strong, /normalizeExpertReview\(JSON\.parse\(choice\.message\.content\),body\.essay,reviewExam\(body\.task\)\)/);
   assert.match(strong, /Never echo a provider error body/);
   assert.match(strong, /DEEPSEEK_BASE_URL\?\.trim\(\)\|\|"https:\/\/api\.deepseek\.com"/);
   const route = text("src/app/api/labs/ielts-writing/review/route.ts");

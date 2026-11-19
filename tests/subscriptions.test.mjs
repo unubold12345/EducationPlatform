@@ -1,30 +1,43 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
-import { subscriptionPlans,legacyPlans,allPlans,findSubscriptionPlan,findAnyPlan,planCovers,salePlanFor,planMonth,addCalendarMonth,formatBillingDate,chargedPrice,validSalePrice,saleEndFromDate,planHomeHref } from "../src/modules/subscriptions/plans.ts";
+import { subscriptionPlans,legacyPlans,allPlans,findSubscriptionPlan,findAnyPlan,planCovers,salePlanFor,planMonth,addCalendarMonth,formatBillingDate,chargedPrice,validSalePrice,saleEndFromDate,planHomeHref,planWorkshopFor,workshopPlansFor,PRO_OF } from "../src/modules/subscriptions/plans.ts";
 import { MOCK_PURCHASE_DAYS,MOCK_PURCHASE_MS,MOCK_PRICE_TERM } from "../src/modules/exams/pricing.ts";
 import { DEFAULT_CREDIT_PACKS,validCreditPacks } from "../src/modules/credits/pricing.ts";
 const text=path=>readFileSync(new URL("../"+path,import.meta.url),"utf8");
-test("three plans: ЭЕШ, Гадаад хэл Basic and Pro (owner rules 2026-11-13 and 2026-11-17); IELTS and SAT are retired",()=>{
-  assert.deepEqual(subscriptionPlans.map(p=>[p.program,p.title,p.amountMnt]),[["entrance","ЭЕШ",29900],["language_basic","Гадаад хэл Basic",29900],["language","Гадаад хэл Pro",59900]]);
-  // What each plan includes: monthly AI credits, bank size, saved file exams.
-  assert.deepEqual(subscriptionPlans.map(p=>[p.program,p.aiCredits,p.vocabularyWords,p.savedExams]),[["entrance",1200,500,5],["language_basic",1200,1500,5],["language",3000,3000,15]]);
+test("five plans: ЭЕШ, Англи хэл Basic / Pro and Ази хэл Basic / Pro (owner rule 2026-11-19); Гадаад хэл, IELTS and SAT are retired",()=>{
+  assert.deepEqual(subscriptionPlans.map(p=>[p.program,p.title,p.amountMnt]),[["entrance","ЭЕШ",29900],["english_basic","Англи хэл Basic",29900],["english_pro","Англи хэл Pro",59900],["asian_basic","Ази хэл Basic",29900],["asian_pro","Ази хэл Pro",59900]]);
+  // What each plan includes: monthly AI credits, bank size, saved file exams (the same Basic and Pro limits as Гадаад хэл had).
+  assert.deepEqual(subscriptionPlans.map(p=>[p.program,p.aiCredits,p.vocabularyWords,p.savedExams]),[["entrance",1200,500,5],["english_basic",1200,1500,5],["english_pro",3000,3000,15],["asian_basic",1200,1500,5],["asian_pro",3000,3000,15]]);
   assert.equal(findSubscriptionPlan("all"),undefined);
   assert.equal(findSubscriptionPlan("../../language"),undefined);
   // Retired plans are not sold or renewed, but a subscription bought before the change is still recognised.
-  for(const program of ["ielts","sat"]){assert.equal(findSubscriptionPlan(program),undefined,program);assert.equal(findAnyPlan(program)?.program,program);}
-  assert.deepEqual(legacyPlans.map(p=>p.program),["ielts","sat"]);
+  for(const program of ["language_basic","language","ielts","sat"]){assert.equal(findSubscriptionPlan(program),undefined,program);assert.equal(findAnyPlan(program)?.program,program);}
+  assert.deepEqual(legacyPlans.map(p=>p.program),["language_basic","language","ielts","sat"]);
+  // Every program a row may name is allowed by the latest CHECK constraint.
+  const migration=text("prisma/migrations/20261119120000_english_asian_plans/migration.sql");
+  for(const plan of allPlans)assert.match(migration,new RegExp(`'${plan.program}'.*'${plan.program}'`,"s"),plan.program);
 });
-test("ЭЕШ opens every ЭЕШ mock; Basic and Pro open every non-ЭЕШ mock and the workshops, with no monthly picks",()=>{
-  const entrance=findSubscriptionPlan("entrance"),basic=findSubscriptionPlan("language_basic"),pro=findSubscriptionPlan("language");
+test("ЭЕШ opens every ЭЕШ mock; Англи хэл SAT, IELTS and TOEFL, Ази хэл JLPT, HSK and TOPIK, each with its workshops and no monthly picks",()=>{
+  const entrance=findSubscriptionPlan("entrance");
   assert.equal(entrance.mockPicks,null);assert.deepEqual(entrance.exams,["entrance"]);assert.equal(entrance.workshops,false);
-  for(const language of [basic,pro]){
-    assert.equal(language.mockPicks,null);assert.equal(language.workshops,true);assert.deepEqual(language.exams,["sat","ielts","toefl","jlpt","hsk","topik"]);
-    for(const exam of ["sat","ielts","toefl","jlpt","hsk","topik"])assert.ok(planCovers(language,exam),exam);
-    assert.ok(!planCovers(language,"entrance"),"Гадаад хэл never opens ЭЕШ mocks");
+  for(const [family,exams,others] of [["english",["sat","ielts","toefl"],["jlpt","hsk","topik"]],["asian",["jlpt","hsk","topik"],["sat","ielts","toefl"]]])for(const tier of ["basic","pro"]){
+    const plan=findSubscriptionPlan(family+"_"+tier);
+    assert.equal(plan.mockPicks,null);assert.equal(plan.workshops,true);assert.deepEqual(plan.exams,exams);
+    for(const exam of exams){assert.ok(planCovers(plan,exam),exam);assert.ok(planWorkshopFor(plan,exam),exam);}
+    for(const exam of [...others,"entrance"]){assert.ok(!planCovers(plan,exam),plan.program+" "+exam);assert.ok(!planWorkshopFor(plan,exam),plan.program+" "+exam);}
+    assert.equal(planHomeHref(plan.program),"/exams");
   }
   // The "or take the plan" link offers the cheapest plan that covers the programme.
-  for(const exam of ["sat","ielts","toefl","jlpt","hsk","topik"])assert.equal(salePlanFor(exam)?.program,"language_basic",exam);
+  for(const exam of ["sat","ielts","toefl"])assert.equal(salePlanFor(exam)?.program,"english_basic",exam);
+  for(const exam of ["jlpt","hsk","topik"])assert.equal(salePlanFor(exam)?.program,"asian_basic",exam);
+  assert.deepEqual(workshopPlansFor("jlpt").map(p=>p.program),["asian_basic","asian_pro"]);
+  assert.deepEqual(workshopPlansFor("toefl").map(p=>p.program),["english_basic","english_pro"]);
+  assert.deepEqual(workshopPlansFor("entrance"),[]);
+  // A retired Гадаад хэл plan keeps every mock and workshop until it ends; the retired IELTS plan only IELTS.
+  for(const program of ["language_basic","language"])for(const exam of ["sat","ielts","toefl","jlpt","hsk","topik"])assert.ok(planWorkshopFor(findAnyPlan(program),exam),program+" "+exam);
+  assert.ok(planWorkshopFor(findAnyPlan("ielts"),"ielts"));assert.ok(!planWorkshopFor(findAnyPlan("ielts"),"toefl"));assert.ok(!planWorkshopFor(findAnyPlan("sat"),"sat"));
+  assert.ok(!planWorkshopFor(undefined,"ielts"));
   assert.equal(planHomeHref("entrance"),"/programs/entrance");assert.equal(planHomeHref("language"),"/exams");assert.equal(planHomeHref("language_basic"),"/exams");
   assert.equal(salePlanFor("entrance")?.program,"entrance");
   assert.equal(salePlanFor("unknown"),undefined);
@@ -65,7 +78,7 @@ test("mock access is decided on the server: free, bought, an unlimited plan, or 
   const exams=text("src/modules/exams/service.ts");
   assert.match(exams,/const access=await mockAccess\(userId,slug,definition\.program\);\n  if \(!opensMock\(access\)\) throw new MockAccessRequired\(slug\);/);
   assert.match(exams,/const subscriptionAccess=access\.kind==="plan"\|\|access\.kind==="picked"\|\|\(access\.kind==="purchase"&&access\.expiresAt!==null\);/);
-  assert.equal((exams.match(/!row\.subscriptionAccess&&!await mayUseMock\(/g)??[]).length,2,"accessMock and ownMock");
+  assert.equal((exams.match(/!row\.subscriptionAccess&&!await mayUseMock\(/g)??[]).length,3,"accessMock, skipMock and ownMock");
   assert.match(text("src/modules/exam-practice/service.ts"),/return mayUseMock\(userId, slug, definition\.program\);/);
   const route=text("src/app/api/mock-picks/route.ts");
   assert.ok(route.indexOf("checkOrigin(request)")<route.indexOf("apiUser(request)"));
@@ -147,12 +160,14 @@ test("a plan sale charges the lower price until it ends, and never raises a pric
   assert.match(admin,/if\(amount!==null&&!validSalePrice\(amount,regular\)\)throw new ApiError\(400/);
   assert.match(admin,/dropSale/,"a regular price at or below the sale clears the sale");
 });
-test("Basic is not sold on top of an active Pro",()=>{
-  assert.match(text("src/modules/subscriptions/service.ts"),/plan\.program==="language_basic"&&await hasSubscription\(userId,"language"\)\)throw new ApiError\(409/);
+test("Basic is not sold on top of an active Pro of its family or the retired Гадаад хэл Pro",()=>{
+  assert.deepEqual(PRO_OF,{english_basic:["english_pro","language"],asian_basic:["asian_pro","language"]});
+  assert.match(text("src/modules/subscriptions/service.ts"),/for\(const pro of PRO_OF\[plan\.program\]\?\?\[\]\)if\(await hasSubscription\(userId,pro\)\)throw new ApiError\(409/);
 });
 test("credit packs are a list of 1-12 different sizes with a default set",()=>{
-  assert.deepEqual(DEFAULT_CREDIT_PACKS.map(pack=>pack.credits),[200,500,1000,2000,5000]);
-  for(const pack of DEFAULT_CREDIT_PACKS)assert.equal(pack.amountMnt,pack.credits*5,String(pack.credits));
+  assert.deepEqual(DEFAULT_CREDIT_PACKS.map(pack=>pack.credits),[200,500,1000]);
+  // Owner rule 2026-11-20: ₮15 a credit for 200, ₮12 for 500 and 1,000 (no discount for the larger pack).
+  assert.deepEqual(DEFAULT_CREDIT_PACKS.map(pack=>pack.amountMnt),[3000,6000,12000]);
   assert.ok(validCreditPacks(DEFAULT_CREDIT_PACKS.map(pack=>({...pack}))));
   assert.ok(validCreditPacks([{credits:10,amountMnt:1000}]));
   assert.ok(validCreditPacks(Array.from({length:12},(_,index)=>({credits:100*(index+1),amountMnt:1000+100*index}))));

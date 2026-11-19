@@ -2,12 +2,14 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
-import { LANGUAGE_DECKS, WORKSHOP_EXAMS, isDeckWordId } from "../src/modules/language-decks/catalog.ts";
+import { LANGUAGE_DECKS, WORKSHOP_EXAMS, isDeckWordId, isStudyDeck } from "../src/modules/language-decks/catalog.ts";
 import { buildQuiz, checkTyped, speechFor } from "../src/modules/vocabulary/quiz.ts";
 import { subscriptionPlans, legacyPlans } from "../src/modules/subscriptions/plans.ts";
 import { DECKS } from "../scripts/language-decks/lists.mjs";
 import { KANA_SCRIPTS } from "../scripts/language-decks/kana.mjs";
-import { kanaToRomaji, romajiVariants } from "../src/modules/language-decks/romaji.ts";
+import { KANJI_DECKS } from "../scripts/language-decks/kanji.mjs";
+import { HSK_CHARACTERS } from "../scripts/language-decks/hanzi.mjs";
+import { kanaToRomaji, romajiVariants, toHiragana } from "../src/modules/language-decks/romaji.ts";
 import { markTone, spellTones, toneChoices } from "../src/modules/language-decks/tones.ts";
 import { inWorkspace, workspaceTab } from "../src/modules/workspace/paths.ts";
 
@@ -38,25 +40,128 @@ test("every deck file matches its list: same lessons and terms, stable ids, comp
       } else assert.equal(word.romaji, undefined);
     }
   }
-  assert.deepEqual(sizes, { "jlpt-n5": 554, "jlpt-n4": 390, "hsk-1": 154, "hsk-2": 150 });
+  assert.deepEqual(sizes, { "jlpt-n5": 791, "jlpt-n4": 688, "hsk-1": 300, "hsk-2": 198 });
 });
 
-test("HSK decks hold exactly the HSK 1/2 syllabus the mock packs validate against", () => {
-  const source = text("MockExmps/HSK2/_source/build.py");
-  const list = name => source.match(new RegExp(name + ' = """([\\s\\S]*?)"""'))[1].trim().split(/\s+/);
-  for (const [id, name] of [["hsk-1", "HSK1"], ["hsk-2", "HSK2"]]) {
-    const terms = DECKS.find(deck => deck.id === id).lessons.flatMap(lesson => lesson.terms);
-    assert.deepEqual([...terms].sort(), [...list(name)].sort(), id);
+test("kanji decks: every kanji from the list once, N4 never repeats N5, readings, answers and gap-able example words", async () => {
+  const { deckDrillItems, buildDrill, domainKinds, rightAnswer, typedMatches } = await import("../src/modules/language-decks/drill.ts");
+  assert.deepEqual(LANGUAGE_DECKS.filter(deck => deck.kind === "kanji").map(deck => deck.id), KANJI_DECKS.map(deck => deck.id));
+  const all = KANJI_DECKS.flatMap(deck => deck.lessons.flatMap(lesson => lesson.terms));
+  assert.equal(new Set(all).size, all.length, "no kanji in two lessons or both levels");
+  const sizes = {};
+  for (const deck of KANJI_DECKS) {
+    const file = asset(deck.id);
+    assert.deepEqual(file.lessons.map(lesson => lesson.words.map(word => word.term)), deck.lessons.map(lesson => lesson.terms), deck.id);
+    const words = file.lessons.flatMap(lesson => lesson.words);
+    sizes[deck.id] = words.length;
+    for (const word of words) {
+      assert.match(word.term, /^\p{Script=Han}$/u);
+      assert.equal(word.id, createHash("sha1").update(word.term).digest("hex").slice(0, 10));
+      assert.ok(word.on.length + word.kun.length > 0, word.term);
+      for (const on of word.on) assert.match(on, /^[ァ-ヺー]+$/, word.term);
+      for (const kun of word.kun) assert.match(kun, /^[ぁ-ゖ]+(\([ぁ-ゖ]+\))?$/, word.term);
+      assert.equal(word.reading, [word.on.join("・"), word.kun.join("・")].filter(Boolean).join(" / "));
+      assert.match(word.meaning, /[Ѐ-ӿ]/, word.term);
+      assert.ok(word.examples.length >= 2 && word.examples.length <= 3, word.term);
+      for (const example of word.examples) {
+        assert.ok(example.word.includes(word.term) && /^[ぁ-ゖー]+$/.test(example.reading) && /[Ѐ-ӿ]/.test(example.meaning), word.term + " " + example.word);
+        assert.equal(example.romaji, kanaToRomaji(example.reading));
+      }
+      // The first example is the quiz's gapped word: longer than the kanji, which it holds exactly once.
+      assert.equal(word.example, word.examples[0].word);
+      assert.ok(word.example.length > 1 && word.example.split(word.term).length === 2, word.term);
+      // Every reading may be typed, in kana or romaji; the on reading in hiragana too.
+      for (const on of word.on) assert.ok(typedMatches(on, word.answers) && typedMatches(toHiragana(on), word.answers) && typedMatches(kanaToRomaji(on), word.answers), word.term + " " + on);
+      for (const kun of word.kun) assert.ok(typedMatches(kun.replace(/[()]/g, ""), word.answers), word.term + " " + kun);
+    }
+  }
+  assert.deepEqual(sizes, { "jlpt-kanji-n5": 104, "jlpt-kanji-n4": 174 });
+  // The quiz: no listening (a lone kanji has several readings) and no reading-building; every exercise answerable.
+  const kinds = domainKinds("kanji", true);
+  assert.deepEqual(kinds, ["meaning", "term", "match", "type", "cloze"]);
+  const deck = { ...LANGUAGE_DECKS.find(item => item.id === "jlpt-kanji-n5"), lessons: asset("jlpt-kanji-n5").lessons };
+  const pool = deckDrillItems(deck, {});
+  const targets = pool.slice(0, 40).map((entry, index) => ({ ...entry, state: { box: index % 5, correct: index % 5, wrong: 0 } }));
+  const exercises = buildDrill(targets, pool, { domain: "kanji", kinds, random: seeded(), showReading: false });
+  assert.equal(exercises.filter(item => item.kind !== "match").length, 40);
+  for (const kind of kinds) assert.ok(exercises.some(item => item.kind === kind), "kanji has " + kind);
+  for (const exercise of exercises) {
+    if ("options" in exercise) assert.equal(new Set(exercise.options.map(option => option.text)).size, 4);
+    if ("options" in exercise) assert.ok(exercise.options.every(option => option.sub === null), "no reading under a choice");
+    if (exercise.kind === "cloze") assert.ok(exercise.prompt.includes("＿") && !exercise.prompt.includes(exercise.options[exercise.answer].text) && /・|[ぁ-ゖ]/.test(exercise.sub));
+    if (exercise.kind !== "match") assert.ok(rightAnswer(exercise));
   }
 });
 
-test("only plans with workshops and the exam open a deck: Basic and Pro, not free, ЭЕШ, SAT or the old IELTS plan", () => {
+test("HSK word decks carry their characters: each once, in the lesson of its first word, pinyin from the deck words", () => {
+  // Owner (2026-11-19): a «Ханз» filter in the word decks, not character decks of their own, and no writing drill.
+  assert.equal(LANGUAGE_DECKS.some(deck => deck.id.startsWith("hsk-hanzi")), false);
+  assert.deepEqual(HSK_CHARACTERS.map(list => list.deck), ["hsk-1", "hsk-2"]);
+  // The characters are exactly those of the HSK 1 words, then the new ones of the HSK 2 words (HSK 3.0: 246 / 371 to read).
+  const chars = id => [...new Set(DECKS.find(deck => deck.id === id).lessons.flatMap(lesson => lesson.terms).join("").match(/\p{Script=Han}/gu))];
+  const [one, two] = ["hsk-1", "hsk-2"].map(id => asset(id).lessons.flatMap(lesson => lesson.chars.map(item => item.term)));
+  assert.deepEqual([one.length, two.length], [248, 123]);
+  assert.deepEqual(new Set(one), new Set(chars("hsk-1")));
+  assert.deepEqual(new Set([...one, ...two]), new Set([...chars("hsk-1"), ...chars("hsk-2")]));
+  assert.ok(!two.some(char => one.includes(char)));
+  const seen = new Set();
+  for (const id of ["hsk-1", "hsk-2"]) {
+    const file = asset(id);
+    assert.deepEqual(file.lessons.map(lesson => lesson.chars.map(item => item.term)), HSK_CHARACTERS.find(list => list.deck === id).lessons.map(lesson => lesson.terms), id);
+    const words = file.lessons.flatMap(lesson => lesson.words);
+    for (const lesson of file.lessons) {
+      const earlier = new Set(seen);
+      for (const item of lesson.chars) {
+        // First met in this lesson: one of its words holds it, and no earlier lesson's word did.
+        assert.ok(lesson.words.some(word => word.term.includes(item.term)) && !earlier.has(item.term), item.term);
+        seen.add(item.term);
+        assert.equal(item.id, createHash("sha1").update(item.term).digest("hex").slice(0, 10));
+        assert.ok(item.readings.length >= 1 && item.readings.length <= 3, item.term);
+        for (const reading of item.readings) assert.match(reading, /^[a-zāáǎàēéěèīíǐìōóǒòūúǔùǖǘǚǜü]+$/, item.term);
+        assert.equal(item.reading, item.readings.join(" / "));
+        assert.match(item.meaning, /[Ѐ-ӿ]/, item.term);
+        assert.equal("write" in item, false);
+        // The examples are this deck's words that hold the character.
+        assert.ok(item.examples.length >= 1 && item.examples.length <= 3, item.term);
+        for (const example of item.examples) {
+          const word = words.find(entry => entry.term === example.word);
+          assert.ok(word && example.word.includes(item.term) && example.reading === word.reading && example.meaning === word.meaning, item.term + " " + example.word);
+        }
+      }
+    }
+  }
+  // Each character's own tone (一 yī, 不 bù, 友 yǒu), and every reading its words use (可能 kě·néng, not kěn·éng).
+  const entry = term => ["hsk-1", "hsk-2"].flatMap(id => asset(id).lessons.flatMap(lesson => lesson.chars)).find(item => item.term === term);
+  for (const [term, reading] of [["一", "yī"], ["不", "bù"], ["友", "yǒu"], ["可", "kě"], ["能", "néng"], ["还", "hái"], ["的", "de"]]) assert.ok(entry(term).readings.includes(reading), term);
+  // The character view is reading only: no character progress, and the quiz has no writing exercise.
+  const client = text("src/modules/language-decks/client.tsx");
+  assert.match(client, /role="tab" aria-selected=\{tab === "chars"\}/);
+  assert.doesNotMatch(text("src/modules/language-decks/drill.ts"), /"write"/);
+});
+
+test("HSK decks hold the HSK 3.0 syllabus (300 + 198 entries) that the HSK 3.0 mock pack validates against", () => {
+  const terms = id => DECKS.find(deck => deck.id === id).lessons.flatMap(lesson => lesson.terms);
+  const [one, two] = [terms("hsk-1"), terms("hsk-2")];
+  assert.equal(new Set(one).size, 300);assert.equal(one.length, 300);
+  assert.equal(new Set(two).size, 198);assert.equal(two.length, 198);
+  // A word in both levels is a new sense at HSK 2, drafted again with its note.
+  const notes = DECKS.find(deck => deck.id === "hsk-2").notes;
+  for (const term of two.filter(term => one.includes(term))) assert.ok(notes[term], term);
+  // The pack reads these lists (no copy of its own) and its last build found no word outside them.
+  assert.match(text("MockExmps/HSK3/_source/build.py"), /deck_terms\("hsk-1"\)/);
+  const report = JSON.parse(text("MockExmps/HSK3/validation-report.json"));
+  assert.equal(Object.keys(report.forms).length, 12);
+  for (const form of Object.values(report.forms)) assert.deepEqual(form.errors, []);
+});
+
+test("only plans with workshops and the exam open a deck: Ази хэл Basic and Pro (and the retired Гадаад хэл until it ends), not free, ЭЕШ, Англи хэл or the old IELTS plan", () => {
   const opens = (plan, exam) => Boolean(plan.workshops && plan.exams.includes(exam));
-  for (const exam of ["jlpt", "hsk"]) {
-    assert.deepEqual([...subscriptionPlans, ...legacyPlans].filter(plan => opens(plan, exam)).map(plan => plan.program), ["language_basic", "language"]);
+  for (const exam of ["jlpt", "hsk", "topik"]) {
+    assert.deepEqual([...subscriptionPlans, ...legacyPlans].filter(plan => opens(plan, exam)).map(plan => plan.program), ["asian_basic", "asian_pro", "language_basic", "language"]);
   }
   const service = text("src/modules/language-decks/service.ts");
-  assert.match(service, /plan\?\.workshops && \(plan\.exams as readonly string\[\]\)\.includes\(exam\)/);
+  assert.match(service, /export async function hasLanguageStudy[^}]*return hasExamWorkshop\(userId, exam, now\);/);
+  assert.match(text("src/modules/subscriptions/mock-access.ts"), /rows\.some\(row => planWorkshopFor\(findAnyPlan\(row\.program\), exam\)\)/);
   // The plan and the timed sitting are checked before any deck word or progress is read or written.
   const open = service.slice(service.indexOf("export async function openLanguageDeck"));
   assert.ok(open.indexOf("await requireStudy(") < open.indexOf("languageDeckProgress.findMany"));
@@ -75,23 +180,25 @@ test("only plans with workshops and the exam open a deck: Basic and Pro, not fre
     assert.ok(page.includes(`studyGate(user.id, ${exam},`), path);
     assert.ok(page.indexOf("if (gate) return gate;") < page.indexOf("openLanguageDeck("), path);
   }
-  // Kana/tone decks never appear as word-deck tiles or open on the word-deck page.
-  assert.match(service, /deck\.exam === exam && deck\.kind === "words"/);
-  assert.match(text("src/app/labs/words/[deck]/page.tsx"), /info\.kind !== "words"\) notFound\(\)/);
+  // Kana/tone decks never appear as word-deck tiles or open on the word-deck page; word and kanji decks do.
+  assert.match(service, /deck\.exam === exam && isStudyDeck\(deck\)/);
+  assert.match(text("src/app/labs/words/[deck]/page.tsx"), /!isStudyDeck\(info\)\) notFound\(\)/);
+  assert.deepEqual(LANGUAGE_DECKS.filter(isStudyDeck).map(deck => deck.kind).filter((kind, at, list) => list.indexOf(kind) === at), ["words", "kanji"]);
   // Deck content is private: read on the server from assets/, which the deployment includes.
   assert.match(text("next.config.ts"), /"\.\/assets\/language-decks\/\*\.json"/);
   assert.doesNotMatch(text("src/modules/language-decks/client.tsx"), /from "\.\/content"|node:fs/);
 });
 
 test("Workshop shows one exam at a time, and the shared Vocabulary page has no JLPT/HSK tab", () => {
-  assert.deepEqual(WORKSHOP_EXAMS.map(exam => exam.id), ["ielts", "jlpt", "hsk", "topik"]);
+  assert.deepEqual(WORKSHOP_EXAMS.map(exam => exam.id), ["ielts", "toefl", "jlpt", "hsk", "topik", "eesh"]);
   // Deck pages sit inside the Workspace frame, under the Workshop tab.
   assert.equal(inWorkspace("/labs/words/jlpt-n5"), true);
   assert.equal(workspaceTab("/labs/words/hsk-1"), "workshop");
   for (const path of ["/labs/kana", "/labs/pinyin", "/labs/hangul"]) { assert.equal(inWorkspace(path), true); assert.equal(workspaceTab(path), "workshop"); }
   const page = text("src/app/workspace/workshop/page.tsx");
   assert.match(page, /isExam\(asked\) \? asked : isExam\(stored\) \? stored : "ielts"/);
-  assert.match(page, /if \(exam !== "ielts"\) \{[\s\S]*return <div className="wsp-page workshop-index">[\s\S]*<LanguageWorkshop/);
+  assert.match(page, /if \(isLanguageExam\(exam\)\) \{[\s\S]*return <div className="wsp-page workshop-index">[\s\S]*<LanguageWorkshop/);
+  assert.match(page, /if \(exam === "toefl"\) \{[\s\S]*href="\/labs\/toefl-listening"[\s\S]*href="\/labs\/toefl-reading"/);
   assert.doesNotMatch(text("src/modules/vocabulary/client.tsx") + text("src/modules/vocabulary/library.tsx"), /JLPT|HSK|language-decks/);
 });
 
@@ -175,6 +282,8 @@ test("pinyin: chart cells are real syllables with a checked example, drill words
   }
   const hsk1 = asset("hsk-1").lessons.flatMap(lesson => lesson.words);
   const spelled = id => spellTones(words.find(word => word.id === id).syllables).replace(/ /g, "");
+  // A later syllable never starts with a vowel unless the reading says so: 可能 is kě·néng (2026-11-19 fix).
+  assert.equal(spellTones(words.find(word => word.term === "可能").syllables), "kě néng");
   for (const term of ["我们", "学生", "老师"]) { const deckWord = hsk1.find(word => word.term === term); assert.equal(spelled(deckWord.id), deckWord.reading.replace(/ /g, "").toLowerCase(), term); }
 });
 

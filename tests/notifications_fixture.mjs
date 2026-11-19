@@ -10,7 +10,7 @@ const db=new PrismaClient({adapter:new PrismaPg({connectionString:process.env.DA
 try {
   const user=await db.user.findUniqueOrThrow({where:{id:userId},select:{email:true}});
   if(!user.email.startsWith("qa-notify-")||!user.email.endsWith("@example.invalid"))throw Error("Only disposable notification QA may be changed");
-  if(action==="ending"&&["entrance","language","language_basic"].includes(program)){
+  if(action==="ending"&&["entrance","language","language_basic","english_basic","english_pro","asian_basic","asian_pro"].includes(program)){
     await db.subscription.update({where:{userId_program:{userId,program}},data:{endsAt:new Date(Date.now()+2*86400_000)}});
     console.log(JSON.stringify({ending:true}));
   } else throw Error("Unknown fixture action");

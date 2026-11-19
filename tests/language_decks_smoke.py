@@ -1,5 +1,5 @@
-"""JLPT/HSK word decks in Workshop: exam tabs (remembered), paid-only access (Гадаад хэл Basic/Pro; free accounts get
-no level), the deck page (lessons, furigana/pinyin toggle, examples, cards, quiz), progress saved on the account, API
+"""JLPT/HSK word decks in Workshop: exam tabs (remembered), paid-only access (Ази хэл Basic/Pro; free accounts and the
+Англи хэл plans get no level, only the IELTS and TOEFL tabs), the deck page (lessons, furigana/pinyin toggle, examples, cards, quiz), progress saved on the account, API
 guards, and the phone layout. Real page, real server code, real database; no AI call.
 """
 import json,os,re
@@ -66,22 +66,58 @@ with sync_playwright() as p:
  expect(tabs.get_by_role('link',name='JLPT')).to_have_attribute('aria-current','page')
  expect(fp.get_by_role('heading',name='N5 үгсийн сан')).to_be_visible();expect(fp.get_by_role('heading',name='N4 үгсийн сан')).to_be_visible()
  assert fp.get_by_text('Сонсгол лаб').count()==0 and fp.get_by_text('IELTS даалгавар').count()==0,'JLPT tab shows only JLPT'
- expect(fp.locator('.workshop-tile').first).to_contain_text('Гадаад хэл Basic, Гадаад хэл Pro багцад багтана')
+ expect(fp.locator('.workshop-tile').first).to_contain_text('Ази хэл Basic, Ази хэл Pro багцад багтана')
  expect(fp.locator('.workshop-tile').first).to_have_attribute('href','/workspace/plans')
  # The last tab is remembered.
  fp.goto(BASE+'/workspace/workshop');expect(tabs.get_by_role('link',name='JLPT')).to_have_attribute('aria-current','page')
  fp.goto(BASE+'/labs/words/jlpt-n5');expect(fp.get_by_role('heading',name='JLPT N5 үгсийн сан')).to_be_visible()
- expect(fp.get_by_text('Гадаад хэл Basic, Гадаад хэл Pro багцад багтана')).to_be_visible();assert fp.get_by_text('おはよう').count()==0
+ expect(fp.get_by_text('Ази хэл Basic, Ази хэл Pro багцад багтана')).to_be_visible();assert fp.get_by_text('おはよう').count()==0
  assert free.request.post(REVIEW.format('jlpt-n5'),headers=ORIGIN,data={'results':[{'id':'0123456789','grade':'good'}]}).status==403
  fp.goto(BASE+'/workspace/workshop?exam=jlpt');expect(fp.locator('.workshop-tile').first).to_contain_text('Үсгийн хүснэгт')
  for path,title in [('/labs/kana','Хирагана · Катакана'),('/labs/pinyin','Pinyin · аялгуу')]:
   fp.goto(BASE+path);expect(fp.get_by_role('heading',name=title)).to_be_visible()
-  expect(fp.get_by_text('Гадаад хэл Basic, Гадаад хэл Pro багцад багтана')).to_be_visible();assert fp.locator('table').count()==0,path
+  expect(fp.get_by_text('Ази хэл Basic, Ази хэл Pro багцад багтана')).to_be_visible();assert fp.locator('table').count()==0,path
  assert free.request.post(REVIEW.format('kana-hiragana'),headers=ORIGIN,data={'results':[{'id':'0123456789','grade':'good'}]}).status==403
+ fp.goto(BASE+'/labs/words/jlpt-kanji-n5');expect(fp.get_by_role('heading',name='JLPT N5 ханз')).to_be_visible()
+ expect(fp.get_by_text('Ази хэл Basic, Ази хэл Pro багцад багтана')).to_be_visible();assert fp.get_by_text('イチ').count()==0
+ assert free.request.post(REVIEW.format('jlpt-kanji-n5'),headers=ORIGIN,data={'results':[{'id':'0123456789','grade':'good'}]}).status==403
+ # The TOEFL tab (owner requests 2026-11-19): speaking and writing practice, and the nine mocks' listening and reading labs,
+ # open to every account to browse, in the IELTS tab's order.
+ fp.goto(BASE+'/workspace/workshop?exam=toefl');expect(tabs.get_by_role('link',name='TOEFL')).to_have_attribute('aria-current','page')
+ expect(fp.locator('.workshop-tile')).to_have_count(4)
+ for index,href in enumerate(['/labs/toefl-speaking','/labs/toefl-writing','/labs/toefl-listening','/labs/toefl-reading']):expect(fp.locator('.workshop-tile').nth(index)).to_have_attribute('href',href)
+ assert fp.get_by_text('N5 үгсийн сан').count()==0 and fp.get_by_text('Speaking Lab').count()==0,'TOEFL tab shows only TOEFL'
+ fp.screenshot(path=str(ART/'workshop-toefl-tab.png'),full_page=True)
+ # TOEFL Speaking: five Listen and Repeat scenes (no AI) and six interview topics, under the Workshop tab.
+ fp.goto(BASE+'/labs/toefl-speaking');expect(fp.get_by_role('heading',name='Listen and Repeat')).to_be_visible()
+ expect(fp.get_by_role('tablist',name='Нөхцөл байдал').get_by_role('tab')).to_have_count(5)
+ expect(fp.get_by_text('Өгүүлбэр далд байна')).to_be_visible();expect(fp.get_by_role('button',name='▶ Сонсох')).to_be_visible()
+ fp.get_by_role('tab',name='Take an Interview').click();expect(fp.get_by_role('tablist',name='Сэдэв').get_by_role('tab')).to_have_count(6)
+ expect(fp.get_by_role('button',name='Ярилцлага эхлэх →')).to_be_visible()
+ fp.screenshot(path=str(ART/'toefl-speaking.png'),full_page=True)
+ # TOEFL Essay Studio: Build a Sentence first, checked here with no AI; then the email and discussion tasks.
+ fp.goto(BASE+'/labs/toefl-writing');expect(fp.get_by_role('heading',name='Build a Sentence')).to_be_visible()
+ expect(fp.locator('.toefl-practice .toefl-build')).to_have_count(1)
+ fp.get_by_role('tab',name='Discussion').click();expect(fp.locator('.toefl-task')).to_be_visible()
+ fp.screenshot(path=str(ART/'toefl-writing-discussion.png'),full_page=True)
+ # A free account sees the mocks with their briefing links, not the lab pages.
+ fp.goto(BASE+'/labs/toefl-listening');expect(fp.locator('a[data-mock^="toefl-"]')).to_have_count(9)
+ assert fp.locator('a[href^="/labs/mock/"]').count()==0,'a locked mock links to its briefing'
  free.close()
 
+ # Англи хэл Basic: the IELTS and TOEFL tabs, never the JLPT/HSK/TOPIK decks (owner rule 2026-11-19).
+ english=browser.new_context(viewport={'width':1280,'height':900});signup(english,'English Decks');subscribe(english,'english_basic')
+ ep=english.new_page();ep.on('pageerror',lambda e:errors.append(str(e)))
+ ep.goto(BASE+'/workspace/workshop?exam=hsk');expect(ep.locator('.workshop-tile').nth(1)).to_contain_text('Ази хэл Basic, Ази хэл Pro багцад багтана')
+ expect(ep.locator('.workshop-tile').nth(1)).to_have_attribute('href','/workspace/plans')
+ ep.goto(BASE+'/labs/words/hsk-1');expect(ep.get_by_text('Ази хэл Basic, Ази хэл Pro багцад багтана')).to_be_visible()
+ for deck in ['hsk-1','jlpt-n5','kana-hiragana']:
+  assert english.request.post(REVIEW.format(deck),headers=ORIGIN,data={'results':[{'id':'0123456789','grade':'good'}]}).status==403,deck
+ ep.goto(BASE+'/labs/toefl-reading');expect(ep.locator('a[href^="/labs/mock/reading/toefl-"]')).to_have_count(9)
+ english.close()
+
  # Basic: decks open; the page, cards, quiz and saved progress.
- basic=browser.new_context(viewport={'width':1280,'height':900});signup(basic,'Basic Decks');subscribe(basic,'language_basic')
+ basic=browser.new_context(viewport={'width':1280,'height':900});signup(basic,'Basic Decks');subscribe(basic,'asian_basic')
  page=basic.new_page();page.on('pageerror',lambda e:errors.append(str(e)))
  page.goto(BASE+'/workspace/workshop?exam=hsk');expect(page.get_by_role('heading',name='HSK 1 үгсийн сан')).to_be_visible()
  expect(page.locator('.workshop-tile').first).to_have_attribute('href','/labs/pinyin')
@@ -90,7 +126,7 @@ with sync_playwright() as p:
  page.locator('.workshop-tile').nth(1).click();expect(page).to_have_url(BASE+'/labs/words/jlpt-n5')
  expect(page.get_by_role('heading',name='JLPT N5',exact=True)).to_be_visible()
  expect(page.get_by_role('navigation',name='Workspace цэс').get_by_role('link',name='Workshop')).to_have_attribute('aria-current','page')
- lessons=page.get_by_role('navigation',name='Хичээлүүд');expect(lessons.get_by_role('button')).to_have_count(18)
+ lessons=page.get_by_role('navigation',name='Хичээлүүд');expect(lessons.get_by_role('button')).to_have_count(29)
  words=page.locator('[aria-labelledby="deck-words-heading"] li')
  expect(words.first).to_contain_text('おはよう');expect(words).to_have_count(23)
  # Furigana toggle: kanji words show their reading; off hides it and is remembered.
@@ -105,9 +141,10 @@ with sync_playwright() as p:
  lessons.get_by_role('button').nth(1).click();expect(row).to_contain_text('kazoku')
  page.get_by_role('button',name='Romaji').click();expect(page.get_by_role('button',name='Romaji')).to_have_attribute('aria-pressed','false')
  lessons.get_by_role('button').nth(0).click()
- # A row opens its example with reading and meaning.
- words.first.get_by_role('button').first.click();expect(words.first.locator('p[lang="ja-JP"]')).to_be_visible()
- expect(words.first.locator('p').nth(2)).to_contain_text(re.compile('[А-Яа-яӨөҮү]'))
+ # A card opens its example (reading, meaning) as a panel after the card's row; the card keeps its place.
+ words.first.get_by_role('button').first.click();example=page.locator('#deck-word-example');expect(example.locator('p[lang="ja-JP"]')).to_be_visible()
+ expect(example.locator('p').nth(2)).to_contain_text(re.compile('[А-Яа-яӨөҮү]'))
+ assert words.first.bounding_box()['y']==words.nth(1).bounding_box()['y'],'the open card left its row'
  # Cards (the lesson's Карт tab): grading saves progress through the deck route.
  page.get_by_role('tab',name='Карт').click();card=page.locator('[data-study-word]');expect(card).to_be_visible();first_id=card.get_attribute('data-study-word')
  page.get_by_role('button',name='Утгыг харах').click()
@@ -119,9 +156,9 @@ with sync_playwright() as p:
  # Today's review starts a quiz at once; the close button returns to the deck.
  page.get_by_role('button',name=re.compile('^Өнөөдрийн давталт')).click();expect(page.get_by_role('progressbar',name='Явц')).to_be_visible()
  page.get_by_role('button',name='Дасгалаас гарах').click();expect(page.get_by_role('heading',name='JLPT N5',exact=True)).to_be_visible()
- # Quiz maker: 18 lessons, kinds, count; a 5-question quiz answered from the deck file, grades saved through the route.
+ # Quiz maker: 29 lessons, kinds, count; a 5-question quiz answered from the deck file, grades saved through the route.
  page.get_by_role('button',name='Quiz үүсгэх').click();expect(page.get_by_role('heading',name='JLPT N5 quiz')).to_be_visible()
- expect(page.get_by_role('group',name='Хичээл').get_by_role('button',name=re.compile(r'^\d+\. '))).to_have_count(18)
+ expect(page.get_by_role('group',name='Хичээл').get_by_role('button',name=re.compile(r'^\d+\. '))).to_have_count(29)
  kinds=page.get_by_role('group',name='Дасгалын төрөл')
  for name in ['Үг сонгох','Бичих','Бүрдүүлэх','Өгүүлбэр','Сонсох']:
   button=kinds.get_by_role('button',name=re.compile('^'+name))
@@ -153,6 +190,31 @@ with sync_playwright() as p:
  page.goto(BASE+'/labs/words/hsk-1');expect(page.locator('[aria-labelledby="deck-words-heading"] li').first).to_contain_text('wǒ')
  expect(page.get_by_role('button',name='Pinyin')).to_be_visible();expect(page.locator('[lang="zh-CN"]').first).to_be_visible()
  page.screenshot(path=str(ART/'language-decks-desktop.png'))
+ # Kanji: tiles after the word decks, on/kun readings on the card, example words, no voice for a lone kanji, a lesson quiz saved.
+ page.goto(BASE+'/workspace/workshop?exam=jlpt');expect(page.get_by_role('heading',name='N5 ханз')).to_be_visible();expect(page.get_by_role('heading',name='N4 ханз')).to_be_visible()
+ page.goto(BASE+'/labs/words/jlpt-kanji-n5');expect(page.get_by_role('heading',name='JLPT N5 ханз',exact=True)).to_be_visible()
+ card=page.locator('[aria-labelledby="deck-words-heading"] > ul > li').first;expect(card).to_contain_text('一');expect(card).to_contain_text('イチ');expect(card).to_contain_text('нэг')
+ assert card.get_by_role('button',name=re.compile('сонсох$')).count()==0,'a lone kanji is not read aloud'
+ card.get_by_role('button').first.click();expect(page.locator('#deck-word-example')).to_contain_text('ひとつ')
+ page.get_by_role('button',name='Уншлага').click();expect(card).not_to_contain_text('イチ');page.get_by_role('button',name='Уншлага').click()
+ with page.expect_response(lambda r:'/api/labs/words/jlpt-kanji-n5/review' in r.url) as hit:
+  page.get_by_role('button',name='Энэ хичээлийн quiz').click();run_drill(page,deck_words('jlpt-kanji-n5'))
+ assert hit.value.ok and len(hit.value.json()['words'])==10,hit.value.status
+ page.get_by_role('button',name='Дуусгах').click();expect(page.get_by_role('heading',name='JLPT N5 ханз',exact=True)).to_be_visible()
+ page.screenshot(path=str(ART/'language-kanji-desktop.png'))
+ # HSK characters (owner 2026-11-19: a filter in the word deck, no decks of their own, no writing): the «Ханз» tab shows the
+ # lesson's new characters with pinyin and meaning; a card opens the deck words that hold it; nothing reads a lone character.
+ page.goto(BASE+'/workspace/workshop?exam=hsk');expect(page.locator('a[href^="/labs/words/hsk-hanzi"]')).to_have_count(0)
+ assert basic.request.get(BASE+'/labs/words/hsk-hanzi-1').status==404
+ page.goto(BASE+'/labs/words/hsk-1');page.get_by_role('tab',name='Ханз').click()
+ chars=page.locator('[aria-labelledby="deck-chars-heading"] > ul > li');expect(chars).to_have_count(27)
+ card=chars.first;expect(card).to_contain_text('我');expect(card).to_contain_text('wǒ');expect(card).to_contain_text('би')
+ assert card.get_by_role('button',name=re.compile('сонсох$')).count()==0,'a lone character is not read aloud'
+ card.get_by_role('button').first.click();expect(page.locator('#deck-char-words')).to_contain_text('我们')
+ page.get_by_role('button',name='Pinyin').click();expect(card).not_to_contain_text('wǒ');page.get_by_role('button',name='Pinyin').click()
+ expect(page.locator('[aria-labelledby="deck-words-heading"]')).to_be_hidden()
+ page.screenshot(path=str(ART/'language-hanzi-desktop.png'))
+ page.get_by_role('tab',name='Үгс').click();expect(page.locator('[aria-labelledby="deck-words-heading"] li').first).to_contain_text('wǒ')
  # Kana: chart first, romaji on, katakana, sections; one plain test (script or both, sections, count), answered and saved.
  page.goto(BASE+'/labs/kana');expect(page.get_by_role('heading',name='Хирагана · Катакана')).to_be_visible()
  chart=page.locator('table');expect(chart.get_by_role('button',name=re.compile('^し shi'))).to_be_visible();expect(chart).to_contain_text('shi')
@@ -212,7 +274,7 @@ with sync_playwright() as p:
  assert page.evaluate('document.documentElement.scrollWidth<=window.innerWidth+1'),'no horizontal page scroll'
  page.screenshot(path=str(ART/'language-decks-phone.png'),full_page=False)
  page.goto(BASE+'/workspace/workshop?exam=jlpt');assert page.evaluate('document.documentElement.scrollWidth<=window.innerWidth+1')
- for path,name in [('/labs/kana','kana'),('/labs/pinyin','pinyin')]:
+ for path,name in [('/labs/kana','kana'),('/labs/pinyin','pinyin'),('/labs/words/jlpt-kanji-n4','kanji')]:
   page.goto(BASE+path);expect(page.locator('h1')).to_be_visible()
   if path=='/labs/pinyin': page.get_by_role('navigation',name='Хүснэгтийн хэсэг').get_by_role('button',name='i',exact=True).click()
   assert page.evaluate('document.documentElement.scrollWidth<=window.innerWidth+1'),path+': no horizontal page scroll'
@@ -221,6 +283,8 @@ with sync_playwright() as p:
  assert not errors,errors
  browser.close()
 print('PASS: Workshop exam tabs (remembered, one exam at a time), JLPT/HSK decks paid only (free: locked tiles/page, 403), '
- 'guest sign-in redirect and 401, Basic opens N5/HSK 1, 18 lessons, furigana toggle remembered, examples, card grade saved through '
+ 'guest sign-in redirect and 401, Basic opens N5/HSK 1, 29 lessons, furigana toggle remembered, examples, card grade saved through '
  'the deck route and kept after reload, shared quiz with lessons, origin/deck/word/grade/shape/size guards, pinyin, romaji toggle, '
+ 'N5/N4 kanji decks (paid, on/kun readings, example words, no voice, lesson quiz saved), '
+ 'HSK characters as a «Ханз» tab in the word deck (pinyin, meaning, deck words, no voice; no character decks), '
  'Kana chart (romaji, katakana, sections, a test set up in a modal: 66 letters of both scripts with a miss and its retry, saved to both charts, paid), Pinyin (tones, chart, tone quiz saved, paid), deck quiz maker (kinds, count, remembered) and a 5-question quiz answered 100% and saved, phone layout')

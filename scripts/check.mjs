@@ -13,7 +13,7 @@ const groups = {
   vocabulary: ["vocabulary"],
   decks: ["language_decks"],
   myexams: ["my_exams"],
-  entrance: ["entrance_mocks"],
+  entrance: ["entrance_mocks", "eesh_workshop"],
   mocks: ["additional_exams"],
   free: ["free_mocks"],
   jlpt: ["jlpt"],

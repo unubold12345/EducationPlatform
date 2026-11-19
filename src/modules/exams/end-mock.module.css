@@ -1,0 +1,15 @@
+/* The confirm for stopping an open timed sitting (end-mock.tsx). Site tokens, so it reads on the exam and workspace pages. */
+.panel { padding: 22px 24px; border-radius: 20px; background: var(--surface); color: var(--ink); box-shadow: 0 24px 60px -22px rgba(0, 0, 0, .5); }
+.panel h2 { margin: 0; font-size: 18px; }
+.panel p { margin: 10px 0 0; color: var(--muted); font-size: 14px; line-height: 1.6; overflow-wrap: anywhere; }
+.panel p strong { color: var(--ink); }
+.error { color: #9c2424 !important; }
+:global([data-theme="dark"]) .error { color: #ffb8be !important; }
+.actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin-top: 18px; }
+/* :global(.button) and the root's theme attribute lift it above the site's `:root[data-theme="dark"] .button` fill. */
+.danger:global(.button), :global(:root[data-theme="dark"]) .danger:global(.button) { background: #b42318; border-color: #b42318; color: #fff; }
+.danger:global(.button):hover:not(:disabled), :global(:root[data-theme="dark"]) .danger:global(.button):hover:not(:disabled) { background: #912018; border-color: #912018; }
+@media (max-width: 420px) { .actions > * { flex: 1 1 100%; } }
+/* Admin testing controls (admin-skip.tsx): the two skip buttons sit beside «Шалгалтыг зогсоох»; the result note. */
+.skip { display: inline-flex; flex-wrap: wrap; gap: inherit; column-gap: 16px; }
+.skipped { margin-top: 20px; padding: 12px 16px; border: 1px solid #d9a441; border-radius: 12px; background: color-mix(in srgb, #d9a441 12%, transparent); color: var(--ink); font-size: 13px; line-height: 1.6; }

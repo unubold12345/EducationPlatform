@@ -503,6 +503,12 @@ main:has(> .wsp) { isolation: auto; }
 .wsp-row-icon.is-warn { background: var(--wsp-warn-soft); color: var(--wsp-warn); }
 .wsp-row-cta { display: inline-flex; align-items: center; gap: 4px; flex-shrink: 0; color: var(--wsp-accent); font-size: 13px; font-weight: 600; }
 .wsp-row-arrow { flex-shrink: 0; color: var(--wsp-soft); }
+/* An open sitting on /workspace/review: the row links to the exam, and «Зогсоох» (end-mock.tsx) sits beside the link. */
+.wsp-open-link { display: flex; flex: 1; align-items: center; gap: 14px; min-width: 0; }
+.wsp-end-button { flex-shrink: 0; padding: 6px 12px; border: 1px solid color-mix(in srgb, #b42318 40%, var(--wsp-line)); border-radius: 999px; background: none; color: #b42318; font: inherit; font-size: 12.5px; font-weight: 600; cursor: pointer; }
+.wsp-end-button:hover { background: color-mix(in srgb, #b42318 9%, transparent); }
+:root[data-theme="dark"] .wsp-end-button { color: #ffb8be; border-color: color-mix(in srgb, #ffb8be 40%, var(--wsp-line)); }
+.wsp-notice { margin: 0 0 18px; padding: 12px 16px; border: 1px solid var(--wsp-line); border-radius: 12px; background: var(--wsp-chip); color: var(--wsp-ink); font-size: 13.5px; }
 
 .wsp-empty { padding: 24px; border: 1px dashed var(--wsp-line-strong); border-radius: 16px; background: var(--wsp-side); }
 .wsp-empty p { margin: 0; color: var(--wsp-muted); font-size: 13px; font-weight: 550; }
@@ -596,6 +602,35 @@ main:has(> .wsp) { isolation: auto; }
 .wsp-domain > span { overflow: hidden; color: var(--wsp-ink); text-overflow: ellipsis; white-space: nowrap; }
 .wsp-domain small { color: var(--wsp-muted); text-align: right; }
 .wsp-domain .wsp-bar b { background: #f0a020; }
+a.wsp-domain.is-link { margin: -4px -8px; padding: 4px 8px; border-radius: 8px; }
+a.wsp-domain.is-link > span { color: var(--wsp-accent); }
+a.wsp-domain.is-link:hover { background: var(--wsp-hover); }
+a.wsp-domain.is-link:hover > span { text-decoration: underline; text-underline-offset: 3px; }
+
+/* A programme's own result details under the scores (HSK /200, TOPIK level, AI grades, recordings). */
+.wsp-skipped { margin: 0 0 16px; border-radius: 12px; }
+.wsp-extras-card { display: grid; gap: 14px; padding: 18px 20px; border: 1px solid var(--wsp-line); border-radius: 16px; background: var(--wsp-card); }
+.wsp-extras-card > .wsp-sections { margin-top: 0; }
+.wsp-extras-card > section { margin: 0; }
+.wsp-extras-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px 16px; }
+.wsp-extras-line { margin: 0; color: var(--wsp-text); font-size: 15px; line-height: 1.6; }
+.wsp-extras-line strong { color: var(--wsp-ink); font-size: 20px; font-weight: 720; }
+.wsp-extras-note { margin: 0; padding: 0; border: 0; color: var(--wsp-muted); font-size: 13px; line-height: 1.7; }
+p.wsp-extras-note.wsp-section { padding: 14px 18px; border: 1px solid var(--wsp-line); border-radius: 14px; background: var(--wsp-side); }
+.wsp-ghost.is-small { min-height: 32px; padding: 5px 12px; font-size: 13px; }
+.wsp-ghost[aria-pressed="true"] { border-color: color-mix(in srgb, var(--wsp-accent) 45%, var(--wsp-line)); color: var(--wsp-accent); }
+/* `.exam-recordings` stays for the suites; its global card rules are reset here. */
+.wsp-recordings.exam-recordings { margin: 40px 0 0; }
+.wsp-recordings.exam-recordings > div { margin: 0 0 14px; padding: 0; border: 0; border-radius: 0; }
+.wsp-recording-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+.wsp-recordings .wsp-recording { display: grid; gap: 8px; padding: 14px 16px; border: 1px solid var(--wsp-line); border-radius: 14px; background: var(--wsp-card); }
+.wsp-recordings .wsp-recording h3 { margin: 0; font-size: 14px; font-weight: 650; text-transform: capitalize; }
+.wsp-recordings .wsp-recording audio { width: 100%; margin: 0; }
+.wsp-program-question { margin-bottom: 10px; }
+/* HSK pictures stay a readable size in the list, and the sitting's sticky picture row does not stick here. */
+.wsp-question figure.hsk-picture { max-width: 320px; }
+.wsp-question .hsk-picture-grid { position: static; background: none; box-shadow: none; }
+.wsp-program-question .wsp-answers { margin-top: 10px; }
 
 .wsp-review-grid { display: grid; grid-template-columns: minmax(0, 1fr) 380px; align-items: start; gap: 24px; margin-top: 8px; }
 .wsp-review-main { min-width: 0; margin-top: 32px; }

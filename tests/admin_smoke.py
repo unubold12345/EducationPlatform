@@ -72,7 +72,7 @@ with sync_playwright() as p:
     for body in [{"action":"drop-db","target":target,"reason":"Invalid operation"},{"action":"grant-month","target":target,"program":"all","reason":"Unknown program"},{"action":"grant-month","target":target,"program":"sat","reason":"bad"},{"action":"grant-month","target":target,"program":"sat","reason":"Unknown fields","amountMnt":1}]:
         assert admin.request.post(BASE+"/api/admin",headers=ORIGIN,data=body).status==400
     assert admin.request.post(BASE+"/api/admin",headers={**ORIGIN,"Content-Type":"application/json"},data="x"*9000).status==413
-    assert admin.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":"grant-month","target":"missing-user","program":"language","reason":"Missing user test"}).status==404
+    assert admin.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":"grant-month","target":"missing-user","program":"english_pro","reason":"Missing user test"}).status==404
     # The retired IELTS and SAT plans are not sold or granted any more; an admin can still end one.
     assert admin.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":"grant-month","target":target,"program":"sat","reason":"Retired plan grant"}).status==400
     assert admin.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":"expire-plan","target":target,"program":"ielts","reason":"No retired plan to end"}).status==404
@@ -147,27 +147,27 @@ with sync_playwright() as p:
     page.goto(BASE+"/admin/users/"+target+"?view=admin");expect(page.locator(".admin-table-wrap tbody")).to_contain_text("unsuspend")
     # Prices: validated, audited, shown on /workspace/plans and used for new orders; restored afterwards.
     for bad in [{"amount":999},{"amount":45050},{"amount":"45000"},{"amount":45000,"target":"all"}]:
-        assert admin.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":"set-price","target":"language","reason":"Invalid price check",**bad}).status==400,bad
+        assert admin.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":"set-price","target":"english_pro","reason":"Invalid price check",**bad}).status==400,bad
     assert admin.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":"set-price","target":"sat","amount":45000,"reason":"Retired plan price"}).status==400
     def price(value,reason):
-        r=admin.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":"set-price","target":"language","amount":value,"reason":reason});assert r.ok,(r.status,r.text())
+        r=admin.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":"set-price","target":"english_pro","amount":value,"reason":reason});assert r.ok,(r.status,r.text())
     price(45500,"Local price change verification")
     page.goto(BASE+"/workspace/plans");expect(page.locator("main")).to_contain_text("45,500")
     page.goto(BASE+"/admin?tab=pricing");expect(page.locator(".admin-rows")).to_contain_text("₮45,500")
-    page.locator(".admin-rows .admin-row",has_text="Гадаад хэл Pro").get_by_role("button",name="Засах").click()
+    page.locator(".admin-rows .admin-row",has_text="Англи хэл Pro").get_by_role("button",name="Засах").click()
     expect(page.locator(".admin-row-form input[name=amount]")).to_have_value("45500")
     page.goto(BASE+"/admin?tab=pricing&kind=history");expect(page.locator(".admin-table-wrap tbody tr").first).to_contain_text("₮45,500")
     price(59900,"Local price restored after verification")
     # Sales: validated, audited, shown beside the regular price, charged on new orders, and cancelled again.
     def sale(amount,reason,**extra):
-        return admin.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":"set-sale","target":"language","amount":amount,"reason":reason,**extra})
+        return admin.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":"set-sale","target":"english_pro","amount":amount,"reason":reason,**extra})
     for bad in [{"amount":59900},{"amount":60000},{"amount":39950},{"amount":999},{"amount":"39900"},{"amount":39900,"saleEndsAt":"2020-01-01"},{"amount":39900,"saleEndsAt":"soon"},{"amount":None,"saleEndsAt":"2099-01-01"},{"amount":39900,"extra":1}]:
         assert sale(reason="Invalid sale check",**bad).status==400,bad
     assert admin.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":"set-sale","target":"sat","amount":20000,"reason":"Retired plan sale"}).status==400
-    assert student.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":"set-sale","target":"language","amount":39900,"reason":"Unauthorized attempt"}).status==403
+    assert student.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":"set-sale","target":"english_pro","amount":39900,"reason":"Unauthorized attempt"}).status==403
     ok=sale(39900,"Local sale verification",saleEndsAt="2099-12-31");assert ok.ok,(ok.status,ok.text())
     page.goto(BASE+"/workspace/plans")
-    card=page.locator('.pricing-card[data-program="language"]')
+    card=page.locator('.pricing-card[data-program="english_pro"]')
     expect(card.locator(".pricing-price s")).to_have_text("₮59,900")
     expect(card.locator(".pricing-price strong")).to_have_text("₮39,900")
     expect(card.locator(".pricing-sale-note")).to_contain_text("Хямдарсан үнэ")
@@ -176,14 +176,14 @@ with sync_playwright() as p:
     page.goto(BASE+"/admin?tab=pricing&kind=sales");expect(page.locator(".admin-sale[data-live]")).to_have_count(1)
     expect(page.locator(".admin-sale[data-live]")).to_contain_text("Хямдарсан ₮39,900")
     # A new order is charged the sale price; once the sale is cancelled that order no longer matches and is refused.
-    sale_order=student.request.post(BASE+"/api/subscriptions/orders",headers=ORIGIN,data={"program":"language"})
+    sale_order=student.request.post(BASE+"/api/subscriptions/orders",headers=ORIGIN,data={"program":"english_pro"})
     assert sale_order.ok and sale_order.json()["amountMnt"]==39900,sale_order.text()
     assert sale(None,"Local sale cancelled after verification").ok
-    page.goto(BASE+"/workspace/plans");expect(page.locator('.pricing-card[data-program="language"] .pricing-price s')).to_have_count(0)
-    expect(page.locator('.pricing-card[data-program="language"] .pricing-price strong')).to_have_text("₮59,900")
+    page.goto(BASE+"/workspace/plans");expect(page.locator('.pricing-card[data-program="english_pro"] .pricing-price s')).to_have_count(0)
+    expect(page.locator('.pricing-card[data-program="english_pro"] .pricing-price strong')).to_have_text("₮59,900")
     stale=student.request.post(BASE+"/api/subscriptions/orders/"+sale_order.json()["id"]+"/confirm",headers=ORIGIN,data={"decision":"success"})
     assert stale.status==409,stale.text()
-    fresh_order=student.request.post(BASE+"/api/subscriptions/orders",headers=ORIGIN,data={"program":"language"}).json()
+    fresh_order=student.request.post(BASE+"/api/subscriptions/orders",headers=ORIGIN,data={"program":"english_pro"}).json()
     assert fresh_order["amountMnt"]==59900 and fresh_order["id"]==sale_order.json()["id"],fresh_order
     student.request.post(BASE+"/api/subscriptions/orders/"+fresh_order["id"]+"/confirm",headers=ORIGIN,data={"decision":"decline"})
     page.goto(BASE+"/admin?tab=pricing&kind=sales");expect(page.locator(".admin-sale[data-live]")).to_have_count(0)
@@ -201,7 +201,7 @@ with sync_playwright() as p:
     assert student.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":"set-credit-packs","target":"packs","packs":[],"reason":"Unauthorized attempt"}).status==403
     assert packs([],"Local default credit packs before the list check").ok,"a reset needs no earlier custom list"
     player=student.new_page();player.goto(BASE+"/workspace/plans")
-    expect(player.locator(".pricing-packs button strong")).to_have_text(["200 кредит","500 кредит","1,000 кредит","2,000 кредит","5,000 кредит"])
+    expect(player.locator(".pricing-packs button strong")).to_have_text(["200 кредит","500 кредит","1,000 кредит"])
     assert packs([{"credits":300,"amountMnt":1500},{"credits":1000,"amountMnt":5000},{"credits":7000,"amountMnt":30000}]).ok
     player.goto(BASE+"/workspace/plans")
     expect(player.locator(".pricing-packs button strong")).to_have_text(["300 кредит","1,000 кредит","7,000 кредит"])
@@ -220,19 +220,19 @@ with sync_playwright() as p:
     assert packs([{"credits":1000,"amountMnt":5000}]).ok
     assert student.request.post(BASE+"/api/credits/orders/"+small["id"]+"/confirm",headers=ORIGIN,data={"decision":"success"}).status==409
     assert packs([],"Local default credit packs restored").ok
-    player.goto(BASE+"/workspace/plans");expect(player.locator(".pricing-packs button strong")).to_have_text(["200 кредит","500 кредит","1,000 кредит","2,000 кредит","5,000 кредит"])
+    player.goto(BASE+"/workspace/plans");expect(player.locator(".pricing-packs button strong")).to_have_text(["200 кредит","500 кредит","1,000 кредит"])
     player.close()
     # Monthly AI credit amounts: validated, audited, shown on /workspace/plans; restored afterwards.
-    for bad in [{"target":"jlpt","amount":100},{"target":"language","amount":-1},{"target":"language","amount":100001},{"target":"language","amount":"3500"}]:
+    for bad in [{"target":"jlpt","amount":100},{"target":"english_pro","amount":-1},{"target":"english_pro","amount":100001},{"target":"english_pro","amount":"3500"}]:
         assert admin.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":"set-credits","reason":"Invalid credit amount check",**bad}).status==400,bad
     def credits(value,reason):
-        r=admin.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":"set-credits","target":"language","amount":value,"reason":reason});assert r.ok,(r.status,r.text())
+        r=admin.request.post(BASE+"/api/admin",headers=ORIGIN,data={"action":"set-credits","target":"english_pro","amount":value,"reason":reason});assert r.ok,(r.status,r.text())
     credits(3500,"Local credit amount verification")
-    page.goto(BASE+"/workspace/plans");expect(page.locator('.pricing-card[data-program="language"] .pricing-credits')).to_contain_text("3,500")
-    page.goto(BASE+"/admin?tab=pricing&kind=credits");expect(page.locator('.admin-credit-allowances [data-credit-key="language"]')).to_contain_text("3,500 кредит")
+    page.goto(BASE+"/workspace/plans");expect(page.locator('.pricing-card[data-program="english_pro"] .pricing-credits')).to_contain_text("3,500")
+    page.goto(BASE+"/admin?tab=pricing&kind=credits");expect(page.locator('.admin-credit-allowances [data-credit-key="english_pro"]')).to_contain_text("3,500 кредит")
     page.goto(BASE+"/admin?tab=pricing&kind=history&filter=set-price");expect(page.locator(".admin-table-wrap tbody tr").first).to_contain_text("₮59,900")
     credits(3000,"Local credit amount restored after verification")
-    page.goto(BASE+"/workspace/plans");expect(page.locator('.pricing-card[data-program="language"] .pricing-credits')).to_contain_text("3,000")
+    page.goto(BASE+"/workspace/plans");expect(page.locator('.pricing-card[data-program="english_pro"] .pricing-credits')).to_contain_text("3,000")
     page.goto(BASE+"/workspace/plans");expect(page.locator("main")).to_contain_text("59,900")
     # Single-question fix publishes a new version through validation; invalid fixes are refused.
     detail=admin.request.get(BASE+"/api/admin/content/sat-full-01").json()

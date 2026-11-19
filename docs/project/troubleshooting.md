@@ -12,8 +12,15 @@ Full text of the known problems and provider notes summarised in [OPERATIONS.md]
 - **Local change log grows forever.** `prisma-dev-nodejs/Data/durable-streams/education-platform` is Prisma's one-way copy of every
   write, has no retention setting, and our app does not use it; each `check:all` adds about 60 MB. Above about 1 GB: stop the
   database, move that folder elsewhere and start again; Prisma recreates it. Moved aside 2026-11-05 at 2.8 GB with identical row counts;
-  the old copy is `Data/durable-streams-log-backup-2026-11-05`, for the owner to delete.
+  the old copy is `Data/durable-streams-log-backup-2026-11-05`, for the owner to delete. Moved again 2026-11-18 at 8.7 GB
+  (identical row counts) to `Data/durable-streams-log-backup-20261118-endmock`, also for the owner to delete.
 - **Only one app on the local database.** PGlite uses one connection, so stop other previews before running suites.
+  2026-11-19: it also dropped the connection after any failed statement (`select 1/0` then `select 1` → ECONNRESET), so
+  code that catches a unique-key error and reads again (a repeated recording upload) answered 503 and `exams_smoke` failed
+  at its duplicate-upload check. `tests/mock_fixture.mjs` retries its first read on P1017. `db:stop`, `db:start` fixed it.
+- **`next dev` console error on a missing exam.** `/exams/<unknown slug>` (the `notFound()` in `ExamPage`) logs "Failed to
+  execute 'measure' on 'Performance': 'ExamPage' cannot have a negative time stamp" in every fresh browser on `next dev`
+  (2026-11-19, dev 3011), so `exams_smoke`'s final `pageerror` check fails there. The production build (3001) shows none.
 - **Build replaces `.next`.** Restart any running preview after a build. If `next dev` reload-loops, delete `.next/dev`.
 - **Vercel build.** It runs `scripts/vercel-build.mjs`: generate, `migrate deploy`, `next build`, with no seed; about 2 minutes.
   Fonts are fetched from Google at build time. A pooled `DATABASE_URL` without a direct URL only warns. A build that fails with

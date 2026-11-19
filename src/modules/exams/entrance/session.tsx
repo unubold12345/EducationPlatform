@@ -1,13 +1,16 @@
 "use client";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState, type RefObject } from "react";
+import { useRouter } from "next/navigation";
 import { MathScratchpad } from "@/components/math-scratchpad";
 import { useQuestionShortcuts } from "../session-tools";
 import { MathText, MathFormula } from "../math-text";
 import { RichText } from "../rich-text";
 import { ExamFigureView } from "../figure";
 import type { ExamGroup, PublicExamAttempt, PublicQuestion } from "../types";
-import { EntranceResults } from "./results";
+import { OpenReview } from "../open-review";
+import { EndMockButton } from "../end-mock";
+import { AdminSkip, requestSkip, type SkipMode } from "../admin-skip";
 import { entranceSubjectLabels, subjectFromSlug } from "./subjects";
 import "./entrance.css";
 
@@ -18,11 +21,12 @@ const subjectName = (subject: PublicExamAttempt["subject"]) => entranceSubjectLa
 const mathSubject = (subject: PublicExamAttempt["subject"]) => subject === "math" || subject === "physics";
 const langOf = (subject: PublicExamAttempt["subject"]) => subject === "english" ? "en" : "mn";
 
-export function EntranceRunner({ initial }: { initial: PublicExamAttempt }) {
-  return initial.report ? <EntranceResults attempt={initial} /> : <EntranceSession initial={initial} />;
+/** `admin`: show the admin skip controls (the server checks admin membership again on every skip). */
+export function EntranceRunner({ initial, admin = false }: { initial: PublicExamAttempt; admin?: boolean }) {
+  return initial.report ? <OpenReview attempt={initial} /> : <EntranceSession initial={initial} admin={admin} />;
 }
 
-function EntranceSession({ initial }: { initial: PublicExamAttempt }) {
+function EntranceSession({ initial, admin }: { initial: PublicExamAttempt; admin: boolean }) {
   const [attempt, setAttempt] = useState(initial);
   const [answers, setAnswers] = useState(initial.responses);
   const [flags, setFlags] = useState(initial.flags);
@@ -39,11 +43,13 @@ function EntranceSession({ initial }: { initial: PublicExamAttempt }) {
   const savedGeneration = useRef(0);
   const busy = useRef(false);
   const paused = useRef(false);
+  const leaving = useRef(false);
   const anchor = useRef({ server: Date.parse(initial.serverNow), performance: 0 });
   const debounce = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const worker = useRef<(mode: "save" | "sync", force?: boolean) => Promise<void>>(async () => {});
   const heading = useRef<HTMLHeadingElement>(null);
   const endpoint = "/api/mock-attempts/" + initial.id;
+  const router = useRouter();
   const stage = (attempt.stage ?? initial.stage)!;
   const questions = stage.questions;
   const subject = attempt.subject ?? initial.subject ?? subjectFromSlug(attempt.slug) ?? "math";
@@ -127,6 +133,8 @@ function EntranceSession({ initial }: { initial: PublicExamAttempt }) {
         });
       } else response = await fetch(known, { cache: "no-store", signal: AbortSignal.timeout(15000) });
       if (response.status === 409) { paused.current = true; setConflict(true); throw Error("conflict"); }
+      // Stopped (here or in another tab): nothing of it is kept, so the page goes back to the list.
+      if (response.status === 410) { stopping(); setError("Энэ шалгалтыг зогсоосон тул хариу, үр дүн хадгалагдаагүй."); router.replace("/workspace/review?ended=1"); return; }
       if (response.status === 401) { setError("Нэвтрэх хугацаа дууссан. Шинэ цонхонд нэвтэрч, дахин хадгална уу."); return; }
       if (!response.ok) throw Error("network");
       const data = await response.json() as PublicExamAttempt;
@@ -143,6 +151,22 @@ function EntranceSession({ initial }: { initial: PublicExamAttempt }) {
       }
     }
   }
+  // Stopping the sitting: autosave halts and leaving the page asks nothing (the answers are discarded anyway).
+  function stopping() { leaving.current = true; paused.current = true; clearTimeout(debounce.current); }
+  function resumeAfterFailedStop() { leaving.current = false; if (!conflict) paused.current = false; }
+  // Admin testing: waits for an autosave in flight, then sends this stage's answers with the skip and loads the result.
+  async function adminSkip(mode: SkipMode) {
+    paused.current = true; clearTimeout(debounce.current);
+    for (let i = 0; i < 50 && busy.current; i++) await new Promise(resolve => setTimeout(resolve, 100));
+    const current = latest.current;
+    if (!current.stage) { paused.current = false; return; }
+    busy.current = true;
+    try {
+      const ids = new Set(current.stage.questions.map(question => question.id));
+      accept(await requestSkip<PublicExamAttempt>(endpoint, mode, { revision: current.revision, stageId: current.stage.id, responses: Object.fromEntries(Object.entries(draft.current).filter(([id]) => ids.has(id))), flags: flagDraft.current.filter(id => ids.has(id)) }), undefined, true);
+    } catch (reason) { if (!conflict) paused.current = false; throw reason; }
+    finally { busy.current = false; }
+  }
   useEffect(() => { worker.current = network; });
   useEffect(() => {
     anchor.current.performance = performance.now();
@@ -155,7 +179,7 @@ function EntranceSession({ initial }: { initial: PublicExamAttempt }) {
       if (seconds === 0) void worker.current(generation.current !== savedGeneration.current ? "save" : "sync");
     }, 250);
     const poll = setInterval(() => { if (!latest.current.finishedAt) void worker.current(generation.current !== savedGeneration.current ? "save" : "sync"); }, 10000);
-    function beforeUnload(event: BeforeUnloadEvent) { if (generation.current !== savedGeneration.current) event.preventDefault(); }
+    function beforeUnload(event: BeforeUnloadEvent) { if (leaving.current) return; if (generation.current !== savedGeneration.current) event.preventDefault(); }
     window.addEventListener("beforeunload", beforeUnload);
     return () => { clearInterval(tick); clearInterval(poll); clearTimeout(debounce.current); window.removeEventListener("beforeunload", beforeUnload); };
   }, []);
@@ -209,7 +233,8 @@ function EntranceSession({ initial }: { initial: PublicExamAttempt }) {
     return () => { document.body.style.overflow = previous; document.removeEventListener("keydown", escape); };
   }, [sheet]);
 
-  if (attempt.report) return <EntranceResults attempt={attempt} />;
+  // The result is the Review page; the runner moves there as soon as the paper is scored.
+  if (attempt.report) return <OpenReview attempt={attempt} />;
 
   const timeNotice = remaining <= 60 ? "1 минутаас бага хугацаа үлдлээ. " + (questions.length - answered) + " асуултад хариулаагүй." : remaining <= 300 ? "5 минутаас бага хугацаа үлдлээ." : "";
   const group = page.group;
@@ -231,7 +256,7 @@ function EntranceSession({ initial }: { initial: PublicExamAttempt }) {
       </div>
     </header>
     <div className="eesh-sit-progress" aria-hidden="true"><i style={{ width: Math.round((answered / Math.max(1, questions.length)) * 100) + "%" }} /></div>
-    <div className="eesh-sit-status"><span role="status">{status}</span><span>{pageIndex + 1} / {pages.length} хуудас</span></div>
+    <div className="eesh-sit-status"><span role="status">{status}</span><span>{pageIndex + 1} / {pages.length} хуудас</span>{admin ? <AdminSkip attemptId={attempt.id} last={attempt.stageIndex >= attempt.timeline.length - 1} onSkip={adminSkip} className="eesh-end-link" /> : null}<EndMockButton attemptId={attempt.id} title={attempt.title} className="eesh-end-link" onEnding={stopping} onFailed={resumeAfterFailedStop}/></div>
     <p className="sr-only" aria-live="polite">{timeNotice}</p>
     {error ? <div className="eesh-sit-error" role="alert"><p>{error}</p><div>{conflict ? <button type="button" className="button secondary" onClick={() => void network("sync", true)}>Хадгалсан хувилбарыг ачаалах</button> : <button type="button" className="button secondary" onClick={() => void network("save")}>Дахин хадгалах</button>}<a className="text-link" href="/login" target="_blank" rel="noopener noreferrer">Нэвтрэх ↗</a></div></div> : null}
 

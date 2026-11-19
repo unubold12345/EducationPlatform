@@ -16,6 +16,7 @@ import {
   type StudyUpdate, type VocabularyDeck, type VocabularyWord, type WordFields,
 } from "./contracts";
 import { nextStudy, type StudyGrade } from "./study";
+import { aiFetch } from "@/modules/ai-usage/server";
 
 const LEASE_MS = 240_000;
 const DAILY_LIMIT = VOCABULARY_LIMITS.dailyImports;
@@ -444,7 +445,7 @@ async function deepseekWords(messages: ChatMessage[], meter: UsageMeter) {
   if (!key) throw new ApiError(503, "AI үг оруулагч одоогоор холбогдоогүй байна.");
   let response: Response;
   try {
-    response = await fetch("https://api.deepseek.com/chat/completions", {
+    response = await aiFetch("deepseek", "https://api.deepseek.com/chat/completions", {
       method: "POST", cache: "no-store", redirect: "error",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
       body: JSON.stringify({

@@ -23,10 +23,16 @@ const KIND_LABEL: Record<DrillKind, [string, string]> = {
   match: ["Хос олох", "Таван хосыг холбох"], type: ["Бичих", "Дуудлагыг нь бичих"], build: ["Бүрдүүлэх", "Хэсгүүдээр угсрах"],
   cloze: ["Өгүүлбэр", "Хоосон зайг нөхөх"], tone: ["Аялгуу", "Аялгууг таних"],
 };
+const KANJI_LABEL: Partial<Record<DrillKind, [string, string]>> = {
+  meaning: ["Утга сонгох", "Ханзыг хараад утгыг нь"], term: ["Ханз сонгох", "Утгыг хараад ханзыг нь"], type: ["Бичих", "Нэг уншлагыг нь бичих"],
+  cloze: ["Үг нөхөх", "Үгэнд орох ханзыг сонгох"],
+};
 const KANA_LABEL: Partial<Record<DrillKind, [string, string]>> = { meaning: ["Дуудлага сонгох", "Үсгийг хараад romaji-г нь"], term: ["Үсэг сонгох", "Romaji-г хараад үсгийг нь"] };
 const FOCUS: { id: DrillFocus; label: string }[] = [{ id: "smart", label: "Ухаалаг" }, { id: "new", label: "Шинэ" }, { id: "weak", label: "Сул" }, { id: "all", label: "Бүгд" }];
 const PRAISE = ["Зөв!", "Гайхалтай!", "Яг зөв!", "Сайн байна!"];
 const secondsSince = (start: number) => Math.round((Date.now() - start) / 1000);
+/** Kanji decks count characters, not words. */
+const unit = (domain: DrillDomain, forms: [string, string, string]) => domain === "kana" ? forms[0] : domain === "kanji" ? forms[1] : forms[2];
 
 /** Start a session from a click handler (time and randomness belong in handlers, not in render). */
 export function startDrill(setup: Setup, config: DrillConfig, ids: string[] | null = null): DrillSessionState {
@@ -61,7 +67,7 @@ function DrillMaker({ title, domain, groups, groupLabel, initialGroups, kinds, c
   const [count, setCount] = useState(stored.count !== undefined && counts.includes(stored.count) ? stored.count : counts[Math.min(1, counts.length - 1)]);
   const [picked, setPicked] = useState<ReadonlySet<DrillKind>>(new Set((stored.kinds ?? kinds).filter(kind => kinds.includes(kind)).length ? (stored.kinds ?? kinds).filter(kind => kinds.includes(kind)) : kinds));
   const [focus, setFocus] = useState<DrillFocus>(stored.focus ?? "smart");
-  const label = (kind: DrillKind) => (domain === "kana" ? KANA_LABEL[kind] : undefined) ?? KIND_LABEL[kind];
+  const label = (kind: DrillKind) => (domain === "kana" ? KANA_LABEL[kind] : domain === "kanji" ? KANJI_LABEL[kind] : undefined) ?? KIND_LABEL[kind];
   const available = pool.filter(item => chosen.has(item.group)).length;
   const sections = [...new Set(groups.map(group => group.section ?? ""))];
   const toggle = <T,>(set: ReadonlySet<T>, value: T) => { const next = new Set(set); if (next.has(value)) next.delete(value); else next.add(value); return next; };
@@ -105,13 +111,13 @@ function DrillMaker({ title, domain, groups, groupLabel, initialGroups, kinds, c
           <div className={styles.segment}>{counts.map(value => <button key={value} type="button" aria-pressed={count === value} onClick={() => setCount(value)}>{value || "Бүгд"}</button>)}</div>
         </div>
         <div className={styles.block} role="group" aria-label="Аль үгсийг">
-          <div className={styles.blockHead}><span>Аль {domain === "kana" ? "үсгийг" : "үгсийг"}</span></div>
+          <div className={styles.blockHead}><span>Аль {unit(domain, ["үсгийг", "ханзыг", "үгсийг"])}</span></div>
           <div className={styles.segment}>{FOCUS.map(item => <button key={item.id} type="button" aria-pressed={focus === item.id} onClick={() => setFocus(item.id)}>{item.label}</button>)}</div>
         </div>
       </div>
 
       <footer className={styles.makerFoot}>
-        <span>{ready ? `${count > 0 ? Math.min(count, available) : available} асуулт · ${available} ${domain === "kana" ? "үсгээс" : "үгнээс"}` : "Нэг ч хэсэг эсвэл төрөл сонгоогүй байна."}</span>
+        <span>{ready ? `${count > 0 ? Math.min(count, available) : available} асуулт · ${available} ${unit(domain, ["үсгээс", "ханзаас", "үгнээс"])}` : "Нэг ч хэсэг эсвэл төрөл сонгоогүй байна."}</span>
         <button type="button" className={styles.primary} disabled={!ready} onClick={start}>Эхлэх</button>
       </footer>
     </section>
@@ -218,6 +224,8 @@ function DrillSession({ domain, session, pool, lang, voiced, reviewUrl, onStudie
     const onKey = (event: KeyboardEvent) => {
       if (finished || !current) return;
       const inField = event.target instanceof HTMLInputElement;
+      // Enter that picks a word in a Chinese/Japanese input method is not a check.
+      if (event.isComposing || event.keyCode === 229) return;
       if (event.key === "Enter") { event.preventDefault(); if (verdict) next(); else check(); return; }
       if (inField || verdict || !/^[1-9]$/.test(event.key)) return;
       const at = Number(event.key) - 1;
@@ -244,9 +252,9 @@ function DrillSession({ domain, session, pool, lang, voiced, reviewUrl, onStudie
           <div data-tone="time"><dt>Хугацаа</dt><dd>{time}</dd></div>
           <div data-tone="combo"><dt>Дараалан зөв</dt><dd>{best}</dd></div>
         </dl>
-        <p className={styles.resultNote} aria-live="polite">{saving === "saving" ? "Явцыг хадгалж байна…" : saving === "saved" ? `Явц хадгалагдлаа: ${asked.size} ${domain === "kana" ? "үсэг" : "үг"}, ${solo} дасгал.` : ""}</p>
+        <p className={styles.resultNote} aria-live="polite">{saving === "saving" ? "Явцыг хадгалж байна…" : saving === "saved" ? `Явц хадгалагдлаа: ${asked.size} ${unit(domain, ["үсэг", "ханз", "үг"])}, ${solo} дасгал.` : ""}</p>
         {error ? <p className={styles.error} role="alert">{error} <button type="button" className={styles.textButton} onClick={() => void save(grades())}>Дахин оролдох</button></p> : null}
-        {wrong.length ? <div className={styles.reviewList}><h2>Давтах {domain === "kana" ? "үсэг" : "үгс"}</h2><ul>{wrong.map(item => <li key={item.id}>
+        {wrong.length ? <div className={styles.reviewList}><h2>Давтах {unit(domain, ["үсэг", "ханз", "үгс"])}</h2><ul>{wrong.map(item => <li key={item.id}>
           <span lang={lang}>{item.term}</span><span>{domain === "tones" ? item.reading : item.reading ?? ""}</span><span>{item.meaning}</span>
           {voiced ? <button type="button" className={styles.iconButton} onClick={() => speak(item.term, lang)} aria-label={`${item.term} сонсох`}><Icon name="sound" size={16} /></button> : null}
         </li>)}</ul></div> : null}
@@ -297,6 +305,7 @@ function DrillSession({ domain, session, pool, lang, voiced, reviewUrl, onStudie
         {current.kind === "type" ? <input className={styles.typeInput} value={typed} onChange={event => setTyped(event.target.value)} disabled={Boolean(verdict)} autoFocus
           aria-label="Хариулт" placeholder={domain === "hsk" ? "жишээ нь: xuesheng" : "жишээ нь: ka"} autoComplete="off" autoCapitalize="off" spellCheck={false}
           data-state={verdict ? (verdict.right ? "right" : "wrong") : undefined} /> : null}
+
 
         {current.kind === "build" ? <div className={styles.build}>
           <div className={styles.buildLine} aria-label="Таны хариулт" lang={lang}>{built.map((at, position) => <button key={position} type="button" disabled={Boolean(verdict)}

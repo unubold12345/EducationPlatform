@@ -7,6 +7,7 @@ import {tutorDay} from "@/modules/tutor/contracts";
 import {normalizeWritingReply,validWritingInput,writingMessages} from "./contracts";
 import {chargeCredits} from "@/modules/credits/service";
 import {AI_ACTIONS,writingCreditAction} from "@/modules/credits/pricing";
+import {aiFetch} from "@/modules/ai-usage/server";
 
 const DAILY_LIMIT=40;
 
@@ -33,7 +34,7 @@ export async function writingReply(userId:string,body:unknown) {
   const maxTokens=AI_ACTIONS[action].outputTokens;
   for(let attempt=0;attempt<2;attempt++){
    let response:Response;
-   try{response=await fetch("https://api.deepseek.com/chat/completions",{method:"POST",cache:"no-store",redirect:"error",headers:{"Content-Type":"application/json",Authorization:`Bearer ${key}`},body:JSON.stringify({model:process.env.DEEPSEEK_MODEL||"deepseek-flash",messages:writingMessages(body),thinking:{type:"disabled"},max_tokens:maxTokens,temperature:body.action==="ideas"?0.7:0.2,response_format:{type:"json_object"},stream:false}),signal:AbortSignal.timeout(body.action==="feedback"?90000:60000)});}
+   try{response=await aiFetch("deepseek","https://api.deepseek.com/chat/completions",{method:"POST",cache:"no-store",redirect:"error",headers:{"Content-Type":"application/json",Authorization:`Bearer ${key}`},body:JSON.stringify({model:process.env.DEEPSEEK_MODEL||"deepseek-flash",messages:writingMessages(body),thinking:{type:"disabled"},max_tokens:maxTokens,temperature:body.action==="ideas"?0.7:0.2,response_format:{type:"json_object"},stream:false}),signal:AbortSignal.timeout(body.action==="feedback"?90000:60000)});}
    catch{throw new ApiError(503,"AI туслахтай холбогдож чадсангүй. Бичвэр тань хадгалагдсан хэвээр байна.");}
    // Never echo provider error bodies: they can contain request/credential details.
    if(!response.ok)throw new ApiError(503,response.status===429?"AI туслах ачаалалтай байна. Түр хүлээгээд дахин оролдоно уу.":"AI туслах түр ажиллахгүй байна. Дахин оролдоно уу.");

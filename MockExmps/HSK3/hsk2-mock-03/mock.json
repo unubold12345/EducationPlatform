@@ -1,0 +1,2182 @@
+{
+ "id": "hsk2-mock-03",
+ "level": 2,
+ "number": 3,
+ "title": "生日快乐",
+ "titlePinyin": "Shēngrì kuàilè",
+ "titleEn": "Happy birthday",
+ "theme": "Birthdays, family, shopping and the weather",
+ "stages": [
+  {
+   "id": "hsk-l",
+   "sets": [
+    {
+     "key": "L1",
+     "id": "hsk-l-1",
+     "layout": "L2",
+     "title": "第一部分 · Өгүүлбэр ба зураг",
+     "domain": "听力一 · Өгүүлбэр, зураг",
+     "task": "听录音，选择对应的图片。",
+     "note": "Өгүүлбэрийг хоёр удаа сонсоно. Гурван зургаас тохирохыг сонгоно.",
+     "prompt": "Сонссон өгүүлбэрт тохирох зургийг сонгоно уу.",
+     "audio": [
+      "听录音，选择对应的图片。",
+      "Tīng lùyīn, xuǎnzé duìyìng de túpiàn."
+     ],
+     "example": {
+      "pictures": [
+       {
+        "label": "A",
+        "image": "../examples/hsk2-listening-1.svg",
+        "alt": "A woman reading a book on a sofa"
+       },
+       {
+        "label": "B",
+        "image": "../examples/hsk1-listening-2-b.svg",
+        "alt": "A computer"
+       },
+       {
+        "label": "C",
+        "image": "../examples/hsk1-listening-2-c.svg",
+        "alt": "A cat"
+       }
+      ],
+      "answer": "A",
+      "turns": [
+       {
+        "text": "她在看书。",
+        "pinyin": "Tā zài kàn shū.",
+        "role": "woman"
+       }
+      ]
+     },
+     "items": [
+      {
+       "n": 1,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "C",
+       "answerDisplay": "C",
+       "pictures": [
+        {
+         "label": "A",
+         "image": "images/l1-03.svg",
+         "alt": "Two people dancing"
+        },
+        {
+         "label": "B",
+         "image": "images/l1-09.svg",
+         "alt": "Two children playing with a ball outside"
+        },
+        {
+         "label": "C",
+         "image": "images/l1-01.svg",
+         "alt": "A girl in a party hat beside a birthday cake"
+        }
+       ],
+       "turns": [
+        {
+         "text": "今天是她的生日。",
+         "pinyin": "Jīntiān shì tā de shēngrì.",
+         "role": "woman"
+        }
+       ],
+       "explanation": "The sentence says 今天是她的生日。 (Jīntiān shì tā de shēngrì.); C shows a girl in a party hat beside a birthday cake."
+      },
+      {
+       "n": 2,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "A",
+       "answerDisplay": "A",
+       "pictures": [
+        {
+         "label": "A",
+         "image": "images/l1-02.svg",
+         "alt": "A woman singing into a microphone"
+        },
+        {
+         "label": "B",
+         "image": "images/l1-06.svg",
+         "alt": "A cat"
+        },
+        {
+         "label": "C",
+         "image": "images/l1-10.svg",
+         "alt": "A bowl of noodles"
+        }
+       ],
+       "turns": [
+        {
+         "text": "她正在唱歌。",
+         "pinyin": "Tā zhèngzài chànggē.",
+         "role": "man"
+        }
+       ],
+       "explanation": "The sentence says 她正在唱歌。 (Tā zhèngzài chànggē.); A shows a woman singing into a microphone."
+      },
+      {
+       "n": 3,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "B",
+       "answerDisplay": "B",
+       "pictures": [
+        {
+         "label": "A",
+         "image": "images/l1-02.svg",
+         "alt": "A woman singing into a microphone"
+        },
+        {
+         "label": "B",
+         "image": "images/l1-04.svg",
+         "alt": "A tall boy standing beside a small girl"
+        },
+        {
+         "label": "C",
+         "image": "images/l1-07.svg",
+         "alt": "A woman cooking at a stove"
+        }
+       ],
+       "turns": [
+        {
+         "text": "哥哥比妹妹高。",
+         "pinyin": "Gēge bǐ mèimei gāo.",
+         "role": "woman"
+        }
+       ],
+       "explanation": "The sentence says 哥哥比妹妹高。 (Gēge bǐ mèimei gāo.); B shows a tall boy standing beside a small girl."
+      },
+      {
+       "n": 4,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "B",
+       "answerDisplay": "B",
+       "pictures": [
+        {
+         "label": "A",
+         "image": "images/l1-05.svg",
+         "alt": "A watermelon and a slice on a table"
+        },
+        {
+         "label": "B",
+         "image": "images/l1-07.svg",
+         "alt": "A woman cooking at a stove"
+        },
+        {
+         "label": "C",
+         "image": "images/l1-08.svg",
+         "alt": "Dark clouds over houses"
+        }
+       ],
+       "turns": [
+        {
+         "text": "妈妈正在做饭。",
+         "pinyin": "Māma zhèngzài zuò fàn.",
+         "role": "man"
+        }
+       ],
+       "explanation": "The sentence says 妈妈正在做饭。 (Māma zhèngzài zuò fàn.); B shows a woman cooking at a stove."
+      },
+      {
+       "n": 5,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "C",
+       "answerDisplay": "C",
+       "pictures": [
+        {
+         "label": "A",
+         "image": "images/l1-01.svg",
+         "alt": "A girl in a party hat beside a birthday cake"
+        },
+        {
+         "label": "B",
+         "image": "images/l1-06.svg",
+         "alt": "A cat"
+        },
+        {
+         "label": "C",
+         "image": "images/l1-08.svg",
+         "alt": "Dark clouds over houses"
+        }
+       ],
+       "turns": [
+        {
+         "text": "今天是阴天。",
+         "pinyin": "Jīntiān shì yīntiān.",
+         "role": "woman"
+        }
+       ],
+       "explanation": "The sentence says 今天是阴天。 (Jīntiān shì yīntiān.); C shows dark clouds over houses."
+      }
+     ]
+    },
+    {
+     "key": "L2a",
+     "id": "hsk-l-2a",
+     "layout": "L3",
+     "title": "第二部分 · Яриа ба зураг (6–10)",
+     "domain": "听力二 · Яриа, зураг",
+     "task": "听对话，选择相应的图片。",
+     "note": "Хоёр хүний яриаг хоёр удаа сонсоно. Тохирох зургийг сонгоно; нэг зураг жишээнд ашиглагдсан.",
+     "prompt": "Сонссон яриад тохирох зургийг сонгоно уу.",
+     "audio": [
+      "听对话，选择相应的图片。",
+      "Tīng duìhuà, xuǎnzé xiāngyìng de túpiàn."
+     ],
+     "pictures": [
+      {
+       "label": "A",
+       "image": "images/l2a-a.svg",
+       "alt": "A cooked fish on a plate"
+      },
+      {
+       "label": "B",
+       "image": "images/l2a-b.svg",
+       "alt": "Two pencils on a notebook"
+      },
+      {
+       "label": "C",
+       "image": "images/l2a-c.svg",
+       "alt": "A cup of tea"
+      },
+      {
+       "label": "D",
+       "image": "images/l2a-d.svg",
+       "alt": "A woman giving a man a present"
+      },
+      {
+       "label": "E",
+       "image": "images/l2a-e.svg",
+       "alt": "A woman washing clothes in a tub"
+      },
+      {
+       "label": "F",
+       "image": "images/l2a-f.svg",
+       "alt": "A mobile phone"
+      }
+     ],
+     "example": {
+      "pictures": [
+       {
+        "label": "C",
+        "image": "images/l2a-c.svg",
+        "alt": "A cup of tea"
+       }
+      ],
+      "answer": "C",
+      "turns": [
+       {
+        "speaker": "女",
+        "text": "你喝茶吗？",
+        "pinyin": "Nǐ hē chá ma?",
+        "role": "woman"
+       },
+       {
+        "speaker": "男",
+        "text": "好的，谢谢你。",
+        "pinyin": "Hǎo de, xièxie nǐ.",
+        "role": "man"
+       }
+      ]
+     },
+     "items": [
+      {
+       "n": 6,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "D",
+       "answerDisplay": "D",
+       "turns": [
+        {
+         "speaker": "女",
+         "text": "生日快乐！这是送给你的。",
+         "pinyin": "Shēngrì kuàilè! Zhè shì sòng gěi nǐ de.",
+         "role": "woman"
+        },
+        {
+         "speaker": "男",
+         "text": "谢谢你！是什么东西？",
+         "pinyin": "Xièxie nǐ! Shì shénme dōngxi?",
+         "role": "man"
+        }
+       ],
+       "explanation": "She gives him a birthday present; D shows a present being given."
+      },
+      {
+       "n": 7,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "E",
+       "answerDisplay": "E",
+       "turns": [
+        {
+         "speaker": "男",
+         "text": "你在洗什么呢？",
+         "pinyin": "Nǐ zài xǐ shénme ne?",
+         "role": "man"
+        },
+        {
+         "speaker": "女",
+         "text": "洗衣服，孩子的衣服太多了。",
+         "pinyin": "Xǐ yīfu, háizi de yīfu tài duō le.",
+         "role": "woman"
+        }
+       ],
+       "explanation": "She is washing clothes; E shows that."
+      },
+      {
+       "n": 8,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "B",
+       "answerDisplay": "B",
+       "turns": [
+        {
+         "speaker": "女",
+         "text": "这是谁的笔？",
+         "pinyin": "Zhè shì shéi de bǐ?",
+         "role": "woman"
+        },
+        {
+         "speaker": "男",
+         "text": "是我的，谢谢你，我找了很长时间。",
+         "pinyin": "Shì wǒ de, xièxie nǐ, wǒ zhǎo le hěn cháng shíjiān.",
+         "role": "man"
+        }
+       ],
+       "explanation": "They are talking about a pencil; B shows pencils."
+      },
+      {
+       "n": 9,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "A",
+       "answerDisplay": "A",
+       "turns": [
+        {
+         "speaker": "男",
+         "text": "今天的鱼真好吃，是你做的吗？",
+         "pinyin": "Jīntiān de yú zhēn hǎochī, shì nǐ zuò de ma?",
+         "role": "man"
+        },
+        {
+         "speaker": "女",
+         "text": "不是，是我丈夫做的。",
+         "pinyin": "Bú shì, shì wǒ zhàngfu zuò de.",
+         "role": "woman"
+        }
+       ],
+       "explanation": "They are talking about the fish; A shows a fish dish."
+      },
+      {
+       "n": 10,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "F",
+       "answerDisplay": "F",
+       "turns": [
+        {
+         "speaker": "女",
+         "text": "你的新手机是什么颜色的？",
+         "pinyin": "Nǐ de xīn shǒujī shì shénme yánsè de?",
+         "role": "woman"
+        },
+        {
+         "speaker": "男",
+         "text": "黑的，你看，在这儿。",
+         "pinyin": "Hēi de, nǐ kàn, zài zhèr.",
+         "role": "man"
+        }
+       ],
+       "explanation": "They are talking about a new phone; F shows a mobile phone."
+      }
+     ]
+    },
+    {
+     "key": "L2b",
+     "id": "hsk-l-2b",
+     "layout": "L3",
+     "title": "第二部分 · Яриа ба зураг (11–15)",
+     "domain": "听力二 · Яриа, зураг",
+     "task": "听对话，选择相应的图片。",
+     "note": "Хоёр хүний яриаг хоёр удаа сонсоно. Таван зураг тус бүр нэг удаа таарна.",
+     "prompt": "Сонссон яриад тохирох зургийг сонгоно уу.",
+     "pictures": [
+      {
+       "label": "A",
+       "image": "images/l2b-a.svg",
+       "alt": "A person feeling hot under a bright sun"
+      },
+      {
+       "label": "B",
+       "image": "images/l2b-b.svg",
+       "alt": "A shop counter with fruit"
+      },
+      {
+       "label": "C",
+       "image": "images/l2b-c.svg",
+       "alt": "A cinema screen and audience"
+      },
+      {
+       "label": "D",
+       "image": "images/l2b-d.svg",
+       "alt": "A person watching television at home"
+      },
+      {
+       "label": "E",
+       "image": "images/l2b-e.svg",
+       "alt": "A dog"
+      }
+     ],
+     "items": [
+      {
+       "n": 11,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+       ],
+       "answer": "C",
+       "answerDisplay": "C",
+       "turns": [
+        {
+         "speaker": "男",
+         "text": "电影快开始了，我们进去吧。",
+         "pinyin": "Diànyǐng kuài kāishǐ le, wǒmen jìnqù ba.",
+         "role": "man"
+        },
+        {
+         "speaker": "女",
+         "text": "等一下，小李还没到呢。",
+         "pinyin": "Děng yíxià, Xiǎo Lǐ hái méi dào ne.",
+         "role": "woman"
+        }
+       ],
+       "explanation": "The film is about to start; C shows a cinema."
+      },
+      {
+       "n": 12,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+       ],
+       "answer": "E",
+       "answerDisplay": "E",
+       "turns": [
+        {
+         "speaker": "女",
+         "text": "你家的狗真漂亮，它几岁了？",
+         "pinyin": "Nǐ jiā de gǒu zhēn piàoliang, tā jǐ suì le?",
+         "role": "woman"
+        },
+        {
+         "speaker": "男",
+         "text": "两岁了，它最喜欢和孩子玩。",
+         "pinyin": "Liǎng suì le, tā zuì xǐhuan hé háizi wán.",
+         "role": "man"
+        }
+       ],
+       "explanation": "They are talking about a dog; E shows a dog."
+      },
+      {
+       "n": 13,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+       ],
+       "answer": "A",
+       "answerDisplay": "A",
+       "turns": [
+        {
+         "speaker": "男",
+         "text": "今天天气真好，是晴天。",
+         "pinyin": "Jīntiān tiānqì zhēn hǎo, shì qíngtiān.",
+         "role": "man"
+        },
+        {
+         "speaker": "女",
+         "text": "是的，但是太热了。",
+         "pinyin": "Shì de, dànshì tài rè le.",
+         "role": "woman"
+        }
+       ],
+       "explanation": "It is sunny and too hot; A shows a hot sunny day."
+      },
+      {
+       "n": 14,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+       ],
+       "answer": "D",
+       "answerDisplay": "D",
+       "turns": [
+        {
+         "speaker": "女",
+         "text": "孩子在做什么呢？",
+         "pinyin": "Háizi zài zuò shénme ne?",
+         "role": "woman"
+        },
+        {
+         "speaker": "男",
+         "text": "他在房间里看电视呢。",
+         "pinyin": "Tā zài fángjiān li kàn diànshì ne.",
+         "role": "man"
+        }
+       ],
+       "explanation": "The child is watching TV in his room; D shows someone watching TV."
+      },
+      {
+       "n": 15,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+       ],
+       "answer": "B",
+       "answerDisplay": "B",
+       "turns": [
+        {
+         "speaker": "男",
+         "text": "苹果怎么卖？",
+         "pinyin": "Píngguǒ zěnme mài?",
+         "role": "man"
+        },
+        {
+         "speaker": "女",
+         "text": "这些苹果十块钱，很便宜。",
+         "pinyin": "Zhèxiē píngguǒ shí kuài qián, hěn piányi.",
+         "role": "woman"
+        }
+       ],
+       "explanation": "He is buying apples; B shows a shop with fruit."
+      }
+     ]
+    },
+    {
+     "key": "L3",
+     "id": "hsk-l-3",
+     "layout": "L4",
+     "title": "第三部分 · Яриа ба асуулт",
+     "domain": "听力三 · Яриа, асуулт",
+     "task": "听对话，选择答案。",
+     "note": "Яриа ба асуултыг хоёр удаа сонсоно. Асуулт бичигдээгүй; гурван хариултаас зөвийг сонгоно.",
+     "prompt": "Сонссон асуултын хариултыг сонгоно уу.",
+     "audio": [
+      "听对话，选择答案。",
+      "Tīng duìhuà, xuǎnzé dá'àn."
+     ],
+     "example": {
+      "choices": [
+       {
+        "label": "A",
+        "text": "椅子上",
+        "pinyin": "yǐzi shang"
+       },
+       {
+        "label": "B",
+        "text": "电脑旁边",
+        "pinyin": "diànnǎo pángbiān"
+       },
+       {
+        "label": "C",
+        "text": "房间外面",
+        "pinyin": "fángjiān wàimiàn"
+       }
+      ],
+      "answer": "B",
+      "turns": [
+       {
+        "speaker": "女",
+        "text": "你看见我的笔了吗？",
+        "pinyin": "Nǐ kànjiàn wǒ de bǐ le ma?",
+        "role": "woman"
+       },
+       {
+        "speaker": "男",
+        "text": "在电脑旁边，那个红的是你的吗？",
+        "pinyin": "Zài diànnǎo pángbiān, nàge hóng de shì nǐ de ma?",
+        "role": "man"
+       },
+       {
+        "text": "问：笔在哪儿？",
+        "pinyin": "Wèn: Bǐ zài nǎr?",
+        "role": "narrator"
+       }
+      ]
+     },
+     "items": [
+      {
+       "n": 16,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "B",
+       "answerDisplay": "B · 衣服 (yīfu)",
+       "choices": [
+        {
+         "label": "A",
+         "text": "手表",
+         "pinyin": "shǒubiǎo"
+        },
+        {
+         "label": "B",
+         "text": "衣服",
+         "pinyin": "yīfu"
+        },
+        {
+         "label": "C",
+         "text": "手机",
+         "pinyin": "shǒujī"
+        }
+       ],
+       "turns": [
+        {
+         "speaker": "男",
+         "text": "明天是你妈妈的生日，你准备送她什么？",
+         "pinyin": "Míngtiān shì nǐ māma de shēngrì, nǐ zhǔnbèi sòng tā shénme?",
+         "role": "man"
+        },
+        {
+         "speaker": "女",
+         "text": "我想送她一件红衣服。",
+         "pinyin": "Wǒ xiǎng sòng tā yí jiàn hóng yīfu.",
+         "role": "woman"
+        },
+        {
+         "text": "问：女的想送妈妈什么？",
+         "pinyin": "Wèn: Nǚ de xiǎng sòng māma shénme?",
+         "role": "narrator"
+        }
+       ],
+       "explanation": "She wants to give her mother a red piece of clothing."
+      },
+      {
+       "n": 17,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "C",
+       "answerDisplay": "C · 二十二岁 (èrshí'èr suì)",
+       "choices": [
+        {
+         "label": "A",
+         "text": "十八岁",
+         "pinyin": "shíbā suì"
+        },
+        {
+         "label": "B",
+         "text": "二十岁",
+         "pinyin": "èrshí suì"
+        },
+        {
+         "label": "C",
+         "text": "二十二岁",
+         "pinyin": "èrshí'èr suì"
+        }
+       ],
+       "turns": [
+        {
+         "speaker": "女",
+         "text": "你弟弟今年多大了？",
+         "pinyin": "Nǐ dìdi jīnnián duō dà le?",
+         "role": "woman"
+        },
+        {
+         "speaker": "男",
+         "text": "他比我小两岁，今年二十岁。",
+         "pinyin": "Tā bǐ wǒ xiǎo liǎng suì, jīnnián èrshí suì.",
+         "role": "man"
+        },
+        {
+         "text": "问：男的今年多大？",
+         "pinyin": "Wèn: Nán de jīnnián duō dà?",
+         "role": "narrator"
+        }
+       ],
+       "explanation": "His brother is twenty and two years younger, so the man is twenty-two."
+      },
+      {
+       "n": 18,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "C",
+       "answerDisplay": "C · 女的姐姐的同学 (nǚ de jiějie de tóngxué)",
+       "choices": [
+        {
+         "label": "A",
+         "text": "女的的姐姐",
+         "pinyin": "nǚ de de jiějie"
+        },
+        {
+         "label": "B",
+         "text": "女的的同学",
+         "pinyin": "nǚ de de tóngxué"
+        },
+        {
+         "label": "C",
+         "text": "女的姐姐的同学",
+         "pinyin": "nǚ de jiějie de tóngxué"
+        }
+       ],
+       "turns": [
+        {
+         "speaker": "男",
+         "text": "你认识那个穿白衣服的女孩子吗？",
+         "pinyin": "Nǐ rènshi nàge chuān bái yīfu de nǚ háizi ma?",
+         "role": "man"
+        },
+        {
+         "speaker": "女",
+         "text": "认识，她是我姐姐的同学。",
+         "pinyin": "Rènshi, tā shì wǒ jiějie de tóngxué.",
+         "role": "woman"
+        },
+        {
+         "text": "问：那个女孩子是谁？",
+         "pinyin": "Wèn: Nàge nǚ háizi shì shéi?",
+         "role": "narrator"
+        }
+       ],
+       "explanation": "She is a classmate of the woman's elder sister."
+      },
+      {
+       "n": 19,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "B",
+       "answerDisplay": "B · 阴天 (yīntiān)",
+       "choices": [
+        {
+         "label": "A",
+         "text": "晴天",
+         "pinyin": "qíngtiān"
+        },
+        {
+         "label": "B",
+         "text": "阴天",
+         "pinyin": "yīntiān"
+        },
+        {
+         "label": "C",
+         "text": "下雨",
+         "pinyin": "xià yǔ"
+        }
+       ],
+       "turns": [
+        {
+         "speaker": "女",
+         "text": "外面还在下雨吗？",
+         "pinyin": "Wàimiàn hái zài xià yǔ ma?",
+         "role": "woman"
+        },
+        {
+         "speaker": "男",
+         "text": "不下了，现在是阴天。",
+         "pinyin": "Bú xià le, xiànzài shì yīntiān.",
+         "role": "man"
+        },
+        {
+         "text": "问：现在天气怎么样？",
+         "pinyin": "Wèn: Xiànzài tiānqì zěnmeyàng?",
+         "role": "narrator"
+        }
+       ],
+       "explanation": "The rain has stopped and it is overcast now."
+      },
+      {
+       "n": 20,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "C",
+       "answerDisplay": "C · 二十块 (èrshí kuài)",
+       "choices": [
+        {
+         "label": "A",
+         "text": "十块",
+         "pinyin": "shí kuài"
+        },
+        {
+         "label": "B",
+         "text": "十二块",
+         "pinyin": "shí'èr kuài"
+        },
+        {
+         "label": "C",
+         "text": "二十块",
+         "pinyin": "èrshí kuài"
+        }
+       ],
+       "turns": [
+        {
+         "speaker": "男",
+         "text": "这个水果真大！多少钱？",
+         "pinyin": "Zhège shuǐguǒ zhēn dà! Duōshao qián?",
+         "role": "man"
+        },
+        {
+         "speaker": "女",
+         "text": "不贵，二十块。",
+         "pinyin": "Bú guì, èrshí kuài.",
+         "role": "woman"
+        },
+        {
+         "text": "问：水果多少钱？",
+         "pinyin": "Wèn: Shuǐguǒ duōshao qián?",
+         "role": "narrator"
+        }
+       ],
+       "explanation": "The watermelon costs twenty kuai."
+      },
+      {
+       "n": 21,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "A",
+       "answerDisplay": "A · 男的的妻子 (nán de de qīzi)",
+       "choices": [
+        {
+         "label": "A",
+         "text": "男的的妻子",
+         "pinyin": "nán de de qīzi"
+        },
+        {
+         "label": "B",
+         "text": "男的的妈妈",
+         "pinyin": "nán de de māma"
+        },
+        {
+         "label": "C",
+         "text": "男的的姐姐",
+         "pinyin": "nán de de jiějie"
+        }
+       ],
+       "turns": [
+        {
+         "speaker": "女",
+         "text": "你妻子会做中国菜吗？",
+         "pinyin": "Nǐ qīzi huì zuò Zhōngguó cài ma?",
+         "role": "woman"
+        },
+        {
+         "speaker": "男",
+         "text": "会，她做的鱼非常好吃。",
+         "pinyin": "Huì, tā zuò de yú fēicháng hǎochī.",
+         "role": "man"
+        },
+        {
+         "text": "问：谁做的鱼好吃？",
+         "pinyin": "Wèn: Shéi zuò de yú hǎochī?",
+         "role": "narrator"
+        }
+       ],
+       "explanation": "The man says his wife's fish is delicious."
+      },
+      {
+       "n": 22,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "A",
+       "answerDisplay": "A · 小红 (Xiǎo Hóng)",
+       "choices": [
+        {
+         "label": "A",
+         "text": "小红",
+         "pinyin": "Xiǎo Hóng"
+        },
+        {
+         "label": "B",
+         "text": "男的",
+         "pinyin": "nán de"
+        },
+        {
+         "label": "C",
+         "text": "小红的妈妈",
+         "pinyin": "Xiǎo Hóng de māma"
+        }
+       ],
+       "turns": [
+        {
+         "speaker": "男",
+         "text": "小红，生日快乐！你今天真漂亮。",
+         "pinyin": "Xiǎo Hóng, shēngrì kuàilè! Nǐ jīntiān zhēn piàoliang.",
+         "role": "man"
+        },
+        {
+         "speaker": "女",
+         "text": "谢谢你！快请进，大家都到了。",
+         "pinyin": "Xièxie nǐ! Kuài qǐng jìn, dàjiā dōu dào le.",
+         "role": "woman"
+        },
+        {
+         "text": "问：今天是谁的生日？",
+         "pinyin": "Wèn: Jīntiān shì shéi de shēngrì?",
+         "role": "narrator"
+        }
+       ],
+       "explanation": "The man wishes Xiao Hong a happy birthday."
+      },
+      {
+       "n": 23,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "B",
+       "answerDisplay": "B · 面条 (miàntiáo)",
+       "choices": [
+        {
+         "label": "A",
+         "text": "米饭",
+         "pinyin": "mǐfàn"
+        },
+        {
+         "label": "B",
+         "text": "面条",
+         "pinyin": "miàntiáo"
+        },
+        {
+         "label": "C",
+         "text": "肉",
+         "pinyin": "ròu"
+        }
+       ],
+       "turns": [
+        {
+         "speaker": "女",
+         "text": "晚上我们去外面吃吧？",
+         "pinyin": "Wǎnshang wǒmen qù wàimiàn chī ba?",
+         "role": "woman"
+        },
+        {
+         "speaker": "男",
+         "text": "别去了，外面太冷，我来做面条。",
+         "pinyin": "Bié qù le, wàimiàn tài lěng, wǒ lái zuò miàntiáo.",
+         "role": "man"
+        },
+        {
+         "text": "问：他们晚上可能吃什么？",
+         "pinyin": "Wèn: Tāmen wǎnshang kěnéng chī shénme?",
+         "role": "narrator"
+        }
+       ],
+       "explanation": "He will cook noodles at home."
+      },
+      {
+       "n": 24,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "C",
+       "answerDisplay": "C · 十一岁 (shíyī suì)",
+       "choices": [
+        {
+         "label": "A",
+         "text": "五岁",
+         "pinyin": "wǔ suì"
+        },
+        {
+         "label": "B",
+         "text": "六岁",
+         "pinyin": "liù suì"
+        },
+        {
+         "label": "C",
+         "text": "十一岁",
+         "pinyin": "shíyī suì"
+        }
+       ],
+       "turns": [
+        {
+         "speaker": "男",
+         "text": "你儿子唱歌唱得真好！",
+         "pinyin": "Nǐ érzi chànggē chàng de zhēn hǎo!",
+         "role": "man"
+        },
+        {
+         "speaker": "女",
+         "text": "他从六岁开始学唱歌，已经学了五年了。",
+         "pinyin": "Tā cóng liù suì kāishǐ xué chànggē, yǐjīng xué le wǔ nián le.",
+         "role": "woman"
+        },
+        {
+         "text": "问：女的的儿子今年可能多大？",
+         "pinyin": "Wèn: Nǚ de de érzi jīnnián kěnéng duō dà?",
+         "role": "narrator"
+        }
+       ],
+       "explanation": "He started at six and has studied for five years, so he is about eleven."
+      },
+      {
+       "n": 25,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "A",
+       "answerDisplay": "A · 手机 (shǒujī)",
+       "choices": [
+        {
+         "label": "A",
+         "text": "手机",
+         "pinyin": "shǒujī"
+        },
+        {
+         "label": "B",
+         "text": "手表",
+         "pinyin": "shǒubiǎo"
+        },
+        {
+         "label": "C",
+         "text": "笔",
+         "pinyin": "bǐ"
+        }
+       ],
+       "turns": [
+        {
+         "speaker": "女",
+         "text": "你在找什么？",
+         "pinyin": "Nǐ zài zhǎo shénme?",
+         "role": "woman"
+        },
+        {
+         "speaker": "男",
+         "text": "我的手机，我早上起床的时候还看见它了。",
+         "pinyin": "Wǒ de shǒujī, wǒ zǎoshang qǐchuáng de shíhou hái kànjiàn tā le.",
+         "role": "man"
+        },
+        {
+         "text": "问：男的在找什么？",
+         "pinyin": "Wèn: Nán de zài zhǎo shénme?",
+         "role": "narrator"
+        }
+       ],
+       "explanation": "He is looking for his mobile phone."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "hsk-r",
+   "sets": [
+    {
+     "key": "R1",
+     "id": "hsk-r-1",
+     "layout": "R2",
+     "title": "第一部分 · Өгүүлбэр ба зураг",
+     "domain": "阅读一 · Өгүүлбэр, зураг",
+     "task": "选择相应的图片。",
+     "note": "Өгүүлбэр бүрт тохирох зургийг сонгоно; нэг зураг жишээнд ашиглагдсан.",
+     "pictures": [
+      {
+       "label": "A",
+       "image": "images/r1-a.svg",
+       "alt": "A glass of milk and a milk bottle"
+      },
+      {
+       "label": "B",
+       "image": "images/r1-b.svg",
+       "alt": "A teacher at a blackboard"
+      },
+      {
+       "label": "C",
+       "image": "images/r1-c.svg",
+       "alt": "An open book"
+      },
+      {
+       "label": "D",
+       "image": "images/r1-d.svg",
+       "alt": "A person running in a park"
+      },
+      {
+       "label": "E",
+       "image": "images/r1-e.svg",
+       "alt": "A person with an umbrella in the rain"
+      },
+      {
+       "label": "F",
+       "image": "images/r1-f.svg",
+       "alt": "A person asleep in bed"
+      }
+     ],
+     "example": {
+      "pictures": [
+       {
+        "label": "D",
+        "image": "images/r1-d.svg",
+        "alt": "A person running in a park"
+       }
+      ],
+      "line": {
+       "text": "他每天早上都去跑步。",
+       "pinyin": "Tā měi tiān zǎoshang dōu qù pǎobù."
+      },
+      "answer": "D"
+     },
+     "items": [
+      {
+       "n": 26,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "C",
+       "answerDisplay": "C",
+       "line": {
+        "text": "这本书是我生日的时候姐姐送的。",
+        "pinyin": "Zhè běn shū shì wǒ shēngrì de shíhou jiějie sòng de."
+       },
+       "explanation": "The sentence is about a book; C shows a book."
+      },
+      {
+       "n": 27,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "E",
+       "answerDisplay": "E",
+       "line": {
+        "text": "外面下雨了，我们今天别出去了。",
+        "pinyin": "Wàimiàn xià yǔ le, wǒmen jīntiān bié chūqù le."
+       },
+       "explanation": "It is raining outside; E shows rain."
+      },
+      {
+       "n": 28,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "F",
+       "answerDisplay": "F",
+       "line": {
+        "text": "孩子已经睡觉了，我们别说话了。",
+        "pinyin": "Háizi yǐjīng shuìjiào le, wǒmen bié shuōhuà le."
+       },
+       "explanation": "The child is asleep; F shows someone sleeping."
+      },
+      {
+       "n": 29,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "A",
+       "answerDisplay": "A",
+       "line": {
+        "text": "我每天早上都要喝一杯牛奶。",
+        "pinyin": "Wǒ měi tiān zǎoshang dōu yào hē yì bēi niúnǎi."
+       },
+       "explanation": "A glass of milk every morning; A shows milk."
+      },
+      {
+       "n": 30,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "B",
+       "answerDisplay": "B",
+       "line": {
+        "text": "王老师正在给学生上课。",
+        "pinyin": "Wáng lǎoshī zhèngzài gěi xuésheng shàng kè."
+       },
+       "explanation": "Teacher Wang is teaching; B shows a teacher at the board."
+      }
+     ]
+    },
+    {
+     "key": "R2",
+     "id": "hsk-r-2",
+     "layout": "R4",
+     "title": "第二部分 · Хоосон зай нөхөх",
+     "domain": "阅读二 · Үг нөхөх",
+     "task": "选词填空。",
+     "note": "Хоосон зайд тохирох үгийг сонгоно; нэг үг жишээнд ашиглагдсан.",
+     "choices": [
+      {
+       "label": "A",
+       "text": "颜色",
+       "pinyin": "yánsè"
+      },
+      {
+       "label": "B",
+       "text": "一起",
+       "pinyin": "yìqǐ"
+      },
+      {
+       "label": "C",
+       "text": "送",
+       "pinyin": "sòng"
+      },
+      {
+       "label": "D",
+       "text": "可能",
+       "pinyin": "kěnéng"
+      },
+      {
+       "label": "E",
+       "text": "虽然",
+       "pinyin": "suīrán"
+      },
+      {
+       "label": "F",
+       "text": "快乐",
+       "pinyin": "kuàilè"
+      }
+     ],
+     "example": {
+      "line": {
+       "text": "妈妈，生日（　）！这是我给您买的衣服。",
+       "pinyin": "Māma, shēngrì (　)! Zhè shì wǒ gěi nín mǎi de yīfu."
+      },
+      "answerLine": {
+       "label": "F",
+       "text": "快乐",
+       "pinyin": "kuàilè"
+      },
+      "answer": "F"
+     },
+     "items": [
+      {
+       "n": 31,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "A",
+       "answerDisplay": "A · 颜色",
+       "line": {
+        "text": "这件衣服的（　）很漂亮，我很喜欢。",
+        "pinyin": "Zhè jiàn yīfu de (　) hěn piàoliang, wǒ hěn xǐhuan."
+       },
+       "explanation": "The colour (颜色) of the clothes is pretty."
+      },
+      {
+       "n": 32,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "C",
+       "answerDisplay": "C · 送",
+       "line": {
+        "text": "明天是爸爸的生日，我想（　）他一块手表。",
+        "pinyin": "Míngtiān shì bàba de shēngrì, wǒ xiǎng (　) tā yí kuài shǒubiǎo."
+       },
+       "explanation": "“Give him a watch”: C is 送."
+      },
+      {
+       "n": 33,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "E",
+       "answerDisplay": "E · 虽然",
+       "line": {
+        "text": "（　）外面在下雪，但是孩子都想出去玩。",
+        "pinyin": "(　) wàimiàn zài xià xuě, dànshì háizi dōu xiǎng chūqù wán."
+       },
+       "explanation": "虽然 … 但是 … means “although … still …”."
+      },
+      {
+       "n": 34,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "D",
+       "answerDisplay": "D · 可能",
+       "line": {
+        "text": "天阴了，下午（　）会下雨，你别去踢足球了。",
+        "pinyin": "Tiān yīn le, xiàwǔ (　) huì xià yǔ, nǐ bié qù tī zúqiú le."
+       },
+       "explanation": "It may (可能) rain this afternoon."
+      },
+      {
+       "n": 35,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "B",
+       "answerDisplay": "B · 一起",
+       "line": {
+        "text": "女：晚上我们（　）去看电影吧？男：好，几点的？",
+        "pinyin": "Nǚ: Wǎnshang wǒmen (　) qù kàn diànyǐng ba? Nán: Hǎo, jǐ diǎn de?"
+       },
+       "explanation": "“Let us go together”: B is 一起."
+      }
+     ]
+    },
+    {
+     "key": "R3a",
+     "id": "hsk-r-3a",
+     "layout": "R3",
+     "title": "第三部分 · Өгүүлбэр холбох (36–40)",
+     "domain": "阅读三 · Өгүүлбэр холбох",
+     "task": "选择相应的句子。",
+     "note": "Өгүүлбэр бүрт тохирох өгүүлбэрийг A–F-ээс сонгоно; нэг нь жишээнд ашиглагдсан.",
+     "choices": [
+      {
+       "label": "A",
+       "text": "是我哥哥，他比我大三岁。",
+       "pinyin": "Shì wǒ gēge, tā bǐ wǒ dà sān suì."
+      },
+      {
+       "label": "B",
+       "text": "太贵了，有便宜一点儿的吗？",
+       "pinyin": "Tài guì le, yǒu piányi yìdiǎnr de ma?"
+      },
+      {
+       "label": "C",
+       "text": "我也是，我们一起去吧。",
+       "pinyin": "Wǒ yě shì, wǒmen yìqǐ qù ba."
+      },
+      {
+       "label": "D",
+       "text": "因为今天是我妻子的生日。",
+       "pinyin": "Yīnwèi jīntiān shì wǒ qīzi de shēngrì."
+      },
+      {
+       "label": "E",
+       "text": "在桌子上，电脑旁边。",
+       "pinyin": "Zài zhuōzi shang, diànnǎo pángbiān."
+      },
+      {
+       "label": "F",
+       "text": "她去商店买东西了，还没回来。",
+       "pinyin": "Tā qù shāngdiàn mǎi dōngxi le, hái méi huílái."
+      }
+     ],
+     "example": {
+      "line": {
+       "text": "你看见我的手机了吗？",
+       "pinyin": "Nǐ kànjiàn wǒ de shǒujī le ma?"
+      },
+      "answerLine": {
+       "label": "E",
+       "text": "在桌子上，电脑旁边。",
+       "pinyin": "Zài zhuōzi shang, diànnǎo pángbiān."
+      },
+      "answer": "E"
+     },
+     "items": [
+      {
+       "n": 36,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "B",
+       "answerDisplay": "B · 太贵了，有便宜一点儿的吗？",
+       "line": {
+        "text": "这块手表两千块。",
+        "pinyin": "Zhè kuài shǒubiǎo liǎngqiān kuài."
+       },
+       "explanation": "B reacts to the price."
+      },
+      {
+       "n": 37,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "D",
+       "answerDisplay": "D · 因为今天是我妻子的生日。",
+       "line": {
+        "text": "你今天为什么买了很多菜？",
+        "pinyin": "Nǐ jīntiān wèi shénme mǎi le hěn duō cài?"
+       },
+       "explanation": "D gives the reason."
+      },
+      {
+       "n": 38,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "A",
+       "answerDisplay": "A · 是我哥哥，他比我大三岁。",
+       "line": {
+        "text": "你左边的这个人是谁？",
+        "pinyin": "Nǐ zuǒbian de zhège rén shì shéi?"
+       },
+       "explanation": "A says who the person is."
+      },
+      {
+       "n": 39,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "C",
+       "answerDisplay": "C · 我也是，我们一起去吧。",
+       "line": {
+        "text": "我想去看那个新电影。",
+        "pinyin": "Wǒ xiǎng qù kàn nàge xīn diànyǐng."
+       },
+       "explanation": "C: me too, let us go together."
+      },
+      {
+       "n": 40,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "F",
+       "answerDisplay": "F · 她去商店买东西了，还没回来。",
+       "line": {
+        "text": "你妈妈呢？",
+        "pinyin": "Nǐ māma ne?"
+       },
+       "explanation": "F says where she is."
+      }
+     ]
+    },
+    {
+     "key": "R3b",
+     "id": "hsk-r-3b",
+     "layout": "R3",
+     "title": "第三部分 · Өгүүлбэр холбох (41–45)",
+     "domain": "阅读三 · Өгүүлбэр холбох",
+     "task": "选择相应的句子。",
+     "note": "Өгүүлбэр бүрт тохирох өгүүлбэрийг A–E-ээс сонгоно; тус бүр нэг удаа таарна.",
+     "choices": [
+      {
+       "label": "A",
+       "text": "好的，我在家等你。",
+       "pinyin": "Hǎo de, wǒ zài jiā děng nǐ."
+      },
+      {
+       "label": "B",
+       "text": "她很高，眼睛很大，非常漂亮。",
+       "pinyin": "Tā hěn gāo, yǎnjing hěn dà, fēicháng piàoliang."
+      },
+      {
+       "label": "C",
+       "text": "不，这是我第一次来。",
+       "pinyin": "Bù, zhè shì wǒ dì-yī cì lái."
+      },
+      {
+       "label": "D",
+       "text": "没关系，我们明天再去吧。",
+       "pinyin": "Méi guānxi, wǒmen míngtiān zài qù ba."
+      },
+      {
+       "label": "E",
+       "text": "谢谢，是我妈妈给我买的。",
+       "pinyin": "Xièxie, shì wǒ māma gěi wǒ mǎi de."
+      }
+     ],
+     "items": [
+      {
+       "n": 41,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+       ],
+       "answer": "D",
+       "answerDisplay": "D · 没关系，我们明天再去吧。",
+       "line": {
+        "text": "对不起，我今天不能和你去看电影了。",
+        "pinyin": "Duìbuqǐ, wǒ jīntiān bù néng hé nǐ qù kàn diànyǐng le."
+       },
+       "explanation": "D accepts the apology: go tomorrow."
+      },
+      {
+       "n": 42,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+       ],
+       "answer": "E",
+       "answerDisplay": "E · 谢谢，是我妈妈给我买的。",
+       "line": {
+        "text": "你的衣服真漂亮！",
+        "pinyin": "Nǐ de yīfu zhēn piàoliang!"
+       },
+       "explanation": "E thanks for the compliment."
+      },
+      {
+       "n": 43,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+       ],
+       "answer": "C",
+       "answerDisplay": "C · 不，这是我第一次来。",
+       "line": {
+        "text": "你来过我们学校吗？",
+        "pinyin": "Nǐ lái guo wǒmen xuéxiào ma?"
+       },
+       "explanation": "C: no, this is my first time."
+      },
+      {
+       "n": 44,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+       ],
+       "answer": "B",
+       "answerDisplay": "B · 她很高，眼睛很大，非常漂亮。",
+       "line": {
+        "text": "你姐姐漂亮吗？",
+        "pinyin": "Nǐ jiějie piàoliang ma?"
+       },
+       "explanation": "B describes her."
+      },
+      {
+       "n": 45,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+       ],
+       "answer": "A",
+       "answerDisplay": "A · 好的，我在家等你。",
+       "line": {
+        "text": "我下午四点去你家找你。",
+        "pinyin": "Wǒ xiàwǔ sì diǎn qù nǐ jiā zhǎo nǐ."
+       },
+       "explanation": "A: fine, I will wait at home."
+      }
+     ]
+    },
+    {
+     "key": "R4",
+     "id": "hsk-r-4",
+     "layout": "RQ",
+     "title": "第四部分 · Текст ба асуулт",
+     "domain": "阅读四 · Текст, асуулт",
+     "task": "阅读短文，选择正确的答案。",
+     "note": "Текстийг уншаад ★ асуултын зөв хариултыг гурван сонголтоос сонгоно.",
+     "example": {
+      "line": {
+       "text": "我昨天下午去商场买了一件衣服，是红色的，很漂亮，也不贵。",
+       "pinyin": "Wǒ zuótiān xiàwǔ qù shāngchǎng mǎi le yí jiàn yīfu, shì hóngsè de, hěn piàoliang, yě bú guì."
+      },
+      "statement": {
+       "text": "她买的衣服是什么颜色的？",
+       "pinyin": "Tā mǎi de yīfu shì shénme yánsè de?"
+      },
+      "choices": [
+       {
+        "label": "A",
+        "text": "白色",
+        "pinyin": "báisè"
+       },
+       {
+        "label": "B",
+        "text": "红色",
+        "pinyin": "hóngsè"
+       },
+       {
+        "label": "C",
+        "text": "黑色",
+        "pinyin": "hēisè"
+       }
+      ],
+      "answer": "B"
+     },
+     "items": [
+      {
+       "n": 46,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "B",
+       "answerDisplay": "B · 手机 (shǒujī)",
+       "line": {
+        "text": "今天是妹妹的生日，妈妈做了很多她爱吃的菜，爸爸给她买了一个新手机。",
+        "pinyin": "Jīntiān shì mèimei de shēngrì, māma zuò le hěn duō tā ài chī de cài, bàba gěi tā mǎi le yí gè xīn shǒujī."
+       },
+       "statement": {
+        "text": "爸爸给妹妹买了什么？",
+        "pinyin": "Bàba gěi mèimei mǎi le shénme?"
+       },
+       "choices": [
+        {
+         "label": "A",
+         "text": "衣服",
+         "pinyin": "yīfu"
+        },
+        {
+         "label": "B",
+         "text": "手机",
+         "pinyin": "shǒujī"
+        },
+        {
+         "label": "C",
+         "text": "手表",
+         "pinyin": "shǒubiǎo"
+        }
+       ],
+       "explanation": "The father bought her a new phone: B."
+      },
+      {
+       "n": 47,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "B",
+       "answerDisplay": "B · 五岁 (wǔ suì)",
+       "line": {
+        "text": "我有两个孩子，儿子今年八岁，女儿比他小三岁，他们都很喜欢唱歌。",
+        "pinyin": "Wǒ yǒu liǎng gè háizi, érzi jīnnián bā suì, nǚ'ér bǐ tā xiǎo sān suì, tāmen dōu hěn xǐhuan chànggē."
+       },
+       "statement": {
+        "text": "女儿今年几岁？",
+        "pinyin": "Nǚ'ér jīnnián jǐ suì?"
+       },
+       "choices": [
+        {
+         "label": "A",
+         "text": "三岁",
+         "pinyin": "sān suì"
+        },
+        {
+         "label": "B",
+         "text": "五岁",
+         "pinyin": "wǔ suì"
+        },
+        {
+         "label": "C",
+         "text": "八岁",
+         "pinyin": "bā suì"
+        }
+       ],
+       "explanation": "The son is eight and the daughter three years younger: B."
+      },
+      {
+       "n": 48,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "A",
+       "answerDisplay": "A · 昨天晚上 (zuótiān wǎnshang)",
+       "line": {
+        "text": "昨天晚上下了很大的雪，今天早上起床的时候，我看见外面都白了，真漂亮。",
+        "pinyin": "Zuótiān wǎnshang xià le hěn dà de xuě, jīntiān zǎoshang qǐchuáng de shíhou, wǒ kànjiàn wàimiàn dōu bái le, zhēn piàoliang."
+       },
+       "statement": {
+        "text": "什么时候下的雪？",
+        "pinyin": "Shénme shíhou xià de xuě?"
+       },
+       "choices": [
+        {
+         "label": "A",
+         "text": "昨天晚上",
+         "pinyin": "zuótiān wǎnshang"
+        },
+        {
+         "label": "B",
+         "text": "今天早上",
+         "pinyin": "jīntiān zǎoshang"
+        },
+        {
+         "label": "C",
+         "text": "今天下午",
+         "pinyin": "jīntiān xiàwǔ"
+        }
+       ],
+       "explanation": "It snowed last night; in the morning everything was white: A."
+      },
+      {
+       "n": 49,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "B",
+       "answerDisplay": "B · 很便宜 (hěn piányi)",
+       "line": {
+        "text": "我家旁边新开了一家商店，那儿的水果非常便宜，所以我每天下班都去买。",
+        "pinyin": "Wǒ jiā pángbiān xīn kāi le yì jiā shāngdiàn, nàr de shuǐguǒ fēicháng piányi, suǒyǐ wǒ měi tiān xiàbān dōu qù mǎi."
+       },
+       "statement": {
+        "text": "那家商店的水果怎么样？",
+        "pinyin": "Nà jiā shāngdiàn de shuǐguǒ zěnmeyàng?"
+       },
+       "choices": [
+        {
+         "label": "A",
+         "text": "很贵",
+         "pinyin": "hěn guì"
+        },
+        {
+         "label": "B",
+         "text": "很便宜",
+         "pinyin": "hěn piányi"
+        },
+        {
+         "label": "C",
+         "text": "不好吃",
+         "pinyin": "bù hǎochī"
+        }
+       ],
+       "explanation": "The fruit there is very cheap: B."
+      },
+      {
+       "n": 50,
+       "options": [
+        "A",
+        "B",
+        "C"
+       ],
+       "answer": "B",
+       "answerDisplay": "B · 洗衣服 (xǐ yīfu)",
+       "line": {
+        "text": "我丈夫不会做饭，但是他每天都帮我洗衣服。",
+        "pinyin": "Wǒ zhàngfu bú huì zuò fàn, dànshì tā měi tiān dōu bāng wǒ xǐ yīfu."
+       },
+       "statement": {
+        "text": "她丈夫每天做什么？",
+        "pinyin": "Tā zhàngfu měi tiān zuò shénme?"
+       },
+       "choices": [
+        {
+         "label": "A",
+         "text": "做饭",
+         "pinyin": "zuò fàn"
+        },
+        {
+         "label": "B",
+         "text": "洗衣服",
+         "pinyin": "xǐ yīfu"
+        },
+        {
+         "label": "C",
+         "text": "买菜",
+         "pinyin": "mǎi cài"
+        }
+       ],
+       "explanation": "He cannot cook but washes the clothes every day: B."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "hsk-w",
+   "sets": [
+    {
+     "key": "W1",
+     "id": "hsk-w-1",
+     "layout": "W1",
+     "title": "第一部分 · Ханзны бүрдэл",
+     "domain": "书写一 · Бүрдэл сонгох",
+     "task": "选择正确的部件，组成汉字。",
+     "note": "Үгийн нэг ханзны нэг хэсэг дутуу. Дутуу хэсгийг A–F-ээс сонгоно; нэг нь илүү.",
+     "choices": [
+      {
+       "label": "A",
+       "text": "宀",
+       "pinyin": ""
+      },
+      {
+       "label": "B",
+       "text": "父",
+       "pinyin": ""
+      },
+      {
+       "label": "C",
+       "text": "女",
+       "pinyin": ""
+      },
+      {
+       "label": "D",
+       "text": "彳",
+       "pinyin": ""
+      },
+      {
+       "label": "E",
+       "text": "王",
+       "pinyin": ""
+      },
+      {
+       "label": "F",
+       "text": "亻",
+       "pinyin": ""
+      }
+     ],
+     "example": {
+      "compose": {
+       "word": "你好",
+       "pinyin": "nǐ hǎo",
+       "at": 0,
+       "given": "尔",
+       "gap": "left"
+      },
+      "answer": "亻"
+     },
+     "items": [
+      {
+       "n": 51,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "C",
+       "answerDisplay": "C · 女 → 好",
+       "compose": {
+        "word": "好吃",
+        "pinyin": "hǎochī",
+        "at": 0,
+        "given": "子",
+        "gap": "left"
+       },
+       "explanation": "女 + 子 = 好, as in 好吃 (hǎochī)."
+      },
+      {
+       "n": 52,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "E",
+       "answerDisplay": "E · 王 → 现",
+       "compose": {
+        "word": "现在",
+        "pinyin": "xiànzài",
+        "at": 0,
+        "given": "见",
+        "gap": "left"
+       },
+       "explanation": "王 + 见 = 现, as in 现在 (xiànzài)."
+      },
+      {
+       "n": 53,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "D",
+       "answerDisplay": "D · 彳 → 很",
+       "compose": {
+        "word": "很好",
+        "pinyin": "hěn hǎo",
+        "at": 0,
+        "given": "艮",
+        "gap": "left"
+       },
+       "explanation": "彳 + 艮 = 很, as in 很好 (hěn hǎo)."
+      },
+      {
+       "n": 54,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "A",
+       "answerDisplay": "A · 宀 → 字",
+       "compose": {
+        "word": "汉字",
+        "pinyin": "Hànzì",
+        "at": 1,
+        "given": "子",
+        "gap": "top"
+       },
+       "explanation": "宀 + 子 = 字, as in 汉字 (Hànzì)."
+      },
+      {
+       "n": 55,
+       "options": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ],
+       "answer": "B",
+       "answerDisplay": "B · 父 → 爸",
+       "compose": {
+        "word": "爸爸",
+        "pinyin": "bàba",
+        "at": 0,
+        "given": "巴",
+        "gap": "top"
+       },
+       "explanation": "父 + 巴 = 爸, as in 爸爸 (bàba)."
+      }
+     ]
+    },
+    {
+     "key": "W2",
+     "id": "hsk-w-2",
+     "layout": "W2",
+     "title": "第二部分 · Ханз бичих",
+     "domain": "书写二 · Ханз бичих",
+     "task": "看拼音，写汉字。",
+     "note": "Хоосон зайд pinyin-д тохирох ханзыг бичнэ (хятад гарны оролт).",
+     "example": {
+      "blank": {
+       "before": "我爱我",
+       "after": "。",
+       "hint": "jiā",
+       "pinyin": "Wǒ ài wǒ jiā."
+      },
+      "answer": "家"
+     },
+     "items": [
+      {
+       "n": 56,
+       "kind": "short",
+       "options": [],
+       "answer": "生",
+       "answerDisplay": "生 (shēng)",
+       "blank": {
+        "before": "今天是我妹妹的",
+        "after": "日。",
+        "hint": "shēng",
+        "pinyin": "Jīntiān shì wǒ mèimei de shēngrì."
+       },
+       "explanation": "今天是我妹妹的生日。 (Jīntiān shì wǒ mèimei de shēngrì.)"
+      },
+      {
+       "n": 57,
+       "kind": "short",
+       "options": [],
+       "answer": "姐",
+       "answerDisplay": "姐 (jiě)",
+       "blank": {
+        "before": "我",
+        "after": "姐今年二十岁。",
+        "hint": "jiě",
+        "pinyin": "Wǒ jiějie jīnnián èrshí suì."
+       },
+       "explanation": "我姐姐今年二十岁。 (Wǒ jiějie jīnnián èrshí suì.)"
+      },
+      {
+       "n": 58,
+       "kind": "short",
+       "options": [],
+       "answer": "多",
+       "answerDisplay": "多 (duō)",
+       "blank": {
+        "before": "这件衣服",
+        "after": "少钱？",
+        "hint": "duō",
+        "pinyin": "Zhè jiàn yīfu duōshao qián?"
+       },
+       "explanation": "这件衣服多少钱？ (Zhè jiàn yīfu duōshao qián?)"
+      },
+      {
+       "n": 59,
+       "kind": "short",
+       "options": [],
+       "answer": "四",
+       "answerDisplay": "四 (sì)",
+       "blank": {
+        "before": "我家有",
+        "after": "口人。",
+        "hint": "sì",
+        "pinyin": "Wǒ jiā yǒu sì kǒu rén."
+       },
+       "explanation": "我家有四口人。 (Wǒ jiā yǒu sì kǒu rén.)"
+      },
+      {
+       "n": 60,
+       "kind": "short",
+       "options": [],
+       "answer": "几",
+       "answerDisplay": "几 (jǐ)",
+       "blank": {
+        "before": "你",
+        "after": "点去商店？",
+        "hint": "jǐ",
+        "pinyin": "Nǐ jǐ diǎn qù shāngdiàn?"
+       },
+       "explanation": "你几点去商店？ (Nǐ jǐ diǎn qù shāngdiàn?)"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

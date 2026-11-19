@@ -20,44 +20,52 @@ with sync_playwright() as p:
     page.goto(BASE+"/plans");page.wait_for_load_state("networkidle")
     expect(page).to_have_url(BASE+"/workspace/plans")
     expect(page.locator('.wsp-nav a[href="/workspace/plans"]')).to_have_attribute("aria-current","page")
-    # Three plans (owner rules 2026-11-13 and 2026-11-17): the free account, ЭЕШ, Гадаад хэл Basic and Pro.
-    expect(page.locator(".pricing-card")).to_have_count(4)
-    expect(page.locator(".pricing-card h3")).to_have_text(["Үнэгүй","ЭЕШ","Гадаад хэл Basic","Гадаад хэл Pro"])
-    expect(page.locator(".pricing-price strong")).to_have_text(["₮0","₮29,900","₮29,900","₮59,900"])
+    # Five plans (owner rule 2026-11-19): the free account, ЭЕШ, Англи хэл Basic and Pro, Ази хэл Basic and Pro.
+    expect(page.locator(".pricing-card")).to_have_count(6)
+    expect(page.locator(".pricing-card h3")).to_have_text(["Үнэгүй","ЭЕШ","Англи хэл Basic","Англи хэл Pro","Ази хэл Basic","Ази хэл Pro"])
+    expect(page.locator(".pricing-price strong")).to_have_text(["₮0","₮29,900","₮29,900","₮59,900","₮29,900","₮59,900"])
     free=page.locator('.pricing-card[data-program="free"]')
     expect(free.get_by_role("heading",name="Үнэгүй",exact=True)).to_be_visible()
     expect(free).to_contain_text("AI кредит / сар")
     expect(free).to_contain_text("10 үнэгүй хагас mock")
     expect(free).to_contain_text("файлаас 5 шалгалт")
     expect(free.get_by_role("link",name="Үнэгүй бүртгүүлэх",exact=False)).to_have_attribute("href","/register")
-    basic=page.locator('.pricing-card[data-program="language_basic"]')
+    basic=page.locator('.pricing-card[data-program="english_basic"]')
     expect(basic).to_contain_text("1,200")
+    expect(basic).to_contain_text("SAT, IELTS, TOEFL-ийн бүх mock")
+    expect(basic).to_contain_text("IELTS, TOEFL workshop")
     expect(basic).to_contain_text("Хязгааргүй өгөх")
     expect(basic).to_contain_text("Үгсийн санд 1,500 үг, файлаас 5 шалгалт")
-    pro=page.locator('.pricing-card[data-program="language"]')
+    pro=page.locator('.pricing-card[data-program="english_pro"]')
     expect(pro).to_contain_text("3,000")
     expect(pro).to_contain_text("Үгсийн санд 3,000 үг, файлаас 15 шалгалт")
+    for program,credits,words in [("asian_basic","1,200","Үгсийн санд 1,500 үг, файлаас 5 шалгалт"),("asian_pro","3,000","Үгсийн санд 3,000 үг, файлаас 15 шалгалт")]:
+        asian=page.locator(f'.pricing-card[data-program="{program}"]')
+        expect(asian).to_contain_text(credits)
+        expect(asian).to_contain_text(words)
+        expect(asian).to_contain_text("JLPT, HSK, TOPIK-ийн бүх mock")
+        expect(asian).to_contain_text("Унших, бичих workshop")
     expect(page.locator('.pricing-card[data-program="entrance"]')).to_contain_text("Үгсийн санд 500 үг, файлаас 5 шалгалт")
     expect(page.locator('.pricing-card[data-program="entrance"]')).to_contain_text("1,200")
-    expect(page.locator('.pricing-card[data-program="ielts"], .pricing-card[data-program="sat"]')).to_have_count(0)
-    expect(page.locator(".pricing-table thead th")).to_have_text(["Багц","Үнэгүй","ЭЕШ","Гадаад хэл Basic","Гадаад хэл Pro"])
+    expect(page.locator('.pricing-card[data-program="ielts"], .pricing-card[data-program="sat"], .pricing-card[data-program="language"], .pricing-card[data-program="language_basic"]')).to_have_count(0)
+    expect(page.locator(".pricing-table thead th")).to_have_text(["Багц","Үнэгүй","ЭЕШ","Англи хэл Basic","Англи хэл Pro","Ази хэл Basic","Ази хэл Pro"])
     expect(page.locator("#credits")).to_contain_text("Кредит")
     expect(page.locator(".pricing-single").last).to_contain_text("7 хоног")
     page.screenshot(path=str(ART/"plans-desktop-dark.png"),full_page=True)
     assert context.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"ielts-academic-01"}).status==401
     assert context.request.post(BASE+"/api/mock-picks",headers=ORIGIN,data={"slug":"ielts-academic-01"}).status==401
     # The retired plans are not sold: their checkout pages are gone.
-    for program in ["ielts","sat"]:
+    for program in ["ielts","sat","language_basic","language"]:
         assert context.request.get(BASE+"/subscribe/"+program).status==404,program
     page.goto(BASE+"/workshops/ielts-writing-data")
     expect(page.locator(".program-gate")).to_be_visible()
-    expect(page.locator(".program-gate")).to_contain_text("Гадаад хэл Basic багцаар IELTS Writing & Speaking workshop")
+    expect(page.locator(".program-gate")).to_contain_text("Англи хэл Basic багцаар IELTS Writing & Speaking workshop")
     expect(page.locator('.program-gate > a')).to_have_attribute("href","/workspace/workshop")
     expect(page.locator('.wsp-nav a[href="/workspace/workshop"]')).to_have_attribute("aria-current","page")
     expect(page.locator(".site-header")).to_be_hidden()
     assert "Commuting in a fictional town" not in page.content()
     page.get_by_role("link",name="Сарын эрх нээх",exact=False).click()
-    expect(page).to_have_url(BASE+"/login?next=%2Fsubscribe%2Flanguage_basic")
+    expect(page).to_have_url(BASE+"/login?next=%2Fsubscribe%2Fenglish_basic")
     page.get_by_role("link",name="Бүртгүүлэх",exact=True).click()
     page.mouse.move(0, 0)
     email="qa-sub-"+uuid4().hex[:12]+"@example.invalid"
@@ -65,7 +73,7 @@ with sync_playwright() as p:
     page.get_by_label("Имэйл",exact=True).fill(email)
     page.get_by_label("Нууц үг",exact=True).fill("Local-Test-"+uuid4().hex)
     page.get_by_role("button",name="Бүртгүүлэх",exact=True).click()
-    expect(page).to_have_url(BASE+"/subscribe/language_basic",timeout=20000)
+    expect(page).to_have_url(BASE+"/subscribe/english_basic",timeout=20000)
     # Plan purchase opens inside the Workspace, under its Plans tab, without the site header.
     expect(page.locator('.wsp-nav a[href="/workspace/plans"]')).to_have_attribute("aria-current","page")
     expect(page.locator(".site-header")).to_be_hidden()
@@ -75,10 +83,10 @@ with sync_playwright() as p:
     expect(page.locator(".subscription-payment .error-message")).to_contain_text("амжилтгүй")
     assert context.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"ielts-academic-01"}).status==402
     assert context.request.post(BASE+"/api/mock-picks",headers=ORIGIN,data={"slug":"ielts-academic-01"}).status==402,"no plan, no pick"
-    for payload in [{"program":"language_basic","amountMnt":1},{"program":"language_basic","userId":"other"},{"program":"language_basic","status":"PAID"}]:
+    for payload in [{"program":"english_basic","amountMnt":1},{"program":"english_basic","userId":"other"},{"program":"english_basic","status":"PAID"}]:
         assert context.request.post(BASE+"/api/subscriptions/orders",headers=ORIGIN,data=payload).status==400
-    assert context.request.post(BASE+"/api/subscriptions/orders",headers={"Origin":"https://untrusted.invalid"},data={"program":"language_basic"}).status==403
-    for program in ["all","ielts","sat"]:
+    assert context.request.post(BASE+"/api/subscriptions/orders",headers={"Origin":"https://untrusted.invalid"},data={"program":"english_basic"}).status==403
+    for program in ["all","ielts","sat","language_basic","language"]:
         assert context.request.post(BASE+"/api/subscriptions/orders",headers=ORIGIN,data={"program":program}).status==404,program
     with page.expect_response(lambda response:"/api/subscriptions/orders/" in response.url and response.url.endswith("/confirm")) as first_paid:
         page.get_by_role("button",name="Сарын эрх нээх",exact=False).click()
@@ -93,14 +101,34 @@ with sync_playwright() as p:
     page.get_by_role("button",name="Өөрийгөө шалгах",exact=False).click()
     expect(page.locator(".self-review")).to_be_visible()
     page.screenshot(path=str(ART/"subscription-language-workshop.png"),full_page=True)
-    # Basic opens every non-ЭЕШ mock with no picking, and its practice mode; ЭЕШ stays closed.
+    # Англи хэл (owner rule 2026-11-19): the TOEFL labs list the nine mocks and open one skill of a mock without a clock; JLPT,
+    # HSK and TOPIK stay closed, their mocks and workshops alike. Checked before any timed sitting opens.
+    page.goto(BASE+"/labs/toefl-listening")
+    expect(page.locator('.wsp-nav a[href="/workspace/workshop"]')).to_have_attribute("aria-current","page")
+    expect(page.locator('a[href^="/labs/mock/listening/toefl-"]')).to_have_count(9)
+    page.goto(BASE+"/labs/mock/listening/toefl-01")
+    expect(page.locator(".study-rail-head .eyebrow")).to_have_text("Workshop · TOEFL сонсгол")
+    expect(page.get_by_role("link",name="← TOEFL сонсгол",exact=True)).to_have_attribute("href","/labs/toefl-listening")
+    page.screenshot(path=str(ART/"lab-mock-toefl-listening.png"),full_page=True)
+    page.goto(BASE+"/labs/toefl-reading")
+    expect(page.locator('a[href^="/labs/mock/reading/toefl-"]')).to_have_count(9)
+    assert context.request.get(BASE+"/labs/mock/writing/toefl-01").status==404,"TOEFL writing is not a lab"
+    for slug in ["jlpt-n5-01","hsk1-mock-01","topik1-mock-01"]:
+        assert context.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":slug}).status==402,slug
+        assert context.request.get(BASE+"/api/exam-practice/"+slug).status==402,slug
+    page.goto(BASE+"/labs/mock/reading/jlpt-n5-01")
+    expect(page).to_have_url(BASE+"/exams/jlpt-n5-01")
+    for path in ["/labs/reading/jlpt","/labs/reading/hsk","/labs/reading/topik","/labs/writing/hsk","/labs/writing/topik"]:
+        page.goto(BASE+path)
+        expect(page.get_by_text("Ази хэл Basic, Ази хэл Pro багцад багтана",exact=False)).to_be_visible()
+    # Англи хэл Basic opens every SAT, IELTS and TOEFL mock with no picking, and its practice mode; ЭЕШ stays closed.
     assert context.request.get(BASE+"/api/exam-practice/ielts-academic-01").status==200,"practice on every covered mock"
     assert context.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"eesh-math-2024-m1"}).status==402
     for bad in [{},{"slug":""},{"slug":"x"*81},{"slug":"ielts-academic-01","extra":1}]:
         assert context.request.post(BASE+"/api/mock-picks",headers=ORIGIN,data=bad).status==400,bad
     assert context.request.post(BASE+"/api/mock-picks",headers={"Origin":"https://untrusted.invalid"},data={"slug":"ielts-academic-01"}).status==403
     assert context.request.post(BASE+"/api/mock-picks",headers=ORIGIN,data={"slug":"no-such-mock"}).status==404
-    assert context.request.post(BASE+"/api/mock-picks",headers=ORIGIN,data={"slug":"eesh-math-2024-m1"}).status==402,"ЭЕШ is not in Гадаад хэл"
+    assert context.request.post(BASE+"/api/mock-picks",headers=ORIGIN,data={"slug":"eesh-math-2024-m1"}).status==402,"ЭЕШ is not in Англи хэл"
     page.goto(BASE+"/exams/ielts-academic-01")
     expect(page.locator(".mock-pick")).to_have_count(0)
     expect(page.locator(".exam-preflight .status")).to_contain_text("ЭРХ НЭЭЛТТЭЙ")
@@ -116,9 +144,9 @@ with sync_playwright() as p:
     page.goto(BASE+"/checkout/ielts-academic-01")
     expect(page.get_by_role("heading",name="Сарын багцад багтсан.")).to_be_visible()
     page.goto(BASE+"/workspace/plans")
-    expect(page.locator('.pricing-card[data-program="language_basic"] .pricing-picks')).to_have_count(0)
+    expect(page.locator('.pricing-card[data-program="english_basic"] .pricing-picks')).to_have_count(0)
     # Renewal order/confirmation is idempotent and adds exactly one month once.
-    orders=page.evaluate("""async()=>Promise.all([1,2].map(async()=>{const r=await fetch('/api/subscriptions/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({program:'language_basic'})});return await r.json()}))""")
+    orders=page.evaluate("""async()=>Promise.all([1,2].map(async()=>{const r=await fetch('/api/subscriptions/orders',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({program:'english_basic'})});return await r.json()}))""")
     assert orders[0]["id"]==orders[1]["id"] and orders[0]["amountMnt"]==29900
     order_id=orders[0]["id"]
     other=browser.new_context()
@@ -146,7 +174,7 @@ with sync_playwright() as p:
     page.get_by_role("tab",name="Багц ба эрх",exact=True).click()
     expect(page.locator(".subscription-row")).to_have_count(2)
     page.screenshot(path=str(ART/"profile-subscriptions.png"),full_page=True)
-    fixture("expire",user_id,"language_basic")
+    fixture("expire",user_id,"english_basic")
     assert context.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"ielts-academic-02"}).status==402
     assert context.request.post(BASE+"/api/mock-picks",headers=ORIGIN,data={"slug":"ielts-academic-02"}).status==402
     assert context.request.get(BASE+"/api/exam-practice/ielts-academic-01").status==402,"practice ended with the plan"
@@ -165,22 +193,38 @@ with sync_playwright() as p:
     page.goto(BASE+"/workspace/profile")
     page.get_by_role("tab",name="Багц ба эрх",exact=True).click()
     legacy=page.locator(".subscription-row").filter(has_text="IELTS (хуучин багц)")
-    expect(legacy.get_by_role("link",name="Гадаад хэл авах",exact=True)).to_have_attribute("href","/subscribe/language_basic")
+    expect(legacy.get_by_role("link",name="Шинэ багц сонгох",exact=True)).to_have_attribute("href","/workspace/plans")
     fixture("expire",user_id,"ielts")
+    # A retired Гадаад хэл plan keeps every non-ЭЕШ mock and workshop until it ends, JLPT included, and an English Basic is not
+    # sold on top of it (owner rule 2026-11-19).
+    fixture("legacy",user_id,"language")
+    assert context.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"jlpt-n5-02"}).ok,"a retired Гадаад хэл plan still opens JLPT"
+    page.goto(BASE+"/labs/reading/jlpt")
+    # The plan passes; only the open timed sittings keep the workshop closed now.
+    expect(page.get_by_text("Цагтай шалгалт явагдаж байхад",exact=False)).to_be_visible()
+    over_legacy=context.request.post(BASE+"/api/subscriptions/orders",headers=ORIGIN,data={"program":"english_basic"})
+    assert over_legacy.status==409 and "Гадаад хэл Pro" in over_legacy.json()["error"],over_legacy.text()
+    page.goto(BASE+"/workspace/profile")
+    page.get_by_role("tab",name="Багц ба эрх",exact=True).click()
+    old=page.locator(".subscription-row").filter(has_text="Гадаад хэл Pro (хуучин багц)")
+    expect(old.get_by_role("link",name="Шинэ багц сонгох",exact=True)).to_have_attribute("href","/workspace/plans")
+    fixture("expire",user_id,"language")
     # Explicit renewal after expiry restores the plan.
-    page.goto(BASE+"/subscribe/language_basic")
+    page.goto(BASE+"/subscribe/english_basic")
     expect(page.locator(".subscription-current")).to_contain_text("ХУГАЦАА ДУУССАН")
     page.get_by_role("button",name="Сарын эрх нээх",exact=False).click()
     expect(page.locator(".subscription-receipt")).to_be_visible()
     assert context.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"ielts-academic-02"}).status==200,"the renewed plan opens every mock again"
-    # Basic is not sold on top of an active Pro.
-    pro_order=context.request.post(BASE+"/api/subscriptions/orders",headers=ORIGIN,data={"program":"language"}).json()
+    # Basic is not sold on top of an active Pro of its family; the other family's Basic is.
+    pro_order=context.request.post(BASE+"/api/subscriptions/orders",headers=ORIGIN,data={"program":"english_pro"}).json()
     assert context.request.post(BASE+"/api/subscriptions/orders/"+pro_order["id"]+"/confirm",headers=ORIGIN,data={"decision":"success"}).json()["status"]=="PAID" and pro_order["amountMnt"]==59900,pro_order
-    blocked=context.request.post(BASE+"/api/subscriptions/orders",headers=ORIGIN,data={"program":"language_basic"})
-    assert blocked.status==409 and "Pro" in blocked.json()["error"],blocked.text()
+    blocked=context.request.post(BASE+"/api/subscriptions/orders",headers=ORIGIN,data={"program":"english_basic"})
+    assert blocked.status==409 and "Англи хэл Pro" in blocked.json()["error"],blocked.text()
+    asian_order=context.request.post(BASE+"/api/subscriptions/orders",headers=ORIGIN,data={"program":"asian_basic"})
+    assert asian_order.status==200 and asian_order.json()["amountMnt"]==29900,asian_order.text()
     page.goto(BASE+"/workshops/ielts-writing-data")
     expect(page.locator(".workshop-response")).to_be_visible()
-    for route in ["/workspace/plans","/subscribe/entrance","/subscribe/language_basic","/subscribe/language","/exams/sat-full-01","/workspace/profile","/workspace"]:
+    for route in ["/workspace/plans","/subscribe/entrance","/subscribe/english_basic","/subscribe/asian_pro","/labs/toefl-reading","/exams/sat-full-01","/workspace/profile","/workspace"]:
         for width in [1440,390,320]:
             page.set_viewport_size({"width":width,"height":844});page.goto(BASE+route);page.wait_for_load_state("networkidle")
             assert page.evaluate("document.documentElement.scrollWidth<=innerWidth"),(route,width)
@@ -190,4 +234,4 @@ with sync_playwright() as p:
     page.screenshot(path=str(ART/"plans-mobile-light.png"),full_page=True)
     assert not errors,errors
     browser.close()
-print("PASS: plans (free, ЭЕШ, Гадаад хэл Basic and Pro), retired IELTS/SAT plans honoured until they end and never sold, Basic/Pro opening every non-ЭЕШ mock and its practice with no picks, Basic refused on top of Pro, decline, tamper/origin/owner checks, idempotent renewal, expiry/restoration, saved-attempt continuation and mobile plans/profile")
+print("PASS: plans (free, ЭЕШ, Англи хэл and Ази хэл Basic and Pro), retired IELTS/SAT/Гадаад хэл plans honoured until they end and never sold, Англи хэл opening every SAT/IELTS/TOEFL mock, its practice and the TOEFL labs with no picks while JLPT/HSK/TOPIK mocks and workshops stay closed, Basic refused on top of a Pro of its family, decline, tamper/origin/owner checks, idempotent renewal, expiry/restoration, saved-attempt continuation and mobile plans/profile")

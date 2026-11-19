@@ -23,6 +23,7 @@ import {
   STRUCTURE_LIMITS, allowedTools, parseStructure, readGenerate, readStructure, structureMessages,
   type AiStructure, type PlannerMessage, type SkillStat,
 } from "./structure";
+import { aiFetch } from "@/modules/ai-usage/server";
 
 /** The goal's mocks in the order a plan uses them: forms in number order, ЭЕШ papers newest year first. */
 export function goalMocks(goal: GoalId): MockRef[] {
@@ -223,7 +224,7 @@ async function deepseekStructure(messages: PlannerMessage[], maxTokens: number, 
   if (!key) throw new ApiError(503, "AI төлөвлөгч одоогоор холбогдоогүй байна.");
   let response: Response;
   try {
-    response = await fetch("https://api.deepseek.com/chat/completions", {
+    response = await aiFetch("deepseek", "https://api.deepseek.com/chat/completions", {
       method: "POST", cache: "no-store", redirect: "error",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${key}` },
       body: JSON.stringify({

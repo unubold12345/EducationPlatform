@@ -13,8 +13,10 @@ const jlptAudio = jlptData as ItemTimings;
 // snapshot `audioRevision`; one without it (started before revision 2) keeps the Kokoro tracks in assets/exams.
 import jlptV2Data from './jlpt/audio-catalog-v2.json' with { type: 'json' };
 const jlptAudioV2 = jlptV2Data as ItemTimings;
-const jlptRevised = (slug:string,version:number)=>version>=2&&Object.hasOwn(jlptAudioV2,slug);
-// HSK 1 and 2 (scripts/generate-hsk-audio.py, generate-hsk2-audio.py): four part tracks per mock in assets/hsk-audio, each item read twice.
+// Forms 04–06 (2026-11-19) were recorded only as revision 2, so they never fall back to the revision 1 folder.
+const jlptRevised = (slug:string,version:number)=>Object.hasOwn(jlptAudioV2,slug)&&(version>=2||!Object.hasOwn(jlptAudio,slug));
+// HSK 1 and 2, HSK 3.0 paper (scripts/generate-hsk3-audio.py): four (HSK 1) or three (HSK 2) part tracks per mock in
+// assets/hsk-audio, each item read twice.
 const hskAudio = hskData as ItemTimings;
 // The free half-length mocks (scripts/generate-free-audio.py): IELTS Parts 1–2, JLPT N5/N4 and HSK 1 tracks in
 // assets/free-audio, with the same per-item timings as the paid JLPT and HSK catalogues.
@@ -77,7 +79,9 @@ const prefixOf=(slug:string)=>Object.hasOwn(listeningFiles,slug)?listeningFiles[
 // Exact allowlist keeps user input out of filesystem paths. A snapshot explicitly selects its original audio revision.
 export function listeningFile(slug:string,part:number,version=2):string|undefined {
   if(Object.hasOwn(freeAudio,slug))return Number.isInteger(part)&&part>=1&&part<=freeAudio[slug].seconds.length?`${slug}-part-${part}.mp3`:undefined;
-  if(Object.hasOwn(jlptAudio,slug)||Object.hasOwn(hskAudio,slug)||Object.hasOwn(topikAudio,slug))return Number.isInteger(part)&&part>=1&&part<=4?`${slug}-part-${part}.mp3`:undefined;
+  // HSK 3.0: HSK 1 has four part tracks, HSK 2 three (the catalogue lists each one).
+  if(Object.hasOwn(hskAudio,slug))return Number.isInteger(part)&&part>=1&&part<=hskAudio[slug].seconds.length?`${slug}-part-${part}.mp3`:undefined;
+  if(Object.hasOwn(jlptAudio,slug)||Object.hasOwn(jlptAudioV2,slug)||Object.hasOwn(topikAudio,slug))return Number.isInteger(part)&&part>=1&&part<=4?`${slug}-part-${part}.mp3`:undefined;
   const prefix=version>=2&&Object.hasOwn(revisedAudio,slug)?revisedAudio[slug].prefix:prefixOf(slug);
   return prefix&&Number.isInteger(part)&&part>=1&&part<=4?`${prefix}-part-${part}.mp3`:undefined;
 }

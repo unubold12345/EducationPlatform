@@ -43,10 +43,10 @@ with sync_playwright() as p:
     expect(page.locator(".library-list .exam-card")).to_have_count(7)  # SAT, IELTS, ЭЕШ, JLPT, HSK, TOEFL, TOPIK
     for program,prefix in [("sat","sat-full"),("ielts","ielts-academic")]:
         page.goto(BASE+"/exams/"+program)
-        expect(page.locator(".mock-variant")).to_have_count(LAST[program])
+        expect(page.locator(".mock-card")).to_have_count(LAST[program])
         for n in range(2,LAST[program]+1):
             slug=f"{prefix}-{n:02}"
-            expect(page.locator(f'.mock-variant[href="/exams/{slug}"] strong')).to_have_text(f"Full Mock {n:02}")
+            expect(page.locator(f'.mock-card:has(a.button[href="/exams/{slug}"]) h2')).to_have_text(f"Full Mock {n:02}")
             assert context.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":slug}).status==401
     password="Local-Test-"+uuid4().hex
     created=context.request.post(BASE+"/api/auth/sign-up/email",headers=ORIGIN,data={"name":"Additional Exam QA","email":"qa-exam-more-"+uuid4().hex[:12]+"@example.invalid","password":password})
@@ -91,7 +91,7 @@ with sync_playwright() as p:
             assert context.request.patch(endpoint,headers=ORIGIN,data=edit).status==409
             page.goto(BASE+"/exams/attempts/"+attempt_id)
             page.reload()
-            expect(page.locator(".exam-toolbar .eyebrow")).to_contain_text(f"Full Mock {n:02}")
+            expect(page.locator(":is(.exam-toolbar,.study-head,.sheet-head) .eyebrow")).to_contain_text(f"Full Mock {n:02}")
             current=state(context,endpoint)
             assert current["responses"][first["id"]]==selected and current["deadline"]==initial["deadline"]
             if program=="ielts":
@@ -172,18 +172,19 @@ with sync_playwright() as p:
                 current=state(context,endpoint)
             assert context.request.patch(endpoint,headers=ORIGIN,data={"revision":current["revision"],"stageId":initial["stage"]["id"],"responses":{},"flags":[]}).status==409
             page.goto(BASE+"/exams/attempts/"+attempt_id)
-            expect(page.locator(".exam-results")).to_be_visible()
+            expect(page.locator(".wsp-review")).to_be_visible()
             print(slug+": lifecycle, access, save/resume, exact report and media passed",flush=True)
-    # The retired SAT and IELTS plans are not sold. Гадаад хэл Pro opens every non-ЭЕШ mock with no picking.
-    for program in ["sat","ielts"]:
+    # The retired SAT, IELTS and Гадаад хэл plans are not sold. Англи хэл Pro opens every SAT and IELTS mock with no picking.
+    for program in ["sat","ielts","language","language_basic"]:
         assert other.request.post(BASE+"/api/subscriptions/orders",headers=ORIGIN,data={"program":program}).status==404
     assert other.request.post(BASE+"/api/mock-attempts",headers=ORIGIN,data={"slug":"sat-full-02"}).status==402,"a plan mock opens only with the plan"
-    order=other.request.post(BASE+"/api/subscriptions/orders",headers=ORIGIN,data={"program":"language"})
+    order=other.request.post(BASE+"/api/subscriptions/orders",headers=ORIGIN,data={"program":"english_pro"})
     assert order.status==200 and order.json()["amountMnt"]==59900,order.text()
     assert other.request.post(BASE+"/api/subscriptions/orders/"+order.json()["id"]+"/confirm",headers=ORIGIN,data={"decision":"success"}).status==200
     def pick(slug):
         return other.request.post(BASE+"/api/mock-picks",headers=ORIGIN,data={"slug":slug})
-    assert pick("eesh-math-2024-m1").status==402,"Гадаад хэл never opens ЭЕШ"
+    assert pick("eesh-math-2024-m1").status==402,"Англи хэл never opens ЭЕШ"
+    assert pick("jlpt-n5-01").status==402,"Англи хэл never opens JLPT"
     opened=[f"sat-full-{n:02}" for n in range(2,LAST["sat"]+1)]+[f"ielts-academic-{n:02}" for n in range(2,13)]
     for slug in opened:
         chosen=pick(slug)

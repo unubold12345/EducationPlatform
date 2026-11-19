@@ -153,7 +153,7 @@ test("model JSON is read through fences and prose, then cleaned and deduplicated
 
 test("the bank size follows the student's plans, and one import asks for a bounded count", () => {
   assert.equal(VOCABULARY_LIMITS.freeWords, 100);
-  assert.deepEqual(subscriptionPlans.map(plan => [plan.program, plan.vocabularyWords]), [["entrance", 500], ["language_basic", 1500], ["language", 3000]]);
+  assert.deepEqual(subscriptionPlans.map(plan => [plan.program, plan.vocabularyWords]), [["entrance", 500], ["english_basic", 1500], ["english_pro", 3000], ["asian_basic", 1500], ["asian_pro", 3000]]);
   // The list reads the largest bank an account can reach: a plan's bank plus permanent space, within maxWords.
   assert.equal(VOCABULARY_LIMITS.maxWords, 5000);
   assert.ok(VOCABULARY_LIMITS.maxWords >= Math.max(...allPlans.map(plan => plan.vocabularyWords)));
@@ -166,9 +166,10 @@ test("the bank size follows the student's plans, and one import asks for a bound
   assert.equal(vocabularyCapacity(["language_basic", "language"]), 3000, "the largest active plan wins");
   assert.equal(vocabularyCapacity(["language", "sat"]), 3000, "plans do not stack");
   assert.equal(vocabularyCapacity(["unknown", "free"]), 100);
-  assert.deepEqual(vocabularyUpgrade(), { words: 3000, plans: ["Гадаад хэл Pro"] });
+  assert.deepEqual(vocabularyUpgrade(), { words: 3000, plans: ["Англи хэл Pro", "Ази хэл Pro"] });
+  assert.equal(vocabularyCapacity(["asian_basic", "english_pro"]), 3000, "the largest active plan wins across families");
   assert.match(bankFullMessage(100), /100 үгийн хязгаартаа хүрсэн/);
-  assert.match(bankFullMessage(100), /Гадаад хэл Pro багцтай бол 3,000 үг хадгална/);
+  assert.match(bankFullMessage(100), /Англи хэл Pro эсвэл Ази хэл Pro багцтай бол 3,000 үг хадгална/);
   assert.match(bankFullMessage(100), /Кредитээр байнгын багтаамж нэмж болно: 100 үг = 200 кредит/);
   assert.doesNotMatch(bankFullMessage(3000), /багцтай бол/, "no upgrade hint once on the largest plan bank");
   assert.doesNotMatch(bankFullMessage(5000), /Кредитээр/, "no space offer at the ceiling");

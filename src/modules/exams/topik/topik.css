@@ -10,9 +10,13 @@
 .topik-levels a{padding:9px 14px;border:1px solid var(--line);border-radius:999px;color:inherit;text-decoration:none;font-weight:600;font-size:14px}
 .topik-levels a[aria-current=true]{border-color:var(--topik-accent);background:color-mix(in srgb,var(--topik-accent) 10%,transparent)}
 .topik-level{font-size:22px;margin:34px 0 6px}.topik-format{color:var(--muted);font-size:14px;margin:0 0 18px;line-height:1.7}
-.topik-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:18px}
+/* Columns from the space beside the sidebar, at least 290 px: three at full width, two on a laptop, one on a phone.
+   auto-fit (not auto-fill) drops empty tracks, so a level's three mocks fill the row (2026-11-19). */
+.topik-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr));gap:18px}
 .topik-card{display:flex;flex-direction:column;gap:12px;padding:24px;border:1px solid var(--line);border-radius:16px;background:var(--panel,var(--paper));min-width:0}
 .topik-card h2{font-size:19px;line-height:1.35;margin:0}.topik-card p{font-size:14px;color:var(--muted);line-height:1.7;margin:0}
+/* The topic list runs to 15 lines; the card shows three, the briefing page all of them. */
+.topik-card .topik-card-topics{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;line-clamp:3;overflow:hidden}
 .topik-card dl{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:8px 0}.topik-card dt{font-size:11px;color:var(--muted)}.topik-card dd{margin:3px 0 0;font-weight:600}
 .topik-card .button{margin-top:auto}.topik-card progress{width:100%;accent-color:var(--topik-accent)}
 .topik-structure{line-height:1.8;padding-left:20px}
@@ -26,9 +30,8 @@
 .topik-gap{white-space:nowrap;font-weight:600;padding:0 .15em}
 .topik-blank{white-space:nowrap;letter-spacing:.1em}
 
-/* Sitting: block page and answer sheet. */
-.topik-layout{display:grid;grid-template-columns:minmax(0,1fr) 232px;gap:24px;align-items:start}
-.topik-page{min-width:0;max-width:860px}
+/* Sitting: block page (the answer sheet is the shared .exam-sheet column, sheet.css). */
+.topik-page{min-width:0;max-width:920px}
 .topik-page-title{display:flex;align-items:baseline;gap:12px;margin:12px 0 8px;font-size:20px}
 .topik-page-title span{font-size:12px;color:var(--muted);font-weight:500}
 .topik-instruction{margin:0 0 6px;font-weight:650;font-size:16px;line-height:1.7}
@@ -116,29 +119,11 @@
 .topik-count{margin:0;font-size:12.5px;color:var(--muted)}
 .topik-count[data-state=short],.topik-count[data-state=long]{color:#b45309}.topik-count[data-state=ok]{color:#2f8a4e}
 
-.topik-next{display:flex;justify-content:space-between;gap:10px;margin:18px 0 8px}
-.topik-sheet{position:sticky;top:114px;border:1px solid var(--line);border-radius:12px;padding:12px;background:var(--panel,var(--paper));max-height:calc(100vh - 130px);overflow:auto}
-.topik-work:has([data-listening-player]) .topik-sheet{top:154px;max-height:calc(100vh - 170px)}
-.topik-sheet>p{margin:0 0 10px;font-size:13px}
-.topik-sheet ol{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;list-style:none;padding:0;margin:0}
-.topik-sheet button{width:100%;display:grid;justify-items:center;gap:1px;padding:4px 0;border:1px solid var(--line);border-radius:7px;background:transparent;color:inherit;cursor:pointer;font-size:11px;line-height:1.2}
-.topik-sheet button b{font-size:13px;min-height:16px;color:var(--topik-accent)}
-.topik-sheet button[aria-current=true]{border-color:var(--topik-accent)}
-.topik-sheet button[data-answered]{background:color-mix(in srgb,var(--topik-accent) 9%,transparent)}
-.topik-sheet button[data-flagged]{box-shadow:inset 0 -3px 0 #d97706}
-.topik-sheet button[data-live]{outline:2px solid var(--topik-accent);outline-offset:1px}
-.topik-sheet-key{display:flex;gap:6px 12px;flex-wrap:wrap;align-items:center;margin:10px 0 0!important;font-size:11px;color:var(--muted)}
-.topik-sheet-key span{display:inline-block;width:12px;height:12px;border:1px solid var(--line);border-radius:3px;margin-right:-6px}
-.topik-sheet-key span[data-answered]{background:color-mix(in srgb,var(--topik-accent) 20%,transparent)}.topik-sheet-key span[data-flagged]{box-shadow:inset 0 -3px 0 #d97706}
-@media(max-width:1000px){
- .topik-layout{grid-template-columns:1fr}
- .topik-sheet{position:static;max-height:none;order:-1}
- .topik-sheet ol{grid-template-columns:repeat(10,minmax(0,1fr))}
-}
+.topik-next{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:18px 0 8px}
+.topik-next>span{font-size:12px;color:var(--muted)}
 @media(max-width:640px){
  .topik-options-grid,.topik-example-choices{grid-template-columns:1fr}
  .topik-options-pictures,.topik-options-charts{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
- .topik-sheet ol{grid-template-columns:repeat(6,minmax(0,1fr))}
  .topik-passage,.topik-doc{padding:12px 13px}
 }
 

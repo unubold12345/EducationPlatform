@@ -97,9 +97,11 @@ def deepseek(batch: list[str]) -> dict:
             {"role": "user", "content": " ".join(batch)},
         ],
     }
-    request = urllib.request.Request("https://api.deepseek.com/chat/completions", data=json.dumps(body).encode(), headers={"Content-Type": "application/json", "Authorization": "Bearer " + key})
-    with urllib.request.urlopen(request, timeout=240) as response:
-        return json.loads(json.loads(response.read())["choices"][0]["message"]["content"])
+    # Logged in the AI usage log (scripts/lib/ai_call.py), like every paid call.
+    sys.path.insert(0, str(ROOT / "scripts" / "lib"))
+    from ai_call import ai_post_json
+    data = ai_post_json("deepseek", "https://api.deepseek.com/chat/completions", body, key, source="script:build_pinyin.py")
+    return json.loads(data["choices"][0]["message"]["content"])
 
 
 if "--draft" in sys.argv:
@@ -132,7 +134,9 @@ def split_word(term: str, toned: str) -> list[tuple[str, int]] | None:
     text = unicodedata.normalize("NFC", toned.lower()).replace(" ", "").replace("'", "").replace("-", "")
     count = len(term)
 
-    def walk(rest: str, left: int):
+    # Pinyin writes an apostrophe before a later syllable that starts with a, e or o, so a split without one is tried
+    # first: kěnéng is kě·néng, not kěn·éng (2026-11-19). Words whose reading lost the apostrophe (nǚér) fall back.
+    def walk(rest: str, left: int, strict: bool, first: bool = True):
         if not rest:
             return [] if left == 0 else None
         if left == 0:
@@ -140,12 +144,12 @@ def split_word(term: str, toned: str) -> list[tuple[str, int]] | None:
         for size in range(min(6, len(rest)), 0, -1):
             piece = rest[:size]
             base, tone = split_tone(piece)
-            if base in valid:
-                tail = walk(rest[size:], left - 1)
+            if base in valid and not (strict and not first and base[0] in "aeo"):
+                tail = walk(rest[size:], left - 1, strict, False)
                 if tail is not None:
                     return [(base, tone)] + tail
         return None
-    return walk(text, count)
+    return walk(text, count, True) or walk(text, count, False)
 
 
 drill = []

@@ -24,6 +24,6 @@ test("DeepSeek transport handles real API shapes, bounds requests and rejects pa
  delete process.env.DEEPSEEK_API_KEY;
  await assert.rejects(()=>deepseekTutor(input,context),error=>error.status===503);
  `;
- const result=spawnSync(process.execPath,["--conditions=react-server","--import","tsx","--input-type=module","-e",script],{cwd:process.cwd(),encoding:"utf8"});
+ const result=spawnSync(process.execPath,["--conditions=react-server","--import","tsx","--input-type=module","-e",script],{cwd:process.cwd(),encoding:"utf8",env:{...process.env,AI_USAGE_LOG:"off"}});
  assert.equal(result.status,0,result.stderr);
 });

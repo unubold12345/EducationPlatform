@@ -33,7 +33,7 @@ with sync_playwright() as p:
     page.goto(BASE+'/exams')
     expect(page.locator('.exam-card.jlpt')).to_be_visible()
     page.goto(BASE+'/exams/jlpt')
-    expect(page.locator('.jlpt-card')).to_have_count(3)
+    expect(page.locator('.jlpt-card')).to_have_count(6)
     fits(page,'hub-n5')
     page.get_by_role('link',name='N4 · Суурь шат',exact=True).click()
     expect(page.locator('.jlpt-cards')).to_contain_text('85')
@@ -83,8 +83,13 @@ with sync_playwright() as p:
         attempt=page.url.rsplit('/',1)[1]
         endpoint=BASE+'/api/mock-attempts/'+attempt
         expect(page.locator('.jlpt-item')).to_have_count(1)
+        # Answer-sheet sidebar: one row per question of the section; a chosen answer fills its bubble.
+        expect(page.locator('.jlpt-sheet-row')).to_have_count(stage_counts[0])
         page.get_by_role('radio').first.check()
-        expect(page.locator('.exam-session-meta [role=status]')).to_have_text('Хадгалсан')
+        expect(page.locator('.jlpt-sheet [role=status]')).to_have_text('Хадгалсан')
+        expect(page.locator('.jlpt-sheet-row').first.locator('i[data-on]')).to_have_count(1)
+        page.locator('.jlpt-sheet-row').nth(2).click()
+        expect(page.locator('.jlpt-item>header>strong')).to_have_text('V03')
         saved=context.request.get(endpoint).json()
         deadline=saved['deadline']
         page.reload()
@@ -99,7 +104,7 @@ with sync_playwright() as p:
             assert all(not any(field in q for field in ['answers','answerDisplay','explanation','listening','script']) for q in data['stage']['questions'])
             if stage_id=='jlpt-g':
                 page.goto(BASE+'/exams/attempts/'+attempt)
-                page.locator('.jlpt-skills button').nth(2).click()
+                page.locator('.jlpt-sheet-group').nth(2).locator('.jlpt-sheet-row').first.click()
                 expect(page.locator('.jlpt-passage')).to_be_visible()
                 expect(page.locator('.jlpt-item')).to_have_count(4)
                 if level=='N4':
@@ -134,13 +139,15 @@ with sync_playwright() as p:
         assert done['finishedAt'] and done['report']['points']=={'total':count,'earned':earned}
         assert [s['total'] for s in done['report']['sections']]==stage_counts
         page.goto(BASE+'/exams/attempts/'+attempt)
-        expect(page.locator('.jlpt-results')).to_be_visible()
-        page.get_by_role('button',name='Бүгд',exact=True).click()
-        expect(page.locator('.jlpt-results .exam-review')).to_have_count(count)
+        # A finished mock's result is the Review page.
+        expect(page.locator('.wsp-review')).to_be_visible()
+        expect(page).to_have_url(BASE+'/workspace/review/'+attempt)
+        page.locator('.wsp-filter button',has_text='Бүгд').click()
+        expect(page.locator('.wsp-question')).to_have_count(count)
         fits(page,'results-'+level.lower())
         if level=='N4':
-            expect(page.locator('.jlpt-recommend a')).to_have_count(1)
-            page.locator('.jlpt-recommend a').click()
+            expect(page.locator('a.wsp-domain.is-link')).to_have_count(1)
+            page.locator('a.wsp-domain.is-link').click()
             expect(page.locator('.practice-sections button[aria-current=true]')).to_contain_text('漢字の読み')
         assert context.request.get(practice).ok
         other=browser.new_context()

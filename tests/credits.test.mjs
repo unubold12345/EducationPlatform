@@ -29,9 +29,10 @@ test("credit prices follow the DeepSeek peak list price", () => {
     "writing-ideas": 3, "writing-grammar": 5, "writing-feedback": 6, "writing-review": 21,
     "speaking-turn": 3, "speaking-report": 9,
     "vocabulary-import": 47, "exam": 80, "exam-retry": 40, "exam-10": 13, "exam-20": 17, "reading-practice": 48, "reading-retry": 24, "roadmap": 8,
+    "language-reading": 13,
   });
   assert.deepEqual(RETRY_ACTIONS, ["exam-retry", "reading-retry"]);
-  assert.deepEqual(MARGIN_ACTIONS, ["vocabulary-import", "exam", "reading-practice"]);
+  assert.deepEqual(MARGIN_ACTIONS, ["vocabulary-import", "exam", "reading-practice", "language-reading"]);
   for (const action of AI_ACTION_IDS) {
     const { inputTokens, outputTokens } = AI_ACTIONS[action];
     const usd = (inputTokens * DEEPSEEK_PRICE.inputCacheMiss + outputTokens * DEEPSEEK_PRICE.output) / 1e6;
@@ -273,9 +274,9 @@ test("feature actions map to their price list entries", () => {
 });
 
 test("every plan carries monthly credits on top of the free ones", () => {
-  // Three plans on sale (owner rules 2026-11-13 and 2026-11-17); the retired IELTS and SAT plans keep their credits until they end.
-  assert.deepEqual(subscriptionPlans.map(plan => [plan.program, plan.aiCredits]), [["entrance", 1200], ["language_basic", 1200], ["language", 3000]]);
-  assert.deepEqual(allPlans.map(plan => [plan.program, plan.aiCredits]), [["entrance", 1200], ["language_basic", 1200], ["language", 3000], ["ielts", 3000], ["sat", 2000]]);
+  // Five plans on sale (owner rule 2026-11-19); the retired Гадаад хэл, IELTS and SAT plans keep their credits until they end.
+  assert.deepEqual(subscriptionPlans.map(plan => [plan.program, plan.aiCredits]), [["entrance", 1200], ["english_basic", 1200], ["english_pro", 3000], ["asian_basic", 1200], ["asian_pro", 3000]]);
+  assert.deepEqual(allPlans.map(plan => [plan.program, plan.aiCredits]), [["entrance", 1200], ["english_basic", 1200], ["english_pro", 3000], ["asian_basic", 1200], ["asian_pro", 3000], ["language_basic", 1200], ["language", 3000], ["ielts", 3000], ["sat", 2000]]);
   assert.equal(FREE_MONTHLY_CREDITS, 100);
 });
 
@@ -349,8 +350,8 @@ test("the meter counts every available credit; purchased credits fill it rather 
 });
 
 test("the credit packs have admin-editable sizes and prices within bounds", () => {
-  assert.deepEqual(DEFAULT_CREDIT_PACK, { credits: 1000, amountMnt: 5000 });
-  assert.deepEqual(DEFAULT_CREDIT_PACKS.map(pack => pack.credits), [200, 500, 1000, 2000, 5000]);
+  assert.deepEqual(DEFAULT_CREDIT_PACK, { credits: 1000, amountMnt: 12000 });
+  assert.deepEqual(DEFAULT_CREDIT_PACKS.map(pack => [pack.credits, pack.amountMnt]), [[200, 3000], [500, 6000], [1000, 12000]]);
   assert.ok(DEFAULT_CREDIT_PACKS.some(pack => pack.credits === DEFAULT_CREDIT_PACK.credits && pack.amountMnt === DEFAULT_CREDIT_PACK.amountMnt));
   assert.ok(validCreditPack(DEFAULT_CREDIT_PACK.credits, DEFAULT_CREDIT_PACK.amountMnt));
   assert.deepEqual(CREDIT_PACK_LIMITS, { credits: { min: 10, max: 100000 }, amountMnt: { min: 1000, max: 1000000, step: 100 } });
@@ -362,8 +363,8 @@ test("the credit packs have admin-editable sizes and prices within bounds", () =
 
 test("admin-set amounts replace the defaults and stay within their limits", () => {
   // Retired plans keep a key so a subscription bought before 2026-11-13 still gets its credits until it ends.
-  assert.deepEqual(ALLOWANCE_KEYS, ["free", "entrance", "language_basic", "language", "ielts", "sat"]);
-  assert.deepEqual(defaultAllowances(), { free: 100, entrance: 1200, language_basic: 1200, language: 3000, ielts: 3000, sat: 2000 });
+  assert.deepEqual(ALLOWANCE_KEYS, ["free", "entrance", "english_basic", "english_pro", "asian_basic", "asian_pro", "language_basic", "language", "ielts", "sat"]);
+  assert.deepEqual(defaultAllowances(), { free: 100, entrance: 1200, english_basic: 1200, english_pro: 3000, asian_basic: 1200, asian_pro: 3000, language_basic: 1200, language: 3000, ielts: 3000, sat: 2000 });
   assert.ok(isAllowanceKey("free") && isAllowanceKey("language") && isAllowanceKey("sat") && !isAllowanceKey("toString") && !isAllowanceKey("jlpt"));
   assert.deepEqual([CREDIT_ALLOWANCE_LIMITS.min, CREDIT_ALLOWANCE_LIMITS.max, CREDIT_GRANT_LIMITS.min, CREDIT_GRANT_LIMITS.max], [0, 100000, 1, 10000]);
   for (const ok of [0, 1, 1500, 100000]) assert.ok(validAllowance(ok), String(ok));
@@ -427,6 +428,7 @@ test("every DeepSeek call is charged against credits, with its budget from the p
     "src/modules/my-exams/service.ts": "chargeCredits(userId, \"exam\",",
     "src/modules/reading-lab/service.ts": "\"reading-practice\"",
     "src/modules/roadmap/service.ts": "chargeCredits(userId, \"roadmap\",",
+    "src/modules/language-reading/service.ts": "\"language-reading\"",
   };
   for (const [path, action] of Object.entries(charged)) {
     const source = text(path);
@@ -441,10 +443,11 @@ test("every DeepSeek call is charged against credits, with its budget from the p
     for (const bound of bounds) assert.ok(text(path).includes(bound), path + ": " + bound);
     assert.doesNotMatch(text(path), /chargeCredits\(/, path);
   }
-  // A new provider call must be added here (and charged) rather than bypass credits.
-  const callers = sourceFiles("src").filter(path => !path.startsWith("src/generated/") && /api\.deepseek\.com|deepseekChat\(|deepseekTutor\(/.test(text(path)));
+  // A new provider call must be added here (and charged) rather than bypass credits. The AI usage log names the host to
+  // tell real calls from stand-in servers and to read the (free) account balance; it makes no feature call of its own.
+  const callers = sourceFiles("src").filter(path => !path.startsWith("src/generated/") && !path.startsWith("src/modules/ai-usage/") && /api\.deepseek\.com|deepseekChat\(|deepseekTutor\(/.test(text(path)));
   assert.deepEqual(callers.sort(), [...Object.keys(charged), ...Object.keys(included), "src/modules/tutor/provider.ts"].sort());
-  for (const path of ["src/modules/writing-lab/service.ts", "src/modules/writing-lab/expert-service.ts", "src/modules/vocabulary/service.ts", "src/modules/my-exams/service.ts", "src/modules/reading-lab/service.ts"]) {
+  for (const path of ["src/modules/writing-lab/service.ts", "src/modules/writing-lab/expert-service.ts", "src/modules/vocabulary/service.ts", "src/modules/my-exams/service.ts", "src/modules/reading-lab/service.ts", "src/modules/language-reading/service.ts"]) {
     assert.match(text(path), /AI_ACTIONS\[/, path);
     assert.doesNotMatch(text(path), /max_tokens:\s*\d/, path);
   }

@@ -155,7 +155,7 @@ test("a retry asks for new questions and numbers them apart from the ones it rep
 
 test("saved exams are limited by the plan: 5 free, ЭЕШ and Basic, 15 with Pro (or a retired IELTS or SAT plan until it ends)", () => {
   assert.equal(MY_EXAM_LIMITS.freeExams, 5);
-  assert.deepEqual(subscriptionPlans.map(plan => [plan.program, plan.savedExams]), [["entrance", 5], ["language_basic", 5], ["language", 15]]);
+  assert.deepEqual(subscriptionPlans.map(plan => [plan.program, plan.savedExams]), [["entrance", 5], ["english_basic", 5], ["english_pro", 15], ["asian_basic", 5], ["asian_pro", 15]]);
   assert.equal(examCapacity([]), 5);
   assert.equal(examCapacity(["language"]), 15);
   assert.equal(examCapacity(["ielts"]), 15, "a retired plan keeps its size until it ends");
@@ -165,8 +165,10 @@ test("saved exams are limited by the plan: 5 free, ЭЕШ and Basic, 15 with Pro
   assert.equal(examCapacity(["unknown", "free"]), 5);
   // The account's ceiling covers every plan size, and exams moved from a browser that pass a plan's size.
   assert.ok(MY_EXAM_LIMITS.exams >= Math.max(...allPlans.map(plan => plan.savedExams)));
-  assert.deepEqual(examUpgrade(), { exams: 15, plans: ["Гадаад хэл Pro"] });
-  assert.match(examsFullMessage(5), /Хадгалах 5 шалгалтын хязгаарт хүрсэн.*Гадаад хэл Pro багцтай бол 15 шалгалт/);
+  assert.deepEqual(examUpgrade(), { exams: 15, plans: ["Англи хэл Pro", "Ази хэл Pro"] });
+  assert.equal(examCapacity(["asian_pro"]), 15);
+  assert.equal(examCapacity(["english_basic"]), 5);
+  assert.match(examsFullMessage(5), /Хадгалах 5 шалгалтын хязгаарт хүрсэн.*Англи хэл Pro эсвэл Ази хэл Pro багцтай бол 15 шалгалт/);
   assert.doesNotMatch(examsFullMessage(15), /багцтай бол/, "no upgrade is offered at the largest size");
 });
 

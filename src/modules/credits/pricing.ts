@@ -10,6 +10,7 @@ import { AI_IMAGE_LIMITS } from "../ai-images/contracts.ts";
 import { READING_LIMITS, passageWords } from "../reading-lab/contracts.ts";
 import { MY_EXAM_LIMITS } from "../my-exams/contracts.ts";
 import { STRUCTURE_LIMITS } from "../roadmap/structure.ts";
+import { READING_LENGTHS, type ReadingLength } from "../language-reading/contracts.ts";
 
 /**
  * DeepSeek list prices in USD per million tokens for the model every AI feature calls.
@@ -42,7 +43,8 @@ export type AiAction =
   | "chat" | "review-coach" | "practice-assistant" | "math-tutor"
   | "writing-ideas" | "writing-grammar" | "writing-feedback" | "writing-review"
   | "speaking-turn" | "speaking-report"
-  | "vocabulary-import" | "exam" | "exam-retry" | "exam-10" | "exam-20" | "reading-practice" | "reading-retry" | "roadmap";
+  | "vocabulary-import" | "exam" | "exam-retry" | "exam-10" | "exam-20" | "reading-practice" | "reading-retry" | "roadmap"
+  | "language-reading";
 
 type ActionBudget = { label: string; area: string; inputTokens: number; outputTokens: number };
 
@@ -83,6 +85,9 @@ export const AI_ACTIONS: Record<AiAction, ActionBudget> = {
   "reading-retry": { label: "Шинэ асуулт үүсгэх (хямд)", area: "Reading Lab", inputTokens: 17340, outputTokens: 5400 },
   // Priced by the plan's length (`roadmapCredits` below); this budget is the longest plan, a year of weeks.
   "roadmap": { label: "AI төлөвлөгөө зохиох", area: "Бэлтгэлийн төлөвлөгөө", inputTokens: 2500, outputTokens: 2800 + 55 * STRUCTURE_LIMITS.maxWeeks },
+  // A JLPT/HSK/TOPIK reading text (Workshop → Унших дасгал; `languageReadingCredits` below): the rules, the allowed kanji or
+  // HSK words and the sampled hints in, the longest text out (15 sentences, each word with its reading).
+  "language-reading": { label: "Унших текст үүсгэх", area: "Унших дасгал (JLPT/HSK/TOPIK)", inputTokens: 5000, outputTokens: 300 + 240 * 15 },
 };
 export const AI_ACTION_IDS = Object.keys(AI_ACTIONS) as AiAction[];
 
@@ -322,10 +327,36 @@ export function readingRetryOutputTokens(questions: number) {
 }
 
 /**
+ * A JLPT/HSK/TOPIK reading text (owner request 2026-11-19: "generates reading content, charges credit"). The length the
+ * student picks is known before the call, so the price is exact up front, like the roadmap's: twice the DeepSeek peak list
+ * cost of the prompt budget and the reply budget of that length (`languageReadingOutputTokens`, also the call's
+ * `max_tokens`). Short 8, medium 10, long 13. A retry after a reply that broke the level's script rules is not charged
+ * again; two calls of one length still cost less than its price.
+ */
+export const LANGUAGE_READING_RATE = {
+  /** The rules, the JSON shape, the allowed kanji (278 at N4) or HSK words (498 at HSK 2) and about 30 sampled words. */
+  promptTokens: 5000,
+  /** The title and the JSON around the sentences. */
+  replyTokens: 300,
+  /** One sentence: its words with their readings, and the Mongolian translation. */
+  tokensPerSentence: 240,
+} as const;
+export const LANGUAGE_READING_PRICE = { floorMargin: 2 } as const;
+const readingLength = (length: ReadingLength) => READING_LENGTHS[length] ?? READING_LENGTHS.long;
+/** The reply budget, and the provider's `max_tokens`, of a text of this length: its most sentences. */
+export function languageReadingOutputTokens(length: ReadingLength) {
+  return LANGUAGE_READING_RATE.replyTokens + readingLength(length).max * LANGUAGE_READING_RATE.tokensPerSentence;
+}
+/** Credits for a reading text of this length (an unknown length prices as the longest). */
+export function languageReadingCredits(length: ReadingLength) {
+  return Math.ceil(LANGUAGE_READING_PRICE.floorMargin * costNanoUsd(LANGUAGE_READING_RATE.promptTokens, languageReadingOutputTokens(length)) / NANO_PER_CREDIT);
+}
+
+/**
  * Actions sold above their DeepSeek cost; every other action's price is its token budget's cost, except the two
  * retries (`RETRY_ACTIONS`), which are a share of the first generation's price.
  */
-export const MARGIN_ACTIONS: readonly AiAction[] = ["vocabulary-import", "exam", "reading-practice"];
+export const MARGIN_ACTIONS: readonly AiAction[] = ["vocabulary-import", "exam", "reading-practice", "language-reading"];
 export const RETRY_ACTIONS: readonly AiAction[] = ["exam-retry", "reading-retry"];
 /** The longest passage a stored practice can hold, in characters: what a Reading Lab retry reads at most. */
 const READING_PASSAGE_CHARS = READING_LIMITS.paragraphs.max * READING_LIMITS.paragraph;
@@ -336,6 +367,7 @@ export const CREDIT_COSTS = {
   "exam-retry": examRetryCredits(MY_EXAM_LIMITS.textChars, MY_EXAM_LIMITS.questions),
   "reading-practice": readingPracticeHold(READING_LIMITS.textChars),
   "reading-retry": readingRetryCredits(READING_PASSAGE_CHARS, READING_LIMITS.passageWords.max, READING_LIMITS.questions.max),
+  "language-reading": languageReadingCredits("long"),
 } as Record<AiAction, number>;
 /**
  * An image attached to a conversation is billed by DeepSeek as at most 1,024 more input tokens, and the reply
@@ -394,6 +426,7 @@ export function creditRange(action: AiAction) {
   if (action === "reading-practice") return { min: readingPracticeCredits(READING_LIMITS.minSourceChars, READING_LIMITS.passageWords.min, READING_LIMITS.questions.min), max };
   if (action === "reading-retry") return { min: readingRetryCredits(READING_LIMITS.minSourceChars, READING_LIMITS.passageWords.min, READING_LIMITS.questions.min), max };
   if (action === "roadmap") return { min: roadmapCredits(1), max };
+  if (action === "language-reading") return { min: languageReadingCredits("short"), max };
   return { min: max, max };
 }
 /** "5" for a fixed price, "1–17" for a priced-by-result action. */
@@ -430,16 +463,16 @@ export function validGrant(value: unknown): value is number {
 }
 /**
  * The AI credit packs on sale (owner rule 2026-11-17: several sizes, admin-editable). Admins add, change and remove packs
- * in the Prices tab (`CreditPack`, one row per pack); these are the fallback when no row exists, at 5 tugrik a credit.
+ * in the Prices tab (`CreditPack`, one row per pack); these are the fallback when no row exists. Owner rule 2026-11-20:
+ * 200 for ₮3,000 (₮15 a credit), then ₮12 a credit for 500 and 1,000, with no discount for the larger pack.
  * Purchased credits never expire and are spent after the monthly and plan credits.
  */
 export type CreditPackOffer = { credits: number; amountMnt: number };
 export const DEFAULT_CREDIT_PACKS: readonly CreditPackOffer[] = [
-  { credits: 200, amountMnt: 1000 }, { credits: 500, amountMnt: 2500 }, { credits: 1000, amountMnt: 5000 },
-  { credits: 2000, amountMnt: 10000 }, { credits: 5000, amountMnt: 25000 },
+  { credits: 200, amountMnt: 3000 }, { credits: 500, amountMnt: 6000 }, { credits: 1000, amountMnt: 12000 },
 ];
 /** The single pack older code (the mobile app's plans route) still reads: the 1,000-credit pack. */
-export const DEFAULT_CREDIT_PACK = { credits: 1000, amountMnt: 5000 } as const;
+export const DEFAULT_CREDIT_PACK = { credits: 1000, amountMnt: 12000 } as const;
 export const CREDIT_PACK_LIMITS = { credits: { min: 10, max: 100_000 }, amountMnt: { min: 1000, max: 1_000_000, step: 100 } } as const;
 /** How many packs the list may hold. */
 export const CREDIT_PACK_COUNT = { min: 1, max: 12 } as const;

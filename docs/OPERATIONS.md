@@ -26,17 +26,20 @@ every session. Product facts: [PROJECT.md](./PROJECT.md) and `docs/project/`. Pa
 Owner actions:
 1. Make the repository private. `reference/` holds the withdrawn БҮТ papers; 2018 A and 2019 A print a no-copying notice.
 2. Confirm plan figures (2026-11-17): ЭЕШ ₮29,900, Гадаад хэл Basic ₮29,900, Pro ₮59,900; 7-day mock purchases; and that Basic and Pro open every non-ЭЕШ mock with no picks.
-3. Audio: listen to the free mocks (HSK free item 1 was misheard by Whisper) and to JLPT audio revision 2 (VoxCPM2 narrator, 2026-11-16), and to the TOPIK mocks (VoxCPM2, 2026-11-18).
+3. Audio: listen to the free mocks (HSK free item 1 was misheard by Whisper) and to JLPT audio revision 2 (VoxCPM2 narrator, 2026-11-16; forms 04–06 added 2026-11-19 with new Kokoro dialogue takes), and to the TOPIK mocks (VoxCPM2, 2026-11-18) and HSK forms 04–06 (Kokoro, 2026-11-19; they also need a Chinese teacher's review). JLPT forms 04–06 also need a Japanese teacher's review; the mobile API (`src/app/api/mobile/exams/**`, `home`) still says 3 JLPT mocks per level and has no 04–06 themes.
 4. Complete one real Google sign-in with an owner-controlled account (only the authorization start is verified).
 5. Buy a sender domain if wanted, then switch to Resend ([troubleshooting](./project/troubleshooting.md)).
 6. Listen to one Speaking Lab partner on the hosted site from a phone. The DeepInfra key was pasted into a chat; consider replacing it.
 7. Old exercise rows stay in Neon by owner choice (2026-11-05); keep the tables, no dropping migration unless asked
    (`scripts/purge-exercises.mjs` is available).
 8. TOEFL: the nine forms are on the site (2026-11-18) with synthetic recordings nobody has listened to; listen to the ones `MockExmps/TOEFL/AUDIO.md` flags and get a teacher's read.
+9. Give the hosted site its own DeepSeek key: local and hosted share one, so `/admin?tab=ai` counts the other side's spend as unrecorded. The tab reaches the hosted site only after an authorized deploy.
 
 For agents:
 - Not verified on the hosted site: signed-in dashboard, admin, plans, picks, retries, free sittings, or a real sitting.
   `hosted_demo_smoke` last passed 2026-11-13 after `d67a969`; rerun only with owner approval.
+- Any live AI call from a script goes through `aiFetch` in `scripts/lib/ai-call.mjs` (Python: `scripts/lib/ai_call.py`) with
+  `AI_USAGE_AGENT="<tool> (<model>)"`, so it lands in the AI usage log; a bare provider `fetch` fails `tests/ai-usage.test.mjs`.
 - Never run live: `tutor_smoke.py`; the practice assistant beyond one SAT reply; exam-from-file with a structure request.
   Real provider calls need owner approval.
 - Unused code kept on purpose (ask before deleting): roadmap planner, `roadmap` credit action, `StudyPlan`/`StudyDay` tables.
@@ -79,7 +82,7 @@ weaken an assertion to pass; change one only when intended behaviour changed. Re
 
 **Invariants.** Keep owner, plan, exam, active-exam, quota, same-origin, ownership, bounded-body and verified-email checks on
 the server. Never trust client scores, prices, user IDs, content versions or prompts. Never add timer, payment, grading or AI
-bypasses, or global paid access. Keep purchases, LEGACY grants, immutable attempt snapshots and exact-version grading. Provider
+bypasses (sole exception: admin skip, [assessments](./project/assessments.md)), or global paid access. Keep purchases, LEGACY grants, immutable attempt snapshots and exact-version grading. Provider
 keys stay server-side; never send secrets, identity or scratch work to a model. The five demo addresses never become admins or
 change shared data. Do not read LawTest/Lexlab code or data. Never fabricate scores, delivery, deployments or test results.
 
@@ -115,26 +118,8 @@ npm run admin:grant -- qa-demo-01@example.invalid
 ## 7. Recent
 
 Full entries, with attribution and verification limits, are at the top of [OPERATIONS_HISTORY.md](./OPERATIONS_HISTORY.md).
-- **2026-11-18 · Claude Code (Opus 5.5) · Next 16.4.6 installed, all work committed**: owner asked; `npm ci` (this checkout
-  had 16.4.2), eslint ignores `.claude/**` (worktree copies), exam-library tests count 7 programmes (TOPIK). `npm run
-  check:all` passed: build with no security notice, all 17 groups incl. `topik`. 3001 restarted on the new build. All
-  pending agent work committed, not pushed. `npm audit`: 16 dependency advisories, not addressed.
-- **2026-11-18 · Claude Code (Opus 5.5) · TOPIK Ⅰ/Ⅱ mocks and TOPIK Workshop** ([assessments](./project/assessments.md),
-  [language-decks](./project/language-decks.md)): three original forms per level on the official paper structure, VoxCPM2
-  Korean audio (Whisper-checked), `/exams/topik`; Workshop TOPIK tab with a Hangul chart and test and two 513-word decks.
-  Forms solved blind twice by subagents. Lint outside `.claude/`, typecheck, unit (367) and the `topik` suite on dev 3011
-  passed; deck pages checked by hand. Korean teacher review and listening pending. No build, no commit.
-- **2026-11-18 · Claude Code (Opus 5.5) · Mock grade = scores; detailed essay reviews** ([assessments](./project/assessments.md)):
-  the automatic grade is now bands/scores plus a one- or two-sentence note. IELTS results offer the Essay Studio reviews per
-  Writing task: Бүрэн үнэлгээ (21 credits) and Шинжээчийн (plan's monthly reviews), essay read from the attempt;
-  `EssayReview.attemptId/questionId` (migration applied locally). Shared Modal fixed for dev StrictMode. Unit, lint,
-  typecheck; stubbed server check, one live review, UI harness. Local DB dropped under QA load; restarted. No commit.
-- **2026-11-18 · Claude Code (Opus 5.5) · AI grading of mock Writing and Speaking** ([assessments](./project/assessments.md)):
-  IELTS/TOEFL results pages now grade Writing and Speaking with DeepSeek once per attempt (no credits; `MockGrade`, migration
-  applied locally): IELTS bands + overall, TOEFL 0–5; recordings via DeepInfra Whisper. Teacher-review copy removed. Unit, lint,
-  typecheck; live run on dev 3009; exams (copy expecting the TOPIK card), toefl, free_mocks suites on next dev. No build, no commit.
-- **2026-11-18 · Claude Code (Fable 5.2) · Admin redesign: tabs, one job per screen** ([admin-content](./project/admin-content.md)):
-  rail unchanged; each section: title, tab bar, toolbar, one table or list. Prices: five tabs, editors open in the
-  row, one History tab (7,400 px before, one screen now); AI credits, announcements, system, user and content records
-  tabbed. Restore: `artifacts/design-backup-2026-11-18-admin`. Lint outside `.claude/`, typecheck, unit passed; admin,
-  publishing, notifications suites passed on the rebuilt 3001. Build warns: installed Next is 16.4.2. No commit.
+- **2026-11-20 · Claude Code (Opus 5.5) · All pending work committed**: owner asked to commit everything, other agents' work included (everything since `7bf4f15`: ЭЕШ physics per year and Workshop, AI usage log, student dashboard, credit packs, HSK/JLPT forms 04–06, decks, TOEFL labs, plan split). Checked first: no secrets, logs or build output; all 3,013 exam asset links resolve; one stray CR removed from `drill-session.tsx` so it stays LF. `npm run check` passed; `git diff --check` leaves one blank line at the end of `collection.module.css`. Not pushed or deployed.
+- **2026-11-20 · Claude Code (Opus 5.5) · ЭЕШ physics per year** ([assessments](./project/assessments.md), [eesh-workshop](./project/eesh-workshop.md)): owner request. Papers found for 2015–2023 and 2025 (EEC, Wayback, third-party copies; ignored `<year>/reference/`); each year's 5 mocks follow its `blueprint.json` (2024 copies 2026; Part II of 2015, 2017, 2021, 2022 too). 48 Part I + 8 Part II templates; validate, H4 and blind solve pass. Site papers and Workshop rebuilt; forecast leaves 2024 out (backtest 85%). `npm run check -- entrance`; 3001 rebuilt. Not teacher-reviewed. No commit.
+- **2026-11-20 · Claude Code (Opus 5.5) · AI usage log** ([ai-credits](./project/ai-credits.md)): owner request. Every DeepSeek, Claude and DeepInfra call is recorded in `AiCall` (feature, student, tokens, cost; mock servers $0), scripts through `scripts/lib/ai-call.mjs`; admin tab «AI зардал» checks it against the DeepSeek balance. Migration `20261120150000_ai_usage_log`, applied locally. Owner's hosted account made admin (audited). `npm run check` (3 ЭЕШ unit fails, physics work in progress); tab seen on dev 3014 with stubbed calls. No build, `check:all` or deploy. No commit.
+- **2026-11-20 · Claude Code (Opus 5.5) · Student dashboard** ([workspace](./project/workspace.md)): owner request. Rail tab «Хянах самбар», `/workspace/dashboard`: exam goals (exam, level, optional booked date, countdown), day-by-day to-do carousel, a year's activity grid, exam facts with sourced statistics, AI credit history. Additive migration `20261120120000_student_dashboard`, applied locally. `npm run check`; seen on dev 3014 at 1440/390/320, light and dark. No browser suite, build or hosted check. Exam facts not teacher-reviewed. No commit.
+- **2026-11-20 · Claude Code (Opus 5.5) · ЭЕШ Workshop** ([eesh-workshop](./project/eesh-workshop.md)): owner request. Workshop → ЭЕШ tab, 5 tiles to `/labs/eesh/<subject>`: format and topic points by year, recurring topics, weak topics. Follow-ups: page centred; «Дасгал» opens `…/drill`; `…/forecast` predicts 2027 (make-up, topic chances, exercise types, area points; backtest: 71–84% of questions' topics right). `npm run check -- entrance` passed after each; 3001 rebuilt, light/dark 1440/390. Topics and labels not teacher-reviewed. No commit.

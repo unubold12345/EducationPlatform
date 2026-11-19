@@ -1,0 +1,2472 @@
+{
+  "slug": "jlpt-n4-05",
+  "version": 1,
+  "audioRevision": 2,
+  "program": "jlpt",
+  "title": "JLPT N4 · Mock 05",
+  "description": "A sports club, a summer festival and volunteering",
+  "points": 85,
+  "notes": [
+    "Албан бус, эх зохиомжтой дадлагын mock. Япон хэлний багшийн хяналт хүлээгдэж байна.",
+    "Listening нь хиймэл япон дуу хоолойтой. Зургийн оронд нөхцөлийн текст ашигласан.",
+    "Raw зөв хариултын тоо; JLPT-ийн 180 оноо, тэнцсэн эсэхийг тооцохгүй."
+  ],
+  "sources": [
+    {
+      "label": "JLPT · албан бүтэц",
+      "url": "https://www.jlpt.jp/e/guideline/testsections.html"
+    },
+    {
+      "label": "JLPT · шинэчилсэн бүтэц",
+      "url": "https://www.jlpt.jp/e/topics/202009091599642827.html"
+    }
+  ],
+  "stages": [
+    {
+      "id": "jlpt-v",
+      "title": "文字・語彙 · Үгийн сан",
+      "kind": "questions",
+      "seconds": 1500,
+      "instructions": "Нэг зөв хариу сонгоно. ★ нь гурав дахь хоосон зай. Одоогийн хэсэг дотор чөлөөтэй шилжинэ. Цаг дуусахад дараагийн хэсэг автоматаар эхэлнэ.",
+      "groups": [
+        {
+          "id": "jlpt-v-1",
+          "title": "漢字の読み · Ханзын уншлага",
+          "section": "漢字の読み · Ханзын уншлага",
+          "instructions": "【　】の ことばは どう よみますか。",
+          "pageMode": "single"
+        },
+        {
+          "id": "jlpt-v-2",
+          "title": "表記 · Зөв бичлэг",
+          "section": "表記 · Зөв бичлэг",
+          "instructions": "【　】の ことばは どう かきますか。",
+          "pageMode": "single"
+        },
+        {
+          "id": "jlpt-v-3",
+          "title": "文脈 · Үг сонгох",
+          "section": "文脈 · Үг сонгох",
+          "instructions": "（　）に 入る いちばん いい ことばを えらんでください。",
+          "pageMode": "single"
+        },
+        {
+          "id": "jlpt-v-4",
+          "title": "言い換え · Ижил утга",
+          "section": "言い換え · Ижил утга",
+          "instructions": "【　】の 文と だいたい 同じ いみの 文を えらんでください。",
+          "pageMode": "single"
+        },
+        {
+          "id": "jlpt-v-5",
+          "title": "用法 · Үгийн хэрэглээ",
+          "section": "用法 · Үгийн хэрэглээ",
+          "instructions": "ことばの 使い方が 正しい 文を えらんでください。",
+          "pageMode": "single"
+        }
+      ],
+      "questions": [
+        {
+          "id": "N4-05-V01",
+          "number": "V01",
+          "domain": "漢字の読み · Ханзын уншлага",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-1",
+          "prompt": "あしたは サッカーの 【試合】が あります。",
+          "options": [
+            "じあい",
+            "しごう",
+            "しあい",
+            "しかい"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "しあい"
+          ],
+          "answerDisplay": "3. しあい",
+          "explanation": "試合 is read しあい."
+        },
+        {
+          "id": "N4-05-V02",
+          "number": "V02",
+          "domain": "漢字の読み · Ханзын уншлага",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-1",
+          "prompt": "あの 人は 有名な テニスの 【選手】です。",
+          "options": [
+            "せんて",
+            "ぜんしゅ",
+            "せんしゅ",
+            "せんしゅう"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "せんしゅ"
+          ],
+          "answerDisplay": "3. せんしゅ",
+          "explanation": "選手 is read せんしゅ, with a short final vowel."
+        },
+        {
+          "id": "N4-05-V03",
+          "number": "V03",
+          "domain": "漢字の読み · Ханзын уншлага",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-1",
+          "prompt": "ボランティアに 【参加】しました。",
+          "options": [
+            "さんか",
+            "さんが",
+            "さんけ",
+            "ざんか"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "さんか"
+          ],
+          "answerDisplay": "1. さんか",
+          "explanation": "参加 is read さんか."
+        },
+        {
+          "id": "N4-05-V04",
+          "number": "V04",
+          "domain": "漢字の読み · Ханзын уншлага",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-1",
+          "prompt": "【会場】は 駅の 前の ホールです。",
+          "options": [
+            "かいじょう",
+            "あいじょう",
+            "かいしょう",
+            "かいば"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "かいじょう"
+          ],
+          "answerDisplay": "1. かいじょう",
+          "explanation": "会場 is read かいじょう."
+        },
+        {
+          "id": "N4-05-V05",
+          "number": "V05",
+          "domain": "漢字の読み · Ханзын уншлага",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-1",
+          "prompt": "きのうの 試合は 一点で 【負けました】。",
+          "options": [
+            "まがりました",
+            "かけました",
+            "おけました",
+            "まけました"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "まけました"
+          ],
+          "answerDisplay": "4. まけました",
+          "explanation": "負ける is read まける."
+        },
+        {
+          "id": "N4-05-V06",
+          "number": "V06",
+          "domain": "漢字の読み · Ханзын уншлага",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-1",
+          "prompt": "夏の 【祭り】に 行きました。",
+          "options": [
+            "まいり",
+            "まつい",
+            "さいり",
+            "まつり"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "まつり"
+          ],
+          "answerDisplay": "4. まつり",
+          "explanation": "祭り is read まつり."
+        },
+        {
+          "id": "N4-05-V07",
+          "number": "V07",
+          "domain": "漢字の読み · Ханзын уншлага",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-1",
+          "prompt": "【集合】は 九時です。",
+          "options": [
+            "しゅうごう",
+            "しゅごう",
+            "じゅうごう",
+            "しゅうこう"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "しゅうごう"
+          ],
+          "answerDisplay": "1. しゅうごう",
+          "explanation": "集合 is read しゅうごう."
+        },
+        {
+          "id": "N4-05-V08",
+          "number": "V08",
+          "domain": "表記 · Зөв бичлэг",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-2",
+          "prompt": "毎朝 【うんどう】を しています。",
+          "options": [
+            "運動",
+            "運働",
+            "連動",
+            "運重"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "運動"
+          ],
+          "answerDisplay": "1. 運動",
+          "explanation": "うんどう is 運動."
+        },
+        {
+          "id": "N4-05-V09",
+          "number": "V09",
+          "domain": "表記 · Зөв бичлэг",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-2",
+          "prompt": "公園に 人が 【あつまって】います。",
+          "options": [
+            "隼まって",
+            "焦まって",
+            "集まって",
+            "進まって"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "集まって"
+          ],
+          "answerDisplay": "3. 集まって",
+          "explanation": "あつまる is 集まる."
+        },
+        {
+          "id": "N4-05-V10",
+          "number": "V10",
+          "domain": "表記 · Зөв бичлэг",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-2",
+          "prompt": "みんなで 【ちから】を 合わせました。",
+          "options": [
+            "方",
+            "刀",
+            "九",
+            "力"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "力"
+          ],
+          "answerDisplay": "4. 力",
+          "explanation": "ちから is 力."
+        },
+        {
+          "id": "N4-05-V11",
+          "number": "V11",
+          "domain": "表記 · Зөв бичлэг",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-2",
+          "prompt": "【せかい】で 一番 高い 山は どこですか。",
+          "options": [
+            "世階",
+            "世界",
+            "世介",
+            "代界"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "世界"
+          ],
+          "answerDisplay": "2. 世界",
+          "explanation": "せかい is 世界."
+        },
+        {
+          "id": "N4-05-V12",
+          "number": "V12",
+          "domain": "表記 · Зөв бичлэг",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-2",
+          "prompt": "この 木は とても 【ふとい】です。",
+          "options": [
+            "犬い",
+            "丈い",
+            "太い",
+            "大い"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "太い"
+          ],
+          "answerDisplay": "3. 太い",
+          "explanation": "ふとい is 太い."
+        },
+        {
+          "id": "N4-05-V13",
+          "number": "V13",
+          "domain": "文脈 · Үг сонгох",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-3",
+          "prompt": "クラブに 入りたい 人は、この 紙に 名前を 書いて （　）ください。",
+          "options": [
+            "もうしこんで",
+            "しょうたいして",
+            "そうだんして",
+            "しょうかいして"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "もうしこんで"
+          ],
+          "answerDisplay": "1. もうしこんで",
+          "explanation": "You apply (もうしこむ) by writing your name on the form."
+        },
+        {
+          "id": "N4-05-V14",
+          "number": "V14",
+          "domain": "文脈 · Үг сонгох",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-3",
+          "prompt": "試合に 負けて、とても （　）。",
+          "options": [
+            "めずらしかったです",
+            "かなしかったです",
+            "うれしかったです",
+            "すずしかったです"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "かなしかったです"
+          ],
+          "answerDisplay": "2. かなしかったです",
+          "explanation": "Losing a match makes you sad."
+        },
+        {
+          "id": "N4-05-V15",
+          "number": "V15",
+          "domain": "文脈 · Үг сонгох",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-3",
+          "prompt": "お祭りの 日は 道が 人で （　）います。",
+          "options": [
+            "ならんで",
+            "こわれて",
+            "こんで",
+            "すいて"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "こんで"
+          ],
+          "answerDisplay": "3. こんで",
+          "explanation": "人で こむ means crowded with people."
+        },
+        {
+          "id": "N4-05-V16",
+          "number": "V16",
+          "domain": "文脈 · Үг сонгох",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-3",
+          "prompt": "ボランティアで お年寄りの 家の 庭を （　）しました。",
+          "options": [
+            "しつもん",
+            "そうじ",
+            "けんか",
+            "ちゅうもん"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "そうじ"
+          ],
+          "answerDisplay": "2. そうじ",
+          "explanation": "Volunteers clean the garden."
+        },
+        {
+          "id": "N4-05-V17",
+          "number": "V17",
+          "domain": "文脈 · Үг сонгох",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-3",
+          "prompt": "走る 前に、よく 体を （　）ください。",
+          "options": [
+            "こわして",
+            "動いて",
+            "動かして",
+            "かくして"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "動かして"
+          ],
+          "answerDisplay": "3. 動かして",
+          "explanation": "体を 動かす means to warm up."
+        },
+        {
+          "id": "N4-05-V18",
+          "number": "V18",
+          "domain": "文脈 · Үг сонгох",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-3",
+          "prompt": "雨で 試合が （　）に なりました。",
+          "options": [
+            "ちゅうしゃ",
+            "ちゅうもん",
+            "ちゅうし",
+            "ちゅうい"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "ちゅうし"
+          ],
+          "answerDisplay": "3. ちゅうし",
+          "explanation": "A match is cancelled (中止) because of rain."
+        },
+        {
+          "id": "N4-05-V19",
+          "number": "V19",
+          "domain": "文脈 · Үг сонгох",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-3",
+          "prompt": "あの 選手は 足が とても （　）です。",
+          "options": [
+            "はやい",
+            "こまかい",
+            "ひろい",
+            "ふかい"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "はやい"
+          ],
+          "answerDisplay": "1. はやい",
+          "explanation": "足が はやい means a fast runner."
+        },
+        {
+          "id": "N4-05-V20",
+          "number": "V20",
+          "domain": "文脈 · Үг сонгох",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-3",
+          "prompt": "マラソンの 後で、のどが （　）ので、水を たくさん 飲みました。",
+          "options": [
+            "あいた",
+            "ひえた",
+            "すいた",
+            "かわいた"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "かわいた"
+          ],
+          "answerDisplay": "4. かわいた",
+          "explanation": "のどが かわく means to be thirsty."
+        },
+        {
+          "id": "N4-05-V21",
+          "number": "V21",
+          "domain": "言い換え · Ижил утга",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-4",
+          "prompt": "お祭りは 【にぎやかでした】。",
+          "options": [
+            "お祭りは 静かでした。",
+            "お祭りには 人が たくさん いて、楽しい 声や 音が していました。",
+            "お祭りは 雨で 中止でした。",
+            "お祭りには 人が 少なかったです。"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "お祭りには 人が たくさん いて、楽しい 声や 音が していました。"
+          ],
+          "answerDisplay": "2. お祭りには 人が たくさん いて、楽しい 声や 音が していました。",
+          "explanation": "にぎやか means lively and busy."
+        },
+        {
+          "id": "N4-05-V22",
+          "number": "V22",
+          "domain": "言い換え · Ижил утга",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-4",
+          "prompt": "練習を 【休まないで ください】。",
+          "options": [
+            "練習は もう しないで ください。",
+            "練習には 毎回 来て ください。",
+            "練習の 時間を 短く して ください。",
+            "練習を 時々 休んで ください。"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "練習には 毎回 来て ください。"
+          ],
+          "answerDisplay": "2. 練習には 毎回 来て ください。",
+          "explanation": "Not missing practice means coming every time."
+        },
+        {
+          "id": "N4-05-V23",
+          "number": "V23",
+          "domain": "言い換え · Ижил утга",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-4",
+          "prompt": "田中さんは 【びっくりしました】。",
+          "options": [
+            "田中さんは とても つかれました。",
+            "田中さんは とても よろこびました。",
+            "田中さんは とても おこりました。",
+            "田中さんは とても おどろきました。"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "田中さんは とても おどろきました。"
+          ],
+          "answerDisplay": "4. 田中さんは とても おどろきました。",
+          "explanation": "びっくりする means to be surprised."
+        },
+        {
+          "id": "N4-05-V24",
+          "number": "V24",
+          "domain": "言い換え · Ижил утга",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-4",
+          "prompt": "この 大会は 【毎年 ひらかれます】。",
+          "options": [
+            "この 大会は 一年に 二回 あります。",
+            "この 大会は 二年に 一回 あります。",
+            "この 大会は 一年に 一回 あります。",
+            "この 大会は 一回だけ ありました。"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "この 大会は 一年に 一回 あります。"
+          ],
+          "answerDisplay": "3. この 大会は 一年に 一回 あります。",
+          "explanation": "Held every year means once a year."
+        },
+        {
+          "id": "N4-05-V25",
+          "number": "V25",
+          "domain": "用法 · Үгийн хэрэглээ",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-5",
+          "prompt": "【勝つ】の つかいかたが 正しい 文を えらんでください。",
+          "options": [
+            "毎朝 犬を 勝って います。",
+            "この 料理は 塩を 勝つと おいしいです。",
+            "かさを 勝って 出かけました。",
+            "決勝戦で 勝って、とても うれしかったです。"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "決勝戦で 勝って、とても うれしかったです。"
+          ],
+          "answerDisplay": "4. 決勝戦で 勝って、とても うれしかったです。",
+          "explanation": "勝つ means to win."
+        },
+        {
+          "id": "N4-05-V26",
+          "number": "V26",
+          "domain": "用法 · Үгийн хэрэглээ",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-5",
+          "prompt": "【すすめる】の つかいかたが 正しい 文を えらんでください。",
+          "options": [
+            "先生に すすめられた 本を 読みました。",
+            "窓を すすめて 空気を 入れました。",
+            "電気を すすめて 部屋を 明るく しました。",
+            "お金を すすめて 買い物を しました。"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "先生に すすめられた 本を 読みました。"
+          ],
+          "answerDisplay": "1. 先生に すすめられた 本を 読みました。",
+          "explanation": "すすめる means to recommend."
+        },
+        {
+          "id": "N4-05-V27",
+          "number": "V27",
+          "domain": "用法 · Үгийн хэрэглээ",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-5",
+          "prompt": "【大切】の つかいかたが 正しい 文を えらんでください。",
+          "options": [
+            "この 道は 大切で 歩けません。",
+            "家族の 写真を 大切に しています。",
+            "大切な 雨が ふっています。",
+            "大切に 寝て ください。"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "家族の 写真を 大切に しています。"
+          ],
+          "answerDisplay": "2. 家族の 写真を 大切に しています。",
+          "explanation": "大切に する means to treasure."
+        },
+        {
+          "id": "N4-05-V28",
+          "number": "V28",
+          "domain": "用法 · Үгийн хэрэглээ",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-v-5",
+          "prompt": "【やめる】の つかいかたが 正しい 文を えらんでください。",
+          "options": [
+            "電車が やめて、遅れました。",
+            "雨が やめたので、出かけました。",
+            "やめる 時間に 起きました。",
+            "雨が 強く なったので、試合を やめました。"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "雨が 強く なったので、試合を やめました。"
+          ],
+          "answerDisplay": "4. 雨が 強く なったので、試合を やめました。",
+          "explanation": "A person stops (やめる) an activity; rain stops with やむ."
+        }
+      ]
+    },
+    {
+      "id": "jlpt-g",
+      "title": "文法・読解 · Хэлзүй, унших",
+      "kind": "questions",
+      "seconds": 3300,
+      "instructions": "Нэг зөв хариу сонгоно. ★ нь гурав дахь хоосон зай. Одоогийн хэсэг дотор чөлөөтэй шилжинэ. Цаг дуусахад дараагийн хэсэг автоматаар эхэлнэ.",
+      "groups": [
+        {
+          "id": "jlpt-g-1",
+          "title": "文法 · Хэлзүй",
+          "section": "文法 · Хэлзүй",
+          "instructions": "（　）に 入る いちばん いい ものを えらんでください。",
+          "pageMode": "single"
+        },
+        {
+          "id": "jlpt-g-2",
+          "title": "文の組み立て · Өгүүлбэр бүтээх",
+          "section": "文の組み立て · Өгүүлбэр бүтээх",
+          "instructions": "四つの ことばを ならべて 文を 作ります。★に 入る ことばを えらんでください。",
+          "pageMode": "single"
+        },
+        {
+          "id": "jlpt-g-3",
+          "title": "文章の文法 · Эхийн хэлзүй",
+          "section": "文章の文法 · Эхийн хэлзүй",
+          "instructions": "文を 読んで、【1】〜【4】に 入る ものを えらんでください。",
+          "pageMode": "single"
+        },
+        {
+          "id": "jlpt-g-4",
+          "title": "短文 · Богино эх",
+          "section": "短文 · Богино эх",
+          "instructions": "文を 読んで、しつもんに こたえてください。",
+          "pageMode": "single"
+        },
+        {
+          "id": "jlpt-g-5",
+          "title": "中文 · Дунд эх",
+          "section": "中文 · Дунд эх",
+          "instructions": "文を 読んで、しつもんに こたえてください。",
+          "pageMode": "single"
+        },
+        {
+          "id": "jlpt-g-6",
+          "title": "情報検索 · Мэдээлэл олох",
+          "section": "情報検索 · Мэдээлэл олох",
+          "instructions": "お知らせを 見て、しつもんに こたえてください。",
+          "pageMode": "single"
+        }
+      ],
+      "questions": [
+        {
+          "id": "N4-05-G01",
+          "number": "G01",
+          "domain": "文法 · Хэлзүй",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-1",
+          "prompt": "いくら 練習（れんしゅう）して（　）、なかなか 上手に なりません。",
+          "options": [
+            "は",
+            "も",
+            "から",
+            "で"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "も"
+          ],
+          "answerDisplay": "2. も",
+          "explanation": "いくら〜ても means however much."
+        },
+        {
+          "id": "N4-05-G02",
+          "number": "G02",
+          "domain": "文法 · Хэлзүй",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-1",
+          "prompt": "お祭（まつ）りの 帰りに 雨に （　）、服が ぬれて しまいました。",
+          "options": [
+            "ふられて",
+            "ふりて",
+            "ふれて",
+            "ふらせて"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "ふられて"
+          ],
+          "answerDisplay": "1. ふられて",
+          "explanation": "雨に ふられる is the passive of suffering."
+        },
+        {
+          "id": "N4-05-G03",
+          "number": "G03",
+          "domain": "文法 · Хэлзүй",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-1",
+          "prompt": "この くつは 重くて、走り（　）です。",
+          "options": [
+            "やすい",
+            "にくい",
+            "すぎ",
+            "たい"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "にくい"
+          ],
+          "answerDisplay": "2. にくい",
+          "explanation": "Verb stem + にくい means hard to do."
+        },
+        {
+          "id": "N4-05-G04",
+          "number": "G04",
+          "domain": "文法 · Хэлзүй",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-1",
+          "prompt": "今年の 夏は 去年（　） 暑くないです。",
+          "options": [
+            "だけ",
+            "まで",
+            "ほど",
+            "しか"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "ほど"
+          ],
+          "answerDisplay": "3. ほど",
+          "explanation": "〜ほど〜ない means not as ... as."
+        },
+        {
+          "id": "N4-05-G05",
+          "number": "G05",
+          "domain": "文法 · Хэлзүй",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-1",
+          "prompt": "大会（たいかい）の 申し込みは 金曜日（　） して ください。",
+          "options": [
+            "ほどに",
+            "まで",
+            "までに",
+            "からに"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "までに"
+          ],
+          "answerDisplay": "3. までに",
+          "explanation": "までに marks a deadline for a one-time action."
+        },
+        {
+          "id": "N4-05-G06",
+          "number": "G06",
+          "domain": "文法 · Хэлзүй",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-1",
+          "prompt": "来月 大阪で 試合（しあい）を する（　）に なりました。",
+          "options": [
+            "ため",
+            "こと",
+            "もの",
+            "ほう"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "こと"
+          ],
+          "answerDisplay": "2. こと",
+          "explanation": "ことに なる reports an arrangement."
+        },
+        {
+          "id": "N4-05-G07",
+          "number": "G07",
+          "domain": "文法 · Хэлзүй",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-1",
+          "prompt": "弟は お祭（まつ）りに 行き（　）がっています。",
+          "options": [
+            "そう",
+            "ない",
+            "たい",
+            "た"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "た"
+          ],
+          "answerDisplay": "4. た",
+          "explanation": "〜たがる describes a third person's wish."
+        },
+        {
+          "id": "N4-05-G08",
+          "number": "G08",
+          "domain": "文法 · Хэлзүй",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-1",
+          "prompt": "熱が あるので、今日の 練習（れんしゅう）を 休ま（　）ください。",
+          "options": [
+            "せて",
+            "られて",
+            "させて",
+            "れて"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "せて"
+          ],
+          "answerDisplay": "1. せて",
+          "explanation": "〜せてください asks for permission to do something."
+        },
+        {
+          "id": "N4-05-G09",
+          "number": "G09",
+          "domain": "文法 · Хэлзүй",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-1",
+          "prompt": "後ろの 人にも 聞こえる（　）、大きな 声で 話して ください。",
+          "options": [
+            "ほど",
+            "ばかり",
+            "ように",
+            "ために"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "ように"
+          ],
+          "answerDisplay": "3. ように",
+          "explanation": "ように follows a non-volitional verb such as 聞こえる."
+        },
+        {
+          "id": "N4-05-G10",
+          "number": "G10",
+          "domain": "文法 · Хэлзүй",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-1",
+          "prompt": "この くつは 先週 買った（　）なのに、もう 汚（よご）れて しまいました。",
+          "options": [
+            "まま",
+            "ほど",
+            "ところ",
+            "ばかり"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "ばかり"
+          ],
+          "answerDisplay": "4. ばかり",
+          "explanation": "〜たばかり means only recently."
+        },
+        {
+          "id": "N4-05-G11",
+          "number": "G11",
+          "domain": "文法 · Хэлзүй",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-1",
+          "prompt": "試合（しあい）の 日、先生も 見に （　）。",
+          "options": [
+            "うかがいました",
+            "おりました",
+            "いらっしゃいました",
+            "まいりました"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "いらっしゃいました"
+          ],
+          "answerDisplay": "3. いらっしゃいました",
+          "explanation": "Honorific いらっしゃる for the teacher."
+        },
+        {
+          "id": "N4-05-G12",
+          "number": "G12",
+          "domain": "文法 · Хэлзүй",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-1",
+          "prompt": "春に なる（　）、この 公園は 花で いっぱいに なります。",
+          "options": [
+            "と",
+            "まで",
+            "のに",
+            "ても"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "と"
+          ],
+          "answerDisplay": "1. と",
+          "explanation": "と expresses a natural result."
+        },
+        {
+          "id": "N4-05-G13",
+          "number": "G13",
+          "domain": "文法 · Хэлзүй",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-1",
+          "prompt": "雨の （　）は、体育館（たいいくかん）で 練習（れんしゅう）します。",
+          "options": [
+            "ため",
+            "場合（ばあい）",
+            "まま",
+            "ほう"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "場合（ばあい）"
+          ],
+          "answerDisplay": "2. 場合（ばあい）",
+          "explanation": "〜の場合は means in case of."
+        },
+        {
+          "id": "N4-05-G14",
+          "number": "G14",
+          "domain": "文の組み立て · Өгүүлбэр бүтээх",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-2",
+          "prompt": "わたしが ____  ____  ★  ____ は 駅の 近くです。",
+          "options": [
+            "公園",
+            "走って",
+            "いる",
+            "毎朝"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "いる"
+          ],
+          "answerDisplay": "3. いる",
+          "explanation": "毎朝 走っている modifies 公園; the third chunk is いる.\nわたしが毎朝 走って いる 公園は 駅の 近くです。"
+        },
+        {
+          "id": "N4-05-G15",
+          "number": "G15",
+          "domain": "文の組み立て · Өгүүлбэр бүтээх",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-2",
+          "prompt": "試合（しあい）に ____  ____  ★  ____ して います。",
+          "options": [
+            "練習（れんしゅう）",
+            "勝（か）つ",
+            "ために",
+            "毎日"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "毎日"
+          ],
+          "answerDisplay": "4. 毎日",
+          "explanation": "勝つために 毎日 練習して います: the third chunk is 毎日.\n試合（しあい）に勝（か）つ ために 毎日 練習（れんしゅう）して います。"
+        },
+        {
+          "id": "N4-05-G16",
+          "number": "G16",
+          "domain": "文の組み立て · Өгүүлбэр бүтээх",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-2",
+          "prompt": "お祭（まつ）りで ____  ____  ★  ____ ので、早く 着たいです。",
+          "options": [
+            "着る",
+            "もらった",
+            "買って",
+            "ゆかたを"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "買って"
+          ],
+          "answerDisplay": "3. 買って",
+          "explanation": "着る ゆかたを 買ってもらった: the third chunk is 買って.\nお祭（まつ）りで着る ゆかたを 買って もらったので、早く 着たいです。"
+        },
+        {
+          "id": "N4-05-G17",
+          "number": "G17",
+          "domain": "文の組み立て · Өгүүлбэр бүтээх",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-2",
+          "prompt": "ボランティアの ____  ____  ★  ____ で 運ばれました。",
+          "options": [
+            "ごみは",
+            "集めた",
+            "トラック",
+            "人たちが"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "ごみは"
+          ],
+          "answerDisplay": "1. ごみは",
+          "explanation": "人たちが 集めた modifies ごみ; the third chunk is ごみは.\nボランティアの人たちが 集めた ごみは トラックで 運ばれました。"
+        },
+        {
+          "id": "N4-05-G18",
+          "number": "G18",
+          "domain": "文章の文法 · Эхийн хэлзүй",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-3",
+          "prompt": "【1】",
+          "options": [
+            "参加（さんか）して",
+            "参加（さんか）します",
+            "参加（さんか）しました",
+            "参加（さんか）しよう"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "参加（さんか）しました"
+          ],
+          "answerDisplay": "3. 参加（さんか）しました",
+          "explanation": "The festival took place this year: past.",
+          "passage": "わたしの 町では 毎年 夏に 大きな お祭（まつ）りが あります。今年、わたしは 初（はじ）めて ボランティアとして お祭（まつ）りに 【1】。仕事は 会場（かいじょう）の 道を 案内する ことでした。外国から 来た 人に 英語で 道を 聞かれて、【2】 少し 困（こま）りましたが、地図を 見せながら 説明しました。その 人は「ありがとう」と 言って、うれしそうに 【3】。来年も ボランティアを 【4】と 思います。"
+        },
+        {
+          "id": "N4-05-G19",
+          "number": "G19",
+          "domain": "文章の文法 · Эхийн хэлзүй",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-3",
+          "prompt": "【2】",
+          "options": [
+            "最初（さいしょ）は",
+            "最後（さいご）は",
+            "次は",
+            "いつもは"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "最初（さいしょ）は"
+          ],
+          "answerDisplay": "1. 最初（さいしょ）は",
+          "explanation": "At first it was a little difficult.",
+          "passage": "わたしの 町では 毎年 夏に 大きな お祭（まつ）りが あります。今年、わたしは 初（はじ）めて ボランティアとして お祭（まつ）りに 【1】。仕事は 会場（かいじょう）の 道を 案内する ことでした。外国から 来た 人に 英語で 道を 聞かれて、【2】 少し 困（こま）りましたが、地図を 見せながら 説明しました。その 人は「ありがとう」と 言って、うれしそうに 【3】。来年も ボランティアを 【4】と 思います。"
+        },
+        {
+          "id": "N4-05-G20",
+          "number": "G20",
+          "domain": "文章の文法 · Эхийн хэлзүй",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-3",
+          "prompt": "【3】",
+          "options": [
+            "帰って いきました",
+            "帰って きました",
+            "帰って おきました",
+            "帰って みました"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "帰って いきました"
+          ],
+          "answerDisplay": "1. 帰って いきました",
+          "explanation": "The visitor went off (away from the writer): ていく.",
+          "passage": "わたしの 町では 毎年 夏に 大きな お祭（まつ）りが あります。今年、わたしは 初（はじ）めて ボランティアとして お祭（まつ）りに 【1】。仕事は 会場（かいじょう）の 道を 案内する ことでした。外国から 来た 人に 英語で 道を 聞かれて、【2】 少し 困（こま）りましたが、地図を 見せながら 説明しました。その 人は「ありがとう」と 言って、うれしそうに 【3】。来年も ボランティアを 【4】と 思います。"
+        },
+        {
+          "id": "N4-05-G21",
+          "number": "G21",
+          "domain": "文章の文法 · Эхийн хэлзүй",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-3",
+          "prompt": "【4】",
+          "options": [
+            "したい",
+            "しろ",
+            "した",
+            "して"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "したい"
+          ],
+          "answerDisplay": "1. したい",
+          "explanation": "来年 calls for a wish: したいと思います.",
+          "passage": "わたしの 町では 毎年 夏に 大きな お祭（まつ）りが あります。今年、わたしは 初（はじ）めて ボランティアとして お祭（まつ）りに 【1】。仕事は 会場（かいじょう）の 道を 案内する ことでした。外国から 来た 人に 英語で 道を 聞かれて、【2】 少し 困（こま）りましたが、地図を 見せながら 説明しました。その 人は「ありがとう」と 言って、うれしそうに 【3】。来年も ボランティアを 【4】と 思います。"
+        },
+        {
+          "id": "N4-05-G22",
+          "number": "G22",
+          "domain": "短文 · Богино эх",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-4",
+          "prompt": "あしたの 練習（れんしゅう）に ついて 正しいのは どれですか。",
+          "options": [
+            "体育館（たいいくかん）で します。",
+            "雨で ありません。",
+            "時間が 変わります。",
+            "ほかの クラブと します。"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "雨で ありません。"
+          ],
+          "answerDisplay": "2. 雨で ありません。",
+          "explanation": "Tomorrow's practice is cancelled because of rain.",
+          "passage": "テニス部の 皆さんへ　あしたの 練習（れんしゅう）は 雨の ため 中止（ちゅうし）です。体育館（たいいくかん）は ほかの クラブが 使うので、使えません。次の 練習（れんしゅう）は 金曜日です。ラケットを 忘れないで ください。キャプテン 山本"
+        },
+        {
+          "id": "N4-05-G23",
+          "number": "G23",
+          "domain": "短文 · Богино эх",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-4",
+          "prompt": "参加（さんか）する 人が 持っていく ものは 何ですか。",
+          "options": [
+            "手ぶくろ",
+            "飲み物",
+            "申込書（もうしこみしょ）",
+            "ごみ袋（ぶくろ）"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "飲み物"
+          ],
+          "answerDisplay": "2. 飲み物",
+          "explanation": "Gloves and bags are provided; bring your own drink.",
+          "passage": "川の そうじボランティア 募集（ぼしゅう）　日時：５月１２日（日）9:00〜11:00　集合（しゅうごう）：さくら橋（ばし）の 下　手ぶくろと ごみ袋（ぶくろ）は こちらで 用意します。飲み物は 各自（かくじ） 持ってきて ください。申し込みは いりません。"
+        },
+        {
+          "id": "N4-05-G24",
+          "number": "G24",
+          "domain": "短文 · Богино эх",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-4",
+          "prompt": "健さんは ジョンさんに 何を たのんでいますか。",
+          "options": [
+            "試合（しあい）の 日を 変える こと",
+            "弟に サッカーを 教える こと",
+            "健さんの 仕事を 手伝う こと",
+            "弟が 試合（しあい）に 出られるか チームに 聞く こと"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "弟が 試合（しあい）に 出られるか チームに 聞く こと"
+          ],
+          "answerDisplay": "4. 弟が 試合（しあい）に 出られるか チームに 聞く こと",
+          "explanation": "Ken asks John to check with the team about his brother.",
+          "passage": "ジョンさん、来週の 試合（しあい）ですが、わたしは 仕事で 行けなく なりました。代（か）わりに 弟が 出たいと 言っています。弟は 高校で サッカー部でした。チームの みんなに 聞いて もらえますか。健"
+        },
+        {
+          "id": "N4-05-G25",
+          "number": "G25",
+          "domain": "中文 · Дунд эх",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-5",
+          "prompt": "わたしは どうして ハイキング部に 入りましたか。",
+          "options": [
+            "先輩（せんぱい）に すすめられたから",
+            "友だちに 誘（さそ）われたから",
+            "運動が 得意（とくい）だったから",
+            "山が 近かったから"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "友だちに 誘（さそ）われたから"
+          ],
+          "answerDisplay": "2. 友だちに 誘（さそ）われたから",
+          "explanation": "A friend invited the writer.",
+          "passage": "わたしは 中学生の とき、運動が 苦手（にがて）でした。走るのが 遅くて、体育（たいいく）の 時間が きらいでした。高校に 入って、友だちに 誘（さそ）われて、ハイキング部に 入りました。最初（さいしょ）の 山は 小さな 山でしたが、わたしは 何度も 休みました。みんなより 一時間 遅れて 頂上（ちょうじょう）に 着いたとき、先輩（せんぱい）たちは 待っていて くれました。そして「自分の 速（はや）さで いいんだよ」と 言ってくれました。それから、わたしは 週末に 近くの 公園を 歩くように なりました。少しずつ 長く 歩けるように なって、二年生の 秋には みんなと いっしょに 高い 山に 登（のぼ）りました。今でも 速（はや）く 走るのは 苦手（にがて）ですが、山を 歩くのは 大好きです。運動は 人と 比（くら）べなくても いいと 思うように なりました。"
+        },
+        {
+          "id": "N4-05-G26",
+          "number": "G26",
+          "domain": "中文 · Дунд эх",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-5",
+          "prompt": "先輩（せんぱい）たちは 何を しましたか。",
+          "options": [
+            "頂上（ちょうじょう）で わたしを 待っていました。",
+            "わたしに 早く 歩くように 言いました。",
+            "わたしの 荷物（にもつ）を 持ちました。",
+            "わたしと いっしょに 休みました。"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "頂上（ちょうじょう）で わたしを 待っていました。"
+          ],
+          "answerDisplay": "1. 頂上（ちょうじょう）で わたしを 待っていました。",
+          "explanation": "The seniors waited at the summit.",
+          "passage": "わたしは 中学生の とき、運動が 苦手（にがて）でした。走るのが 遅くて、体育（たいいく）の 時間が きらいでした。高校に 入って、友だちに 誘（さそ）われて、ハイキング部に 入りました。最初（さいしょ）の 山は 小さな 山でしたが、わたしは 何度も 休みました。みんなより 一時間 遅れて 頂上（ちょうじょう）に 着いたとき、先輩（せんぱい）たちは 待っていて くれました。そして「自分の 速（はや）さで いいんだよ」と 言ってくれました。それから、わたしは 週末に 近くの 公園を 歩くように なりました。少しずつ 長く 歩けるように なって、二年生の 秋には みんなと いっしょに 高い 山に 登（のぼ）りました。今でも 速（はや）く 走るのは 苦手（にがて）ですが、山を 歩くのは 大好きです。運動は 人と 比（くら）べなくても いいと 思うように なりました。"
+        },
+        {
+          "id": "N4-05-G27",
+          "number": "G27",
+          "domain": "中文 · Дунд эх",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-5",
+          "prompt": "わたしは 今 どう 思っていますか。",
+          "options": [
+            "運動は 人と 比（くら）べなくても いい。",
+            "走るのが 好きに なった。",
+            "運動は 速（はや）いほうが いい。",
+            "一人で 歩くほうが いい。"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "運動は 人と 比（くら）べなくても いい。"
+          ],
+          "answerDisplay": "1. 運動は 人と 比（くら）べなくても いい。",
+          "explanation": "The writer no longer compares with others.",
+          "passage": "わたしは 中学生の とき、運動が 苦手（にがて）でした。走るのが 遅くて、体育（たいいく）の 時間が きらいでした。高校に 入って、友だちに 誘（さそ）われて、ハイキング部に 入りました。最初（さいしょ）の 山は 小さな 山でしたが、わたしは 何度も 休みました。みんなより 一時間 遅れて 頂上（ちょうじょう）に 着いたとき、先輩（せんぱい）たちは 待っていて くれました。そして「自分の 速（はや）さで いいんだよ」と 言ってくれました。それから、わたしは 週末に 近くの 公園を 歩くように なりました。少しずつ 長く 歩けるように なって、二年生の 秋には みんなと いっしょに 高い 山に 登（のぼ）りました。今でも 速（はや）く 走るのは 苦手（にがて）ですが、山を 歩くのは 大好きです。運動は 人と 比（くら）べなくても いいと 思うように なりました。"
+        },
+        {
+          "id": "N4-05-G28",
+          "number": "G28",
+          "domain": "情報検索 · Мэдээлэл олох",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-6",
+          "prompt": "中学生の アキラさんは 10月6日に 参加（さんか）したいです。どれに 申し込めますか。",
+          "options": [
+            "AかCの どちらか 一つ",
+            "AとCの 両方（りょうほう）",
+            "Bだけ",
+            "Dだけ"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "AかCの どちらか 一つ"
+          ],
+          "answerDisplay": "1. AかCの どちらか 一つ",
+          "explanation": "Both A and C are on 6 October, and only one per day is allowed.",
+          "passage": "みなみ市 スポーツ大会（たいかい）　申し込み\nA マラソン（５km）：10月6日（日）／中学生 以上（いじょう）／500円\nB サッカー：10月13日（日）／小学生／無料（むりょう）\nC バドミントン：10月6日（日）／だれでも／300円\nD ダンス：10月20日（日）／高校生 以上（いじょう）／無料（むりょう）\n申し込みは 9月30日まで。一人 二つまで。同じ 日の 種目（しゅもく）は 一つだけ。"
+        },
+        {
+          "id": "N4-05-G29",
+          "number": "G29",
+          "domain": "情報検索 · Мэдээлэл олох",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-g-6",
+          "prompt": "高校生の マリさんは 無料（むりょう）の 種目（しゅもく）に 参加（さんか）したいです。どれに 申し込めますか。",
+          "options": [
+            "D",
+            "A",
+            "B",
+            "BとD"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "D"
+          ],
+          "answerDisplay": "1. D",
+          "explanation": "B is for elementary pupils only.",
+          "passage": "みなみ市 スポーツ大会（たいかい）　申し込み\nA マラソン（５km）：10月6日（日）／中学生 以上（いじょう）／500円\nB サッカー：10月13日（日）／小学生／無料（むりょう）\nC バドミントン：10月6日（日）／だれでも／300円\nD ダンス：10月20日（日）／高校生 以上（いじょう）／無料（むりょう）\n申し込みは 9月30日まで。一人 二つまで。同じ 日の 種目（しゅもく）は 一つだけ。"
+        }
+      ]
+    },
+    {
+      "id": "jlpt-l",
+      "title": "聴解 · Сонсох",
+      "kind": "listening",
+      "seconds": 2100,
+      "instructions": "Бичлэг нэг удаа, серверийн цагтай зэрэг тоглоно. 1–2-р бүлгийн сонголт бичгээр; 3–4-р бүлгийн сонголт зөвхөн дуугаар. Дууссан хэсэг рүү буцахгүй.",
+      "groups": [
+        {
+          "id": "jlpt-l-1",
+          "title": "課題理解 · Үйлдэл сонгох",
+          "section": "課題理解 · Үйлдэл сонгох",
+          "instructions": "話を 聞いて、さいごの しつもんに こたえてください。",
+          "pageMode": "single"
+        },
+        {
+          "id": "jlpt-l-2",
+          "title": "ポイント理解 · Гол мэдээлэл",
+          "section": "ポイント理解 · Гол мэдээлэл",
+          "instructions": "しつもんを 聞いてから、話を 聞きます。大切な ことを えらんでください。",
+          "pageMode": "single"
+        },
+        {
+          "id": "jlpt-l-3",
+          "title": "発話表現 · Юу хэлэх вэ",
+          "section": "発話表現 · Юу хэлэх вэ",
+          "instructions": "場面を 見て、三つの ことばを 聞きます。何と 言うか えらんでください。",
+          "pageMode": "single"
+        },
+        {
+          "id": "jlpt-l-4",
+          "title": "即時応答 · Шуурхай хариу",
+          "section": "即時応答 · Шуурхай хариу",
+          "instructions": "短い ことばと 三つの 返事を 聞いて、いちばん いい 返事を えらんでください。",
+          "pageMode": "single"
+        }
+      ],
+      "questions": [
+        {
+          "id": "N4-05-L01",
+          "number": "L01",
+          "domain": "課題理解 · Үйлдэл сонгох",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-1",
+          "prompt": "音声の質問に答えてください。",
+          "options": [
+            "ユニフォームと くつ",
+            "くつだけ",
+            "くつと 水",
+            "ユニフォームと 水"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "くつと 水"
+          ],
+          "answerDisplay": "3. くつと 水",
+          "explanation": "The team provides uniforms.",
+          "listening": {
+            "part": 1,
+            "script": "話を 聞いてください。\nナレーター：女の人と 男の人が 話しています。男の人は 試合の 日に 何を 持っていきますか。女：あしたの 試合、ユニフォームは チームが 用意するから、いらないよ。男：くつは？ 女：くつは 自分のを 持ってきて。あと、水は 会場でも 買えるけど、高いから 持ってきたほうが いいよ。男：わかった。\n男の人は 試合（しあい）の 日に 何を 持っていきますか。"
+          }
+        },
+        {
+          "id": "N4-05-L02",
+          "number": "L02",
+          "domain": "課題理解 · Үйлдэл сонгох",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-1",
+          "prompt": "音声の質問に答えてください。",
+          "options": [
+            "10時",
+            "９時",
+            "９時半",
+            "９時15分"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "９時15分"
+          ],
+          "answerDisplay": "4. ９時15分",
+          "explanation": "She will go a little before the 9:30 briefing.",
+          "listening": {
+            "part": 1,
+            "script": "話を 聞いてください。\nナレーター：男の人と 女の人が 話しています。女の人は 何時ごろ 会場に 行きますか。男：お祭りの ボランティアは 10時からですよね。女：ええ。でも、初めての 人は 30分 前に 説明が あるそうです。男：じゃあ、９時半ですね。女：ええ。でも、少し 早めに ９時15分ごろ 行きます。\n女の人は 何時ごろ 会場（かいじょう）に 行きますか。"
+          }
+        },
+        {
+          "id": "N4-05-L03",
+          "number": "L03",
+          "domain": "課題理解 · Үйлдэл сонгох",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-1",
+          "prompt": "音声の質問に答えてください。",
+          "options": [
+            "体育館（たいいくかん）",
+            "グラウンド",
+            "公園の テニスコート",
+            "学校の 教室"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "公園の テニスコート"
+          ],
+          "answerDisplay": "3. 公園の テニスコート",
+          "explanation": "The ground is closed and the gym is in use.",
+          "listening": {
+            "part": 1,
+            "script": "話を 聞いてください。\nナレーター：女の人と 男の人が 話しています。二人は どこで 練習しますか。女：今日は グラウンドが 使えないので、体育館で 練習します。男：体育館は バスケット部が 使っていますよ。女：あ、そうか。じゃあ、公園の テニスコートを 借りましょう。男：わかりました。\n二人は どこで 練習（れんしゅう）しますか。"
+          }
+        },
+        {
+          "id": "N4-05-L04",
+          "number": "L04",
+          "domain": "課題理解 · Үйлдэл сонгох",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-1",
+          "prompt": "音声の質問に答えてください。",
+          "options": [
+            "看板（かんばん）を かける",
+            "テーブルを 出す",
+            "いすを 並（なら）べる",
+            "テントを 立てる"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "看板（かんばん）を かける"
+          ],
+          "answerDisplay": "1. 看板（かんばん）を かける",
+          "explanation": "The sign goes up before the chairs.",
+          "listening": {
+            "part": 1,
+            "script": "話を 聞いてください。\nナレーター：お祭りの 会場で 男の人と 女の人が 話しています。女の人は 次に 何を しますか。男：テントは 立てたので、次は いすを 並べて ください。女：テーブルも 出しますか。男：テーブルは 午後に 届くので、あとで。あ、その前に、入口に この 看板を かけて くれますか。女：はい。\n女の人は 次に 何を しますか。"
+          }
+        },
+        {
+          "id": "N4-05-L05",
+          "number": "L05",
+          "domain": "課題理解 · Үйлдэл сонгох",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-1",
+          "prompt": "音声の質問に答えてください。",
+          "options": [
+            "２千５百円",
+            "千五百円",
+            "２千円",
+            "千円"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "２千円"
+          ],
+          "answerDisplay": "3. ２千円",
+          "explanation": "500 yen for members plus 1,500 for the T-shirt.",
+          "listening": {
+            "part": 1,
+            "script": "話を 聞いてください。\nナレーター：受付で 男の人と 女の人が 話しています。男の人は いくら はらいますか。男：マラソン大会に 申し込みたいんですが。女：参加費は 千円です。でも、会員の 方は 半分です。男：会員です。あ、Tシャツも 買えますか。女：はい、千五百円です。男：じゃあ、それも お願いします。\n男の人は いくら はらいますか。"
+          }
+        },
+        {
+          "id": "N4-05-L06",
+          "number": "L06",
+          "domain": "課題理解 · Үйлдэл сонгох",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-1",
+          "prompt": "音声の質問に答えてください。",
+          "options": [
+            "水泳（すいえい）",
+            "ダンス",
+            "ヨガ",
+            "テニス"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "ヨガ"
+          ],
+          "answerDisplay": "3. ヨガ",
+          "explanation": "Swimming has no evening class.",
+          "listening": {
+            "part": 1,
+            "script": "話を 聞いてください。\nナレーター：スポーツセンターで 女の人と 男の人が 話しています。男の人は 何を 習いますか。女：教室は 何に しますか。男：水泳が いいと 思ったんですが、夜の クラスが ないんです。女：ヨガは 夜も ありますよ。男：じゃあ、ヨガに します。\n男の人は 何を 習（なら）いますか。"
+          }
+        },
+        {
+          "id": "N4-05-L07",
+          "number": "L07",
+          "domain": "課題理解 · Үйлдэл сонгох",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-1",
+          "prompt": "音声の質問に答えてください。",
+          "options": [
+            "土曜の 午後",
+            "火曜と 木曜",
+            "木曜と 土曜の 午前",
+            "木曜だけ"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "木曜と 土曜の 午前"
+          ],
+          "answerDisplay": "3. 木曜と 土曜の 午前",
+          "explanation": "She works on Tuesdays and can only do Saturday mornings.",
+          "listening": {
+            "part": 1,
+            "script": "話を 聞いてください。\nナレーター：男の人と 女の人が 話しています。女の人は いつ 練習に 来ますか。男：練習は 火曜と 木曜と 土曜です。女：火曜は アルバイトが あります。男：じゃあ、木曜と 土曜ですね。女：土曜は 午前だけでも いいですか。男：ええ、大丈夫ですよ。\n女の人は いつ 練習（れんしゅう）に 来ますか。"
+          }
+        },
+        {
+          "id": "N4-05-L08",
+          "number": "L08",
+          "domain": "課題理解 · Үйлдэл сонгох",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-1",
+          "prompt": "音声の質問に答えてください。",
+          "options": [
+            "受付（うけつけ）",
+            "子どもたちの 案内",
+            "川の そうじ",
+            "ごみを 運ぶ こと"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "子どもたちの 案内"
+          ],
+          "answerDisplay": "2. 子どもたちの 案内",
+          "explanation": "Reception is covered, so he guides the children.",
+          "listening": {
+            "part": 1,
+            "script": "話を 聞いてください。\nナレーター：女の人と 男の人が 話しています。男の人は ボランティアで 何を しますか。女：今日は 川の そうじと、子どもたちの 案内と、受付が あります。男：ぼくは 何を すれば いいですか。女：受付は もう 人が いるので、子どもたちの 案内を お願いします。男：わかりました。\n男の人は ボランティアで 何を しますか。"
+          }
+        },
+        {
+          "id": "N4-05-L09",
+          "number": "L09",
+          "domain": "ポイント理解 · Гол мэдээлэл",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-2",
+          "prompt": "音声の質問に答えてください。",
+          "options": [
+            "負（ま）けた",
+            "引（ひ）き分けた",
+            "中止（ちゅうし）に なった",
+            "勝（か）った"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "負（ま）けた"
+          ],
+          "answerDisplay": "1. 負（ま）けた",
+          "explanation": "They were ahead but lost at the end.",
+          "listening": {
+            "part": 2,
+            "script": "きのうの 試合（しあい）は どう なりましたか。\n男：きのうの 試合、どうだった？ 女：前半は 勝っていたんだけど、最後に 点を 取られて、負けちゃった。\nきのうの 試合（しあい）は どう なりましたか。"
+          }
+        },
+        {
+          "id": "N4-05-L10",
+          "number": "L10",
+          "domain": "ポイント理解 · Гол мэдээлэл",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-2",
+          "prompt": "音声の質問に答えてください。",
+          "options": [
+            "試合（しあい）に 出られないから",
+            "練習（れんしゅう）が きびしいから",
+            "時間が なくなったから",
+            "けがを したから"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "時間が なくなったから"
+          ],
+          "answerDisplay": "3. 時間が なくなったから",
+          "explanation": "A part-time job left no time.",
+          "listening": {
+            "part": 2,
+            "script": "男の人は どうして サッカー部を やめましたか。\n女：サッカー部、やめたんですか。けがですか。男：いいえ、足は もう 大丈夫です。アルバイトを 始めて、練習に 行く 時間が なくなったんです。\n男の人は どうして サッカー部を やめましたか。"
+          }
+        },
+        {
+          "id": "N4-05-L11",
+          "number": "L11",
+          "domain": "ポイント理解 · Гол мэдээлэл",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-2",
+          "prompt": "音声の質問に答えてください。",
+          "options": [
+            "四日間",
+            "五日間",
+            "三日間",
+            "二日間"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "四日間"
+          ],
+          "answerDisplay": "1. 四日間",
+          "explanation": "One day longer than the usual three.",
+          "listening": {
+            "part": 2,
+            "script": "今年の お祭（まつ）りは 何日間 ありますか。\n女：今年の お祭りは 三日間ですか。男：いつもは 三日間ですが、今年は 五十回目なので、一日 長く なるそうです。\n今年の お祭（まつ）りは 何日間 ありますか。"
+          }
+        },
+        {
+          "id": "N4-05-L12",
+          "number": "L12",
+          "domain": "ポイント理解 · Гол мэдээлэл",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-2",
+          "prompt": "音声の質問に答えてください。",
+          "options": [
+            "駅の 前",
+            "市役所の 前",
+            "市民（しみん）ホールの 中",
+            "公園"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "市民（しみん）ホールの 中"
+          ],
+          "answerDisplay": "3. 市民（しみん）ホールの 中",
+          "explanation": "Rain moved the meeting place indoors.",
+          "listening": {
+            "part": 2,
+            "script": "あしたの 集合場所（しゅうごうばしょ）は どこですか。\n女：あしたの ボランティアの 集合は 公園でしたよね。男：それが、雨の 予報なので、公園じゃなくて 市民ホールの 中に 変わったんです。\nあしたの 集合場所（しゅうごうばしょ）は どこですか。"
+          }
+        },
+        {
+          "id": "N4-05-L13",
+          "number": "L13",
+          "domain": "ポイント理解 · Гол мэдээлэл",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-2",
+          "prompt": "音声の質問に答えてください。",
+          "options": [
+            "二時間",
+            "一時間",
+            "一時間半",
+            "30分"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "一時間"
+          ],
+          "answerDisplay": "2. 一時間",
+          "explanation": "Thirty minutes was last year.",
+          "listening": {
+            "part": 2,
+            "script": "男の人は 今、毎朝 どのくらい 走っていますか。\n女：毎朝 走っているんですか。男：ええ。去年は 30分でしたが、今は 一時間 走っています。週末は もっと 長く 走ります。\n男の人は 今、毎朝 どのくらい 走っていますか。"
+          }
+        },
+        {
+          "id": "N4-05-L14",
+          "number": "L14",
+          "domain": "ポイント理解 · Гол мэдээлэл",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-2",
+          "prompt": "音声の質問に答えてください。",
+          "options": [
+            "練習（れんしゅう）が 大変だったから",
+            "駅から 歩いて 帰ったから",
+            "寝る 時間が 少なかったから",
+            "試合（しあい）に 負（ま）けたから"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "駅から 歩いて 帰ったから"
+          ],
+          "answerDisplay": "2. 駅から 歩いて 帰ったから",
+          "explanation": "The train stopped and she walked an hour.",
+          "listening": {
+            "part": 2,
+            "script": "女の人は なぜ 疲（つか）れていますか。\n男：疲れているようですね。練習が 大変だったんですか。女：練習は いつもどおりでした。でも、帰りの 電車が 止まって、駅から 一時間 歩いたんです。\n女の人は なぜ 疲（つか）れていますか。"
+          }
+        },
+        {
+          "id": "N4-05-L15",
+          "number": "L15",
+          "domain": "ポイント理解 · Гол мэдээлэл",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-2",
+          "prompt": "音声の質問に答えてください。",
+          "options": [
+            "自分の 店を 出す こと",
+            "友だちと おどる こと",
+            "花火（はなび）を 見る こと",
+            "店で 食べる こと"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3",
+            "4"
+          ],
+          "answers": [
+            "店で 食べる こと"
+          ],
+          "answerDisplay": "4. 店で 食べる こと",
+          "explanation": "He looks forward to eating at the stalls.",
+          "listening": {
+            "part": 2,
+            "script": "男の人は お祭（まつ）りで 何を 楽しみに していますか。\n女：お祭りで 何が 楽しみですか。男：花火も きれいですが、やっぱり いろいろな 店で 食べ歩くのが 楽しみですね。今年は 友だちの 店も 出るんです。\n男の人は お祭（まつ）りで 何を 楽しみに していますか。"
+          }
+        },
+        {
+          "id": "N4-05-L16",
+          "number": "L16",
+          "domain": "発話表現 · Юу хэлэх вэ",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-3",
+          "prompt": "試合（しあい）に 勝（か）った 友だちに 言います。何と 言いますか。",
+          "options": [
+            "1",
+            "2",
+            "3"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3"
+          ],
+          "answers": [
+            "3"
+          ],
+          "answerDisplay": "3. 勝（か）ったんだって？ おめでとう。",
+          "explanation": "Congratulate the friend.",
+          "listening": {
+            "part": 3,
+            "script": "ナレーター：友だちの チームが 試合に 勝ちました。\n1。勝（か）ったんだって？ お大事（だいじ）に。\n2。勝（か）ったんだって？ ごめんね。\n3。勝（か）ったんだって？ おめでとう。"
+          }
+        },
+        {
+          "id": "N4-05-L17",
+          "number": "L17",
+          "domain": "発話表現 · Юу хэлэх вэ",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-3",
+          "prompt": "練習（れんしゅう）で ボールを 借りたいです。コーチに 何と 言いますか。",
+          "options": [
+            "1",
+            "2",
+            "3"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3"
+          ],
+          "answers": [
+            "1"
+          ],
+          "answerDisplay": "1. ボールを お借りしても いいですか。",
+          "explanation": "お借りする asks to borrow; お貸しする means to lend.",
+          "listening": {
+            "part": 3,
+            "script": "ナレーター：練習で ボールを 借りたいです。コーチに 言います。\n1。ボールを お借りしても いいですか。\n2。ボールを お貸ししても いいですか。\n3。ボールを 借りて あげましょうか。"
+          }
+        },
+        {
+          "id": "N4-05-L18",
+          "number": "L18",
+          "domain": "発話表現 · Юу хэлэх вэ",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-3",
+          "prompt": "試合（しあい）を 見に 来てくれた 友だちに 何と 言いますか。",
+          "options": [
+            "1",
+            "2",
+            "3"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3"
+          ],
+          "answers": [
+            "3"
+          ],
+          "answerDisplay": "3. 来てくれて ありがとう。",
+          "explanation": "てくれて ありがとう thanks the friend for coming.",
+          "listening": {
+            "part": 3,
+            "script": "ナレーター：友だちが 試合を 見に 来てくれました。\n1。来てあげて ありがとう。\n2。見に 行って ありがとう。\n3。来てくれて ありがとう。"
+          }
+        },
+        {
+          "id": "N4-05-L19",
+          "number": "L19",
+          "domain": "発話表現 · Юу хэлэх вэ",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-3",
+          "prompt": "練習（れんしゅう）中に 気分が 悪く なりました。何と 言いますか。",
+          "options": [
+            "1",
+            "2",
+            "3"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3"
+          ],
+          "answers": [
+            "2"
+          ],
+          "answerDisplay": "2. すみません、少し 休んでも いいですか。",
+          "explanation": "Ask permission to rest.",
+          "listening": {
+            "part": 3,
+            "script": "ナレーター：練習中に 気分が 悪く なりました。コーチに 言います。\n1。すみません、少し 休ませましょうか。\n2。すみません、少し 休んでも いいですか。\n3。すみません、少し 休んで ください。"
+          }
+        },
+        {
+          "id": "N4-05-L20",
+          "number": "L20",
+          "domain": "発話表現 · Юу хэлэх вэ",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-3",
+          "prompt": "試合（しあい）の 前に チームの 友だちに 何と 言いますか。",
+          "options": [
+            "1",
+            "2",
+            "3"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3"
+          ],
+          "answers": [
+            "3"
+          ],
+          "answerDisplay": "3. がんばろうね。",
+          "explanation": "〜よう invites the team to try hard together.",
+          "listening": {
+            "part": 3,
+            "script": "ナレーター：試合が もうすぐ 始まります。チームの 友だちに 言います。\n1。がんばったね。\n2。がんばって くれた？\n3。がんばろうね。"
+          }
+        },
+        {
+          "id": "N4-05-L21",
+          "number": "L21",
+          "domain": "即時応答 · Шуурхай хариу",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-4",
+          "prompt": "音声を聞いて、返事を選んでください。",
+          "options": [
+            "1",
+            "2",
+            "3"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3"
+          ],
+          "answers": [
+            "3"
+          ],
+          "answerDisplay": "3. ええ、行く つもりです。",
+          "explanation": "State the intention to come.",
+          "listening": {
+            "part": 4,
+            "script": "女：あしたの 試合、見に 来られますか。\n1。ええ、来て ください。\n2。いいえ、見て いません。\n3。ええ、行く つもりです。"
+          }
+        },
+        {
+          "id": "N4-05-L22",
+          "number": "L22",
+          "domain": "即時応答 · Шуурхай хариу",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-4",
+          "prompt": "音声を聞いて、返事を選んでください。",
+          "options": [
+            "1",
+            "2",
+            "3"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3"
+          ],
+          "answers": [
+            "3"
+          ],
+          "answerDisplay": "3. ええ、もう 走れるように なりました。",
+          "explanation": "Say the injury has healed.",
+          "listening": {
+            "part": 4,
+            "script": "男：けがは もう 大丈夫ですか。\n1。ええ、けがを しました。\n2。いいえ、大丈夫でした。\n3。ええ、もう 走れるように なりました。"
+          }
+        },
+        {
+          "id": "N4-05-L23",
+          "number": "L23",
+          "domain": "即時応答 · Шуурхай хариу",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-4",
+          "prompt": "音声を聞いて、返事を選んでください。",
+          "options": [
+            "1",
+            "2",
+            "3"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3"
+          ],
+          "answers": [
+            "1"
+          ],
+          "answerDisplay": "1. いいね。何時に 待ち合わせる？",
+          "explanation": "Accept the invitation.",
+          "listening": {
+            "part": 4,
+            "script": "女：お祭り、一緒に 行かない？\n1。いいね。何時に 待ち合わせる？\n2。いいえ、お祭（まつ）りです。\n3。うん、行かなかったよ。"
+          }
+        },
+        {
+          "id": "N4-05-L24",
+          "number": "L24",
+          "domain": "即時応答 · Шуурхай хариу",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-4",
+          "prompt": "音声を聞いて、返事を選んでください。",
+          "options": [
+            "1",
+            "2",
+            "3"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3"
+          ],
+          "answers": [
+            "1"
+          ],
+          "answerDisplay": "1. ええ、いいですよ。",
+          "explanation": "Agree to help.",
+          "listening": {
+            "part": 4,
+            "script": "男：この テントを 立てるの、手を 貸して もらえませんか。\n1。ええ、いいですよ。\n2。ええ、貸して あげました。\n3。いいえ、テントです。"
+          }
+        },
+        {
+          "id": "N4-05-L25",
+          "number": "L25",
+          "domain": "即時応答 · Шуурхай хариу",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-4",
+          "prompt": "音声を聞いて、返事を選んでください。",
+          "options": [
+            "1",
+            "2",
+            "3"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3"
+          ],
+          "answers": [
+            "1"
+          ],
+          "answerDisplay": "1. うん、次は 勝（か）とうね。",
+          "explanation": "Look ahead to the next match.",
+          "listening": {
+            "part": 4,
+            "script": "女：負けちゃったけど、いい 試合だったね。\n1。うん、次は 勝（か）とうね。\n2。うん、勝（か）って よかったね。\n3。うん、試合（しあい）に 出たいね。"
+          }
+        },
+        {
+          "id": "N4-05-L26",
+          "number": "L26",
+          "domain": "即時応答 · Шуурхай хариу",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-4",
+          "prompt": "音声を聞いて、返事を選んでください。",
+          "options": [
+            "1",
+            "2",
+            "3"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3"
+          ],
+          "answers": [
+            "3"
+          ],
+          "answerDisplay": "3. あ、すみません。速（はや）すぎましたね。",
+          "explanation": "Apologise and slow down.",
+          "listening": {
+            "part": 4,
+            "script": "男：もう 少し ゆっくり 走って くれませんか。\n1。いいえ、走りませんでした。\n2。はい、もっと 速（はや）く 走ります。\n3。あ、すみません。速（はや）すぎましたね。"
+          }
+        },
+        {
+          "id": "N4-05-L27",
+          "number": "L27",
+          "domain": "即時応答 · Шуурхай хариу",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-4",
+          "prompt": "音声を聞いて、返事を選んでください。",
+          "options": [
+            "1",
+            "2",
+            "3"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3"
+          ],
+          "answers": [
+            "3"
+          ],
+          "answerDisplay": "3. はい、よろしく お願いします。",
+          "explanation": "A first-timer greets the group.",
+          "listening": {
+            "part": 4,
+            "script": "女：ボランティア、初めてですか。\n1。いいえ、ボランティアです。\n2。はい、また 来て ください。\n3。はい、よろしく お願いします。"
+          }
+        },
+        {
+          "id": "N4-05-L28",
+          "number": "L28",
+          "domain": "即時応答 · Шуурхай хариу",
+          "kind": "choice",
+          "points": 1,
+          "groupId": "jlpt-l-4",
+          "prompt": "音声を聞いて、返事を選んでください。",
+          "options": [
+            "1",
+            "2",
+            "3"
+          ],
+          "optionLabels": [
+            "1",
+            "2",
+            "3"
+          ],
+          "answers": [
+            "2"
+          ],
+          "answerDisplay": "2. そうだね。じゃ、また 今度。",
+          "explanation": "Agree to cancel.",
+          "listening": {
+            "part": 4,
+            "script": "男：雨が 降りそうだから、今日の 練習は やめておこうか。\n1。そうだね。もう 降りたね。\n2。そうだね。じゃ、また 今度。\n3。そうだね。練習（れんしゅう）しようか。"
+          }
+        }
+      ]
+    }
+  ]
+}

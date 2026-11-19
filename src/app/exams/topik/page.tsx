@@ -32,7 +32,7 @@ export default async function TopikHub(){
    const owned=access.practice(mock.slug),active=attempts.find(a=>a.slug===mock.slug);
    const results=practice.find(p=>p.slug===mock.slug)?.results;
    const checked=results&&typeof results==='object'?Object.keys(results).filter(id=>id.startsWith(`topik${mock.level}-0${mock.number}-`)).length:0;
-   return <article className="topik-card" key={mock.slug}><span className="eyebrow">{name} · MOCK 0{mock.number}</span><h2>{mock.theme}</h2>{mock.topics?<p>{mock.topics}</p>:null}<dl><div><dt>Асуулт</dt><dd>{mock.questions}</dd></div><div><dt>Хугацаа</dt><dd>{mock.minutes} мин</dd></div><div><dt>Сонсох</dt><dd>{mock.audio?'Солонгос audio':'Audio бэлтгэгдэж байна'}</dd></div><div><dt>Эрх</dt><dd>{hubLabel(access.state(mock.slug),MOCK_PRICE_LABEL)}</dd></div></dl>
+   return <article className="topik-card" key={mock.slug}><span className="eyebrow">{name} · MOCK 0{mock.number}</span><h2>{mock.theme}</h2>{mock.topics?<p className="topik-card-topics">{mock.topics}</p>:null}<dl><div><dt>Асуулт</dt><dd>{mock.questions}</dd></div><div><dt>Хугацаа</dt><dd>{mock.minutes} мин</dd></div><div><dt>Сонсох</dt><dd>{mock.audio?'Солонгос audio':'Audio бэлтгэгдэж байна'}</dd></div><div><dt>Эрх</dt><dd>{hubLabel(access.state(mock.slug),MOCK_PRICE_LABEL)}</dd></div></dl>
     {checked>0?<div><progress max={mock.questions} value={checked} aria-label="Дадлагын явц"/><p>{checked}/{mock.questions} шалгасан</p></div>:null}
     <Link className="button" href={active?'/exams/attempts/'+active.id:'/exams/'+mock.slug}>{active?'Шалгалтаа үргэлжлүүлэх':'Танилцах / эхлэх'} →</Link>
     {owned?<Link className="text-link" href={'/exams/'+mock.slug+'/practice'}>{checked?'Дадлагаа үргэлжлүүлэх':'Цаггүй дадлага'} →</Link>:null}

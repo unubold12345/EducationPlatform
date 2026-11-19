@@ -12,6 +12,7 @@ import {
  readIeltsSpeaking,readIeltsWriting,readToeflSpeaking,readToeflWriting,spokenWords,toeflSpeaking,toeflSpeakingMessages,toeflWritingMessages,writingGrade,writingItems,
  type GradePart,type GradeView,type IeltsWritingTaskGrade,type Message,type MockGradeResult,type ToeflWritingTaskGrade,type WritingItem,
 } from "./contracts";
+import {aiFetch,aiFetcher,withAiContext} from "@/modules/ai-usage/server";
 
 // Grading is part of the mock (owner 2026-11-18): no credits. It runs once per finished attempt and part, is saved on
 // the server, and is bounded by tries per part and a daily cap per student, since the free mock can be retaken.
@@ -60,7 +61,11 @@ export async function mockGrades(id:string,userId:string) {
 }
 
 /** Grades one part of the student's own finished IELTS or TOEFL mock, or returns the grade already saved or running. */
-export async function gradeMock(id:string,userId:string,body:unknown):Promise<GradeView> {
+export function gradeMock(id:string,userId:string,body:unknown):Promise<GradeView> {
+ // Every provider call of this grading is logged for this student (`ai-usage`); an essay review inside sets its own action.
+ return withAiContext({userId,source:"mock-grading"},()=>gradeMockNow(id,userId,body));
+}
+async function gradeMockNow(id:string,userId:string,body:unknown):Promise<GradeView> {
  const part=(body&&typeof body==="object"&&!Array.isArray(body)&&Object.keys(body).length===1?(body as {part?:unknown}).part:null) as GradePart;
  if(!GRADE_PARTS.includes(part))throw new ApiError(400,"Үнэлэх хэсгээ зөв сонгоно уу.");
  const state=await finishedMock(id,userId);
@@ -115,7 +120,7 @@ async function ask<T>(messages:Message[],read:(json:unknown)=>T|null,usage:Usage
  for(let attempt=0;attempt<2;attempt++){
   let response:Response;
   try{
-   response=await fetch(`${base}/chat/completions`,{method:"POST",cache:"no-store",redirect:"error",headers:{"Content-Type":"application/json",Authorization:`Bearer ${key}`},
+   response=await aiFetch("deepseek",`${base}/chat/completions`,{method:"POST",cache:"no-store",redirect:"error",headers:{"Content-Type":"application/json",Authorization:`Bearer ${key}`},
     body:JSON.stringify({model:process.env.DEEPSEEK_MODEL||"deepseek-flash",thinking:{type:"enabled"},max_tokens:GRADE_LIMITS.maxTokens,response_format:{type:"json_object"},stream:false,messages}),
     signal:AbortSignal.timeout(GRADE_LIMITS.timeoutMs)});
   }catch(error){
@@ -160,7 +165,7 @@ async function transcribeRecording(attemptId:string,stageId:string):Promise<stri
  const bytes=new Uint8Array(recording.data);
  const mime=(["audio/webm","audio/ogg","audio/mp4"] as const).find(type=>type===recording.mime)??"audio/webm";
  try{
-  const text=await hostedTranscript(key,bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength) as ArrayBuffer,fetch,400,mime);
+  const text=await hostedTranscript(key,bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength) as ArrayBuffer,aiFetcher("deepinfra",{source:"mock-transcribe"}),400,mime);
   // Whisper writes bracketed non-speech tags such as [BLANK_AUDIO] or (music) on silence.
   return text.replace(/[[(][^\])]*[\])]/g," ").replace(/\s+/g," ").trim().slice(0,12000);
  }catch{

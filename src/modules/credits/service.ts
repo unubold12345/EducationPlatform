@@ -8,6 +8,7 @@ import {
   type AiAction, type AllowanceKey, type AllowanceTable, type CreditReceipt,
 } from "./pricing";
 import { allocateCredits, available, creditTotals, planTermCredits, returnParts, totalsAfter, type Bucket, type ChargePart } from "./buckets";
+import { withAiContext } from "@/modules/ai-usage/server";
 
 export type CreditSummary = {
   /** `balance` is every credit left; `yellow` is the part of it that was purchased (shown apart, never lapses). */
@@ -169,7 +170,8 @@ export async function chargeCredits<T extends object>(userId: string, action: Ai
   const hold = await holdCredits(userId, action, options.hold ?? creditCost(action, options.images ?? 0), Boolean(options.settle));
   const meter = new UsageMeter();
   let result: T;
-  try { result = await work(meter); }
+  // Every provider call inside `work` is logged against this student, action and charge (`ai-usage`).
+  try { result = await withAiContext({ userId, source: action, chargeId: hold.id }, () => work(meter)); }
   catch (error) { await refund(hold, meter); throw error; }
   let spent = settledPrice(hold, result, options.settle);
   const split = returnParts(hold.parts, hold.credits - spent);

@@ -97,13 +97,17 @@ function mathDomain(skill) {
   for (const [pattern, name] of mathDomainRules) if (pattern.test(skill)) return name;
   return "Тоо, илэрхийлэл";
 }
+// The first match wins. Skills added with the per-year blueprints (2026-11-20) are covered too: "хий" starts a word (not
+// "ерөнхий"), an LC circuit and "Хэлбэлзлийн төрөл" count as oscillations, and astronomy has its own domain.
 const physicsDomainRules = [
   [/Хэмжилт/i, "Хэмжилт"],
-  [/дулаан|температур|хий|халах|молекул|изохор/i, "Молекул ба дулаан"],
-  [/хэлхээ|гүйдэл|цахилгаан|конденсатор|багтаамж|кулон|соронзон|логик|булийн|өсгөгч|цэнэг/i, "Цахилгаан ба соронзон"],
+  [/дулаан|температур|(^|\s)хий|халах|молекул|изохор|термодинамик/i, "Молекул ба дулаан"],
+  [/хэлбэлзл/i, "Хэлбэлзэл ба долгион"],
+  [/хэлхээ|гүйдэл|цахилгаан|конденсатор|багтаамж|кулон|соронзон|логик|булийн|өсгөгч|цэнэг|эсэргүүцэл|хүчдэл|дамжуулагч|ампер|лоренц|индукц|трансформатор/i, "Цахилгаан ба соронзон"],
   [/долгион|хэлбэлзэл|гармоник|дууны/i, "Хэлбэлзэл ба долгион"],
-  [/гэрэл|оптик|нүд|хугарал|гэрэлтүүлэг/i, "Оптик"],
-  [/атом|фотон|изотоп|цацраг|квант/i, "Атом, квант"],
+  [/гэрэл|гэрл|оптик|нүд|хугарал|гэрэлтүүлэг|линз|толь|толин|дифракц|интерференц/i, "Оптик"],
+  [/атом|фотон|фотоэффект|изотоп|цацраг|квант|задрал|цөм/i, "Атом, квант"],
+  [/гариг|одон|орчлон/i, "Орчлон ертөнц"],
 ];
 function physicsDomain(skill) {
   for (const [pattern, name] of physicsDomainRules) if (pattern.test(skill)) return name;
@@ -230,6 +234,16 @@ function buildMath(mock, year, number) {
 }
 
 // ------------------------------------------------------------------- Physics
+/** What a year's papers follow, from MockExmps/Physics/<year>/blueprint.json (Physics README): the year's own paper, or the
+ * 2026 sequence where no paper (2024) or no Part II (2015, 2017, 2021, 2022) was found. */
+function physicsBasis(year) {
+  const file = join(SOURCE, "Physics", String(year), "blueprint.json");
+  const plan = existsSync(file) ? JSON.parse(readFileSync(file, "utf8")) : { copiesYear: 2026 };
+  if (plan.copiesYear) return `${year} оны хувилбар олдоогүй тул ${plan.copiesYear} оны ЭЕШ-ийн физикийн даалгаврын дараалалтай`;
+  const variant = plan.referenceVariant && plan.referenceVariant !== "A" ? ` (${plan.referenceVariant} хувилбар)` : "";
+  if (plan.partIICopiesYear) return `${year} оны ЭЕШ-ийн физикийн${variant} I хэсгийн дараалалтай (II хэсэг нь ${plan.partIICopiesYear} оных)`;
+  return `${year} оны ЭЕШ-ийн физикийн${variant} бүтэцтэй`;
+}
 function buildPhysics(mock, year, number) {
   const form = `P${number}`;
   const variant = String(mock.mockVariant ?? form).toUpperCase();
@@ -287,10 +301,7 @@ function buildPhysics(mock, year, number) {
   return baseMock({
     slug, subject: "physics", year, form: variant,
     title: `ЭЕШ · Физик · ${year} · ${variant}`,
-    // Only the 2026 A paper was available, so every year follows its item order with that year's point split (Physics README).
-    description: year === 2026
-      ? `2026 оны ЭЕШ-ийн физикийн бүтэцтэй, энэ сайтад зориулж зохиосон дадлагын шалгалт. 46 сонгох, 4 бодолт; g = 10 м/с².`
-      : `2026 оны ЭЕШ-ийн физикийн даалгаврын дараалал, ${year} оны онооны хуваарьтай, энэ сайтад зориулж зохиосон дадлагын шалгалт. 46 сонгох, 4 бодолт; g = 10 м/с².`,
+    description: `${physicsBasis(year)}, энэ сайтад зориулж зохиосон дадлагын шалгалт. 46 сонгох, 4 бодолт; g = 10 м/с².`,
     durationMinutes: 100, points: total, calculator: false,
     instructions: [
       "Нэгдүгээр хэсэгт 46 даалгаврын A–E сонголтоос нэгийг сонгоно.",
